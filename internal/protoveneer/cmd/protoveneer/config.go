@@ -26,8 +26,6 @@ import (
 type config struct {
 	Package         string
 	ProtoImportPath string `yaml:"protoImportPath"`
-	// Import path for the support package needed by the generated code.
-	SupportImportPath string `yaml:"supportImportPath"`
 
 	// The types to process. Only these types and the types they depend
 	// on will be output.
@@ -54,6 +52,8 @@ type typeConfig struct {
 	Fields map[string]fieldConfig
 	// Custom conversion functions: "tofunc, fromfunc"
 	ConvertToFrom string `yaml:"convertToFrom"`
+	// Custom population functions, that are called after field-by-field conversion: "tofunc, fromfunc"
+	PopulateToFrom string `yaml:"populateToFrom"`
 	// Doc string for the type, omitting the initial type name.
 	// This replaces the first line of the doc.
 	Doc string
@@ -67,8 +67,14 @@ type typeConfig struct {
 type fieldConfig struct {
 	Name string // veneer name
 	Type string // veneer type
+	Doc  string // Doc string for the field. Replaces existing doc.
 	// Omit from output.
 	Omit bool
+	// This field is not part of the proto; add it.
+	Add bool
+	// Generate the type, but not conversions.
+	// The populate functions (see [typeConfg.PopulateToFrom]) should set the field.
+	NoConvert bool `yaml:"noConvert"`
 	// Custom conversion functions: "tofunc, fromfunc"
 	ConvertToFrom string `yaml:"convertToFrom"`
 }

@@ -24,6 +24,7 @@ import (
 	"math/big"
 	"net/http"
 	"os"
+	"reflect"
 	"sort"
 	"strings"
 	"testing"
@@ -1160,18 +1161,20 @@ type SubTestStruct struct {
 }
 
 type TestStruct struct {
-	Name      string
-	Bytes     []byte
-	Integer   int64
-	Float     float64
-	Boolean   bool
-	Timestamp time.Time
-	Date      civil.Date
-	Time      civil.Time
-	DateTime  civil.DateTime
-	Numeric   *big.Rat
-	Geography string
-
+	Name           string
+	Bytes          []byte
+	Integer        int64
+	Float          float64
+	Boolean        bool
+	Timestamp      time.Time
+	Date           civil.Date
+	Time           civil.Time
+	DateTime       civil.DateTime
+	Numeric        *big.Rat
+	Geography      string
+	RangeDate      *RangeValue `bigquery:"rangedate"` //TODO: remove tags when field normalization works
+	RangeDateTime  *RangeValue `bigquery:"rangedatetime"`
+	RangeTimestamp *RangeValue `bigquery:"rangetimestamp"`
 	StringArray    []string
 	IntegerArray   []int64
 	FloatArray     []float64
@@ -1200,6 +1203,19 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// Finish declaring the ambigous range element types.
+	for idx, typ := range map[int]FieldType{
+		11: DateFieldType,
+		12: DateTimeFieldType,
+		13: TimestampFieldType,
+	} {
+		if schema[idx].Type != RangeFieldType {
+			t.Fatalf("mismatch in expected RANGE element in schema field %d", idx)
+		} else {
+			schema[idx].RangeElementType = &RangeElementType{Type: typ}
+		}
+	}
+
 	ctx := context.Background()
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
@@ -1214,6 +1230,15 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 	dtm2 := civil.DateTime{Date: d2, Time: tm2}
 	g := "POINT(-122.350220 47.649154)"
 	g2 := "POINT(-122.0836791 37.421827)"
+	rangedate := &RangeValue{Start: civil.Date{Year: 2024, Month: 04, Day: 11}}
+	rangedatetime := &RangeValue{
+		End: civil.DateTime{
+			Date: civil.Date{Year: 2024, Month: 04, Day: 11},
+			Time: civil.Time{Hour: 2, Minute: 4, Second: 6, Nanosecond: 0}},
+	}
+	rangetimestamp := &RangeValue{
+		Start: time.Date(2016, 3, 20, 15, 4, 5, 6000, time.UTC),
+	}
 
 	// Populate the table.
 	ins := table.Inserter()
@@ -1230,6 +1255,9 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			dtm,
 			big.NewRat(57, 100),
 			g,
+			rangedate,
+			rangedatetime,
+			rangetimestamp,
 			[]string{"a", "b"},
 			[]int64{1, 2},
 			[]float64{1, 1.41},
@@ -1255,16 +1283,19 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			},
 		},
 		{
-			Name:      "b",
-			Bytes:     []byte("byte2"),
-			Integer:   24,
-			Float:     4.13,
-			Boolean:   false,
-			Timestamp: ts,
-			Date:      d,
-			Time:      tm,
-			DateTime:  dtm,
-			Numeric:   big.NewRat(4499, 10000),
+			Name:           "b",
+			Bytes:          []byte("byte2"),
+			Integer:        24,
+			Float:          4.13,
+			Boolean:        false,
+			Timestamp:      ts,
+			Date:           d,
+			Time:           tm,
+			DateTime:       dtm,
+			Numeric:        big.NewRat(4499, 10000),
+			RangeDate:      rangedate,
+			RangeDateTime:  rangedatetime,
+			RangeTimestamp: rangetimestamp,
 		},
 	}
 	var savers []*StructSaver
@@ -1866,6 +1897,10 @@ func TestIntegration_StandardQuery(t *testing.T) {
 		{"ArrayOfStructs", "SELECT [(1, 2, 3), (4, 5, 6)]", []Value{[]Value{ints(1, 2, 3), ints(4, 5, 6)}}},
 		{"ComplexNested", "SELECT [([1, 2, 3], 4), ([5, 6], 7)]", []Value{[]Value{[]Value{ints(1, 2, 3), int64(4)}, []Value{ints(5, 6), int64(7)}}}},
 		{"SubSelectArray", "SELECT ARRAY(SELECT STRUCT([1, 2]))", []Value{[]Value{[]Value{ints(1, 2)}}}},
+		{"RangeOofDateLiteral",
+			"SELECT RANGE(DATE '2023-03-01', DATE '2024-04-16')",
+			[]Value{&RangeValue{Start: civil.Date{Year: 2023, Month: 03, Day: 01}, End: civil.Date{Year: 2024, Month: 04, Day: 16}}},
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -2108,14 +2143,16 @@ func TestIntegration_QuerySessionSupport(t *testing.T) {
 
 }
 
+type queryParameterTestCase struct {
+	name       string
+	query      string
+	parameters []QueryParameter
+	wantRow    []Value
+	wantConfig interface{}
+}
+
 var (
-	queryParameterTestCases = []struct {
-		name       string
-		query      string
-		parameters []QueryParameter
-		wantRow    []Value
-		wantConfig interface{}
-	}{}
+	queryParameterTestCases = []queryParameterTestCase{}
 )
 
 func initQueryParameterTestCases() {
@@ -2127,6 +2164,12 @@ func initQueryParameterTestCases() {
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	rat := big.NewRat(13, 10)
 	bigRat := big.NewRat(12345, 10e10)
+	rangeTimestamp1 := &RangeValue{
+		Start: time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC),
+	}
+	rangeTimestamp2 := &RangeValue{
+		End: time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC),
+	}
 
 	type ss struct {
 		String string
@@ -2139,13 +2182,7 @@ func initQueryParameterTestCases() {
 		SubStructArray []ss
 	}
 
-	queryParameterTestCases = []struct {
-		name       string
-		query      string
-		parameters []QueryParameter
-		wantRow    []Value
-		wantConfig interface{}
-	}{
+	queryParameterTestCases = []queryParameterTestCase{
 		{
 			"Int64Param",
 			"SELECT @val",
@@ -2239,6 +2276,46 @@ func initQueryParameterTestCases() {
 			},
 			[]Value{"{\"alpha\":\"beta\"}"},
 			"{\"alpha\":\"beta\"}",
+		},
+		{
+			"RangeUnboundedStart",
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "RANGE",
+							RangeElementType: &StandardSQLDataType{
+								TypeKind: "TIMESTAMP",
+							},
+						},
+						Value: rangeTimestamp1,
+					},
+				},
+			},
+			[]Value{rangeTimestamp1},
+			rangeTimestamp1,
+		},
+		{
+			"RangeUnboundedEnd",
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "RANGE",
+							RangeElementType: &StandardSQLDataType{
+								TypeKind: "TIMESTAMP",
+							},
+						},
+						Value: rangeTimestamp2,
+					},
+				},
+			},
+			[]Value{rangeTimestamp2},
+			rangeTimestamp2,
 		},
 		{
 			"NestedStructParam",
@@ -2448,6 +2525,37 @@ func TestIntegration_QueryParameters(t *testing.T) {
 					tc.parameters[0].Value, got, tc.wantConfig)
 			}
 		})
+	}
+}
+
+func TestIntegration_QueryEmptyArrays(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	q := client.Query("SELECT ARRAY<string>[] as a, ARRAY<STRUCT<name string>>[] as b")
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for {
+		vals := map[string]Value{}
+		if err := it.Next(&vals); err != nil {
+			if errors.Is(err, iterator.Done) {
+				break
+			}
+		}
+
+		valueOfA := reflect.ValueOf(vals["a"])
+		if testutil.Equal(vals["a"], nil) || valueOfA.IsNil() {
+			t.Fatalf("expected empty string array to not return nil, but found %v %v %T", valueOfA, vals["a"], vals["a"])
+		}
+
+		valueOfB := reflect.ValueOf(vals["b"])
+		if testutil.Equal(vals["b"], nil) || valueOfB.IsNil() {
+			t.Fatalf("expected empty struct array to not return nil, but found %v %v %T", valueOfB, vals["b"], vals["b"])
+		}
 	}
 }
 
@@ -2820,11 +2928,10 @@ func TestIntegration_ExportDataStatistics(t *testing.T) {
 				break
 			}
 			if err != nil {
-				t.Logf("failed to delete bucket: %v", err)
+				t.Logf("failed to iterate through bucket %q: %v", bucketName, err)
 				continue
 			}
 			err = storageClient.Bucket(bucketName).Object(obj.Name).Delete(ctx)
-			t.Logf("deleted object %s: %v", obj.Name, err)
 		}
 	}()
 
@@ -3297,7 +3404,7 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 		CREATE MODEL %s
 		OPTIONS (
 			model_type='linear_reg',
-			max_iteration=1,
+			max_iterations=1,
 			learn_rate=0.4,
 			learn_rate_strategy='constant'
 		) AS (

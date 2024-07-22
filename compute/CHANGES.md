@@ -1,5 +1,47 @@
 # Changes
 
+## [1.27.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.2...compute/v1.27.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **compute:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.27.2](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.1...compute/v1.27.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **compute/metadata:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **compute:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.0...compute/v1.27.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **compute:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.26.0...compute/v1.27.0) (2024-05-16)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20240430 ([#900](https://github.com/googleapis/google-cloud-go/issues/900)) ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.25.1...compute/v1.26.0) (2024-05-01)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20240407 ([#890](https://github.com/googleapis/google-cloud-go/issues/890)) ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **compute:** Update Compute Engine API to revision 20240421 ([#899](https://github.com/googleapis/google-cloud-go/issues/899)) ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **compute:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.25.0...compute/v1.25.1) (2024-03-14)
 
 
@@ -303,4 +345,3 @@ Compute metadata has been moved to its own module.
 
 This is the first tag to carve out compute as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

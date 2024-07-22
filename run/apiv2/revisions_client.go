@@ -65,6 +65,7 @@ func defaultRevisionsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -154,7 +155,8 @@ func (c *RevisionsClient) GetRevision(ctx context.Context, req *runpb.GetRevisio
 	return c.internalClient.GetRevision(ctx, req, opts...)
 }
 
-// ListRevisions lists Revisions from a given Service, or from a given location.
+// ListRevisions lists Revisions from a given Service, or from a given location.  Results
+// are sorted by creation time, descending.
 func (c *RevisionsClient) ListRevisions(ctx context.Context, req *runpb.ListRevisionsRequest, opts ...gax.CallOption) *RevisionIterator {
 	return c.internalClient.ListRevisions(ctx, req, opts...)
 }
@@ -272,7 +274,9 @@ func (c *revisionsGRPCClient) Connection() *grpc.ClientConn {
 func (c *revisionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -340,6 +344,7 @@ func defaultRevisionsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -349,7 +354,9 @@ func defaultRevisionsRESTClientOptions() []option.ClientOption {
 func (c *revisionsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -642,7 +649,8 @@ func (c *revisionsRESTClient) GetRevision(ctx context.Context, req *runpb.GetRev
 	return resp, nil
 }
 
-// ListRevisions lists Revisions from a given Service, or from a given location.
+// ListRevisions lists Revisions from a given Service, or from a given location.  Results
+// are sorted by creation time, descending.
 func (c *revisionsRESTClient) ListRevisions(ctx context.Context, req *runpb.ListRevisionsRequest, opts ...gax.CallOption) *RevisionIterator {
 	it := &RevisionIterator{}
 	req = proto.Clone(req).(*runpb.ListRevisionsRequest)

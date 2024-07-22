@@ -40,20 +40,22 @@ func TestIntegration_StorageReadBasicTypes(t *testing.T) {
 	initQueryParameterTestCases()
 
 	for _, c := range queryParameterTestCases {
-		q := storageOptimizedClient.Query(c.query)
-		q.Parameters = c.parameters
-		q.forceStorageAPI = true
-		it, err := q.Read(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		err = checkIteratorRead(it, c.wantRow)
-		if err != nil {
-			t.Fatalf("%s: error on query `%s`[%v]: %v", it.SourceJob().ID(), c.query, c.parameters, err)
-		}
-		if !it.IsAccelerated() {
-			t.Fatalf("%s: expected storage api to be used", it.SourceJob().ID())
-		}
+		t.Run(c.name, func(t *testing.T) {
+			q := storageOptimizedClient.Query(c.query)
+			q.Parameters = c.parameters
+			q.forceStorageAPI = true
+			it, err := q.Read(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = checkIteratorRead(it, c.wantRow)
+			if err != nil {
+				t.Fatalf("%s: error on query `%s`[%v]: %v", it.SourceJob().ID(), c.query, c.parameters, err)
+			}
+			if !it.IsAccelerated() {
+				t.Fatalf("%s: expected storage api to be used", it.SourceJob().ID())
+			}
+		})
 	}
 }
 

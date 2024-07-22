@@ -1,6 +1,69 @@
 # Changelog
 
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.0...batch/v1.9.1) (2024-07-10)
+
+
+### Bug Fixes
+
+* **batch:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.8...batch/v1.9.0) (2024-07-01)
+
+
+### Features
+
+* **batch:** Add a install_ops_agent field to InstancePolicyOrTemplate for Ops Agent support ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+
+### Bug Fixes
+
+* **batch:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+
+### Documentation
+
+* **batch:** Add instructions on how to configure cross-project pubsub publisher ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **batch:** Document default disk type ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **batch:** Update GCS description of volume.mount_options field ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **batch:** Update links in the description of volume.mount_options field ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **batch:** Update list of volume.mount_options field ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+## [1.8.8](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.7...batch/v1.8.8) (2024-06-26)
+
+
+### Bug Fixes
+
+* **batch:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.8.7](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.6...batch/v1.8.7) (2024-06-05)
+
+
+### Documentation
+
+* **batch:** Documentation improvements ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
+## [1.8.6](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.5...batch/v1.8.6) (2024-05-16)
+
+
+### Documentation
+
+* **batch:** Refine description for field `task_execution` ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
+## [1.8.5](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.4...batch/v1.8.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **batch:** Add internaloption.WithDefaultEndpointTemplate ([3b41408](https://github.com/googleapis/google-cloud-go/commit/3b414084450a5764a0248756e95e13383a645f90))
+* **batch:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+
+### Documentation
+
+* **batch:** Update description on allowed_locations in LocationPolicy field ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **batch:** Update description on allowed_locations in LocationPolicy field ([#9777](https://github.com/googleapis/google-cloud-go/issues/9777)) ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
 ## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.3...batch/v1.8.4) (2024-04-15)
 
 

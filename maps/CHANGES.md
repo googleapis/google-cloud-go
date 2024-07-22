@@ -2,6 +2,92 @@
 
 
 
+## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.3...maps/v1.11.4) (2024-07-10)
+
+
+### Bug Fixes
+
+* **maps:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.2...maps/v1.11.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* **maps:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.1...maps/v1.11.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **maps:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.0...maps/v1.11.1) (2024-06-10)
+
+
+### Bug Fixes
+
+* **maps/places:** Update Go maps/places to unstable ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.10.0...maps/v1.11.0) (2024-05-29)
+
+
+### Features
+
+* **maps:** Removed mapsplatformdatasets v1alpha library ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.9.0...maps/v1.10.0) (2024-05-22)
+
+
+### Features
+
+* **maps/places:** Add `generative_summary` and `area_summary` for place summaries ([#10204](https://github.com/googleapis/google-cloud-go/issues/10204)) ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.8.0...maps/v1.9.0) (2024-05-16)
+
+
+### Features
+
+* **maps:** FleetEngine and Delivery RPC turndown and removal ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+
+
+### Bug Fixes
+
+* **maps:** An existing message `SearchTasksRequest` is removed ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing message `SearchTasksResponse` is removed ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing message `UpdateVehicleLocationRequest` is removed ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing method `SearchFuzzedVehicles` is removed from service `VehicleService` ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing method `SearchTasks` is removed from service `DeliveryService` ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing method `UpdateVehicleLocation` is removed from service `VehicleService` ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Remove comment about deleted SearchTasks method ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+* **maps/fleetengine:** Mark TerminalPointId as deprecated ([#10130](https://github.com/googleapis/google-cloud-go/issues/10130)) ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.3...maps/v1.8.0) (2024-05-08)
+
+
+### Features
+
+* **maps:** New clients ([#10129](https://github.com/googleapis/google-cloud-go/issues/10129)) ([97eb0f5](https://github.com/googleapis/google-cloud-go/commit/97eb0f5c93e8a4528a35910f9b0ab75a113a002c))
+
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.2...maps/v1.7.3) (2024-05-01)
+
+
+### Bug Fixes
+
+* **maps:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Correct link in ListTasks documentation ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **maps/places:** Slightly improved documentation for EVOptions in SearchTextRequest ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **maps/places:** Update comment of Places API ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
 ## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.1...maps/v1.7.2) (2024-04-15)
 
 

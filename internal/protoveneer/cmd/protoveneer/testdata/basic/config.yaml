@@ -14,7 +14,6 @@
 
 package: basic
 protoImportPath: example.com/basic
-supportImportPath: example.com/protoveneer/support
 
 types:
     HarmCategory:
@@ -40,9 +39,27 @@ types:
         TopK:
           type: '*int32'
           convertToFrom: int32pToFloat32p, float32pToInt32p
+          doc: |
+            Multiple lines of
+            documentation for this
+            field.
+        FinishReason:
+          doc: 'The reason for finishing.'
 
     Citation:
       docVerb: contains
       fields:
         Uri:
           name: URI
+
+    Pop:
+      fields:
+        Y:
+          noConvert: true
+      populateToFrom: popYTo, popYFrom
+
+    File:
+      fields:
+        hidden:
+          add: true
+          type: '*Client'

@@ -443,7 +443,9 @@ func (c *modelMonitoringGRPCClient) Connection() *grpc.ClientConn {
 func (c *modelMonitoringGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -521,7 +523,9 @@ func defaultModelMonitoringRESTClientOptions() []option.ClientOption {
 func (c *modelMonitoringRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1100,6 +1104,7 @@ func (c *modelMonitoringRESTClient) CreateModelMonitor(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/modelMonitors", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetModelMonitorId() != "" {
 		params.Add("modelMonitorId", fmt.Sprintf("%v", req.GetModelMonitorId()))
 	}
@@ -1173,6 +1178,7 @@ func (c *modelMonitoringRESTClient) UpdateModelMonitor(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetModelMonitor().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1241,6 +1247,11 @@ func (c *modelMonitoringRESTClient) GetModelMonitor(ctx context.Context, req *ai
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1311,6 +1322,7 @@ func (c *modelMonitoringRESTClient) ListModelMonitors(ctx context.Context, req *
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/modelMonitors", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1396,6 +1408,7 @@ func (c *modelMonitoringRESTClient) DeleteModelMonitor(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -1469,6 +1482,7 @@ func (c *modelMonitoringRESTClient) CreateModelMonitoringJob(ctx context.Context
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/modelMonitoringJobs", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetModelMonitoringJobId() != "" {
 		params.Add("modelMonitoringJobId", fmt.Sprintf("%v", req.GetModelMonitoringJobId()))
 	}
@@ -1529,6 +1543,11 @@ func (c *modelMonitoringRESTClient) GetModelMonitoringJob(ctx context.Context, r
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1604,6 +1623,7 @@ func (c *modelMonitoringRESTClient) ListModelMonitoringJobs(ctx context.Context,
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/modelMonitoringJobs", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1688,6 +1708,11 @@ func (c *modelMonitoringRESTClient) DeleteModelMonitoringJob(ctx context.Context
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1765,6 +1790,11 @@ func (c *modelMonitoringRESTClient) SearchModelMonitoringStats(ctx context.Conte
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:searchModelMonitoringStats", req.GetModelMonitor())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
 		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
@@ -1850,6 +1880,11 @@ func (c *modelMonitoringRESTClient) SearchModelMonitoringAlerts(ctx context.Cont
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:searchModelMonitoringAlerts", req.GetModelMonitor())
 
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
 		// Build HTTP headers from client and context metadata.
 		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 		headers := gax.BuildHeaders(ctx, hds...)
@@ -1914,6 +1949,11 @@ func (c *modelMonitoringRESTClient) GetLocation(ctx context.Context, req *locati
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1984,6 +2024,7 @@ func (c *modelMonitoringRESTClient) ListLocations(ctx context.Context, req *loca
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2068,6 +2109,11 @@ func (c *modelMonitoringRESTClient) GetIamPolicy(ctx context.Context, req *iampb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -2132,6 +2178,11 @@ func (c *modelMonitoringRESTClient) SetIamPolicy(ctx context.Context, req *iampb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
@@ -2200,6 +2251,11 @@ func (c *modelMonitoringRESTClient) TestIamPermissions(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -2255,6 +2311,11 @@ func (c *modelMonitoringRESTClient) CancelOperation(ctx context.Context, req *lo
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2292,6 +2353,11 @@ func (c *modelMonitoringRESTClient) DeleteOperation(ctx context.Context, req *lo
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2328,6 +2394,11 @@ func (c *modelMonitoringRESTClient) GetOperation(ctx context.Context, req *longr
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2398,6 +2469,7 @@ func (c *modelMonitoringRESTClient) ListOperations(ctx context.Context, req *lon
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2476,6 +2548,7 @@ func (c *modelMonitoringRESTClient) WaitOperation(ctx context.Context, req *long
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
 		timeout, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {

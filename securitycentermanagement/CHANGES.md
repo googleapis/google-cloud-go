@@ -1,5 +1,67 @@
 # Changelog
 
+
+
+## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v1.0.1...securitycentermanagement/v1.0.2) (2024-07-10)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v1.0.0...securitycentermanagement/v1.0.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.3.0...securitycentermanagement/v1.0.0) (2024-06-26)
+
+
+### Features
+
+* **securitycentermanagement:** Add `show_eligible_modules_only` field to `GetSecurityCenterServiceRequest` message ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+* **securitycentermanagement:** Add `TOXIC_COMBINATION` to `FindingClass` enum ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
+
+### Miscellaneous Chores
+
+* **securitycentermanagement:** Release v1.0.0 ([#10447](https://github.com/googleapis/google-cloud-go/issues/10447)) ([c8b65e4](https://github.com/googleapis/google-cloud-go/commit/c8b65e41ec3a90ba854ee28a26260892dfb8e846))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.2.1...securitycentermanagement/v0.3.0) (2024-06-18)
+
+
+### Features
+
+* **securitycentermanagement:** Add an INGEST_ONLY EnablementState ([abac5c6](https://github.com/googleapis/google-cloud-go/commit/abac5c6eec859477c6d390b116ea8954213ba585))
+
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.2.0...securitycentermanagement/v0.2.1) (2024-06-10)
+
+
+### Documentation
+
+* **securitycentermanagement:** Minor docs formatting in `UpdateSecurityCenterServiceRequest.validate_only` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.8...securitycentermanagement/v0.2.0) (2024-05-29)
+
+
+### Features
+
+* **securitycentermanagement:** Adding support for new Security Center Management Apis ([#10247](https://github.com/googleapis/google-cloud-go/issues/10247)) ([b19dd34](https://github.com/googleapis/google-cloud-go/commit/b19dd340b13e247fa80f8ab7868294cf53e50450))
+
+
+### Documentation
+
+* **securitycentermanagement:** Update comment formatting throughout API ([b19dd34](https://github.com/googleapis/google-cloud-go/commit/b19dd340b13e247fa80f8ab7868294cf53e50450))
+
+## [0.1.8](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.7...securitycentermanagement/v0.1.8) (2024-05-01)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.1.7](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.6...securitycentermanagement/v0.1.7) (2024-03-25)
 
 
@@ -58,4 +120,3 @@
 * **securitycentermanagement:** Security Center Management API ([#9068](https://github.com/googleapis/google-cloud-go/issues/9068)) ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
 
 ## Changes
-

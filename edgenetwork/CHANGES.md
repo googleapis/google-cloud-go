@@ -1,5 +1,40 @@
 # Changelog
 
+
+
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v1.1.0...edgenetwork/v1.1.1) (2024-07-10)
+
+
+### Bug Fixes
+
+* **edgenetwork:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v1.0.0...edgenetwork/v1.1.0) (2024-07-01)
+
+
+### Features
+
+* **edgenetwork:** A new field `bonding_type` is added to message `.google.cloud.edgenetwork.v1.Subnet` ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+
+### Bug Fixes
+
+* **edgenetwork:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v0.2.4...edgenetwork/v1.0.0) (2024-06-26)
+
+
+### Miscellaneous Chores
+
+* **edgenetwork:** Release v1.0.0 ([#10445](https://github.com/googleapis/google-cloud-go/issues/10445)) ([1cf83a8](https://github.com/googleapis/google-cloud-go/commit/1cf83a8056d3a10d9513563e0eba058bf7a19f5b))
+
+## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v0.2.3...edgenetwork/v0.2.4) (2024-05-01)
+
+
+### Bug Fixes
+
+* **edgenetwork:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v0.2.2...edgenetwork/v0.2.3) (2024-03-19)
 
 
@@ -36,4 +71,3 @@
 * **edgenetwork:** New client(s) ([#8996](https://github.com/googleapis/google-cloud-go/issues/8996)) ([8e63c70](https://github.com/googleapis/google-cloud-go/commit/8e63c70b423e8c10ecd617ccf81fa0662f8f91b5))
 
 ## Changes
-

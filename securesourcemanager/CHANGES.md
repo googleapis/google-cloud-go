@@ -1,5 +1,35 @@
 # Changelog
 
+
+
+## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.0.1...securesourcemanager/v1.0.2) (2024-07-10)
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.0.0...securesourcemanager/v1.0.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v0.1.5...securesourcemanager/v1.0.0) (2024-06-26)
+
+
+### Miscellaneous Chores
+
+* **securesourcemanager:** Release v1.0.0 ([#10446](https://github.com/googleapis/google-cloud-go/issues/10446)) ([752601c](https://github.com/googleapis/google-cloud-go/commit/752601cec9ec5ebbc240b197d81e07cf6b537c6d))
+
+## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v0.1.4...securesourcemanager/v0.1.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v0.1.3...securesourcemanager/v0.1.4) (2024-03-14)
 
 
@@ -36,4 +66,3 @@
 * **securesourcemanager:** New clients ([#8738](https://github.com/googleapis/google-cloud-go/issues/8738)) ([b02ab73](https://github.com/googleapis/google-cloud-go/commit/b02ab733edd1a74f74b244298524f72d84046c0c))
 
 ## Changes
-

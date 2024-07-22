@@ -1,5 +1,71 @@
 # Changes
 
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.32.0...securitycenter/v1.33.0) (2024-07-10)
+
+
+### Features
+
+* **securitycenter:** Added attack path API methods ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **securitycenter:** Added cloud provider field to list findings response ([#10506](https://github.com/googleapis/google-cloud-go/issues/10506)) ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **securitycenter:** Added etd custom module protos and API methods ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **securitycenter:** Added ResourceValueConfig protos and API methods ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **securitycenter:** Added toxic combination field to finding ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+
+
+### Bug Fixes
+
+* **securitycenter:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+
+### Documentation
+
+* **securitycenter:** Update examples in comments to use backticks ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **securitycenter:** Update toxic combinations comments ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.31.0...securitycenter/v1.32.0) (2024-07-01)
+
+
+### Features
+
+* **securitycenter:** Added cloud provider field to list findings response ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **securitycenter:** Added http configuration rule to ResourceValueConfig and ValuedResource API methods ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **securitycenter:** Added toxic combination field to finding ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+
+### Bug Fixes
+
+* **securitycenter:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+
+### Documentation
+
+* **securitycenter:** Updated comments for ResourceValueConfig ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.30.0...securitycenter/v1.31.0) (2024-06-26)
+
+
+### Features
+
+* **securitycenter:** Add toxic_combination and group_memberships fields to finding ([7ca4fa3](https://github.com/googleapis/google-cloud-go/commit/7ca4fa38519b24acde1675724edcde7b99fb32ee))
+* **securitycenter:** Add toxic_combination and group_memberships fields to finding ([7ca4fa3](https://github.com/googleapis/google-cloud-go/commit/7ca4fa38519b24acde1675724edcde7b99fb32ee))
+
+
+### Bug Fixes
+
+* **securitycenter:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.29.0...securitycenter/v1.30.0) (2024-05-01)
+
+
+### Features
+
+* **securitycenter:** Add cloud_armor field to finding's list of attributes ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **securitycenter:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.28.0...securitycenter/v1.29.0) (2024-04-15)
 
 

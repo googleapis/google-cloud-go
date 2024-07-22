@@ -26,102 +26,159 @@ import (
 )
 
 func TestRetryableErrors(t *testing.T) {
-	for _, tc := range []struct {
-		description string
-		in          error
-		want        bool
+	testCases := []struct {
+		description        string
+		in                 error
+		useJobRetryReasons bool
+		wantRetry          bool
 	}{
 		{
-			"nil error",
-			nil,
-			false,
+			description: "nil error",
+			in:          nil,
+			wantRetry:   false,
 		},
 		{
-			"http stream closed",
-			errors.New("http2: stream closed"),
-			true,
+			description: "http stream closed",
+			in:          errors.New("http2: stream closed"),
+			wantRetry:   true,
 		},
 		{
-			"io ErrUnexpectedEOF",
-			io.ErrUnexpectedEOF,
-			true,
+			description: "io ErrUnexpectedEOF",
+			in:          io.ErrUnexpectedEOF,
+			wantRetry:   true,
 		},
 		{
-			"unavailable",
-			&googleapi.Error{
+			description: "unavailable",
+			in: &googleapi.Error{
 				Code:    http.StatusServiceUnavailable,
 				Message: "foo",
 			},
-			true,
+			wantRetry: true,
 		},
 		{
-			"url connection error",
-			&url.Error{Op: "blah", URL: "blah", Err: errors.New("connection refused")},
-			true,
+			description: "url connection error",
+			in:          &url.Error{Op: "blah", URL: "blah", Err: errors.New("connection refused")},
+			wantRetry:   true,
 		},
 		{
-			"url other error",
-			&url.Error{Op: "blah", URL: "blah", Err: errors.New("blah")},
-			false,
+			description: "url other error",
+			in:          &url.Error{Op: "blah", URL: "blah", Err: errors.New("blah")},
+			wantRetry:   false,
 		},
 		{
-			"wrapped retryable",
-			xerrors.Errorf("test of wrapped retryable: %w", &googleapi.Error{
+			description: "wrapped retryable",
+			in: xerrors.Errorf("test of wrapped retryable: %w", &googleapi.Error{
 				Code:    http.StatusServiceUnavailable,
 				Message: "foo",
 				Errors: []googleapi.ErrorItem{
 					{Reason: "backendError", Message: "foo"},
 				},
 			}),
-			true,
+			wantRetry: true,
 		},
 		{
-			"wrapped non-retryable",
-			xerrors.Errorf("test of wrapped retryable: %w", errors.New("blah")),
-			false,
+			description: "wrapped non-retryable",
+			in:          xerrors.Errorf("test of wrapped retryable: %w", errors.New("blah")),
+			wantRetry:   false,
 		},
 		{
 			// not retried per https://google.aip.dev/194
-			"internal error",
-			&googleapi.Error{
+			description: "internal error",
+			in: &googleapi.Error{
 				Code: http.StatusInternalServerError,
 			},
-			true,
+			wantRetry: true,
 		},
 		{
-			"internal w/backend reason",
-			&googleapi.Error{
+			description: "internal w/backend reason",
+			in: &googleapi.Error{
 				Code:    http.StatusServiceUnavailable,
 				Message: "foo",
 				Errors: []googleapi.ErrorItem{
 					{Reason: "backendError", Message: "foo"},
 				},
 			},
-			true,
+			wantRetry: true,
 		},
 		{
-			"internal w/rateLimitExceeded reason",
-			&googleapi.Error{
+			description: "internal w/rateLimitExceeded reason",
+			in: &googleapi.Error{
 				Code:    http.StatusServiceUnavailable,
 				Message: "foo",
 				Errors: []googleapi.ErrorItem{
 					{Reason: "rateLimitExceeded", Message: "foo"},
 				},
 			},
-			true,
+			wantRetry: true,
 		},
 		{
-			"bad gateway error",
-			&googleapi.Error{
+			description: "bad gateway error",
+			in: &googleapi.Error{
 				Code:    http.StatusBadGateway,
 				Message: "foo",
 			},
-			true,
+			wantRetry: true,
 		},
-	} {
-		got := retryableError(tc.in, defaultRetryReasons)
-		if got != tc.want {
-			t.Errorf("case (%s) mismatch:  got %t want %t", tc.description, got, tc.want)
-		}
+		{
+			description: "jobRateLimitExceeded default",
+			in: &googleapi.Error{
+				Code:    http.StatusOK, // ensure we're testing the reason
+				Message: "foo",
+				Errors: []googleapi.ErrorItem{
+					{Reason: "jobRateLimitExceeded", Message: "foo"},
+				},
+			},
+			wantRetry: false,
+		},
+		{
+			description: "jobRateLimitExceeded job",
+			in: &googleapi.Error{
+				Code:    http.StatusOK, // ensure we're testing the reason
+				Message: "foo",
+				Errors: []googleapi.ErrorItem{
+					{Reason: "jobRateLimitExceeded", Message: "foo"},
+				},
+			},
+			useJobRetryReasons: true,
+			wantRetry:          true,
+		},
+		{
+			description: "structured internal error default",
+			in: &googleapi.Error{
+				Code:    http.StatusOK, // ensure we're testing the reason
+				Message: "foo",
+				Errors: []googleapi.ErrorItem{
+					{Reason: "internalError", Message: "foo"},
+				},
+			},
+			wantRetry: false,
+		},
+		{
+			description: "structured internal error default",
+			in: &googleapi.Error{
+				Code:    http.StatusOK, // ensure we're testing the reason
+				Message: "foo",
+				Errors: []googleapi.ErrorItem{
+					{Reason: "internalError", Message: "foo"},
+				},
+			},
+			useJobRetryReasons: true,
+			wantRetry:          true,
+		},
+	}
+
+	for _, testcase := range testCases {
+		tc := testcase
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+			reasons := defaultRetryReasons
+			if tc.useJobRetryReasons {
+				reasons = jobRetryReasons
+			}
+			got := retryableError(tc.in, reasons)
+			if got != tc.wantRetry {
+				t.Errorf("case (%s) mismatch:  got %t wantRetry %t", tc.description, got, tc.wantRetry)
+			}
+		})
 	}
 }

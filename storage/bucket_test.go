@@ -62,11 +62,12 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				ResponseHeaders: []string{"FOO"},
 			},
 		},
-		Encryption:       &BucketEncryption{DefaultKMSKeyName: "key"},
-		Logging:          &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:          &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:        &Autoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
-		SoftDeletePolicy: &SoftDeletePolicy{RetentionDuration: time.Hour},
+		Encryption:            &BucketEncryption{DefaultKMSKeyName: "key"},
+		Logging:               &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:               &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:             &Autoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
+		SoftDeletePolicy:      &SoftDeletePolicy{RetentionDuration: time.Hour},
+		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -167,11 +168,12 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				ResponseHeader: []string{"FOO"},
 			},
 		},
-		Encryption:       &raw.BucketEncryption{DefaultKmsKeyName: "key"},
-		Logging:          &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:          &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:        &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
-		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 60 * 60},
+		Encryption:            &raw.BucketEncryption{DefaultKmsKeyName: "key"},
+		Logging:               &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:               &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:             &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
+		SoftDeletePolicy:      &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 60 * 60, ForceSendFields: []string{"RetentionDurationSeconds"}},
+		HierarchicalNamespace: &raw.BucketHierarchicalNamespace{Enabled: true},
 		Lifecycle: &raw.BucketLifecycle{
 			Rule: []*raw.BucketLifecycleRule{{
 				Action: &raw.BucketLifecycleRuleAction{
@@ -446,7 +448,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Website:          &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass:     "NEARLINE",
 		Autoclass:        &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "ARCHIVE", ForceSendFields: []string{"Enabled"}},
-		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 3600},
+		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 3600, ForceSendFields: []string{"RetentionDurationSeconds"}},
 		ForceSendFields:  []string{"DefaultEventBasedHold", "Lifecycle", "Autoclass"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -665,6 +667,7 @@ func TestNewBucket(t *testing.T) {
 			EffectiveTime:            "2017-10-23T04:05:06Z",
 			RetentionDurationSeconds: 3600,
 		},
+		HierarchicalNamespace: &raw.BucketHierarchicalNamespace{Enabled: true},
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -726,6 +729,7 @@ func TestNewBucket(t *testing.T) {
 			EffectiveTime:     time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
 			RetentionDuration: time.Hour,
 		},
+		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
 	}
 	got, err := newBucket(rb)
 	if err != nil {
@@ -785,6 +789,9 @@ func TestNewBucketFromProto(t *testing.T) {
 			RetentionDuration: durationpb.New(3 * time.Hour),
 			EffectiveTime:     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
 		},
+		HierarchicalNamespace: &storagepb.Bucket_HierarchicalNamespace{
+			Enabled: true,
+		},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
 			Rule: []*storagepb.Bucket_Lifecycle_Rule{
 				{
@@ -830,6 +837,9 @@ func TestNewBucketFromProto(t *testing.T) {
 			EffectiveTime:     time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 			RetentionDuration: time.Hour * 3,
 		},
+		HierarchicalNamespace: &HierarchicalNamespace{
+			Enabled: true,
+		},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -874,11 +884,12 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 				ResponseHeaders: []string{"FOO"},
 			},
 		},
-		Encryption:       &BucketEncryption{DefaultKMSKeyName: "key"},
-		Logging:          &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:          &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:        &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
-		SoftDeletePolicy: &SoftDeletePolicy{RetentionDuration: time.Hour * 2},
+		Encryption:            &BucketEncryption{DefaultKMSKeyName: "key"},
+		Logging:               &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:               &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:             &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
+		SoftDeletePolicy:      &SoftDeletePolicy{RetentionDuration: time.Hour * 2},
+		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -925,11 +936,12 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 				ResponseHeader: []string{"FOO"},
 			},
 		},
-		Encryption:       &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
-		Logging:          &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
-		Website:          &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:        &storagepb.Bucket_Autoclass{Enabled: true, TerminalStorageClass: &autoclassTSC},
-		SoftDeletePolicy: &storagepb.Bucket_SoftDeletePolicy{RetentionDuration: durationpb.New(2 * time.Hour)},
+		Encryption:            &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
+		Logging:               &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
+		Website:               &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:             &storagepb.Bucket_Autoclass{Enabled: true, TerminalStorageClass: &autoclassTSC},
+		SoftDeletePolicy:      &storagepb.Bucket_SoftDeletePolicy{RetentionDuration: durationpb.New(2 * time.Hour)},
+		HierarchicalNamespace: &storagepb.Bucket_HierarchicalNamespace{Enabled: true},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
 			Rule: []*storagepb.Bucket_Lifecycle_Rule{
 				{
@@ -1595,7 +1607,7 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 
 			var opts []option.ClientOption
 			if test.endpoint != nil {
-				opts = append(opts, option.WithEndpoint(*test.endpoint))
+				opts = append(opts, option.WithEndpoint(*test.endpoint), option.WithoutAuthentication())
 			}
 			c, err := NewClient(context.Background(), opts...)
 			if err != nil {

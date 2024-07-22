@@ -16,9 +16,12 @@ package basic
 
 import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/structpb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -93,9 +96,10 @@ type GenerationConfig struct {
 	// Optional. Stop sequences.
 	StopSequences []string `protobuf:"bytes,6,rep,name=stop_sequences,json=stopSequences,proto3" json:"stop_sequences,omitempty"`
 	HarmCat       HarmCategory
-	FinishReason  Candidate_FinishReason
-	CitMet        *CitationMetadata
-	TopK          *float32
+	// Bad doc that doesn't make sense.
+	FinishReason Candidate_FinishReason
+	CitMet       *CitationMetadata
+	TopK         *float32
 }
 
 // A collection of source attributions for a piece of content.
@@ -120,4 +124,23 @@ type Citation struct {
 	// Output only. Publication date of the attribution.
 	PublicationDate *date.Date `protobuf:"bytes,6,opt,name=publication_date,json=publicationDate,proto3" json:"publication_date,omitempty"`
 	Struct          *structpb.Struct
+	CreateTime      *timestamppb.Timestamp
+}
+
+type unexported interface{ u() }
+
+// This demonstrates using population functions to deal with
+// proto oneof field, which has an unexported type.
+// That can be a way to deal with proto oneofs.
+type Pop struct {
+	X int
+	Y unexported
+}
+
+// status.Status converts to apierror.APIError.
+// durationpb.Duration converts to time.Duration.
+
+type File struct {
+	Error *status.Status
+	Dur   *durationpb.Duration
 }

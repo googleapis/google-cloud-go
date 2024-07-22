@@ -1,6 +1,27 @@
 # Changelog
 
 
+## [0.3.4](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.3.3...cloudprofiler/v0.3.4) (2024-07-10)
+
+
+### Bug Fixes
+
+* **cloudprofiler:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [0.3.3](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.3.2...cloudprofiler/v0.3.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* **cloudprofiler:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [0.3.2](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.3.1...cloudprofiler/v0.3.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **cloudprofiler:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.3.0...cloudprofiler/v0.3.1) (2024-03-14)
 
 
@@ -37,4 +58,3 @@
 * **cloudprofiler:** New clients ([#9016](https://github.com/googleapis/google-cloud-go/issues/9016)) ([8fefcce](https://github.com/googleapis/google-cloud-go/commit/8fefcce1bdd86afb07a4c8bcfc3d3d00f61a9100))
 
 ## Changes
-

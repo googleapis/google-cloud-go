@@ -377,6 +377,34 @@ func TestSchemaConversion(t *testing.T) {
 			},
 		},
 		{
+			// rounding mode values
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					{
+						Name:         "num",
+						Type:         "NUMERIC",
+						RoundingMode: "ROUND_HALF_AWAY_FROM_ZERO",
+					},
+					{
+						Name:         "bignum",
+						Type:         "BIGNUMERIC",
+						RoundingMode: "ROUND_HALF_EVEN",
+					},
+				}},
+			schema: Schema{
+				{
+					Name:         "num",
+					Type:         NumericFieldType,
+					RoundingMode: RoundHalfAwayFromZero,
+				},
+				{
+					Name:         "bignum",
+					Type:         BigNumericFieldType,
+					RoundingMode: RoundHalfEven,
+				},
+			},
+		},
+		{
 			// policy tags
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
@@ -485,10 +513,12 @@ type allBoolean struct {
 }
 
 type allTime struct {
-	Timestamp time.Time
-	Time      civil.Time
-	Date      civil.Date
-	DateTime  civil.DateTime
+	Timestamp    time.Time
+	Time         civil.Time
+	Date         civil.Date
+	DateTime     civil.DateTime
+	Interval     *IntervalValue
+	RangeGeneric *RangeValue
 }
 
 type allNumeric struct {
@@ -566,6 +596,8 @@ func TestSimpleInference(t *testing.T) {
 				reqField("Time", "TIME"),
 				reqField("Date", "DATE"),
 				reqField("DateTime", "DATETIME"),
+				reqField("Interval", "INTERVAL"),
+				reqField("RangeGeneric", "RANGE"),
 			},
 		},
 		{

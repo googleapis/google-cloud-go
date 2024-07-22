@@ -450,6 +450,20 @@ func TestDefaultCredentials_ServiceAccountKeySelfSigned_UniverseDomain(t *testin
 	}
 }
 
+func TestDefaultCredentials_ServiceAccountKey_NoFile(t *testing.T) {
+	t.Setenv(credsfile.GoogleAppCredsEnvVar, "/a/path/that/most/certainly/does/not/exist.json")
+	_, err := DetectDefault(&DetectOptions{
+		Scopes:           []string{"https://www.googleapis.com/auth/cloud-platform"},
+		UseSelfSignedJWT: true,
+	})
+	if err == nil {
+		t.Fatal("DetectDefault() = nil error, expected non-nil error")
+	}
+	if !strings.Contains(err.Error(), "no such file or directory") {
+		t.Fatalf("got %v, want a does not exist error", err)
+	}
+}
+
 func TestDefaultCredentials_ClientCredentials(t *testing.T) {
 	ctx := context.Background()
 	b, err := os.ReadFile("../internal/testdata/clientcreds_installed.json")
@@ -667,7 +681,7 @@ func TestDefaultCredentials_ExternalAccountAuthorizedUserKey(t *testing.T) {
 }
 
 func TestDefaultCredentials_Fails(t *testing.T) {
-	t.Setenv(credsfile.GoogleAppCredsEnvVar, "nothingToSeeHere")
+	t.Setenv(credsfile.GoogleAppCredsEnvVar, "")
 	t.Setenv("HOME", "nothingToSeeHere")
 	t.Setenv("APPDATA", "nothingToSeeHere")
 	allowOnGCECheck = false
@@ -682,6 +696,15 @@ func TestDefaultCredentials_Fails(t *testing.T) {
 func TestDefaultCredentials_BadFiletype(t *testing.T) {
 	if _, err := DetectDefault(&DetectOptions{
 		CredentialsJSON: []byte(`{"type":"42"}`),
+		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+	}); err == nil {
+		t.Fatal("got nil, want non-nil err")
+	}
+}
+
+func TestDefaultCredentials_BadFileName(t *testing.T) {
+	if _, err := DetectDefault(&DetectOptions{
+		CredentialsFile: "a/bad/filepath",
 		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 	}); err == nil {
 		t.Fatal("got nil, want non-nil err")

@@ -1,5 +1,45 @@
 # Changes
 
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.20.1...monitoring/v1.20.2) (2024-07-10)
+
+
+### Bug Fixes
+
+* **monitoring:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.20.0...monitoring/v1.20.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **monitoring:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.19.0...monitoring/v1.20.0) (2024-06-26)
+
+
+### Features
+
+* **monitoring/apiv3:** Add support to add links in AlertPolicy ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
+
+### Bug Fixes
+
+* **monitoring:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.18.2...monitoring/v1.19.0) (2024-05-01)
+
+
+### Features
+
+* **monitoring/apiv3:** Added CloudRun, GkeNamespace, GkeWorkload, GkeService, and BasicService service types ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **monitoring/apiv3:** Added Synthetic Monitor targets to Uptime data model ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **monitoring/apiv3:** Defined class prefix of GMON for Objective C ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **monitoring:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.18.1...monitoring/v1.18.2) (2024-04-15)
 
 

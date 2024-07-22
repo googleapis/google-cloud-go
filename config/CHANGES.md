@@ -1,5 +1,51 @@
 # Changelog
 
+
+## [1.0.3](https://github.com/googleapis/google-cloud-go/compare/config/v1.0.2...config/v1.0.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **config:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/config/v1.0.1...config/v1.0.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **config:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/config/v1.0.0...config/v1.0.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **config:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/config/v0.4.0...config/v1.0.0) (2024-05-16)
+
+
+### Features
+
+* **config:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+
+### Miscellaneous Chores
+
+* **config:** Promote to GA v1.0.0 ([#10208](https://github.com/googleapis/google-cloud-go/issues/10208)) ([5892409](https://github.com/googleapis/google-cloud-go/commit/58924096313b6144b982b2ff908be7eadafc9257))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/config/v0.3.0...config/v0.4.0) (2024-05-01)
+
+
+### Features
+
+* **config:** Infrastructure manager supports 1.2.3, 1.3.10, 1.4.7, 1.5.7 versions of Terraform when creating a preview of a deployment ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **config:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/config/v0.2.2...config/v0.3.0) (2024-03-19)
 
 
@@ -64,4 +110,3 @@
 * **config:** New clients ([#8493](https://github.com/googleapis/google-cloud-go/issues/8493)) ([9874485](https://github.com/googleapis/google-cloud-go/commit/9874485f0ac1f47139c903bfee4f57c64c3149d4))
 
 ## Changes
-

@@ -122,7 +122,7 @@ type settings struct {
 	gax []gax.CallOption
 
 	// idempotent indicates if the call is idempotent or not when considering
-	// if the call should be retired or not.
+	// if the call should be retried or not.
 	idempotent bool
 
 	// clientOption is a set of option.ClientOption to be used during client

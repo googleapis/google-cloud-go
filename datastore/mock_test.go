@@ -49,6 +49,10 @@ type reqItem struct {
 	adjust  func(gotReq proto.Message)
 }
 
+const (
+	mockProjectID = "projectID"
+)
+
 func newMock(t *testing.T) (_ *Client, _ *mockServer, _ func()) {
 	srv, cleanup, err := newMockServer()
 	if err != nil {
@@ -59,7 +63,7 @@ func newMock(t *testing.T) (_ *Client, _ *mockServer, _ func()) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	client, err := NewClient(context.Background(), "projectID", option.WithGRPCConn(conn))
+	client, err := NewClient(context.Background(), mockProjectID, option.WithGRPCConn(conn))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -110,7 +114,7 @@ func (s *mockServer) addRPCAdjust(wantReq proto.Message, resp interface{}, adjus
 // was expected or there are no expected rpcs.
 func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
 	if len(s.reqItems) == 0 {
-		panic(fmt.Sprintf("out of RPCs, saw %v", reflect.TypeOf(gotReq)))
+		return nil, fmt.Errorf("out of RPCs, saw %v", reflect.TypeOf(gotReq))
 	}
 	ri := s.reqItems[0]
 	s.reqItems = s.reqItems[1:]
@@ -146,10 +150,42 @@ func (s *mockServer) Lookup(ctx context.Context, in *pb.LookupRequest) (*pb.Look
 	return res.(*pb.LookupResponse), nil
 }
 
+func (s *mockServer) Rollback(_ context.Context, in *pb.RollbackRequest) (*pb.RollbackResponse, error) {
+	res, err := s.popRPC(in)
+	if err != nil {
+		return nil, err
+	}
+	return res.(*pb.RollbackResponse), nil
+}
+
 func (s *mockServer) Commit(_ context.Context, in *pb.CommitRequest) (*pb.CommitResponse, error) {
 	res, err := s.popRPC(in)
 	if err != nil {
 		return nil, err
 	}
 	return res.(*pb.CommitResponse), nil
+}
+
+func (s *mockServer) BeginTransaction(ctx context.Context, in *pb.BeginTransactionRequest) (*pb.BeginTransactionResponse, error) {
+	res, err := s.popRPC(in)
+	if err != nil {
+		return nil, err
+	}
+	return res.(*pb.BeginTransactionResponse), nil
+}
+
+func (s *mockServer) RunQuery(ctx context.Context, in *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
+	res, err := s.popRPC(in)
+	if err != nil {
+		return nil, err
+	}
+	return res.(*pb.RunQueryResponse), nil
+}
+
+func (s *mockServer) RunAggregationQuery(ctx context.Context, in *pb.RunAggregationQueryRequest) (*pb.RunAggregationQueryResponse, error) {
+	res, err := s.popRPC(in)
+	if err != nil {
+		return nil, err
+	}
+	return res.(*pb.RunAggregationQueryResponse), nil
 }
