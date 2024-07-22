@@ -1394,7 +1394,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					iter.eoMu.RLock()
 					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
-					// otelCtx is used to relate the main subscribe span to the other subspans in the subscribe side.
+					// otelCtx is used to connect the main subscribe span to the other child spans.
 					// We don't want to override the ctx passed into Receive, which is necessary for user-initiated cancellations.
 					// This context is passed into the callback (regardless of if tracing is enabled). Thus, it shadows ctx2 so
 					// the callback is cancellable.
