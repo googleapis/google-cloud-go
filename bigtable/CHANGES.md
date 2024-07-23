@@ -1,5 +1,22 @@
 # Changes
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.25.0...bigtable/v1.26.0) (2024-07-23)
+
+
+### Features
+
+* **bigtable/emulator:** Allow listening on Unix Domain Sockets ([#9665](https://github.com/googleapis/google-cloud-go/issues/9665)) ([424494c](https://github.com/googleapis/google-cloud-go/commit/424494ce23db13468a4ea3e3be6ed1dee028ecdb))
+* **bigtable:** Add column family type to FamilyInfo in TableInfo ([#10520](https://github.com/googleapis/google-cloud-go/issues/10520)) ([fd16a17](https://github.com/googleapis/google-cloud-go/commit/fd16a1785df6f1378aecb3cd6a7f2c9bcc40c6c7))
+* **bigtable:** Mark CBT Authorized View admin APIs as unimplemented in the emulator  ([#10562](https://github.com/googleapis/google-cloud-go/issues/10562)) ([6b32871](https://github.com/googleapis/google-cloud-go/commit/6b328715c83c8fa2bfd1c3b6b64acd8f1bd486f2))
+
+
+### Bug Fixes
+
+* **bigtable:** Add quotes to end of range ([#10488](https://github.com/googleapis/google-cloud-go/issues/10488)) ([142b153](https://github.com/googleapis/google-cloud-go/commit/142b15384d4d818faf30f3bae4567c7f579f4079))
+* **bigtable:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **bigtable:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+* **bigtable:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.24.0...bigtable/v1.25.0) (2024-06-20)
 
 
