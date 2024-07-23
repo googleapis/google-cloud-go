@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"runtime"
 	"time"
 
 	"cloud.google.com/go/bigquery"
@@ -170,7 +171,12 @@ func ExampleQuery_Read_accelerated() {
 	}
 
 	// Enable Storage API usage for fetching data
-	err = client.EnableStorageReadClient(ctx)
+	err = client.EnableStorageReadClient(ctx,
+		bigquery.WithStorageReaderOptions(
+			bigquery.WithMaxWorkerCount(runtime.GOMAXPROCS(0)),
+			bigquery.WithMaxStreamCount(0),
+		),
+	)
 	if err != nil {
 		// TODO: Handle error.
 	}
