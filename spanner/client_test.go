@@ -23,6 +23,7 @@ import (
 	"math/big"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -37,6 +38,7 @@ import (
 	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/multiendpoint"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
@@ -389,6 +391,180 @@ func TestClient_MultiEndpoint(t *testing.T) {
 	err = executeSingerQueryWithTimeout(ctx, client.Single(), time.Second*3)
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestClient_MultiplexedSession(t *testing.T) {
+	var tests = []struct {
+		name     string
+		test     func(client *Client) error
+		validate func(server InMemSpannerServer)
+		wantErr  error
+	}{
+		{
+			name: "Given if multiplexed session is enabled, When executing single use R/O transactions, should use multiplexed session",
+			test: func(client *Client) error {
+				ctx := context.Background()
+				// Test the single use read-only transaction
+				_, err := client.Single().ReadRow(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
+				return err
+			},
+			validate: func(server InMemSpannerServer) {
+				// Validate the multiplexed session is used
+				expected := map[string]interface{}{
+					"SessionsCount": uint(1),
+				}
+				if !isMultiplexEnabled {
+					expected["SessionsCount"] = uint(25) // BatchCreateSession request from regular session pool
+				}
+				if !testEqual(expected["SessionsCount"], server.TotalSessionsCreated()) {
+					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expected["SessionsCount"], server.TotalSessionsCreated())
+				}
+				reqs := drainRequestsFromServer(server)
+				for _, s := range reqs {
+					switch s.(type) {
+					case *sppb.ReadRequest:
+						req, _ := s.(*sppb.ReadRequest)
+						// Validate the session is multiplexed
+						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
+						}
+
+					}
+				}
+			},
+		},
+		{
+			name: "Given if multiplexed session is enabled, When executing multi use R/O transactions, should use multiplexed session",
+			test: func(client *Client) error {
+				ctx := context.Background()
+				// Test the multi use read-only transaction
+				roTxn := client.ReadOnlyTransaction()
+				defer roTxn.Close()
+				iter := roTxn.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+				if err := iter.Do(func(row *Row) error {
+					return nil
+				}); err != nil {
+					return err
+				}
+				iter = roTxn.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+				return iter.Do(func(row *Row) error {
+					return nil
+				})
+			},
+			validate: func(server InMemSpannerServer) {
+				// Validate the multiplexed session is used
+				expected := map[string]interface{}{
+					"SessionsCount": uint(1),
+				}
+				if !isMultiplexEnabled {
+					expected["SessionsCount"] = uint(25) // BatchCreateSession request from regular session pool
+				}
+				if !testEqual(expected["SessionsCount"], server.TotalSessionsCreated()) {
+					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expected["SessionsCount"], server.TotalSessionsCreated())
+				}
+				reqs := drainRequestsFromServer(server)
+				for _, s := range reqs {
+					switch s.(type) {
+					case *sppb.ReadRequest:
+						req, _ := s.(*sppb.ReadRequest)
+						// Validate the session is multiplexed
+						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
+						}
+					case *sppb.ExecuteSqlRequest:
+						req, _ := s.(*sppb.ExecuteSqlRequest)
+						// Validate the session is multiplexed
+						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
+						}
+					}
+
+				}
+			},
+		},
+		{
+			name: "Given if multiplexed session is enabled, When executing R/W transactions, should always use regular session",
+			test: func(client *Client) error {
+				ctx := context.Background()
+				// Test the read-write transaction
+				_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+					iter := txn.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+					return iter.Do(func(r *Row) error {
+						return nil
+					})
+				})
+				return err
+			},
+			validate: func(server InMemSpannerServer) {
+				// Validate the regular session is used
+				if !testEqual(uint(25), server.TotalSessionsCreated()) {
+					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), 25, server.TotalSessionsCreated())
+				}
+				reqs := drainRequestsFromServer(server)
+				for _, s := range reqs {
+					switch s.(type) {
+					case *sppb.ReadRequest:
+						req, _ := s.(*sppb.ReadRequest)
+						// Validate the session is not multiplexed
+						if !testEqual(false, strings.Contains(req.Session, "multiplexed")) {
+							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
+						}
+					}
+				}
+			},
+		},
+		{
+			name: "Given if multiplexed session is enabled, Only one multiplex session should be created for multiple read only transactions",
+			test: func(client *Client) error {
+				// Test the parallel single use read-only transaction
+				g := new(errgroup.Group)
+				for i := 0; i < 25; i++ {
+					g.Go(func() error {
+						ctx := context.Background()
+						// Test the single use read-only transaction
+						_, err := client.Single().ReadRow(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
+						return err
+					})
+				}
+				return g.Wait()
+			},
+			validate: func(server InMemSpannerServer) {
+				// Validate the multiplexed session is used
+				expected := map[string]interface{}{
+					"SessionsCount": uint(1),
+				}
+				if !isMultiplexEnabled {
+					expected["SessionsCount"] = uint(25) // BatchCreateSession request from regular session pool
+				}
+				if !testEqual(expected["SessionsCount"], server.TotalSessionsCreated()) {
+					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expected["SessionsCount"], server.TotalSessionsCreated())
+				}
+				reqs := drainRequestsFromServer(server)
+				for _, s := range reqs {
+					switch s.(type) {
+					case *sppb.ReadRequest:
+						req, _ := s.(*sppb.ReadRequest)
+						// Validate the session is not multiplexed
+						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
+						}
+					}
+				}
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server, client, teardown := setupMockedTestServer(t)
+			defer teardown()
+			gotErr := tt.test(client)
+			if !testEqual(gotErr, tt.wantErr) {
+				t.Errorf("TestClient_MultiplexedSession error=%v, wantErr: %v", gotErr, tt.wantErr)
+			} else {
+				tt.validate(server.TestSpanner)
+			}
+		})
 	}
 }
 

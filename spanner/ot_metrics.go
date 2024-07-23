@@ -70,6 +70,12 @@ func createOpenTelemetryConfig(mp metric.MeterProvider, logger *log.Logger, sess
 	}
 	config.attributeMap = append(config.attributeMap, attributeMap...)
 
+	config.attributeMapWithMultiplexed = append(config.attributeMapWithMultiplexed, attributeMap...)
+	config.attributeMapWithMultiplexed = append(config.attributeMapWithMultiplexed, attributeKeyIsMultiplexed.String("true"))
+
+	config.attributeMapWithoutMultiplexed = append(config.attributeMapWithoutMultiplexed, attributeMap...)
+	config.attributeMapWithoutMultiplexed = append(config.attributeMapWithoutMultiplexed, attributeKeyIsMultiplexed.String("false"))
+
 	setOpenTelemetryMetricProvider(config, mp, logger)
 	return config, nil
 }
@@ -191,7 +197,9 @@ func registerSessionPoolOTMetrics(pool *sessionPool) error {
 	}
 
 	attributes := otConfig.attributeMap
+	attributesWithMux := otConfig.attributeMapWithMultiplexed
 	attributesInUseSessions := append(attributes, attributeNumInUseSessions)
+	attributesInUseSessionsWithMux := append(attributesWithMux, attributeNumInUseSessions)
 	attributesAvailableSessions := append(attributes, attributeNumSessions)
 
 	reg, err := otConfig.meterProvider.Meter(OtInstrumentationScope, metric.WithInstrumentationVersion(internal.Version)).RegisterCallback(
@@ -202,10 +210,10 @@ func registerSessionPoolOTMetrics(pool *sessionPool) error {
 			o.ObserveInt64(otConfig.openSessionCount, int64(pool.numOpened), metric.WithAttributes(attributes...))
 			o.ObserveInt64(otConfig.maxAllowedSessionsCount, int64(pool.SessionPoolConfig.MaxOpened), metric.WithAttributes(attributes...))
 			o.ObserveInt64(otConfig.sessionsCount, int64(pool.numInUse), metric.WithAttributes(append(attributesInUseSessions, attribute.Key("is_multiplexed").String("false"))...))
-			o.ObserveInt64(otConfig.sessionsCount, int64(pool.multiplexedSessionInUse), metric.WithAttributes(append(attributesInUseSessions, attribute.Key("is_multiplexed").String("true"))...))
+			o.ObserveInt64(otConfig.sessionsCount, int64(pool.multiplexedSessionInUse), metric.WithAttributes(attributesInUseSessionsWithMux...))
 			o.ObserveInt64(otConfig.sessionsCount, int64(pool.numSessions), metric.WithAttributes(attributesAvailableSessions...))
 			o.ObserveInt64(otConfig.maxInUseSessionsCount, int64(pool.maxNumInUse), metric.WithAttributes(append(attributes, attribute.Key("is_multiplexed").String("false"))...))
-			o.ObserveInt64(otConfig.maxInUseSessionsCount, int64(pool.maxMultiplexedSessionInUse), metric.WithAttributes(append(attributes, attribute.Key("is_multiplexed").String("true"))...))
+			o.ObserveInt64(otConfig.maxInUseSessionsCount, int64(pool.maxMultiplexedSessionInUse), metric.WithAttributes(attributesWithMux...))
 			return nil
 		},
 		otConfig.openSessionCount,

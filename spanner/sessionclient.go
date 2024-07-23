@@ -313,16 +313,16 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 	}
 }
 
-func (sc *sessionClient) executeCreateMultiplexedSessions(ctx context.Context, client *vkit.Client, labels map[string]string, md metadata.MD, consumer sessionConsumer) {
+func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, client *vkit.Client, md metadata.MD, consumer sessionConsumer) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.CreateSession")
 	defer func() { trace.EndSpan(ctx, nil) }()
-	trace.TracePrintf(ctx, nil, "Creating a multiplexes sessions")
+	trace.TracePrintf(ctx, nil, "Creating a multiplexed session")
 	sc.mu.Lock()
 	closed := sc.closed
 	sc.mu.Unlock()
 	if closed {
 		err := spannerErrorf(codes.Canceled, "Session client closed")
-		trace.TracePrintf(ctx, nil, "Session client closed while creating multiplexed sessions: %v", err)
+		trace.TracePrintf(ctx, nil, "Session client closed while creating a multiplexed session: %v", err)
 		return
 	}
 	if ctx.Err() != nil {

@@ -347,15 +347,20 @@ func (s *server) GetDatabaseDdl(ctx context.Context, req *adminpb.GetDatabaseDdl
 
 func (s *server) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest) (*spannerpb.Session, error) {
 	//s.logf("CreateSession(%q)", req.Database)
-	sess := s.newSession()
+	isMultiplexed := false
 	if req.Session != nil && req.Session.Multiplexed {
-		sess.Multiplexed = true
+		isMultiplexed = true
 	}
+	sess := s.newSession(isMultiplexed)
+
 	return sess, nil
 }
 
-func (s *server) newSession() *spannerpb.Session {
+func (s *server) newSession(isMultiplexed bool) *spannerpb.Session {
 	id := genRandomSession()
+	if isMultiplexed {
+		id = "multiplexed-" + id
+	}
 	now := time.Now()
 	sess := &session{
 		name:         id,
@@ -363,13 +368,15 @@ func (s *server) newSession() *spannerpb.Session {
 		lastUse:      now,
 		transactions: make(map[string]*transaction),
 	}
+
 	sess.ctx, sess.cancel = context.WithCancel(context.Background())
 
 	s.mu.Lock()
 	s.sessions[id] = sess
 	s.mu.Unlock()
-
-	return sess.Proto()
+	sesspb := sess.Proto()
+	sesspb.Multiplexed = isMultiplexed
+	return sesspb
 }
 
 func (s *server) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest) (*spannerpb.BatchCreateSessionsResponse, error) {
@@ -377,7 +384,7 @@ func (s *server) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCr
 
 	var sessions []*spannerpb.Session
 	for i := int32(0); i < req.GetSessionCount(); i++ {
-		sessions = append(sessions, s.newSession())
+		sessions = append(sessions, s.newSession(false))
 	}
 
 	return &spannerpb.BatchCreateSessionsResponse{Session: sessions}, nil

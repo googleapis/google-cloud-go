@@ -39,14 +39,13 @@ import (
 	octrace "go.opencensus.io/trace"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
-	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
 
 const (
-	healthCheckIntervalMins  = 50
-	multiplexSessionIdleTime = 7 * 24 * time.Hour
+	healthCheckIntervalMins        = 50
+	multiplexSessionActiveInterval = 7 * 24 * time.Hour
 )
 
 // ActionOnInactiveTransactionKind describes the kind of action taken when there are inactive transactions.
@@ -497,6 +496,11 @@ type SessionPoolConfig struct {
 	// Defaults to 50m.
 	HealthCheckInterval time.Duration
 
+	// MultiplexSessionRefreshInterval is the interval at which the multiplexed session is refreshed.
+	//
+	// Defaults to 10 mins.
+	MultiplexSessionRefreshInterval time.Duration
+
 	// TrackSessionHandles determines whether the session pool will keep track
 	// of the stacktrace of the goroutines that take sessions from the pool.
 	// This setting can be used to track down session leak problems.
@@ -576,6 +580,10 @@ func (spc *SessionPoolConfig) validate() error {
 	return nil
 }
 
+type muxSessionCreateRequest struct {
+	force bool
+}
+
 // sessionPool creates and caches Cloud Spanner sessions.
 type sessionPool struct {
 	// mu protects sessionPool from concurrent access.
@@ -591,14 +599,20 @@ type sessionPool struct {
 	// idleList caches idle session IDs. Session IDs in this list can be
 	// allocated for use.
 	idleList list.List
+	// multiplexSessionClientCounter is the counter for the multiplexed session client.
+	multiplexSessionClientCounter int
+	// clientPool is a pool of Cloud Spanner grpc clients.
+	clientPool []*vkit.Client
 	// multiplexedSession contains the multiplexed session
 	multiplexedSession *session
 	// mayGetSession is for broadcasting that session retrival/creation may
 	// proceed.
 	mayGetSession chan struct{}
+	// multiplexedSessionsReq is the number of ongoing multiplexed session creation requests.
+	multiplexedSessionsReq chan muxSessionCreateRequest
 	// mayGetSession is for broadcasting that multiplexed session retrival/creation may
 	// proceed.
-	mayGetMultiplexedSession chan struct{}
+	mayGetMultiplexedSession chan bool
 	// sessionCreationError is the last error that occurred during session
 	// creation and is propagated to any waiters waiting for a session.
 	sessionCreationError error
@@ -688,6 +702,9 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	if config.usedSessionsRatioThreshold == 0 {
 		config.usedSessionsRatioThreshold = DefaultSessionPoolConfig.usedSessionsRatioThreshold
 	}
+	if config.MultiplexSessionRefreshInterval == 0 {
+		config.MultiplexSessionRefreshInterval = 10 * time.Minute
+	}
 	isMultiplexed := strings.ToLower(os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"))
 	if isMultiplexed != "" && isMultiplexed != "true" && isMultiplexed != "false" {
 		return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
@@ -696,7 +713,8 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		sc:                       sc,
 		valid:                    true,
 		mayGetSession:            make(chan struct{}),
-		mayGetMultiplexedSession: make(chan struct{}),
+		mayGetMultiplexedSession: make(chan bool),
+		multiplexedSessionsReq:   make(chan muxSessionCreateRequest),
 		SessionPoolConfig:        config,
 		mw:                       newMaintenanceWindow(config.MaxOpened),
 		rand:                     rand.New(rand.NewSource(time.Now().UnixNano())),
@@ -724,7 +742,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	// 10ms to finish, given a 5 minutes interval and 10 healthcheck workers, a
 	// healthChecker can effectively mantain
 	// 100 checks_per_worker/sec * 10 workers * 300 seconds = 300K sessions.
-	pool.hc = newHealthChecker(config.HealthCheckInterval, config.HealthCheckWorkers, config.healthCheckSampleInterval, pool)
+	pool.hc = newHealthChecker(config.HealthCheckInterval, config.MultiplexSessionRefreshInterval, config.HealthCheckWorkers, config.healthCheckSampleInterval, pool)
 
 	// First initialize the pool before we indicate that the healthchecker is
 	// ready. This prevents the maintainer from starting before the pool has
@@ -736,6 +754,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 			return nil, err
 		}
 	}
+	go pool.createMultiplexedSession(context.Background())
 	pool.recordStat(context.Background(), MaxAllowedSessionsCount, int64(config.MaxOpened))
 
 	err = registerSessionPoolOTMetrics(pool)
@@ -760,11 +779,15 @@ func (p *sessionPool) recordStat(ctx context.Context, m *stats.Int64Measure, n i
 	recordStat(ctx, m, n)
 }
 
-func (p *sessionPool) recordOTStat(ctx context.Context, m metric.Int64Counter, val int64, attributes ...attribute.KeyValue) {
+type recordOTStatOption struct {
+	attr []attribute.KeyValue
+}
+
+func (p *sessionPool) recordOTStat(ctx context.Context, m metric.Int64Counter, val int64, option recordOTStatOption) {
 	if m != nil {
 		attrs := p.otConfig.attributeMap
-		for _, attr := range attributes {
-			attrs = append(attrs, attr)
+		if len(option.attr) > 0 {
+			attrs = option.attr
 		}
 		m.Add(ctx, val, metric.WithAttributes(attrs...))
 	}
@@ -859,12 +882,33 @@ func (p *sessionPool) growPoolLocked(numSessions uint64, distributeOverChannels 
 	return p.sc.batchCreateSessions(int32(numSessions), distributeOverChannels, p)
 }
 
-func (p *sessionPool) getMultiplexedSession(ctx context.Context) error {
-	client, err := p.sc.nextClient()
-	if err != nil {
-		return err
+func (p *sessionPool) createMultiplexedSession(ctx context.Context) error {
+	for c := range p.multiplexedSessionsReq {
+		p.mu.Lock()
+		session := p.multiplexedSession
+		p.mu.Unlock()
+		if c.force || session == nil {
+			p.mu.Lock()
+			p.sc.mu.Lock()
+			client, err := p.sc.nextClient()
+			p.sc.mu.Unlock()
+			p.mu.Unlock()
+			if err != nil {
+				// If we can't get a client, we can't create a session.
+				p.mu.Lock()
+				p.multiplexedSessionCreationError = err
+				p.mayGetMultiplexedSession <- true
+				p.mu.Unlock()
+				continue
+			}
+			p.sc.executeCreateMultiplexedSession(ctx, client, p.sc.md, p)
+			continue
+		}
+		p.mu.Lock()
+		// If the session is already created, we can notify the next request to proceed.
+		p.mayGetMultiplexedSession <- true
+		p.mu.Unlock()
 	}
-	go p.sc.executeCreateMultiplexedSessions(ctx, client, p.sc.sessionLabels, p.sc.md, p)
 	return nil
 }
 
@@ -877,13 +921,12 @@ func (p *sessionPool) sessionReady(s *session) {
 	// Clear any session creation error.
 	if s.isMultiplexed {
 		s.pool = p
-		p.hc.register(s)
 		p.multiplexedSession = s
 		p.multiplexedSessionCreationError = nil
 		p.recordStat(context.Background(), OpenSessionCount, int64(1), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 		p.recordStat(context.Background(), SessionsCount, 1, tagNumSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
-		close(p.mayGetMultiplexedSession)
-		p.mayGetMultiplexedSession = make(chan struct{})
+		// Notify other waiters blocking on session creation.
+		p.mayGetMultiplexedSession <- true
 		return
 	}
 	p.sessionCreationError = nil
@@ -921,15 +964,14 @@ func (p *sessionPool) sessionCreationFailed(err error, numSessions int32, isMult
 	if isMultiplexed {
 		// Ignore the error if multiplexed session already present
 		if p.multiplexedSession != nil {
+			p.multiplexedSession.checkingHealth = false
 			p.multiplexedSessionCreationError = nil
-			close(p.mayGetMultiplexedSession)
-			p.mayGetMultiplexedSession = make(chan struct{})
+			p.mayGetMultiplexedSession <- true
 			return
 		}
 		p.recordStat(context.Background(), OpenSessionCount, int64(0), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 		p.multiplexedSessionCreationError = err
-		close(p.mayGetMultiplexedSession)
-		p.mayGetMultiplexedSession = make(chan struct{})
+		p.mayGetMultiplexedSession <- true
 		return
 	}
 	p.createReqs -= uint64(numSessions)
@@ -1006,24 +1048,12 @@ func (p *sessionPool) newSessionHandle(s *session) (sh *sessionHandle) {
 	sh = &sessionHandle{session: s, checkoutTime: time.Now(), lastUseTime: time.Now()}
 	if s.isMultiplexed {
 		p.mu.Lock()
-		p.sc.mu.Lock()
-		clientOpt := option.WithGRPCConn(p.sc.connPool.Conn())
-		clientInfo := []string{"gccl", internal.Version}
-		if p.sc.userAgent != "" {
-			agentWithVersion := strings.SplitN(p.sc.userAgent, "/", 2)
-			if len(agentWithVersion) == 2 {
-				clientInfo = append(clientInfo, agentWithVersion[0], agentWithVersion[1])
-			}
+		sh.client = p.getRoundRobinClient()
+		if sh.client != nil {
+			p.multiplexSessionClientCounter++
 		}
-		p.sc.mu.Unlock()
 		p.mu.Unlock()
-		client, err := vkit.NewClient(context.Background(), clientOpt)
-		if err != nil {
-			return nil
-		}
-		client.SetGoogleClientInfo(clientInfo...)
-		client.CallOptions = s.client.CallOptions
-		sh.client = client
+		return sh
 	}
 	if p.TrackSessionHandles || p.ActionOnInactiveTransaction == Warn || p.ActionOnInactiveTransaction == WarnAndClose || p.ActionOnInactiveTransaction == Close {
 		p.mu.Lock()
@@ -1034,6 +1064,24 @@ func (p *sessionPool) newSessionHandle(s *session) (sh *sessionHandle) {
 		p.mu.Unlock()
 	}
 	return sh
+}
+
+func (p *sessionPool) getRoundRobinClient() *vkit.Client {
+	p.sc.mu.Lock()
+	defer p.sc.mu.Unlock()
+	if len(p.clientPool) == 0 {
+		p.clientPool = make([]*vkit.Client, p.sc.connPool.Num())
+		for i := 0; i < p.sc.connPool.Num(); i++ {
+			c, err := p.sc.nextClient()
+			if err != nil {
+				// If we can't get a client, use the session's client.
+				return nil
+			}
+			p.clientPool[i] = c
+		}
+	}
+	p.multiplexSessionClientCounter = p.multiplexSessionClientCounter % len(p.clientPool)
+	return p.clientPool[p.multiplexSessionClientCounter]
 }
 
 // errGetSessionTimeout returns error for context timeout during
@@ -1087,37 +1135,6 @@ func (p *sessionPool) getTrackedSessionHandleStacksLocked() string {
 		i++
 	}
 	return stackTraces
-}
-
-func (p *sessionPool) createSession(ctx context.Context) (*session, error) {
-	trace.TracePrintf(ctx, nil, "Creating a new session")
-	doneCreate := func(done bool) {
-		p.mu.Lock()
-		if !done {
-			// Session creation failed, give budget back.
-			p.numOpened--
-			p.recordStat(ctx, OpenSessionCount, int64(p.numOpened))
-		}
-		p.createReqs--
-		// Notify other waiters blocking on session creation.
-		close(p.mayGetSession)
-		p.mayGetSession = make(chan struct{})
-		p.mu.Unlock()
-	}
-	s, err := p.sc.createSession(ctx)
-	if err != nil {
-		doneCreate(false)
-		// Should return error directly because of the previous retries on
-		// CreateSession RPC.
-		// If the error is a timeout, there is a chance that the session was
-		// created on the server but is not known to the session pool. This
-		// session will then be garbage collected by the server after 1 hour.
-		return nil, err
-	}
-	s.pool = p
-	p.hc.register(s)
-	doneCreate(true)
-	return s, nil
 }
 
 func (p *sessionPool) isHealthy(s *session) bool {
@@ -1188,7 +1205,7 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 			trace.TracePrintf(ctx, nil, "Context done waiting for session")
 			p.recordStat(ctx, GetSessionTimeoutsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
 			if p.otConfig != nil {
-				p.recordOTStat(ctx, p.otConfig.getSessionTimeoutsCount, 1, attributeKeyIsMultiplexed.String("false"))
+				p.recordOTStat(ctx, p.otConfig.getSessionTimeoutsCount, 1, recordOTStatOption{attr: p.otConfig.attributeMapWithoutMultiplexed})
 			}
 			p.mu.Lock()
 			p.numWaiters--
@@ -1211,17 +1228,17 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 // takeMultiplexed returns a cached session if there is available one; if there isn't
 // any, it tries to allocate a new one.
 func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, error) {
-	if !p.enableMultiplexSession {
-		return p.take(ctx)
-	}
 	trace.TracePrintf(ctx, nil, "Acquiring a multiplexed session")
 	for {
 		var s *session
-
 		p.mu.Lock()
 		if !p.valid {
 			p.mu.Unlock()
 			return nil, errInvalidSessionPool
+		}
+		if !p.enableMultiplexSession {
+			p.mu.Unlock()
+			return p.take(ctx)
 		}
 		// use the multiplex session if it is available
 		if p.multiplexedSession != nil {
@@ -1232,38 +1249,23 @@ func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, erro
 		}
 		if s != nil {
 			p.mu.Unlock()
-			// From here, If healthcheck workers failed to
-			// schedule healthcheck for the session timely, do the check here.
-			// Because session check is still much cheaper than session
-			// creation, they should be reused as much as possible.
-			if !p.isHealthy(s) {
-				continue
-			}
 			p.incNumMultiplexedInUse(ctx)
-
 			return p.newSessionHandle(s), nil
 		}
-
-		// No session available. Start the creation of multiplexed session.
-		if err := p.getMultiplexedSession(ctx); err != nil {
-			p.mu.Unlock()
-			return nil, err
-		}
-
 		mayGetSession := p.mayGetMultiplexedSession
 		p.mu.Unlock()
-		trace.TracePrintf(ctx, nil, "Waiting for multiplexed session to become available")
+		// No session available. Start the creation of multiplexed session.
+		p.multiplexedSessionsReq <- muxSessionCreateRequest{force: false}
+
 		select {
 		case <-ctx.Done():
 			trace.TracePrintf(ctx, nil, "Context done waiting for multiplexed session")
 			p.recordStat(ctx, GetSessionTimeoutsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 			if p.otConfig != nil {
-				p.recordOTStat(ctx, p.otConfig.getSessionTimeoutsCount, 1, attributeKeyIsMultiplexed.String("true"))
+				p.recordOTStat(ctx, p.otConfig.getSessionTimeoutsCount, 1, recordOTStatOption{attr: p.otConfig.attributeMapWithMultiplexed})
 			}
-			p.mu.Lock()
-			p.mu.Unlock()
 			return nil, p.errGetSessionTimeout(ctx)
-		case <-mayGetSession:
+		case <-mayGetSession: // Block until multiplexed session is created.
 			p.mu.Lock()
 			if p.multiplexedSessionCreationError != nil {
 				trace.TracePrintf(ctx, nil, "Error creating multiplexed session: %v", p.multiplexedSessionCreationError)
@@ -1271,11 +1273,12 @@ func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, erro
 				if isUnimplementedError(err) {
 					logf(p.sc.logger, "Multiplexed session is not enabled on this project, continuing with regular sessions")
 					p.enableMultiplexSession = false
+				} else {
 					p.mu.Unlock()
-					return p.take(ctx)
+					// If the error is a timeout, there is a chance that the session was
+					// created on the server but is not known to the session pool. This
+					return nil, err
 				}
-				p.mu.Unlock()
-				return nil, err
 			}
 			p.mu.Unlock()
 		}
@@ -1359,7 +1362,7 @@ func (p *sessionPool) incNumInUseLocked(ctx context.Context) {
 	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
 	p.recordStat(ctx, AcquiredSessionsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
 	if p.otConfig != nil {
-		p.recordOTStat(ctx, p.otConfig.acquiredSessionsCount, 1, attributeKeyIsMultiplexed.String("false"))
+		p.recordOTStat(ctx, p.otConfig.acquiredSessionsCount, 1, recordOTStatOption{attr: p.otConfig.attributeMapWithoutMultiplexed})
 	}
 	if p.numInUse > p.maxNumInUse {
 		p.maxNumInUse = p.numInUse
@@ -1372,12 +1375,13 @@ func (p *sessionPool) incNumMultiplexedInUse(ctx context.Context) {
 	p.incNumMultiplexedInUseLocked(ctx)
 	p.mu.Unlock()
 }
+
 func (p *sessionPool) incNumMultiplexedInUseLocked(ctx context.Context) {
 	p.multiplexedSessionInUse++
 	p.recordStat(ctx, SessionsCount, int64(p.multiplexedSessionInUse), tagNumInUseSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 	p.recordStat(ctx, AcquiredSessionsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 	if p.otConfig != nil {
-		p.recordOTStat(ctx, p.otConfig.acquiredSessionsCount, 1, attributeKeyIsMultiplexed.String("true"))
+		p.recordOTStat(ctx, p.otConfig.acquiredSessionsCount, 1, recordOTStatOption{attr: p.otConfig.attributeMapWithMultiplexed})
 	}
 	if p.multiplexedSessionInUse > p.maxMultiplexedSessionInUse {
 		p.maxMultiplexedSessionInUse = p.multiplexedSessionInUse
@@ -1395,7 +1399,7 @@ func (p *sessionPool) decNumInUseLocked(ctx context.Context) {
 	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
 	p.recordStat(ctx, ReleasedSessionsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
 	if p.otConfig != nil {
-		p.recordOTStat(ctx, p.otConfig.releasedSessionsCount, 1, attributeKeyIsMultiplexed.String("false"))
+		p.recordOTStat(ctx, p.otConfig.releasedSessionsCount, 1, recordOTStatOption{attr: p.otConfig.attributeMapWithoutMultiplexed})
 	}
 }
 
@@ -1404,7 +1408,7 @@ func (p *sessionPool) decNumMultiplexedInUseLocked(ctx context.Context) {
 	p.recordStat(ctx, SessionsCount, int64(p.multiplexedSessionInUse), tagNumInUseSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 	p.recordStat(ctx, ReleasedSessionsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 	if p.otConfig != nil {
-		p.recordOTStat(ctx, p.otConfig.releasedSessionsCount, 1, attributeKeyIsMultiplexed.String("true"))
+		p.recordOTStat(ctx, p.otConfig.releasedSessionsCount, 1, recordOTStatOption{attr: p.otConfig.attributeMapWithMultiplexed})
 	}
 }
 
@@ -1547,6 +1551,8 @@ type healthChecker struct {
 	pool *sessionPool
 	// sampleInterval is the interval of sampling by the maintainer.
 	sampleInterval time.Duration
+	// multiplexSessionRefreshInterval is the interval of refreshing multiplexed session.
+	multiplexSessionRefreshInterval time.Duration
 	// ready is used to signal that maintainer can start running.
 	ready chan struct{}
 	// done is used to signal that health checker should be closed.
@@ -1557,18 +1563,19 @@ type healthChecker struct {
 }
 
 // newHealthChecker initializes new instance of healthChecker.
-func newHealthChecker(interval time.Duration, workers int, sampleInterval time.Duration, pool *sessionPool) *healthChecker {
+func newHealthChecker(interval, multiplexSessionRefreshInterval time.Duration, workers int, sampleInterval time.Duration, pool *sessionPool) *healthChecker {
 	if workers <= 0 {
 		workers = 1
 	}
 	hc := &healthChecker{
-		interval:         interval,
-		workers:          workers,
-		pool:             pool,
-		sampleInterval:   sampleInterval,
-		ready:            make(chan struct{}),
-		done:             make(chan struct{}),
-		maintainerCancel: func() {},
+		interval:                        interval,
+		multiplexSessionRefreshInterval: multiplexSessionRefreshInterval,
+		workers:                         workers,
+		pool:                            pool,
+		sampleInterval:                  sampleInterval,
+		ready:                           make(chan struct{}),
+		done:                            make(chan struct{}),
+		maintainerCancel:                func() {},
 	}
 	hc.waitWorkers.Add(1)
 	go hc.maintainer()
@@ -1576,6 +1583,8 @@ func newHealthChecker(interval time.Duration, workers int, sampleInterval time.D
 		hc.waitWorkers.Add(1)
 		go hc.worker(i)
 	}
+	hc.waitWorkers.Add(1)
+	go hc.multiplexSessionWorker()
 	return hc
 }
 
@@ -1668,8 +1677,7 @@ func (hc *healthChecker) markDone(s *session) {
 func (hc *healthChecker) healthCheck(s *session) {
 	defer hc.markDone(s)
 	// If the session is multiplexed and has been idle for more than 7 days,
-	if s.isMultiplexed && s.createTime.Add(multiplexSessionIdleTime).Before(time.Now()) {
-		go hc.pool.getMultiplexedSession(context.Background())
+	if s.isMultiplexed {
 		return
 	}
 	if !s.pool.isValid() {
@@ -1870,6 +1878,33 @@ func (hc *healthChecker) shrinkPool(ctx context.Context, shrinkToNumSessions uin
 	}
 }
 
+func (hc *healthChecker) multiplexSessionWorker() {
+	for {
+		if hc.isClosing() {
+			hc.waitWorkers.Done()
+			return
+		}
+		hc.pool.mu.Lock()
+		createTime := time.Now()
+		s := hc.pool.multiplexedSession
+		if s != nil {
+			createTime = hc.pool.multiplexedSession.createTime
+		}
+		hc.pool.mu.Unlock()
+		if createTime.Add(multiplexSessionActiveInterval).Before(time.Now()) {
+			// Multiplexed session is idle for more than 7 days, replace it.
+			hc.pool.multiplexedSessionsReq <- muxSessionCreateRequest{force: true}
+			// wait for the new multiplexed session to be created.
+			<-hc.pool.mayGetMultiplexedSession
+		}
+		// Sleep for a while to avoid burning CPU.
+		select {
+		case <-time.After(hc.multiplexSessionRefreshInterval):
+		case <-hc.done:
+		}
+	}
+}
+
 // maxUint64 returns the maximum of two uint64.
 func maxUint64(a, b uint64) uint64 {
 	if a > b {
@@ -1903,8 +1938,7 @@ func isSessionNotFoundError(err error) bool {
 	return strings.Contains(err.Error(), "Session not found")
 }
 
-// isUnimplementedError returns true if the error indicates that an gRPC call is
-// aborted on the server side.
+// isUnimplementedError returns true if the gRPC error code is Unimplemented.
 func isUnimplementedError(err error) bool {
 	if err == nil {
 		return false

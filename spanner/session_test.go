@@ -365,12 +365,12 @@ func TestSessionLeak(t *testing.T) {
 		t.Fatalf("Idle sessions count mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 	// The checked out session should contain a stack trace.
-	if single.sh.stack == nil {
+	if single.sh.stack == nil && !isMultiplexEnabled {
 		t.Fatalf("Missing stacktrace from session handle")
 	}
 	stack := fmt.Sprintf("%s", single.sh.stack)
 	testMethod := "TestSessionLeak"
-	if !strings.Contains(stack, testMethod) {
+	if !strings.Contains(stack, testMethod) && !isMultiplexEnabled {
 		t.Fatalf("Stacktrace does not contain '%s'\nGot: %s", testMethod, stack)
 	}
 	// Return the session to the pool.
@@ -456,8 +456,10 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 	// The checked out session should contain a stack trace as Logging is true.
 	single.sh.mu.Lock()
 	if single.sh.stack == nil {
-		single.sh.mu.Unlock()
-		t.Fatalf("Missing stacktrace from session handle")
+		if !isMultiplexEnabled {
+			single.sh.mu.Unlock()
+			t.Fatalf("Missing stacktrace from session handle")
+		}
 	}
 	if g, w := single.sh.eligibleForLongRunning, false; g != w {
 		single.sh.mu.Unlock()
@@ -1664,6 +1666,82 @@ func TestMaintainer(t *testing.T) {
 		}
 		return nil
 	})
+}
+
+func TestMultiplexSessionWorker(t *testing.T) {
+	t.Parallel()
+	if !isMultiplexEnabled {
+		t.Skip("Multiplexing is not enabled")
+	}
+	ctx := context.Background()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: SessionPoolConfig{
+				MultiplexSessionRefreshInterval: time.Millisecond,
+			},
+		})
+	defer teardown()
+	_, err := client.Single().ReadRow(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if sp.multiplexedSession == nil {
+			return errInvalidSessionPool
+		}
+		return nil
+	})
+	if !testEqual(uint(1), server.TestSpanner.TotalSessionsCreated()) {
+		t.Fatalf("expected 1 session to be created, got %v", server.TestSpanner.TotalSessionsCreated())
+	}
+	// Will cause session creation RPC to be fail.
+	server.TestSpanner.PutExecutionTime(MethodCreateSession,
+		SimulatedExecutionTime{
+			Errors:    []error{status.Errorf(codes.Unavailable, "try later")},
+			KeepError: true,
+		})
+	// To save test time, update the multiplex session creation time to trigger refresh.
+	sp.mu.Lock()
+	oldMultiplexedSession := sp.multiplexedSession.id
+	sp.multiplexedSession.createTime = sp.multiplexedSession.createTime.Add(-10 * 24 * time.Hour)
+	sp.mu.Unlock()
+
+	// Subsequent read should use existing session.
+	_, err = client.Single().ReadRow(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	// To save test time, update the multiplex session creation time to trigger refresh.
+	sp.mu.Lock()
+	multiplexSessionID := sp.multiplexedSession.id
+	sp.mu.Unlock()
+	if !testEqual(oldMultiplexedSession, multiplexSessionID) {
+		t.Errorf("TestMultiplexSessionWorker expected multiplexed session id to be=%v, got: %v", oldMultiplexedSession, multiplexSessionID)
+	}
+
+	// Let the first session request succeed.
+	server.TestSpanner.Freeze()
+	server.TestSpanner.PutExecutionTime(MethodCreateSession, SimulatedExecutionTime{})
+	server.TestSpanner.Unfreeze()
+
+	waitFor(t, func() error {
+		if server.TestSpanner.TotalSessionsCreated() != 2 {
+			return errInvalidSessionPool
+		}
+		return nil
+	})
+
+	sp.mu.Lock()
+	multiplexSessionID = sp.multiplexedSession.id
+	sp.mu.Unlock()
+
+	if testEqual(oldMultiplexedSession, multiplexSessionID) {
+		t.Errorf("TestMultiplexSessionWorker expected multiplexed session id to be different, got: %v", multiplexSessionID)
+	}
 }
 
 // Tests that the session pool creates up to MinOpened connections.
