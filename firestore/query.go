@@ -63,53 +63,11 @@ type Query struct {
 	// e.g. read time
 	readSettings *readSettings
 
+	// readOptions specifies constraints for running the query
+	// e.g. explainOptions
 	runQuerySettings *runQuerySettings
-  
-  findNearest *pb.StructuredQuery_FindNearest
-}
 
-type runQuerySettings struct {
-	// Explain options for the query. If set, additional query
-	// statistics will be returned. If not, only query results will be returned.
-	explainOptions *pb.ExplainOptions
-}
-
-// newRunQuerySettings creates a runQuerySettings with a given RunOption slice.
-func newRunQuerySettings(opts []RunOption) (*runQuerySettings, error) {
-	s := &runQuerySettings{}
-	for _, o := range opts {
-		if o == nil {
-			return nil, errors.New("firestore: RunOption cannot be nil")
-		}
-		err := o.apply(s)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return s, nil
-}
-
-// ExplainOptions is explain options for the query.
-//
-// Query Explain feature is still in preview and not yet publicly available.
-// Pre-GA features might have limited support and can change at any time.
-type ExplainOptions struct {
-	// When false (the default), the query will be planned, returning only
-	// metrics from the planning stages.
-	// When true, the query will be planned and executed, returning the full
-	// query results along with both planning and execution stage metrics.
-	Analyze bool
-}
-
-func (e ExplainOptions) apply(s *runQuerySettings) error {
-	if s.explainOptions != nil {
-		return errors.New("firestore: ExplainOptions can be specified only once")
-	}
-	pbExplainOptions := pb.ExplainOptions{
-		Analyze: e.Analyze,
-	}
-	s.explainOptions = &pbExplainOptions
-	return nil
+	findNearest *pb.StructuredQuery_FindNearest
 }
 
 // ExplainMetrics represents explain metrics for the query.
@@ -202,11 +160,6 @@ func fromPbExecutionStats(pbstats *pb.ExecutionStats) *ExecutionStats {
 	executionStats.DebugStats = &debugStats
 
 	return executionStats
-}
-
-// RunOption lets the user provide options while running a query
-type RunOption interface {
-	apply(*runQuerySettings) error
 }
 
 // DocumentID is the special field name representing the ID of a document
@@ -492,24 +445,6 @@ func (q *Query) processLimitToLast() {
 
 func (q Query) query() *Query { return &q }
 
-func (q Query) toPbRunQueryRequest() (*pb.RunQueryRequest, error) {
-	structuredQuery, err := q.toProto()
-	if err != nil {
-		return nil, err
-	}
-
-	var explainOptions *pb.ExplainOptions
-	if q.runQuerySettings != nil && q.runQuerySettings.explainOptions != nil {
-		explainOptions = q.runQuerySettings.explainOptions
-	}
-	p := &pb.RunQueryRequest{
-		Parent:         q.parentPath,
-		ExplainOptions: explainOptions,
-		QueryType:      &pb.RunQueryRequest_StructuredQuery{StructuredQuery: structuredQuery},
-	}
-	return p, nil
-}
-
 // Serialize creates a RunQueryRequest wire-format byte slice from a Query object.
 // This can be used in combination with Deserialize to marshal Query objects.
 // This could be useful, for instance, if executing a query formed in one
@@ -533,6 +468,24 @@ func (q Query) Deserialize(bytes []byte) (Query, error) {
 		return q, err
 	}
 	return q.fromProto(&runQueryRequest)
+}
+
+func (q Query) toPbRunQueryRequest() (*pb.RunQueryRequest, error) {
+	structuredQuery, err := q.toProto()
+	if err != nil {
+		return nil, err
+	}
+
+	var explainOptions *pb.ExplainOptions
+	if q.runQuerySettings != nil && q.runQuerySettings.explainOptions != nil {
+		explainOptions = q.runQuerySettings.explainOptions
+	}
+	p := &pb.RunQueryRequest{
+		Parent:         q.parentPath,
+		ExplainOptions: explainOptions,
+		QueryType:      &pb.RunQueryRequest_StructuredQuery{StructuredQuery: structuredQuery},
+	}
+	return p, nil
 }
 
 // DistanceMeasure is the distance measure to use when comparing vectors with [Query.FindNearest] or [Query.FindNearestPath].
