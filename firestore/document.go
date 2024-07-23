@@ -97,6 +97,7 @@ func (d *DocumentSnapshot) Data() map[string]interface{} {
 //     Slices are resized to the incoming value's size, while arrays that are too
 //     long have excess elements filled with zero values. If the array is too short,
 //     excess incoming values will be dropped.
+//   - Vectors convert to []float64
 //   - Maps convert to map[string]interface{}. When setting a struct field,
 //     maps of key type string and any value type are permitted, and are populated
 //     recursively.
