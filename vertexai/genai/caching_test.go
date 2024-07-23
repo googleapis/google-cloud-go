@@ -103,7 +103,9 @@ func testCaching(t *testing.T, client *Client) {
 		argcc := &CachedContent{
 			Model:      model,
 			Expiration: ExpireTimeOrTTL{TTL: ttl},
-			Contents:   []*Content{NewUserContent(FileData{MIMEType: "text/plain", FileURI: "gs://0002-test-multimodal/embeddings/xray-embedding.json"})},
+			Contents: []*Content{NewUserContent(FileData{
+				MIMEType: "text/plain",
+				FileURI:  gcsFilePath})},
 		}
 		cc := must(client.CreateCachedContent(ctx, argcc))
 		compare(cc, wantExpireTime)
