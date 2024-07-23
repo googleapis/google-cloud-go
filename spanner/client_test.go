@@ -411,14 +411,12 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			},
 			validate: func(server InMemSpannerServer) {
 				// Validate the multiplexed session is used
-				expected := map[string]interface{}{
-					"SessionsCount": uint(1),
-				}
+				expectedSessionCount := uint(1)
 				if !isMultiplexEnabled {
-					expected["SessionsCount"] = uint(25) // BatchCreateSession request from regular session pool
+					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
 				}
-				if !testEqual(expected["SessionsCount"], server.TotalSessionsCreated()) {
-					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expected["SessionsCount"], server.TotalSessionsCreated())
+				if !testEqual(expectedSessionCount, server.TotalSessionsCreated()) {
+					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expectedSessionCount, server.TotalSessionsCreated())
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
@@ -454,14 +452,12 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			},
 			validate: func(server InMemSpannerServer) {
 				// Validate the multiplexed session is used
-				expected := map[string]interface{}{
-					"SessionsCount": uint(1),
-				}
+				expectedSessionCount := uint(1)
 				if !isMultiplexEnabled {
-					expected["SessionsCount"] = uint(25) // BatchCreateSession request from regular session pool
+					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
 				}
-				if !testEqual(expected["SessionsCount"], server.TotalSessionsCreated()) {
-					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expected["SessionsCount"], server.TotalSessionsCreated())
+				if !testEqual(expectedSessionCount, server.TotalSessionsCreated()) {
+					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expectedSessionCount, server.TotalSessionsCreated())
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
@@ -497,8 +493,12 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				return err
 			},
 			validate: func(server InMemSpannerServer) {
-				// Validate the regular session is used
-				if !testEqual(uint(25), server.TotalSessionsCreated()) {
+				// Validate the regular session is used, toatl session created should be 25
+				expectedSessionCount := uint(26)
+				if !isMultiplexEnabled {
+					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
+				}
+				if !testEqual(expectedSessionCount, server.TotalSessionsCreated()) {
 					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), 25, server.TotalSessionsCreated())
 				}
 				reqs := drainRequestsFromServer(server)
@@ -531,14 +531,12 @@ func TestClient_MultiplexedSession(t *testing.T) {
 			},
 			validate: func(server InMemSpannerServer) {
 				// Validate the multiplexed session is used
-				expected := map[string]interface{}{
-					"SessionsCount": uint(1),
-				}
+				expectedSessionCount := uint(1)
 				if !isMultiplexEnabled {
-					expected["SessionsCount"] = uint(25) // BatchCreateSession request from regular session pool
+					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
 				}
-				if !testEqual(expected["SessionsCount"], server.TotalSessionsCreated()) {
-					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expected["SessionsCount"], server.TotalSessionsCreated())
+				if !testEqual(expectedSessionCount, server.TotalSessionsCreated()) {
+					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expectedSessionCount, server.TotalSessionsCreated())
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {

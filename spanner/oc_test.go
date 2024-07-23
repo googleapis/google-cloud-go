@@ -17,7 +17,6 @@ package spanner
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -55,12 +54,15 @@ func TestOCStats_SessionPool(t *testing.T) {
 	DisableGfeLatencyAndHeaderMissingCountViews()
 	// expectedValues is a map of expected values for different configurations of
 	// multiplexed session env="GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS".
-	expectedValues := map[string]map[string]string{
-		"false": {
-			"open_session_count": "25",
+	expectedValues := map[string]map[bool]string{
+		"open_session_count": {
+			false: "25",
+			// since we are doing only R/O operations and MinOpened=0, we should have only one session.
+			true: "1",
 		},
-		"true": {
-			"open_session_count": "1",
+		"max_in_use_sessions": {
+			false: "1",
+			true:  "0",
 		},
 	}
 	for _, test := range []struct {
@@ -73,7 +75,7 @@ func TestOCStats_SessionPool(t *testing.T) {
 			"OpenSessionCount",
 			OpenSessionCountView,
 			"open_session_count",
-			expectedValues[strconv.FormatBool(isMultiplexEnabled)]["open_session_count"],
+			expectedValues["open_session_count"][isMultiplexEnabled],
 		},
 		{
 			"MaxAllowedSessionsCount",
@@ -85,7 +87,7 @@ func TestOCStats_SessionPool(t *testing.T) {
 			"MaxInUseSessionsCount",
 			MaxInUseSessionsCountView,
 			"max_in_use_sessions",
-			"1",
+			expectedValues["max_in_use_sessions"][isMultiplexEnabled],
 		},
 		{
 			"AcquiredSessionsCount",

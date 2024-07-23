@@ -1678,7 +1678,7 @@ func TestMultiplexSessionWorker(t *testing.T) {
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
 			SessionPoolConfig: SessionPoolConfig{
-				MultiplexSessionRefreshInterval: time.Millisecond,
+				MultiplexSessionCheckInterval: time.Millisecond,
 			},
 		})
 	defer teardown()
