@@ -45,7 +45,12 @@ type datastoreClientOption interface {
 
 // WithIgnoreFieldMismatch allows ignoring ErrFieldMismatch error while
 // reading or querying data.
-// WARNING: Ignoring ErrFieldMismatch can cause data loss
+// WARNING: Ignoring ErrFieldMismatch can cause data loss while writing
+// back to Datastore. E.g.
+// if entity written to Datastore is {X: 1, Y:2} and it is read into
+// type NewStruct struct{X int}, then {X:1} is returned.
+// Now, if this is written back to Datastore, there will be no Y field
+// left for this entity in Datastore
 func WithIgnoreFieldMismatch() option.ClientOption {
 	return &withIgnoreFieldMismatch{ignoreFieldMismatchErrors: true}
 }
