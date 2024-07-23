@@ -149,7 +149,7 @@ func (c *Candidate) FunctionCalls() []FunctionCall {
 	return fcs
 }
 
-// NewUserContent returns a *Content with a "user" role set and one or more
+// NewUserContent returns a [Content] with a "user" role set and one or more
 // parts.
 func NewUserContent(parts ...Part) *Content {
 	content := &Content{Role: roleUser, Parts: []Part{}}
