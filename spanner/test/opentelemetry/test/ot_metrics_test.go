@@ -205,7 +205,6 @@ func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
 
 	client.Single().ReadRow(context.Background(), "Users", spanner.Key{"alice"}, []string{"email"})
 
-	//attributesNumInUseSessions := append(getAttributes(client.ClientID()), attribute.Key("type").String("num_in_use_sessions"))
 	attributesNumSessions := append(getAttributes(client.ClientID()), attribute.Key("type").String("num_sessions"))
 
 	expectedMetricData := metricdata.Metrics{
