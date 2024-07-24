@@ -1,5 +1,23 @@
 # Changes
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.23.4...speech/v1.24.0) (2024-07-24)
+
+
+### Features
+
+* **speech:** Add locations metadata proto file ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
+
+### Bug Fixes
+
+* **speech:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **speech:** Update the list of automatically detected encodings ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **speech:** Update the maximum number of files that may be included in a BatchRecognizeRequest ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
 ## [1.23.4](https://github.com/googleapis/google-cloud-go/compare/speech/v1.23.3...speech/v1.23.4) (2024-07-10)
 
 

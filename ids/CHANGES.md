@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.4.11](https://github.com/googleapis/google-cloud-go/compare/ids/v1.4.10...ids/v1.4.11) (2024-07-24)
+
+
+### Bug Fixes
+
+* **ids:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.4.10](https://github.com/googleapis/google-cloud-go/compare/ids/v1.4.9...ids/v1.4.10) (2024-07-10)
 
 

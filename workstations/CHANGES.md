@@ -2,6 +2,13 @@
 
 
 
+## [1.0.4](https://github.com/googleapis/google-cloud-go/compare/workstations/v1.0.3...workstations/v1.0.4) (2024-07-24)
+
+
+### Bug Fixes
+
+* **workstations:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.0.3](https://github.com/googleapis/google-cloud-go/compare/workstations/v1.0.2...workstations/v1.0.3) (2024-07-10)
 
 

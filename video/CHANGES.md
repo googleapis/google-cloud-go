@@ -1,6 +1,25 @@
 # Changes
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.21.3...video/v1.22.0) (2024-07-24)
+
+
+### Features
+
+* **video/livestream:** Added Clip resource for performing clip cutting jobs ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+* **video/livestream:** Added RetentionConfig for enabling retention of output media segments ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+* **video/livestream:** Added StaticOverlay for embedding images the whole duration of the live stream ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+
+### Bug Fixes
+
+* **video:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **video/livestream:** Clarify the format of key/id fields ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
 ## [1.21.3](https://github.com/googleapis/google-cloud-go/compare/video/v1.21.2...video/v1.21.3) (2024-07-10)
 
 

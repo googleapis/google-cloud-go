@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.9](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.8...apigeeregistry/v0.8.9) (2024-07-24)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [0.8.8](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.7...apigeeregistry/v0.8.8) (2024-07-10)
 
 
