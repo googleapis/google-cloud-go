@@ -1,5 +1,37 @@
 # Changes
 
+## [1.55.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.54.3...dialogflow/v1.55.0) (2024-07-24)
+
+
+### Features
+
+* **dialogflow/cx:** Added support for consent based redaction ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Added support for lock flow ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Added support for lock flow ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Added support for multi language settings in flow ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Added support for oauth and service agent auth for webhook. ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Added support for service directory in tools ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Added support for service directory in tools ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Added support for transit to playbook from page ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Expose PersonalizationSettings & SpeechSettings in v3 API. ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Expose store tts option in security settings ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Exposed DataStoreConnectionSignals ([#10543](https://github.com/googleapis/google-cloud-go/issues/10543)) ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Exposed model name in DataStoreConnectionSignals ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
+
+### Bug Fixes
+
+* **dialogflow:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **dialogflow/cx:** Clarified wording around audio redaction ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Clarified wording around enable_stackdriver_logging & enable_interaction_logging ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Clarified wording around enable_stackdriver_logging & enable_interaction_logging ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Clarified wording around start point of test config. ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **dialogflow/cx:** Clarified wording around start point of test config. ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
 ## [1.54.3](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.54.2...dialogflow/v1.54.3) (2024-07-10)
 
 

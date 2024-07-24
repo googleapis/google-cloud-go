@@ -1,5 +1,22 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.14.3...dlp/v1.15.0) (2024-07-24)
+
+
+### Features
+
+* **dlp:** Add Cloud Storage discovery support ([#10527](https://github.com/googleapis/google-cloud-go/issues/10527)) ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+
+### Bug Fixes
+
+* **dlp:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **dlp:** Updated method documentation ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
 ## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.14.2...dlp/v1.14.3) (2024-07-10)
 
 
