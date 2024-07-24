@@ -2356,6 +2356,9 @@ func TestIntegration_NewClientWithDatabase(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
+	if iClient == nil {
+		t.Skip("Integration test skipped: did not create client")
+	}
 	for _, tc := range []struct {
 		desc    string
 		dbName  string

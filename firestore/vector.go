@@ -33,8 +33,7 @@ type Vector64 []float64
 type Vector32 []float32
 
 // vectorToProtoValue returns a Firestore [pb.Value] representing the Vector.
-// The calling function should check for type safety
-func vectorToProtoValue[vType float32 | float64](v []vType) *pb.Value {
+func vectorToProtoValue[T float32 | float64](v []T) *pb.Value {
 	if v == nil {
 		return nullValue
 	}
@@ -59,40 +58,27 @@ func vectorToProtoValue[vType float32 | float64](v []vType) *pb.Value {
 	}
 }
 
-func vectorFromProtoValue(v *pb.Value) (interface{}, error) {
-	return vector64FromProtoValue(v)
-}
-
 func vector32FromProtoValue(v *pb.Value) (Vector32, error) {
-	pbArrVals, err := pbValToVectorVals(v)
-	if err != nil {
-		return nil, err
-	}
-
-	floats := make([]float32, len(pbArrVals))
-	for i, fval := range pbArrVals {
-		dv, ok := fval.ValueType.(*pb.Value_DoubleValue)
-		if !ok {
-			return nil, fmt.Errorf("firestore: failed to convert %v to *pb.Value_DoubleValue", fval.ValueType)
-		}
-		floats[i] = float32(dv.DoubleValue)
-	}
-	return floats, nil
+	return vectorFromProtoValue[float32](v)
 }
 
 func vector64FromProtoValue(v *pb.Value) (Vector64, error) {
+	return vectorFromProtoValue[float64](v)
+}
+
+func vectorFromProtoValue[T float32 | float64](v *pb.Value) ([]T, error) {
 	pbArrVals, err := pbValToVectorVals(v)
 	if err != nil {
 		return nil, err
 	}
 
-	floats := make([]float64, len(pbArrVals))
+	floats := make([]T, len(pbArrVals))
 	for i, fval := range pbArrVals {
 		dv, ok := fval.ValueType.(*pb.Value_DoubleValue)
 		if !ok {
 			return nil, fmt.Errorf("firestore: failed to convert %v to *pb.Value_DoubleValue", fval.ValueType)
 		}
-		floats[i] = dv.DoubleValue
+		floats[i] = T(dv.DoubleValue)
 	}
 	return floats, nil
 }
