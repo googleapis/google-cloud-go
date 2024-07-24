@@ -1432,3 +1432,105 @@ func TestSchemaToJSONFields(t *testing.T) {
 		}
 	}
 }
+
+func TestSchemaClone(t *testing.T) {
+	testCases := []struct {
+		description string
+		schema      Schema
+	}{
+		{
+			description: "with policy",
+			schema: Schema{
+				{
+					Name:                   "a",
+					Description:            "test description",
+					Type:                   IntegerFieldType,
+					Repeated:               true,
+					Required:               true,
+					MaxLength:              1234,
+					Precision:              12345,
+					Scale:                  123456,
+					DefaultValueExpression: "0",
+					PolicyTags: &PolicyTagList{
+						Names: []string{"b", "c"},
+					},
+					Schema: Schema{
+						{
+							Name: "d",
+							Type: IntegerFieldType,
+							PolicyTags: &PolicyTagList{
+								Names: []string{"e", "f"},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			description: "nested schema",
+			schema: Schema{
+				{
+					Name: "a",
+					Type: "RECORD",
+					Schema: Schema{
+						{
+							Name: "b",
+							Type: "RECORD",
+							Schema: Schema{
+								{
+									Name: "c",
+									Type: "INTEGER",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			description: "array of nested schema",
+			schema: Schema{
+				{
+					Name:     "a",
+					Type:     "RECORD",
+					Repeated: true,
+					Schema: Schema{
+						{
+							Name: "b1",
+							Type: "RECORD",
+							Schema: Schema{
+								{Name: "c1", Type: "INTEGER"},
+								{
+									Name: "c2",
+									Type: "RECORD",
+									Schema: Schema{
+										{
+											Name:     "d1",
+											Type:     "RECORD",
+											Repeated: true,
+											Schema: Schema{
+												{Name: "e1", Type: "STRING"},
+											},
+										},
+									},
+								},
+							},
+						},
+						{Name: "b2", Type: "BOOLEAN"},
+					},
+				},
+			},
+		},
+		{
+			description: "nil schema",
+			schema:      nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		got := tc.schema.Clone()
+		if diff := cmp.Diff(tc.schema, got); diff != "" {
+			t.Errorf("copySchema(%v) returned an unexpected diff (-want +got): %v", tc.schema, diff)
+		}
+	}
+}

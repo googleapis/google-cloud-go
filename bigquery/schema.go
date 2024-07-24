@@ -159,6 +159,47 @@ type FieldSchema struct {
 	RoundingMode RoundingMode
 }
 
+// Clone returns a duplicate of the existing schema.
+func (s Schema) Clone() Schema {
+	if s == nil {
+		return nil
+	}
+	newS := make(Schema, 0, len(s))
+	for _, v := range s {
+		if v == nil {
+			newS = append(newS, nil)
+			continue
+		}
+		newV := &FieldSchema{
+			Name:                   v.Name,
+			Description:            v.Description,
+			Type:                   v.Type,
+			Repeated:               v.Repeated,
+			Required:               v.Required,
+			MaxLength:              v.MaxLength,
+			Precision:              v.Precision,
+			Scale:                  v.Scale,
+			DefaultValueExpression: v.DefaultValueExpression,
+			Collation:              v.Collation,
+		}
+		if v.RangeElementType != nil {
+			newV.RangeElementType = &RangeElementType{
+				Type: v.RangeElementType.Type,
+			}
+		}
+		newV.Schema = v.Schema.Clone()
+		if v.PolicyTags != nil {
+			newV.PolicyTags = &PolicyTagList{}
+			if len(v.PolicyTags.Names) > 0 {
+				newV.PolicyTags.Names = make([]string, len(v.PolicyTags.Names))
+				copy(newV.PolicyTags.Names, v.PolicyTags.Names)
+			}
+		}
+		newS = append(newS, newV)
+	}
+	return newS
+}
+
 func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 	tfs := &bq.TableFieldSchema{
 		Description:            fs.Description,
