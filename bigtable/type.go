@@ -169,6 +169,7 @@ type HllAggregator struct{}
 
 func (hll HllAggregator) fillProto(proto *btapb.Type_Aggregate) {
 	proto.Aggregator = &btapb.Type_Aggregate_Hll_{Hll: &btapb.Type_Aggregate_Hll{}}
+}
 
 type unknownAggregator struct {
 	wrapped *btapb.Type_Aggregate

@@ -114,7 +114,6 @@ func TestProtoBijection(t *testing.T) {
 	}
 }
 
-
 func TestMinAggregateProto(t *testing.T) {
 	want := &btapb.Type{
 		Kind: &btapb.Type_AggregateType{
@@ -220,7 +219,7 @@ func TestHllAggregateProto(t *testing.T) {
 	got := AggregateType{Input: Int64Type{}, Aggregator: HllAggregator{}}.proto()
 	if !proto.Equal(got, want) {
 		t.Errorf("got type %v, want: %v", got, want)
-  }
+	}
 }
 
 func TestNilChecks(t *testing.T) {
