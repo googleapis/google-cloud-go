@@ -163,17 +163,6 @@ func (hll HllAggregator) fillProto(proto *btapb.Type_Aggregate) {
 	proto.Aggregator = &btapb.Type_Aggregate_Hll_{Hll: &btapb.Type_Aggregate_Hll{}}
 }
 
-type unknownAggregator struct {
-	wrapped *btapb.Type_Aggregate
-}
-
-func (ua unknownAggregator) fillProto(proto *btapb.Type_Aggregate) {
-	if ua.wrapped == nil {
-		return
-	}
-	proto.Aggregator = ua.wrapped.Aggregator
-}
-
 // AggregateType represents an aggregate.  See types.proto for more details
 // on aggregate types.
 type AggregateType struct {
