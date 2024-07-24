@@ -410,38 +410,6 @@ func TestTableAdmin_SetGcPolicy(t *testing.T) {
 	}
 }
 
-func TestTableAdmin_SetType(t *testing.T) {
-	for _, test := range []struct {
-		desc       string
-		familyType Type
-		hasError   bool
-	}{
-		{
-			desc:       "Update with aggregate type failed",
-			familyType: AggregateType{Input: Int64Type{Encoding: BigEndianBytesEncoding{}}, Aggregator: SumAggregator{}},
-			hasError:   true,
-		},
-		{
-			desc:       "Update with string type",
-			familyType: StringType{Encoding: StringUtf8Encoding{}},
-			hasError:   false,
-		},
-		{
-			desc:       "Update with nil type",
-			familyType: nil,
-			hasError:   true,
-		},
-	} {
-		mock := &mockTableAdminClock{}
-		c := setupTableClient(t, mock)
-
-		err := c.SetValueType(context.Background(), "My-table", "cf1", test.familyType)
-		if err != nil && !test.hasError {
-			t.Fatalf("Unexpected error when setting type: %v", err)
-		}
-	}
-}
-
 func TestTableAdmin_CreateAuthorizedView_DeletionProtection_Protected(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)

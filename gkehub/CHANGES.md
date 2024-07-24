@@ -1,5 +1,12 @@
 # Changes
 
+## [0.14.10](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.9...gkehub/v0.14.10) (2024-07-10)
+
+
+### Bug Fixes
+
+* **gkehub:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [0.14.9](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.8...gkehub/v0.14.9) (2024-07-01)
 
 

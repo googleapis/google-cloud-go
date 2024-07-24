@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/visionai/v0.2.2...visionai/v0.2.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **visionai:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/visionai/v0.2.1...visionai/v0.2.2) (2024-07-01)
 
 

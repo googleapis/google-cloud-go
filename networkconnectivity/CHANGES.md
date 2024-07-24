@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.9](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.14.8...networkconnectivity/v1.14.9) (2024-07-10)
+
+
+### Bug Fixes
+
+* **networkconnectivity:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.14.8](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.14.7...networkconnectivity/v1.14.8) (2024-07-01)
 
 

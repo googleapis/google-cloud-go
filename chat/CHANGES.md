@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.1.3...chat/v0.2.0) (2024-07-10)
+
+
+### Features
+
+* **chat:** Add doc for Discoverable Space support for GA launch ([#10505](https://github.com/googleapis/google-cloud-go/issues/10505)) ([a187451](https://github.com/googleapis/google-cloud-go/commit/a187451a912835703078e5b6a339c514edebe5de))
+
+
+### Bug Fixes
+
+* **chat:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+
+### Documentation
+
+* **chat:** Update resource naming formats ([a187451](https://github.com/googleapis/google-cloud-go/commit/a187451a912835703078e5b6a339c514edebe5de))
+
 ## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/chat/v0.1.2...chat/v0.1.3) (2024-07-01)
 
 

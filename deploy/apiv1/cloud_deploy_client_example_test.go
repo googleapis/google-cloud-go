@@ -276,6 +276,36 @@ func ExampleCloudDeployClient_CreateDeliveryPipeline() {
 	_ = resp
 }
 
+func ExampleCloudDeployClient_CreateDeployPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.CreateDeployPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#CreateDeployPolicyRequest.
+	}
+	op, err := c.CreateDeployPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleCloudDeployClient_CreateRelease() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -450,6 +480,34 @@ func ExampleCloudDeployClient_DeleteDeliveryPipeline() {
 	}
 }
 
+func ExampleCloudDeployClient_DeleteDeployPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.DeleteDeployPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#DeleteDeployPolicyRequest.
+	}
+	op, err := c.DeleteDeployPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleCloudDeployClient_DeleteTarget() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -596,6 +654,31 @@ func ExampleCloudDeployClient_GetDeliveryPipeline() {
 		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#GetDeliveryPipelineRequest.
 	}
 	resp, err := c.GetDeliveryPipeline(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudDeployClient_GetDeployPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.GetDeployPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#GetDeployPolicyRequest.
+	}
+	resp, err := c.GetDeployPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -873,6 +956,43 @@ func ExampleCloudDeployClient_ListDeliveryPipelines() {
 		// Otherwise, remove this line. Only populated after
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*deploypb.ListDeliveryPipelinesResponse)
+	}
+}
+
+func ExampleCloudDeployClient_ListDeployPolicies() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.ListDeployPoliciesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#ListDeployPoliciesRequest.
+	}
+	it := c.ListDeployPolicies(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListDeployPoliciesResponse)
 	}
 }
 
@@ -1177,6 +1297,36 @@ func ExampleCloudDeployClient_UpdateDeliveryPipeline() {
 		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#UpdateDeliveryPipelineRequest.
 	}
 	op, err := c.UpdateDeliveryPipeline(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudDeployClient_UpdateDeployPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.UpdateDeployPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#UpdateDeployPolicyRequest.
+	}
+	op, err := c.UpdateDeployPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

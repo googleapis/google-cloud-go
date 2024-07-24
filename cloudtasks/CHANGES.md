@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.11](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.10...cloudtasks/v1.12.11) (2024-07-10)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.12.10](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.9...cloudtasks/v1.12.10) (2024-07-01)
 
 
