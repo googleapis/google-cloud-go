@@ -181,6 +181,7 @@ func (s Schema) Clone() Schema {
 			Scale:                  v.Scale,
 			DefaultValueExpression: v.DefaultValueExpression,
 			Collation:              v.Collation,
+			RoundingMode:           v.RoundingMode,
 		}
 		if v.RangeElementType != nil {
 			newV.RangeElementType = &RangeElementType{

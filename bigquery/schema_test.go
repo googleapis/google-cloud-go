@@ -1451,6 +1451,7 @@ func TestSchemaClone(t *testing.T) {
 					Precision:              12345,
 					Scale:                  123456,
 					DefaultValueExpression: "0",
+					RoundingMode:           "ROUND_HALF_EVEN",
 					PolicyTags: &PolicyTagList{
 						Names: []string{"b", "c"},
 					},
