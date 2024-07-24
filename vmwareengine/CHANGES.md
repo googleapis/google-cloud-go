@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.1.6...vmwareengine/v1.2.0) (2024-07-24)
+
+
+### Features
+
+* **vmwareengine:** Adding autoscaling settings ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
+
+### Bug Fixes
+
+* **vmwareengine:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.1.5...vmwareengine/v1.1.6) (2024-07-10)
 
 
