@@ -142,6 +142,38 @@ func (sum SumAggregator) fillProto(proto *btapb.Type_Aggregate) {
 	proto.Aggregator = &btapb.Type_Aggregate_Sum_{Sum: &btapb.Type_Aggregate_Sum{}}
 }
 
+// MinAggregator is an aggregation function that finds the minimum between the input and the accumulator.
+type MinAggregator struct{}
+
+func (min MinAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	proto.Aggregator = &btapb.Type_Aggregate_Min_{Min: &btapb.Type_Aggregate_Min{}}
+}
+
+// MaxAggregator is an aggregation function that finds the maximum between the input and the accumulator.
+type MaxAggregator struct{}
+
+func (max MaxAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	proto.Aggregator = &btapb.Type_Aggregate_Max_{Max: &btapb.Type_Aggregate_Max{}}
+}
+
+// HllAggregator is an aggregation function that calculates the unique count of inputs and the accumulator.
+type HllAggregator struct{}
+
+func (hll HllAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	proto.Aggregator = &btapb.Type_Aggregate_Hll_{Hll: &btapb.Type_Aggregate_Hll{}}
+}
+
+type unknownAggregator struct {
+	wrapped *btapb.Type_Aggregate
+}
+
+func (ua unknownAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	if ua.wrapped == nil {
+		return
+	}
+	proto.Aggregator = ua.wrapped.Aggregator
+}
+
 // AggregateType represents an aggregate.  See types.proto for more details
 // on aggregate types.
 type AggregateType struct {
