@@ -197,7 +197,7 @@ func TestVectorFromProtoValue(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := vectorFromProtoValue(tt.v)
+			got, err := vector64FromProtoValue(tt.v)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("vectorFromProtoValue() error = %v, wantErr %v", err, tt.wantErr)
 				return
