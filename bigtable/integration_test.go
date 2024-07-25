@@ -38,6 +38,8 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -46,6 +48,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -276,6 +279,7 @@ func TestIntegration_ReadRowList(t *testing.T) {
 		t.Fatalf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
 	}
 }
+
 func TestIntegration_ReadRowListReverse(t *testing.T) {
 	ctx := context.Background()
 	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
@@ -749,6 +753,101 @@ func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 	wg.Wait()
 }
 
+func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
+	ctx := context.Background()
+
+	// Reduce sampling period for faster test runs
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = time.Minute
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+
+	// record start time
+	testStartTime := time.Now()
+	tsListStart := &timestamppb.Timestamp{
+		Seconds: testStartTime.Unix(),
+		Nanos:   int32(testStartTime.Nanosecond()),
+	}
+
+	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if testing.Short() || !testEnv.Config().UseProd {
+		t.Skip("Skip long running tests in short mode or non-prod environments")
+	}
+
+	columnFamilyName := "export"
+	if err := adminClient.CreateColumnFamily(ctx, tableName, columnFamilyName); err != nil {
+		t.Fatalf("Creating column family: %v", err)
+	}
+
+	for i := 0; i < 10; i++ {
+		mut := NewMutation()
+		mut.Set(columnFamilyName, "col", 1000, []byte("test"))
+		if err := table.Apply(ctx, fmt.Sprintf("row-%v", i), mut); err != nil {
+			t.Fatalf("Apply: %v", err)
+		}
+	}
+	err = table.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
+		return true
+	}, RowFilter(ColumnFilter("col")))
+	if err != nil {
+		t.Fatalf("ReadRows: %v", err)
+	}
+
+	// Validate that metrics are exported
+	elapsedTime := time.Since(testStartTime)
+	if elapsedTime < 2*defaultSamplePeriod {
+		// Ensure at least 2 datapoints are recorded
+		time.Sleep(2*defaultSamplePeriod - elapsedTime)
+	}
+
+	// Sleep some more
+	time.Sleep(30 * time.Second)
+
+	monitoringClient, err := monitoring.NewMetricClient(ctx)
+	if err != nil {
+		t.Errorf("Failed to create metric client: %v", err)
+	}
+	metricNamesValidate := []string{
+		metricNameOperationLatencies,
+		metricNameAttemptLatencies,
+		metricNameServerLatencies,
+	}
+
+	// Try for 5m with 10s sleep between retries
+	testutil.Retry(t, 10, 30*time.Second, func(r *testutil.R) {
+		for _, metricName := range metricNamesValidate {
+			timeListEnd := time.Now()
+			tsListEnd := &timestamppb.Timestamp{
+				Seconds: timeListEnd.Unix(),
+				Nanos:   int32(timeListEnd.Nanosecond()),
+			}
+
+			// ListTimeSeries can list only one metric type at a time.
+			// So, call ListTimeSeries with different metric names
+			iter := monitoringClient.ListTimeSeries(ctx, &monitoringpb.ListTimeSeriesRequest{
+				Name: fmt.Sprintf("projects/%s", testEnv.Config().Project),
+				Interval: &monitoringpb.TimeInterval{
+					StartTime: tsListStart,
+					EndTime:   tsListEnd,
+				},
+				Filter: fmt.Sprintf("metric.type = starts_with(\"bigtable.googleapis.com/client/%v\")", metricName),
+			})
+
+			// Assert at least 1 datapoint was exported
+			_, err := iter.Next()
+			if err != nil {
+				r.Errorf("%v not exported\n", metricName)
+			}
+		}
+	})
+}
+
 func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	ctx := context.Background()
 	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
@@ -757,7 +856,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	}
 	defer cleanup()
 
-	if !testEnv.Config().UseProd {
+	if testing.Short() {
 		t.Skip("Skip long running tests in short mode")
 	}
 
@@ -3974,72 +4073,6 @@ func TestIntegration_DataAuthorizedView(t *testing.T) {
 	want = "r11,r12,r2"
 	if got := strings.Join(sampleKeys, ","); got != want {
 		t.Fatalf("Error sample row keys from an authorized view.\n Got %v\n Want %v", got, want)
-	}
-}
-
-func TestIntegration_TestUpdateColumnFamilyValueType(t *testing.T) {
-	testEnv, err := NewIntegrationEnv()
-	if err != nil {
-		t.Fatalf("IntegrationEnv: %v", err)
-	}
-	defer testEnv.Close()
-
-	if !testEnv.Config().UseProd {
-		t.Skip("emulator doesn't support update column family operation")
-	}
-
-	timeout := 15 * time.Minute
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	adminClient, err := testEnv.NewAdminClient()
-	if err != nil {
-		t.Fatalf("NewAdminClient: %v", err)
-	}
-	defer adminClient.Close()
-
-	tblConf := TableConf{
-		TableID: testEnv.Config().Table,
-		ColumnFamilies: map[string]Family{
-			"cf": {
-				GCPolicy: MaxVersionsPolicy(1),
-			},
-		},
-	}
-	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
-		t.Fatalf("Create table from TableConf error: %v", err)
-	}
-	// Clean-up
-	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
-
-	// Update column family type to aggregate type should not be successful
-	err = adminClient.SetValueType(ctx, tblConf.TableID, "cf", AggregateType{
-		Input: Int64Type{}, Aggregator: SumAggregator{},
-	})
-	if err == nil {
-		t.Fatalf("Update family type to aggregate type should not be successful")
-	}
-
-	// Update column family type to string type should be successful
-	err = adminClient.SetValueType(ctx, tblConf.TableID, "cf", StringType{
-		Encoding: StringUtf8Encoding{},
-	})
-	if err != nil {
-		t.Fatalf("Failed to update value type of family: %v", err)
-	}
-
-	table, err := adminClient.TableInfo(ctx, tblConf.TableID)
-	if err != nil {
-		t.Fatalf("Failed to get table info: %v", err)
-	}
-	if len(table.FamilyInfos) != 0 {
-		t.Fatalf("Unexpected number of family infos. Got %d, want %d", len(table.FamilyInfos), 0)
-	}
-	if table.FamilyInfos[0].Name != "cf" {
-		t.Errorf("Unexpected family name. Got %q, want %q", table.FamilyInfos[0].Name, "cf")
-	}
-	if _, ok := table.FamilyInfos[0].ValueType.proto().GetKind().(*btapb.Type_StringType); !ok {
-		t.Errorf("Unexpected value type. Got %T, want *btapb.Type_StringType", table.FamilyInfos[0].ValueType.proto().GetKind())
 	}
 }
 

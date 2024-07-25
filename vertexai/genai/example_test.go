@@ -74,9 +74,7 @@ func ExampleGenerativeModel_GenerateContent_config() {
 	model.SetTopP(0.5)
 	model.SetTopK(20)
 	model.SetMaxOutputTokens(100)
-	model.SystemInstruction = &genai.Content{
-		Parts: []genai.Part{genai.Text("You are Yoda from Star Wars.")},
-	}
+	model.SystemInstruction = genai.NewUserContent(genai.Text("You are Yoda from Star Wars."))
 	resp, err := model.GenerateContent(ctx, genai.Text("What is the average size of a swallow?"))
 	if err != nil {
 		log.Fatal(err)
@@ -315,7 +313,7 @@ func ExampleClient_cachedContent() {
 	file := genai.FileData{MIMEType: "application/pdf", FileURI: "gs://my-bucket/my-doc.pdf"}
 	cc, err := client.CreateCachedContent(ctx, &genai.CachedContent{
 		Model:    modelName,
-		Contents: []*genai.Content{{Parts: []genai.Part{file}}},
+		Contents: []*genai.Content{genai.NewUserContent(file)},
 	})
 	model := client.GenerativeModelFromCachedContent(cc)
 	// Work with the model as usual in this program.

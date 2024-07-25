@@ -37,19 +37,19 @@ func TestIt(t *testing.T) {
 		},
 		{
 			name:      "environment project id",
-			projectID: projectIDSentinel,
+			projectID: ProjectIDSentinel,
 			env:       map[string]string{envProjectID: "environment-project-id"},
 			want:      "environment-project-id",
 		},
 		{
 			name:         "adc project id",
-			projectID:    projectIDSentinel,
+			projectID:    ProjectIDSentinel,
 			adcProjectID: "adc-project-id",
 			want:         "adc-project-id",
 		},
 		{
 			name:      "emulator project id",
-			projectID: projectIDSentinel,
+			projectID: ProjectIDSentinel,
 			env:       map[string]string{"EMULATOR_HOST": "something"},
 			want:      "emulated-project",
 		},

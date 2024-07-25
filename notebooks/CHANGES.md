@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.11.9](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.11.8...notebooks/v1.11.9) (2024-07-24)
+
+
+### Bug Fixes
+
+* **notebooks:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.11.8](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.11.7...notebooks/v1.11.8) (2024-07-10)
 
 

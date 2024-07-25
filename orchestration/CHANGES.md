@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.9.6](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.9.5...orchestration/v1.9.6) (2024-07-24)
+
+
+### Bug Fixes
+
+* **orchestration:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.9.5](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.9.4...orchestration/v1.9.5) (2024-07-10)
 
 

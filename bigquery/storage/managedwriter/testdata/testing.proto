@@ -60,6 +60,7 @@ message ComplexType {
   repeated NestedType nested_repeated_type = 1;
   optional InnerType inner_type = 2;
   optional RangeTypeTimestamp range_type = 3;
+  optional string json_type = 4;
 }
 
 message ContainsRecursive {

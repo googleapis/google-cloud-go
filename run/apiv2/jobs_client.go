@@ -194,7 +194,7 @@ func (c *JobsClient) GetJob(ctx context.Context, req *runpb.GetJobRequest, opts 
 	return c.internalClient.GetJob(ctx, req, opts...)
 }
 
-// ListJobs lists Jobs.
+// ListJobs lists Jobs. Results are sorted by creation time, descending.
 func (c *JobsClient) ListJobs(ctx context.Context, req *runpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	return c.internalClient.ListJobs(ctx, req, opts...)
 }
@@ -953,7 +953,7 @@ func (c *jobsRESTClient) GetJob(ctx context.Context, req *runpb.GetJobRequest, o
 	return resp, nil
 }
 
-// ListJobs lists Jobs.
+// ListJobs lists Jobs. Results are sorted by creation time, descending.
 func (c *jobsRESTClient) ListJobs(ctx context.Context, req *runpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	it := &JobIterator{}
 	req = proto.Clone(req).(*runpb.ListJobsRequest)
