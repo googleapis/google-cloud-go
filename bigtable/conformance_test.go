@@ -25,10 +25,10 @@ import (
 	"testing"
 	"time"
 
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	pb "cloud.google.com/go/bigtable/internal/conformance"
 	"cloud.google.com/go/bigtable/internal/mockserver"
 	"google.golang.org/api/option"
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
 )

@@ -16,7 +16,7 @@ limitations under the License.
 
 package bigtable
 
-import btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+import btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 
 // Type wraps the protobuf representation of a type. See the protobuf definition
 // for more details on types.

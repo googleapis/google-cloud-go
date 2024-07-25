@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"os"
 
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"google.golang.org/protobuf/proto"
 
 	"cloud.google.com/go/bigtable/internal"
