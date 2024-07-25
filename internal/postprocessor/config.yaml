@@ -448,9 +448,11 @@ service-configs:
   - input-directory: google/bigtable/admin/v2
     service-config: bigtableadmin_v2.yaml
     import-path: cloud.google.com/go/bigtable/admin/apiv2
+    release-level-override: stable
   - input-directory: google/bigtable/v2
     service-config: bigtable_v2.yaml
     import-path: cloud.google.com/go/bigtable/apiv2
+    release-level-override: stable
   - input-directory: google/cloud/billing/budgets/v1
     service-config: billingbudgets.yaml
     import-path: cloud.google.com/go/billing/budgets/apiv1
