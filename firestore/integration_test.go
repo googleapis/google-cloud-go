@@ -72,6 +72,7 @@ const (
 	envProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envPrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
 	envDatabases  = "GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES"
+	envEmulator   = "FIRESTORE_EMULATOR_HOST"
 )
 
 var (
@@ -82,6 +83,7 @@ var (
 	wantDBPath       string
 	testParams       map[string]interface{}
 	seededFirstIndex bool
+	useEmulator      bool
 )
 
 func initIntegrationTest() {
@@ -90,6 +92,9 @@ func initIntegrationTest() {
 	flag.Parse() // needed for testing.Short()
 	if testing.Short() {
 		return
+	}
+	if addr := os.Getenv(envEmulator); addr != "" {
+		useEmulator = true
 	}
 	ctx := context.Background()
 	testProjectID := os.Getenv(envProjID)
@@ -620,6 +625,9 @@ func getRunWithOptionsTestcases(t *testing.T) ([]runWithOptionsTestcase, []*Docu
 }
 
 func TestIntegration_GetAllWithOptions(t *testing.T) {
+	if useEmulator {
+		t.Skip("Skipping. Query profiling not supported in emulator.")
+	}
 	coll := integrationColl(t)
 	ctx := context.Background()
 	testcases, wantDocRefs := getRunWithOptionsTestcases(t)
@@ -657,6 +665,9 @@ func TestIntegration_GetAllWithOptions(t *testing.T) {
 }
 
 func TestIntegration_QueryRunOptions(t *testing.T) {
+	if useEmulator {
+		t.Skip("Skipping. Query profiling not supported in emulator.")
+	}
 	coll := integrationColl(t)
 	ctx := context.Background()
 	testcases, wantDocRefs := getRunWithOptionsTestcases(t)
@@ -1531,6 +1542,9 @@ func TestIntegration_RunTransaction(t *testing.T) {
 }
 
 func TestIntegration_RunTransactionWithExplainOptions(t *testing.T) {
+	if useEmulator {
+		t.Skip("Skipping. Query profiling not supported in emulator.")
+	}
 	ctx := context.Background()
 	client := integrationClient(t)
 	testcases, wantDocRefs := getRunWithOptionsTestcases(t)
@@ -2914,6 +2928,9 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 }
 
 func TestIntegration_AggregationQueriesWithRunOptions(t *testing.T) {
+	if useEmulator {
+		t.Skip("Skipping. Query profiling not supported in emulator.")
+	}
 	ctx := context.Background()
 	coll := integrationColl(t)
 

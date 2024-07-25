@@ -862,32 +862,38 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 			desc: `q.Where("a", ">", 5).FindNearest float64 vector`,
 			in: q.Where("a", ">", 5).
 				FindNearest("embeddedField", []float64{100, 200, 300}, 2, DistanceMeasureEuclidean, nil).q,
-			want: &pb.StructuredQuery{
-				Where: filtr([]string{"a"}, ">", 5),
-				FindNearest: &pb.StructuredQuery_FindNearest{
-					VectorField: fref1("embeddedField"),
-					QueryVector: &pb.Value{
-						ValueType: &pb.Value_MapValue{
-							MapValue: &pb.MapValue{
-								Fields: map[string]*pb.Value{
-									typeKey: stringToProtoValue(typeValVector),
-									valueKey: {
-										ValueType: &pb.Value_ArrayValue{
-											ArrayValue: &pb.ArrayValue{
-												Values: []*pb.Value{
-													{ValueType: &pb.Value_DoubleValue{DoubleValue: 100}},
-													{ValueType: &pb.Value_DoubleValue{DoubleValue: 200}},
-													{ValueType: &pb.Value_DoubleValue{DoubleValue: 300}},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Where: filtr([]string{"a"}, ">", 5),
+						FindNearest: &pb.StructuredQuery_FindNearest{
+							VectorField: fref1("embeddedField"),
+							QueryVector: &pb.Value{
+								ValueType: &pb.Value_MapValue{
+									MapValue: &pb.MapValue{
+										Fields: map[string]*pb.Value{
+											typeKey: stringToProtoValue(typeValVector),
+											valueKey: {
+												ValueType: &pb.Value_ArrayValue{
+													ArrayValue: &pb.ArrayValue{
+														Values: []*pb.Value{
+															{ValueType: &pb.Value_DoubleValue{DoubleValue: 100}},
+															{ValueType: &pb.Value_DoubleValue{DoubleValue: 200}},
+															{ValueType: &pb.Value_DoubleValue{DoubleValue: 300}},
+														},
+													},
 												},
 											},
 										},
 									},
 								},
 							},
+							Limit:           &wrapperspb.Int32Value{Value: trunc32(2)},
+							DistanceMeasure: pb.StructuredQuery_FindNearest_EUCLIDEAN,
 						},
 					},
-					Limit:           &wrapperspb.Int32Value{Value: trunc32(2)},
-					DistanceMeasure: pb.StructuredQuery_FindNearest_EUCLIDEAN,
 				},
 			},
 		},
@@ -895,32 +901,38 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 			desc: `q.Where("a", ">", 5).FindNearest float32 vector`,
 			in: q.Where("a", ">", 5).
 				FindNearest("embeddedField", []float32{100, 200, 300}, 2, DistanceMeasureEuclidean, nil).q,
-			want: &pb.StructuredQuery{
-				Where: filtr([]string{"a"}, ">", 5),
-				FindNearest: &pb.StructuredQuery_FindNearest{
-					VectorField: fref1("embeddedField"),
-					QueryVector: &pb.Value{
-						ValueType: &pb.Value_MapValue{
-							MapValue: &pb.MapValue{
-								Fields: map[string]*pb.Value{
-									typeKey: stringToProtoValue(typeValVector),
-									valueKey: {
-										ValueType: &pb.Value_ArrayValue{
-											ArrayValue: &pb.ArrayValue{
-												Values: []*pb.Value{
-													{ValueType: &pb.Value_DoubleValue{DoubleValue: 100}},
-													{ValueType: &pb.Value_DoubleValue{DoubleValue: 200}},
-													{ValueType: &pb.Value_DoubleValue{DoubleValue: 300}},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Where: filtr([]string{"a"}, ">", 5),
+						FindNearest: &pb.StructuredQuery_FindNearest{
+							VectorField: fref1("embeddedField"),
+							QueryVector: &pb.Value{
+								ValueType: &pb.Value_MapValue{
+									MapValue: &pb.MapValue{
+										Fields: map[string]*pb.Value{
+											typeKey: stringToProtoValue(typeValVector),
+											valueKey: {
+												ValueType: &pb.Value_ArrayValue{
+													ArrayValue: &pb.ArrayValue{
+														Values: []*pb.Value{
+															{ValueType: &pb.Value_DoubleValue{DoubleValue: 100}},
+															{ValueType: &pb.Value_DoubleValue{DoubleValue: 200}},
+															{ValueType: &pb.Value_DoubleValue{DoubleValue: 300}},
+														},
+													},
 												},
 											},
 										},
 									},
 								},
 							},
+							Limit:           &wrapperspb.Int32Value{Value: trunc32(2)},
+							DistanceMeasure: pb.StructuredQuery_FindNearest_EUCLIDEAN,
 						},
 					},
-					Limit:           &wrapperspb.Int32Value{Value: trunc32(2)},
-					DistanceMeasure: pb.StructuredQuery_FindNearest_EUCLIDEAN,
 				},
 			},
 		},
