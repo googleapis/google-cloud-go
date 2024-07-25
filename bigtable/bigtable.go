@@ -67,9 +67,11 @@ type ClientConfig struct {
 	// If unspecified, the default app profile for the instance will be used.
 	AppProfile string
 
-	// If not set, client side metrics will be collected and exported
+	// If not set or set to nil, client side metrics will be collected and exported
 	//
 	// To disable client side metrics, set 'MetricsProvider' to 'NoopMetricsProvider'
+	//
+	// TODO: support user provided meter provider
 	MetricsProvider MetricsProvider
 }
 
@@ -1510,7 +1512,7 @@ func (t *Table) sampleRowKeys(ctx context.Context, mt *builtinMetricsTracer) ([]
 }
 
 func (t *Table) newBuiltinMetricsTracer(ctx context.Context, isStreaming bool) *builtinMetricsTracer {
-	mt := t.c.metricsTracerFactory.newBuiltinMetricsTracer(ctx, t.table, isStreaming)
+	mt := t.c.metricsTracerFactory.createBuiltinMetricsTracer(ctx, t.table, isStreaming)
 	return &mt
 }
 
@@ -1571,12 +1573,12 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 
 		// Get location attributes from metadata and set it in tracer
 		// Ignore get location error since the metric can still be recorded with rest of the attributes
-		clusterID, zoneID, _ := getLocation(attemptHeaderMD, attempTrailerMD)
+		clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
 		mt.currOp.currAttempt.setClusterID(clusterID)
 		mt.currOp.currAttempt.setZoneID(zoneID)
 
 		// Set server latency in tracer
-		serverLatency, serverLatencyErr := getServerLatency(attemptHeaderMD, attempTrailerMD)
+		serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
 		mt.currOp.currAttempt.setServerLatencyErr(serverLatencyErr)
 		mt.currOp.currAttempt.setServerLatency(serverLatency)
 

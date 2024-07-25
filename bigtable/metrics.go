@@ -106,7 +106,7 @@ var (
 		},
 	}
 
-	// Generates unique client ID in the format go-<random UUID>@<>hostname
+	// Generates unique client ID in the format go-<random UUID>@<hostname>
 	generateClientUID = func() (string, error) {
 		hostname := "localhost"
 		hostname, err := os.Hostname()
@@ -267,6 +267,7 @@ type builtinMetricsTracer struct {
 	currOp opTracer
 }
 
+// opTracer is used to record metrics for the entire operation, including retries.
 type opTracer struct {
 	attemptCount int64
 
@@ -291,6 +292,7 @@ func (o *opTracer) incrementAttemptCount() {
 	o.attemptCount++
 }
 
+// attemptTracer is used to record metrics for each individual attempt of the operation.
 type attemptTracer struct {
 	startTime time.Time
 	clusterID string
@@ -330,7 +332,7 @@ func (a *attemptTracer) setServerLatencyErr(err error) {
 	a.serverLatencyErr = err
 }
 
-func (tf *builtinMetricsTracerFactory) newBuiltinMetricsTracer(ctx context.Context, tableName string, isStreaming bool) builtinMetricsTracer {
+func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Context, tableName string, isStreaming bool) builtinMetricsTracer {
 	// Operation has started but not the attempt.
 	// So, create only operation tracer and not attempt tracer
 	currOpTracer := opTracer{}

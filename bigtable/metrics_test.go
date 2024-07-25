@@ -378,7 +378,7 @@ func TestGetServerLatency(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			gotLatency, gotErr := getServerLatency(test.headerMD, test.trailerMD)
+			gotLatency, gotErr := extractServerLatency(test.headerMD, test.trailerMD)
 			if !equalErrs(gotErr, test.wantError) {
 				t.Errorf("error got: %v, want: %v", gotErr, test.wantError)
 			}
@@ -455,7 +455,7 @@ func TestGetLocation(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			gotCluster, gotZone, gotErr := getLocation(test.headerMD, test.trailerMD)
+			gotCluster, gotZone, gotErr := extractLocation(test.headerMD, test.trailerMD)
 			if gotCluster != test.wantCluster {
 				t.Errorf("cluster got: %v, want: %v", gotCluster, test.wantCluster)
 			}

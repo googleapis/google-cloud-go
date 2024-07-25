@@ -32,7 +32,7 @@ const (
 )
 
 // get GFE latency in ms from response metadata
-func getServerLatency(headerMD metadata.MD, trailerMD metadata.MD) (float64, error) {
+func extractServerLatency(headerMD metadata.MD, trailerMD metadata.MD) (float64, error) {
 	serverTimingStr := ""
 
 	// Check whether server latency available in response header metadata
@@ -63,7 +63,7 @@ func getServerLatency(headerMD metadata.MD, trailerMD metadata.MD) (float64, err
 }
 
 // Obtain cluster and zone from response metadata
-func getLocation(headerMD metadata.MD, trailerMD metadata.MD) (string, string, error) {
+func extractLocation(headerMD metadata.MD, trailerMD metadata.MD) (string, string, error) {
 	var locationMetadata []string
 
 	// Check whether location metadata available in response header metadata
