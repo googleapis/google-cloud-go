@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.11](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.1.10...apikeys/v1.1.11) (2024-07-24)
+
+
+### Bug Fixes
+
+* **apikeys:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.1.10](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.1.9...apikeys/v1.1.10) (2024-07-10)
 
 

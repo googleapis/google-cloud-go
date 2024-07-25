@@ -1,5 +1,12 @@
 # Changes
 
+## [0.14.11](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.10...gkehub/v0.14.11) (2024-07-24)
+
+
+### Bug Fixes
+
+* **gkehub:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [0.14.10](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.9...gkehub/v0.14.10) (2024-07-10)
 
 
