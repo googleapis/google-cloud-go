@@ -4,7 +4,7 @@
   "auth": "0.7.2",
   "auth/oauth2adapt": "0.2.3",
   "bigquery": "1.62.0",
-  "bigtable": "1.27.0",
+  "bigtable": "1.27.1",
   "datastore": "1.17.1",
   "errorreporting": "0.3.1",
   "firestore": "1.16.0",
