@@ -21,13 +21,12 @@
 package managedkafkapb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -517,8 +516,6 @@ type GcpConfig struct {
 	// must be located in the same region as the cluster and cannot be changed.
 	// Structured like:
 	// projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}.
-	// Note that the project component only accepts a project ID, and not a
-	// project number.
 	KmsKey string `protobuf:"bytes,2,opt,name=kms_key,json=kmsKey,proto3" json:"kms_key,omitempty"`
 }
 
