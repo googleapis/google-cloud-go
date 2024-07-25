@@ -84,7 +84,7 @@ func populateTable(bts *bttest.Server) error {
 		}
 	}
 
-	dataClient, err := bigtable.NewClient(ctx, "client", "instance",
+	dataClient, err := bigtable.NewClientWithConfig(ctx, "client", "instance", bigtable.ClientConfig{MetricsProvider: bigtable.NoopMetricsProvider{}},
 		option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
 	if err != nil {
 		return fmt.Errorf("testproxy setup: can't create Bigtable client: %v", err)
