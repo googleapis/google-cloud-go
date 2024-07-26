@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.1...batch/v1.9.2) (2024-07-24)
+
+
+### Bug Fixes
+
+* **batch:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.0...batch/v1.9.1) (2024-07-10)
 
 

@@ -2,6 +2,24 @@
 
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.0.2...securesourcemanager/v1.1.0) (2024-07-24)
+
+
+### Features
+
+* **securesourcemanager:** Add constant `UNKNOWN` to field `State` in message `.google.cloud.securesourcemanager.v1.Instance` ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+* **securesourcemanager:** Add field `private_config` to message `.google.cloud.securesourcemanager.v1.Instance` ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **securesourcemanager:** A comment for field `instance` in message `.google.cloud.securesourcemanager.v1.Repository` is updated to include data plane vs control plane behavior. ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
 ## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.0.1...securesourcemanager/v1.0.2) (2024-07-10)
 
 

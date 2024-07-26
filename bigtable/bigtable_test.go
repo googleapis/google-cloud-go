@@ -24,11 +24,13 @@ import (
 	"testing"
 	"time"
 
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
 )
+
+var disableMetricsConfig = ClientConfig{MetricsProvider: NoopMetricsProvider{}}
 
 func TestPrefix(t *testing.T) {
 	for _, test := range []struct {
@@ -253,8 +255,9 @@ func TestApplyErrors(t *testing.T) {
 	ctx := context.Background()
 	table := &Table{
 		c: &Client{
-			project:  "P",
-			instance: "I",
+			project:              "P",
+			instance:             "I",
+			metricsTracerFactory: &builtinMetricsTracerFactory{},
 		},
 		table: "t",
 	}
@@ -581,9 +584,9 @@ func TestReadRowsInvalidRowSet(t *testing.T) {
 	if err := adminClient.CreateTable(ctx, testEnv.config.Table); err != nil {
 		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
 	}
-	client, err := NewClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	client, err := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
 	if err != nil {
-		t.Fatalf("NewClient failed: %v", err)
+		t.Fatalf("NewClientWithConfig failed: %v", err)
 	}
 	defer client.Close()
 	table := client.Open(testEnv.config.Table)
@@ -657,9 +660,9 @@ func TestReadRowsRequestStats(t *testing.T) {
 		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
 	}
 
-	client, err := NewClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	client, err := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
 	if err != nil {
-		t.Fatalf("NewClient failed: %v", err)
+		t.Fatalf("NewClientWithConfig failed: %v", err)
 	}
 	defer client.Close()
 	table := client.Open(testEnv.config.Table)
@@ -785,9 +788,9 @@ func TestMutateRowsWithAggregates_AddToCell(t *testing.T) {
 		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
 	}
 
-	client, err := NewClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	client, err := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
 	if err != nil {
-		t.Fatalf("NewClient failed: %v", err)
+		t.Fatalf("NewClientWithConfig failed: %v", err)
 	}
 	defer client.Close()
 	table := client.Open(testEnv.config.Table)

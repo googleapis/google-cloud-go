@@ -187,12 +187,12 @@ func (m *GenerativeModel) Name() string {
 
 // GenerateContent produces a single request and response.
 func (m *GenerativeModel) GenerateContent(ctx context.Context, parts ...Part) (*GenerateContentResponse, error) {
-	return m.generateContent(ctx, m.newGenerateContentRequest(newUserContent(parts)))
+	return m.generateContent(ctx, m.newGenerateContentRequest(NewUserContent(parts...)))
 }
 
 // GenerateContentStream returns an iterator that enumerates responses.
 func (m *GenerativeModel) GenerateContentStream(ctx context.Context, parts ...Part) *GenerateContentResponseIterator {
-	streamClient, err := m.c.pc.StreamGenerateContent(ctx, m.newGenerateContentRequest(newUserContent(parts)))
+	streamClient, err := m.c.pc.StreamGenerateContent(ctx, m.newGenerateContentRequest(NewUserContent(parts...)))
 	return &GenerateContentResponseIterator{
 		sc:  streamClient,
 		err: err,
@@ -219,10 +219,6 @@ func (m *GenerativeModel) newGenerateContentRequest(contents ...*Content) *pb.Ge
 		SystemInstruction: m.SystemInstruction.toProto(),
 		CachedContent:     m.CachedContentName,
 	}
-}
-
-func newUserContent(parts []Part) *Content {
-	return &Content{Role: roleUser, Parts: parts}
 }
 
 // GenerateContentResponseIterator is an iterator over GnerateContentResponse.
@@ -286,7 +282,7 @@ func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse
 
 // CountTokens counts the number of tokens in the content.
 func (m *GenerativeModel) CountTokens(ctx context.Context, parts ...Part) (*CountTokensResponse, error) {
-	req := m.newCountTokensRequest(newUserContent(parts))
+	req := m.newCountTokensRequest(NewUserContent(parts...))
 	res, err := m.c.pc.CountTokens(ctx, req)
 	if err != nil {
 		return nil, err

@@ -42,6 +42,7 @@ import (
 	"math"
 	"math/rand"
 	"net"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -51,10 +52,10 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/google/btree"
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -108,7 +109,15 @@ type server struct {
 // The Server will be listening for gRPC connections, without TLS,
 // on the provided address. The resolved address is named by the Addr field.
 func NewServer(laddr string, opt ...grpc.ServerOption) (*Server, error) {
-	l, err := net.Listen("tcp", laddr)
+	var l net.Listener
+	var err error
+
+	// If the address contains slashes, listen on a unix domain socket instead.
+	if strings.Contains(laddr, "/") {
+		l, err = net.Listen("unix", laddr)
+	} else {
+		l, err = net.Listen("tcp", laddr)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -141,6 +150,11 @@ func (s *Server) Close() {
 
 	s.srv.Stop()
 	s.l.Close()
+
+	// clean up unix socket
+	if strings.Contains(s.Addr, "/") {
+		_ = os.Remove(s.Addr)
+	}
 }
 
 func (s *server) CreateTable(ctx context.Context, req *btapb.CreateTableRequest) (*btapb.Table, error) {
@@ -1793,4 +1807,24 @@ func toColumnFamilies(families map[string]*columnFamily) map[string]*btapb.Colum
 		fs[k] = v.proto()
 	}
 	return fs
+}
+
+func (s *server) CreateAuthorizedView(context.Context, *btapb.CreateAuthorizedViewRequest) (*longrunning.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
+}
+
+func (s *server) GetAuthorizedView(context.Context, *btapb.GetAuthorizedViewRequest) (*btapb.AuthorizedView, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
+}
+
+func (s *server) ListAuthorizedViews(context.Context, *btapb.ListAuthorizedViewsRequest) (*btapb.ListAuthorizedViewsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
+}
+
+func (s *server) DeleteAuthorizedView(context.Context, *btapb.DeleteAuthorizedViewRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
+}
+
+func (s *server) UpdateAuthorizedView(context.Context, *btapb.UpdateAuthorizedViewRequest) (*longrunning.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
 }
