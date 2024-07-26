@@ -108,18 +108,18 @@ func TestAggregateProto(t *testing.T) {
 
 func TestProtoBijection(t *testing.T) {
 	want := aggregateProto()
-	got := protoToType(want).proto()
+	got := ProtoToType(want).proto()
 	if !proto.Equal(got, want) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 }
 
 func TestNilChecks(t *testing.T) {
-	// protoToType
-	if val, ok := protoToType(nil).(unknown[btapb.Type]); !ok {
+	// ProtoToType
+	if val, ok := ProtoToType(nil).(unknown[btapb.Type]); !ok {
 		t.Errorf("got: %T, wanted unknown[btapb.Type]", val)
 	}
-	if val, ok := protoToType(&btapb.Type{}).(unknown[btapb.Type]); !ok {
+	if val, ok := ProtoToType(&btapb.Type{}).(unknown[btapb.Type]); !ok {
 		t.Errorf("got: %T, wanted unknown[btapb.Type]", val)
 	}
 
