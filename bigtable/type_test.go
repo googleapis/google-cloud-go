@@ -209,8 +209,8 @@ func TestHllAggregateProto(t *testing.T) {
 						},
 					},
 				},
-				Aggregator: &btapb.Type_Aggregate_Hll_{
-					Hll: &btapb.Type_Aggregate_Hll{},
+				Aggregator: &btapb.Type_Aggregate_HllppUniqueCount{
+					HllppUniqueCount: &btapb.Type_Aggregate_HyperLogLogPlusPlusUniqueCount{},
 				},
 			},
 		},
