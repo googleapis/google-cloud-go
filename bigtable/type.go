@@ -177,6 +177,7 @@ func (agg AggregateType) proto() *btapb.Type {
 	return &btapb.Type{Kind: &btapb.Type_AggregateType{AggregateType: protoAgg}}
 }
 
+// ProtoToType converts a protobuf *btapb.Type to an instance of the Type interface, for use of the admin API.
 func ProtoToType(pb *btapb.Type) Type {
 	if pb == nil {
 		return unknown[btapb.Type]{wrapped: nil}
