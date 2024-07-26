@@ -168,7 +168,7 @@ func (max MaxAggregator) fillProto(proto *btapb.Type_Aggregate) {
 type HllAggregator struct{}
 
 func (hll HllAggregator) fillProto(proto *btapb.Type_Aggregate) {
-	proto.Aggregator = &btapb.Type_Aggregate_HllppUniqueCount{Hll: &btapb.Type_Aggregate_HyperLogLogPlusPlusUniqueCount{}}
+	proto.Aggregator = &btapb.Type_Aggregate_HllppUniqueCount{HllppUniqueCount: &btapb.Type_Aggregate_HyperLogLogPlusPlusUniqueCount{}}
 }
 
 type unknownAggregator struct {
