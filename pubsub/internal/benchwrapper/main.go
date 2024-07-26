@@ -63,6 +63,7 @@ func main() {
 
 type server struct {
 	c *pubsub.Client
+	pb.PubsubBenchWrapperServer
 }
 
 func (s *server) Recv(ctx context.Context, req *pb.PubsubRecv) (*pb.EmptyResponse, error) {

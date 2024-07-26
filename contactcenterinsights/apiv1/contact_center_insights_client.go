@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ type CallOptions struct {
 	ListAnalyses             []gax.CallOption
 	DeleteAnalysis           []gax.CallOption
 	BulkAnalyzeConversations []gax.CallOption
+	BulkDeleteConversations  []gax.CallOption
 	IngestConversations      []gax.CallOption
 	ExportInsightsData       []gax.CallOption
 	CreateIssueModel         []gax.CallOption
@@ -93,10 +94,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("contactcenterinsights.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("contactcenterinsights.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("contactcenterinsights.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://contactcenterinsights.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -225,6 +229,18 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		BulkAnalyzeConversations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BulkDeleteConversations: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -722,6 +738,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		BulkDeleteConversations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		IngestConversations: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1074,6 +1101,8 @@ type internalClient interface {
 	DeleteAnalysis(context.Context, *contactcenterinsightspb.DeleteAnalysisRequest, ...gax.CallOption) error
 	BulkAnalyzeConversations(context.Context, *contactcenterinsightspb.BulkAnalyzeConversationsRequest, ...gax.CallOption) (*BulkAnalyzeConversationsOperation, error)
 	BulkAnalyzeConversationsOperation(name string) *BulkAnalyzeConversationsOperation
+	BulkDeleteConversations(context.Context, *contactcenterinsightspb.BulkDeleteConversationsRequest, ...gax.CallOption) (*BulkDeleteConversationsOperation, error)
+	BulkDeleteConversationsOperation(name string) *BulkDeleteConversationsOperation
 	IngestConversations(context.Context, *contactcenterinsightspb.IngestConversationsRequest, ...gax.CallOption) (*IngestConversationsOperation, error)
 	IngestConversationsOperation(name string) *IngestConversationsOperation
 	ExportInsightsData(context.Context, *contactcenterinsightspb.ExportInsightsDataRequest, ...gax.CallOption) (*ExportInsightsDataOperation, error)
@@ -1226,6 +1255,17 @@ func (c *Client) BulkAnalyzeConversations(ctx context.Context, req *contactcente
 // The name must be that of a previously created BulkAnalyzeConversationsOperation, possibly from a different process.
 func (c *Client) BulkAnalyzeConversationsOperation(name string) *BulkAnalyzeConversationsOperation {
 	return c.internalClient.BulkAnalyzeConversationsOperation(name)
+}
+
+// BulkDeleteConversations deletes multiple conversations in a single request.
+func (c *Client) BulkDeleteConversations(ctx context.Context, req *contactcenterinsightspb.BulkDeleteConversationsRequest, opts ...gax.CallOption) (*BulkDeleteConversationsOperation, error) {
+	return c.internalClient.BulkDeleteConversations(ctx, req, opts...)
+}
+
+// BulkDeleteConversationsOperation returns a new BulkDeleteConversationsOperation from a given name.
+// The name must be that of a previously created BulkDeleteConversationsOperation, possibly from a different process.
+func (c *Client) BulkDeleteConversationsOperation(name string) *BulkDeleteConversationsOperation {
+	return c.internalClient.BulkDeleteConversationsOperation(name)
 }
 
 // IngestConversations imports conversations and processes them according to the user’s
@@ -1499,7 +1539,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1562,9 +1604,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://contactcenterinsights.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://contactcenterinsights.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://contactcenterinsights.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://contactcenterinsights.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1574,7 +1619,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1839,6 +1886,26 @@ func (c *gRPCClient) BulkAnalyzeConversations(ctx context.Context, req *contactc
 		return nil, err
 	}
 	return &BulkAnalyzeConversationsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) BulkDeleteConversations(ctx context.Context, req *contactcenterinsightspb.BulkDeleteConversationsRequest, opts ...gax.CallOption) (*BulkDeleteConversationsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BulkDeleteConversations[0:len((*c.CallOptions).BulkDeleteConversations):len((*c.CallOptions).BulkDeleteConversations)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.BulkDeleteConversations(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BulkDeleteConversationsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -3213,6 +3280,76 @@ func (c *restClient) BulkAnalyzeConversations(ctx context.Context, req *contactc
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &BulkAnalyzeConversationsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// BulkDeleteConversations deletes multiple conversations in a single request.
+func (c *restClient) BulkDeleteConversations(ctx context.Context, req *contactcenterinsightspb.BulkDeleteConversationsRequest, opts ...gax.CallOption) (*BulkDeleteConversationsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/conversations:bulkDelete", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &BulkDeleteConversationsOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -5184,12 +5321,6 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// BulkAnalyzeConversationsOperation manages a long-running operation from BulkAnalyzeConversations.
-type BulkAnalyzeConversationsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // BulkAnalyzeConversationsOperation returns a new BulkAnalyzeConversationsOperation from a given name.
 // The name must be that of a previously created BulkAnalyzeConversationsOperation, possibly from a different process.
 func (c *gRPCClient) BulkAnalyzeConversationsOperation(name string) *BulkAnalyzeConversationsOperation {
@@ -5208,68 +5339,22 @@ func (c *restClient) BulkAnalyzeConversationsOperation(name string) *BulkAnalyze
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *BulkAnalyzeConversationsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.BulkAnalyzeConversationsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.BulkAnalyzeConversationsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// BulkDeleteConversationsOperation returns a new BulkDeleteConversationsOperation from a given name.
+// The name must be that of a previously created BulkDeleteConversationsOperation, possibly from a different process.
+func (c *gRPCClient) BulkDeleteConversationsOperation(name string) *BulkDeleteConversationsOperation {
+	return &BulkDeleteConversationsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *BulkAnalyzeConversationsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.BulkAnalyzeConversationsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.BulkAnalyzeConversationsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// BulkDeleteConversationsOperation returns a new BulkDeleteConversationsOperation from a given name.
+// The name must be that of a previously created BulkDeleteConversationsOperation, possibly from a different process.
+func (c *restClient) BulkDeleteConversationsOperation(name string) *BulkDeleteConversationsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &BulkDeleteConversationsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *BulkAnalyzeConversationsOperation) Metadata() (*contactcenterinsightspb.BulkAnalyzeConversationsMetadata, error) {
-	var meta contactcenterinsightspb.BulkAnalyzeConversationsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *BulkAnalyzeConversationsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *BulkAnalyzeConversationsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateAnalysisOperation manages a long-running operation from CreateAnalysis.
-type CreateAnalysisOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateAnalysisOperation returns a new CreateAnalysisOperation from a given name.
@@ -5290,70 +5375,6 @@ func (c *restClient) CreateAnalysisOperation(name string) *CreateAnalysisOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateAnalysisOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.Analysis, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.Analysis
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateAnalysisOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.Analysis, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.Analysis
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateAnalysisOperation) Metadata() (*contactcenterinsightspb.CreateAnalysisOperationMetadata, error) {
-	var meta contactcenterinsightspb.CreateAnalysisOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateAnalysisOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateAnalysisOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateIssueModelOperation manages a long-running operation from CreateIssueModel.
-type CreateIssueModelOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateIssueModelOperation returns a new CreateIssueModelOperation from a given name.
 // The name must be that of a previously created CreateIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) CreateIssueModelOperation(name string) *CreateIssueModelOperation {
@@ -5370,70 +5391,6 @@ func (c *restClient) CreateIssueModelOperation(name string) *CreateIssueModelOpe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateIssueModelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.IssueModel, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.IssueModel
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateIssueModelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.IssueModel, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.IssueModel
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateIssueModelOperation) Metadata() (*contactcenterinsightspb.CreateIssueModelMetadata, error) {
-	var meta contactcenterinsightspb.CreateIssueModelMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateIssueModelOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateIssueModelOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteIssueModelOperation manages a long-running operation from DeleteIssueModel.
-type DeleteIssueModelOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteIssueModelOperation returns a new DeleteIssueModelOperation from a given name.
@@ -5454,59 +5411,6 @@ func (c *restClient) DeleteIssueModelOperation(name string) *DeleteIssueModelOpe
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteIssueModelOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteIssueModelOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteIssueModelOperation) Metadata() (*contactcenterinsightspb.DeleteIssueModelMetadata, error) {
-	var meta contactcenterinsightspb.DeleteIssueModelMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteIssueModelOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteIssueModelOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeployIssueModelOperation manages a long-running operation from DeployIssueModel.
-type DeployIssueModelOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeployIssueModelOperation returns a new DeployIssueModelOperation from a given name.
 // The name must be that of a previously created DeployIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) DeployIssueModelOperation(name string) *DeployIssueModelOperation {
@@ -5523,70 +5427,6 @@ func (c *restClient) DeployIssueModelOperation(name string) *DeployIssueModelOpe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeployIssueModelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.DeployIssueModelResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.DeployIssueModelResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeployIssueModelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.DeployIssueModelResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.DeployIssueModelResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeployIssueModelOperation) Metadata() (*contactcenterinsightspb.DeployIssueModelMetadata, error) {
-	var meta contactcenterinsightspb.DeployIssueModelMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeployIssueModelOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeployIssueModelOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ExportInsightsDataOperation manages a long-running operation from ExportInsightsData.
-type ExportInsightsDataOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // ExportInsightsDataOperation returns a new ExportInsightsDataOperation from a given name.
@@ -5607,70 +5447,6 @@ func (c *restClient) ExportInsightsDataOperation(name string) *ExportInsightsDat
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ExportInsightsDataOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.ExportInsightsDataResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.ExportInsightsDataResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ExportInsightsDataOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.ExportInsightsDataResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.ExportInsightsDataResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ExportInsightsDataOperation) Metadata() (*contactcenterinsightspb.ExportInsightsDataMetadata, error) {
-	var meta contactcenterinsightspb.ExportInsightsDataMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ExportInsightsDataOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ExportInsightsDataOperation) Name() string {
-	return op.lro.Name()
-}
-
-// IngestConversationsOperation manages a long-running operation from IngestConversations.
-type IngestConversationsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // IngestConversationsOperation returns a new IngestConversationsOperation from a given name.
 // The name must be that of a previously created IngestConversationsOperation, possibly from a different process.
 func (c *gRPCClient) IngestConversationsOperation(name string) *IngestConversationsOperation {
@@ -5687,70 +5463,6 @@ func (c *restClient) IngestConversationsOperation(name string) *IngestConversati
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *IngestConversationsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.IngestConversationsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.IngestConversationsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *IngestConversationsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.IngestConversationsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.IngestConversationsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *IngestConversationsOperation) Metadata() (*contactcenterinsightspb.IngestConversationsMetadata, error) {
-	var meta contactcenterinsightspb.IngestConversationsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *IngestConversationsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *IngestConversationsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UndeployIssueModelOperation manages a long-running operation from UndeployIssueModel.
-type UndeployIssueModelOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UndeployIssueModelOperation returns a new UndeployIssueModelOperation from a given name.
@@ -5771,70 +5483,6 @@ func (c *restClient) UndeployIssueModelOperation(name string) *UndeployIssueMode
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UndeployIssueModelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.UndeployIssueModelResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.UndeployIssueModelResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UndeployIssueModelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.UndeployIssueModelResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.UndeployIssueModelResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UndeployIssueModelOperation) Metadata() (*contactcenterinsightspb.UndeployIssueModelMetadata, error) {
-	var meta contactcenterinsightspb.UndeployIssueModelMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UndeployIssueModelOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UndeployIssueModelOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UploadConversationOperation manages a long-running operation from UploadConversation.
-type UploadConversationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UploadConversationOperation returns a new UploadConversationOperation from a given name.
 // The name must be that of a previously created UploadConversationOperation, possibly from a different process.
 func (c *gRPCClient) UploadConversationOperation(name string) *UploadConversationOperation {
@@ -5851,297 +5499,4 @@ func (c *restClient) UploadConversationOperation(name string) *UploadConversatio
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UploadConversationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.Conversation
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UploadConversationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp contactcenterinsightspb.Conversation
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UploadConversationOperation) Metadata() (*contactcenterinsightspb.UploadConversationMetadata, error) {
-	var meta contactcenterinsightspb.UploadConversationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UploadConversationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UploadConversationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// AnalysisIterator manages a stream of *contactcenterinsightspb.Analysis.
-type AnalysisIterator struct {
-	items    []*contactcenterinsightspb.Analysis
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.Analysis, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AnalysisIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AnalysisIterator) Next() (*contactcenterinsightspb.Analysis, error) {
-	var item *contactcenterinsightspb.Analysis
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AnalysisIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AnalysisIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ConversationIterator manages a stream of *contactcenterinsightspb.Conversation.
-type ConversationIterator struct {
-	items    []*contactcenterinsightspb.Conversation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.Conversation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ConversationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ConversationIterator) Next() (*contactcenterinsightspb.Conversation, error) {
-	var item *contactcenterinsightspb.Conversation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ConversationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ConversationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// PhraseMatcherIterator manages a stream of *contactcenterinsightspb.PhraseMatcher.
-type PhraseMatcherIterator struct {
-	items    []*contactcenterinsightspb.PhraseMatcher
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.PhraseMatcher, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PhraseMatcherIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PhraseMatcherIterator) Next() (*contactcenterinsightspb.PhraseMatcher, error) {
-	var item *contactcenterinsightspb.PhraseMatcher
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PhraseMatcherIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PhraseMatcherIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ViewIterator manages a stream of *contactcenterinsightspb.View.
-type ViewIterator struct {
-	items    []*contactcenterinsightspb.View
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.View, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ViewIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ViewIterator) Next() (*contactcenterinsightspb.View, error) {
-	var item *contactcenterinsightspb.View
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ViewIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ViewIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

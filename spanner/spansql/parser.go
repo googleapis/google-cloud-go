@@ -607,7 +607,7 @@ func (p *parser) consumeStringContent(delim string, raw, unicode bool, name stri
 				if !(i+1 < len(p.s) && isHexDigit(p.s[i]) && isHexDigit(p.s[i+1])) {
 					return "", p.errorf("illegal escape sequence: hex escape sequence must be followed by 2 hex digits")
 				}
-				c, err := strconv.ParseUint(p.s[i:i+2], 16, 64)
+				c, err := strconv.ParseUint(p.s[i:i+2], 16, 8)
 				if err != nil {
 					return "", p.errorf("illegal escape sequence: invalid hex digits: %q: %v", p.s[i:i+2], err)
 				}
@@ -982,7 +982,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 
 	/*
 		statement:
-			{ create_database | create_table | create_index | alter_table | drop_table | drop_index | create_change_stream | alter_change_stream | drop_change_stream }
+			{ create_database | create_table | create_index | alter_table | drop_table | rename_table | drop_index | create_change_stream | alter_change_stream | drop_change_stream }
 	*/
 
 	// TODO: support create_database
@@ -1069,6 +1069,9 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 			}
 			return &DropSequence{Name: name, IfExists: ifExists, Position: pos}, nil
 		}
+	} else if p.sniff("RENAME", "TABLE") {
+		a, err := p.parseRenameTable()
+		return a, err
 	} else if p.sniff("ALTER", "DATABASE") {
 		a, err := p.parseAlterDatabase()
 		return a, err
@@ -1106,8 +1109,11 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 
 	/*
 		CREATE TABLE [ IF NOT EXISTS ] table_name(
-			[column_def, ...] [ table_constraint, ...] )
+			[column_def, ...] [ table_constraint, ...] [ synonym ] )
 			primary_key [, cluster]
+
+		synonym:
+			SYNONYM (name)
 
 		primary_key:
 			PRIMARY KEY ( [key_part, ...] )
@@ -1140,6 +1146,15 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 				return err
 			}
 			ct.Constraints = append(ct.Constraints, tc)
+			return nil
+		}
+
+		if p.sniffTableSynonym() {
+			ts, err := p.parseTableSynonym()
+			if err != nil {
+				return err
+			}
+			ct.Synonym = ts
 			return nil
 		}
 
@@ -1228,6 +1243,35 @@ func (p *parser) sniffTableConstraint() bool {
 	return p.sniff("FOREIGN") || p.sniff("CHECK")
 }
 
+func (p *parser) sniffTableSynonym() bool {
+	return p.sniff("SYNONYM")
+}
+
+func (p *parser) parseTableSynonym() (ID, *parseError) {
+	debugf("parseTableSynonym: %v", p)
+
+	/*
+		table_synonym:
+			SYNONYM ( name )
+	*/
+
+	if err := p.expect("SYNONYM"); err != nil {
+		return "", err
+	}
+	if err := p.expect("("); err != nil {
+		return "", err
+	}
+	name, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return "", err
+	}
+	if err := p.expect(")"); err != nil {
+		return "", err
+	}
+
+	return name, nil
+}
+
 func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	debugf("parseCreateIndex: %v", p)
 
@@ -1311,7 +1355,7 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 
 	/*
 		{ CREATE VIEW | CREATE OR REPLACE VIEW } view_name
-		SQL SECURITY INVOKER
+		SQL SECURITY {INVOKER | DEFINER}
 		AS query
 	*/
 
@@ -1328,7 +1372,26 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 		return nil, err
 	}
 	vname, err := p.parseTableOrIndexOrColumnName()
-	if err := p.expect("SQL", "SECURITY", "INVOKER", "AS"); err != nil {
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expect("SQL", "SECURITY"); err != nil {
+		return nil, err
+	}
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+	var securityType SecurityType
+	switch {
+	case tok.caseEqual("INVOKER"):
+		securityType = Invoker
+	case tok.caseEqual("DEFINER"):
+		securityType = Definer
+	default:
+		return nil, p.errorf("got %q, want INVOKER or DEFINER", tok.value)
+	}
+	if err := p.expect("AS"); err != nil {
 		return nil, err
 	}
 	query, err := p.parseQuery()
@@ -1337,9 +1400,10 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 	}
 
 	return &CreateView{
-		Name:      vname,
-		OrReplace: orReplace,
-		Query:     query,
+		Name:         vname,
+		OrReplace:    orReplace,
+		SecurityType: securityType,
+		Query:        query,
 
 		Position: pos,
 	}, nil
@@ -1563,7 +1627,10 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			| DROP [ COLUMN ] column_name
 			| ADD table_constraint
 			| DROP CONSTRAINT constraint_name
-			| SET ON DELETE { CASCADE | NO ACTION } }
+			| SET ON DELETE { CASCADE | NO ACTION }
+			| ADD SYNONYM synonym_name
+			| DROP SYNONYM synonym_name
+			| RENAME TO new_table_name }
 
 		table_column_alteration:
 			ALTER [ COLUMN ] column_name { { scalar_type | array_type } [NOT NULL] | SET options_def }
@@ -1608,6 +1675,16 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			return a, nil
 		}
 
+		// TODO: "COLUMN" is optional. A column named SYNONYM is allowed.
+		if p.eat("SYNONYM") {
+			synonym, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			a.Alteration = AddSynonym{Name: synonym}
+			return a, nil
+		}
+
 		// TODO: "COLUMN" is optional.
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
@@ -1634,6 +1711,16 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 
 		if p.eat("ROW", "DELETION", "POLICY") {
 			a.Alteration = DropRowDeletionPolicy{}
+			return a, nil
+		}
+
+		// TODO: "COLUMN" is optional. A column named SYNONYM is allowed.
+		if p.eat("SYNONYM") {
+			synonym, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			a.Alteration = DropSynonym{Name: synonym}
 			return a, nil
 		}
 
@@ -1687,8 +1774,76 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			a.Alteration = ReplaceRowDeletionPolicy{RowDeletionPolicy: rdp}
 			return a, nil
 		}
+	case tok.caseEqual("RENAME"):
+		if p.eat("TO") {
+			newName, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			rt := RenameTo{ToName: newName}
+			if p.eat(",", "ADD", "SYNONYM") {
+				synonym, err := p.parseTableOrIndexOrColumnName()
+				if err != nil {
+					return nil, err
+				}
+				rt.Synonym = synonym
+			}
+			a.Alteration = rt
+			return a, nil
+		}
 	}
 	return a, nil
+}
+
+func (p *parser) parseRenameTable() (*RenameTable, *parseError) {
+	debugf("parseRenameTable: %v", p)
+
+	/*
+		RENAME TABLE table_name TO new_name [, table_name2 TO new_name2, ...]
+	*/
+
+	if err := p.expect("RENAME"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("TABLE"); err != nil {
+		return nil, err
+	}
+	rt := &RenameTable{
+		Position: pos,
+	}
+
+	var renameOps []TableRenameOp
+	for {
+		fromName, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		if err := p.expect("TO"); err != nil {
+			return nil, err
+		}
+		toName, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		renameOps = append(renameOps, TableRenameOp{FromName: fromName, ToName: toName})
+
+		tok := p.next()
+		if tok.err != nil {
+			if tok.err == eof {
+				break
+			}
+			return nil, tok.err
+		} else if tok.value == "," {
+			continue
+		} else if tok.value == ";" {
+			break
+		} else {
+			return nil, p.errorf("unexpected token %q", tok.value)
+		}
+	}
+	rt.TableRenameOps = renameOps
+	return rt, nil
 }
 
 func (p *parser) parseAlterDatabase() (*AlterDatabase, *parseError) {

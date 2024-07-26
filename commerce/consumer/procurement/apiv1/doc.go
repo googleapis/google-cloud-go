@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 // Package procurement is an auto-generated package for the
 // Cloud Commerce Consumer Procurement API.
 //
-// Enables consumers to procure products served by Cloud Marketplace platform
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+// # Enables consumers to procure products served by Cloud Marketplace platform
 //
 // # General documentation
 //
@@ -69,16 +67,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &procurementpb.PlaceOrderRequest{
+//	req := &procurementpb.GetOrderRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/commerce/consumer/procurement/apiv1/procurementpb#PlaceOrderRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/commerce/consumer/procurement/apiv1/procurementpb#GetOrderRequest.
 //	}
-//	op, err := c.PlaceOrder(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//
-//	resp, err := op.Wait(ctx)
+//	resp, err := c.GetOrder(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

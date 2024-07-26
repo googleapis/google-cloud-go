@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -79,10 +79,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("accesscontextmanager.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("accesscontextmanager.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("accesscontextmanager.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://accesscontextmanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -807,7 +810,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -880,9 +885,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://accesscontextmanager.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://accesscontextmanager.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://accesscontextmanager.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://accesscontextmanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -892,7 +900,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -3585,12 +3595,6 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	return resp, nil
 }
 
-// CommitServicePerimetersOperation manages a long-running operation from CommitServicePerimeters.
-type CommitServicePerimetersOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CommitServicePerimetersOperation returns a new CommitServicePerimetersOperation from a given name.
 // The name must be that of a previously created CommitServicePerimetersOperation, possibly from a different process.
 func (c *gRPCClient) CommitServicePerimetersOperation(name string) *CommitServicePerimetersOperation {
@@ -3607,70 +3611,6 @@ func (c *restClient) CommitServicePerimetersOperation(name string) *CommitServic
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CommitServicePerimetersOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.CommitServicePerimetersResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.CommitServicePerimetersResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CommitServicePerimetersOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.CommitServicePerimetersResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.CommitServicePerimetersResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CommitServicePerimetersOperation) Metadata() (*accesscontextmanagerpb.AccessContextManagerOperationMetadata, error) {
-	var meta accesscontextmanagerpb.AccessContextManagerOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CommitServicePerimetersOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CommitServicePerimetersOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateAccessLevelOperation manages a long-running operation from CreateAccessLevel.
-type CreateAccessLevelOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateAccessLevelOperation returns a new CreateAccessLevelOperation from a given name.
@@ -3691,70 +3631,6 @@ func (c *restClient) CreateAccessLevelOperation(name string) *CreateAccessLevelO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateAccessLevelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessLevel, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.AccessLevel
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateAccessLevelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessLevel, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.AccessLevel
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateAccessLevelOperation) Metadata() (*accesscontextmanagerpb.AccessContextManagerOperationMetadata, error) {
-	var meta accesscontextmanagerpb.AccessContextManagerOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateAccessLevelOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateAccessLevelOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateAccessPolicyOperation manages a long-running operation from CreateAccessPolicy.
-type CreateAccessPolicyOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateAccessPolicyOperation returns a new CreateAccessPolicyOperation from a given name.
 // The name must be that of a previously created CreateAccessPolicyOperation, possibly from a different process.
 func (c *gRPCClient) CreateAccessPolicyOperation(name string) *CreateAccessPolicyOperation {
@@ -3771,70 +3647,6 @@ func (c *restClient) CreateAccessPolicyOperation(name string) *CreateAccessPolic
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateAccessPolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessPolicy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.AccessPolicy
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateAccessPolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessPolicy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.AccessPolicy
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateAccessPolicyOperation) Metadata() (*accesscontextmanagerpb.AccessContextManagerOperationMetadata, error) {
-	var meta accesscontextmanagerpb.AccessContextManagerOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateAccessPolicyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateAccessPolicyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateGcpUserAccessBindingOperation manages a long-running operation from CreateGcpUserAccessBinding.
-type CreateGcpUserAccessBindingOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateGcpUserAccessBindingOperation returns a new CreateGcpUserAccessBindingOperation from a given name.
@@ -3855,70 +3667,6 @@ func (c *restClient) CreateGcpUserAccessBindingOperation(name string) *CreateGcp
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateGcpUserAccessBindingOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.GcpUserAccessBinding, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.GcpUserAccessBinding
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateGcpUserAccessBindingOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.GcpUserAccessBinding, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.GcpUserAccessBinding
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateGcpUserAccessBindingOperation) Metadata() (*accesscontextmanagerpb.GcpUserAccessBindingOperationMetadata, error) {
-	var meta accesscontextmanagerpb.GcpUserAccessBindingOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateGcpUserAccessBindingOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateGcpUserAccessBindingOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateServicePerimeterOperation manages a long-running operation from CreateServicePerimeter.
-type CreateServicePerimeterOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateServicePerimeterOperation returns a new CreateServicePerimeterOperation from a given name.
 // The name must be that of a previously created CreateServicePerimeterOperation, possibly from a different process.
 func (c *gRPCClient) CreateServicePerimeterOperation(name string) *CreateServicePerimeterOperation {
@@ -3935,70 +3683,6 @@ func (c *restClient) CreateServicePerimeterOperation(name string) *CreateService
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateServicePerimeterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ServicePerimeter, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.ServicePerimeter
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateServicePerimeterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ServicePerimeter, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.ServicePerimeter
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateServicePerimeterOperation) Metadata() (*accesscontextmanagerpb.AccessContextManagerOperationMetadata, error) {
-	var meta accesscontextmanagerpb.AccessContextManagerOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateServicePerimeterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateServicePerimeterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteAccessLevelOperation manages a long-running operation from DeleteAccessLevel.
-type DeleteAccessLevelOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteAccessLevelOperation returns a new DeleteAccessLevelOperation from a given name.
@@ -4019,59 +3703,6 @@ func (c *restClient) DeleteAccessLevelOperation(name string) *DeleteAccessLevelO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteAccessLevelOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteAccessLevelOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteAccessLevelOperation) Metadata() (*accesscontextmanagerpb.AccessContextManagerOperationMetadata, error) {
-	var meta accesscontextmanagerpb.AccessContextManagerOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteAccessLevelOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteAccessLevelOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteAccessPolicyOperation manages a long-running operation from DeleteAccessPolicy.
-type DeleteAccessPolicyOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteAccessPolicyOperation returns a new DeleteAccessPolicyOperation from a given name.
 // The name must be that of a previously created DeleteAccessPolicyOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAccessPolicyOperation(name string) *DeleteAccessPolicyOperation {
@@ -4088,59 +3719,6 @@ func (c *restClient) DeleteAccessPolicyOperation(name string) *DeleteAccessPolic
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteAccessPolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteAccessPolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteAccessPolicyOperation) Metadata() (*accesscontextmanagerpb.AccessContextManagerOperationMetadata, error) {
-	var meta accesscontextmanagerpb.AccessContextManagerOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteAccessPolicyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteAccessPolicyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteGcpUserAccessBindingOperation manages a long-running operation from DeleteGcpUserAccessBinding.
-type DeleteGcpUserAccessBindingOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteGcpUserAccessBindingOperation returns a new DeleteGcpUserAccessBindingOperation from a given name.
@@ -4161,59 +3739,6 @@ func (c *restClient) DeleteGcpUserAccessBindingOperation(name string) *DeleteGcp
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteGcpUserAccessBindingOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteGcpUserAccessBindingOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteGcpUserAccessBindingOperation) Metadata() (*accesscontextmanagerpb.GcpUserAccessBindingOperationMetadata, error) {
-	var meta accesscontextmanagerpb.GcpUserAccessBindingOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteGcpUserAccessBindingOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteGcpUserAccessBindingOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteServicePerimeterOperation manages a long-running operation from DeleteServicePerimeter.
-type DeleteServicePerimeterOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteServicePerimeterOperation returns a new DeleteServicePerimeterOperation from a given name.
 // The name must be that of a previously created DeleteServicePerimeterOperation, possibly from a different process.
 func (c *gRPCClient) DeleteServicePerimeterOperation(name string) *DeleteServicePerimeterOperation {
@@ -4230,59 +3755,6 @@ func (c *restClient) DeleteServicePerimeterOperation(name string) *DeleteService
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteServicePerimeterOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteServicePerimeterOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteServicePerimeterOperation) Metadata() (*accesscontextmanagerpb.AccessContextManagerOperationMetadata, error) {
-	var meta accesscontextmanagerpb.AccessContextManagerOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteServicePerimeterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteServicePerimeterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ReplaceAccessLevelsOperation manages a long-running operation from ReplaceAccessLevels.
-type ReplaceAccessLevelsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // ReplaceAccessLevelsOperation returns a new ReplaceAccessLevelsOperation from a given name.
@@ -4303,70 +3775,6 @@ func (c *restClient) ReplaceAccessLevelsOperation(name string) *ReplaceAccessLev
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ReplaceAccessLevelsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ReplaceAccessLevelsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.ReplaceAccessLevelsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ReplaceAccessLevelsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ReplaceAccessLevelsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.ReplaceAccessLevelsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ReplaceAccessLevelsOperation) Metadata() (*accesscontextmanagerpb.AccessContextManagerOperationMetadata, error) {
-	var meta accesscontextmanagerpb.AccessContextManagerOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ReplaceAccessLevelsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ReplaceAccessLevelsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ReplaceServicePerimetersOperation manages a long-running operation from ReplaceServicePerimeters.
-type ReplaceServicePerimetersOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ReplaceServicePerimetersOperation returns a new ReplaceServicePerimetersOperation from a given name.
 // The name must be that of a previously created ReplaceServicePerimetersOperation, possibly from a different process.
 func (c *gRPCClient) ReplaceServicePerimetersOperation(name string) *ReplaceServicePerimetersOperation {
@@ -4383,70 +3791,6 @@ func (c *restClient) ReplaceServicePerimetersOperation(name string) *ReplaceServ
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ReplaceServicePerimetersOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ReplaceServicePerimetersResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.ReplaceServicePerimetersResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ReplaceServicePerimetersOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ReplaceServicePerimetersResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.ReplaceServicePerimetersResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ReplaceServicePerimetersOperation) Metadata() (*accesscontextmanagerpb.AccessContextManagerOperationMetadata, error) {
-	var meta accesscontextmanagerpb.AccessContextManagerOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ReplaceServicePerimetersOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ReplaceServicePerimetersOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateAccessLevelOperation manages a long-running operation from UpdateAccessLevel.
-type UpdateAccessLevelOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateAccessLevelOperation returns a new UpdateAccessLevelOperation from a given name.
@@ -4467,70 +3811,6 @@ func (c *restClient) UpdateAccessLevelOperation(name string) *UpdateAccessLevelO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateAccessLevelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessLevel, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.AccessLevel
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateAccessLevelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessLevel, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.AccessLevel
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateAccessLevelOperation) Metadata() (*accesscontextmanagerpb.AccessContextManagerOperationMetadata, error) {
-	var meta accesscontextmanagerpb.AccessContextManagerOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateAccessLevelOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateAccessLevelOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateAccessPolicyOperation manages a long-running operation from UpdateAccessPolicy.
-type UpdateAccessPolicyOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateAccessPolicyOperation returns a new UpdateAccessPolicyOperation from a given name.
 // The name must be that of a previously created UpdateAccessPolicyOperation, possibly from a different process.
 func (c *gRPCClient) UpdateAccessPolicyOperation(name string) *UpdateAccessPolicyOperation {
@@ -4547,70 +3827,6 @@ func (c *restClient) UpdateAccessPolicyOperation(name string) *UpdateAccessPolic
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateAccessPolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessPolicy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.AccessPolicy
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateAccessPolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessPolicy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.AccessPolicy
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateAccessPolicyOperation) Metadata() (*accesscontextmanagerpb.AccessContextManagerOperationMetadata, error) {
-	var meta accesscontextmanagerpb.AccessContextManagerOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateAccessPolicyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateAccessPolicyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateGcpUserAccessBindingOperation manages a long-running operation from UpdateGcpUserAccessBinding.
-type UpdateGcpUserAccessBindingOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateGcpUserAccessBindingOperation returns a new UpdateGcpUserAccessBindingOperation from a given name.
@@ -4631,70 +3847,6 @@ func (c *restClient) UpdateGcpUserAccessBindingOperation(name string) *UpdateGcp
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateGcpUserAccessBindingOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.GcpUserAccessBinding, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.GcpUserAccessBinding
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateGcpUserAccessBindingOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.GcpUserAccessBinding, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.GcpUserAccessBinding
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateGcpUserAccessBindingOperation) Metadata() (*accesscontextmanagerpb.GcpUserAccessBindingOperationMetadata, error) {
-	var meta accesscontextmanagerpb.GcpUserAccessBindingOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateGcpUserAccessBindingOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateGcpUserAccessBindingOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateServicePerimeterOperation manages a long-running operation from UpdateServicePerimeter.
-type UpdateServicePerimeterOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateServicePerimeterOperation returns a new UpdateServicePerimeterOperation from a given name.
 // The name must be that of a previously created UpdateServicePerimeterOperation, possibly from a different process.
 func (c *gRPCClient) UpdateServicePerimeterOperation(name string) *UpdateServicePerimeterOperation {
@@ -4711,250 +3863,4 @@ func (c *restClient) UpdateServicePerimeterOperation(name string) *UpdateService
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateServicePerimeterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ServicePerimeter, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.ServicePerimeter
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateServicePerimeterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ServicePerimeter, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp accesscontextmanagerpb.ServicePerimeter
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateServicePerimeterOperation) Metadata() (*accesscontextmanagerpb.AccessContextManagerOperationMetadata, error) {
-	var meta accesscontextmanagerpb.AccessContextManagerOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateServicePerimeterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateServicePerimeterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// AccessLevelIterator manages a stream of *accesscontextmanagerpb.AccessLevel.
-type AccessLevelIterator struct {
-	items    []*accesscontextmanagerpb.AccessLevel
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*accesscontextmanagerpb.AccessLevel, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AccessLevelIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AccessLevelIterator) Next() (*accesscontextmanagerpb.AccessLevel, error) {
-	var item *accesscontextmanagerpb.AccessLevel
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AccessLevelIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AccessLevelIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// AccessPolicyIterator manages a stream of *accesscontextmanagerpb.AccessPolicy.
-type AccessPolicyIterator struct {
-	items    []*accesscontextmanagerpb.AccessPolicy
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*accesscontextmanagerpb.AccessPolicy, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AccessPolicyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AccessPolicyIterator) Next() (*accesscontextmanagerpb.AccessPolicy, error) {
-	var item *accesscontextmanagerpb.AccessPolicy
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AccessPolicyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AccessPolicyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// GcpUserAccessBindingIterator manages a stream of *accesscontextmanagerpb.GcpUserAccessBinding.
-type GcpUserAccessBindingIterator struct {
-	items    []*accesscontextmanagerpb.GcpUserAccessBinding
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*accesscontextmanagerpb.GcpUserAccessBinding, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *GcpUserAccessBindingIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *GcpUserAccessBindingIterator) Next() (*accesscontextmanagerpb.GcpUserAccessBinding, error) {
-	var item *accesscontextmanagerpb.GcpUserAccessBinding
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *GcpUserAccessBindingIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *GcpUserAccessBindingIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ServicePerimeterIterator manages a stream of *accesscontextmanagerpb.ServicePerimeter.
-type ServicePerimeterIterator struct {
-	items    []*accesscontextmanagerpb.ServicePerimeter
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*accesscontextmanagerpb.ServicePerimeter, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ServicePerimeterIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ServicePerimeterIterator) Next() (*accesscontextmanagerpb.ServicePerimeter, error) {
-	var item *accesscontextmanagerpb.ServicePerimeter
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ServicePerimeterIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ServicePerimeterIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

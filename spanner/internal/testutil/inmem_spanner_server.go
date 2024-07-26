@@ -28,21 +28,21 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	"github.com/golang/protobuf/ptypes"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	structpb "github.com/golang/protobuf/ptypes/struct"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	gstatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-var (
-	// KvMeta is the Metadata for mocked KV table.
-	KvMeta = spannerpb.ResultSetMetadata{
+// KvMeta is the Metadata for mocked KV table.
+func KvMeta() *spannerpb.ResultSetMetadata {
+	return &spannerpb.ResultSetMetadata{
 		RowType: &spannerpb.StructType{
 			Fields: []*spannerpb.StructType_Field{
 				{
@@ -56,7 +56,7 @@ var (
 			},
 		},
 	}
-)
+}
 
 // StatementResultType indicates the type of result returned by a SQL
 // statement.
@@ -89,6 +89,7 @@ const (
 	MethodExecuteStreamingSql string = "EXECUTE_STREAMING_SQL"
 	MethodExecuteBatchDml     string = "EXECUTE_BATCH_DML"
 	MethodStreamingRead       string = "EXECUTE_STREAMING_READ"
+	MethodBatchWrite          string = "BATCH_WRITE"
 )
 
 // StatementResult represents a mocked result on the test server. The result is
@@ -554,9 +555,9 @@ func (s *inMemSpannerServer) updateSessionLastUseTime(session string) {
 	s.sessionLastUseTime[session] = time.Now()
 }
 
-func getCurrentTimestamp() *timestamp.Timestamp {
+func getCurrentTimestamp() *timestamppb.Timestamp {
 	t := time.Now()
-	return &timestamp.Timestamp{Seconds: t.Unix(), Nanos: int32(t.Nanosecond())}
+	return &timestamppb.Timestamp{Seconds: t.Unix(), Nanos: int32(t.Nanosecond())}
 }
 
 // Gets the transaction id from the transaction selector. If the selector
@@ -619,7 +620,7 @@ func (s *inMemSpannerServer) getTransactionByID(session *spannerpb.Session, id [
 func newAbortedErrorWithMinimalRetryDelay() error {
 	st := gstatus.New(codes.Aborted, "Transaction has been aborted")
 	retry := &errdetails.RetryInfo{
-		RetryDelay: ptypes.DurationProto(time.Nanosecond),
+		RetryDelay: durationpb.New(time.Nanosecond),
 	}
 	st, _ = st.WithDetails(retry)
 	return st.Err()
@@ -729,8 +730,9 @@ func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spann
 	sessionsToCreate := req.SessionCount
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	// return a non-retryable error if the limit is reached
 	if s.maxSessionsReturnedByServerInTotal > int32(0) && int32(len(s.sessions)) >= s.maxSessionsReturnedByServerInTotal {
-		return nil, gstatus.Error(codes.ResourceExhausted, "No more sessions available")
+		return nil, gstatus.Error(codes.OutOfRange, "No more sessions available")
 	}
 	if sessionsToCreate > s.maxSessionsReturnedByServerPerBatchRequest {
 		sessionsToCreate = s.maxSessionsReturnedByServerPerBatchRequest
@@ -1160,4 +1162,37 @@ func DecodeResumeToken(t []byte) (uint64, error) {
 		return 0, fmt.Errorf("invalid resume token: %v", t)
 	}
 	return s, nil
+}
+
+func (s *inMemSpannerServer) BatchWrite(req *spannerpb.BatchWriteRequest, stream spannerpb.Spanner_BatchWriteServer) error {
+	if err := s.simulateExecutionTime(MethodBatchWrite, req); err != nil {
+		return err
+	}
+	return s.batchWrite(req, stream)
+}
+
+func (s *inMemSpannerServer) batchWrite(req *spannerpb.BatchWriteRequest, stream spannerpb.Spanner_BatchWriteServer) error {
+	if req.Session == "" {
+		return gstatus.Error(codes.InvalidArgument, "Missing session name")
+	}
+	session, err := s.findSession(req.Session)
+	if err != nil {
+		return err
+	}
+	s.updateSessionLastUseTime(session.Name)
+	if len(req.GetMutationGroups()) == 0 {
+		return gstatus.Error(codes.InvalidArgument, "No mutations in Batch Write")
+	}
+	// For each MutationGroup, write a BatchWriteResponse to the response stream
+	for idx := range req.GetMutationGroups() {
+		res := &spannerpb.BatchWriteResponse{
+			Indexes:         []int32{int32(idx)},
+			CommitTimestamp: getCurrentTimestamp(),
+			Status:          &status.Status{},
+		}
+		if err = stream.Send(res); err != nil {
+			return err
+		}
+	}
+	return nil
 }

@@ -619,6 +619,17 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 func toHTML(p *doc.Package, s string) string {
 	printer := p.Printer()
 
+	// Set the DocLinkBaseURL to pkg.go.dev so links to other packages work.
+	//
+	// This will send users to pkg.go.dev for other cloud.google.com packages
+	// that do have docs hosted on cloud.google.com. The link structure for
+	// docs on cloud.google.com is [prefix]/[module]/[version]/[pkg]. At this
+	// point, we don't know what the module path is for any given import path.
+	// So, for simplicity, we're choosing to have working links to pkg.go.dev
+	// (with occasional links that could be served on cloud.google.com) rather
+	// than broken links on cloud.google.com.
+	printer.DocLinkBaseURL = "https://pkg.go.dev"
+
 	// Set the default heading level to 2 so we go from H1 to H2.
 	printer.HeadingLevel = 2
 

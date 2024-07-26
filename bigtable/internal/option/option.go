@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"os"
 
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"google.golang.org/protobuf/proto"
 
 	"cloud.google.com/go/bigtable/internal"
@@ -115,7 +115,7 @@ func DefaultClientOptions(endpoint, mtlsEndpoint, scope, userAgent string) ([]op
 		o = []option.ClientOption{option.WithGRPCConn(conn)}
 	} else {
 		o = []option.ClientOption{
-			internaloption.WithDefaultEndpoint(endpoint),
+			internaloption.WithDefaultEndpointTemplate(endpoint),
 			internaloption.WithDefaultMTLSEndpoint(mtlsEndpoint),
 			option.WithScopes(scope),
 			option.WithUserAgent(userAgent),

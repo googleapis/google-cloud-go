@@ -18,7 +18,7 @@ import (
 	"context"
 	"testing"
 
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

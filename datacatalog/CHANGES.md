@@ -1,5 +1,95 @@
 # Changes
 
+## [1.20.5](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.4...datacatalog/v1.20.5) (2024-07-24)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.3...datacatalog/v1.20.4) (2024-07-10)
+
+
+### Bug Fixes
+
+* **datacatalog:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.2...datacatalog/v1.20.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* **datacatalog:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.1...datacatalog/v1.20.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **datacatalog:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.0...datacatalog/v1.20.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **datacatalog:** Add internaloption.WithDefaultEndpointTemplate ([3b41408](https://github.com/googleapis/google-cloud-go/commit/3b414084450a5764a0248756e95e13383a645f90))
+* **datacatalog:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.3...datacatalog/v1.20.0) (2024-03-14)
+
+
+### Features
+
+* **datacatalog:** Add RANGE type to Data Catalog ([#9573](https://github.com/googleapis/google-cloud-go/issues/9573)) ([25c3f2d](https://github.com/googleapis/google-cloud-go/commit/25c3f2dfcf1e720df82b3ee236d8e6a1fe888318))
+
+
+### Bug Fixes
+
+* **datacatalog:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.2...datacatalog/v1.19.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **datacatalog:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.1...datacatalog/v1.19.2) (2024-01-11)
+
+
+### Bug Fixes
+
+* **datacatalog:** Change field behavior of the property "name" to IDENTIFIER ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.0...datacatalog/v1.19.1) (2024-01-08)
+
+
+### Documentation
+
+* **datacatalog:** Change field behavior of the property "name" to IDENTIFIER ([bd30055](https://github.com/googleapis/google-cloud-go/commit/bd3005532fbffa9894b11149e9693b7c33227d79))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.3...datacatalog/v1.19.0) (2023-11-09)
+
+
+### Features
+
+* **datacatalog/lineage:** Add open lineage support ([#8974](https://github.com/googleapis/google-cloud-go/issues/8974)) ([1a16cbf](https://github.com/googleapis/google-cloud-go/commit/1a16cbf260bb673e07a05e1014868b236e510499))
+
+## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.2...datacatalog/v1.18.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **datacatalog:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.1...datacatalog/v1.18.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.0...datacatalog/v1.18.1) (2023-10-12)
 
 

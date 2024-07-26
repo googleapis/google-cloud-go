@@ -5,6 +5,50 @@
   "protoPackage": "google.cloud.retail.v2beta",
   "libraryPackage": "cloud.google.com/go/retail/apiv2beta",
   "services": {
+    "AnalyticsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AnalyticsClient",
+          "rpcs": {
+            "ExportAnalyticsMetrics": {
+              "methods": [
+                "ExportAnalyticsMetrics"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AnalyticsClient",
+          "rpcs": {
+            "ExportAnalyticsMetrics": {
+              "methods": [
+                "ExportAnalyticsMetrics"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
     "CatalogService": {
       "clients": {
         "grpc": {
@@ -505,6 +549,11 @@
                 "ListProducts"
               ]
             },
+            "PurgeProducts": {
+              "methods": [
+                "PurgeProducts"
+              ]
+            },
             "RemoveFulfillmentPlaces": {
               "methods": [
                 "RemoveFulfillmentPlaces"
@@ -573,6 +622,11 @@
             "ListProducts": {
               "methods": [
                 "ListProducts"
+              ]
+            },
+            "PurgeProducts": {
+              "methods": [
+                "PurgeProducts"
               ]
             },
             "RemoveFulfillmentPlaces": {

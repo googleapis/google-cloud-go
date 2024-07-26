@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,31 +58,6 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
-func ExampleClient_GetAuthorization() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := gsuiteaddons.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &gsuiteaddonspb.GetAuthorizationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#GetAuthorizationRequest.
-	}
-	resp, err := c.GetAuthorization(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleClient_CreateDeployment() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -108,7 +83,7 @@ func ExampleClient_CreateDeployment() {
 	_ = resp
 }
 
-func ExampleClient_ReplaceDeployment() {
+func ExampleClient_DeleteDeployment() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -121,11 +96,34 @@ func ExampleClient_ReplaceDeployment() {
 	}
 	defer c.Close()
 
-	req := &gsuiteaddonspb.ReplaceDeploymentRequest{
+	req := &gsuiteaddonspb.DeleteDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#ReplaceDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#DeleteDeploymentRequest.
 	}
-	resp, err := c.ReplaceDeployment(ctx, req)
+	err = c.DeleteDeployment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetAuthorization() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gsuiteaddons.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gsuiteaddonspb.GetAuthorizationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#GetAuthorizationRequest.
+	}
+	resp, err := c.GetAuthorization(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -158,6 +156,54 @@ func ExampleClient_GetDeployment() {
 	_ = resp
 }
 
+func ExampleClient_GetInstallStatus() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gsuiteaddons.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gsuiteaddonspb.GetInstallStatusRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#GetInstallStatusRequest.
+	}
+	resp, err := c.GetInstallStatus(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_InstallDeployment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gsuiteaddons.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gsuiteaddonspb.InstallDeploymentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#InstallDeploymentRequest.
+	}
+	err = c.InstallDeployment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_ListDeployments() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -186,10 +232,16 @@ func ExampleClient_ListDeployments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gsuiteaddonspb.ListDeploymentsResponse)
 	}
 }
 
-func ExampleClient_DeleteDeployment() {
+func ExampleClient_ReplaceDeployment() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -202,37 +254,16 @@ func ExampleClient_DeleteDeployment() {
 	}
 	defer c.Close()
 
-	req := &gsuiteaddonspb.DeleteDeploymentRequest{
+	req := &gsuiteaddonspb.ReplaceDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#DeleteDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#ReplaceDeploymentRequest.
 	}
-	err = c.DeleteDeployment(ctx, req)
+	resp, err := c.ReplaceDeployment(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-}
-
-func ExampleClient_InstallDeployment() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := gsuiteaddons.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &gsuiteaddonspb.InstallDeploymentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#InstallDeploymentRequest.
-	}
-	err = c.InstallDeployment(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_UninstallDeployment() {
@@ -256,29 +287,4 @@ func ExampleClient_UninstallDeployment() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-}
-
-func ExampleClient_GetInstallStatus() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := gsuiteaddons.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &gsuiteaddonspb.GetInstallStatusRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#GetInstallStatusRequest.
-	}
-	resp, err := c.GetInstallStatus(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }

@@ -15,6 +15,7 @@
 package testutil_test
 
 import (
+	"io"
 	"strconv"
 
 	. "cloud.google.com/go/spanner/internal/testutil"
@@ -29,8 +30,8 @@ import (
 	"testing"
 
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/grpc/codes"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 
 	apiv1 "cloud.google.com/go/spanner/apiv1"
 	"google.golang.org/api/iterator"
@@ -601,5 +602,105 @@ func TestRollbackTransaction(t *testing.T) {
 	err = c.Rollback(context.Background(), rollbackRequest)
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestSpannerBatchWrite(t *testing.T) {
+	setup()
+	c, err := apiv1.NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var formattedDatabase = fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
+	var createRequest = &spannerpb.CreateSessionRequest{
+		Database: formattedDatabase,
+	}
+	session, err := c.CreateSession(context.Background(), createRequest)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	batchWriteRequest := &spannerpb.BatchWriteRequest{
+		Session: session.Name,
+		MutationGroups: []*spannerpb.BatchWriteRequest_MutationGroup{
+			{Mutations: []*spannerpb.Mutation{
+				{
+					Operation: &spannerpb.Mutation_Delete_{
+						Delete: &spannerpb.Mutation_Delete{
+							Table: "t_test",
+							KeySet: &spannerpb.KeySet{
+								Keys: []*structpb.ListValue{
+									{
+										Values: []*structpb.Value{
+											{Kind: &structpb.Value_StringValue{StringValue: "k"}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			}},
+			{Mutations: []*spannerpb.Mutation{
+				{
+					Operation: &spannerpb.Mutation_Insert{
+						Insert: &spannerpb.Mutation_Write{
+							Table:   "t_test",
+							Columns: []string{"key", "val"},
+							Values: []*structpb.ListValue{
+								{
+									Values: []*structpb.Value{
+										{Kind: &structpb.Value_StringValue{StringValue: "k"}},
+										{Kind: &structpb.Value_StringValue{StringValue: "v"}},
+									},
+								},
+							},
+						},
+					},
+				},
+			}},
+		},
+	}
+	stream, err := c.BatchWrite(context.Background(), batchWriteRequest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Records the mutation group indexes received in the response.
+	seen := make(map[int32]int32)
+	numMutationGroups := len(batchWriteRequest.GetMutationGroups())
+	validate := func(res *spannerpb.BatchWriteResponse) {
+		if status := res.GetStatus().GetCode(); status != int32(codes.OK) {
+			t.Fatalf("Invalid status: %v", status)
+		}
+		if ts := res.GetCommitTimestamp(); ts == nil {
+			t.Fatal("Invalid commit timestamp")
+		}
+		for _, idx := range res.GetIndexes() {
+			if idx >= 0 && idx < int32(numMutationGroups) {
+				seen[idx]++
+			} else {
+				t.Fatalf("Index %v out of range. Expected range [%v,%v]", idx, 0, numMutationGroups-1)
+			}
+		}
+	}
+	for {
+		response, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		validate(response)
+	}
+	// Validate that each mutation group index is seen exactly once.
+	if numMutationGroups != len(seen) {
+		t.Fatalf("Expected %v indexes, got %v indexes", numMutationGroups, len(seen))
+	}
+	for idx, ct := range seen {
+		if ct != 1 {
+			t.Fatalf("Index %v seen %v times instead of exactly once", idx, ct)
+		}
 	}
 }

@@ -95,6 +95,11 @@
                 "ListRuns"
               ]
             },
+            "ProcessOpenLineageRunEvent": {
+              "methods": [
+                "ProcessOpenLineageRunEvent"
+              ]
+            },
             "SearchLinks": {
               "methods": [
                 "SearchLinks"
@@ -198,6 +203,11 @@
             "ListRuns": {
               "methods": [
                 "ListRuns"
+              ]
+            },
+            "ProcessOpenLineageRunEvent": {
+              "methods": [
+                "ProcessOpenLineageRunEvent"
               ]
             },
             "SearchLinks": {

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@
 //
 // Allows administrators to create managed developer environments in the
 // cloud.
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // # General documentation
 //
@@ -70,11 +68,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &workstationspb.GetWorkstationClusterRequest{
+//	req := &workstationspb.CreateWorkstationRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#GetWorkstationClusterRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#CreateWorkstationRequest.
 //	}
-//	resp, err := c.GetWorkstationCluster(ctx, req)
+//	op, err := c.CreateWorkstation(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

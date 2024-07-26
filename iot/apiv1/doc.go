@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &iotpb.CreateDeviceRegistryRequest{
+//	req := &iotpb.BindDeviceToGatewayRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#CreateDeviceRegistryRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#BindDeviceToGatewayRequest.
 //	}
-//	resp, err := c.CreateDeviceRegistry(ctx, req)
+//	resp, err := c.BindDeviceToGateway(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

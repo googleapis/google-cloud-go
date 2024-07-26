@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -92,10 +92,13 @@ type CertificateAuthorityCallOptions struct {
 func defaultCertificateAuthorityGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("privateca.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("privateca.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("privateca.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://privateca.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -1208,9 +1211,8 @@ func (c *CertificateAuthorityClient) DeleteCaPoolOperation(name string) *DeleteC
 
 // FetchCaCerts fetchCaCerts returns the current trust anchor for the
 // CaPool. This will include CA
-// certificate chains for all ACTIVE
-// CertificateAuthority
-// resources in the CaPool.
+// certificate chains for all certificate authorities in the ENABLED,
+// DISABLED, or STAGED states.
 func (c *CertificateAuthorityClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
 	return c.internalClient.FetchCaCerts(ctx, req, opts...)
 }
@@ -1434,7 +1436,9 @@ func (c *certificateAuthorityGRPCClient) Connection() *grpc.ClientConn {
 func (c *certificateAuthorityGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1499,9 +1503,12 @@ func NewCertificateAuthorityRESTClient(ctx context.Context, opts ...option.Clien
 func defaultCertificateAuthorityRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://privateca.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://privateca.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://privateca.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://privateca.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1511,7 +1518,9 @@ func defaultCertificateAuthorityRESTClientOptions() []option.ClientOption {
 func (c *certificateAuthorityRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -3948,9 +3957,8 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 
 // FetchCaCerts fetchCaCerts returns the current trust anchor for the
 // CaPool. This will include CA
-// certificate chains for all ACTIVE
-// CertificateAuthority
-// resources in the CaPool.
+// certificate chains for all certificate authorities in the ENABLED,
+// DISABLED, or STAGED states.
 func (c *certificateAuthorityRESTClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -5239,12 +5247,6 @@ func (c *certificateAuthorityRESTClient) ListOperations(ctx context.Context, req
 	return it
 }
 
-// ActivateCertificateAuthorityOperation manages a long-running operation from ActivateCertificateAuthority.
-type ActivateCertificateAuthorityOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ActivateCertificateAuthorityOperation returns a new ActivateCertificateAuthorityOperation from a given name.
 // The name must be that of a previously created ActivateCertificateAuthorityOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) ActivateCertificateAuthorityOperation(name string) *ActivateCertificateAuthorityOperation {
@@ -5261,70 +5263,6 @@ func (c *certificateAuthorityRESTClient) ActivateCertificateAuthorityOperation(n
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ActivateCertificateAuthorityOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ActivateCertificateAuthorityOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ActivateCertificateAuthorityOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ActivateCertificateAuthorityOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ActivateCertificateAuthorityOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateCaPoolOperation manages a long-running operation from CreateCaPool.
-type CreateCaPoolOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateCaPoolOperation returns a new CreateCaPoolOperation from a given name.
@@ -5345,70 +5283,6 @@ func (c *certificateAuthorityRESTClient) CreateCaPoolOperation(name string) *Cre
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateCaPoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CaPool, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CaPool
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateCaPoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CaPool, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CaPool
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateCaPoolOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateCaPoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateCaPoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateCertificateAuthorityOperation manages a long-running operation from CreateCertificateAuthority.
-type CreateCertificateAuthorityOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateCertificateAuthorityOperation returns a new CreateCertificateAuthorityOperation from a given name.
 // The name must be that of a previously created CreateCertificateAuthorityOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) CreateCertificateAuthorityOperation(name string) *CreateCertificateAuthorityOperation {
@@ -5425,70 +5299,6 @@ func (c *certificateAuthorityRESTClient) CreateCertificateAuthorityOperation(nam
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateCertificateAuthorityOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateCertificateAuthorityOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateCertificateAuthorityOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateCertificateAuthorityOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateCertificateAuthorityOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateCertificateTemplateOperation manages a long-running operation from CreateCertificateTemplate.
-type CreateCertificateTemplateOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateCertificateTemplateOperation returns a new CreateCertificateTemplateOperation from a given name.
@@ -5509,70 +5319,6 @@ func (c *certificateAuthorityRESTClient) CreateCertificateTemplateOperation(name
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateCertificateTemplateOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateTemplate, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateTemplate
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateCertificateTemplateOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateTemplate, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateTemplate
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateCertificateTemplateOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateCertificateTemplateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateCertificateTemplateOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteCaPoolOperation manages a long-running operation from DeleteCaPool.
-type DeleteCaPoolOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteCaPoolOperation returns a new DeleteCaPoolOperation from a given name.
 // The name must be that of a previously created DeleteCaPoolOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) DeleteCaPoolOperation(name string) *DeleteCaPoolOperation {
@@ -5589,59 +5335,6 @@ func (c *certificateAuthorityRESTClient) DeleteCaPoolOperation(name string) *Del
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteCaPoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteCaPoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteCaPoolOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteCaPoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteCaPoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteCertificateAuthorityOperation manages a long-running operation from DeleteCertificateAuthority.
-type DeleteCertificateAuthorityOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteCertificateAuthorityOperation returns a new DeleteCertificateAuthorityOperation from a given name.
@@ -5662,70 +5355,6 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateAuthorityOperation(nam
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteCertificateAuthorityOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteCertificateAuthorityOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteCertificateAuthorityOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteCertificateAuthorityOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteCertificateAuthorityOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteCertificateTemplateOperation manages a long-running operation from DeleteCertificateTemplate.
-type DeleteCertificateTemplateOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteCertificateTemplateOperation returns a new DeleteCertificateTemplateOperation from a given name.
 // The name must be that of a previously created DeleteCertificateTemplateOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) DeleteCertificateTemplateOperation(name string) *DeleteCertificateTemplateOperation {
@@ -5742,59 +5371,6 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateTemplateOperation(name
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteCertificateTemplateOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteCertificateTemplateOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteCertificateTemplateOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteCertificateTemplateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteCertificateTemplateOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DisableCertificateAuthorityOperation manages a long-running operation from DisableCertificateAuthority.
-type DisableCertificateAuthorityOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DisableCertificateAuthorityOperation returns a new DisableCertificateAuthorityOperation from a given name.
@@ -5815,70 +5391,6 @@ func (c *certificateAuthorityRESTClient) DisableCertificateAuthorityOperation(na
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DisableCertificateAuthorityOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DisableCertificateAuthorityOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DisableCertificateAuthorityOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DisableCertificateAuthorityOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DisableCertificateAuthorityOperation) Name() string {
-	return op.lro.Name()
-}
-
-// EnableCertificateAuthorityOperation manages a long-running operation from EnableCertificateAuthority.
-type EnableCertificateAuthorityOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // EnableCertificateAuthorityOperation returns a new EnableCertificateAuthorityOperation from a given name.
 // The name must be that of a previously created EnableCertificateAuthorityOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) EnableCertificateAuthorityOperation(name string) *EnableCertificateAuthorityOperation {
@@ -5895,70 +5407,6 @@ func (c *certificateAuthorityRESTClient) EnableCertificateAuthorityOperation(nam
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *EnableCertificateAuthorityOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *EnableCertificateAuthorityOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *EnableCertificateAuthorityOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *EnableCertificateAuthorityOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *EnableCertificateAuthorityOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UndeleteCertificateAuthorityOperation manages a long-running operation from UndeleteCertificateAuthority.
-type UndeleteCertificateAuthorityOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UndeleteCertificateAuthorityOperation returns a new UndeleteCertificateAuthorityOperation from a given name.
@@ -5979,70 +5427,6 @@ func (c *certificateAuthorityRESTClient) UndeleteCertificateAuthorityOperation(n
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UndeleteCertificateAuthorityOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UndeleteCertificateAuthorityOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UndeleteCertificateAuthorityOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UndeleteCertificateAuthorityOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UndeleteCertificateAuthorityOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateCaPoolOperation manages a long-running operation from UpdateCaPool.
-type UpdateCaPoolOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateCaPoolOperation returns a new UpdateCaPoolOperation from a given name.
 // The name must be that of a previously created UpdateCaPoolOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) UpdateCaPoolOperation(name string) *UpdateCaPoolOperation {
@@ -6059,70 +5443,6 @@ func (c *certificateAuthorityRESTClient) UpdateCaPoolOperation(name string) *Upd
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateCaPoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CaPool, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CaPool
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateCaPoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CaPool, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CaPool
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateCaPoolOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateCaPoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateCaPoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateCertificateAuthorityOperation manages a long-running operation from UpdateCertificateAuthority.
-type UpdateCertificateAuthorityOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateCertificateAuthorityOperation returns a new UpdateCertificateAuthorityOperation from a given name.
@@ -6143,70 +5463,6 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateAuthorityOperation(nam
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateCertificateAuthorityOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateCertificateAuthorityOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateAuthority
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateCertificateAuthorityOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateCertificateAuthorityOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateCertificateAuthorityOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateCertificateRevocationListOperation manages a long-running operation from UpdateCertificateRevocationList.
-type UpdateCertificateRevocationListOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateCertificateRevocationListOperation returns a new UpdateCertificateRevocationListOperation from a given name.
 // The name must be that of a previously created UpdateCertificateRevocationListOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) UpdateCertificateRevocationListOperation(name string) *UpdateCertificateRevocationListOperation {
@@ -6225,70 +5481,6 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationListOperatio
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateCertificateRevocationListOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateRevocationList
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateCertificateRevocationListOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateRevocationList
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateCertificateRevocationListOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateCertificateRevocationListOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateCertificateRevocationListOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateCertificateTemplateOperation manages a long-running operation from UpdateCertificateTemplate.
-type UpdateCertificateTemplateOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateCertificateTemplateOperation returns a new UpdateCertificateTemplateOperation from a given name.
 // The name must be that of a previously created UpdateCertificateTemplateOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) UpdateCertificateTemplateOperation(name string) *UpdateCertificateTemplateOperation {
@@ -6305,391 +5497,4 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateTemplateOperation(name
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateCertificateTemplateOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateTemplate, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateTemplate
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateCertificateTemplateOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateTemplate, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp privatecapb.CertificateTemplate
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateCertificateTemplateOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateCertificateTemplateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateCertificateTemplateOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CaPoolIterator manages a stream of *privatecapb.CaPool.
-type CaPoolIterator struct {
-	items    []*privatecapb.CaPool
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*privatecapb.CaPool, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CaPoolIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CaPoolIterator) Next() (*privatecapb.CaPool, error) {
-	var item *privatecapb.CaPool
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CaPoolIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CaPoolIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CertificateAuthorityIterator manages a stream of *privatecapb.CertificateAuthority.
-type CertificateAuthorityIterator struct {
-	items    []*privatecapb.CertificateAuthority
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*privatecapb.CertificateAuthority, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CertificateAuthorityIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CertificateAuthorityIterator) Next() (*privatecapb.CertificateAuthority, error) {
-	var item *privatecapb.CertificateAuthority
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CertificateAuthorityIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CertificateAuthorityIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CertificateIterator manages a stream of *privatecapb.Certificate.
-type CertificateIterator struct {
-	items    []*privatecapb.Certificate
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*privatecapb.Certificate, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CertificateIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CertificateIterator) Next() (*privatecapb.Certificate, error) {
-	var item *privatecapb.Certificate
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CertificateIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CertificateIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CertificateRevocationListIterator manages a stream of *privatecapb.CertificateRevocationList.
-type CertificateRevocationListIterator struct {
-	items    []*privatecapb.CertificateRevocationList
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*privatecapb.CertificateRevocationList, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CertificateRevocationListIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CertificateRevocationListIterator) Next() (*privatecapb.CertificateRevocationList, error) {
-	var item *privatecapb.CertificateRevocationList
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CertificateRevocationListIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CertificateRevocationListIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CertificateTemplateIterator manages a stream of *privatecapb.CertificateTemplate.
-type CertificateTemplateIterator struct {
-	items    []*privatecapb.CertificateTemplate
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*privatecapb.CertificateTemplate, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CertificateTemplateIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CertificateTemplateIterator) Next() (*privatecapb.CertificateTemplate, error) {
-	var item *privatecapb.CertificateTemplate
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CertificateTemplateIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CertificateTemplateIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

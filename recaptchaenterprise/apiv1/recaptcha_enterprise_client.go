@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ type CallOptions struct {
 	GetFirewallPolicy                    []gax.CallOption
 	UpdateFirewallPolicy                 []gax.CallOption
 	DeleteFirewallPolicy                 []gax.CallOption
+	ReorderFirewallPolicies              []gax.CallOption
 	ListRelatedAccountGroups             []gax.CallOption
 	ListRelatedAccountGroupMemberships   []gax.CallOption
 	SearchRelatedAccountGroupMemberships []gax.CallOption
@@ -60,10 +61,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("recaptchaenterprise.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("recaptchaenterprise.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("recaptchaenterprise.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://recaptchaenterprise.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -100,6 +104,7 @@ func defaultCallOptions() *CallOptions {
 		GetFirewallPolicy:                    []gax.CallOption{},
 		UpdateFirewallPolicy:                 []gax.CallOption{},
 		DeleteFirewallPolicy:                 []gax.CallOption{},
+		ReorderFirewallPolicies:              []gax.CallOption{},
 		ListRelatedAccountGroups:             []gax.CallOption{},
 		ListRelatedAccountGroupMemberships:   []gax.CallOption{},
 		SearchRelatedAccountGroupMemberships: []gax.CallOption{},
@@ -126,6 +131,7 @@ type internalClient interface {
 	GetFirewallPolicy(context.Context, *recaptchaenterprisepb.GetFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
 	UpdateFirewallPolicy(context.Context, *recaptchaenterprisepb.UpdateFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
 	DeleteFirewallPolicy(context.Context, *recaptchaenterprisepb.DeleteFirewallPolicyRequest, ...gax.CallOption) error
+	ReorderFirewallPolicies(context.Context, *recaptchaenterprisepb.ReorderFirewallPoliciesRequest, ...gax.CallOption) (*recaptchaenterprisepb.ReorderFirewallPoliciesResponse, error)
 	ListRelatedAccountGroups(context.Context, *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, ...gax.CallOption) *RelatedAccountGroupIterator
 	ListRelatedAccountGroupMemberships(context.Context, *recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest, ...gax.CallOption) *RelatedAccountGroupMembershipIterator
 	SearchRelatedAccountGroupMemberships(context.Context, *recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest, ...gax.CallOption) *RelatedAccountGroupMembershipIterator
@@ -252,6 +258,11 @@ func (c *Client) DeleteFirewallPolicy(ctx context.Context, req *recaptchaenterpr
 	return c.internalClient.DeleteFirewallPolicy(ctx, req, opts...)
 }
 
+// ReorderFirewallPolicies reorders all firewall policies.
+func (c *Client) ReorderFirewallPolicies(ctx context.Context, req *recaptchaenterprisepb.ReorderFirewallPoliciesRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.ReorderFirewallPoliciesResponse, error) {
+	return c.internalClient.ReorderFirewallPolicies(ctx, req, opts...)
+}
+
 // ListRelatedAccountGroups list groups of related accounts.
 func (c *Client) ListRelatedAccountGroups(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, opts ...gax.CallOption) *RelatedAccountGroupIterator {
 	return c.internalClient.ListRelatedAccountGroups(ctx, req, opts...)
@@ -330,7 +341,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -657,6 +670,24 @@ func (c *gRPCClient) DeleteFirewallPolicy(ctx context.Context, req *recaptchaent
 	return err
 }
 
+func (c *gRPCClient) ReorderFirewallPolicies(ctx context.Context, req *recaptchaenterprisepb.ReorderFirewallPoliciesRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.ReorderFirewallPoliciesResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ReorderFirewallPolicies[0:len((*c.CallOptions).ReorderFirewallPolicies):len((*c.CallOptions).ReorderFirewallPolicies)], opts...)
+	var resp *recaptchaenterprisepb.ReorderFirewallPoliciesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ReorderFirewallPolicies(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) ListRelatedAccountGroups(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, opts ...gax.CallOption) *RelatedAccountGroupIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -793,192 +824,4 @@ func (c *gRPCClient) SearchRelatedAccountGroupMemberships(ctx context.Context, r
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// FirewallPolicyIterator manages a stream of *recaptchaenterprisepb.FirewallPolicy.
-type FirewallPolicyIterator struct {
-	items    []*recaptchaenterprisepb.FirewallPolicy
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recaptchaenterprisepb.FirewallPolicy, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *FirewallPolicyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *FirewallPolicyIterator) Next() (*recaptchaenterprisepb.FirewallPolicy, error) {
-	var item *recaptchaenterprisepb.FirewallPolicy
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *FirewallPolicyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *FirewallPolicyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// KeyIterator manages a stream of *recaptchaenterprisepb.Key.
-type KeyIterator struct {
-	items    []*recaptchaenterprisepb.Key
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recaptchaenterprisepb.Key, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *KeyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *KeyIterator) Next() (*recaptchaenterprisepb.Key, error) {
-	var item *recaptchaenterprisepb.Key
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *KeyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *KeyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RelatedAccountGroupIterator manages a stream of *recaptchaenterprisepb.RelatedAccountGroup.
-type RelatedAccountGroupIterator struct {
-	items    []*recaptchaenterprisepb.RelatedAccountGroup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recaptchaenterprisepb.RelatedAccountGroup, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RelatedAccountGroupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RelatedAccountGroupIterator) Next() (*recaptchaenterprisepb.RelatedAccountGroup, error) {
-	var item *recaptchaenterprisepb.RelatedAccountGroup
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RelatedAccountGroupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RelatedAccountGroupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RelatedAccountGroupMembershipIterator manages a stream of *recaptchaenterprisepb.RelatedAccountGroupMembership.
-type RelatedAccountGroupMembershipIterator struct {
-	items    []*recaptchaenterprisepb.RelatedAccountGroupMembership
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recaptchaenterprisepb.RelatedAccountGroupMembership, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RelatedAccountGroupMembershipIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RelatedAccountGroupMembershipIterator) Next() (*recaptchaenterprisepb.RelatedAccountGroupMembership, error) {
-	var item *recaptchaenterprisepb.RelatedAccountGroupMembership
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RelatedAccountGroupMembershipIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RelatedAccountGroupMembershipIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

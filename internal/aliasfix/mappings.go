@@ -66,6 +66,14 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/area120/tables/apiv1alpha1/tablespb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/bigtable/admin/v2": {
+		ImportPath: "cloud.google.com/go/bigtable/admin/apiv2/adminpb",
+		Status:     StatusMigrated,
+	},
+	"google.golang.org/genproto/googleapis/bigtable/v2": {
+		ImportPath: "cloud.google.com/go/bigtable/apiv2/bigtablepb",
+		Status:     StatusMigrated,
+	},
 	"google.golang.org/genproto/googleapis/cloud/accessapproval/v1": {
 		ImportPath: "cloud.google.com/go/accessapproval/apiv1/accessapprovalpb",
 		Status:     StatusMigrated,
@@ -848,10 +856,6 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/cloud/datacatalog/lineage/v1": {
 		ImportPath: "cloud.google.com/go/datacatalog/lineage/apiv1/lineagepb",
-		Status:     StatusMigrated,
-	},
-	"google.golang.org/genproto/googleapis/maps/mapsplatformdatasets/v1alpha": {
-		ImportPath: "cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha/mapsplatformdatasetspb",
 		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/cloud/discoveryengine/v1beta": {

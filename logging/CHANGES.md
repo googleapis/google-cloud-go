@@ -1,5 +1,58 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/logging/v1.10.0...logging/v1.11.0) (2024-07-24)
+
+
+### Features
+
+* **logging:** OpenTelemetry trace/span ID integration for Go logging library ([#10030](https://github.com/googleapis/google-cloud-go/issues/10030)) ([c6711b8](https://github.com/googleapis/google-cloud-go/commit/c6711b83cb6f9f35032e69a40632b7268fcdbd0a))
+
+
+### Bug Fixes
+
+* **logging:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **logging:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+* **logging:** Skip automatic resource detection if a CommonResource ([#10441](https://github.com/googleapis/google-cloud-go/issues/10441)) ([fc4c910](https://github.com/googleapis/google-cloud-go/commit/fc4c91099443385d3052e1d6cf1020c7918c0e5a))
+* **logging:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **logging:** Documentation for automatic trace/span ID extraction ([#10536](https://github.com/googleapis/google-cloud-go/issues/10536)) ([8cf89a3](https://github.com/googleapis/google-cloud-go/commit/8cf89a340ad75cc1c39e8a9b876b47af069aa273))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/logging/v1.9.0...logging/v1.10.0) (2024-05-15)
+
+
+### Features
+
+* **logging/logadmin:** Allow logging PageSize to override ([#9409](https://github.com/googleapis/google-cloud-go/issues/9409)) ([5ca0271](https://github.com/googleapis/google-cloud-go/commit/5ca0271f4354d51a968cf5819322d1c093944d1c))
+
+
+### Bug Fixes
+
+* **logging:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+* **logging:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+* **logging:** Set default value for BundleByteLimit to 9.5 MiB to avoid payload size limits. ([#9662](https://github.com/googleapis/google-cloud-go/issues/9662)) ([d5815da](https://github.com/googleapis/google-cloud-go/commit/d5815da84dfb3fedd67bce4c7a24e2f0ab235811))
+* **logging:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/logging/v1.8.1...logging/v1.9.0) (2023-12-12)
+
+
+### Features
+
+* **logging:** Add Cloud Run job monitored resource ([#8631](https://github.com/googleapis/google-cloud-go/issues/8631)) ([de66868](https://github.com/googleapis/google-cloud-go/commit/de66868905c83cc77d7781202264e4c6daafb519))
+* **logging:** Automatic project detection in logging.NewClient() ([#9006](https://github.com/googleapis/google-cloud-go/issues/9006)) ([bc13e6a](https://github.com/googleapis/google-cloud-go/commit/bc13e6acd5df2c46fe43de64cc0a6220e7086b9c))
+
+
+### Bug Fixes
+
+* **logging:** Added marshalling methods for proto fields in structuredLogEntry ([#8979](https://github.com/googleapis/google-cloud-go/issues/8979)) ([aa385f9](https://github.com/googleapis/google-cloud-go/commit/aa385f97d07230af0bb47a0775cf0e2db368a0b7))
+* **logging:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+* **logging:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+* **logging:** Update grpc-go to v1.56.3 ([343cea8](https://github.com/googleapis/google-cloud-go/commit/343cea8c43b1e31ae21ad50ad31d3b0b60143f8c))
+* **logging:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+* **logging:** Use instance/attributes/cluster-location for location on GKE ([#9094](https://github.com/googleapis/google-cloud-go/issues/9094)) ([c85b9d4](https://github.com/googleapis/google-cloud-go/commit/c85b9d4ee4b936c551562d9b83bcaab09297f369))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/logging/v1.8.0...logging/v1.8.1) (2023-08-14)
 
 

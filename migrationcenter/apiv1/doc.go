@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@
 //
 // A unified platform that helps you accelerate your end-to-end cloud journey
 // from your current on-premises or cloud environments to Google Cloud.
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // # General documentation
 //
@@ -70,22 +68,21 @@
 //	}
 //	defer c.Close()
 //
-//	req := &migrationcenterpb.ListAssetsRequest{
+//	req := &migrationcenterpb.AddAssetsToGroupRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/migrationcenter/apiv1/migrationcenterpb#ListAssetsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/migrationcenter/apiv1/migrationcenterpb#AddAssetsToGroupRequest.
 //	}
-//	it := c.ListAssets(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	op, err := c.AddAssetsToGroup(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//
+//	resp, err := op.Wait(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

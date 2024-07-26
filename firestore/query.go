@@ -26,9 +26,9 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/btree"
 	"cloud.google.com/go/internal/trace"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // Query represents a Firestore query.
@@ -36,18 +36,21 @@ import (
 // Query values are immutable. Each Query method creates
 // a new Query; it does not modify the old.
 type Query struct {
-	c                      *Client
-	path                   string // path to query (collection)
-	parentPath             string // path of the collection's parent (document)
-	collectionID           string
-	selection              []*pb.StructuredQuery_FieldReference
-	filters                []*pb.StructuredQuery_Filter
-	orders                 []order
-	offset                 int32
-	limit                  *wrappers.Int32Value
-	limitToLast            bool
-	startVals, endVals     []interface{}
-	startDoc, endDoc       *DocumentSnapshot
+	c                  *Client
+	path               string // path to query (collection)
+	parentPath         string // path of the collection's parent (document)
+	collectionID       string
+	selection          []*pb.StructuredQuery_FieldReference
+	filters            []*pb.StructuredQuery_Filter
+	orders             []order
+	offset             int32
+	limit              *wrapperspb.Int32Value
+	limitToLast        bool
+	startVals, endVals []interface{}
+	startDoc, endDoc   *DocumentSnapshot
+
+	// Set startBefore to true when doc in startVals needs to be included in result
+	// Set endBefore to false when doc in endVals needs to be included in result
 	startBefore, endBefore bool
 	err                    error
 
@@ -58,6 +61,8 @@ type Query struct {
 	// readOptions specifies constraints for reading results from the query
 	// e.g. read time
 	readSettings *readSettings
+
+	findNearest *pb.StructuredQuery_FindNearest
 }
 
 // DocumentID is the special field name representing the ID of a document
@@ -208,7 +213,7 @@ func (q Query) Offset(n int) Query {
 // Limit returns a new Query that specifies the maximum number of first results
 // to return. It must not be negative.
 func (q Query) Limit(n int) Query {
-	q.limit = &wrappers.Int32Value{Value: trunc32(n)}
+	q.limit = &wrapperspb.Int32Value{Value: trunc32(n)}
 	q.limitToLast = false
 	return q
 }
@@ -216,7 +221,7 @@ func (q Query) Limit(n int) Query {
 // LimitToLast returns a new Query that specifies the maximum number of last
 // results to return. It must not be negative.
 func (q Query) LimitToLast(n int) Query {
-	q.limit = &wrappers.Int32Value{Value: trunc32(n)}
+	q.limit = &wrapperspb.Int32Value{Value: trunc32(n)}
 	q.limitToLast = true
 	return q
 }
@@ -293,7 +298,11 @@ func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interfa
 
 func (q *Query) processLimitToLast() {
 	if q.limitToLast {
-		// Flip order statements before posting a request.
+		// Firestore service does not provide limit to last behaviour out of the box. This is a client-side concept
+		// So, flip order statements and cursors before posting a request. The response is flipped by other methods before returning to user
+		// E.g.
+		// If id of documents is 1, 2, 3, 4, 5, 6, 7 and query is (OrderBy(id, ASC), StartAt(2), EndAt(6), LimitToLast(3))
+		// request sent to server is  (OrderBy(id, DESC), StartAt(6), EndAt(2), Limit(3))
 		for i := range q.orders {
 			if q.orders[i].dir == Asc {
 				q.orders[i].dir = Desc
@@ -301,15 +310,25 @@ func (q *Query) processLimitToLast() {
 				q.orders[i].dir = Asc
 			}
 		}
+
+		if q.startBefore == q.endBefore && q.startCursorSpecified() && q.endCursorSpecified() {
+			// E.g. query.StartAt(2).EndBefore(6).LimitToLast(3).OrderBy(Asc) i.e. cursors are [2, 6)
+			// E.g. query.StartAfter(2).EndAt(6).LimitToLast(3).OrderBy(Asc)  i.e. cursors are (2, 6]
+			q.startBefore, q.endBefore = !q.startBefore, !q.endBefore
+		} else if !q.startCursorSpecified() && q.endCursorSpecified() {
+			// E.g. query.EndAt(6).LimitToLast(3).OrderBy(Asc) i.e. cursors are (-inf, 6]
+			q.startBefore = !q.endBefore
+			q.endBefore = false
+		} else if q.startCursorSpecified() && !q.endCursorSpecified() {
+			// E.g. query.StartAt(2).LimitToLast(3).OrderBy(Asc) i.e. cursors are [2, inf)
+			q.endBefore = !q.startBefore
+			q.startBefore = false
+		}
+
 		// Swap cursors.
 		q.startVals, q.endVals = q.endVals, q.startVals
 		q.startDoc, q.endDoc = q.endDoc, q.startDoc
-		if q.endBefore {
-			q.endBefore = false
-			q.startBefore = false
-		} else {
-			q.startBefore, q.endBefore = q.endBefore, q.startBefore
-		}
+
 		q.limitToLast = false
 	}
 }
@@ -345,6 +364,110 @@ func (q Query) Deserialize(bytes []byte) (Query, error) {
 		return q, err
 	}
 	return q.fromProto(&runQueryRequest)
+}
+
+// DistanceMeasure is the distance measure to use when comparing vectors with [Query.FindNearest] or [Query.FindNearestPath].
+type DistanceMeasure int32
+
+const (
+	// DistanceMeasureEuclidean is used to measures the Euclidean distance between the vectors. See
+	// [Euclidean] to learn more.
+	//
+	// [Euclidean]: https://en.wikipedia.org/wiki/Euclidean_distance
+	DistanceMeasureEuclidean DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_EUCLIDEAN)
+
+	// DistanceMeasureCosine compares vectors based on the angle between them, which allows you to
+	// measure similarity that isn't based on the vectors magnitude.
+	// We recommend using dot product with unit normalized vectors instead of
+	// cosine distance, which is mathematically equivalent with better
+	// performance. See [Cosine Similarity] to learn more.
+	//
+	// [Cosine Similarity]: https://en.wikipedia.org/wiki/Cosine_similarity
+	DistanceMeasureCosine DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_COSINE)
+
+	// DistanceMeasureDotProduct is similar to cosine but is affected by the magnitude of the vectors. See
+	// [Dot Product] to learn more.
+	//
+	// [Dot Product]: https://en.wikipedia.org/wiki/Dot_product
+	DistanceMeasureDotProduct DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_DOT_PRODUCT)
+)
+
+// FindNearestOptions are options for a FindNearest vector query.
+// At present, there are no options.
+type FindNearestOptions struct {
+}
+
+// VectorQuery represents a query that uses [Query.FindNearest] or [Query.FindNearestPath].
+type VectorQuery struct {
+	q Query
+}
+
+// FindNearest returns a query that can perform vector distance (similarity) search.
+//
+// The returned query, when executed, performs a distance search on the specified
+// vectorField against the given queryVector and returns the top documents that are closest
+// to the queryVector according to measure. At most limit documents are returned.
+//
+// Only documents whose vectorField field is a Vector32 or Vector64 of the same dimension
+// as queryVector participate in the query; all other documents are ignored.
+// In particular, fields of type []float32 or []float64 are ignored.
+//
+// The vectorField argument can be a single field or a dot-separated sequence of
+// fields, and must not contain any of the runes "˜*/[]".
+//
+// The queryVector argument can be any of the following types:
+//   - []float32
+//   - []float64
+//   - Vector32
+//   - Vector64
+func (q Query) FindNearest(vectorField string, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
+	// Validate field path
+	fieldPath, err := parseDotSeparatedString(vectorField)
+	if err != nil {
+		q.err = err
+		return VectorQuery{q: q}
+	}
+	return q.FindNearestPath(fieldPath, queryVector, limit, measure, options)
+}
+
+// Documents returns an iterator over the vector query's resulting documents.
+func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
+	return vq.q.Documents(ctx)
+}
+
+// FindNearestPath is like [Query.FindNearest] but it accepts a [FieldPath].
+func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
+	vq := VectorQuery{q: q}
+
+	// Convert field path to field reference
+	vectorFieldRef, err := fref(vectorFieldPath)
+	if err != nil {
+		vq.q.err = err
+		return vq
+	}
+
+	var fnvq *pb.Value
+	switch v := queryVector.(type) {
+	case Vector32:
+		fnvq = vectorToProtoValue([]float32(v))
+	case []float32:
+		fnvq = vectorToProtoValue(v)
+	case Vector64:
+		fnvq = vectorToProtoValue([]float64(v))
+	case []float64:
+		fnvq = vectorToProtoValue(v)
+	default:
+		vq.q.err = errors.New("firestore: queryVector must be Vector32 or Vector64")
+		return vq
+	}
+
+	vq.q.findNearest = &pb.StructuredQuery_FindNearest{
+		VectorField:     vectorFieldRef,
+		QueryVector:     fnvq,
+		Limit:           &wrapperspb.Int32Value{Value: trunc32(limit)},
+		DistanceMeasure: pb.StructuredQuery_FindNearest_DistanceMeasure(measure),
+	}
+	return vq
 }
 
 // NewAggregationQuery returns an AggregationQuery with this query as its
@@ -453,14 +576,24 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// 	offset                 int32
 	q.offset = pbq.GetOffset()
 
-	// 	limit                  *wrappers.Int32Value
+	// 	limit                  *wrapperspb.Int32Value
 	if limit := pbq.GetLimit(); limit != nil {
 		q.limit = limit
 	}
 
+	q.findNearest = pbq.GetFindNearest()
+
 	// NOTE: limit to last isn't part of the proto, this is a client-side concept
 	// 	limitToLast            bool
 	return q, q.err
+}
+
+func (q Query) startCursorSpecified() bool {
+	return len(q.startVals) != 0 || q.startDoc != nil
+}
+
+func (q Query) endCursorSpecified() bool {
+	return len(q.endVals) != 0 || q.endDoc != nil
 }
 
 func (q Query) toProto() (*pb.StructuredQuery, error) {
@@ -471,12 +604,12 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 		return nil, errors.New("firestore: query created without CollectionRef")
 	}
 	if q.startBefore {
-		if len(q.startVals) == 0 && q.startDoc == nil {
+		if !q.startCursorSpecified() {
 			return nil, errors.New("firestore: StartAt/StartAfter must be called with at least one value")
 		}
 	}
 	if q.endBefore {
-		if len(q.endVals) == 0 && q.endDoc == nil {
+		if !q.endCursorSpecified() {
 			return nil, errors.New("firestore: EndAt/EndBefore must be called with at least one value")
 		}
 	}
@@ -531,6 +664,7 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 		return nil, err
 	}
 	p.EndAt = cursor
+	p.FindNearest = q.findNearest
 	return p, nil
 }
 
@@ -597,7 +731,7 @@ func (q *Query) fieldValuesToCursorValues(fieldValues []interface{}) ([]*pb.Valu
 
 			switch docID := fval.(type) {
 			case string:
-				vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{q.path + "/" + docID}}
+				vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: q.path + "/" + docID}}
 				continue
 			case *DocumentRef:
 				// DocumentRef can be transformed in usual way.
@@ -626,7 +760,7 @@ func (q *Query) docSnapshotToCursorValues(ds *DocumentSnapshot, orders []order) 
 			if !q.allDescendants && dp != qp {
 				return nil, fmt.Errorf("firestore: document snapshot for %s passed to query on %s", dp, qp)
 			}
-			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ds.Ref.Path}}
+			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: ds.Ref.Path}}
 		} else {
 			var val *pb.Value
 			var err error

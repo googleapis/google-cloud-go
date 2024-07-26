@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,10 +55,13 @@ type CloudShellCallOptions struct {
 func defaultCloudShellGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudshell.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudshell.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudshell.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudshell.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -332,7 +335,9 @@ func (c *cloudShellGRPCClient) Connection() *grpc.ClientConn {
 func (c *cloudShellGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -401,9 +406,12 @@ func NewCloudShellRESTClient(ctx context.Context, opts ...option.ClientOption) (
 func defaultCloudShellRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudshell.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudshell.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudshell.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudshell.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -413,7 +421,9 @@ func defaultCloudShellRESTClientOptions() []option.ClientOption {
 func (c *cloudShellRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -881,12 +891,6 @@ func (c *cloudShellRESTClient) RemovePublicKey(ctx context.Context, req *shellpb
 	}, nil
 }
 
-// AddPublicKeyOperation manages a long-running operation from AddPublicKey.
-type AddPublicKeyOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // AddPublicKeyOperation returns a new AddPublicKeyOperation from a given name.
 // The name must be that of a previously created AddPublicKeyOperation, possibly from a different process.
 func (c *cloudShellGRPCClient) AddPublicKeyOperation(name string) *AddPublicKeyOperation {
@@ -903,70 +907,6 @@ func (c *cloudShellRESTClient) AddPublicKeyOperation(name string) *AddPublicKeyO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *AddPublicKeyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*shellpb.AddPublicKeyResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp shellpb.AddPublicKeyResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *AddPublicKeyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*shellpb.AddPublicKeyResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp shellpb.AddPublicKeyResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *AddPublicKeyOperation) Metadata() (*shellpb.AddPublicKeyMetadata, error) {
-	var meta shellpb.AddPublicKeyMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *AddPublicKeyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *AddPublicKeyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// AuthorizeEnvironmentOperation manages a long-running operation from AuthorizeEnvironment.
-type AuthorizeEnvironmentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // AuthorizeEnvironmentOperation returns a new AuthorizeEnvironmentOperation from a given name.
@@ -987,70 +927,6 @@ func (c *cloudShellRESTClient) AuthorizeEnvironmentOperation(name string) *Autho
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *AuthorizeEnvironmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*shellpb.AuthorizeEnvironmentResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp shellpb.AuthorizeEnvironmentResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *AuthorizeEnvironmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*shellpb.AuthorizeEnvironmentResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp shellpb.AuthorizeEnvironmentResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *AuthorizeEnvironmentOperation) Metadata() (*shellpb.AuthorizeEnvironmentMetadata, error) {
-	var meta shellpb.AuthorizeEnvironmentMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *AuthorizeEnvironmentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *AuthorizeEnvironmentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RemovePublicKeyOperation manages a long-running operation from RemovePublicKey.
-type RemovePublicKeyOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // RemovePublicKeyOperation returns a new RemovePublicKeyOperation from a given name.
 // The name must be that of a previously created RemovePublicKeyOperation, possibly from a different process.
 func (c *cloudShellGRPCClient) RemovePublicKeyOperation(name string) *RemovePublicKeyOperation {
@@ -1069,70 +945,6 @@ func (c *cloudShellRESTClient) RemovePublicKeyOperation(name string) *RemovePubl
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RemovePublicKeyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*shellpb.RemovePublicKeyResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp shellpb.RemovePublicKeyResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RemovePublicKeyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*shellpb.RemovePublicKeyResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp shellpb.RemovePublicKeyResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RemovePublicKeyOperation) Metadata() (*shellpb.RemovePublicKeyMetadata, error) {
-	var meta shellpb.RemovePublicKeyMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RemovePublicKeyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RemovePublicKeyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StartEnvironmentOperation manages a long-running operation from StartEnvironment.
-type StartEnvironmentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // StartEnvironmentOperation returns a new StartEnvironmentOperation from a given name.
 // The name must be that of a previously created StartEnvironmentOperation, possibly from a different process.
 func (c *cloudShellGRPCClient) StartEnvironmentOperation(name string) *StartEnvironmentOperation {
@@ -1149,62 +961,4 @@ func (c *cloudShellRESTClient) StartEnvironmentOperation(name string) *StartEnvi
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StartEnvironmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*shellpb.StartEnvironmentResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp shellpb.StartEnvironmentResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StartEnvironmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*shellpb.StartEnvironmentResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp shellpb.StartEnvironmentResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StartEnvironmentOperation) Metadata() (*shellpb.StartEnvironmentMetadata, error) {
-	var meta shellpb.StartEnvironmentMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StartEnvironmentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StartEnvironmentOperation) Name() string {
-	return op.lro.Name()
 }

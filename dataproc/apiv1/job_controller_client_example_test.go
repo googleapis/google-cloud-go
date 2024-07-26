@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ func ExampleNewJobControllerRESTClient() {
 	_ = c
 }
 
-func ExampleJobControllerClient_SubmitJob() {
+func ExampleJobControllerClient_CancelJob() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -73,11 +73,11 @@ func ExampleJobControllerClient_SubmitJob() {
 	}
 	defer c.Close()
 
-	req := &dataprocpb.SubmitJobRequest{
+	req := &dataprocpb.CancelJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#SubmitJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#CancelJobRequest.
 	}
-	resp, err := c.SubmitJob(ctx, req)
+	resp, err := c.CancelJob(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -85,7 +85,7 @@ func ExampleJobControllerClient_SubmitJob() {
 	_ = resp
 }
 
-func ExampleJobControllerClient_SubmitJobAsOperation() {
+func ExampleJobControllerClient_DeleteJob() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -98,21 +98,14 @@ func ExampleJobControllerClient_SubmitJobAsOperation() {
 	}
 	defer c.Close()
 
-	req := &dataprocpb.SubmitJobRequest{
+	req := &dataprocpb.DeleteJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#SubmitJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#DeleteJobRequest.
 	}
-	op, err := c.SubmitJobAsOperation(ctx, req)
+	err = c.DeleteJob(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleJobControllerClient_GetJob() {
@@ -168,7 +161,68 @@ func ExampleJobControllerClient_ListJobs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dataprocpb.ListJobsResponse)
 	}
+}
+
+func ExampleJobControllerClient_SubmitJob() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataproc.NewJobControllerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataprocpb.SubmitJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#SubmitJobRequest.
+	}
+	resp, err := c.SubmitJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleJobControllerClient_SubmitJobAsOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataproc.NewJobControllerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataprocpb.SubmitJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#SubmitJobRequest.
+	}
+	op, err := c.SubmitJobAsOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleJobControllerClient_UpdateJob() {
@@ -194,54 +248,6 @@ func ExampleJobControllerClient_UpdateJob() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleJobControllerClient_CancelJob() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataproc.NewJobControllerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataprocpb.CancelJobRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#CancelJobRequest.
-	}
-	resp, err := c.CancelJob(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleJobControllerClient_DeleteJob() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataproc.NewJobControllerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataprocpb.DeleteJobRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#DeleteJobRequest.
-	}
-	err = c.DeleteJob(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }
 
 func ExampleJobControllerClient_GetIamPolicy() {
@@ -418,5 +424,11 @@ func ExampleJobControllerClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

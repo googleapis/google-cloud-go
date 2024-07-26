@@ -1,5 +1,75 @@
 # Changes
 
+## [1.14.13](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.12...artifactregistry/v1.14.13) (2024-07-24)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.14.12](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.11...artifactregistry/v1.14.12) (2024-07-10)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.14.11](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.10...artifactregistry/v1.14.11) (2024-07-01)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.14.10](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.9...artifactregistry/v1.14.10) (2024-06-26)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.14.9](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.8...artifactregistry/v1.14.9) (2024-05-01)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.14.8](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.7...artifactregistry/v1.14.8) (2024-03-14)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.14.7](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.6...artifactregistry/v1.14.7) (2024-01-30)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.14.6](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.5...artifactregistry/v1.14.6) (2023-11-01)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.14.5](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.4...artifactregistry/v1.14.5) (2023-10-31)
+
+
+### Documentation
+
+* **artifactregistry:** Use code font for resource name references ([ffb0dda](https://github.com/googleapis/google-cloud-go/commit/ffb0ddabf3d9822ba8120cabaf25515fd32e9615))
+
+## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.3...artifactregistry/v1.14.4) (2023-10-26)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.2...artifactregistry/v1.14.3) (2023-10-12)
 
 

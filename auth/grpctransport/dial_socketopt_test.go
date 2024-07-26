@@ -26,6 +26,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/auth"
 	"google.golang.org/grpc"
 )
 
@@ -107,9 +108,11 @@ func TestDialWithDirectPathEnabled(t *testing.T) {
 	})
 
 	pool, err := Dial(ctx, true, &Options{
-		TokenProvider: staticTP("hey"),
-		GRPCDialOpts:  []grpc.DialOption{userDialer},
-		Endpoint:      "example.google.com:443",
+		Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider: &staticTP{tok: &auth.Token{Value: "hey"}},
+		}),
+		GRPCDialOpts: []grpc.DialOption{userDialer},
+		Endpoint:     "example.google.com:443",
 		InternalOptions: &InternalOptions{
 			EnableDirectPath: true,
 		},

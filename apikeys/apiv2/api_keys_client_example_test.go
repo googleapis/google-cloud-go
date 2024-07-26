@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ func ExampleClient_CreateKey() {
 	_ = resp
 }
 
-func ExampleClient_ListKeys() {
+func ExampleClient_DeleteKey() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -102,22 +102,21 @@ func ExampleClient_ListKeys() {
 	}
 	defer c.Close()
 
-	req := &apikeyspb.ListKeysRequest{
+	req := &apikeyspb.DeleteKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/apikeys/apiv2/apikeyspb#ListKeysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apikeys/apiv2/apikeyspb#DeleteKeyRequest.
 	}
-	it := c.ListKeys(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	op, err := c.DeleteKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_GetKey() {
@@ -170,7 +169,7 @@ func ExampleClient_GetKeyString() {
 	_ = resp
 }
 
-func ExampleClient_UpdateKey() {
+func ExampleClient_ListKeys() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -183,24 +182,31 @@ func ExampleClient_UpdateKey() {
 	}
 	defer c.Close()
 
-	req := &apikeyspb.UpdateKeyRequest{
+	req := &apikeyspb.ListKeysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/apikeys/apiv2/apikeyspb#UpdateKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apikeys/apiv2/apikeyspb#ListKeysRequest.
 	}
-	op, err := c.UpdateKey(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
+	it := c.ListKeys(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apikeyspb.ListKeysResponse)
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
-func ExampleClient_DeleteKey() {
+func ExampleClient_LookupKey() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -213,16 +219,11 @@ func ExampleClient_DeleteKey() {
 	}
 	defer c.Close()
 
-	req := &apikeyspb.DeleteKeyRequest{
+	req := &apikeyspb.LookupKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/apikeys/apiv2/apikeyspb#DeleteKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apikeys/apiv2/apikeyspb#LookupKeyRequest.
 	}
-	op, err := c.DeleteKey(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
+	resp, err := c.LookupKey(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -260,7 +261,7 @@ func ExampleClient_UndeleteKey() {
 	_ = resp
 }
 
-func ExampleClient_LookupKey() {
+func ExampleClient_UpdateKey() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -273,11 +274,16 @@ func ExampleClient_LookupKey() {
 	}
 	defer c.Close()
 
-	req := &apikeyspb.LookupKeyRequest{
+	req := &apikeyspb.UpdateKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/apikeys/apiv2/apikeyspb#LookupKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apikeys/apiv2/apikeyspb#UpdateKeyRequest.
 	}
-	resp, err := c.LookupKey(ctx, req)
+	op, err := c.UpdateKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

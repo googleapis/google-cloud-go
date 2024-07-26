@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ type ProductCallOptions struct {
 	ListProducts            []gax.CallOption
 	UpdateProduct           []gax.CallOption
 	DeleteProduct           []gax.CallOption
+	PurgeProducts           []gax.CallOption
 	ImportProducts          []gax.CallOption
 	SetInventory            []gax.CallOption
 	AddFulfillmentPlaces    []gax.CallOption
@@ -59,10 +60,13 @@ type ProductCallOptions struct {
 func defaultProductGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("retail.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -123,6 +127,19 @@ func defaultProductCallOptions() *ProductCallOptions {
 			}),
 		},
 		DeleteProduct: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		PurgeProducts: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -230,7 +247,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 	}
 }
 
-// internalProductClient is an interface that defines the methods available from Retail API.
+// internalProductClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalProductClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -240,6 +257,8 @@ type internalProductClient interface {
 	ListProducts(context.Context, *retailpb.ListProductsRequest, ...gax.CallOption) *ProductIterator
 	UpdateProduct(context.Context, *retailpb.UpdateProductRequest, ...gax.CallOption) (*retailpb.Product, error)
 	DeleteProduct(context.Context, *retailpb.DeleteProductRequest, ...gax.CallOption) error
+	PurgeProducts(context.Context, *retailpb.PurgeProductsRequest, ...gax.CallOption) (*PurgeProductsOperation, error)
+	PurgeProductsOperation(name string) *PurgeProductsOperation
 	ImportProducts(context.Context, *retailpb.ImportProductsRequest, ...gax.CallOption) (*ImportProductsOperation, error)
 	ImportProductsOperation(name string) *ImportProductsOperation
 	SetInventory(context.Context, *retailpb.SetInventoryRequest, ...gax.CallOption) (*SetInventoryOperation, error)
@@ -256,7 +275,7 @@ type internalProductClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ProductClient is a client for interacting with Retail API.
+// ProductClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for ingesting Product information
@@ -320,6 +339,33 @@ func (c *ProductClient) UpdateProduct(ctx context.Context, req *retailpb.UpdateP
 // DeleteProduct deletes a Product.
 func (c *ProductClient) DeleteProduct(ctx context.Context, req *retailpb.DeleteProductRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteProduct(ctx, req, opts...)
+}
+
+// PurgeProducts permanently deletes all selected Products
+// under a branch.
+//
+// This process is asynchronous. If the request is valid, the removal will be
+// enqueued and processed offline. Depending on the number of
+// Products, this operation could take hours
+// to complete. Before the operation completes, some
+// Products may still be returned by
+// ProductService.GetProduct
+// or
+// ProductService.ListProducts.
+//
+// Depending on the number of Products, this
+// operation could take hours to complete. To get a sample of
+// Products that would be deleted, set
+// PurgeProductsRequest.force
+// to false.
+func (c *ProductClient) PurgeProducts(ctx context.Context, req *retailpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
+	return c.internalClient.PurgeProducts(ctx, req, opts...)
+}
+
+// PurgeProductsOperation returns a new PurgeProductsOperation from a given name.
+// The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
+func (c *ProductClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
+	return c.internalClient.PurgeProductsOperation(name)
 }
 
 // ImportProducts bulk import of multiple Products.
@@ -398,10 +444,11 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 	return c.internalClient.SetInventoryOperation(name)
 }
 
-// AddFulfillmentPlaces it is recommended to use the
+// AddFulfillmentPlaces we recommend that you use the
 // ProductService.AddLocalInventories
-// method instead of
-// ProductService.AddFulfillmentPlaces.
+// method instead of the
+// ProductService.AddFulfillmentPlaces
+// method.
 // ProductService.AddLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -437,10 +484,11 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 	return c.internalClient.AddFulfillmentPlacesOperation(name)
 }
 
-// RemoveFulfillmentPlaces it is recommended to use the
+// RemoveFulfillmentPlaces we recommend that you use the
 // ProductService.RemoveLocalInventories
-// method instead of
-// ProductService.RemoveFulfillmentPlaces.
+// method instead of the
+// ProductService.RemoveFulfillmentPlaces
+// method.
 // ProductService.RemoveLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -560,7 +608,7 @@ func (c *ProductClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// productGRPCClient is a client for interacting with Retail API over gRPC transport.
+// productGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type productGRPCClient struct {
@@ -643,7 +691,9 @@ func (c *productGRPCClient) Connection() *grpc.ClientConn {
 func (c *productGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -764,6 +814,26 @@ func (c *productGRPCClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *productGRPCClient) PurgeProducts(ctx context.Context, req *retailpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).PurgeProducts[0:len((*c.CallOptions).PurgeProducts):len((*c.CallOptions).PurgeProducts)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.productClient.PurgeProducts(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &PurgeProductsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.ImportProductsRequest, opts ...gax.CallOption) (*ImportProductsOperation, error) {
@@ -950,78 +1020,12 @@ func (c *productGRPCClient) ListOperations(ctx context.Context, req *longrunning
 	return it
 }
 
-// AddFulfillmentPlacesOperation manages a long-running operation from AddFulfillmentPlaces.
-type AddFulfillmentPlacesOperation struct {
-	lro *longrunning.Operation
-}
-
 // AddFulfillmentPlacesOperation returns a new AddFulfillmentPlacesOperation from a given name.
 // The name must be that of a previously created AddFulfillmentPlacesOperation, possibly from a different process.
 func (c *productGRPCClient) AddFulfillmentPlacesOperation(name string) *AddFulfillmentPlacesOperation {
 	return &AddFulfillmentPlacesOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *AddFulfillmentPlacesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddFulfillmentPlacesResponse, error) {
-	var resp retailpb.AddFulfillmentPlacesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *AddFulfillmentPlacesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddFulfillmentPlacesResponse, error) {
-	var resp retailpb.AddFulfillmentPlacesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *AddFulfillmentPlacesOperation) Metadata() (*retailpb.AddFulfillmentPlacesMetadata, error) {
-	var meta retailpb.AddFulfillmentPlacesMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *AddFulfillmentPlacesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *AddFulfillmentPlacesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// AddLocalInventoriesOperation manages a long-running operation from AddLocalInventories.
-type AddLocalInventoriesOperation struct {
-	lro *longrunning.Operation
 }
 
 // AddLocalInventoriesOperation returns a new AddLocalInventoriesOperation from a given name.
@@ -1032,67 +1036,6 @@ func (c *productGRPCClient) AddLocalInventoriesOperation(name string) *AddLocalI
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *AddLocalInventoriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddLocalInventoriesResponse, error) {
-	var resp retailpb.AddLocalInventoriesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *AddLocalInventoriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddLocalInventoriesResponse, error) {
-	var resp retailpb.AddLocalInventoriesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *AddLocalInventoriesOperation) Metadata() (*retailpb.AddLocalInventoriesMetadata, error) {
-	var meta retailpb.AddLocalInventoriesMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *AddLocalInventoriesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *AddLocalInventoriesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ImportProductsOperation manages a long-running operation from ImportProducts.
-type ImportProductsOperation struct {
-	lro *longrunning.Operation
-}
-
 // ImportProductsOperation returns a new ImportProductsOperation from a given name.
 // The name must be that of a previously created ImportProductsOperation, possibly from a different process.
 func (c *productGRPCClient) ImportProductsOperation(name string) *ImportProductsOperation {
@@ -1101,65 +1044,12 @@ func (c *productGRPCClient) ImportProductsOperation(name string) *ImportProducts
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportProductsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.ImportProductsResponse, error) {
-	var resp retailpb.ImportProductsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// PurgeProductsOperation returns a new PurgeProductsOperation from a given name.
+// The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
+func (c *productGRPCClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
+	return &PurgeProductsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportProductsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.ImportProductsResponse, error) {
-	var resp retailpb.ImportProductsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportProductsOperation) Metadata() (*retailpb.ImportMetadata, error) {
-	var meta retailpb.ImportMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportProductsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportProductsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RemoveFulfillmentPlacesOperation manages a long-running operation from RemoveFulfillmentPlaces.
-type RemoveFulfillmentPlacesOperation struct {
-	lro *longrunning.Operation
 }
 
 // RemoveFulfillmentPlacesOperation returns a new RemoveFulfillmentPlacesOperation from a given name.
@@ -1170,67 +1060,6 @@ func (c *productGRPCClient) RemoveFulfillmentPlacesOperation(name string) *Remov
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RemoveFulfillmentPlacesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveFulfillmentPlacesResponse, error) {
-	var resp retailpb.RemoveFulfillmentPlacesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RemoveFulfillmentPlacesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveFulfillmentPlacesResponse, error) {
-	var resp retailpb.RemoveFulfillmentPlacesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RemoveFulfillmentPlacesOperation) Metadata() (*retailpb.RemoveFulfillmentPlacesMetadata, error) {
-	var meta retailpb.RemoveFulfillmentPlacesMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RemoveFulfillmentPlacesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RemoveFulfillmentPlacesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RemoveLocalInventoriesOperation manages a long-running operation from RemoveLocalInventories.
-type RemoveLocalInventoriesOperation struct {
-	lro *longrunning.Operation
-}
-
 // RemoveLocalInventoriesOperation returns a new RemoveLocalInventoriesOperation from a given name.
 // The name must be that of a previously created RemoveLocalInventoriesOperation, possibly from a different process.
 func (c *productGRPCClient) RemoveLocalInventoriesOperation(name string) *RemoveLocalInventoriesOperation {
@@ -1239,174 +1068,10 @@ func (c *productGRPCClient) RemoveLocalInventoriesOperation(name string) *Remove
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RemoveLocalInventoriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveLocalInventoriesResponse, error) {
-	var resp retailpb.RemoveLocalInventoriesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RemoveLocalInventoriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveLocalInventoriesResponse, error) {
-	var resp retailpb.RemoveLocalInventoriesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RemoveLocalInventoriesOperation) Metadata() (*retailpb.RemoveLocalInventoriesMetadata, error) {
-	var meta retailpb.RemoveLocalInventoriesMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RemoveLocalInventoriesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RemoveLocalInventoriesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// SetInventoryOperation manages a long-running operation from SetInventory.
-type SetInventoryOperation struct {
-	lro *longrunning.Operation
-}
-
 // SetInventoryOperation returns a new SetInventoryOperation from a given name.
 // The name must be that of a previously created SetInventoryOperation, possibly from a different process.
 func (c *productGRPCClient) SetInventoryOperation(name string) *SetInventoryOperation {
 	return &SetInventoryOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SetInventoryOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.SetInventoryResponse, error) {
-	var resp retailpb.SetInventoryResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SetInventoryOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.SetInventoryResponse, error) {
-	var resp retailpb.SetInventoryResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SetInventoryOperation) Metadata() (*retailpb.SetInventoryMetadata, error) {
-	var meta retailpb.SetInventoryMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SetInventoryOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SetInventoryOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ProductIterator manages a stream of *retailpb.Product.
-type ProductIterator struct {
-	items    []*retailpb.Product
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*retailpb.Product, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProductIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProductIterator) Next() (*retailpb.Product, error) {
-	var item *retailpb.Product
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ProductIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ProductIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }
