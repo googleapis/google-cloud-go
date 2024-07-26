@@ -259,6 +259,12 @@ func aggregateProtoToType(agg *btapb.Type_Aggregate) Type {
 	switch agg.Aggregator.(type) {
 	case *btapb.Type_Aggregate_Sum_:
 		aggregator = SumAggregator{}
+	case *btapb.Type_Aggregate_Min_:
+		aggregator = MinAggregator{}
+	case *btapb.Type_Aggregate_Max_:
+		aggregator = MaxAggregator{}
+	case *btapb.Type_Aggregate_Hll_:
+		aggregator = HllAggregator{}
 	default:
 		aggregator = unknownAggregator{wrapped: agg}
 	}
