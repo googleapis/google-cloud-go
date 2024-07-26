@@ -216,7 +216,7 @@ func TestHllAggregateProto(t *testing.T) {
 		},
 	}
 
-	got := AggregateType{Input: Int64Type{}, Aggregator: HllAggregator{}}.proto()
+	got := AggregateType{Input: Int64Type{}, Aggregator: HllppUniqueCountAggregator{}}.proto()
 	if !proto.Equal(got, want) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}

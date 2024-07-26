@@ -164,10 +164,10 @@ func (max MaxAggregator) fillProto(proto *btapb.Type_Aggregate) {
 	proto.Aggregator = &btapb.Type_Aggregate_Max_{Max: &btapb.Type_Aggregate_Max{}}
 }
 
-// HllAggregator is an aggregation function that calculates the unique count of inputs and the accumulator.
-type HllAggregator struct{}
+// HllppUniqueCountAggregator is an aggregation function that calculates the unique count of inputs and the accumulator.
+type HllppUniqueCountAggregator struct{}
 
-func (hll HllAggregator) fillProto(proto *btapb.Type_Aggregate) {
+func (hll HllppUniqueCountAggregator) fillProto(proto *btapb.Type_Aggregate) {
 	proto.Aggregator = &btapb.Type_Aggregate_HllppUniqueCount{HllppUniqueCount: &btapb.Type_Aggregate_HyperLogLogPlusPlusUniqueCount{}}
 }
 
@@ -264,7 +264,7 @@ func aggregateProtoToType(agg *btapb.Type_Aggregate) Type {
 	case *btapb.Type_Aggregate_Max_:
 		aggregator = MaxAggregator{}
 	case *btapb.Type_Aggregate_HllppUniqueCount:
-		aggregator = HllAggregator{}
+		aggregator = HllppUniqueCountAggregator{}
 	default:
 		aggregator = unknownAggregator{wrapped: agg}
 	}
