@@ -19,7 +19,7 @@ package bigtable
 import (
 	"testing"
 
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"google.golang.org/protobuf/proto"
 )
 

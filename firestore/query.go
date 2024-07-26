@@ -371,7 +371,7 @@ type DistanceMeasure int32
 
 const (
 	// DistanceMeasureEuclidean is used to measures the Euclidean distance between the vectors. See
-	// [Euclidean] to learn more
+	// [Euclidean] to learn more.
 	//
 	// [Euclidean]: https://en.wikipedia.org/wiki/Euclidean_distance
 	DistanceMeasureEuclidean DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_EUCLIDEAN)
@@ -393,33 +393,39 @@ const (
 )
 
 // FindNearestOptions are options for a FindNearest vector query.
+// At present, there are no options.
 type FindNearestOptions struct {
 }
 
-// VectorQuery represents a vector query
+// VectorQuery represents a query that uses [Query.FindNearest] or [Query.FindNearestPath].
 type VectorQuery struct {
 	q Query
 }
 
-// FindNearest returns a query that can perform vector distance (similarity) search with given parameters.
+// FindNearest returns a query that can perform vector distance (similarity) search.
 //
-// The returned query, when executed, performs a distance (similarity) search on the specified
+// The returned query, when executed, performs a distance search on the specified
 // vectorField against the given queryVector and returns the top documents that are closest
-// to the queryVector;.
+// to the queryVector according to measure. At most limit documents are returned.
 //
-// Only documents whose vectorField field is a Vector of the same dimension as queryVector
-// participate in the query, all other documents are ignored.
+// Only documents whose vectorField field is a Vector32 or Vector64 of the same dimension
+// as queryVector participate in the query; all other documents are ignored.
+// In particular, fields of type []float32 or []float64 are ignored.
 //
 // The vectorField argument can be a single field or a dot-separated sequence of
 // fields, and must not contain any of the runes "˜*/[]".
+//
+// The queryVector argument can be any of the following types:
+//   - []float32
+//   - []float64
+//   - Vector32
+//   - Vector64
 func (q Query) FindNearest(vectorField string, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
 	// Validate field path
 	fieldPath, err := parseDotSeparatedString(vectorField)
 	if err != nil {
 		q.err = err
-		return VectorQuery{
-			q: q,
-		}
+		return VectorQuery{q: q}
 	}
 	return q.FindNearestPath(fieldPath, queryVector, limit, measure, options)
 }
@@ -429,11 +435,9 @@ func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
 	return vq.q.Documents(ctx)
 }
 
-// FindNearestPath is similar to FindNearest but it accepts a [FieldPath].
+// FindNearestPath is like [Query.FindNearest] but it accepts a [FieldPath].
 func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
-	vq := VectorQuery{
-		q: q,
-	}
+	vq := VectorQuery{q: q}
 
 	// Convert field path to field reference
 	vectorFieldRef, err := fref(vectorFieldPath)
