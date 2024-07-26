@@ -1,5 +1,19 @@
 # Changes
 
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.27.0...bigtable/v1.27.1) (2024-07-25)
+
+
+### Bug Fixes
+
+* **bigtable:** Start generating proto sources ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.26.0...bigtable/v1.27.0) (2024-07-25)
+
+
+### Features
+
+* **bigtable:** Built-in client side metrics ([#10046](https://github.com/googleapis/google-cloud-go/issues/10046)) ([a747f0a](https://github.com/googleapis/google-cloud-go/commit/a747f0a49b79c0fe3034f7374b47ca56fc5ce0f5))
+
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.25.0...bigtable/v1.26.0) (2024-07-23)
 
 

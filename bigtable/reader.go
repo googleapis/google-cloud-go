@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 )
 
 // A Row is returned by ReadRows. The map is keyed by column family (the prefix
