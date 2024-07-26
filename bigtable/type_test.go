@@ -70,7 +70,7 @@ func TestStringProto(t *testing.T) {
 	}
 }
 
-func TestAggregateProto(t *testing.T) {
+func TestSumAggregateProto(t *testing.T) {
 	want := &btapb.Type{
 		Kind: &btapb.Type_AggregateType{
 			AggregateType: &btapb.Type_Aggregate{
@@ -109,6 +109,114 @@ func TestAggregateProto(t *testing.T) {
 func TestProtoBijection(t *testing.T) {
 	want := aggregateProto()
 	got := protoToType(want).proto()
+	if !proto.Equal(got, want) {
+		t.Errorf("got type %v, want: %v", got, want)
+	}
+}
+
+func TestMinAggregateProto(t *testing.T) {
+	want := &btapb.Type{
+		Kind: &btapb.Type_AggregateType{
+			AggregateType: &btapb.Type_Aggregate{
+				InputType: &btapb.Type{
+					Kind: &btapb.Type_Int64Type{
+						Int64Type: &btapb.Type_Int64{
+							Encoding: &btapb.Type_Int64_Encoding{
+								Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
+									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{
+										BytesType: &btapb.Type_Bytes{
+											Encoding: &btapb.Type_Bytes_Encoding{
+												Encoding: &btapb.Type_Bytes_Encoding_Raw_{
+													Raw: &btapb.Type_Bytes_Encoding_Raw{},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Aggregator: &btapb.Type_Aggregate_Min_{
+					Min: &btapb.Type_Aggregate_Min{},
+				},
+			},
+		},
+	}
+
+	got := AggregateType{Input: Int64Type{}, Aggregator: MinAggregator{}}.proto()
+	if !proto.Equal(got, want) {
+		t.Errorf("got type %v, want: %v", got, want)
+	}
+}
+
+func TestMaxAggregateProto(t *testing.T) {
+	want := &btapb.Type{
+		Kind: &btapb.Type_AggregateType{
+			AggregateType: &btapb.Type_Aggregate{
+				InputType: &btapb.Type{
+					Kind: &btapb.Type_Int64Type{
+						Int64Type: &btapb.Type_Int64{
+							Encoding: &btapb.Type_Int64_Encoding{
+								Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
+									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{
+										BytesType: &btapb.Type_Bytes{
+											Encoding: &btapb.Type_Bytes_Encoding{
+												Encoding: &btapb.Type_Bytes_Encoding_Raw_{
+													Raw: &btapb.Type_Bytes_Encoding_Raw{},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Aggregator: &btapb.Type_Aggregate_Max_{
+					Max: &btapb.Type_Aggregate_Max{},
+				},
+			},
+		},
+	}
+
+	got := AggregateType{Input: Int64Type{}, Aggregator: MaxAggregator{}}.proto()
+	if !proto.Equal(got, want) {
+		t.Errorf("got type %v, want: %v", got, want)
+	}
+}
+
+func TestHllAggregateProto(t *testing.T) {
+	want := &btapb.Type{
+		Kind: &btapb.Type_AggregateType{
+			AggregateType: &btapb.Type_Aggregate{
+				InputType: &btapb.Type{
+					Kind: &btapb.Type_Int64Type{
+						Int64Type: &btapb.Type_Int64{
+							Encoding: &btapb.Type_Int64_Encoding{
+								Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
+									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{
+										BytesType: &btapb.Type_Bytes{
+											Encoding: &btapb.Type_Bytes_Encoding{
+												Encoding: &btapb.Type_Bytes_Encoding_Raw_{
+													Raw: &btapb.Type_Bytes_Encoding_Raw{},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Aggregator: &btapb.Type_Aggregate_HllppUniqueCount{
+					HllppUniqueCount: &btapb.Type_Aggregate_HyperLogLogPlusPlusUniqueCount{},
+				},
+			},
+		},
+	}
+
+	got := AggregateType{Input: Int64Type{}, Aggregator: HllppUniqueCountAggregator{}}.proto()
 	if !proto.Equal(got, want) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
