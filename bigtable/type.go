@@ -150,6 +150,27 @@ func (sum SumAggregator) fillProto(proto *btapb.Type_Aggregate) {
 	proto.Aggregator = &btapb.Type_Aggregate_Sum_{Sum: &btapb.Type_Aggregate_Sum{}}
 }
 
+// MinAggregator is an aggregation function that finds the minimum between the input and the accumulator.
+type MinAggregator struct{}
+
+func (min MinAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	proto.Aggregator = &btapb.Type_Aggregate_Min_{Min: &btapb.Type_Aggregate_Min{}}
+}
+
+// MaxAggregator is an aggregation function that finds the maximum between the input and the accumulator.
+type MaxAggregator struct{}
+
+func (max MaxAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	proto.Aggregator = &btapb.Type_Aggregate_Max_{Max: &btapb.Type_Aggregate_Max{}}
+}
+
+// HllppUniqueCountAggregator is an aggregation function that calculates the unique count of inputs and the accumulator.
+type HllppUniqueCountAggregator struct{}
+
+func (hll HllppUniqueCountAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	proto.Aggregator = &btapb.Type_Aggregate_HllppUniqueCount{HllppUniqueCount: &btapb.Type_Aggregate_HyperLogLogPlusPlusUniqueCount{}}
+}
+
 type unknownAggregator struct {
 	wrapped *btapb.Type_Aggregate
 }
@@ -239,6 +260,12 @@ func aggregateProtoToType(agg *btapb.Type_Aggregate) Type {
 	switch agg.Aggregator.(type) {
 	case *btapb.Type_Aggregate_Sum_:
 		aggregator = SumAggregator{}
+	case *btapb.Type_Aggregate_Min_:
+		aggregator = MinAggregator{}
+	case *btapb.Type_Aggregate_Max_:
+		aggregator = MaxAggregator{}
+	case *btapb.Type_Aggregate_HllppUniqueCount:
+		aggregator = HllppUniqueCountAggregator{}
 	default:
 		aggregator = unknownAggregator{wrapped: agg}
 	}
