@@ -328,9 +328,9 @@ func TestIntegration_Aggregates(t *testing.T) {
 		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
 	}
 
-	// Merge 4 to override existing value.
+	// Merge 5, which translates in the backend to adding 5 for sum column families.
 	mut2 := NewMutation()
-	mut2.MergeBytesToCell(family, column, 1000, binary.BigEndian.AppendUint64([]byte{}, 4))
+	mut2.MergeBytesToCell(family, column, 1000, binary.BigEndian.AppendUint64([]byte{}, 5))
 	if err := table.Apply(ctx, key, mut); err != nil {
 		t.Fatalf("Mutating row %q: %v", key, err)
 	}
@@ -340,7 +340,7 @@ func TestIntegration_Aggregates(t *testing.T) {
 	}
 	wantRow = Row{
 		family: []ReadItem{
-			{Row: key, Column: fmt.Sprintf("%s:%s", family, column), Timestamp: 1000, Value: binary.BigEndian.AppendUint64([]byte{}, 4)},
+			{Row: key, Column: fmt.Sprintf("%s:%s", family, column), Timestamp: 1000, Value: binary.BigEndian.AppendUint64([]byte{}, 15)},
 		},
 	}
 	if !testutil.Equal(row, wantRow) {
