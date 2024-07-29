@@ -1167,6 +1167,20 @@ func (m *Mutation) addToCell(family, column string, ts Timestamp, value *btpb.Va
 	}}})
 }
 
+// MergeBytesToCell merges a bytes accumulator value to a cell in an aggregate column family.
+func (m *Mutation) MergeBytesToCell(family, column string, ts Timestamp, value []byte) {
+	m.mergeToCell(family, column, ts, &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: value}})
+}
+
+func (m *Mutation) mergeToCell(family, column string, ts Timestamp, value *btpb.Value) {
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_MergeToCell_{MergeToCell: &btpb.Mutation_MergeToCell{
+		FamilyName:      family,
+		ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte(column)}},
+		Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: int64(ts.TruncateToMilliseconds())}},
+		Input:           value,
+	}}})
+}
+
 // entryErr is a container that combines an entry with the error that was returned for it.
 // Err may be nil if no error was returned for the Entry, or if the Entry has not yet been processed.
 type entryErr struct {
