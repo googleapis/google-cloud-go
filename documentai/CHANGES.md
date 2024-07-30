@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.30.5](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.4...documentai/v1.30.5) (2024-07-24)
+
+
+### Bug Fixes
+
+* **documentai:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.30.4](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.3...documentai/v1.30.4) (2024-07-10)
 
 

@@ -59,6 +59,8 @@ deep-remove-regex:
   - /bigquery/storage/apiv1/
   - /bigquery/storage/apiv1beta1/
   - /bigquery/storage/apiv1beta2/
+  - /bigtable/admin/apiv2/
+  - /bigtable/apiv2/
   - /billing/apiv1/
   - /billing/budgets/apiv1/
   - /billing/budgets/apiv1beta1/
@@ -661,6 +663,11 @@ deep-copy-regex:
     dest: /
   - source: /google/area120/tables/v1alpha1/cloud.google.com/go
     dest: /
+  # Just copy the bigtable protos for now
+  - source: /google/bigtable/admin/v2/cloud.google.com/go/bigtable/admin/apiv2/adminpb
+    dest: /bigtable/admin/apiv2/adminpb
+  - source: /google/bigtable/v2/cloud.google.com/go/bigtable/apiv2/bigtablepb
+    dest: /bigtable/apiv2/bigtablepb
   - source: /google/devtools/artifactregistry/v1/cloud.google.com/go
     dest: /
   - source: /google/devtools/artifactregistry/v1beta2/cloud.google.com/go

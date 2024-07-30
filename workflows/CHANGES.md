@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.10](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.12.9...workflows/v1.12.10) (2024-07-24)
+
+
+### Bug Fixes
+
+* **workflows:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.12.9](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.12.8...workflows/v1.12.9) (2024-07-10)
 
 

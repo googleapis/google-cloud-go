@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.7](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.6...translate/v1.10.7) (2024-07-24)
+
+
+### Bug Fixes
+
+* **translate:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.10.6](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.5...translate/v1.10.6) (2024-07-10)
 
 
