@@ -5,7 +5,7 @@ go 1.20
 require (
 	cloud.google.com/go/compute/metadata v0.3.0
 	github.com/google/go-cmp v0.6.0
-	github.com/google/s2a-go v0.1.7
+	github.com/google/s2a-go v0.1.8
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2
 	go.opencensus.io v0.24.0
 	golang.org/x/net v0.27.0
@@ -15,7 +15,6 @@ require (
 
 require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/golang/protobuf v1.5.4 // indirect
 	golang.org/x/crypto v0.25.0 // indirect
 	golang.org/x/oauth2 v0.21.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
