@@ -963,7 +963,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	if t.enableTracing {
 		links := make([]trace.Link, 0, numMsgs)
 		for _, bm := range bms {
-			links = append(links, trace.Link{SpanContext: bm.createSpan.SpanContext()})
+			if bm.createSpan.SpanContext().IsSampled() {
+				links = append(links, trace.Link{SpanContext: bm.createSpan.SpanContext()})
+			}
 		}
 
 		projectID, topicID := parseResourceName(t.name)

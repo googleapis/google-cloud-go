@@ -343,9 +343,10 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 				semconv.MessagingBatchMessageCount(len(msgs)),
 				semconv.CodeFunction("receive"),
 			)
-			if span.SpanContext().IsSampled() {
-				it.activeSpans.Store(ackID, span)
-			}
+			// Always store the subscribe span, even if sampling isn't enabled.
+			// This is useful since we need to propagate the sampling flag
+			// to the callback in Receive, so traces have an unbroken sampling decision.
+			it.activeSpans.Store(ackID, span)
 		}
 	}
 	deadline := it.ackDeadline()
@@ -651,7 +652,10 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 					subscribeSpans = append(subscribeSpans, subscribeSpan)
 					subscribeSpan.AddEvent(eventAckStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(ackIDs))))
 					defer subscribeSpan.AddEvent(eventAckEnd)
-					links = append(links, trace.Link{SpanContext: subscribeSpan.SpanContext()})
+					// Only add this link if the span is sampled, otherwise we're creating invalid links.
+					if subscribeSpan.SpanContext().IsSampled() {
+						links = append(links, trace.Link{SpanContext: subscribeSpan.SpanContext()})
+					}
 				}
 			}
 
@@ -729,7 +733,11 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 					}
 					subscribeSpan.AddEvent(eventStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(ackIDs))))
 					defer subscribeSpan.AddEvent(eventEnd)
-					links = append(links, trace.Link{SpanContext: subscribeSpan.SpanContext()})
+
+					// Only add this link if the span is sampled, otherwise we're creating invalid links.
+					if subscribeSpan.SpanContext().IsSampled() {
+						links = append(links, trace.Link{SpanContext: subscribeSpan.SpanContext()})
+					}
 				}
 			}
 
