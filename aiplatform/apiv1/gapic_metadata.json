@@ -2047,9 +2047,19 @@
                 "CancelOperation"
               ]
             },
+            "CreateNotebookExecutionJob": {
+              "methods": [
+                "CreateNotebookExecutionJob"
+              ]
+            },
             "CreateNotebookRuntimeTemplate": {
               "methods": [
                 "CreateNotebookRuntimeTemplate"
+              ]
+            },
+            "DeleteNotebookExecutionJob": {
+              "methods": [
+                "DeleteNotebookExecutionJob"
               ]
             },
             "DeleteNotebookRuntime": {
@@ -2077,6 +2087,11 @@
                 "GetLocation"
               ]
             },
+            "GetNotebookExecutionJob": {
+              "methods": [
+                "GetNotebookExecutionJob"
+              ]
+            },
             "GetNotebookRuntime": {
               "methods": [
                 "GetNotebookRuntime"
@@ -2095,6 +2110,11 @@
             "ListLocations": {
               "methods": [
                 "ListLocations"
+              ]
+            },
+            "ListNotebookExecutionJobs": {
+              "methods": [
+                "ListNotebookExecutionJobs"
               ]
             },
             "ListNotebookRuntimeTemplates": {
