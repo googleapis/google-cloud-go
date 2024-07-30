@@ -5,7 +5,7 @@ go 1.20
 require (
 	cloud.google.com/go v0.115.0
 	cloud.google.com/go/accessapproval v1.7.9
-	cloud.google.com/go/accesscontextmanager v1.8.9
+	cloud.google.com/go/accesscontextmanager v1.8.11
 	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/aiplatform v1.68.0
 	cloud.google.com/go/alloydb v0.0.0-00010101000000-000000000000
@@ -36,7 +36,7 @@ require (
 	cloud.google.com/go/contactcenterinsights v1.13.4
 	cloud.google.com/go/container v1.37.2
 	cloud.google.com/go/containeranalysis v0.11.8
-	cloud.google.com/go/datacatalog v1.20.3
+	cloud.google.com/go/datacatalog v1.20.5
 	cloud.google.com/go/dataflow v0.9.9
 	cloud.google.com/go/dataform v0.9.6
 	cloud.google.com/go/datafusion v1.7.9
@@ -64,15 +64,15 @@ require (
 	cloud.google.com/go/gkehub v0.14.9
 	cloud.google.com/go/gkemulticloud v1.2.2
 	cloud.google.com/go/gsuiteaddons v1.6.9
-	cloud.google.com/go/iam v1.1.10
+	cloud.google.com/go/iam v1.1.12
 	cloud.google.com/go/iap v1.9.8
 	cloud.google.com/go/ids v1.4.9
 	cloud.google.com/go/iot v1.7.9
-	cloud.google.com/go/kms v1.18.2
+	cloud.google.com/go/kms v1.18.4
 	cloud.google.com/go/language v1.12.7
 	cloud.google.com/go/lifesciences v0.9.9
 	cloud.google.com/go/logging v1.10.0
-	cloud.google.com/go/longrunning v0.5.10
+	cloud.google.com/go/longrunning v0.5.11
 	cloud.google.com/go/managedidentities v1.6.9
 	cloud.google.com/go/maps v1.11.3
 	cloud.google.com/go/mediatranslation v0.8.9
@@ -85,8 +85,8 @@ require (
 	cloud.google.com/go/notebooks v1.11.7
 	cloud.google.com/go/optimization v1.6.7
 	cloud.google.com/go/orchestration v1.9.4
-	cloud.google.com/go/orgpolicy v1.12.5
-	cloud.google.com/go/osconfig v1.13.0
+	cloud.google.com/go/orgpolicy v1.12.7
+	cloud.google.com/go/osconfig v1.13.2
 	cloud.google.com/go/oslogin v1.13.5
 	cloud.google.com/go/phishingprotection v0.8.9
 	cloud.google.com/go/policytroubleshooter v1.10.7
@@ -162,11 +162,11 @@ require (
 	cloud.google.com/go/securityposture v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/servicehealth v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/shopping v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/storage v1.42.0
+	cloud.google.com/go/storage v1.43.0
 	cloud.google.com/go/streetview v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/telcoautomation v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/visionai v0.0.0-00010101000000-000000000000
-	google.golang.org/genproto/googleapis/api v0.0.0-20240722135656-d784300faade
+	google.golang.org/genproto/googleapis/api v0.0.0-20240725223205-93522f1f2a9f
 	google.golang.org/protobuf v1.34.2
 )
 
@@ -195,8 +195,8 @@ require (
 	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240722135656-d784300faade // indirect
-	google.golang.org/grpc v1.64.1 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240725223205-93522f1f2a9f // indirect
+	google.golang.org/grpc v1.65.0 // indirect
 )
 
 replace cloud.google.com/go/storageinsights => ../../../storageinsights
