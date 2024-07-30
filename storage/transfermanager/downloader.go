@@ -35,7 +35,7 @@ import (
 
 // maxChecksumZeroArraySize is the maximum amount of memory to allocate for
 // updating the checksum. A larger size will occupy more memory but will require
-// more updates when computing the crc32c of a full object.
+// fewer updates when computing the crc32c of a full object.
 // TODO: test the performance of smaller values for this.
 const maxChecksumZeroArraySize = 4 * 1024 * 1024
 
@@ -361,9 +361,9 @@ func (d *Downloader) downloadWorker() {
 func (d *Downloader) startDownload(input *DownloadObjectInput) {
 	var out *DownloadOutput
 
-	// Special-case: full object read.
-	// In this case, we want to request the full object and only read partSize bytes,
-	// so that we can avoid a metadata call to grab the CRC32C for JSON downloads.
+	// Full object read. Request the full object and only read partSize bytes
+	// (or the full object, if smaller than partSize), so that we can avoid a
+	// metadata call to grab the CRC32C for JSON downloads.
 	if fullObjectRead(input.Range) {
 		input.checkCRC = true
 		out = input.downloadFirstShard(d.client, d.config.perOperationTimeout, d.config.partSize)
@@ -389,8 +389,7 @@ func (d *Downloader) startDownload(input *DownloadObjectInput) {
 	} else {
 		// Download completed with a single shard.
 		if input.checkCRC {
-			o := d.client.Bucket(input.Bucket).Object(input.Object).Generation(out.Attrs.Generation)
-			if err := checksumObject(input.ctx, o, out.crc32c, out.Attrs.CRC32C); err != nil {
+			if err := checksumObject(out.crc32c, out.Attrs.CRC32C); err != nil {
 				out.Err = err
 			}
 		}
@@ -451,8 +450,7 @@ func (d *Downloader) gatherShards(in *DownloadObjectInput, out *DownloadOutput, 
 	// All pieces gathered.
 	if len(errs) == 0 && in.checkCRC && out.Attrs != nil {
 		fullCrc := joinCRC32C(firstPieceCRC, orderedChecksums)
-		o := d.client.Bucket(in.Bucket).Object(in.Object).Generation(out.Attrs.Generation)
-		if err := checksumObject(in.ctx, o, fullCrc, out.Attrs.CRC32C); err != nil {
+		if err := checksumObject(fullCrc, out.Attrs.CRC32C); err != nil {
 			errs = append(errs, err)
 		}
 	}
@@ -932,16 +930,7 @@ func fullObjectRead(r *DownloadRange) bool {
 	return r == nil || (r.Offset == 0 && r.Length < 0)
 }
 
-func checksumObject(ctx context.Context, object *storage.ObjectHandle, got, want uint32) error {
-	// If we don't have a CRC32C from the reader, do a metadata call to get it.
-	if want == 0 {
-		attrs, err := object.Attrs(ctx)
-		if err != nil {
-			return fmt.Errorf("error getting ObjectAttrs for checksumming: %w", err)
-		}
-		want = attrs.CRC32C
-	}
-
+func checksumObject(got, want uint32) error {
 	// Only checksum the object if we have a valid CRC32C.
 	if want != 0 && want != got {
 		return fmt.Errorf("bad CRC on read: got %d, want %d", got, want)
