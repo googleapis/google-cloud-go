@@ -338,12 +338,12 @@ func (bw *BulkWriter) send(i interface{}) {
 
 				// Do we need separate retry bundler?
 				_, isRetryable := batchWriteRetryCodes[codes.Code(s.Code)]
-				if j.attempts >= maxRetryAttempts || !isRetryable {
-					j.setError(status.Error(codes.Code(s.Code), s.Message))
-				} else {
+				if j.attempts < maxRetryAttempts && isRetryable {
 					// ignore operation size constraints and related errors; job size can't be inferred at compile time
 					// Bundler is set to accept an unlimited amount of bytes
 					_ = bw.bundler.Add(j, 0)
+				} else {
+					j.setError(status.Error(codes.Code(s.Code), s.Message))
 				}
 				continue
 			}
