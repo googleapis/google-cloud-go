@@ -22,9 +22,6 @@ package dlppb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -39,6 +36,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -5325,9 +5324,9 @@ type RedactImageRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -5571,9 +5570,9 @@ type DeidentifyContentRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -5766,9 +5765,9 @@ type ReidentifyContentRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -5961,9 +5960,9 @@ type InspectContentRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -6966,7 +6965,7 @@ type ListInfoTypesRequest struct {
 	//
 	// The format of this value is as follows:
 	//
-	//	locations/<var>LOCATION_ID</var>
+	//	`locations/{location_id}`
 	Parent string `protobuf:"bytes,4,opt,name=parent,proto3" json:"parent,omitempty"`
 	// BCP-47 language code for localized infoType friendly
 	// names. If omitted, or if localized strings are not available,
@@ -9505,8 +9504,7 @@ type CryptoReplaceFfxFpeConfig_CustomAlphabet struct {
 	// This must be encoded as ASCII.
 	// The order of characters does not matter.
 	// The full list of allowed characters is:
-	// <code>0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
-	// ~`!@#$%^&*()_-+={[}]|\:;"'<,>.?/</code>
+	// “0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~`!@#$%^&*()_-+={[}]|\:;"'<,>.?/“
 	CustomAlphabet string `protobuf:"bytes,5,opt,name=custom_alphabet,json=customAlphabet,proto3,oneof"`
 }
 
@@ -11716,13 +11714,13 @@ type CreateInspectTemplateRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//   - Organizations scope, location specified:
-	//     `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `organizations/{org_id}/locations/{location_id}`
 	//   - Organizations scope, no location specified (defaults to global):
-	//     `organizations/`<var>ORG_ID</var>
+	//     `organizations/{org_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -11934,13 +11932,13 @@ type ListInspectTemplatesRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//   - Organizations scope, location specified:
-	//     `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `organizations/{org_id}/locations/{location_id}`
 	//   - Organizations scope, no location specified (defaults to global):
-	//     `organizations/`<var>ORG_ID</var>
+	//     `organizations/{org_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -12162,9 +12160,9 @@ type CreateJobTriggerRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -12423,9 +12421,9 @@ type CreateDiscoveryConfigRequest struct {
 	// (project or organization):
 	//
 	//   - Projects scope:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Organizations scope:
-	//     `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `organizations/{org_id}/locations/{location_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -12622,7 +12620,7 @@ type ListDiscoveryConfigsRequest struct {
 	// Required. Parent resource name.
 	//
 	// The format of this value is as follows:
-	// `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	// `projects/{project_id}/locations/{location_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -12835,9 +12833,9 @@ type CreateDlpJobRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -12967,9 +12965,9 @@ type ListJobTriggersRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -16576,9 +16574,9 @@ type ListDlpJobsRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -16940,13 +16938,13 @@ type CreateDeidentifyTemplateRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//   - Organizations scope, location specified:
-	//     `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `organizations/{org_id}/locations/{location_id}`
 	//   - Organizations scope, no location specified (defaults to global):
-	//     `organizations/`<var>ORG_ID</var>
+	//     `organizations/{org_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -17159,13 +17157,13 @@ type ListDeidentifyTemplatesRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//   - Organizations scope, location specified:
-	//     `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `organizations/{org_id}/locations/{location_id}`
 	//   - Organizations scope, no location specified (defaults to global):
-	//     `organizations/`<var>ORG_ID</var>
+	//     `organizations/{org_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -17902,13 +17900,13 @@ type CreateStoredInfoTypeRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//   - Organizations scope, location specified:
-	//     `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `organizations/{org_id}/locations/{location_id}`
 	//   - Organizations scope, no location specified (defaults to global):
-	//     `organizations/`<var>ORG_ID</var>
+	//     `organizations/{org_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -18122,9 +18120,9 @@ type ListStoredInfoTypesRequest struct {
 	// location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
 	//
 	//   - Projects scope, location specified:
-	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Projects scope, no location specified (defaults to global):
-	//     `projects/`<var>PROJECT_ID</var>
+	//     `projects/{project_id}`
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
@@ -21240,9 +21238,9 @@ type CreateConnectionRequest struct {
 	// (project or organization):
 	//
 	//   - Projects scope:
-	//     `projects/PROJECT_ID/locations/LOCATION_ID`
+	//     `projects/{project_id}/locations/{location_id}`
 	//   - Organizations scope:
-	//     `organizations/ORG_ID/locations/LOCATION_ID`
+	//     `organizations/{org_id}/locations/{location_id}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The connection resource.
 	Connection *Connection `protobuf:"bytes,2,opt,name=connection,proto3" json:"connection,omitempty"`

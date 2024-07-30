@@ -21,13 +21,12 @@
 package dlppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2973,7 +2972,7 @@ type StorageConfig_TimespanConfig struct {
 	// Specification of the field containing the timestamp of scanned items.
 	// Used for data sources like Datastore and BigQuery.
 	//
-	// <b>For BigQuery</b>
+	// **For BigQuery**
 	//
 	// If this value is not specified and the table was modified between the
 	// given start and end times, the entire table will be scanned. If this
@@ -2988,13 +2987,11 @@ type StorageConfig_TimespanConfig struct {
 	// you can use any of the following pseudo-columns as your timestamp field.
 	// When used with Cloud DLP, these pseudo-column names are case sensitive.
 	//
-	// <ul>
-	// <li><code>_PARTITIONTIME</code></li>
-	// <li><code>_PARTITIONDATE</code></li>
-	// <li><code>_PARTITION_LOAD_TIME</code></li>
-	// </ul>
+	// - `_PARTITIONTIME`
+	// - `_PARTITIONDATE`
+	// - `_PARTITION_LOAD_TIME`
 	//
-	// <b>For Datastore</b>
+	// **For Datastore**
 	//
 	// If this value is specified, then entities are filtered based on the given
 	// start and end times. If an entity does not contain the provided timestamp
