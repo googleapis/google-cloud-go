@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.13](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.12...artifactregistry/v1.14.13) (2024-07-24)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.14.12](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.11...artifactregistry/v1.14.12) (2024-07-10)
 
 

@@ -2,6 +2,13 @@
 
 
 
+## [1.5.4](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.5.3...gkebackup/v1.5.4) (2024-07-24)
+
+
+### Bug Fixes
+
+* **gkebackup:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.5.3](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.5.2...gkebackup/v1.5.3) (2024-07-10)
 
 

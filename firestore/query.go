@@ -61,6 +61,8 @@ type Query struct {
 	// readOptions specifies constraints for reading results from the query
 	// e.g. read time
 	readSettings *readSettings
+
+	findNearest *pb.StructuredQuery_FindNearest
 }
 
 // DocumentID is the special field name representing the ID of a document
@@ -364,6 +366,110 @@ func (q Query) Deserialize(bytes []byte) (Query, error) {
 	return q.fromProto(&runQueryRequest)
 }
 
+// DistanceMeasure is the distance measure to use when comparing vectors with [Query.FindNearest] or [Query.FindNearestPath].
+type DistanceMeasure int32
+
+const (
+	// DistanceMeasureEuclidean is used to measures the Euclidean distance between the vectors. See
+	// [Euclidean] to learn more.
+	//
+	// [Euclidean]: https://en.wikipedia.org/wiki/Euclidean_distance
+	DistanceMeasureEuclidean DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_EUCLIDEAN)
+
+	// DistanceMeasureCosine compares vectors based on the angle between them, which allows you to
+	// measure similarity that isn't based on the vectors magnitude.
+	// We recommend using dot product with unit normalized vectors instead of
+	// cosine distance, which is mathematically equivalent with better
+	// performance. See [Cosine Similarity] to learn more.
+	//
+	// [Cosine Similarity]: https://en.wikipedia.org/wiki/Cosine_similarity
+	DistanceMeasureCosine DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_COSINE)
+
+	// DistanceMeasureDotProduct is similar to cosine but is affected by the magnitude of the vectors. See
+	// [Dot Product] to learn more.
+	//
+	// [Dot Product]: https://en.wikipedia.org/wiki/Dot_product
+	DistanceMeasureDotProduct DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_DOT_PRODUCT)
+)
+
+// FindNearestOptions are options for a FindNearest vector query.
+// At present, there are no options.
+type FindNearestOptions struct {
+}
+
+// VectorQuery represents a query that uses [Query.FindNearest] or [Query.FindNearestPath].
+type VectorQuery struct {
+	q Query
+}
+
+// FindNearest returns a query that can perform vector distance (similarity) search.
+//
+// The returned query, when executed, performs a distance search on the specified
+// vectorField against the given queryVector and returns the top documents that are closest
+// to the queryVector according to measure. At most limit documents are returned.
+//
+// Only documents whose vectorField field is a Vector32 or Vector64 of the same dimension
+// as queryVector participate in the query; all other documents are ignored.
+// In particular, fields of type []float32 or []float64 are ignored.
+//
+// The vectorField argument can be a single field or a dot-separated sequence of
+// fields, and must not contain any of the runes "˜*/[]".
+//
+// The queryVector argument can be any of the following types:
+//   - []float32
+//   - []float64
+//   - Vector32
+//   - Vector64
+func (q Query) FindNearest(vectorField string, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
+	// Validate field path
+	fieldPath, err := parseDotSeparatedString(vectorField)
+	if err != nil {
+		q.err = err
+		return VectorQuery{q: q}
+	}
+	return q.FindNearestPath(fieldPath, queryVector, limit, measure, options)
+}
+
+// Documents returns an iterator over the vector query's resulting documents.
+func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
+	return vq.q.Documents(ctx)
+}
+
+// FindNearestPath is like [Query.FindNearest] but it accepts a [FieldPath].
+func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
+	vq := VectorQuery{q: q}
+
+	// Convert field path to field reference
+	vectorFieldRef, err := fref(vectorFieldPath)
+	if err != nil {
+		vq.q.err = err
+		return vq
+	}
+
+	var fnvq *pb.Value
+	switch v := queryVector.(type) {
+	case Vector32:
+		fnvq = vectorToProtoValue([]float32(v))
+	case []float32:
+		fnvq = vectorToProtoValue(v)
+	case Vector64:
+		fnvq = vectorToProtoValue([]float64(v))
+	case []float64:
+		fnvq = vectorToProtoValue(v)
+	default:
+		vq.q.err = errors.New("firestore: queryVector must be Vector32 or Vector64")
+		return vq
+	}
+
+	vq.q.findNearest = &pb.StructuredQuery_FindNearest{
+		VectorField:     vectorFieldRef,
+		QueryVector:     fnvq,
+		Limit:           &wrapperspb.Int32Value{Value: trunc32(limit)},
+		DistanceMeasure: pb.StructuredQuery_FindNearest_DistanceMeasure(measure),
+	}
+	return vq
+}
+
 // NewAggregationQuery returns an AggregationQuery with this query as its
 // base query.
 func (q *Query) NewAggregationQuery() *AggregationQuery {
@@ -475,6 +581,8 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 		q.limit = limit
 	}
 
+	q.findNearest = pbq.GetFindNearest()
+
 	// NOTE: limit to last isn't part of the proto, this is a client-side concept
 	// 	limitToLast            bool
 	return q, q.err
@@ -556,6 +664,7 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 		return nil, err
 	}
 	p.EndAt = cursor
+	p.FindNearest = q.findNearest
 	return p, nil
 }
 

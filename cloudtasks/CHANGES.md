@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.12](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.11...cloudtasks/v1.12.12) (2024-07-24)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.12.11](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.10...cloudtasks/v1.12.11) (2024-07-10)
 
 

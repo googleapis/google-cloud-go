@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.6.9](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.8...optimization/v1.6.9) (2024-07-24)
+
+
+### Bug Fixes
+
+* **optimization:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.6.8](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.7...optimization/v1.6.8) (2024-07-10)
 
 
