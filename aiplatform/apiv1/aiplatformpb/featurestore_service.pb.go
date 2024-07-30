@@ -2521,7 +2521,8 @@ type UpdateFeatureRequest struct {
 	//
 	//   - `description`
 	//   - `labels`
-	//   - `disable_monitoring` (Not supported for FeatureRegistry Feature)
+	//   - `disable_monitoring` (Not supported for FeatureRegistryService Feature)
+	//   - `point_of_contact` (Not supported for FeaturestoreService FeatureStore)
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
