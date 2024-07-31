@@ -110,22 +110,22 @@ func TestToken_MetadataString(t *testing.T) {
 		want     string
 	}{
 		{
-			name:  "nil metadata",
-			want:  "",
+			name: "nil metadata",
+			want: "",
 		},
 		{
-			name:  "not string",
+			name: "not string",
 			metadata: map[string]interface{}{
 				"my.key": 123,
 			},
-			want:  "",
+			want: "",
 		},
 		{
-			name:  "string",
+			name: "string",
 			metadata: map[string]interface{}{
 				"my.key": "my.value",
 			},
-			want:  "my.value",
+			want: "my.value",
 		},
 	}
 	for _, tc := range cases {
