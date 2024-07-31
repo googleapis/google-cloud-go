@@ -337,16 +337,18 @@ func (c *grpcCredentialsProvider) getClientUniverseDomain() string {
 }
 
 func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-	credentialsUniverseDomain, err := c.creds.UniverseDomain(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if err := transport.ValidateUniverseDomain(c.getClientUniverseDomain(), credentialsUniverseDomain); err != nil {
-		return nil, err
-	}
 	token, err := c.creds.Token(ctx)
 	if err != nil {
 		return nil, err
+	}
+	if source, _ := token.Metadata["auth.google.tokenSource"].(string); source != "compute-metadata" {
+		credentialsUniverseDomain, err := c.creds.UniverseDomain(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if err := transport.ValidateUniverseDomain(c.getClientUniverseDomain(), credentialsUniverseDomain); err != nil {
+			return nil, err
+		}
 	}
 	if c.secure {
 		ri, _ := grpccreds.RequestInfoFromContext(ctx)

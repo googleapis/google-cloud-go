@@ -193,16 +193,18 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 			}
 		}()
 	}
-	credentialsUniverseDomain, err := t.creds.UniverseDomain(req.Context())
-	if err != nil {
-		return nil, err
-	}
-	if err := transport.ValidateUniverseDomain(t.getClientUniverseDomain(), credentialsUniverseDomain); err != nil {
-		return nil, err
-	}
 	token, err := t.creds.Token(req.Context())
 	if err != nil {
 		return nil, err
+	}
+	if source, _ := token.Metadata["auth.google.tokenSource"].(string); source != "compute-metadata" {
+		credentialsUniverseDomain, err := t.creds.UniverseDomain(req.Context())
+		if err != nil {
+			return nil, err
+		}
+		if err := transport.ValidateUniverseDomain(t.getClientUniverseDomain(), credentialsUniverseDomain); err != nil {
+			return nil, err
+		}
 	}
 	req2 := req.Clone(req.Context())
 	SetAuthHeader(token, req2)
