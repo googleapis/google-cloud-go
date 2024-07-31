@@ -124,6 +124,10 @@ func ShouldRetry(err error) bool {
 				return true
 			}
 		}
+	case *net.DNSError:
+		if strings.Contains(e.Error(), "no such host") {
+			return true
+		}
 	case interface{ Temporary() bool }:
 		if e.Temporary() {
 			return true
