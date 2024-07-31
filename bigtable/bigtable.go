@@ -47,8 +47,11 @@ import (
 	_ "google.golang.org/grpc/balancer/rls"
 )
 
-const prodAddr = "bigtable.googleapis.com:443"
-const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
+const (
+	prodAddr           = "bigtable.googleapis.com:443"
+	mtlsProdAddr       = "bigtable.mtls.googleapis.com:443"
+	methodNameReadRows = "ReadRows"
+)
 
 // Client is a client for reading and writing data to tables in an instance.
 //
@@ -353,7 +356,7 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *builtinMetricsTracer, opts ...ReadOption) (err error) {
 	var prevRowKey string
 	attrMap := make(map[string]interface{})
-	err = gaxInvokeWithRecorder(ctx, mt, "ReadRows", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+	err = gaxInvokeWithRecorder(ctx, mt, methodNameReadRows, func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		req := &btpb.ReadRowsRequest{
 			AppProfileId: t.c.appProfile,
 		}
@@ -395,6 +398,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 		// Ignore error since header is only being used to record builtin metrics
 		// Failure to record metrics should not fail the operation
 		*headerMD, _ = stream.Header()
+		mt.currOp.setFirstRespTime(time.Now())
 		for {
 			res, err := stream.Recv()
 			if err == io.EOF {
@@ -1531,29 +1535,33 @@ func (t *Table) newBuiltinMetricsTracer(ctx context.Context, isStreaming bool) *
 }
 
 // recordOperationCompletion records as many operation specific metrics as it can
+// Ignores error seen while creating metric attributes since metric can still
+// be recorded with rest of the attributes
 func recordOperationCompletion(mt *builtinMetricsTracer) {
 	if !mt.builtInEnabled {
 		return
 	}
 
 	// Calculate elapsed time
-	elapsedTimeMs := float64(time.Since(mt.currOp.startTime).Nanoseconds()) / 1000000
+	elapsedTimeMs := convertToMs(time.Since(mt.currOp.startTime))
 
-	// Attributes for operation_latencies
-	// Ignore error seen while creating metric attributes since metric can still
-	// be recorded with rest of the attributes
+	// Record operation_latencies
 	opLatAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationLatencies)
 	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributes(opLatAttrs...))
 
-	// Attributes for retry_count
-	// Ignore error seen while creating metric attributes since metric can still
-	// be recorded with rest of the attributes
+	// Record retry_count
 	retryCntAttrs, _ := mt.toOtelMetricAttrs(metricNameRetryCount)
-
-	// Only record when retry count is greater than 0 so the retry
-	// graph will be less confusing
 	if mt.currOp.attemptCount > 1 {
+		// Only record when retry count is greater than 0 so the retry
+		// graph will be less confusing
 		mt.instrumentRetryCount.Add(mt.ctx, mt.currOp.attemptCount-1, metric.WithAttributes(retryCntAttrs...))
+	}
+
+	// Record first_reponse_latencies
+	firstRespLatAttrs, _ := mt.toOtelMetricAttrs(metricNameRetryCount)
+	if mt.method == methodNameReadRows {
+		elapsedTimeMs = convertToMs(mt.currOp.firstRespTime.Sub(mt.currOp.startTime))
+		mt.instrumentFirstRespLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributes(firstRespLatAttrs...))
 	}
 }
 
@@ -1604,25 +1612,27 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 }
 
 // recordAttemptCompletion records as many attempt specific metrics as it can
+// Ignore errors seen while creating metric attributes since metric can still
+// be recorded with rest of the attributes
 func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	if !mt.builtInEnabled {
 		return
 	}
 
 	// Calculate elapsed time
-	elapsedTime := float64(time.Since(mt.currOp.currAttempt.startTime).Nanoseconds()) / 1000000
+	elapsedTime := convertToMs(time.Since(mt.currOp.currAttempt.startTime))
 
-	// Attributes for attempt_latencies
-	// Ignore error seen while creating metric attributes since metric can still
-	// be recorded with rest of the attributes
+	// Record attempt_latencies
 	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
 	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributes(attemptLatAttrs...))
 
-	// Attributes for server_latencies
-	// Ignore error seen while creating metric attributes since metric can still
-	// be recorded with rest of the attributes
+	// Record server_latencies and connectivity_error_count
+	connErrCountAttrs, _ := mt.toOtelMetricAttrs(metricNameConnErrCount)
 	serverLatAttrs, _ := mt.toOtelMetricAttrs(metricNameServerLatencies)
 	if mt.currOp.currAttempt.serverLatencyErr == nil {
 		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributes(serverLatAttrs...))
+		mt.instrumentConnErrCount.Add(mt.ctx, 0, metric.WithAttributes(connErrCountAttrs...))
+	} else {
+		mt.instrumentConnErrCount.Add(mt.ctx, 1, metric.WithAttributes(connErrCountAttrs...))
 	}
 }
