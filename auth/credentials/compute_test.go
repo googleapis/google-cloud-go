@@ -53,11 +53,7 @@ func TestComputeTokenProvider(t *testing.T) {
 	if want := "bearer"; tok.Type != want {
 		t.Errorf("got %q, want %q", tok.Type, want)
 	}
-	source, ok := tok.Metadata["auth.google.tokenSource"].(string)
-	if !ok {
-		t.Errorf("got %t, want true", ok)
-	}
-	if want := "compute-metadata"; source != want {
-		t.Errorf("got %q, want %q", source, want)
+	if got, want := tok.MetadataString("auth.google.tokenSource"), "compute-metadata"; got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }

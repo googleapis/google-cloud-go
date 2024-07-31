@@ -341,7 +341,7 @@ func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ..
 	if err != nil {
 		return nil, err
 	}
-	if source, _ := token.Metadata["auth.google.tokenSource"].(string); source != "compute-metadata" {
+	if token.MetadataString("auth.google.tokenSource") != "compute-metadata" {
 		credentialsUniverseDomain, err := c.creds.UniverseDomain(ctx)
 		if err != nil {
 			return nil, err
