@@ -689,6 +689,9 @@ func (c *modelGardenRESTClient) GetPublisherModel(ctx context.Context, req *aipl
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetIsHuggingFaceModel() {
+		params.Add("isHuggingFaceModel", fmt.Sprintf("%v", req.GetIsHuggingFaceModel()))
+	}
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}

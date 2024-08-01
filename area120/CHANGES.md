@@ -1,5 +1,12 @@
 # Changes
 
+## [0.8.11](https://github.com/googleapis/google-cloud-go/compare/area120/v0.8.10...area120/v0.8.11) (2024-07-24)
+
+
+### Bug Fixes
+
+* **area120:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [0.8.10](https://github.com/googleapis/google-cloud-go/compare/area120/v0.8.9...area120/v0.8.10) (2024-07-10)
 
 

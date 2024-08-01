@@ -66,6 +66,14 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/area120/tables/apiv1alpha1/tablespb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/bigtable/admin/v2": {
+		ImportPath: "cloud.google.com/go/bigtable/admin/apiv2/adminpb",
+		Status:     StatusMigrated,
+	},
+	"google.golang.org/genproto/googleapis/bigtable/v2": {
+		ImportPath: "cloud.google.com/go/bigtable/apiv2/bigtablepb",
+		Status:     StatusMigrated,
+	},
 	"google.golang.org/genproto/googleapis/cloud/accessapproval/v1": {
 		ImportPath: "cloud.google.com/go/accessapproval/apiv1/accessapprovalpb",
 		Status:     StatusMigrated,

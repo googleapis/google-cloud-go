@@ -1,6 +1,25 @@
 # Changes
 
 
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.5...documentai/v1.31.0) (2024-08-01)
+
+
+### Features
+
+* **documentai:** A new field `imageless_mode` is added to message `.google.cloud.documentai.v1.ProcessRequest` ([#10615](https://github.com/googleapis/google-cloud-go/issues/10615)) ([97fa560](https://github.com/googleapis/google-cloud-go/commit/97fa56008a30857fc6d835517fc2d9a2959b19a5))
+
+
+### Documentation
+
+* **documentai:** Keep the API doc up-to-date with recent changes ([97fa560](https://github.com/googleapis/google-cloud-go/commit/97fa56008a30857fc6d835517fc2d9a2959b19a5))
+
+## [1.30.5](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.4...documentai/v1.30.5) (2024-07-24)
+
+
+### Bug Fixes
+
+* **documentai:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.30.4](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.3...documentai/v1.30.4) (2024-07-10)
 
 

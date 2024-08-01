@@ -1,6 +1,53 @@
 # Changelog
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.10.0...discoveryengine/v1.11.0) (2024-08-01)
+
+
+### Features
+
+* **discoveryengine:** Update CompletionService ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **discoveryengine:** Update SearchService ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **discoveryengine:** Update SearchService ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+
+### Bug Fixes
+
+* **discoveryengine:** SearchService ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+
+### Documentation
+
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.9.0...discoveryengine/v1.10.0) (2024-07-24)
+
+
+### Features
+
+* **discoveryengine:** A new resource pattern value `projects/{project}/locations/{location}/sampleQuerySets/{sample_query_set}/sampleQueries/{sample_query}` added to the resource definition `discoveryengine.googleapis.com/SampleQuery` ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **discoveryengine:** A new resource pattern value `projects/{project}/locations/{location}/sampleQuerySets/{sample_query_set}` added to the resource definition `discoveryengine.googleapis.com/SampleQuerySet` ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **discoveryengine:** Add Chunk resource in the search response ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **discoveryengine:** Add evaluation APIs ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **discoveryengine:** Add evaluation APIs ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **discoveryengine:** Add sample query APIs ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **discoveryengine:** Add sample query APIs ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **discoveryengine:** Add sample query set APIs ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **discoveryengine:** Add sample query set APIs ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
+
+### Bug Fixes
+
+* **discoveryengine:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+* **discoveryengine:** Update sample query, sample query set patterns ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
+
+### Documentation
+
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.8.2...discoveryengine/v1.9.0) (2024-07-10)
 
 

@@ -46,6 +46,7 @@ const (
 	testPrefix      = "go-integration-test-tm"
 	grpcTestPrefix  = "golang-grpc-test-tm"
 	bucketExpiryAge = 24 * time.Hour
+	minObjectSize   = 1024
 	maxObjectSize   = 1024 * 1024
 )
 
@@ -721,7 +722,7 @@ func TestIntegration_DownloadShard(t *testing.T) {
 		o := c.Bucket(tb.bucket).Object(objectName)
 		r, err := o.NewReader(ctx)
 		if err != nil {
-			t.Fatalf("o.Attrs: %v", err)
+			t.Fatalf("o.NewReader: %v", err)
 		}
 
 		incorrectGen := r.Attrs.Generation - 1
@@ -773,6 +774,7 @@ func TestIntegration_DownloadShard(t *testing.T) {
 						LastModified:    r.Attrs.LastModified,
 						Generation:      r.Attrs.Generation,
 						Metageneration:  r.Attrs.Metageneration,
+						CRC32C:          r.Attrs.CRC32C,
 					},
 				},
 			},
@@ -1029,7 +1031,7 @@ func (tb *downloadTestBucket) Create(prefix string) error {
 
 	// Write objects.
 	for _, obj := range tb.objects {
-		size := randomInt64(1000, maxObjectSize)
+		size := randomInt64(minObjectSize, maxObjectSize)
 		crc, err := generateFileInGCS(ctx, b.Object(obj), size)
 		if err != nil {
 			return fmt.Errorf("generateFileInGCS: %v", err)

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.16.4](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.3...redis/v1.16.4) (2024-07-24)
+
+
+### Bug Fixes
+
+* **redis:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.16.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.2...redis/v1.16.3) (2024-07-10)
 
 
