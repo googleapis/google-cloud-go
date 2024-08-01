@@ -1,6 +1,26 @@
 # Changelog
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.10.0...discoveryengine/v1.11.0) (2024-08-01)
+
+
+### Features
+
+* **discoveryengine:** Update CompletionService ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **discoveryengine:** Update SearchService ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **discoveryengine:** Update SearchService ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+
+### Bug Fixes
+
+* **discoveryengine:** SearchService ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+
+### Documentation
+
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.9.0...discoveryengine/v1.10.0) (2024-07-24)
 
 
