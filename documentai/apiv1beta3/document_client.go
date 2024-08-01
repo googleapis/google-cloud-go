@@ -172,6 +172,11 @@ func (c *DocumentClient) Connection() *grpc.ClientConn {
 }
 
 // UpdateDataset updates metadata associated with a dataset.
+// Note that this method requires the
+// documentai.googleapis.com/datasets.update permission on the project,
+// which is highly privileged. A user or service account with this permission
+// can create new processors that can interact with any gcs bucket in your
+// project.
 func (c *DocumentClient) UpdateDataset(ctx context.Context, req *documentaipb.UpdateDatasetRequest, opts ...gax.CallOption) (*UpdateDatasetOperation, error) {
 	return c.internalClient.UpdateDataset(ctx, req, opts...)
 }
@@ -736,6 +741,11 @@ func (c *documentGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 }
 
 // UpdateDataset updates metadata associated with a dataset.
+// Note that this method requires the
+// documentai.googleapis.com/datasets.update permission on the project,
+// which is highly privileged. A user or service account with this permission
+// can create new processors that can interact with any gcs bucket in your
+// project.
 func (c *documentRESTClient) UpdateDataset(ctx context.Context, req *documentaipb.UpdateDatasetRequest, opts ...gax.CallOption) (*UpdateDatasetOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDataset()
