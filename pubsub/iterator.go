@@ -613,18 +613,14 @@ func (it *messageIterator) sendAckWithFunc(m map[string]*AckResult, ackFunc ackF
 				resultsByAckID := make(map[string]*AckResult)
 				for _, ackID := range toSend {
 					resultsByAckID[ackID] = m[ackID]
-					resultsByAckID := make(map[string]*AckResult)
-					for _, ackID := range toSend {
-						resultsByAckID[ackID] = m[ackID]
-					}
-					st, md := extractMetadata(err)
-					_, toRetry := processResults(st, resultsByAckID, md)
-					if len(toRetry) > 0 {
-						// Retry acks/modacks/nacks in a separate goroutine.
-						go func() {
-							retryAckFunc(toRetry)
-						}()
-					}
+				}
+				st, md := extractMetadata(err)
+				_, toRetry := processResults(st, resultsByAckID, md)
+				if len(toRetry) > 0 {
+					// Retry acks/modacks/nacks in a separate goroutine.
+					go func() {
+						retryAckFunc(toRetry)
+					}()
 				}
 			}
 		}(batch)

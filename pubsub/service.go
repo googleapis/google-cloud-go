@@ -132,12 +132,12 @@ func newExactlyOnceBackoff() gax.Backoff {
 }
 
 // parseResourceName parses the project and resource ID from a fully qualified name.
-// For example, "projects/p/topics/my-topic" -> "p", "my-topic"
+// For example, "projects/p/topics/my-topic" -> "p", "my-topic".
+// Returns empty strings if the input is misformatted.
 func parseResourceName(fqn string) (string, string) {
 	s := strings.Split(fqn, "/")
-	// Some tests don't use FQN, in which case return empty projectID.
-	if len(s) == 1 {
-		return "", s[0]
+	if len(s) != 4 {
+		return "", ""
 	}
 	return s[1], s[len(s)-1]
 }
