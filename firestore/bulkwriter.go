@@ -40,6 +40,14 @@ const (
 	maxWritesPerSecond = maxBatchSize * defaultStartingMaximumOpsPerSecond
 )
 
+var (
+	batchWriteRetryCodes = map[codes.Code]bool{
+		codes.ResourceExhausted: true,
+		codes.Unavailable:       true,
+		codes.Aborted:           true,
+	}
+)
+
 // bulkWriterResult contains the WriteResult or error results from an individual
 // write to the database.
 type bulkWriterResult struct {
@@ -329,7 +337,8 @@ func (bw *BulkWriter) send(i interface{}) {
 				j.attempts++
 
 				// Do we need separate retry bundler?
-				if j.attempts < maxRetryAttempts {
+				_, isRetryable := batchWriteRetryCodes[codes.Code(s.Code)]
+				if j.attempts < maxRetryAttempts && isRetryable {
 					// ignore operation size constraints and related errors; job size can't be inferred at compile time
 					// Bundler is set to accept an unlimited amount of bytes
 					_ = bw.bundler.Add(j, 0)

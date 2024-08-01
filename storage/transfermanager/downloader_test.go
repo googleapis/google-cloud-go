@@ -15,6 +15,7 @@
 package transfermanager
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"strings"
@@ -411,11 +412,12 @@ func TestGatherShards(t *testing.T) {
 		Offset: 20,
 		Length: 120,
 	}
+	firstOut := &DownloadOutput{Object: object, Range: &DownloadRange{Offset: 20, Length: 30}, shard: 0}
 	outChan := make(chan *DownloadOutput, shards)
 	outs := []*DownloadOutput{
-		{Object: object, Range: &DownloadRange{Offset: 50, Length: 30}},
-		{Object: object, Range: &DownloadRange{Offset: 80, Length: 30}},
-		{Object: object, Range: &DownloadRange{Offset: 110, Length: 30}},
+		{Object: object, Range: &DownloadRange{Offset: 50, Length: 30}, shard: 1},
+		{Object: object, Range: &DownloadRange{Offset: 80, Length: 30}, shard: 2},
+		{Object: object, Range: &DownloadRange{Offset: 110, Length: 30}, shard: 3},
 	}
 
 	in := &DownloadObjectInput{
@@ -441,7 +443,7 @@ func TestGatherShards(t *testing.T) {
 	d.downloadsInProgress.Add(1)
 
 	go func() {
-		d.gatherShards(in, outChan, shards)
+		d.gatherShards(in, firstOut, outChan, shards, 0)
 		wg.Done()
 	}()
 
@@ -475,7 +477,7 @@ func TestGatherShards(t *testing.T) {
 	d.downloadsInProgress.Add(1)
 
 	go func() {
-		d.gatherShards(in, outChan, shards)
+		d.gatherShards(in, firstOut, outChan, shards, 0)
 		wg.Done()
 	}()
 
@@ -505,5 +507,45 @@ func TestGatherShards(t *testing.T) {
 	}
 	if errors.Is(err, errCancelAllShards) || strings.Contains(err.Error(), errCancelAllShards.Error()) {
 		t.Errorf("error in DownloadOutput should not contain error %q; got: %v", errCancelAllShards, err)
+	}
+}
+
+func TestCalculateCRC32C(t *testing.T) {
+	t.Parallel()
+	for _, test := range []struct {
+		desc   string
+		pieces []string
+	}{
+		{
+			desc:   "equal sized pieces",
+			pieces: []string{"he", "ll", "o ", "wo", "rl", "d!"},
+		},
+		{
+			desc:   "uneven pieces",
+			pieces: []string{"hello", " ", "world!"},
+		},
+		{
+			desc: "large pieces",
+			pieces: []string{string(bytes.Repeat([]byte("a"), 1024*1024*32)),
+				string(bytes.Repeat([]byte("b"), 1024*1024*32)),
+				string(bytes.Repeat([]byte("c"), 1024*1024*32)),
+			},
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			initialChecksum := crc32c([]byte(test.pieces[0]))
+
+			remainingChecksums := make([]crc32cPiece, len(test.pieces)-1)
+			for i, piece := range test.pieces[1:] {
+				remainingChecksums[i] = crc32cPiece{sum: crc32c([]byte(piece)), length: int64(len(piece))}
+			}
+
+			got := joinCRC32C(initialChecksum, remainingChecksums)
+			want := crc32c([]byte(strings.Join(test.pieces, "")))
+
+			if got != want {
+				t.Errorf("crc32c not calculated correctly - want %v, got %v", want, got)
+			}
+		})
 	}
 }

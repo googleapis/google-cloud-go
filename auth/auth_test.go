@@ -103,6 +103,39 @@ func TestError_Temporary(t *testing.T) {
 	}
 }
 
+func TestToken_MetadataString(t *testing.T) {
+	cases := []struct {
+		name     string
+		metadata map[string]interface{}
+		want     string
+	}{
+		{
+			name: "nil metadata",
+			want: "",
+		},
+		{
+			name: "not string",
+			metadata: map[string]interface{}{
+				"my.key": 123,
+			},
+			want: "",
+		},
+		{
+			name: "string",
+			metadata: map[string]interface{}{
+				"my.key": "my.value",
+			},
+			want: "my.value",
+		},
+	}
+	for _, tc := range cases {
+		tok := &Token{Metadata: tc.metadata}
+		if got, want := tok.MetadataString("my.key"), tc.want; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+	}
+}
+
 func TestToken_isValidWithEarlyExpiry(t *testing.T) {
 	now := time.Now()
 	timeNow = func() time.Time { return now }
