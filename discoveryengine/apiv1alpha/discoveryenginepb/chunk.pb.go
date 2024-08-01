@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -55,7 +54,7 @@ type Chunk struct {
 	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 	// Content is a string from a document (parsed content).
 	Content string `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
-	// The relevance score based on similarity.
+	// Output only. Represents the relevance score based on similarity.
 	// Higher score indicates higher chunk relevance.
 	// The score is in range [-1.0, 1.0].
 	// Only populated on [SearchService.SearchResponse][].
