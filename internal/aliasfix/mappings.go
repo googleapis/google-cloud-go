@@ -178,10 +178,6 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/bigquery/storage/apiv1beta1/storagepb",
 		Status:     StatusMigrated,
 	},
-	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2": {
-		ImportPath: "cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb",
-		Status:     StatusMigrated,
-	},
 	"google.golang.org/genproto/googleapis/cloud/billing/budgets/v1": {
 		ImportPath: "cloud.google.com/go/billing/budgets/apiv1/budgetspb",
 		Status:     StatusMigrated,

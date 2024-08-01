@@ -569,16 +569,6 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
-  "cloud.google.com/go/bigquery/storage/apiv1beta2": {
-    "api_shortname": "bigquerystorage",
-    "distribution_name": "cloud.google.com/go/bigquery/storage/apiv1beta2",
-    "description": "BigQuery Storage API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/storage/apiv1beta2",
-    "release_level": "preview",
-    "library_type": "GAPIC_AUTO"
-  },
   "cloud.google.com/go/bigtable": {
     "api_shortname": "bigtable",
     "distribution_name": "cloud.google.com/go/bigtable",
