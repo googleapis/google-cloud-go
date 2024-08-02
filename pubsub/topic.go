@@ -33,10 +33,8 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	otelcodes "go.opentelemetry.io/otel/codes"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/grpc"
@@ -88,6 +86,11 @@ type Topic struct {
 
 	// EnableMessageOrdering enables delivery of ordered keys.
 	EnableMessageOrdering bool
+
+	// enableTracing enables OTel tracing of Pub/Sub messages on this topic.
+	// This is configured at client instantiation, and allows
+	// disabling tracing even when a tracer provider is detectd.
+	enableTracing bool
 }
 
 // PublishSettings control the bundling of published messages.
@@ -220,6 +223,7 @@ func newTopic(c *Client, name string) *Topic {
 		c:               c,
 		name:            name,
 		PublishSettings: DefaultPublishSettings,
+		enableTracing:   c.enableTracing,
 	}
 }
 
@@ -741,7 +745,12 @@ var errTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, 
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
-	ctx, publishSpan := startPublishSpan(ctx, msg, t.String())
+	var createSpan trace.Span
+	if t.enableTracing {
+		opts := getPublishSpanAttributes(t.c.projectID, t.ID(), msg)
+		ctx, createSpan = startSpan(ctx, createSpanName, t.ID(), opts...)
+		createSpan.SetAttributes(semconv.CodeFunction("Publish"))
+	}
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in Publish: %v", err)
@@ -750,7 +759,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
 		ipubsub.SetPublishResult(r, "", errTopicOrderingNotEnabled)
-		spanRecordError(publishSpan, errTopicOrderingNotEnabled)
+		spanRecordError(createSpan, errTopicOrderingNotEnabled)
 		return r
 	}
 
@@ -761,43 +770,55 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		Attributes:  msg.Attributes,
 		OrderingKey: msg.OrderingKey,
 	})
-	publishSpan.SetAttributes(semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize))
+	if t.enableTracing {
+		createSpan.SetAttributes(semconv.MessagingMessageBodySize(len(msg.Data)))
+	}
 
 	t.initBundler()
 	t.mu.RLock()
 	defer t.mu.RUnlock()
 	if t.stopped {
 		ipubsub.SetPublishResult(r, "", ErrTopicStopped)
-		spanRecordError(publishSpan, ErrTopicStopped)
+		spanRecordError(createSpan, ErrTopicStopped)
 		return r
 	}
 
-	ctx2, fcSpan := startPublishFlowControlSpan(ctx)
-	if err := t.flowController.acquire(ctx2, msgSize); err != nil {
+	var batcherSpan trace.Span
+	var fcSpan trace.Span
+
+	if t.enableTracing {
+		_, fcSpan = startSpan(ctx, publishFCSpanName, "")
+	}
+	if err := t.flowController.acquire(ctx, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
 		spanRecordError(fcSpan, err)
 		return r
 	}
-	fcSpan.End()
-
-	_, batcherSpan := startBatcherSpan(ctx)
-
-	bmsg := &bundledMessage{
-		msg:         msg,
-		res:         r,
-		size:        msgSize,
-		span:        publishSpan,
-		batcherSpan: batcherSpan,
+	if t.enableTracing {
+		fcSpan.End()
 	}
 
-	// Inject the context from the first publish span rather than from flow control / batching.
-	injectPropagation(ctx, msg)
+	_, batcherSpan = startSpan(ctx, batcherSpanName, "")
+
+	bmsg := &bundledMessage{
+		msg:        msg,
+		res:        r,
+		size:       msgSize,
+		createSpan: createSpan,
+	}
+
+	if t.enableTracing {
+		bmsg.batcherSpan = batcherSpan
+
+		// Inject the context from the first publish span rather than from flow control / batching.
+		injectPropagation(ctx, msg)
+	}
 
 	if err := t.scheduler.Add(msg.OrderingKey, bmsg, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
-		spanRecordError(publishSpan, err)
+		spanRecordError(createSpan, err)
 	}
 
 	return r
@@ -829,8 +850,8 @@ type bundledMessage struct {
 	msg  *Message
 	res  *PublishResult
 	size int
-	// span is the entire publish span (from user calling Publish to the publish RPC resolving).
-	span trace.Span
+	// createSpan is the entire publish createSpan (from user calling Publish to the publish RPC resolving).
+	createSpan trace.Span
 	// batcherSpan traces the message batching operation in publish scheduler.
 	batcherSpan trace.Span
 }
@@ -860,18 +881,23 @@ func (t *Topic) initBundler() {
 	}
 
 	t.scheduler = scheduler.NewPublishScheduler(workers, func(bundle interface{}) {
-		// TODO(jba): use a context detached from the one passed to NewClient.
-		ctx2 := context.TODO()
+		// Use a context detached from the one passed to NewClient.
+		ctx := context.Background()
 		if timeout != 0 {
 			var cancel func()
-			ctx2, cancel = context.WithTimeout(ctx2, timeout)
+			ctx, cancel = context.WithTimeout(ctx, timeout)
 			defer cancel()
 		}
 		bmsgs := bundle.([]*bundledMessage)
-		for _, m := range bmsgs {
-			m.batcherSpan.End()
+		if t.enableTracing {
+			for _, m := range bmsgs {
+				m.batcherSpan.End()
+				m.createSpan.AddEvent(eventPublishStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(bmsgs))))
+				defer m.createSpan.End()
+				defer m.createSpan.AddEvent(eventPublishEnd)
+			}
 		}
-		t.publishMessageBundle(ctx2, bmsgs)
+		t.publishMessageBundle(ctx, bmsgs)
 	})
 	t.scheduler.DelayThreshold = t.PublishSettings.DelayThreshold
 	t.scheduler.BundleCountThreshold = t.PublishSettings.CountThreshold
@@ -933,20 +959,43 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		// key, it doesn't matter which we read from.
 		orderingKey = bms[0].msg.OrderingKey
 	}
-	batchSize := 0
+
+	if t.enableTracing {
+		links := make([]trace.Link, 0, numMsgs)
+		for _, bm := range bms {
+			if bm.createSpan.SpanContext().IsSampled() {
+				links = append(links, trace.Link{SpanContext: bm.createSpan.SpanContext()})
+			}
+		}
+
+		projectID, topicID := parseResourceName(t.name)
+		var pSpan trace.Span
+		opts := getCommonOptions(projectID, topicID)
+		// Add link to publish RPC span of createSpan(s).
+		opts = append(opts, trace.WithLinks(links...))
+		ctx, pSpan = startSpan(ctx, publishRPCSpanName, topicID, opts...)
+		pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs), semconv.CodeFunction("publishMessageBundle"))
+		defer pSpan.End()
+
+		// Add the reverse link to createSpan(s) of publish RPC span.
+		if pSpan.SpanContext().IsSampled() {
+			for _, bm := range bms {
+				bm.createSpan.AddLink(trace.Link{
+					SpanContext: pSpan.SpanContext(),
+					Attributes: []attribute.KeyValue{
+						semconv.MessagingOperationName(publishRPCSpanName),
+					},
+				})
+			}
+		}
+	}
+	var batchSize int
 	for i, bm := range bms {
 		pbMsgs[i] = &pb.PubsubMessage{
 			Data:        bm.msg.Data,
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
-		if bm.msg.Attributes != nil {
-			ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(bm.msg))
-		}
-		_, pSpan := tracer().Start(ctx, publishRPCSpanName)
-		pSpan.SetAttributes(attribute.Int(numBatchedMessagesAttribute, numMsgs))
-		defer bm.span.End()
-		defer pSpan.End()
 		batchSize = batchSize + proto.Size(pbMsgs[i])
 		bm.msg = nil // release bm.msg for GC
 	}
@@ -991,11 +1040,12 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		t.flowController.release(ctx, bm.size)
 		if err != nil {
 			ipubsub.SetPublishResult(bm.res, "", err)
-			bm.span.RecordError(err)
-			bm.span.SetStatus(otelcodes.Error, err.Error())
+			spanRecordError(bm.createSpan, err)
 		} else {
 			ipubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
-			bm.span.SetAttributes(semconv.MessagingMessageIDKey.String(res.MessageIds[i]))
+			if t.enableTracing {
+				bm.createSpan.SetAttributes(semconv.MessagingMessageIDKey.String(res.MessageIds[i]))
+			}
 		}
 	}
 }

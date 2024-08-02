@@ -28,10 +28,8 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
-	"google.golang.org/protobuf/proto"
 )
 
 // The following keys are used to tag requests with a specific topic/subscription ID.
@@ -280,6 +278,8 @@ type messageCarrier struct {
 	msg *Message
 }
 
+const googclientPrefix string = "googclient_"
+
 // newMessageCarrier creates a new PubsubMessageCarrier.
 func newMessageCarrier(msg *Message) messageCarrier {
 	return messageCarrier{msg: msg}
@@ -287,12 +287,12 @@ func newMessageCarrier(msg *Message) messageCarrier {
 
 // Get retrieves a single value for a given key.
 func (c messageCarrier) Get(key string) string {
-	return c.msg.Attributes["googclient_"+key]
+	return c.msg.Attributes[googclientPrefix+key]
 }
 
 // Set sets an attribute.
 func (c messageCarrier) Set(key, val string) {
-	c.msg.Attributes["googclient_"+key] = val
+	c.msg.Attributes[googclientPrefix+key] = val
 }
 
 // Keys returns a slice of all keys in the carrier.
@@ -306,55 +306,6 @@ func (c messageCarrier) Keys() []string {
 	return out
 }
 
-const (
-	// span names
-	publisherSpanName          = "send"
-	publishFlowControlSpanName = "publisher flow control"
-	publishBatcherSpanName     = "publish batcher"
-	publishRPCSpanName         = "publish"
-
-	// custom pubsub specific attributes
-	numBatchedMessagesAttribute = "messaging.pubsub.num_messages_in_batch"
-	orderingAttribute           = "messaging.pubsub.ordering_key"
-)
-
-func startPublishSpan(ctx context.Context, m *Message, topicName string) (context.Context, trace.Span) {
-	opts := getPublishSpanAttributes(topicName, m)
-	return tracer().Start(ctx, fmt.Sprintf("%s %s", topicName, publisherSpanName), opts...)
-}
-
-func startPublishFlowControlSpan(ctx context.Context) (context.Context, trace.Span) {
-	return tracer().Start(ctx, publishFlowControlSpanName)
-}
-
-func startBatcherSpan(ctx context.Context) (context.Context, trace.Span) {
-	return tracer().Start(ctx, publishBatcherSpanName)
-}
-
-func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
-	// TODO(hongalex): benchmark this to make sure no significant performance degradation
-	// when calculating proto.Size in receive paths.
-	// TODO(hongalex): find way to incorporate pubsub client library version in attribute.
-	msgSize := proto.Size(&pb.PubsubMessage{
-		Data:        msg.Data,
-		Attributes:  msg.Attributes,
-		OrderingKey: msg.OrderingKey,
-	})
-	ss := []trace.SpanStartOption{
-		trace.WithAttributes(
-			semconv.MessagingSystemKey.String("pubsub"),
-			semconv.MessagingDestinationKey.String(topic),
-			semconv.MessagingDestinationKindTopic,
-			semconv.MessagingMessageIDKey.String(msg.ID),
-			semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
-			attribute.String(orderingAttribute, msg.OrderingKey),
-		),
-		trace.WithAttributes(opts...),
-		trace.WithSpanKind(trace.SpanKindProducer),
-	}
-	return ss
-}
-
 // injectPropagation injects context data into the Pub/Sub message's Attributes field.
 func injectPropagation(ctx context.Context, msg *Message) {
 	// only inject propagation if a valid span context was detected.
@@ -362,15 +313,111 @@ func injectPropagation(ctx context.Context, msg *Message) {
 		if msg.Attributes == nil {
 			msg.Attributes = make(map[string]string)
 		}
-		otel.GetTextMapPropagator().Inject(ctx, newMessageCarrier(msg))
+		propagation.TraceContext{}.Inject(ctx, newMessageCarrier(msg))
 	}
+}
+
+const (
+	// publish span names
+	createSpanName     = "create"
+	publishFCSpanName  = "publisher flow control"
+	batcherSpanName    = "publisher batching"
+	publishRPCSpanName = "publish"
+
+	// subscribe span names
+	subscribeSpanName = "subscribe"
+	ccSpanName        = "subscriber concurrency control"
+	processSpanName   = "process"
+	scheduleSpanName  = "subscribe scheduler"
+	modackSpanName    = "modack"
+	ackSpanName       = "ack"
+	nackSpanName      = "nack"
+
+	// event names
+	eventPublishStart = "publish start"
+	eventPublishEnd   = "publish end"
+	eventModackStart  = "modack start"
+	eventModackEnd    = "modack end"
+	eventAckStart     = "ack start"
+	eventAckEnd       = "ack end"
+	eventNackStart    = "nack start"
+	eventNackEnd      = "nack end"
+	eventAckCalled    = "ack called"
+	eventNackCalled   = "nack called"
+
+	resultAcked   = "acked"
+	resultNacked  = "nacked"
+	resultExpired = "expired"
+
+	// custom pubsub specific attributes
+	gcpProjectIDAttribute    = "gcp.project_id"
+	pubsubPrefix             = "messaging.gcp_pubsub."
+	orderingAttribute        = pubsubPrefix + "message.ordering_key"
+	deliveryAttemptAttribute = pubsubPrefix + "message.delivery_attempt"
+	eosAttribute             = pubsubPrefix + "exactly_once_delivery"
+	ackIDAttribute           = pubsubPrefix + "message.ack_id"
+	resultAttribute          = pubsubPrefix + "result"
+	receiptModackAttribute   = pubsubPrefix + "is_receipt_modack"
+)
+
+func startSpan(ctx context.Context, spanType, resourceID string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	spanName := spanType
+	if resourceID != "" {
+		spanName = fmt.Sprintf("%s %s", resourceID, spanType)
+	}
+	return tracer().Start(ctx, spanName, opts...)
+}
+
+func getPublishSpanAttributes(project, dst string, msg *Message, attrs ...attribute.KeyValue) []trace.SpanStartOption {
+	opts := []trace.SpanStartOption{
+		trace.WithAttributes(
+			semconv.MessagingMessageID(msg.ID),
+			semconv.MessagingMessageBodySize(len(msg.Data)),
+			attribute.String(orderingAttribute, msg.OrderingKey),
+		),
+		trace.WithAttributes(attrs...),
+		trace.WithSpanKind(trace.SpanKindProducer),
+	}
+	opts = append(opts, getCommonOptions(project, dst)...)
+	return opts
+}
+
+func getSubscriberOpts(project, dst string, msg *Message, attrs ...attribute.KeyValue) []trace.SpanStartOption {
+	opts := []trace.SpanStartOption{
+		trace.WithAttributes(
+			semconv.MessagingMessageID(msg.ID),
+			semconv.MessagingMessageBodySize(len(msg.Data)),
+			attribute.String(orderingAttribute, msg.OrderingKey),
+		),
+		trace.WithAttributes(attrs...),
+		trace.WithSpanKind(trace.SpanKindConsumer),
+	}
+	if msg.DeliveryAttempt != nil {
+		opts = append(opts, trace.WithAttributes(attribute.Int(deliveryAttemptAttribute, *msg.DeliveryAttempt)))
+	}
+	opts = append(opts, getCommonOptions(project, dst)...)
+	return opts
+}
+
+func getCommonOptions(projectID, destination string) []trace.SpanStartOption {
+	opts := []trace.SpanStartOption{
+		trace.WithAttributes(
+			attribute.String(gcpProjectIDAttribute, projectID),
+			semconv.MessagingSystemGCPPubsub,
+			semconv.MessagingDestinationName(destination),
+		),
+	}
+	return opts
+
 }
 
 // spanRecordError records the error, sets the status to error, and ends the span.
 // This is recommended by https://opentelemetry.io/docs/instrumentation/go/manual/#record-errors
 // since RecordError doesn't set the status of a span.
 func spanRecordError(span trace.Span, err error) {
-	span.RecordError(err)
-	span.SetStatus(otelcodes.Error, err.Error())
-	span.End()
+	if span != nil {
+		span.RecordError(err)
+		span.SetStatus(otelcodes.Error, err.Error())
+		span.End()
+	}
 }
