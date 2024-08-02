@@ -741,9 +741,6 @@ func compareRequests(want []interface{}, got []interface{}) error {
 			got[0], got[muxSessionIndex] = got[muxSessionIndex], got[0]
 		}
 	}
-	muxSessionIndex := 0
-
-	got[0], got[muxSessionIndex] = got[muxSessionIndex], got[0]
 	if len(got) != len(want) {
 		var gotMsg string
 		for _, r := range got {
