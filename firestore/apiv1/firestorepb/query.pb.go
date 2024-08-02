@@ -349,18 +349,21 @@ const (
 	StructuredQuery_FindNearest_DISTANCE_MEASURE_UNSPECIFIED StructuredQuery_FindNearest_DistanceMeasure = 0
 	// Measures the EUCLIDEAN distance between the vectors. See
 	// [Euclidean](https://en.wikipedia.org/wiki/Euclidean_distance) to learn
-	// more
+	// more. The resulting distance decreases the more similar two vectors
+	// are.
 	StructuredQuery_FindNearest_EUCLIDEAN StructuredQuery_FindNearest_DistanceMeasure = 1
-	// Compares vectors based on the angle between them, which allows you to
-	// measure similarity that isn't based on the vectors magnitude.
-	// We recommend using DOT_PRODUCT with unit normalized vectors instead of
-	// COSINE distance, which is mathematically equivalent with better
-	// performance. See [Cosine
+	// COSINE distance compares vectors based on the angle between them, which
+	// allows you to measure similarity that isn't based on the vectors
+	// magnitude. We recommend using DOT_PRODUCT with unit normalized vectors
+	// instead of COSINE distance, which is mathematically equivalent with
+	// better performance. See [Cosine
 	// Similarity](https://en.wikipedia.org/wiki/Cosine_similarity) to learn
-	// more.
+	// more about COSINE similarity and COSINE distance. The resulting
+	// COSINE distance decreases the more similar two vectors are.
 	StructuredQuery_FindNearest_COSINE StructuredQuery_FindNearest_DistanceMeasure = 2
 	// Similar to cosine but is affected by the magnitude of the vectors. See
 	// [Dot Product](https://en.wikipedia.org/wiki/Dot_product) to learn more.
+	// The resulting distance increases the more similar two vectors are.
 	StructuredQuery_FindNearest_DOT_PRODUCT StructuredQuery_FindNearest_DistanceMeasure = 3
 )
 
@@ -511,7 +514,7 @@ type StructuredQuery struct {
 	//
 	// * The value must be greater than or equal to zero if specified.
 	Limit *wrapperspb.Int32Value `protobuf:"bytes,5,opt,name=limit,proto3" json:"limit,omitempty"`
-	// Optional. A potential Nearest Neighbors Search.
+	// Optional. A potential nearest neighbors search.
 	//
 	// Applies after all other filters and ordering.
 	//
@@ -1298,7 +1301,10 @@ func (x *StructuredQuery_Projection) GetFields() []*StructuredQuery_FieldReferen
 	return nil
 }
 
-// Nearest Neighbors search config.
+// Nearest Neighbors search config. The ordering provided by FindNearest
+// supersedes the order_by stage. If multiple documents have the same vector
+// distance, the returned document order is not guaranteed to be stable
+// between queries.
 type StructuredQuery_FindNearest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1311,7 +1317,7 @@ type StructuredQuery_FindNearest struct {
 	// Required. The query vector that we are searching on. Must be a vector of
 	// no more than 2048 dimensions.
 	QueryVector *Value `protobuf:"bytes,2,opt,name=query_vector,json=queryVector,proto3" json:"query_vector,omitempty"`
-	// Required. The Distance Measure to use, required.
+	// Required. The distance measure to use, required.
 	DistanceMeasure StructuredQuery_FindNearest_DistanceMeasure `protobuf:"varint,3,opt,name=distance_measure,json=distanceMeasure,proto3,enum=google.firestore.v1.StructuredQuery_FindNearest_DistanceMeasure" json:"distance_measure,omitempty"`
 	// Required. The number of nearest neighbors to return. Must be a positive
 	// integer of no more than 1000.

@@ -18,14 +18,26 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"hash"
+	"hash/crc32"
 	"io"
+	"io/fs"
 	"math"
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/googleapis/gax-go/v2/callctx"
+	"google.golang.org/api/iterator"
 )
+
+// maxChecksumZeroArraySize is the maximum amount of memory to allocate for
+// updating the checksum. A larger size will occupy more memory but will require
+// fewer updates when computing the crc32c of a full object (but is not necessarily
+// more performant). 100kib is around the smallest size with the highest performance.
+const maxChecksumZeroArraySize = 100 * 1024
 
 // Downloader manages a set of parallelized downloads.
 type Downloader struct {
@@ -51,21 +63,151 @@ type Downloader struct {
 // set on the ctx may time out before the download even starts. To set a timeout
 // that starts with the download, use the [WithPerOpTimeout()] option.
 func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectInput) error {
-	if d.config.asynchronous && input.Callback == nil {
-		return errors.New("transfermanager: input.Callback must not be nil when the WithCallbacks option is set")
+	if d.closed() {
+		return errors.New("transfermanager: Downloader used after WaitAndClose was called")
 	}
-	if !d.config.asynchronous && input.Callback != nil {
-		return errors.New("transfermanager: input.Callback must be nil unless the WithCallbacks option is set")
-	}
-
-	select {
-	case <-d.doneReceivingInputs:
-		return errors.New("transfermanager: WaitAndClose called before DownloadObject")
-	default:
+	if err := d.validateObjectInput(input); err != nil {
+		return err
 	}
 
 	input.ctx = ctx
 	d.addInput(input)
+	return nil
+}
+
+// DownloadDirectory queues the download of a set of objects to a local path.
+// This will initiate the download but is non-blocking; call Downloader.Results
+// or use the callback to process the result. DownloadDirectory is thread-safe
+// and can be called simultaneously from different goroutines.
+// DownloadDirectory will resolve any filters on the input and create the needed
+// directory structure locally. Do not modify this struture until the download
+// has completed.
+// DownloadDirectory will fail if any of the files it attempts to download
+// already exist in the local directory.
+func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirectoryInput) error {
+	if d.closed() {
+		return errors.New("transfermanager: Downloader used after WaitAndClose was called")
+	}
+	if err := d.validateDirectoryInput(input); err != nil {
+		return err
+	}
+
+	query := &storage.Query{
+		Prefix:      input.Prefix,
+		StartOffset: input.StartOffset,
+		EndOffset:   input.EndOffset,
+		MatchGlob:   input.MatchGlob,
+	}
+	if err := query.SetAttrSelection([]string{"Name"}); err != nil {
+		return fmt.Errorf("transfermanager: DownloadDirectory query.SetAttrSelection: %w", err)
+	}
+
+	// Grab a snapshot of the local directory so we can return to it on error.
+	localDirSnapshot := make(map[string]bool) // stores all filepaths to directories in localdir
+	if err := filepath.WalkDir(input.LocalDirectory, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				return nil
+			}
+			return err
+		}
+		if d.IsDir() {
+			localDirSnapshot[path] = true
+		}
+		return nil
+	}); err != nil {
+		return fmt.Errorf("transfermanager: local directory walkthrough failed: %w", err)
+	}
+
+	cleanFiles := func(inputs []DownloadObjectInput) error {
+		// Remove all created files.
+		for _, in := range inputs {
+			f := in.Destination.(*os.File)
+			f.Close()
+			os.Remove(f.Name())
+		}
+
+		// Remove all created dirs.
+		var removePaths []string
+		if err := filepath.WalkDir(input.LocalDirectory, func(path string, d os.DirEntry, err error) error {
+			if d.IsDir() && !localDirSnapshot[path] {
+				removePaths = append(removePaths, path)
+				// We don't need to go into subdirectories, since this directory needs to be removed.
+				return filepath.SkipDir
+			}
+			return err
+		}); err != nil {
+			return fmt.Errorf("transfermanager: local directory walkthrough failed: %w", err)
+		}
+
+		for _, path := range removePaths {
+			if err := os.RemoveAll(path); err != nil {
+				return fmt.Errorf("transfermanager: failed to remove directory: %w", err)
+			}
+		}
+		return nil
+	}
+
+	objectsToQueue := []string{}
+	it := d.client.Bucket(input.Bucket).Objects(ctx, query)
+	for {
+		attrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return fmt.Errorf("transfermanager: DownloadDirectory failed to list objects: %w", err)
+		}
+
+		// Check if the file exists.
+		// TODO: add skip option.
+		filePath := filepath.Join(input.LocalDirectory, attrs.Name)
+		if _, err := os.Stat(filePath); err == nil {
+			return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, os.ErrExist)
+		} else if !errors.Is(err, os.ErrNotExist) {
+			return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, err)
+		}
+
+		objectsToQueue = append(objectsToQueue, attrs.Name)
+	}
+
+	outs := make(chan DownloadOutput, len(objectsToQueue))
+	inputs := make([]DownloadObjectInput, 0, len(objectsToQueue))
+
+	for _, object := range objectsToQueue {
+		objDirectory := filepath.Join(input.LocalDirectory, filepath.Dir(object))
+		filePath := filepath.Join(input.LocalDirectory, object)
+
+		// Make sure all directories in the object path exist.
+		err := os.MkdirAll(objDirectory, fs.ModeDir|fs.ModePerm)
+		if err != nil {
+			cleanFiles(inputs)
+			return fmt.Errorf("transfermanager: DownloadDirectory failed to make directory(%q): %w", objDirectory, err)
+		}
+
+		// Create file to download to.
+		f, fErr := os.Create(filePath)
+		if fErr != nil {
+			cleanFiles(inputs)
+			return fmt.Errorf("transfermanager: DownloadDirectory failed to create file(%q): %w", filePath, fErr)
+		}
+
+		inputs = append(inputs, DownloadObjectInput{
+			Bucket:                 input.Bucket,
+			Object:                 object,
+			Destination:            f,
+			Callback:               input.OnObjectDownload,
+			ctx:                    ctx,
+			directory:              true,
+			directoryObjectOutputs: outs,
+		})
+	}
+
+	if d.config.asynchronous {
+		d.downloadsInProgress.Add(1)
+		go d.gatherObjectOutputs(input, outs, len(inputs))
+	}
+	d.addNewInputs(inputs)
 	return nil
 }
 
@@ -143,14 +285,41 @@ func (d *Downloader) addInput(input *DownloadObjectInput) {
 	d.inputsMu.Unlock()
 }
 
-func (d *Downloader) addResult(input *DownloadObjectInput, result *DownloadOutput) {
-	// TODO: check checksum if full object
+// addNewInputs adds a slice of inputs to the downloader.
+// This should only be used to queue new objects.
+func (d *Downloader) addNewInputs(inputs []DownloadObjectInput) {
+	d.downloadsInProgress.Add(len(inputs))
 
-	if d.config.asynchronous {
+	d.inputsMu.Lock()
+	d.inputs = append(d.inputs, inputs...)
+	d.inputsMu.Unlock()
+}
+
+func (d *Downloader) addResult(input *DownloadObjectInput, result *DownloadOutput) {
+	copiedResult := *result // make a copy so that callbacks do not affect the result
+
+	if input.directory {
+		f := input.Destination.(*os.File)
+		if err := f.Close(); err != nil && result.Err == nil {
+			result.Err = fmt.Errorf("closing file(%q): %w", f.Name(), err)
+		}
+
+		// Clean up the file if it failed.
+		if result.Err != nil {
+			os.Remove(f.Name())
+		}
+
+		if d.config.asynchronous {
+			input.directoryObjectOutputs <- copiedResult
+		}
+	}
+
+	if d.config.asynchronous || input.directory {
 		input.Callback(result)
-	} else {
+	}
+	if !d.config.asynchronous {
 		d.resultsMu.Lock()
-		d.results = append(d.results, *result)
+		d.results = append(d.results, copiedResult)
 		d.resultsMu.Unlock()
 	}
 
@@ -175,33 +344,57 @@ func (d *Downloader) downloadWorker() {
 			break // no more work; exit
 		}
 
-		out := input.downloadShard(d.client, d.config.perOperationTimeout, d.config.partSize)
-
 		if input.shard == 0 {
-			if out.Err != nil {
-				// Don't queue more shards if the first failed.
-				d.addResult(input, out)
-			} else {
-				numShards := numShards(out.Attrs, input.Range, d.config.partSize)
-
-				if numShards <= 1 {
-					// Download completed with a single shard.
-					d.addResult(input, out)
-				} else {
-					// Queue more shards.
-					outs := d.queueShards(input, out.Attrs.Generation, numShards)
-					// Start a goroutine that gathers shards sent to the output
-					// channel and adds the result once it has received all shards.
-					go d.gatherShards(input, outs, numShards)
-				}
-			}
+			d.startDownload(input)
 		} else {
+			out := input.downloadShard(d.client, d.config.perOperationTimeout, d.config.partSize)
 			// If this isn't the first shard, send to the output channel specific to the object.
 			// This should never block since the channel is buffered to exactly the number of shards.
 			input.shardOutputs <- out
 		}
 	}
 	d.workers.Done()
+}
+
+// startDownload downloads the first shard and schedules subsequent shards
+// if necessary.
+func (d *Downloader) startDownload(input *DownloadObjectInput) {
+	var out *DownloadOutput
+
+	// Full object read. Request the full object and only read partSize bytes
+	// (or the full object, if smaller than partSize), so that we can avoid a
+	// metadata call to grab the CRC32C for JSON downloads.
+	if fullObjectRead(input.Range) {
+		input.checkCRC = true
+		out = input.downloadFirstShard(d.client, d.config.perOperationTimeout, d.config.partSize)
+	} else {
+		out = input.downloadShard(d.client, d.config.perOperationTimeout, d.config.partSize)
+	}
+
+	if out.Err != nil {
+		// Don't queue more shards if the first failed.
+		d.addResult(input, out)
+		return
+	}
+
+	numShards := numShards(out.Attrs, input.Range, d.config.partSize)
+	input.checkCRC = input.checkCRC && !out.Attrs.Decompressed // do not checksum if the object was decompressed
+
+	if numShards > 1 {
+		outs := d.queueShards(input, out.Attrs.Generation, numShards)
+		// Start a goroutine that gathers shards sent to the output
+		// channel and adds the result once it has received all shards.
+		go d.gatherShards(input, out, outs, numShards, out.crc32c)
+
+	} else {
+		// Download completed with a single shard.
+		if input.checkCRC {
+			if err := checksumObject(out.crc32c, out.Attrs.CRC32C); err != nil {
+				out.Err = err
+			}
+		}
+		d.addResult(input, out)
+	}
 }
 
 // queueShards queues all subsequent shards of an object after the first.
@@ -235,12 +428,12 @@ var errCancelAllShards = errors.New("cancelled because another shard failed")
 // It will add the result to the Downloader once it has received all shards.
 // gatherShards cancels remaining shards if any shard errored.
 // It does not do any checking to verify that shards are for the same object.
-func (d *Downloader) gatherShards(in *DownloadObjectInput, outs <-chan *DownloadOutput, shards int) {
+func (d *Downloader) gatherShards(in *DownloadObjectInput, out *DownloadOutput, outs <-chan *DownloadOutput, shards int, firstPieceCRC uint32) {
 	errs := []error{}
-	var shardOut *DownloadOutput
+	orderedChecksums := make([]crc32cPiece, shards-1)
+
 	for i := 1; i < shards; i++ {
-		// Add monitoring here? This could hang if any individual piece does.
-		shardOut = <-outs
+		shardOut := <-outs
 
 		// We can ignore errors that resulted from a previous error.
 		// Note that we may still get some cancel errors if they
@@ -250,14 +443,75 @@ func (d *Downloader) gatherShards(in *DownloadObjectInput, outs <-chan *Download
 			errs = append(errs, shardOut.Err)
 			in.cancelCtx(errCancelAllShards)
 		}
+
+		orderedChecksums[shardOut.shard-1] = crc32cPiece{sum: shardOut.crc32c, length: shardOut.shardLength}
 	}
 
-	// All pieces gathered; return output. Any shard output will do.
-	shardOut.Range = in.Range
-	if len(errs) != 0 {
-		shardOut.Err = fmt.Errorf("download shard errors:\n%w", errors.Join(errs...))
+	// All pieces gathered.
+	if len(errs) == 0 && in.checkCRC && out.Attrs != nil {
+		fullCrc := joinCRC32C(firstPieceCRC, orderedChecksums)
+		if err := checksumObject(fullCrc, out.Attrs.CRC32C); err != nil {
+			errs = append(errs, err)
+		}
 	}
-	d.addResult(in, shardOut)
+
+	// Prepare output.
+	out.Range = in.Range
+	if len(errs) != 0 {
+		out.Err = fmt.Errorf("download shard errors:\n%w", errors.Join(errs...))
+	}
+	if out.Attrs != nil {
+		out.Attrs.StartOffset = 0
+		if in.Range != nil {
+			out.Attrs.StartOffset = in.Range.Offset
+		}
+	}
+	d.addResult(in, out)
+}
+
+// gatherObjectOutputs receives from the given channel exactly numObjects times.
+// It will execute the callback once all object outputs are received.
+// It does not do any verification on the outputs nor does it cancel other
+// objects on error.
+func (d *Downloader) gatherObjectOutputs(in *DownloadDirectoryInput, gatherOuts <-chan DownloadOutput, numObjects int) {
+	outs := make([]DownloadOutput, 0, numObjects)
+	for i := 0; i < numObjects; i++ {
+		obj := <-gatherOuts
+		outs = append(outs, obj)
+	}
+
+	// All objects have been gathered; execute the callback.
+	in.Callback(outs)
+	d.downloadsInProgress.Done()
+}
+
+func (d *Downloader) validateObjectInput(in *DownloadObjectInput) error {
+	if d.config.asynchronous && in.Callback == nil {
+		return errors.New("transfermanager: input.Callback must not be nil when the WithCallbacks option is set")
+	}
+	if !d.config.asynchronous && in.Callback != nil {
+		return errors.New("transfermanager: input.Callback must be nil unless the WithCallbacks option is set")
+	}
+	return nil
+}
+
+func (d *Downloader) validateDirectoryInput(in *DownloadDirectoryInput) error {
+	if d.config.asynchronous && in.Callback == nil {
+		return errors.New("transfermanager: input.Callback must not be nil when the WithCallbacks option is set")
+	}
+	if !d.config.asynchronous && in.Callback != nil {
+		return errors.New("transfermanager: input.Callback must be nil unless the WithCallbacks option is set")
+	}
+	return nil
+}
+
+func (d *Downloader) closed() bool {
+	select {
+	case <-d.doneReceivingInputs:
+		return true
+	default:
+		return false
+	}
 }
 
 // NewDownloader creates a new Downloader to add operations to.
@@ -307,16 +561,34 @@ type DownloadRange struct {
 
 // DownloadObjectInput is the input for a single object to download.
 type DownloadObjectInput struct {
-	// Required fields
-	Bucket      string
-	Object      string
+	// Bucket is the bucket in GCS to download from. Required.
+	Bucket string
+
+	// Object is the object in GCS to download. Required.
+	Object string
+
+	// Destination is the WriterAt to which the Downloader will write the object
+	// data, such as an [os.File] file handle or a [DownloadBuffer]. Required.
 	Destination io.WriterAt
 
-	// Optional fields
-	Generation    *int64
-	Conditions    *storage.Conditions
+	// Generation, if specified, will request a specific generation of the object.
+	// Optional. By default, the latest generation is downloaded.
+	Generation *int64
+
+	// Conditions constrains the download to act on a specific
+	// generation/metageneration of the object.
+	// Optional.
+	Conditions *storage.Conditions
+
+	// EncryptionKey will be used to decrypt the object's contents.
+	// The encryption key must be a 32-byte AES-256 key.
+	// See https://cloud.google.com/storage/docs/encryption for details.
+	// Optional.
 	EncryptionKey []byte
-	Range         *DownloadRange // if specified, reads only a range
+
+	// Range specifies the range to read of the object.
+	// Optional. If not specified, the entire object will be read.
+	Range *DownloadRange
 
 	// Callback will be run once the object is finished downloading. It must be
 	// set if and only if the [WithCallbacks] option is set; otherwise, it must
@@ -326,10 +598,13 @@ type DownloadObjectInput struct {
 	// finish.
 	Callback func(*DownloadOutput)
 
-	ctx          context.Context
-	cancelCtx    context.CancelCauseFunc
-	shard        int // the piece of the object range that should be downloaded
-	shardOutputs chan<- *DownloadOutput
+	ctx                    context.Context
+	cancelCtx              context.CancelCauseFunc
+	shard                  int // the piece of the object range that should be downloaded
+	shardOutputs           chan<- *DownloadOutput
+	directory              bool // input was queued by calling DownloadDirectory
+	directoryObjectOutputs chan<- DownloadOutput
+	checkCRC               bool
 }
 
 // downloadShard will read a specific object piece into in.Destination.
@@ -337,38 +612,10 @@ type DownloadObjectInput struct {
 func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout time.Duration, partSize int64) (out *DownloadOutput) {
 	out = &DownloadOutput{Bucket: in.Bucket, Object: in.Object, Range: in.Range}
 
-	// Set timeout.
-	ctx := in.ctx
-	if timeout > 0 {
-		c, cancel := context.WithTimeout(ctx, timeout)
-		defer cancel()
-		ctx = c
-	}
-
-	// The first shard will be sent as download many, since we do not know yet
-	// if it will be sharded.
-	method := downloadMany
-	if in.shard != 0 {
-		method = downloadSharded
-	}
-	ctx = setUsageMetricHeader(ctx, method)
-
-	// Set options on the object.
-	o := client.Bucket(in.Bucket).Object(in.Object)
-
-	if in.Conditions != nil {
-		o = o.If(*in.Conditions)
-	}
-	if in.Generation != nil {
-		o = o.Generation(*in.Generation)
-	}
-	if len(in.EncryptionKey) > 0 {
-		o = o.Key(in.EncryptionKey)
-	}
-
 	objRange := shardRange(in.Range, partSize, in.shard)
+	ctx := in.setOptionsOnContext(timeout)
+	o := in.setOptionsOnObject(client)
 
-	// Read.
 	r, err := o.NewRangeReader(ctx, objRange.Offset, objRange.Length)
 	if err != nil {
 		out.Err = err
@@ -385,8 +632,16 @@ func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout tim
 		}
 	}
 
-	w := io.NewOffsetWriter(in.Destination, offset)
-	_, err = io.Copy(w, r)
+	var w io.Writer
+	w = io.NewOffsetWriter(in.Destination, offset)
+
+	var crcHash hash.Hash32
+	if in.checkCRC {
+		crcHash = crc32.New(crc32.MakeTable(crc32.Castagnoli))
+		w = io.MultiWriter(w, crcHash)
+	}
+
+	n, err := io.Copy(w, r)
 	if err != nil {
 		out.Err = err
 		r.Close()
@@ -399,7 +654,131 @@ func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout tim
 	}
 
 	out.Attrs = &r.Attrs
+	out.shard = in.shard
+	out.shardLength = n
+	if in.checkCRC {
+		out.crc32c = crcHash.Sum32()
+	}
 	return
+}
+
+// downloadFirstShard will read the first object piece into in.Destination.
+// If timeout is less than 0, no timeout is set.
+func (in *DownloadObjectInput) downloadFirstShard(client *storage.Client, timeout time.Duration, partSize int64) (out *DownloadOutput) {
+	out = &DownloadOutput{Bucket: in.Bucket, Object: in.Object, Range: in.Range}
+
+	ctx := in.setOptionsOnContext(timeout)
+	o := in.setOptionsOnObject(client)
+
+	r, err := o.NewReader(ctx)
+	if err != nil {
+		out.Err = err
+		return
+	}
+
+	var w io.Writer
+	w = io.NewOffsetWriter(in.Destination, 0)
+
+	var crcHash hash.Hash32
+	if in.checkCRC {
+		crcHash = crc32.New(crc32.MakeTable(crc32.Castagnoli))
+		w = io.MultiWriter(w, crcHash)
+	}
+
+	// Copy only the first partSize bytes before closing the reader.
+	// If we encounter an EOF, the file was smaller than partSize.
+	n, err := io.CopyN(w, r, partSize)
+	if err != nil && err != io.EOF {
+		out.Err = err
+		r.Close()
+		return
+	}
+
+	if err = r.Close(); err != nil {
+		out.Err = err
+		return
+	}
+
+	out.Attrs = &r.Attrs
+	out.shard = in.shard
+	out.shardLength = n
+	if in.checkCRC {
+		out.crc32c = crcHash.Sum32()
+	}
+	return
+}
+
+func (in *DownloadObjectInput) setOptionsOnContext(timeout time.Duration) context.Context {
+	ctx := in.ctx
+	if timeout > 0 {
+		c, cancel := context.WithTimeout(ctx, timeout)
+		defer cancel()
+		ctx = c
+	}
+
+	// The first shard will be sent as download many, since we do not know yet
+	// if it will be sharded.
+	method := downloadMany
+	if in.shard != 0 {
+		method = downloadSharded
+	}
+	return setUsageMetricHeader(ctx, method)
+}
+
+func (in *DownloadObjectInput) setOptionsOnObject(client *storage.Client) *storage.ObjectHandle {
+	o := client.Bucket(in.Bucket).Object(in.Object)
+	if in.Conditions != nil {
+		o = o.If(*in.Conditions)
+	}
+	if in.Generation != nil {
+		o = o.Generation(*in.Generation)
+	}
+	if len(in.EncryptionKey) > 0 {
+		o = o.Key(in.EncryptionKey)
+	}
+	return o
+}
+
+// DownloadDirectoryInput is the input for a directory to download.
+type DownloadDirectoryInput struct {
+	// Bucket is the bucket in GCS to download from. Required.
+	Bucket string
+
+	// LocalDirectory specifies the directory to download the matched objects
+	// to. Relative paths are allowed. The directory structure and contents
+	// must not be modified while the download is in progress.
+	// The directory will be created if it does not already exist. Required.
+	LocalDirectory string
+
+	// Prefix is the prefix filter to download objects whose names begin with this.
+	// Optional.
+	Prefix string
+
+	// StartOffset is used to filter results to objects whose names are
+	// lexicographically equal to or after startOffset. If endOffset is also
+	// set, the objects listed will have names between startOffset (inclusive)
+	// and endOffset (exclusive). Optional.
+	StartOffset string
+
+	// EndOffset is used to filter results to objects whose names are
+	// lexicographically before endOffset. If startOffset is also set, the
+	// objects listed will have names between startOffset (inclusive) and
+	// endOffset (exclusive). Optional.
+	EndOffset string
+
+	// MatchGlob is a glob pattern used to filter results (for example, foo*bar). See
+	// https://cloud.google.com/storage/docs/json_api/v1/objects/list#list-object-glob
+	// for syntax details. Optional.
+	MatchGlob string
+
+	// Callback will run after all the objects in the directory as selected by
+	// the provided filters are finished downloading.
+	// It must be set if and only if the [WithCallbacks] option is set.
+	// WaitAndClose will wait for all callbacks to finish.
+	Callback func([]DownloadOutput)
+
+	// OnObjectDownload will run after every finished object download. Optional.
+	OnObjectDownload func(*DownloadOutput)
 }
 
 // DownloadOutput provides output for a single object download, including all
@@ -411,6 +790,10 @@ type DownloadOutput struct {
 	Range  *DownloadRange             // requested range, if it was specified
 	Err    error                      // error occurring during download
 	Attrs  *storage.ReaderObjectAttrs // attributes of downloaded object, if successful
+
+	shard       int
+	shardLength int64
+	crc32c      uint32
 }
 
 // TODO: use built-in after go < 1.21 is dropped.
@@ -431,8 +814,13 @@ func numShards(attrs *storage.ReaderObjectAttrs, r *DownloadRange, partSize int6
 		return 1
 	}
 
+	// Sharding turned off with partSize < 1.
+	if partSize < 1 {
+		return 1
+	}
+
+	// Divide entire object into shards if no range given.
 	if r == nil {
-		// Divide entire object into shards.
 		return int(math.Ceil(float64(objectSize) / float64(partSize)))
 	}
 	// Negative offset reads the whole object in one go.
@@ -467,6 +855,11 @@ func shardRange(r *DownloadRange, partSize int64, shard int) DownloadRange {
 		}
 	}
 
+	// No sharding if partSize is less than 1.
+	if partSize < 1 {
+		return *r
+	}
+
 	// Negative offset reads the whole object in one go.
 	if r.Offset < 0 {
 		return *r
@@ -498,4 +891,49 @@ const (
 func setUsageMetricHeader(ctx context.Context, method string) context.Context {
 	header := fmt.Sprintf("%s/%s", usageMetricKey, method)
 	return callctx.SetHeaders(ctx, xGoogHeaderKey, header)
+}
+
+type crc32cPiece struct {
+	sum    uint32 // crc32c checksum of the piece
+	length int64  // number of bytes in this piece
+}
+
+// joinCRC32C pieces together the initial checksum with the orderedChecksums
+// provided to calculate the checksum of the whole.
+func joinCRC32C(initialChecksum uint32, orderedChecksums []crc32cPiece) uint32 {
+	base := initialChecksum
+
+	zeroes := make([]byte, maxChecksumZeroArraySize)
+	for _, part := range orderedChecksums {
+		// Precondition Base (flip every bit)
+		base ^= 0xFFFFFFFF
+
+		// Zero pad base crc32c. To conserve memory, do so with only maxChecksumZeroArraySize
+		// at a time. Reuse the zeroes array where possible.
+		var padded int64 = 0
+		for padded < part.length {
+			desiredZeroes := min(part.length-padded, maxChecksumZeroArraySize)
+			base = crc32.Update(base, crc32.MakeTable(crc32.Castagnoli), zeroes[:desiredZeroes])
+			padded += desiredZeroes
+		}
+
+		// Postcondition Base (same as precondition, this switches the bits back)
+		base ^= 0xFFFFFFFF
+
+		// Bitwise OR between Base and Part to produce a new Base
+		base ^= part.sum
+	}
+	return base
+}
+
+func fullObjectRead(r *DownloadRange) bool {
+	return r == nil || (r.Offset == 0 && r.Length < 0)
+}
+
+func checksumObject(got, want uint32) error {
+	// Only checksum the object if we have a valid CRC32C.
+	if want != 0 && want != got {
+		return fmt.Errorf("bad CRC on read: got %d, want %d", got, want)
+	}
+	return nil
 }

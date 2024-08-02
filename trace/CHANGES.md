@@ -1,5 +1,26 @@
 # Changes
 
+## [1.10.11](https://github.com/googleapis/google-cloud-go/compare/trace/v1.10.10...trace/v1.10.11) (2024-07-24)
+
+
+### Bug Fixes
+
+* **trace:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.10.10](https://github.com/googleapis/google-cloud-go/compare/trace/v1.10.9...trace/v1.10.10) (2024-07-10)
+
+
+### Bug Fixes
+
+* **trace:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.10.9](https://github.com/googleapis/google-cloud-go/compare/trace/v1.10.8...trace/v1.10.9) (2024-07-01)
+
+
+### Bug Fixes
+
+* **trace:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.10.8](https://github.com/googleapis/google-cloud-go/compare/trace/v1.10.7...trace/v1.10.8) (2024-06-26)
 
 

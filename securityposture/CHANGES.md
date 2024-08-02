@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.1.7](https://github.com/googleapis/google-cloud-go/compare/securityposture/v0.1.6...securityposture/v0.1.7) (2024-07-24)
+
+
+### Bug Fixes
+
+* **securityposture:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [0.1.6](https://github.com/googleapis/google-cloud-go/compare/securityposture/v0.1.5...securityposture/v0.1.6) (2024-07-10)
+
+
+### Bug Fixes
+
+* **securityposture:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/securityposture/v0.1.4...securityposture/v0.1.5) (2024-07-01)
+
+
+### Bug Fixes
+
+* **securityposture:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/securityposture/v0.1.3...securityposture/v0.1.4) (2024-06-26)
 
 

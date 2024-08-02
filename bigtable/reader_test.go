@@ -23,8 +23,8 @@ import (
 	"strings"
 	"testing"
 
+	btspb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/internal/testutil"
-	btspb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )

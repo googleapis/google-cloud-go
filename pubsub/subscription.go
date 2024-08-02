@@ -1431,13 +1431,16 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					iter.eoMu.RLock()
 					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
-					// otelCtx is used to relate the main subscribe span to the other subspans in the subscribe side.
-					// We don't want to override the ctx passed into Receive, which is necessary for user-initiated cancellations.
-					// This context is passed into the callback (regardless of if tracing is enabled). Thus, it shadows ctx2 so
-					// the callback is cancellable.
+					// otelCtx is used to store the main subscribe span to the other child spans.
+					// We want this to derive from the main subscribe ctx, so the iterator remains
+					// cancellable.
+					// We cannot reassign into ctx2 directly since this ctx should be different per
+					// batch of messages and also per message iterator.
 					otelCtx := ctx2
-					// Stores if message is sampled or not.
-					var messageSampled bool
+					// Stores the concurrency control span, which starts before the call to
+					// acquire is made, and ends immediately after. This used to be called
+					// flow control, but is more accurately describes as concurrency control
+					// since this limits the number of simultaneous callback invocations.
 					var ccSpan trace.Span
 					if iter.enableTracing {
 						c, ok := iter.activeSpans.Load(ackh.ackID)
@@ -1447,7 +1450,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 							// Don't override otelCtx here since the parent of subsequent spans
 							// should be the subscribe span still.
 							_, ccSpan = startSpan(otelCtx, ccSpanName, "")
-							messageSampled = true
 						}
 					}
 					// Use the original user defined ctx for this operation so the acquire operation can be cancelled.
@@ -1459,7 +1461,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					if iter.enableTracing && messageSampled {
+					if iter.enableTracing {
 						ccSpan.End()
 					}
 					if fc.semCount != nil {
@@ -1482,7 +1484,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					// TODO(deklerk): Can we have a generic handler at the
 					// constructor level?
 					var schedulerSpan trace.Span
-					if iter.enableTracing && messageSampled {
+					if iter.enableTracing {
 						_, schedulerSpan = startSpan(otelCtx, scheduleSpanName, "")
 					}
 					iter.orderingMu.RUnlock()
@@ -1491,8 +1493,9 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						m := msg.(*Message)
 						defer wg.Done()
 						var ps trace.Span
-						if iter.enableTracing && messageSampled {
+						if iter.enableTracing {
 							schedulerSpan.End()
+							// Start the process span, and augment the done function to end this span and record events.
 							otelCtx, ps = startSpan(otelCtx, processSpanName, s.ID())
 							old := ackh.doneFunc
 							ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {

@@ -1,5 +1,43 @@
 # Changes
 
+## [1.65.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.64.0...spanner/v1.65.0) (2024-07-29)
+
+
+### Features
+
+* **spanner/admin/database:** Add support for Cloud Spanner Scheduled Backups ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **spanner:** Add RESOURCE_EXHAUSTED to retryable transaction codes ([#10412](https://github.com/googleapis/google-cloud-go/issues/10412)) ([29b52dc](https://github.com/googleapis/google-cloud-go/commit/29b52dc40f3d1a6ffe7fa40e6142d8035c0d95ee))
+
+
+### Bug Fixes
+
+* **spanner/test:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **spanner/test:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+* **spanner/test:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+* **spanner:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **spanner:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+* **spanner:** Fix negative values for max_in_use_sessions metrics [#10449](https://github.com/googleapis/google-cloud-go/issues/10449) ([#10508](https://github.com/googleapis/google-cloud-go/issues/10508)) ([4e180f4](https://github.com/googleapis/google-cloud-go/commit/4e180f4539012eb6e3d1d2788e68b291ef7230c3))
+* **spanner:** HealthCheck should not decrement num_in_use sessions ([#10480](https://github.com/googleapis/google-cloud-go/issues/10480)) ([9b2b47f](https://github.com/googleapis/google-cloud-go/commit/9b2b47f107153d624d56709d9a8e6a6b72c39447))
+* **spanner:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.64.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.63.0...spanner/v1.64.0) (2024-06-29)
+
+
+### Features
+
+* **spanner:** Add field lock_hint in spanner.proto ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **spanner:** Add field order_by in spanner.proto ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **spanner:** Add LockHint feature ([#10382](https://github.com/googleapis/google-cloud-go/issues/10382)) ([64bdcb1](https://github.com/googleapis/google-cloud-go/commit/64bdcb1a6a462d41a62d3badea6814425e271f22))
+* **spanner:** Add OrderBy feature ([#10289](https://github.com/googleapis/google-cloud-go/issues/10289)) ([07b8bd2](https://github.com/googleapis/google-cloud-go/commit/07b8bd2f5dc738e0293305dfc459c13632d5ea65))
+* **spanner:** Add support of checking row not found errors from ReadRow and ReadRowUsingIndex ([#10405](https://github.com/googleapis/google-cloud-go/issues/10405)) ([5cb0c26](https://github.com/googleapis/google-cloud-go/commit/5cb0c26013eeb3bbe51174bee628a20c2ec775e0))
+
+
+### Bug Fixes
+
+* **spanner:** Fix data-race caused by TrackSessionHandle ([#10321](https://github.com/googleapis/google-cloud-go/issues/10321)) ([23c5fff](https://github.com/googleapis/google-cloud-go/commit/23c5fffd06bcde408db50a981c015921cd4ecf0e)), refs [#10320](https://github.com/googleapis/google-cloud-go/issues/10320)
+* **spanner:** Fix negative values for max_in_use_sessions metrics ([#10449](https://github.com/googleapis/google-cloud-go/issues/10449)) ([a1e198a](https://github.com/googleapis/google-cloud-go/commit/a1e198a9b18bd2f92c3438e4f609412047f8ccf4))
+* **spanner:** Prevent possible panic for Session not found errors ([#10386](https://github.com/googleapis/google-cloud-go/issues/10386)) ([ba9711f](https://github.com/googleapis/google-cloud-go/commit/ba9711f87ec871153ae00cfd0827bce17c31ee9c)), refs [#10385](https://github.com/googleapis/google-cloud-go/issues/10385)
+
 ## [1.63.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.62.0...spanner/v1.63.0) (2024-05-24)
 
 

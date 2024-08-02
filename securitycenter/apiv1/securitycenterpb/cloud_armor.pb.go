@@ -57,8 +57,8 @@ type CloudArmor struct {
 	// Information about DDoS attack volume and classification.
 	Attack *Attack `protobuf:"bytes,4,opt,name=attack,proto3" json:"attack,omitempty"`
 	// Distinguish between volumetric & protocol DDoS attack and
-	// application layer attacks. For example, “L3_4” for Layer 3 and Layer 4 DDoS
-	// attacks, or “L_7” for Layer 7 DDoS attacks.
+	// application layer attacks. For example, "L3_4" for Layer 3 and Layer 4 DDoS
+	// attacks, or "L_7" for Layer 7 DDoS attacks.
 	ThreatVector string `protobuf:"bytes,5,opt,name=threat_vector,json=threatVector,proto3" json:"threat_vector,omitempty"`
 	// Duration of attack from the start until the current moment (updated every 5
 	// minutes).
@@ -150,9 +150,9 @@ type SecurityPolicy struct {
 	// The name of the Google Cloud Armor security policy, for example,
 	// "my-security-policy".
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The type of Google Cloud Armor security policy for example, ‘backend
-	// security policy’, ‘edge security policy’, ‘network edge security policy’,
-	// or ‘always-on DDoS protection’.
+	// The type of Google Cloud Armor security policy for example, 'backend
+	// security policy', 'edge security policy', 'network edge security policy',
+	// or 'always-on DDoS protection'.
 	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
 	// Whether or not the associated rule or policy is in preview mode.
 	Preview bool `protobuf:"varint,3,opt,name=preview,proto3" json:"preview,omitempty"`
@@ -353,7 +353,7 @@ type Attack struct {
 	VolumePps int32 `protobuf:"varint,1,opt,name=volume_pps,json=volumePps,proto3" json:"volume_pps,omitempty"`
 	// Total BPS (bytes per second) volume of attack.
 	VolumeBps int32 `protobuf:"varint,2,opt,name=volume_bps,json=volumeBps,proto3" json:"volume_bps,omitempty"`
-	// Type of attack, for example, ‘SYN-flood’, ‘NTP-udp’, or ‘CHARGEN-udp’.
+	// Type of attack, for example, 'SYN-flood', 'NTP-udp', or 'CHARGEN-udp'.
 	Classification string `protobuf:"bytes,3,opt,name=classification,proto3" json:"classification,omitempty"`
 }
 

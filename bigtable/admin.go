@@ -26,6 +26,7 @@ import (
 	"strings"
 	"time"
 
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -599,6 +599,7 @@ type FamilyInfo struct {
 	Name         string
 	GCPolicy     string
 	FullGCPolicy GCPolicy
+	ValueType    Type
 }
 
 func (ac *AdminClient) getTable(ctx context.Context, table string, view btapb.Table_View) (*btapb.Table, error) {
@@ -638,6 +639,7 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 			Name:         name,
 			GCPolicy:     GCRuleToString(fam.GcRule),
 			FullGCPolicy: gcRuleToPolicy(fam.GcRule),
+			ValueType:    ProtoToType(fam.ValueType),
 		})
 	}
 	// we expect DeletionProtection to be in the response because Table_SCHEMA_VIEW is being used in this function

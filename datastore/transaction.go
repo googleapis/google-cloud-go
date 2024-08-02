@@ -45,12 +45,10 @@ var (
 	}
 
 	// Do not include codes.Unavailable here since client already retries for Unavailable error
-	beginTxnRetryer = gax.OnCodes([]codes.Code{codes.DeadlineExceeded,
-		codes.Internal}, txnBackoff)
-	rollbackRetryer = gax.OnCodes([]codes.Code{codes.DeadlineExceeded,
-		codes.Internal}, txnBackoff)
-	txnRetryer = gax.OnCodes([]codes.Code{codes.Aborted, codes.Canceled, codes.Unknown, codes.DeadlineExceeded,
-		codes.Internal, codes.Unauthenticated}, txnBackoff)
+	beginTxnRetryCodes = []codes.Code{codes.DeadlineExceeded, codes.Internal}
+	rollbackRetryCodes = []codes.Code{codes.DeadlineExceeded, codes.Internal}
+	txnRetryCodes      = []codes.Code{codes.Aborted, codes.Canceled, codes.Unknown, codes.DeadlineExceeded,
+		codes.Internal, codes.Unauthenticated}
 
 	gaxSleep = gax.Sleep
 )
@@ -307,7 +305,7 @@ func (c *Client) newTransactionWithRetry(ctx context.Context, s *transactionSett
 			return t, newTxnErr
 		}
 		// Check if BeginTransaction should be retried
-		if backoffErr := backoffBeforeRetry(ctx, beginTxnRetryer, newTxnErr); backoffErr != nil {
+		if backoffErr := backoffBeforeRetry(ctx, gax.OnCodes(beginTxnRetryCodes, txnBackoff), newTxnErr); backoffErr != nil {
 			return nil, backoffErr
 		}
 	}
@@ -414,7 +412,7 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 			}
 		} else {
 			// Check whether error other than ResourceExhausted should be retried
-			backoffErr := backoffBeforeRetry(ctx, txnRetryer, retryErr)
+			backoffErr := backoffBeforeRetry(ctx, gax.OnCodes(txnRetryCodes, txnBackoff), retryErr)
 			if backoffErr != nil {
 				return nil, err
 			}
@@ -496,7 +494,7 @@ func (t *Transaction) rollbackWithRetry() error {
 		}
 
 		// Check if Rollback should be retried
-		if backoffErr := backoffBeforeRetry(t.ctx, rollbackRetryer, rollbackErr); backoffErr != nil {
+		if backoffErr := backoffBeforeRetry(t.ctx, gax.OnCodes(rollbackRetryCodes, txnBackoff), rollbackErr); backoffErr != nil {
 			return backoffErr
 		}
 	}
@@ -573,7 +571,7 @@ func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err er
 	if txnID != nil && err == nil {
 		t.setToInProgress(txnID)
 	}
-	return err
+	return t.client.processFieldMismatchError(err)
 }
 
 // Get is the transaction-specific version of the package function Get.
@@ -584,9 +582,9 @@ func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err er
 func (t *Transaction) Get(key *Key, dst interface{}) (err error) {
 	err = t.get("cloud.google.com/go/datastore.Transaction.Get", []*Key{key}, []interface{}{dst})
 	if me, ok := err.(MultiError); ok {
-		return me[0]
+		return t.client.processFieldMismatchError(me[0])
 	}
-	return err
+	return t.client.processFieldMismatchError(err)
 }
 
 // GetMulti is a batch version of Get.

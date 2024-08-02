@@ -2383,6 +2383,11 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DocumentServiceClient interface {
 	// Updates metadata associated with a dataset.
+	// Note that this method requires the
+	// `documentai.googleapis.com/datasets.update` permission on the project,
+	// which is highly privileged. A user or service account with this permission
+	// can create new processors that can interact with any gcs bucket in your
+	// project.
 	UpdateDataset(ctx context.Context, in *UpdateDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Import documents into a dataset.
 	ImportDocuments(ctx context.Context, in *ImportDocumentsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
@@ -2472,6 +2477,11 @@ func (c *documentServiceClient) UpdateDatasetSchema(ctx context.Context, in *Upd
 // DocumentServiceServer is the server API for DocumentService service.
 type DocumentServiceServer interface {
 	// Updates metadata associated with a dataset.
+	// Note that this method requires the
+	// `documentai.googleapis.com/datasets.update` permission on the project,
+	// which is highly privileged. A user or service account with this permission
+	// can create new processors that can interact with any gcs bucket in your
+	// project.
 	UpdateDataset(context.Context, *UpdateDatasetRequest) (*longrunningpb.Operation, error)
 	// Import documents into a dataset.
 	ImportDocuments(context.Context, *ImportDocumentsRequest) (*longrunningpb.Operation, error)

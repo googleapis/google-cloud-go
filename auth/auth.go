@@ -101,6 +101,20 @@ func (t *Token) IsValid() bool {
 	return t.isValidWithEarlyExpiry(defaultExpiryDelta)
 }
 
+// MetadataString is a convenience method for accessing string values in the
+// token's metadata. Returns an empty string if the metadata is nil or the value
+// for the given key cannot be cast to a string.
+func (t *Token) MetadataString(k string) string {
+	if t.Metadata == nil {
+		return ""
+	}
+	s, ok := t.Metadata[k].(string)
+	if !ok {
+		return ""
+	}
+	return s
+}
+
 func (t *Token) isValidWithEarlyExpiry(earlyExpiry time.Duration) bool {
 	if t.isEmpty() {
 		return false
@@ -538,12 +552,12 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 	v := url.Values{}
 	v.Set("grant_type", defaultGrantType)
 	v.Set("assertion", payload)
-	resp, err := tp.Client.PostForm(tp.opts.TokenURL, v)
+	req, err := http.NewRequestWithContext(ctx, "POST", tp.opts.TokenURL, strings.NewReader(v.Encode()))
 	if err != nil {
-		return nil, fmt.Errorf("auth: cannot fetch token: %w", err)
+		return nil, err
 	}
-	defer resp.Body.Close()
-	body, err := internal.ReadAll(resp.Body)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	resp, body, err := internal.DoRequest(tp.Client, req)
 	if err != nil {
 		return nil, fmt.Errorf("auth: cannot fetch token: %w", err)
 	}

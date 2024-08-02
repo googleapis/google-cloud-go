@@ -4,31 +4,31 @@ go 1.20
 
 require (
 	cloud.google.com/go v0.115.0
-	cloud.google.com/go/datacatalog v1.20.1
-	cloud.google.com/go/iam v1.1.8
-	cloud.google.com/go/longrunning v0.5.7
+	cloud.google.com/go/datacatalog v1.20.3
+	cloud.google.com/go/iam v1.1.10
+	cloud.google.com/go/longrunning v0.5.9
 	cloud.google.com/go/storage v1.42.0
 	github.com/apache/arrow/go/v15 v15.0.2
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
-	github.com/googleapis/gax-go/v2 v2.12.5
+	github.com/googleapis/gax-go/v2 v2.13.0
 	go.opencensus.io v0.24.0
 	golang.org/x/sync v0.7.0
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028
-	google.golang.org/api v0.186.0
-	google.golang.org/genproto v0.0.0-20240617180043-68d350f18fd4
-	google.golang.org/genproto/googleapis/api v0.0.0-20240617180043-68d350f18fd4
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240617180043-68d350f18fd4
-	google.golang.org/grpc v1.64.0
+	google.golang.org/api v0.189.0
+	google.golang.org/genproto v0.0.0-20240722135656-d784300faade
+	google.golang.org/genproto/googleapis/api v0.0.0-20240722135656-d784300faade
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240722135656-d784300faade
+	google.golang.org/grpc v1.64.1
 	google.golang.org/protobuf v1.34.2
 )
 
 require (
-	cloud.google.com/go/auth v0.6.0 // indirect
-	cloud.google.com/go/auth/oauth2adapt v0.2.2 // indirect
-	cloud.google.com/go/compute/metadata v0.3.0 // indirect
+	cloud.google.com/go/auth v0.7.2 // indirect
+	cloud.google.com/go/auth/oauth2adapt v0.2.3 // indirect
+	cloud.google.com/go/compute/metadata v0.5.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
-	github.com/go-logr/logr v1.4.1 // indirect
+	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
@@ -47,12 +47,12 @@ require (
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.24.0 // indirect
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
-	golang.org/x/crypto v0.24.0 // indirect
+	golang.org/x/crypto v0.25.0 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
 	golang.org/x/mod v0.18.0 // indirect
-	golang.org/x/net v0.26.0 // indirect
+	golang.org/x/net v0.27.0 // indirect
 	golang.org/x/oauth2 v0.21.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/tools v0.22.0 // indirect

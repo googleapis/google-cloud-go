@@ -107,6 +107,7 @@ modules:
   - policysimulator
   - policytroubleshooter
   - privatecatalog
+  - privilegedaccessmanager
   - profiler
   - pubsub
   - pubsublite
@@ -444,6 +445,14 @@ service-configs:
   - input-directory: google/cloud/bigquery/storage/v1beta2
     service-config: bigquerystorage_v1beta2.yaml
     import-path: cloud.google.com/go/bigquery/storage/apiv1beta2
+  - input-directory: google/bigtable/admin/v2
+    service-config: bigtableadmin_v2.yaml
+    import-path: cloud.google.com/go/bigtable/admin/apiv2
+    release-level-override: stable
+  - input-directory: google/bigtable/v2
+    service-config: bigtable_v2.yaml
+    import-path: cloud.google.com/go/bigtable/apiv2
+    release-level-override: stable
   - input-directory: google/cloud/billing/budgets/v1
     service-config: billingbudgets.yaml
     import-path: cloud.google.com/go/billing/budgets/apiv1
@@ -748,6 +757,9 @@ service-configs:
   - input-directory: google/cloud/privatecatalog/v1beta1
     service-config: cloudprivatecatalog_v1beta1.yaml
     import-path: cloud.google.com/go/privatecatalog/apiv1beta1
+  - input-directory: google/cloud/privilegedaccessmanager/v1
+    service-config: privilegedaccessmanager_v1.yaml
+    import-path: cloud.google.com/go/privilegedaccessmanager/apiv1
   - input-directory: google/cloud/pubsublite/v1
     service-config: pubsublite_v1.yaml
     import-path: cloud.google.com/go/pubsublite/apiv1
