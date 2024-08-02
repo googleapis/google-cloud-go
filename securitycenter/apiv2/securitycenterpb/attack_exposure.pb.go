@@ -21,13 +21,12 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -104,7 +103,7 @@ type AttackExposure struct {
 	LatestCalculationTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=latest_calculation_time,json=latestCalculationTime,proto3" json:"latest_calculation_time,omitempty"`
 	// The resource name of the attack path simulation result that contains the
 	// details regarding this attack exposure score.
-	// Example: organizations/123/simulations/456/attackExposureResults/789
+	// Example: `organizations/123/simulations/456/attackExposureResults/789`
 	AttackExposureResult string `protobuf:"bytes,3,opt,name=attack_exposure_result,json=attackExposureResult,proto3" json:"attack_exposure_result,omitempty"`
 	// Output only. What state this AttackExposure is in. This captures whether or
 	// not an attack exposure has been calculated or not.
