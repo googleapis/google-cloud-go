@@ -180,11 +180,15 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 	})
 	client.Single().ReadRow(context.Background(), "Users", Key{"alice"}, []string{"email"})
 
+	expectedSpans := 2
+	if isMultiplexEnabled {
+		expectedSpans = 1
+	}
 	// Wait for a while to see all exported metrics.
 	waitFor(t, func() error {
 		select {
 		case stat := <-te.Stats:
-			if len(stat.Rows) >= 2 {
+			if len(stat.Rows) >= expectedSpans {
 				return nil
 			}
 		}
@@ -196,7 +200,7 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 	case stat := <-te.Stats:
 		// There are 4 types for this metric, so we should see at least four
 		// rows.
-		if len(stat.Rows) < 2 {
+		if len(stat.Rows) < expectedSpans {
 			t.Fatal("No enough metrics are exported")
 		}
 		if got, want := stat.View.Measure.Name(), statsPrefix+"num_sessions_in_pool"; got != want {
@@ -213,11 +217,7 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 			var want string
 			switch m[tagKeyType] {
 			case "num_sessions":
-				if isMultiplexEnabled {
-					want = "1"
-				} else {
-					want = "100"
-				}
+				want = "100"
 			case "num_in_use_sessions":
 				want = "0"
 			default:
@@ -233,6 +233,9 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 }
 
 func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
+	if isMultiplexEnabled {
+		t.Skip("Skipping test as multiplexed sessions will be available from background thread if enabled as soon as client is created")
+	}
 	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter(GetSessionTimeoutsCountView)
 	defer te.Unregister()

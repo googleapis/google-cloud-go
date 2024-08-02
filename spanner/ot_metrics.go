@@ -204,7 +204,9 @@ func registerSessionPoolOTMetrics(pool *sessionPool) error {
 		func(ctx context.Context, o metric.Observer) error {
 			pool.mu.Lock()
 			defer pool.mu.Unlock()
-
+			if pool.multiplexedSession != nil {
+				o.ObserveInt64(otConfig.openSessionCount, int64(1), metric.WithAttributes(otConfig.attributeMapWithMultiplexed...))
+			}
 			o.ObserveInt64(otConfig.openSessionCount, int64(pool.numOpened), metric.WithAttributes(attributes...))
 			o.ObserveInt64(otConfig.maxAllowedSessionsCount, int64(pool.SessionPoolConfig.MaxOpened), metric.WithAttributes(attributes...))
 			o.ObserveInt64(otConfig.sessionsCount, int64(pool.numInUse), metric.WithAttributes(append(attributesInUseSessions, attribute.Key("is_multiplexed").String("false"))...))

@@ -46,6 +46,13 @@ func setupMockedTestServerWithConfig(t *testing.T, config spanner.ClientConfig) 
 	if err != nil {
 		t.Fatal(err)
 	}
+	if isMultiplexEnabled {
+		// trigger R/O txn for multiplexed session creation to avoid flakiness
+		waitFor(t, func() error {
+			iter := client.Single().Query(ctx, spanner.NewStatement(stestutil.SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+			return iter.Do(func(_ *spanner.Row) error { return nil })
+		})
+	}
 	return server, client, func() {
 		client.Close()
 		serverTeardown()

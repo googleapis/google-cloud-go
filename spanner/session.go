@@ -751,13 +751,10 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	}
 	if pool.enableMultiplexSession {
 		go pool.createMultiplexedSession()
-		reqCtx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-		pool.multiplexedSessionReq <- muxSessionCreateRequest{force: true, ctx: ctx}
+		pool.multiplexedSessionReq <- muxSessionCreateRequest{force: true, ctx: context.Background()}
 		// listen for the session to be created
 		go func() {
 			select {
-			case <-reqCtx.Done():
-				cancel()
 			// wait for the session to be created
 			case <-pool.mayGetMultiplexedSession:
 			}
@@ -893,12 +890,10 @@ func (p *sessionPool) growPoolLocked(numSessions uint64, distributeOverChannels 
 
 func (p *sessionPool) createMultiplexedSession() {
 	for c := range p.multiplexedSessionReq {
-		fmt.Printf("createMultiplexedSession called\n")
 		p.mu.Lock()
-		session := p.multiplexedSession
+		sess := p.multiplexedSession
 		p.mu.Unlock()
-		fmt.Printf("c.force: %v, session: %v\n", c.force, session)
-		if c.force || session == nil {
+		if c.force || sess == nil {
 			p.mu.Lock()
 			p.sc.mu.Lock()
 			client, err := p.sc.nextClient()
@@ -908,17 +903,14 @@ func (p *sessionPool) createMultiplexedSession() {
 				// If we can't get a client, we can't create a session.
 				p.mu.Lock()
 				p.multiplexedSessionCreationError = err
-				p.mayGetMultiplexedSession <- true
 				p.mu.Unlock()
+				p.mayGetMultiplexedSession <- true
 				continue
 			}
 			p.sc.executeCreateMultiplexedSession(c.ctx, client, p.sc.md, p)
 			continue
 		}
-		p.mu.Lock()
-		// If the session is already created, we can notify the next request to proceed.
 		p.mayGetMultiplexedSession <- true
-		p.mu.Unlock()
 	}
 }
 
@@ -935,7 +927,6 @@ func (p *sessionPool) sessionReady(s *session) {
 		p.multiplexedSessionCreationError = nil
 		p.recordStat(context.Background(), OpenSessionCount, int64(1), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 		p.recordStat(context.Background(), SessionsCount, 1, tagNumSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
-		// Notify other waiters blocking on session creation.
 		p.mayGetMultiplexedSession <- true
 		return
 	}
@@ -1261,11 +1252,7 @@ func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, erro
 		}
 		mayGetSession := p.mayGetMultiplexedSession
 		p.mu.Unlock()
-		// No session available. Start the creation of multiplexed session.
-		fmt.Printf("Sending multiplexed session request\n")
 		p.multiplexedSessionReq <- muxSessionCreateRequest{force: false, ctx: ctx}
-		fmt.Printf("Sent multiplexed session request\n")
-
 		select {
 		case <-ctx.Done():
 			trace.TracePrintf(ctx, nil, "Context done waiting for multiplexed session")
@@ -1275,8 +1262,6 @@ func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, erro
 			}
 			return nil, p.errGetSessionTimeout(ctx)
 		case <-mayGetSession: // Block until multiplexed session is created.
-			fmt.Printf("Received multiplexed session result\n")
-
 			p.mu.Lock()
 			if p.multiplexedSessionCreationError != nil {
 				trace.TracePrintf(ctx, nil, "Error creating multiplexed session: %v", p.multiplexedSessionCreationError)
@@ -1586,8 +1571,9 @@ func newHealthChecker(interval, multiplexSessionRefreshInterval time.Duration, w
 		hc.waitWorkers.Add(1)
 		go hc.worker(i)
 	}
-	hc.waitWorkers.Add(1)
-	go hc.multiplexSessionWorker()
+	if hc.pool.enableMultiplexSession {
+		go hc.multiplexSessionWorker()
+	}
 	return hc
 }
 
@@ -1882,7 +1868,6 @@ func (hc *healthChecker) shrinkPool(ctx context.Context, shrinkToNumSessions uin
 func (hc *healthChecker) multiplexSessionWorker() {
 	for {
 		if hc.isClosing() {
-			hc.waitWorkers.Done()
 			return
 		}
 		hc.pool.mu.Lock()
@@ -1905,6 +1890,7 @@ func (hc *healthChecker) multiplexSessionWorker() {
 			cancel()
 		case <-hc.done:
 			cancel()
+			return
 		}
 	}
 }

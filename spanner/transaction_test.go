@@ -320,17 +320,20 @@ func TestBatchDML_WithMultipleDML(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if got, want := gotReqs[1].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
+	muxCreateBuffer := 0
+	if isMultiplexEnabled {
+		muxCreateBuffer = 1
+	}
+	if got, want := gotReqs[1+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[2].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
+	if got, want := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
+	if got, want := gotReqs[3+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+	if got, want := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
@@ -606,17 +609,20 @@ func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
+	muxCreateBuffer := 0
+	if isMultiplexEnabled {
+		muxCreateBuffer = 1
+	}
+	if got, want := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
+	if got, want := gotReqs[3+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
+	if got, want := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[5].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+	if got, want := gotReqs[5+muxCreateBuffer].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
@@ -674,22 +680,26 @@ func TestPriorityInQueryOptions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	muxCreateBuffer := 0
+	if isMultiplexEnabled {
+		muxCreateBuffer = 1
+	}
+	if got, want := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
+	if got, want := gotReqs[3+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[5].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[5+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[6].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+	if got, want := gotReqs[6+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[7].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
+	if got, want := gotReqs[7+muxCreateBuffer].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
@@ -706,6 +716,34 @@ func shouldHaveReceived(server InMemSpannerServer, want []interface{}) ([]interf
 
 // Compares expected requests (want) with actual requests (got).
 func compareRequests(want []interface{}, got []interface{}) error {
+	if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
+		sessReq := 0
+		for i := 0; i < len(want); i++ {
+			if reflect.TypeOf(want[i]) == reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
+				sessReq = i
+				break
+			}
+		}
+		want[0], want[sessReq] = want[sessReq], want[0]
+	}
+	if isMultiplexEnabled {
+		if reflect.TypeOf(want[0]) != reflect.TypeOf(&sppb.CreateSessionRequest{}) {
+			want = append([]interface{}{&sppb.CreateSessionRequest{}}, want...)
+		}
+		if reflect.TypeOf(got[0]) == reflect.TypeOf(&sppb.BatchCreateSessionsRequest{}) {
+			muxSessionIndex := 0
+			for i := 0; i < len(got); i++ {
+				if reflect.TypeOf(got[i]) == reflect.TypeOf(&sppb.CreateSessionRequest{}) {
+					muxSessionIndex = i
+					break
+				}
+			}
+			got[0], got[muxSessionIndex] = got[muxSessionIndex], got[0]
+		}
+	}
+	muxSessionIndex := 0
+
+	got[0], got[muxSessionIndex] = got[muxSessionIndex], got[0]
 	if len(got) != len(want) {
 		var gotMsg string
 		for _, r := range got {

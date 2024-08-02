@@ -236,6 +236,9 @@ func TestTakeFromIdleList(t *testing.T) {
 	if len(gotSessions) != 10 {
 		t.Fatalf("got %v unique sessions, want 10", len(gotSessions))
 	}
+	if sp.multiplexedSession != nil {
+		gotSessions[sp.multiplexedSession.getID()] = true
+	}
 	if !testEqual(gotSessions, wantSessions) {
 		t.Fatalf("got sessions: %v, want %v", gotSessions, wantSessions)
 	}
@@ -1094,6 +1097,7 @@ func TestMaxBurst(t *testing.T) {
 			},
 		})
 	defer teardown()
+
 	sp := client.idleSessions
 
 	// Will cause session creation RPC to be retried forever.
@@ -1286,6 +1290,13 @@ func TestHealthCheckScheduler(t *testing.T) {
 			gotPings[p]++
 		}
 		for s := range liveSessions {
+			if strings.Contains(s, "multiplexed") {
+				// no pings for multiplexed sessions
+				if gotPings[s] > 0 {
+					return fmt.Errorf("got %v healthchecks on multiplexed session %v, want 0", gotPings[s], s)
+				}
+				continue
+			}
 			want := int64(20)
 			if got := gotPings[s]; got < want/2 || got > want+want/2 {
 				// This is an unnacceptable amount of pings.
@@ -1780,6 +1791,11 @@ loop:
 			numOpened = sp.idleList.Len()
 			sp.mu.Unlock()
 			if numOpened == 10 {
+				if isMultiplexEnabled {
+					if sp.multiplexedSession == nil {
+						continue
+					}
+				}
 				break loop
 			}
 		}

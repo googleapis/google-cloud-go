@@ -75,12 +75,10 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 	client.Single().ReadRow(context.Background(), "Users", spanner.Key{"alice"}, []string{"email"})
 
 	expectedOpenSessionCount := int64(25)
-	expectedMaxInUseWithMultiplexed := int64(0)
-	expectedMaxInUse := int64(1)
+	expectedAcquiredSessionsCount := int64(1)
 	if isMultiplexEnabled {
-		expectedOpenSessionCount = 0
-		expectedMaxInUse = 0
-		expectedMaxInUseWithMultiplexed = 1
+		expectedOpenSessionCount = 1
+		expectedAcquiredSessionsCount = int64(2)
 	}
 	for _, test := range []struct {
 		name           string
@@ -127,12 +125,8 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 				Data: metricdata.Gauge[int64]{
 					DataPoints: []metricdata.DataPoint[int64]{
 						{
-							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String("false"))...),
-							Value:      expectedMaxInUse,
-						},
-						{
-							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String("true"))...),
-							Value:      expectedMaxInUseWithMultiplexed,
+							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String(strconv.FormatBool(isMultiplexEnabled)))...),
+							Value:      1,
 						},
 					},
 				},
@@ -148,7 +142,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 					DataPoints: []metricdata.DataPoint[int64]{
 						{
 							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String(strconv.FormatBool(isMultiplexEnabled)))...),
-							Value:      1,
+							Value:      expectedAcquiredSessionsCount, //
 						},
 					},
 					Temporality: metricdata.CumulativeTemporality,
@@ -166,7 +160,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 					DataPoints: []metricdata.DataPoint[int64]{
 						{
 							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String(strconv.FormatBool(isMultiplexEnabled)))...),
-							Value:      1,
+							Value:      expectedAcquiredSessionsCount, // should be same as acquired sessions count
 						},
 					},
 					Temporality: metricdata.CumulativeTemporality,
@@ -178,6 +172,26 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			metricName := test.expectedMetric.Name
 			expectedMetric := test.expectedMetric
+			if isMultiplexEnabled {
+				if metricName == "spanner/max_in_use_sessions" {
+					t.Skip("Skipping test for " + metricName + " as it is not applicable for multiplexed sessions")
+				}
+				if metricName == "spanner/open_session_count" {
+					// For multiplexed sessions, the open session count should be 1.
+					expectedMetric.Data = metricdata.Gauge[int64]{
+						DataPoints: []metricdata.DataPoint[int64]{
+							{
+								Attributes: attribute.NewSet(getAttributes(client.ClientID())...),
+								Value:      0,
+							},
+							{
+								Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String(strconv.FormatBool(isMultiplexEnabled)))...),
+								Value:      1,
+							},
+						},
+					}
+				}
+			}
 			validateOTMetric(ctx, t, te, metricName, expectedMetric)
 		})
 	}
@@ -197,8 +211,14 @@ func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
 	// Wait for the session pool initialization to finish.
 	expectedReads := spanner.DefaultSessionPoolConfig.MinOpened
 	waitFor(t, func() error {
-		if uint64(server.TestSpanner.TotalSessionsCreated()) == expectedReads {
-			return nil
+		if isMultiplexEnabled {
+			if uint64(server.TestSpanner.TotalSessionsCreated()) == expectedReads+1 {
+				return nil
+			}
+		} else {
+			if uint64(server.TestSpanner.TotalSessionsCreated()) == expectedReads {
+				return nil
+			}
 		}
 		return errors.New("Not yet initialized")
 	})
@@ -213,10 +233,6 @@ func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
 		Unit:        "1",
 		Data: metricdata.Gauge[int64]{
 			DataPoints: []metricdata.DataPoint[int64]{
-				{
-					Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("type").String("num_in_use_sessions"), attribute.Key("is_multiplexed").String("true"))...),
-					Value:      0,
-				},
 				{
 					Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("type").String("num_in_use_sessions"), attribute.Key("is_multiplexed").String("false"))...),
 					Value:      0,
@@ -233,6 +249,10 @@ func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
 }
 
 func TestOTMetrics_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
+	if isMultiplexEnabled {
+		// multiplexed sessions will be always available in background, so this metric is not applicable.
+		t.Skip("Skipping test for GetSessionTimeoutsCount as it is not applicable for multiplexed sessions")
+	}
 	ctx1 := context.Background()
 	te := newOpenTelemetryTestExporter(false, false)
 	t.Cleanup(func() {
@@ -243,10 +263,6 @@ func TestOTMetrics_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 	defer teardown()
 
 	server.TestSpanner.PutExecutionTime(stestutil.MethodBatchCreateSession,
-		stestutil.SimulatedExecutionTime{
-			MinimumExecutionTime: 2 * time.Millisecond,
-		})
-	server.TestSpanner.PutExecutionTime(stestutil.MethodCreateSession,
 		stestutil.SimulatedExecutionTime{
 			MinimumExecutionTime: 2 * time.Millisecond,
 		})
@@ -372,6 +388,10 @@ func TestOTMetrics_GFELatency(t *testing.T) {
 			Temporality: metricdata.CumulativeTemporality,
 			IsMonotonic: true,
 		},
+	}
+	if isMultiplexEnabled {
+		// add datapoint from initial wait for multiplexed session to be available
+		expectedMetricData.Data.(metricdata.Sum[int64]).DataPoints[0].Value = 2
 	}
 	metricdatatest.AssertEqual(t, expectedMetricData, resourceMetrics.ScopeMetrics[0].Metrics[idx1], metricdatatest.IgnoreTimestamp(), metricdatatest.IgnoreExemplars())
 }
