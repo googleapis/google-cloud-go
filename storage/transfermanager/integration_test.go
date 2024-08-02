@@ -23,8 +23,11 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"io/fs"
 	"log"
 	"math/rand"
+	"os"
+	"path/filepath"
 	"sync"
 	"testing"
 	"time"
@@ -43,10 +46,12 @@ const (
 	testPrefix      = "go-integration-test-tm"
 	grpcTestPrefix  = "golang-grpc-test-tm"
 	bucketExpiryAge = 24 * time.Hour
+	minObjectSize   = 1024
+	maxObjectSize   = 1024 * 1024
 )
 
 var (
-	uidSpace = uid.NewSpace("", &uid.Options{Short: true})
+	uidSpace = uid.NewSpace("", nil)
 	//  These buckets are shared amongst download tests. They are created,
 	// populated with objects and cleaned up in TestMain.
 	httpTestBucket = downloadTestBucket{}
@@ -80,21 +85,314 @@ func TestMain(m *testing.M) {
 	}
 }
 
+// Downloads the entire contents of the bucket synchronously.
+func TestIntegration_DownloadDirectory(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
+		localDir := t.TempDir()
+		numCallbacks := 0
+		callbackMu := sync.Mutex{}
+
+		d, err := NewDownloader(c, WithWorkers(8), WithPartSize(maxObjectSize/2))
+		if err != nil {
+			t.Fatalf("NewDownloader: %v", err)
+		}
+
+		if err := d.DownloadDirectory(ctx, &DownloadDirectoryInput{
+			Bucket:         tb.bucket,
+			LocalDirectory: localDir,
+			OnObjectDownload: func(got *DownloadOutput) {
+				callbackMu.Lock()
+				numCallbacks++
+				callbackMu.Unlock()
+
+				if got.Err != nil {
+					t.Errorf("result.Err: %v", got.Err)
+				}
+
+				if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+					t.Errorf("expected object size %d, got %d", want, got)
+				}
+
+				path := filepath.Join(localDir, got.Object)
+				f, err := os.Open(path)
+				if err != nil {
+					t.Errorf("os.Open(%q): %v", path, err)
+				}
+				defer f.Close()
+
+				b := bytes.NewBuffer(make([]byte, 0, got.Attrs.Size))
+				if _, err := io.Copy(b, f); err != nil {
+					t.Errorf("io.Copy: %v", err)
+				}
+
+				if wantCRC, gotCRC := tb.contentHashes[got.Object], crc32c(b.Bytes()); gotCRC != wantCRC {
+					t.Errorf("object(%q) at filepath(%q): content crc32c does not match; got: %v, expected: %v", got.Object, path, gotCRC, wantCRC)
+				}
+				got.Object = "modifying this shouldn't be a problem"
+			},
+		}); err != nil {
+			t.Errorf("d.DownloadDirectory: %v", err)
+		}
+
+		results, err := d.WaitAndClose()
+		if err != nil {
+			t.Fatalf("d.WaitAndClose: %v", err)
+		}
+
+		if len(results) != len(tb.objects) {
+			t.Errorf("expected to receive %d results, got %d results", len(tb.objects), len(results))
+		}
+		if numCallbacks != len(tb.objects) {
+			t.Errorf("expected to receive %d callbacks, got %d", len(tb.objects), numCallbacks)
+		}
+
+		for _, got := range results {
+			if got.Err != nil {
+				t.Errorf("result.Err: %v", got.Err)
+				continue
+			}
+
+			if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+				t.Errorf("expected object size %d, got %d", want, got)
+			}
+
+			path := filepath.Join(localDir, got.Object)
+			f, err := os.Open(path)
+			if err != nil {
+				t.Errorf("os.Open(%q): %v", path, err)
+			}
+			defer f.Close()
+
+			b := bytes.NewBuffer(make([]byte, 0, got.Attrs.Size))
+			if _, err := io.Copy(b, f); err != nil {
+				t.Errorf("io.Copy: %v", err)
+			}
+
+			if wantCRC, gotCRC := tb.contentHashes[got.Object], crc32c(b.Bytes()); gotCRC != wantCRC {
+				t.Errorf("object(%q) at filepath(%q): content crc32c does not match; got: %v, expected: %v", got.Object, path, gotCRC, wantCRC)
+			}
+		}
+	})
+}
+
+// Downloads a subset of objects using callbacks.
+func TestIntegration_DownloadDirectoryAsync(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
+		localDir := t.TempDir()
+
+		numCallbacks := 0
+		callbackMu := sync.Mutex{}
+
+		d, err := NewDownloader(c, WithWorkers(2), WithPartSize(maxObjectSize/2), WithCallbacks())
+		if err != nil {
+			t.Fatalf("NewDownloader: %v", err)
+		}
+
+		// In lex order we have:
+		// "dir/nested/again/obj1", -- excluded
+		// "dir/nested/objA", -- included
+		// "dir/file" -- excluded by MatchGlob
+		// "dir/objA", -- included
+		// "dir/objB", -- included
+		// "dir/objC", -- excluded
+		wantObjs := 3
+
+		if err := d.DownloadDirectory(ctx, &DownloadDirectoryInput{
+			Bucket:         tb.bucket,
+			LocalDirectory: localDir,
+			Prefix:         "dir",
+			StartOffset:    "dir/nested/o",
+			EndOffset:      "dir/objC",
+			MatchGlob:      "**obj**",
+			OnObjectDownload: func(got *DownloadOutput) {
+				callbackMu.Lock()
+				numCallbacks++
+				callbackMu.Unlock()
+
+				if got.Err != nil {
+					t.Errorf("result.Err: %v", got.Err)
+				}
+
+				if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+					t.Errorf("expected object size %d, got %d", want, got)
+				}
+
+				path := filepath.Join(localDir, got.Object)
+				f, err := os.Open(path)
+				if err != nil {
+					t.Errorf("os.Open(%q): %v", path, err)
+				}
+				defer f.Close()
+
+				b := bytes.NewBuffer(make([]byte, 0, got.Attrs.Size))
+				if _, err := io.Copy(b, f); err != nil {
+					t.Errorf("io.Copy: %v", err)
+				}
+
+				if wantCRC, gotCRC := tb.contentHashes[got.Object], crc32c(b.Bytes()); gotCRC != wantCRC {
+					t.Errorf("object(%q) at filepath(%q): content crc32c does not match; got: %v, expected: %v", got.Object, path, gotCRC, wantCRC)
+				}
+				got.Object = "modifying this shouldn't be a problem"
+			},
+			Callback: func(outs []DownloadOutput) {
+				if len(outs) != wantObjs {
+					t.Errorf("expected to receive %d results, got %d results", wantObjs, len(outs))
+				}
+
+				for _, got := range outs {
+					if got.Err != nil {
+						t.Errorf("result.Err: %v", got.Err)
+						continue
+					}
+
+					if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+						t.Errorf("expected object size %d, got %d", want, got)
+					}
+
+					path := filepath.Join(localDir, got.Object)
+					f, err := os.Open(path)
+					if err != nil {
+						t.Errorf("os.Open(%q): %v", path, err)
+					}
+					defer f.Close()
+
+					b := bytes.NewBuffer(make([]byte, 0, got.Attrs.Size))
+					if _, err := io.Copy(b, f); err != nil {
+						t.Errorf("io.Copy: %v", err)
+					}
+
+					if wantCRC, gotCRC := tb.contentHashes[got.Object], crc32c(b.Bytes()); gotCRC != wantCRC {
+						t.Errorf("object(%q) at filepath(%q): content crc32c does not match; got: %v, expected: %v", got.Object, path, gotCRC, wantCRC)
+					}
+				}
+			},
+		}); err != nil {
+			t.Errorf("d.DownloadDirectory: %v", err)
+		}
+
+		if _, err = d.WaitAndClose(); err != nil {
+			t.Fatalf("d.WaitAndClose: %v", err)
+		}
+
+		if numCallbacks != wantObjs {
+			t.Errorf("expected to receive %d results, got %d callbacks", (wantObjs), numCallbacks)
+		}
+
+		entries, err := os.ReadDir(filepath.Join(localDir, "dir"))
+		if err != nil {
+			t.Fatalf("os.ReadDir: %v", err)
+		}
+
+		if len(entries) != wantObjs {
+			t.Errorf("expected %d entries in dir, got %d", (wantObjs), len(entries))
+		}
+
+		for _, entry := range entries {
+			if entry.IsDir() && entry.Name() != "nested" {
+				t.Errorf("unexpected subdirectory %q in dir", entry.Name())
+			}
+			if !entry.IsDir() && entry.Name() != "objA" && entry.Name() != "objB" {
+				t.Errorf("unexpected file %q in dir", entry.Name())
+			}
+		}
+	})
+}
+
+// TestIntegration_DownloadDirectoryError tests that an error is returned if the
+// file already exists and that any created file structure is deleted as well.
+func TestIntegration_DownloadDirectoryError(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
+		localDir := t.TempDir()
+		callbacks := make(chan bool)
+
+		d, err := NewDownloader(c, WithWorkers(2))
+		if err != nil {
+			t.Fatalf("NewDownloader: %v", err)
+		}
+		defer d.WaitAndClose()
+
+		// First download a nested file.
+		obj := "dir/objC"
+		if err := d.DownloadDirectory(ctx, &DownloadDirectoryInput{
+			Bucket:         tb.bucket,
+			LocalDirectory: localDir,
+			Prefix:         obj,
+			OnObjectDownload: func(got *DownloadOutput) {
+				callbacks <- true
+
+				if got.Err != nil {
+					t.Errorf("result.Err: %v", got.Err)
+				}
+
+				if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+					t.Errorf("expected object size %d, got %d", want, got)
+				}
+			},
+		}); err != nil {
+			t.Fatalf("d.DownloadDirectory: %v", err)
+		}
+
+		// Then add another file and another directory to the temp dir.
+		localNestedDir := "localonly"
+		localFile := "localonly-file"
+
+		f, err := os.Create(filepath.Join(localDir, localFile))
+		if err != nil {
+			t.Errorf("os.Create: %v", err)
+		}
+		if err := f.Close(); err != nil {
+			t.Errorf("f.Close: %v", err)
+		}
+
+		if err := os.Mkdir(filepath.Join(localDir, localNestedDir), fs.ModeDir|fs.ModePerm); err != nil {
+			t.Errorf("os.Mkdir: %v", err)
+		}
+
+		// Now attempt to download the directory; it should fail.
+		<-callbacks
+		err = d.DownloadDirectory(ctx, &DownloadDirectoryInput{
+			Bucket:         tb.bucket,
+			LocalDirectory: localDir,
+		})
+		if !errors.Is(err, os.ErrExist) {
+			t.Errorf("d.DownloadDirectory should have failed with error %q; got %v", os.ErrExist, err)
+		}
+
+		// Check the local directory, it should have the first file, the second and another directory only.
+		expected := []string{obj, localNestedDir, localFile}
+
+		entries, err := os.ReadDir(localDir)
+		if err != nil {
+			t.Errorf("os.ReadDir: %v", err)
+		}
+		if got, want := len(entries), len(expected); got != want {
+			t.Errorf("localDir does not have the expected amount of entries, got %d, want %d", got, want)
+		}
+
+		for _, exp := range expected {
+			_, err := os.Stat(filepath.Join(localDir, exp))
+			if err != nil {
+				t.Errorf("os.Stat: %v", err)
+			}
+		}
+	})
+}
+
 func TestIntegration_DownloaderSynchronous(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
 		objects := tb.objects
 
 		// Start a downloader. Give it a smaller amount of workers than objects,
 		// to make sure we aren't blocking anywhere.
-		d, err := NewDownloader(c, WithWorkers(2))
+		d, err := NewDownloader(c, WithWorkers(2), WithPartSize(maxObjectSize/2))
 		if err != nil {
 			t.Fatalf("NewDownloader: %v", err)
 		}
 		// Download several objects.
-		writers := make([]*testWriter, len(objects))
+		writers := make([]*DownloadBuffer, len(objects))
 		objToWriter := make(map[string]int) // so we can map the resulting content back to the correct object
 		for i, obj := range objects {
-			writers[i] = &testWriter{}
+			writers[i] = NewDownloadBuffer(make([]byte, tb.objectSizes[obj]))
 			objToWriter[obj] = i
 			if err := d.DownloadObject(ctx, &DownloadObjectInput{
 				Bucket:      tb.bucket,
@@ -110,14 +408,6 @@ func TestIntegration_DownloaderSynchronous(t *testing.T) {
 			t.Fatalf("d.WaitAndClose: %v", err)
 		}
 
-		// Close the writers so we can check the contents. This should be fine,
-		// since the downloads should all be complete after WaitAndClose.
-		for i := range objects {
-			if err := writers[i].Close(); err != nil {
-				t.Fatalf("testWriter.Close: %v", err)
-			}
-		}
-
 		// Check the results.
 		for _, got := range results {
 			writerIdx := objToWriter[got.Object]
@@ -127,12 +417,16 @@ func TestIntegration_DownloaderSynchronous(t *testing.T) {
 				continue
 			}
 
-			if want, got := tb.contentHashes[got.Object], writers[writerIdx].crc32c; got != want {
+			if want, got := tb.contentHashes[got.Object], crc32c(writers[writerIdx].Bytes()); got != want {
 				t.Fatalf("content crc32c does not match; got: %v, expected: %v", got, want)
 			}
 
-			if got.Attrs.Size != tb.objectSize {
-				t.Errorf("expected object size %d, got %d", tb.objectSize, got.Attrs.Size)
+			if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+				t.Errorf("expected object size %d, got %d", want, got)
+			}
+
+			if got, want := got.Attrs.StartOffset, int64(0); want != got {
+				t.Errorf("expected start offset %d, got %d", want, got)
 			}
 		}
 
@@ -156,16 +450,16 @@ func TestIntegration_DownloaderErrorSync(t *testing.T) {
 		objects = append([]string{nonexistentObject}, objects...)
 
 		// Start a downloader.
-		d, err := NewDownloader(c, WithWorkers(2))
+		d, err := NewDownloader(c, WithWorkers(2), WithPartSize(maxObjectSize/2))
 		if err != nil {
 			t.Fatalf("NewDownloader: %v", err)
 		}
 
 		// Download objects.
-		writers := make([]*testWriter, len(objects))
+		writers := make([]*DownloadBuffer, len(objects))
 		objToWriter := make(map[string]int) // so we can map the resulting content back to the correct object
 		for i, obj := range objects {
-			writers[i] = &testWriter{}
+			writers[i] = NewDownloadBuffer(make([]byte, tb.objectSizes[obj]))
 			objToWriter[obj] = i
 			if err := d.DownloadObject(ctx, &DownloadObjectInput{
 				Bucket:      tb.bucket,
@@ -180,14 +474,6 @@ func TestIntegration_DownloaderErrorSync(t *testing.T) {
 		results, err := d.WaitAndClose()
 		if err == nil {
 			t.Error("d.WaitAndClose should return an error, instead got nil")
-		}
-
-		// Close the writers so we can check the contents. This should be fine,
-		// since the downloads should all be complete after WaitAndClose.
-		for i := range objects {
-			if err := writers[i].Close(); err != nil {
-				t.Fatalf("testWriter.Close: %v", err)
-			}
 		}
 
 		// Check the results.
@@ -208,12 +494,12 @@ func TestIntegration_DownloaderErrorSync(t *testing.T) {
 				continue
 			}
 
-			if want, got := tb.contentHashes[got.Object], writers[writerIdx].crc32c; got != want {
+			if want, got := tb.contentHashes[got.Object], crc32c(writers[writerIdx].Bytes()); got != want {
 				t.Fatalf("content crc32c does not match; got: %v, expected: %v", got, want)
 			}
 
-			if got.Attrs.Size != tb.objectSize {
-				t.Errorf("expected object size %d, got %d", tb.objectSize, got.Attrs.Size)
+			if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+				t.Errorf("expected object size %d, got %d", want, got)
 			}
 		}
 
@@ -227,7 +513,7 @@ func TestIntegration_DownloaderAsynchronous(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
 		objects := tb.objects
 
-		d, err := NewDownloader(c, WithWorkers(2), WithCallbacks())
+		d, err := NewDownloader(c, WithWorkers(2), WithCallbacks(), WithPartSize(maxObjectSize/2))
 		if err != nil {
 			t.Fatalf("NewDownloader: %v", err)
 		}
@@ -236,10 +522,10 @@ func TestIntegration_DownloaderAsynchronous(t *testing.T) {
 		callbackMu := sync.Mutex{}
 
 		// Download objects.
-		writers := make([]*testWriter, len(objects))
+		writers := make([]*DownloadBuffer, len(objects))
 		for i, obj := range objects {
 			i := i
-			writers[i] = &testWriter{}
+			writers[i] = NewDownloadBuffer(make([]byte, tb.objectSizes[obj]))
 			if err := d.DownloadObject(ctx, &DownloadObjectInput{
 				Bucket:      tb.bucket,
 				Object:      obj,
@@ -253,17 +539,12 @@ func TestIntegration_DownloaderAsynchronous(t *testing.T) {
 						t.Errorf("result.Err: %v", got.Err)
 					}
 
-					// Close the writer so we can check the contents.
-					if err := writers[i].Close(); err != nil {
-						t.Fatalf("testWriter.Close: %v", err)
+					if want, got := tb.contentHashes[got.Object], crc32c(writers[i].Bytes()); got != want {
+						t.Errorf("content crc32c does not match; got: %v, expected: %v", got, want)
 					}
 
-					if want, got := tb.contentHashes[got.Object], writers[i].crc32c; got != want {
-						t.Fatalf("content crc32c does not match; got: %v, expected: %v", got, want)
-					}
-
-					if got.Attrs.Size != tb.objectSize {
-						t.Errorf("expected object size %d, got %d", tb.objectSize, got.Attrs.Size)
+					if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+						t.Errorf("expected object size %d, got %d", want, got)
 					}
 				},
 			}); err != nil {
@@ -297,7 +578,7 @@ func TestIntegration_DownloaderErrorAsync(t *testing.T) {
 		if err := d.DownloadObject(ctx, &DownloadObjectInput{
 			Bucket:      tb.bucket,
 			Object:      tb.objects[0],
-			Destination: &testWriter{},
+			Destination: &DownloadBuffer{},
 			Conditions: &storage.Conditions{
 				GenerationMatch: -10,
 			},
@@ -318,10 +599,10 @@ func TestIntegration_DownloaderErrorAsync(t *testing.T) {
 		}
 
 		// Download existing objects.
-		writers := make([]*testWriter, len(tb.objects))
+		writers := make([]*DownloadBuffer, len(tb.objects))
 		for i, obj := range tb.objects {
 			i := i
-			writers[i] = &testWriter{}
+			writers[i] = NewDownloadBuffer(make([]byte, tb.objectSizes[obj]))
 			if err := d.DownloadObject(ctx, &DownloadObjectInput{
 				Bucket:      tb.bucket,
 				Object:      obj,
@@ -335,17 +616,12 @@ func TestIntegration_DownloaderErrorAsync(t *testing.T) {
 						t.Errorf("result.Err: %v", got.Err)
 					}
 
-					// Close the writer so we can check the contents.
-					if err := writers[i].Close(); err != nil {
-						t.Fatalf("testWriter.Close: %v", err)
+					if want, got := tb.contentHashes[got.Object], crc32c(writers[i].Bytes()); got != want {
+						t.Errorf("content crc32c does not match; got: %v, expected: %v", got, want)
 					}
 
-					if want, got := tb.contentHashes[got.Object], writers[i].crc32c; got != want {
-						t.Fatalf("content crc32c does not match; got: %v, expected: %v", got, want)
-					}
-
-					if got.Attrs.Size != tb.objectSize {
-						t.Errorf("expected object size %d, got %d", tb.objectSize, got.Attrs.Size)
+					if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+						t.Errorf("expected object size %d, got %d", want, got)
 					}
 				},
 			}); err != nil {
@@ -357,7 +633,7 @@ func TestIntegration_DownloaderErrorAsync(t *testing.T) {
 		if err := d.DownloadObject(ctx, &DownloadObjectInput{
 			Bucket:      tb.bucket,
 			Object:      "not-written",
-			Destination: &testWriter{},
+			Destination: &DownloadBuffer{},
 			Callback: func(got *DownloadOutput) {
 				callbackMu.Lock()
 				numCallbacks++
@@ -417,7 +693,7 @@ func TestIntegration_DownloaderTimeout(t *testing.T) {
 	if err := d.DownloadObject(ctx, &DownloadObjectInput{
 		Bucket:      httpTestBucket.bucket,
 		Object:      httpTestBucket.objects[0],
-		Destination: &testWriter{},
+		Destination: &DownloadBuffer{},
 	}); err != nil {
 		t.Errorf("d.DownloadObject: %v", err)
 	}
@@ -440,12 +716,13 @@ func TestIntegration_DownloaderTimeout(t *testing.T) {
 func TestIntegration_DownloadShard(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
 		objectName := tb.objects[0]
+		objectSize := tb.objectSizes[objectName]
 
 		// Get expected Attrs.
 		o := c.Bucket(tb.bucket).Object(objectName)
 		r, err := o.NewReader(ctx)
 		if err != nil {
-			t.Fatalf("o.Attrs: %v", err)
+			t.Fatalf("o.NewReader: %v", err)
 		}
 
 		incorrectGen := r.Attrs.Generation - 1
@@ -477,7 +754,7 @@ func TestIntegration_DownloadShard(t *testing.T) {
 					Bucket: tb.bucket,
 					Object: objectName,
 					Range: &DownloadRange{
-						Offset: tb.objectSize - 5,
+						Offset: objectSize - 5,
 						Length: -1,
 					},
 				},
@@ -485,18 +762,19 @@ func TestIntegration_DownloadShard(t *testing.T) {
 					Bucket: tb.bucket,
 					Object: objectName,
 					Range: &DownloadRange{
-						Offset: tb.objectSize - 5,
+						Offset: objectSize - 5,
 						Length: -1,
 					},
 					Attrs: &storage.ReaderObjectAttrs{
-						Size:            tb.objectSize,
-						StartOffset:     tb.objectSize - 5,
+						Size:            objectSize,
+						StartOffset:     objectSize - 5,
 						ContentType:     r.Attrs.ContentType,
 						ContentEncoding: r.Attrs.ContentEncoding,
 						CacheControl:    r.Attrs.CacheControl,
 						LastModified:    r.Attrs.LastModified,
 						Generation:      r.Attrs.Generation,
 						Metageneration:  r.Attrs.Metageneration,
+						CRC32C:          r.Attrs.CRC32C,
 					},
 				},
 			},
@@ -572,15 +850,14 @@ func TestIntegration_DownloadShard(t *testing.T) {
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
-				w := &testWriter{}
-
+				w := &DownloadBuffer{}
 				test.in.Destination = w
 
 				if test.in.ctx == nil {
 					test.in.ctx = ctx
 				}
 
-				got := test.in.downloadShard(c, test.timeout)
+				got := test.in.downloadShard(c, test.timeout, 1024)
 
 				if got.Bucket != test.want.Bucket || got.Object != test.want.Object {
 					t.Errorf("wanted bucket %q, object %q, got: %q, %q", test.want.Bucket, test.want.Object, got.Bucket, got.Object)
@@ -648,33 +925,6 @@ func randomInt64(min, max int64) int64 {
 	return rand.Int63n(max-min+1) + min
 }
 
-// TODO: once we provide a DownloaderBuffer that implements WriterAt in the
-// library, we can use that instead.
-type testWriter struct {
-	b      []byte
-	crc32c uint32
-	bufs   [][]byte // temp bufs that will be joined on Close()
-}
-
-// Close must be called to finalize the buffer
-func (tw *testWriter) Close() error {
-	tw.b = bytes.Join(tw.bufs, nil)
-	crc := crc32.New(crc32.MakeTable(crc32.Castagnoli))
-
-	_, err := io.Copy(crc, bytes.NewReader(tw.b))
-	tw.crc32c = crc.Sum32()
-	return err
-}
-
-func (tw *testWriter) WriteAt(b []byte, offset int64) (n int, err error) {
-	// TODO: use the offset. This is fine for now since reads are not yet sharded.
-	copiedB := make([]byte, len(b))
-	copy(copiedB, b)
-	tw.bufs = append(tw.bufs, copiedB)
-
-	return len(b), nil
-}
-
 func deleteExpiredBuckets(prefix string) error {
 	if testing.Short() {
 		return nil
@@ -739,7 +989,7 @@ type downloadTestBucket struct {
 	bucket        string
 	objects       []string
 	contentHashes map[string]uint32
-	objectSize    int64
+	objectSizes   map[string]int64
 }
 
 // Create initializes the downloadTestBucket, creating a bucket and populating
@@ -752,16 +1002,21 @@ func (tb *downloadTestBucket) Create(prefix string) error {
 	ctx := context.Background()
 
 	tb.bucket = prefix + uidSpace.New()
-	tb.objectSize = randomInt64(200, 1024*1024)
 	tb.objects = []string{
+		"!#$&'()*+,:;=,?@,[] and spaces",
+		"./obj",
 		"obj1",
 		"obj2",
-		"obj/with/slashes",
-		"obj/",
-		"./obj",
-		"!#$&'()*+,/:;=,?@,[] and spaces",
+		"dir/file",
+		"dir/objA",
+		"dir/objB",
+		"dir/objC",
+		"dir/nested/objA",
+		"dir/nested/again/obj1",
+		"anotherDir/objC",
 	}
 	tb.contentHashes = make(map[string]uint32)
+	tb.objectSizes = make(map[string]int64)
 
 	client, err := storage.NewClient(ctx)
 	if err != nil {
@@ -776,12 +1031,13 @@ func (tb *downloadTestBucket) Create(prefix string) error {
 
 	// Write objects.
 	for _, obj := range tb.objects {
-		crc, err := generateFileInGCS(ctx, b.Object(obj), tb.objectSize)
+		size := randomInt64(minObjectSize, maxObjectSize)
+		crc, err := generateFileInGCS(ctx, b.Object(obj), size)
 		if err != nil {
 			return fmt.Errorf("generateFileInGCS: %v", err)
 		}
 		tb.contentHashes[obj] = crc
-
+		tb.objectSizes[obj] = size
 	}
 	return nil
 }
@@ -856,4 +1112,8 @@ func initTransportClients(ctx context.Context) (map[string]*storage.Client, erro
 		"http": c,
 		"grpc": gc,
 	}, nil
+}
+
+func crc32c(b []byte) uint32 {
+	return crc32.Checksum(b, crc32.MakeTable(crc32.Castagnoli))
 }

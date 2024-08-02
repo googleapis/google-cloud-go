@@ -34,14 +34,7 @@
 // See the config type in config.go and the config.yaml files in the testdata
 // subdirectories to understand how to write configuration.
 //
-// # Support functions
-//
-// protoveneer generates code that relies on a few support functions. These live
-// in the support subdirectory. You should copy the contents of this directory
-// to a location of your choice, and add "supportImportPath" to your config to
-// refer to that directory's import path.
-//
-// # Unhandled features
+// # Unsupported features
 //
 // There is no support for oneofs. Omit the oneof type and write custom code.
 // However, the types of the individual oneof cases can be generated.
@@ -56,6 +49,7 @@ package main
 import (
 	"bytes"
 	"context"
+	_ "embed"
 	"errors"
 	"flag"
 	"fmt"
@@ -68,9 +62,10 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
-	"text/template"
+	"text/template" // NOLINT
 	"unicode"
 )
 
@@ -265,6 +260,8 @@ func buildConverterMap(typeInfos []*typeInfo, conf *config) (map[string]converte
 	for _, et := range externalTypes {
 		if et.used && et.convertTo != "" {
 			converters[et.qualifiedName] = customConverter{et.convertTo, et.convertFrom}
+			needSupport(et.convertTo)
+			needSupport(et.convertFrom)
 		}
 	}
 
@@ -514,6 +511,17 @@ func processField(af *ast.Field, tc *typeConfig, typeInfos map[string]*typeInfo)
 				}
 				af.Type = expr
 			}
+			if fc.Doc != "" {
+				cg := &ast.CommentGroup{}
+				for i, line := range strings.Split(strings.TrimSpace(fc.Doc), "\n") {
+					c := &ast.Comment{Text: "// " + line}
+					if i == 0 {
+						c.Slash = af.Pos() - 1
+					}
+					cg.List = append(cg.List, c)
+				}
+				af.Doc = cg
+			}
 			if fc.ConvertToFrom != "" {
 				c, err := parseCustomConverter(id.Name, fc.ConvertToFrom)
 				if err != nil {
@@ -741,12 +749,14 @@ func write(typeInfos []*typeInfo, conf *config, fset *token.FileSet) ([]byte, er
 	}
 	pr("\n")
 	prn(`    pb "%s"`, conf.ProtoImportPath)
-	if conf.SupportImportPath == "" {
-		return nil, errors.New("missing supportImportPath in config")
-	}
-	prn(`    "%s"`, conf.SupportImportPath)
 	for ip := range otherImportPaths {
-		prn(`    "%s"`, ip)
+		// May be just a path, or "id path".
+		id, path, found := strings.Cut(ip, " ")
+		if !found {
+			prn(`    "%s"`, ip)
+		} else {
+			prn(`  %s "%s"`, id, path)
+		}
 	}
 	pr(")\n\n")
 
@@ -771,7 +781,9 @@ func write(typeInfos []*typeInfo, conf *config, fset *token.FileSet) ([]byte, er
 			ti.generateConversionMethods(pr)
 		}
 	}
-
+	if err := generateSupportFunctions(&buf, neededSupportFunctions); err != nil {
+		return nil, err
+	}
 	return buf.Bytes(), nil
 }
 
@@ -876,36 +888,41 @@ var externalTypes = []*externalType{
 	{
 		qualifiedName: "civil.Date",
 		replaces:      "*date.Date",
-		importPaths:   []string{"cloud.google.com/go/civil"},
-		convertTo:     "support.CivilDateToProto",
-		convertFrom:   "support.CivilDateFromProto",
+		importPaths:   []string{"cloud.google.com/go/civil", "google.golang.org/genproto/googleapis/type/date"},
+		convertTo:     "pvCivilDateToProto",
+		convertFrom:   "pvCivilDateFromProto",
 	},
 	{
 		qualifiedName: "map[string]any",
 		replaces:      "*structpb.Struct",
-		convertTo:     "support.MapToStructPB",
-		convertFrom:   "support.MapFromStructPB",
+		importPaths:   []string{"google.golang.org/protobuf/types/known/structpb"},
+		convertTo:     "pvMapToStructPB",
+		convertFrom:   "pvMapFromStructPB",
 	},
 	{
 		qualifiedName: "time.Time",
 		replaces:      "*timestamppb.Timestamp",
-		importPaths:   []string{"time"},
-		convertTo:     "support.TimeToProto",
-		convertFrom:   "support.TimeFromProto",
+		importPaths:   []string{"time", "google.golang.org/protobuf/types/known/timestamppb"},
+		convertTo:     "pvTimeToProto",
+		convertFrom:   "pvTimeFromProto",
 	},
 	{
 		qualifiedName: "time.Duration",
 		replaces:      "*durationpb.Duration",
 		importPaths:   []string{"time", "google.golang.org/protobuf/types/known/durationpb"},
 		convertTo:     "durationpb.New",
-		convertFrom:   "support.DurationFromProto",
+		convertFrom:   "pvDurationFromProto",
 	},
 	{
 		qualifiedName: "*apierror.APIError",
 		replaces:      "*status.Status",
-		importPaths:   []string{"github.com/googleapis/gax-go/v2/apierror"},
-		convertTo:     "support.APIErrorToProto",
-		convertFrom:   "support.APIErrorFromProto",
+		importPaths: []string{
+			"github.com/googleapis/gax-go/v2/apierror",
+			"spb google.golang.org/genproto/googleapis/rpc/status",
+			"gstatus google.golang.org/grpc/status",
+		},
+		convertTo:   "pvAPIErrorToProto",
+		convertFrom: "pvAPIErrorFromProto",
 	},
 }
 
@@ -923,6 +940,97 @@ func init() {
 		}
 		protoTypeToExternalType[et.replaces] = et
 	}
+}
+
+////////////////////////////////////////////////////////////////
+
+//go:embed internal/support/support.go
+var supportCode string
+
+var neededSupportFunctions = map[string]bool{}
+
+// needSupport should be called whenever a support function is needed by the generated code.
+// It is OK to call it for functions that are not in the support package.
+func needSupport(name string) { neededSupportFunctions[name] = true }
+
+var (
+	// Regexps to match the start and end of top-level functions.
+	// These assume the file is gofmt'd.
+	// The "m" flag means that ^ and $ match line starts and ends, respectively.
+	startFuncRegexp = regexp.MustCompile(`(?m:^func ([A-Za-z0-9_]+))`)
+	endFuncRegexp   = regexp.MustCompile(`(?m:^}$)`)
+)
+
+// generateSupportFunctions writes the support functions needed by the
+// generated code to w.
+func generateSupportFunctions(w io.Writer, need map[string]bool) error {
+	// Walk through the file of support functions,
+	// writing the ones whose names are in need.
+	code := supportCode
+	for {
+		starts := startFuncRegexp.FindStringSubmatchIndex(code)
+		if starts == nil {
+			break
+		}
+		end := endFuncRegexp.FindStringIndex(code)
+		if end == nil {
+			return errors.New("generateSupportFunctions: missing function end")
+		}
+		// starts[0] to starts[1]: entire start regexp
+		// starts[2] to starts[3]: function name
+		// end[1]: index of newline after '}'.
+		name := code[starts[2]:starts[3]]
+		if need[name] {
+			comment, err := extractFunctionComment(code, starts[0])
+			if err != nil {
+				return err
+			}
+			if _, err := fmt.Fprintf(w, "\n%s%s\n", comment, code[starts[0]:end[1]]); err != nil {
+				return err
+			}
+		}
+		// Move past match.
+		code = code[end[1]:]
+	}
+
+	// Keep in sync with the type in internal/support/support.go
+	_, err := fmt.Fprintf(w, `
+// pvPanic wraps panics from support functions.
+// User-provided functions in the same package can also use it.
+// It allows callers to distinguish conversion function panics from other panics.
+type pvPanic error
+
+// pvCatchPanic recovers from panics of type pvPanic and
+// returns an error instead.
+func pvCatchPanic[T any](f func() T) (_ T, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(pvPanic); ok {
+				err = r.(error)
+			} else {
+				panic(r)
+			}
+		}
+	}()
+	return f(), nil
+}
+`)
+	return err
+}
+
+// extractFunctionComment returns the top-level comment for the function
+// beginning at code[funcStart].
+func extractFunctionComment(code string, funcStart int) (string, error) {
+	// Take advantage of the facts that every support function has a doc comment,
+	// and all functions are separated by at least one empty line.
+
+	// Search backwards for a blank line.
+	for i := funcStart; i > 0; i-- {
+		if code[i] == '\n' && code[i-1] == '\n' {
+			return code[i+1 : funcStart], nil
+		}
+	}
+	return "", fmt.Errorf("could not find comment before function at %d", funcStart)
 }
 
 ////////////////////////////////////////////////////////////////

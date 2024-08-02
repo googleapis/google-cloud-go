@@ -69,9 +69,36 @@ func (wpt withPerOpTimeout) apply(tm *transferManagerConfig) {
 	tm.perOperationTimeout = wpt.timeout
 }
 
+// WithPartSize returns a TransferManagerOption that specifies the size in bytes
+// of the shards to transfer; that is, if the object is larger than partSize,
+// it will be uploaded or downloaded in concurrent pieces of size partSize.
+//
+// The default is 32 MiB for downloads.
+//
+// To turn off sharding, set partSize to 0.
+//
+// Note that files that support decompressive transcoding will be downloaded in
+// a single piece regardless of the partSize set here.
+func WithPartSize(partSize int64) Option {
+	return &withPartSize{partSize: partSize}
+}
+
+type withPartSize struct {
+	partSize int64
+}
+
+func (wps withPartSize) apply(tm *transferManagerConfig) {
+	tm.partSize = wps.partSize
+}
+
 type transferManagerConfig struct {
 	// Workers in thread pool; default numCPU/2 based on previous benchmarks?
 	numWorkers int
+
+	// Size of shards to transfer; Python found 32 MiB to be good default for
+	// JSON downloads but gRPC may benefit from larger.
+	// A partSize smaller than 1 indicates to turn off sharding.
+	partSize int64
 
 	// Timeout for a single operation (including all retries). Zero value means
 	// no timeout.
@@ -85,7 +112,8 @@ type transferManagerConfig struct {
 func defaultTransferManagerConfig() *transferManagerConfig {
 	return &transferManagerConfig{
 		numWorkers:          runtime.NumCPU() / 2,
-		perOperationTimeout: 0, // no timeout
+		partSize:            32 * 1024 * 1024, // 32 MiB
+		perOperationTimeout: 0,                // no timeout
 	}
 }
 

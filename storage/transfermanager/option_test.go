@@ -22,23 +22,46 @@ import (
 )
 
 func TestApply(t *testing.T) {
-	opts := []Option{
-		WithWorkers(3),
-		WithPerOpTimeout(time.Hour),
-		WithCallbacks(),
-	}
-	var got transferManagerConfig
-	for _, opt := range opts {
-		opt.apply(&got)
-	}
-	want := transferManagerConfig{
-		numWorkers:          3,
-		perOperationTimeout: time.Hour,
-		asynchronous:        true,
-	}
+	for _, test := range []struct {
+		desc string
+		opts []Option
+		want transferManagerConfig
+	}{
+		{
+			desc: "all options",
+			opts: []Option{
+				WithWorkers(3),
+				WithPerOpTimeout(time.Hour),
+				WithCallbacks(),
+				WithPartSize(300000),
+			},
+			want: transferManagerConfig{
+				numWorkers:          3,
+				perOperationTimeout: time.Hour,
+				asynchronous:        true,
+				partSize:            300000,
+			},
+		},
+		{
+			desc: "small partSize",
+			opts: []Option{
+				WithPartSize(30),
+			},
+			want: transferManagerConfig{
+				partSize: 30,
+			},
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			var got transferManagerConfig
+			for _, opt := range test.opts {
+				opt.apply(&got)
+			}
 
-	if got != want {
-		t.Errorf("got: %+v, want: %+v", got, want)
+			if got != test.want {
+				t.Errorf("got: %+v, want: %+v", got, test.want)
+			}
+		})
 	}
 }
 

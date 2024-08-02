@@ -1,5 +1,33 @@
 # Changes
 
+## [1.7.4](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.7.3...resourcesettings/v1.7.4) (2024-07-24)
+
+
+### Bug Fixes
+
+* **resourcesettings:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.7.2...resourcesettings/v1.7.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **resourcesettings:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.7.1...resourcesettings/v1.7.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **resourcesettings:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.7.0...resourcesettings/v1.7.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **resourcesettings:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.6.7...resourcesettings/v1.7.0) (2024-06-05)
 
 

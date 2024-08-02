@@ -30,7 +30,6 @@ import (
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
 	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"cloud.google.com/go/vertexai/internal"
-	"cloud.google.com/go/vertexai/internal/support"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
@@ -89,7 +88,11 @@ func setGAPICClient[ClientType sgci](ctx context.Context, pf *ClientType, conf c
 	if err != nil {
 		return err
 	}
-	c.SetGoogleClientInfo("gccl", internal.Version)
+	kvs := []string{"gccl", internal.Version}
+	if conf.ciKey != "" && conf.ciValue != "" {
+		kvs = append(kvs, conf.ciKey, conf.ciValue)
+	}
+	c.SetGoogleClientInfo(kvs...)
 	*pf = c
 	return nil
 }
@@ -184,12 +187,12 @@ func (m *GenerativeModel) Name() string {
 
 // GenerateContent produces a single request and response.
 func (m *GenerativeModel) GenerateContent(ctx context.Context, parts ...Part) (*GenerateContentResponse, error) {
-	return m.generateContent(ctx, m.newGenerateContentRequest(newUserContent(parts)))
+	return m.generateContent(ctx, m.newGenerateContentRequest(NewUserContent(parts...)))
 }
 
 // GenerateContentStream returns an iterator that enumerates responses.
 func (m *GenerativeModel) GenerateContentStream(ctx context.Context, parts ...Part) *GenerateContentResponseIterator {
-	streamClient, err := m.c.pc.StreamGenerateContent(ctx, m.newGenerateContentRequest(newUserContent(parts)))
+	streamClient, err := m.c.pc.StreamGenerateContent(ctx, m.newGenerateContentRequest(NewUserContent(parts...)))
 	return &GenerateContentResponseIterator{
 		sc:  streamClient,
 		err: err,
@@ -208,18 +211,14 @@ func (m *GenerativeModel) generateContent(ctx context.Context, req *pb.GenerateC
 func (m *GenerativeModel) newGenerateContentRequest(contents ...*Content) *pb.GenerateContentRequest {
 	return &pb.GenerateContentRequest{
 		Model:             m.fullName,
-		Contents:          support.TransformSlice(contents, (*Content).toProto),
-		SafetySettings:    support.TransformSlice(m.SafetySettings, (*SafetySetting).toProto),
-		Tools:             support.TransformSlice(m.Tools, (*Tool).toProto),
+		Contents:          pvTransformSlice(contents, (*Content).toProto),
+		SafetySettings:    pvTransformSlice(m.SafetySettings, (*SafetySetting).toProto),
+		Tools:             pvTransformSlice(m.Tools, (*Tool).toProto),
 		ToolConfig:        m.ToolConfig.toProto(),
 		GenerationConfig:  m.GenerationConfig.toProto(),
 		SystemInstruction: m.SystemInstruction.toProto(),
 		CachedContent:     m.CachedContentName,
 	}
-}
-
-func newUserContent(parts []Part) *Content {
-	return &Content{Role: roleUser, Parts: parts}
 }
 
 // GenerateContentResponseIterator is an iterator over GnerateContentResponse.
@@ -283,7 +282,7 @@ func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse
 
 // CountTokens counts the number of tokens in the content.
 func (m *GenerativeModel) CountTokens(ctx context.Context, parts ...Part) (*CountTokensResponse, error) {
-	req := m.newCountTokensRequest(newUserContent(parts))
+	req := m.newCountTokensRequest(NewUserContent(parts...))
 	res, err := m.c.pc.CountTokens(ctx, req)
 	if err != nil {
 		return nil, err
@@ -296,7 +295,7 @@ func (m *GenerativeModel) newCountTokensRequest(contents ...*Content) *pb.CountT
 	return &pb.CountTokensRequest{
 		Endpoint: m.fullName,
 		Model:    m.fullName,
-		Contents: support.TransformSlice(contents, (*Content).toProto),
+		Contents: pvTransformSlice(contents, (*Content).toProto),
 	}
 }
 

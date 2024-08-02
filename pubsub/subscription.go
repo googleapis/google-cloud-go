@@ -28,6 +28,7 @@ import (
 	ipubsub "cloud.google.com/go/internal/pubsub"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
+	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
@@ -58,6 +59,10 @@ type Subscription struct {
 	// This is configured at client instantiation, and allows
 	// disabling of tracing even when a tracer provider is detected.
 	enableTracing bool
+	// clientID to be used across all streaming pull connections that are created.
+	// This indicates to the server that any guarantees made for a stream that
+	// disconnected will be made for the stream that is created to replace it.
+	clientID string
 }
 
 // Subscription creates a reference to a subscription.
@@ -76,6 +81,7 @@ func newSubscription(c *Client, name string) *Subscription {
 		name:            name,
 		ReceiveSettings: DefaultReceiveSettings,
 		enableTracing:   c.enableTracing,
+		clientID:        uuid.NewString(),
 	}
 }
 
@@ -1294,6 +1300,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		maxOutstandingMessages: maxCount,
 		maxOutstandingBytes:    maxBytes,
 		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
+		clientID:               s.clientID,
 	}
 	fc := newSubscriptionFlowController(FlowControlSettings{
 		MaxOutstandingMessages: maxCount,
@@ -1517,4 +1524,5 @@ type pullOptions struct {
 	maxOutstandingMessages int
 	maxOutstandingBytes    int
 	useLegacyFlowControl   bool
+	clientID               string
 }

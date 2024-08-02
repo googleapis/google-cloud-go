@@ -16,12 +16,20 @@ limitations under the License.
 
 package bigtable
 
-import btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+import btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 
 // Type wraps the protobuf representation of a type. See the protobuf definition
 // for more details on types.
 type Type interface {
 	proto() *btapb.Type
+}
+
+type unknown[T interface{}] struct {
+	wrapped *T
+}
+
+func (u unknown[T]) proto() *T {
+	return u.wrapped
 }
 
 // BytesEncoding represents the encoding of a Bytes type.
@@ -142,6 +150,38 @@ func (sum SumAggregator) fillProto(proto *btapb.Type_Aggregate) {
 	proto.Aggregator = &btapb.Type_Aggregate_Sum_{Sum: &btapb.Type_Aggregate_Sum{}}
 }
 
+// MinAggregator is an aggregation function that finds the minimum between the input and the accumulator.
+type MinAggregator struct{}
+
+func (min MinAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	proto.Aggregator = &btapb.Type_Aggregate_Min_{Min: &btapb.Type_Aggregate_Min{}}
+}
+
+// MaxAggregator is an aggregation function that finds the maximum between the input and the accumulator.
+type MaxAggregator struct{}
+
+func (max MaxAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	proto.Aggregator = &btapb.Type_Aggregate_Max_{Max: &btapb.Type_Aggregate_Max{}}
+}
+
+// HllppUniqueCountAggregator is an aggregation function that calculates the unique count of inputs and the accumulator.
+type HllppUniqueCountAggregator struct{}
+
+func (hll HllppUniqueCountAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	proto.Aggregator = &btapb.Type_Aggregate_HllppUniqueCount{HllppUniqueCount: &btapb.Type_Aggregate_HyperLogLogPlusPlusUniqueCount{}}
+}
+
+type unknownAggregator struct {
+	wrapped *btapb.Type_Aggregate
+}
+
+func (ua unknownAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	if ua.wrapped == nil {
+		return
+	}
+	proto.Aggregator = ua.wrapped.Aggregator
+}
+
 // AggregateType represents an aggregate.  See types.proto for more details
 // on aggregate types.
 type AggregateType struct {
@@ -156,4 +196,78 @@ func (agg AggregateType) proto() *btapb.Type {
 
 	agg.Aggregator.fillProto(protoAgg)
 	return &btapb.Type{Kind: &btapb.Type_AggregateType{AggregateType: protoAgg}}
+}
+
+// ProtoToType converts a protobuf *btapb.Type to an instance of the Type interface, for use of the admin API.
+func ProtoToType(pb *btapb.Type) Type {
+	if pb == nil {
+		return unknown[btapb.Type]{wrapped: nil}
+	}
+
+	switch t := pb.Kind.(type) {
+	case *btapb.Type_Int64Type:
+		return int64ProtoToType(t.Int64Type)
+	case *btapb.Type_BytesType:
+		return bytesProtoToType(t.BytesType)
+	case *btapb.Type_AggregateType:
+		return aggregateProtoToType(t.AggregateType)
+	default:
+		return unknown[btapb.Type]{wrapped: pb}
+	}
+}
+
+func bytesEncodingProtoToType(be *btapb.Type_Bytes_Encoding) BytesEncoding {
+	if be == nil {
+		return unknown[btapb.Type_Bytes_Encoding]{wrapped: be}
+	}
+
+	switch be.Encoding.(type) {
+	case *btapb.Type_Bytes_Encoding_Raw_:
+		return RawBytesEncoding{}
+	default:
+		return unknown[btapb.Type_Bytes_Encoding]{wrapped: be}
+	}
+}
+
+func bytesProtoToType(b *btapb.Type_Bytes) BytesType {
+	return BytesType{Encoding: bytesEncodingProtoToType(b.Encoding)}
+}
+
+func int64EncodingProtoToEncoding(ie *btapb.Type_Int64_Encoding) Int64Encoding {
+	if ie == nil {
+		return unknown[btapb.Type_Int64_Encoding]{wrapped: ie}
+	}
+
+	switch e := ie.Encoding.(type) {
+	case *btapb.Type_Int64_Encoding_BigEndianBytes_:
+		return BigEndianBytesEncoding{Bytes: bytesProtoToType(e.BigEndianBytes.BytesType)}
+	default:
+		return unknown[btapb.Type_Int64_Encoding]{wrapped: ie}
+	}
+}
+
+func int64ProtoToType(i *btapb.Type_Int64) Type {
+	return Int64Type{Encoding: int64EncodingProtoToEncoding(i.Encoding)}
+}
+
+func aggregateProtoToType(agg *btapb.Type_Aggregate) Type {
+	if agg == nil {
+		return AggregateType{Input: nil, Aggregator: unknownAggregator{wrapped: agg}}
+	}
+
+	it := ProtoToType(agg.InputType)
+	var aggregator Aggregator
+	switch agg.Aggregator.(type) {
+	case *btapb.Type_Aggregate_Sum_:
+		aggregator = SumAggregator{}
+	case *btapb.Type_Aggregate_Min_:
+		aggregator = MinAggregator{}
+	case *btapb.Type_Aggregate_Max_:
+		aggregator = MaxAggregator{}
+	case *btapb.Type_Aggregate_HllppUniqueCount:
+		aggregator = HllppUniqueCountAggregator{}
+	default:
+		aggregator = unknownAggregator{wrapped: agg}
+	}
+	return AggregateType{Input: it, Aggregator: aggregator}
 }
