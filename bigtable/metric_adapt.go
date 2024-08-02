@@ -20,10 +20,13 @@ import (
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 )
 
+// MetricOption is a wrapper over sdkmetric.Option
+// This is to avoid third-party project dependency into the Cloud Bigtable public surface
 type MetricOption struct {
 	option sdkmetric.Option
 }
 
+// OtelSdkMetricOptions returns the underlying sdkmetric.Option array
 func OtelSdkMetricOptions(btOptions []MetricOption) []sdkmetric.Option {
 	if btOptions == nil {
 		return nil
@@ -36,6 +39,7 @@ func OtelSdkMetricOptions(btOptions []MetricOption) []sdkmetric.Option {
 	return otelOpts
 }
 
+// OtelSdkMetricOption returns the underlying sdkmetric.Option
 func OtelSdkMetricOption(btOption MetricOption) sdkmetric.Option {
 	return btOption.option
 }
