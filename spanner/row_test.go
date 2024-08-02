@@ -2100,7 +2100,7 @@ func BenchmarkColumn(b *testing.B) {
 }
 
 func TestSelectAll(t *testing.T) {
-	skipForPGTest(t)
+	skipUnsupportedPGTest(t)
 	type args struct {
 		destination interface{}
 		options     []DecodeOptions
