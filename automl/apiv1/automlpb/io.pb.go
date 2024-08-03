@@ -21,12 +21,11 @@
 package automlpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -67,16 +66,16 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing.
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing.
 //
-//	  - `GCS_FILE_PATH` - The Google Cloud Storage location of an image of up to
-//	    30MB in size. Supported extensions: .JPEG, .GIF, .PNG, .WEBP, .BMP,
-//	    .TIFF, .ICO.
+//   - `GCS_FILE_PATH` - The Google Cloud Storage location of an image of up to
+//     30MB in size. Supported extensions: .JPEG, .GIF, .PNG, .WEBP, .BMP,
+//     .TIFF, .ICO.
 //
 // *   `LABEL` - A label that identifies the object in the image.
 //
@@ -103,26 +102,26 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing.
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing.
 //
-//	  - `GCS_FILE_PATH` - The Google Cloud Storage location of an image of up to
-//	    30MB in size. Supported extensions: .JPEG, .GIF, .PNG. Each image
-//	    is assumed to be exhaustively labeled.
+//   - `GCS_FILE_PATH` - The Google Cloud Storage location of an image of up to
+//     30MB in size. Supported extensions: .JPEG, .GIF, .PNG. Each image
+//     is assumed to be exhaustively labeled.
 //
-//	  - `LABEL` - A label that identifies the object in the image specified by the
-//	    `BOUNDING_BOX`.
+//   - `LABEL` - A label that identifies the object in the image specified by the
+//     `BOUNDING_BOX`.
 //
-//	  - `BOUNDING BOX` - The vertices of an object in the example image.
-//	    The minimum allowed `BOUNDING_BOX` edge length is 0.01, and no more than
-//	    500 `BOUNDING_BOX` instances per image are allowed (one `BOUNDING_BOX`
-//	    per line). If an image has no looked for objects then it should be
-//	    mentioned just once with no LABEL and the ",,,,,,," in place of the
-//	    `BOUNDING_BOX`.
+//   - `BOUNDING BOX` - The vertices of an object in the example image.
+//     The minimum allowed `BOUNDING_BOX` edge length is 0.01, and no more than
+//     500 `BOUNDING_BOX` instances per image are allowed (one `BOUNDING_BOX`
+//     per line). If an image has no looked for objects then it should be
+//     mentioned just once with no LABEL and the ",,,,,,," in place of the
+//     `BOUNDING_BOX`.
 //
 // **Four sample rows:**
 //
@@ -247,16 +246,16 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing..
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing..
 //
-//	  - `GCS_FILE_PATH` - a Identifies JSON Lines (.JSONL) file stored in
-//	    Google Cloud Storage that contains in-line text in-line as documents
-//	    for model training.
+//   - `GCS_FILE_PATH` - a Identifies JSON Lines (.JSONL) file stored in
+//     Google Cloud Storage that contains in-line text in-line as documents
+//     for model training.
 //
 // After the training data set has been determined from the `TRAIN` and
 // `UNASSIGNED` CSV files, the training data is divided into train and
@@ -428,29 +427,29 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing.
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing.
 //
-//	  - `TEXT_SNIPPET` and `GCS_FILE_PATH` are distinguished by a pattern. If
-//	    the column content is a valid Google Cloud Storage file path, that is,
-//	    prefixed by "gs://", it is treated as a `GCS_FILE_PATH`. Otherwise, if
-//	    the content is enclosed in double quotes (""), it is treated as a
-//	    `TEXT_SNIPPET`. For `GCS_FILE_PATH`, the path must lead to a
-//	    file with supported extension and UTF-8 encoding, for example,
-//	    "gs://folder/content.txt" AutoML imports the file content
-//	    as a text snippet. For `TEXT_SNIPPET`, AutoML imports the column content
-//	    excluding quotes. In both cases, size of the content must be 10MB or
-//	    less in size. For zip files, the size of each file inside the zip must be
-//	    10MB or less in size.
+//   - `TEXT_SNIPPET` and `GCS_FILE_PATH` are distinguished by a pattern. If
+//     the column content is a valid Google Cloud Storage file path, that is,
+//     prefixed by "gs://", it is treated as a `GCS_FILE_PATH`. Otherwise, if
+//     the content is enclosed in double quotes (""), it is treated as a
+//     `TEXT_SNIPPET`. For `GCS_FILE_PATH`, the path must lead to a
+//     file with supported extension and UTF-8 encoding, for example,
+//     "gs://folder/content.txt" AutoML imports the file content
+//     as a text snippet. For `TEXT_SNIPPET`, AutoML imports the column content
+//     excluding quotes. In both cases, size of the content must be 10MB or
+//     less in size. For zip files, the size of each file inside the zip must be
+//     10MB or less in size.
 //
-//	    For the `MULTICLASS` classification type, at most one `LABEL` is allowed.
+//     For the `MULTICLASS` classification type, at most one `LABEL` is allowed.
 //
-//	    The `ML_USE` and `LABEL` columns are optional.
-//	    Supported file extensions: .TXT, .PDF, .TIF, .TIFF, .ZIP
+//     The `ML_USE` and `LABEL` columns are optional.
+//     Supported file extensions: .TXT, .PDF, .TIF, .TIFF, .ZIP
 //
 // A maximum of 100 unique labels are allowed per CSV row.
 //
@@ -474,44 +473,44 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing.
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing.
 //
-//	  - `TEXT_SNIPPET` and `GCS_FILE_PATH` are distinguished by a pattern. If
-//	    the column content is a valid  Google Cloud Storage file path, that is,
-//	    prefixed by "gs://", it is treated as a `GCS_FILE_PATH`. Otherwise, if
-//	    the content is enclosed in double quotes (""), it is treated as a
-//	    `TEXT_SNIPPET`. For `GCS_FILE_PATH`, the path must lead to a
-//	    file with supported extension and UTF-8 encoding, for example,
-//	    "gs://folder/content.txt" AutoML imports the file content
-//	    as a text snippet. For `TEXT_SNIPPET`, AutoML imports the column content
-//	    excluding quotes. In both cases, size of the content must be 128kB or
-//	    less in size. For zip files, the size of each file inside the zip must be
-//	    128kB or less in size.
+//   - `TEXT_SNIPPET` and `GCS_FILE_PATH` are distinguished by a pattern. If
+//     the column content is a valid  Google Cloud Storage file path, that is,
+//     prefixed by "gs://", it is treated as a `GCS_FILE_PATH`. Otherwise, if
+//     the content is enclosed in double quotes (""), it is treated as a
+//     `TEXT_SNIPPET`. For `GCS_FILE_PATH`, the path must lead to a
+//     file with supported extension and UTF-8 encoding, for example,
+//     "gs://folder/content.txt" AutoML imports the file content
+//     as a text snippet. For `TEXT_SNIPPET`, AutoML imports the column content
+//     excluding quotes. In both cases, size of the content must be 128kB or
+//     less in size. For zip files, the size of each file inside the zip must be
+//     128kB or less in size.
 //
-//	    The `ML_USE` and `SENTIMENT` columns are optional.
-//	    Supported file extensions: .TXT, .PDF, .TIF, .TIFF, .ZIP
+//     The `ML_USE` and `SENTIMENT` columns are optional.
+//     Supported file extensions: .TXT, .PDF, .TIF, .TIFF, .ZIP
 //
-//	  - `SENTIMENT` - An integer between 0 and
-//	    Dataset.text_sentiment_dataset_metadata.sentiment_max
-//	    (inclusive). Describes the ordinal of the sentiment - higher
-//	    value means a more positive sentiment. All the values are
-//	    completely relative, i.e. neither 0 needs to mean a negative or
-//	    neutral sentiment nor sentiment_max needs to mean a positive one -
-//	    it is just required that 0 is the least positive sentiment
-//	    in the data, and sentiment_max is the  most positive one.
-//	    The SENTIMENT shouldn't be confused with "score" or "magnitude"
-//	    from the previous Natural Language Sentiment Analysis API.
-//	    All SENTIMENT values between 0 and sentiment_max must be
-//	    represented in the imported data. On prediction the same 0 to
-//	    sentiment_max range will be used. The difference between
-//	    neighboring sentiment values needs not to be uniform, e.g. 1 and
-//	    2 may be similar whereas the difference between 2 and 3 may be
-//	    large.
+//   - `SENTIMENT` - An integer between 0 and
+//     Dataset.text_sentiment_dataset_metadata.sentiment_max
+//     (inclusive). Describes the ordinal of the sentiment - higher
+//     value means a more positive sentiment. All the values are
+//     completely relative, i.e. neither 0 needs to mean a negative or
+//     neutral sentiment nor sentiment_max needs to mean a positive one -
+//     it is just required that 0 is the least positive sentiment
+//     in the data, and sentiment_max is the  most positive one.
+//     The SENTIMENT shouldn't be confused with "score" or "magnitude"
+//     from the previous Natural Language Sentiment Analysis API.
+//     All SENTIMENT values between 0 and sentiment_max must be
+//     represented in the imported data. On prediction the same 0 to
+//     sentiment_max range will be used. The difference between
+//     neighboring sentiment values needs not to be uniform, e.g. 1 and
+//     2 may be similar whereas the difference between 2 and 3 may be
+//     large.
 //
 // Sample rows:
 //
