@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"context"
+	"encoding/binary"
 	"flag"
 	"fmt"
 	"log"
@@ -33,6 +34,7 @@ import (
 	"testing"
 	"time"
 
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/optional"
@@ -43,7 +45,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -277,6 +278,73 @@ func TestIntegration_ReadRowList(t *testing.T) {
 
 	if got := strings.Join(elt, ","); got != want {
 		t.Fatalf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
+	}
+}
+
+func TestIntegration_Aggregates(t *testing.T) {
+	ctx := context.Background()
+	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+	key := "some-key"
+	family := "sum"
+	column := "col"
+	mut := NewMutation()
+	mut.AddIntToCell(family, column, 1000, 5)
+
+	// Add 5 to empty cell.
+	if err := table.Apply(ctx, key, mut); err != nil {
+		t.Fatalf("Mutating row %q: %v", key, err)
+	}
+	row, err := table.ReadRow(ctx, key)
+	if err != nil {
+		t.Fatalf("Reading a row: %v", err)
+	}
+	wantRow := Row{
+		family: []ReadItem{
+			{Row: key, Column: fmt.Sprintf("%s:%s", family, column), Timestamp: 1000, Value: binary.BigEndian.AppendUint64([]byte{}, 5)},
+		},
+	}
+	if !testutil.Equal(row, wantRow) {
+		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
+	}
+
+	// Add 5 again.
+	if err := table.Apply(ctx, key, mut); err != nil {
+		t.Fatalf("Mutating row %q: %v", key, err)
+	}
+	row, err = table.ReadRow(ctx, key)
+	if err != nil {
+		t.Fatalf("Reading a row: %v", err)
+	}
+	wantRow = Row{
+		family: []ReadItem{
+			{Row: key, Column: fmt.Sprintf("%s:%s", family, column), Timestamp: 1000, Value: binary.BigEndian.AppendUint64([]byte{}, 10)},
+		},
+	}
+	if !testutil.Equal(row, wantRow) {
+		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
+	}
+
+	// Merge 5, which translates in the backend to adding 5 for sum column families.
+	mut2 := NewMutation()
+	mut2.MergeBytesToCell(family, column, 1000, binary.BigEndian.AppendUint64([]byte{}, 5))
+	if err := table.Apply(ctx, key, mut); err != nil {
+		t.Fatalf("Mutating row %q: %v", key, err)
+	}
+	row, err = table.ReadRow(ctx, key)
+	if err != nil {
+		t.Fatalf("Reading a row: %v", err)
+	}
+	wantRow = Row{
+		family: []ReadItem{
+			{Row: key, Column: fmt.Sprintf("%s:%s", family, column), Timestamp: 1000, Value: binary.BigEndian.AppendUint64([]byte{}, 15)},
+		},
+	}
+	if !testutil.Equal(row, wantRow) {
+		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
 	}
 }
 
@@ -4218,6 +4286,18 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 	if err != nil {
 		cancel()
 		t.Logf("Error creating column family: %v", err)
+		return nil, nil, nil, nil, "", nil, err
+	}
+
+	err = retryOnUnavailable(ctx, func() error {
+		return adminClient.CreateColumnFamilyWithConfig(ctx, tableName, "sum", Family{ValueType: AggregateType{
+			Input:      Int64Type{},
+			Aggregator: SumAggregator{},
+		}})
+	})
+	if err != nil {
+		cancel()
+		t.Logf("Error creating aggregate column family: %v", err)
 		return nil, nil, nil, nil, "", nil, err
 	}
 

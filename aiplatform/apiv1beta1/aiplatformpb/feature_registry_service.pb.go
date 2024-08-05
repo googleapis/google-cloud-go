@@ -375,6 +375,9 @@ type UpdateFeatureGroupRequest struct {
 	// Updatable fields:
 	//
 	//   - `labels`
+	//   - `description`
+	//   - `big_query`
+	//   - `big_query.entity_id_columns`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 

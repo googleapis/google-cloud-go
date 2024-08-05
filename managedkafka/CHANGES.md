@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.1.4...managedkafka/v0.1.5) (2024-08-01)
+
+
+### Documentation
+
+* **managedkafka:** Update values allowed in kms_key ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.1.3...managedkafka/v0.1.4) (2024-07-24)
 
 

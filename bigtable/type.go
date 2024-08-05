@@ -16,7 +16,7 @@ limitations under the License.
 
 package bigtable
 
-import btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+import btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 
 // Type wraps the protobuf representation of a type. See the protobuf definition
 // for more details on types.
@@ -150,6 +150,27 @@ func (sum SumAggregator) fillProto(proto *btapb.Type_Aggregate) {
 	proto.Aggregator = &btapb.Type_Aggregate_Sum_{Sum: &btapb.Type_Aggregate_Sum{}}
 }
 
+// MinAggregator is an aggregation function that finds the minimum between the input and the accumulator.
+type MinAggregator struct{}
+
+func (min MinAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	proto.Aggregator = &btapb.Type_Aggregate_Min_{Min: &btapb.Type_Aggregate_Min{}}
+}
+
+// MaxAggregator is an aggregation function that finds the maximum between the input and the accumulator.
+type MaxAggregator struct{}
+
+func (max MaxAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	proto.Aggregator = &btapb.Type_Aggregate_Max_{Max: &btapb.Type_Aggregate_Max{}}
+}
+
+// HllppUniqueCountAggregator is an aggregation function that calculates the unique count of inputs and the accumulator.
+type HllppUniqueCountAggregator struct{}
+
+func (hll HllppUniqueCountAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	proto.Aggregator = &btapb.Type_Aggregate_HllppUniqueCount{HllppUniqueCount: &btapb.Type_Aggregate_HyperLogLogPlusPlusUniqueCount{}}
+}
+
 type unknownAggregator struct {
 	wrapped *btapb.Type_Aggregate
 }
@@ -177,7 +198,8 @@ func (agg AggregateType) proto() *btapb.Type {
 	return &btapb.Type{Kind: &btapb.Type_AggregateType{AggregateType: protoAgg}}
 }
 
-func protoToType(pb *btapb.Type) Type {
+// ProtoToType converts a protobuf *btapb.Type to an instance of the Type interface, for use of the admin API.
+func ProtoToType(pb *btapb.Type) Type {
 	if pb == nil {
 		return unknown[btapb.Type]{wrapped: nil}
 	}
@@ -233,11 +255,17 @@ func aggregateProtoToType(agg *btapb.Type_Aggregate) Type {
 		return AggregateType{Input: nil, Aggregator: unknownAggregator{wrapped: agg}}
 	}
 
-	it := protoToType(agg.InputType)
+	it := ProtoToType(agg.InputType)
 	var aggregator Aggregator
 	switch agg.Aggregator.(type) {
 	case *btapb.Type_Aggregate_Sum_:
 		aggregator = SumAggregator{}
+	case *btapb.Type_Aggregate_Min_:
+		aggregator = MinAggregator{}
+	case *btapb.Type_Aggregate_Max_:
+		aggregator = MaxAggregator{}
+	case *btapb.Type_Aggregate_HllppUniqueCount:
+		aggregator = HllppUniqueCountAggregator{}
 	default:
 		aggregator = unknownAggregator{wrapped: agg}
 	}

@@ -26,9 +26,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigtable"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
 	"google.golang.org/api/option"
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

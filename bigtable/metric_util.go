@@ -20,8 +20,9 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
@@ -91,4 +92,8 @@ func extractLocation(headerMD metadata.MD, trailerMD metadata.MD) (string, strin
 	}
 
 	return responseParams.GetClusterId(), responseParams.GetZoneId(), nil
+}
+
+func convertToMs(d time.Duration) float64 {
+	return float64(d.Nanoseconds()) / 1000000
 }
