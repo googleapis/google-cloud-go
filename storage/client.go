@@ -134,7 +134,11 @@ type settings struct {
 	// userProject is the user project that should be billed for the request.
 	userProject string
 
-	reader metric.Reader
+	// instance of metric reader used by gRPC client-side metrics
+	meterProvider *metric.MeterProvider
+
+	//
+	meterCleanup func()
 }
 
 func initSettings(opts ...storageOption) *settings {
