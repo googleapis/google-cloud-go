@@ -52,6 +52,10 @@ type NotebookCallOptions struct {
 	DeleteNotebookRuntime         []gax.CallOption
 	UpgradeNotebookRuntime        []gax.CallOption
 	StartNotebookRuntime          []gax.CallOption
+	CreateNotebookExecutionJob    []gax.CallOption
+	GetNotebookExecutionJob       []gax.CallOption
+	ListNotebookExecutionJobs     []gax.CallOption
+	DeleteNotebookExecutionJob    []gax.CallOption
 	GetLocation                   []gax.CallOption
 	ListLocations                 []gax.CallOption
 	GetIamPolicy                  []gax.CallOption
@@ -91,6 +95,10 @@ func defaultNotebookCallOptions() *NotebookCallOptions {
 		DeleteNotebookRuntime:         []gax.CallOption{},
 		UpgradeNotebookRuntime:        []gax.CallOption{},
 		StartNotebookRuntime:          []gax.CallOption{},
+		CreateNotebookExecutionJob:    []gax.CallOption{},
+		GetNotebookExecutionJob:       []gax.CallOption{},
+		ListNotebookExecutionJobs:     []gax.CallOption{},
+		DeleteNotebookExecutionJob:    []gax.CallOption{},
 		GetLocation:                   []gax.CallOption{},
 		ListLocations:                 []gax.CallOption{},
 		GetIamPolicy:                  []gax.CallOption{},
@@ -126,6 +134,12 @@ type internalNotebookClient interface {
 	UpgradeNotebookRuntimeOperation(name string) *UpgradeNotebookRuntimeOperation
 	StartNotebookRuntime(context.Context, *aiplatformpb.StartNotebookRuntimeRequest, ...gax.CallOption) (*StartNotebookRuntimeOperation, error)
 	StartNotebookRuntimeOperation(name string) *StartNotebookRuntimeOperation
+	CreateNotebookExecutionJob(context.Context, *aiplatformpb.CreateNotebookExecutionJobRequest, ...gax.CallOption) (*CreateNotebookExecutionJobOperation, error)
+	CreateNotebookExecutionJobOperation(name string) *CreateNotebookExecutionJobOperation
+	GetNotebookExecutionJob(context.Context, *aiplatformpb.GetNotebookExecutionJobRequest, ...gax.CallOption) (*aiplatformpb.NotebookExecutionJob, error)
+	ListNotebookExecutionJobs(context.Context, *aiplatformpb.ListNotebookExecutionJobsRequest, ...gax.CallOption) *NotebookExecutionJobIterator
+	DeleteNotebookExecutionJob(context.Context, *aiplatformpb.DeleteNotebookExecutionJobRequest, ...gax.CallOption) (*DeleteNotebookExecutionJobOperation, error)
+	DeleteNotebookExecutionJobOperation(name string) *DeleteNotebookExecutionJobOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -268,6 +282,38 @@ func (c *NotebookClient) StartNotebookRuntime(ctx context.Context, req *aiplatfo
 // The name must be that of a previously created StartNotebookRuntimeOperation, possibly from a different process.
 func (c *NotebookClient) StartNotebookRuntimeOperation(name string) *StartNotebookRuntimeOperation {
 	return c.internalClient.StartNotebookRuntimeOperation(name)
+}
+
+// CreateNotebookExecutionJob creates a NotebookExecutionJob.
+func (c *NotebookClient) CreateNotebookExecutionJob(ctx context.Context, req *aiplatformpb.CreateNotebookExecutionJobRequest, opts ...gax.CallOption) (*CreateNotebookExecutionJobOperation, error) {
+	return c.internalClient.CreateNotebookExecutionJob(ctx, req, opts...)
+}
+
+// CreateNotebookExecutionJobOperation returns a new CreateNotebookExecutionJobOperation from a given name.
+// The name must be that of a previously created CreateNotebookExecutionJobOperation, possibly from a different process.
+func (c *NotebookClient) CreateNotebookExecutionJobOperation(name string) *CreateNotebookExecutionJobOperation {
+	return c.internalClient.CreateNotebookExecutionJobOperation(name)
+}
+
+// GetNotebookExecutionJob gets a NotebookExecutionJob.
+func (c *NotebookClient) GetNotebookExecutionJob(ctx context.Context, req *aiplatformpb.GetNotebookExecutionJobRequest, opts ...gax.CallOption) (*aiplatformpb.NotebookExecutionJob, error) {
+	return c.internalClient.GetNotebookExecutionJob(ctx, req, opts...)
+}
+
+// ListNotebookExecutionJobs lists NotebookExecutionJobs in a Location.
+func (c *NotebookClient) ListNotebookExecutionJobs(ctx context.Context, req *aiplatformpb.ListNotebookExecutionJobsRequest, opts ...gax.CallOption) *NotebookExecutionJobIterator {
+	return c.internalClient.ListNotebookExecutionJobs(ctx, req, opts...)
+}
+
+// DeleteNotebookExecutionJob deletes a NotebookExecutionJob.
+func (c *NotebookClient) DeleteNotebookExecutionJob(ctx context.Context, req *aiplatformpb.DeleteNotebookExecutionJobRequest, opts ...gax.CallOption) (*DeleteNotebookExecutionJobOperation, error) {
+	return c.internalClient.DeleteNotebookExecutionJob(ctx, req, opts...)
+}
+
+// DeleteNotebookExecutionJobOperation returns a new DeleteNotebookExecutionJobOperation from a given name.
+// The name must be that of a previously created DeleteNotebookExecutionJobOperation, possibly from a different process.
+func (c *NotebookClient) DeleteNotebookExecutionJobOperation(name string) *DeleteNotebookExecutionJobOperation {
+	return c.internalClient.DeleteNotebookExecutionJobOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -696,6 +742,110 @@ func (c *notebookGRPCClient) StartNotebookRuntime(ctx context.Context, req *aipl
 	}, nil
 }
 
+func (c *notebookGRPCClient) CreateNotebookExecutionJob(ctx context.Context, req *aiplatformpb.CreateNotebookExecutionJobRequest, opts ...gax.CallOption) (*CreateNotebookExecutionJobOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateNotebookExecutionJob[0:len((*c.CallOptions).CreateNotebookExecutionJob):len((*c.CallOptions).CreateNotebookExecutionJob)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.notebookClient.CreateNotebookExecutionJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateNotebookExecutionJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *notebookGRPCClient) GetNotebookExecutionJob(ctx context.Context, req *aiplatformpb.GetNotebookExecutionJobRequest, opts ...gax.CallOption) (*aiplatformpb.NotebookExecutionJob, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetNotebookExecutionJob[0:len((*c.CallOptions).GetNotebookExecutionJob):len((*c.CallOptions).GetNotebookExecutionJob)], opts...)
+	var resp *aiplatformpb.NotebookExecutionJob
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.notebookClient.GetNotebookExecutionJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *notebookGRPCClient) ListNotebookExecutionJobs(ctx context.Context, req *aiplatformpb.ListNotebookExecutionJobsRequest, opts ...gax.CallOption) *NotebookExecutionJobIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListNotebookExecutionJobs[0:len((*c.CallOptions).ListNotebookExecutionJobs):len((*c.CallOptions).ListNotebookExecutionJobs)], opts...)
+	it := &NotebookExecutionJobIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListNotebookExecutionJobsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.NotebookExecutionJob, string, error) {
+		resp := &aiplatformpb.ListNotebookExecutionJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.notebookClient.ListNotebookExecutionJobs(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetNotebookExecutionJobs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *notebookGRPCClient) DeleteNotebookExecutionJob(ctx context.Context, req *aiplatformpb.DeleteNotebookExecutionJobRequest, opts ...gax.CallOption) (*DeleteNotebookExecutionJobOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteNotebookExecutionJob[0:len((*c.CallOptions).DeleteNotebookExecutionJob):len((*c.CallOptions).DeleteNotebookExecutionJob)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.notebookClient.DeleteNotebookExecutionJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteNotebookExecutionJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *notebookGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -932,10 +1082,26 @@ func (c *notebookGRPCClient) AssignNotebookRuntimeOperation(name string) *Assign
 	}
 }
 
+// CreateNotebookExecutionJobOperation returns a new CreateNotebookExecutionJobOperation from a given name.
+// The name must be that of a previously created CreateNotebookExecutionJobOperation, possibly from a different process.
+func (c *notebookGRPCClient) CreateNotebookExecutionJobOperation(name string) *CreateNotebookExecutionJobOperation {
+	return &CreateNotebookExecutionJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
 // CreateNotebookRuntimeTemplateOperation returns a new CreateNotebookRuntimeTemplateOperation from a given name.
 // The name must be that of a previously created CreateNotebookRuntimeTemplateOperation, possibly from a different process.
 func (c *notebookGRPCClient) CreateNotebookRuntimeTemplateOperation(name string) *CreateNotebookRuntimeTemplateOperation {
 	return &CreateNotebookRuntimeTemplateOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteNotebookExecutionJobOperation returns a new DeleteNotebookExecutionJobOperation from a given name.
+// The name must be that of a previously created DeleteNotebookExecutionJobOperation, possibly from a different process.
+func (c *notebookGRPCClient) DeleteNotebookExecutionJobOperation(name string) *DeleteNotebookExecutionJobOperation {
+	return &DeleteNotebookExecutionJobOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

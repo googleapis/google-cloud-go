@@ -64,6 +64,7 @@ const (
 	metricNameRetryCount              = "retry_count"
 	metricNameConnErrCount            = "connectivity_error_count"
 
+
 	// Metric units
 	metricUnitMS    = "ms"
 	metricUnitCount = "1"

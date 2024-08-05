@@ -21,11 +21,14 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
+	grpcstatus "google.golang.org/grpc/status"
 )
 
 type bulkwriterTestCase struct {
-	name string
-	test func(*BulkWriter) (*BulkWriterJob, error)
+	name            string
+	test            func(*BulkWriter) (*BulkWriterJob, error)
+	setupMockServer func(c *Client, docPrefix string, srv *mockServer)
+	wantErrorCode   codes.Code
 }
 
 // setupMockServer adds expected write requests and correct mocked responses
@@ -247,6 +250,152 @@ func TestBulkWriterErrors(t *testing.T) {
 			_, err := tc.test(b)
 			if err == nil {
 				t.Fatalf("wanted error, got nil value")
+			}
+		})
+	}
+}
+
+func TestBulkWriterRetries(t *testing.T) {
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	docPrefix := c.Collection("C").Path + "/"
+
+	ctx := context.Background()
+
+	tcs := []bulkwriterTestCase{
+		{
+			name: "should not retry non-retryable error codes",
+			test: func(b *BulkWriter) (*BulkWriterJob, error) {
+				return b.Create(c.Doc("C/a"), testData)
+			},
+			wantErrorCode: codes.Internal,
+			setupMockServer: func(c *Client, docPrefix string, srv *mockServer) {
+				srv.reset()
+				srv.addRPC(
+					&pb.BatchWriteRequest{
+						Database: c.path(),
+						Writes: []*pb.Write{
+							{
+								Operation: &pb.Write_Update{
+									Update: &pb.Document{
+										Name:   docPrefix + "a",
+										Fields: testFields,
+									},
+								},
+								CurrentDocument: &pb.Precondition{
+									ConditionType: &pb.Precondition_Exists{
+										Exists: false,
+									},
+								},
+							},
+						},
+					},
+					&pb.BatchWriteResponse{
+						WriteResults: []*pb.WriteResult{
+							{UpdateTime: aTimestamp},
+						},
+						Status: []*status.Status{
+							{
+								Code: int32(codes.Internal),
+							},
+						},
+					},
+				)
+			},
+		},
+		{
+			name: "should retry retryable error codes",
+			test: func(bw *BulkWriter) (*BulkWriterJob, error) {
+				return bw.Create(c.Doc("C/a"), testData)
+			},
+			setupMockServer: func(c *Client, docPrefix string, srv *mockServer) {
+				srv.reset()
+				srv.addRPC(
+					&pb.BatchWriteRequest{
+						Database: c.path(),
+						Writes: []*pb.Write{
+							{
+								Operation: &pb.Write_Update{
+									Update: &pb.Document{
+										Name:   docPrefix + "a",
+										Fields: testFields,
+									},
+								},
+								CurrentDocument: &pb.Precondition{
+									ConditionType: &pb.Precondition_Exists{
+										Exists: false,
+									},
+								},
+							},
+						},
+					},
+					&pb.BatchWriteResponse{
+						WriteResults: []*pb.WriteResult{
+							{UpdateTime: aTimestamp},
+						},
+						Status: []*status.Status{
+							{
+								Code: int32(codes.Aborted),
+							},
+						},
+					})
+				srv.addRPC(
+					&pb.BatchWriteRequest{
+						Database: c.path(),
+						Writes: []*pb.Write{
+							{
+								Operation: &pb.Write_Update{
+									Update: &pb.Document{
+										Name:   docPrefix + "a",
+										Fields: testFields,
+									},
+								},
+								CurrentDocument: &pb.Precondition{
+									ConditionType: &pb.Precondition_Exists{
+										Exists: false,
+									},
+								},
+							},
+						},
+					},
+					&pb.BatchWriteResponse{
+						WriteResults: []*pb.WriteResult{
+							{UpdateTime: aTimestamp},
+						},
+						Status: []*status.Status{
+							{
+								Code:    int32(codes.OK),
+								Message: "create test successful",
+							},
+						},
+					},
+				)
+			},
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.setupMockServer(c, docPrefix, srv)
+			bw := c.BulkWriter(ctx)
+			j, err := tc.test(bw)
+			if err != nil {
+				t.Errorf("bulkwriter: cannot call %s for document\n", tc.name)
+			}
+			if j == nil {
+				t.Fatalf("bulkwriter: got nil WriteResult for call to %s\n", tc.name)
+			}
+
+			bw.Flush()
+
+			_, err = j.Results()
+
+			errStatus, _ := grpcstatus.FromError(err)
+			if (tc.wantErrorCode == 0 && err != nil) ||
+				(tc.wantErrorCode != 0 && err == nil) ||
+				(tc.wantErrorCode != 0 && err != nil && errStatus.Code() != tc.wantErrorCode) {
+				t.Errorf("bulkwriter err: want %v, got %v", tc.wantErrorCode, err)
 			}
 		})
 	}

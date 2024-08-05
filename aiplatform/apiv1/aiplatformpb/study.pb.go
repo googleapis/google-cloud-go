@@ -733,7 +733,6 @@ func (x *Trial) GetWebAccessUris() map[string]string {
 	return nil
 }
 
-// Next ID: 3
 type TrialContext struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

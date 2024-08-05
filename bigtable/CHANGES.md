@@ -1,5 +1,20 @@
 # Changes
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.27.1...bigtable/v1.28.0) (2024-08-03)
+
+
+### Features
+
+* **bigtable:** Add MergeToCell support to the bigtable emulator and client ([#10366](https://github.com/googleapis/google-cloud-go/issues/10366)) ([0211c95](https://github.com/googleapis/google-cloud-go/commit/0211c95e0404aad31be5bec6d5855f0bc5358161))
+* **bigtable:** Add support for new functions ([#10582](https://github.com/googleapis/google-cloud-go/issues/10582)) ([a49ab59](https://github.com/googleapis/google-cloud-go/commit/a49ab593a7495c2cfff106594762b9a6c79eb8b2))
+* **bigtable:** Expose protoToType ([#10602](https://github.com/googleapis/google-cloud-go/issues/10602)) ([643a8e3](https://github.com/googleapis/google-cloud-go/commit/643a8e356632160c143e94f905c72b4e6452f5a6))
+
+
+### Bug Fixes
+
+* **bigtable/emulator:** Sending empty row in SampleRowKeys response ([#10611](https://github.com/googleapis/google-cloud-go/issues/10611)) ([928f1a7](https://github.com/googleapis/google-cloud-go/commit/928f1a77191fbf4736051305e0ad67b69bae11fb))
+* **bigtable:** Move usage to local proto definitions ([#10598](https://github.com/googleapis/google-cloud-go/issues/10598)) ([ce31365](https://github.com/googleapis/google-cloud-go/commit/ce31365acc54fdf0970fc9552b1758c8fef4762f))
+
 ## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.27.0...bigtable/v1.27.1) (2024-07-25)
 
 

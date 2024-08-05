@@ -274,11 +274,25 @@ func TestSampleRowKeys(t *testing.T) {
 	if len(mock.responses) == 0 {
 		t.Fatal("Response count: got 0, want > 0")
 	}
-	// Make sure the offset of the final response is the offset of the final row
-	got := mock.responses[len(mock.responses)-1].OffsetBytes
+	// Make sure the offset of the penultimate response is the offset of the final row
+	got := mock.responses[len(mock.responses)-2].OffsetBytes
 	want := int64((rowCount - 1) * len(val))
 	if got != want {
-		t.Errorf("Invalid offset: got %d, want %d", got, want)
+		t.Errorf("Invalid penultimate offset: got %d, want %d", got, want)
+	}
+
+	// Make sure the offset of the final response is the offset of all the rows
+	got = mock.responses[len(mock.responses)-1].OffsetBytes
+	want = int64(rowCount * len(val))
+	if got != want {
+		t.Errorf("Invalid final offset: got %d, want %d", got, want)
+	}
+
+	// Make sure the key of the final response is empty
+	gotLastKey := mock.responses[len(mock.responses)-1].RowKey
+	wantLastKey := ""
+	if got != want {
+		t.Errorf("Invalid final RowKey: got %s, want %s", gotLastKey, wantLastKey)
 	}
 }
 

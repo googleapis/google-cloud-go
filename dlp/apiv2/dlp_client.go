@@ -511,9 +511,45 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		ListFileStoreDataProfiles:  []gax.CallOption{},
-		GetFileStoreDataProfile:    []gax.CallOption{},
-		DeleteFileStoreDataProfile: []gax.CallOption{},
+		ListFileStoreDataProfiles: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetFileStoreDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteFileStoreDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetTableDataProfile: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -924,9 +960,42 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		ListFileStoreDataProfiles:  []gax.CallOption{},
-		GetFileStoreDataProfile:    []gax.CallOption{},
-		DeleteFileStoreDataProfile: []gax.CallOption{},
+		ListFileStoreDataProfiles: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetFileStoreDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		DeleteFileStoreDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		GetTableDataProfile: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1464,7 +1533,8 @@ func (c *Client) GetConnection(ctx context.Context, req *dlppb.GetConnectionRequ
 	return c.internalClient.GetConnection(ctx, req, opts...)
 }
 
-// ListConnections lists Connections in a parent.
+// ListConnections lists Connections in a parent. Use SearchConnections to see all connections
+// within an organization.
 func (c *Client) ListConnections(ctx context.Context, req *dlppb.ListConnectionsRequest, opts ...gax.CallOption) *ConnectionIterator {
 	return c.internalClient.ListConnections(ctx, req, opts...)
 }
@@ -6443,7 +6513,8 @@ func (c *restClient) GetConnection(ctx context.Context, req *dlppb.GetConnection
 	return resp, nil
 }
 
-// ListConnections lists Connections in a parent.
+// ListConnections lists Connections in a parent. Use SearchConnections to see all connections
+// within an organization.
 func (c *restClient) ListConnections(ctx context.Context, req *dlppb.ListConnectionsRequest, opts ...gax.CallOption) *ConnectionIterator {
 	it := &ConnectionIterator{}
 	req = proto.Clone(req).(*dlppb.ListConnectionsRequest)
