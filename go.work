@@ -29,6 +29,7 @@ use (
 	./beyondcorp
 	./bigquery
 	./bigtable
+	./otelsdkadapt/metric
 	./billing
 	./binaryauthorization
 	./certificatemanager

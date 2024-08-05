@@ -37,6 +37,7 @@ var individuallyReleasedModules map[string]bool = map[string]bool{
 	"auth/oauth2adapt": true,
 	"bigquery":         true,
 	"bigtable":         true,
+	"otelsdkadapt":     true,
 	"datastore":        true,
 	"errorreporting":   true,
 	"firestore":        true,
