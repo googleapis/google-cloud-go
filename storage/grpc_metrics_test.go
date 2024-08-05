@@ -17,121 +17,22 @@ package storage
 import (
 	"context"
 	"log"
-	"strings"
 	"testing"
 
-	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
-
-	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/sdk/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
-	"google.golang.org/grpc/stats/opentelemetry"
+	estats "google.golang.org/grpc/experimental/stats"
 )
-
-func getMetricsToEnable() []string {
-	return []string{"grpc.lb.wrr.rr_fallback",
-		"grpc.lb.wrr.endpoint_weight_not_yet_usable",
-		"grpc.lb.wrr.endpoint_weight_stale",
-		"grpc.lb.wrr.endpoint_weights",
-		"grpc.lb.rls.cache_entries",
-		"grpc.lb.rls.cache_size",
-		"grpc.lb.rls.default_target_picks",
-		"grpc.lb.rls.target_picks",
-		"grpc.lb.rls.failed_picks",
-		"grpc.xds_client.connected",
-		"grpc.xds_client.server_failure",
-		"grpc.xds_client.resource_updates_valid",
-		"grpc.xds_client.resource_updates_invalid",
-		"grpc.xds_client.resources",
-	}
-}
-
-func getMetricsEnabledByDefault() []string {
-	return []string{
-		"grpc.client.attempt.sent_total_compressed_message_size",
-		"grpc.client.attempt.rcvd_total_compressed_message_size",
-		"grpc.client.attempt.started",
-		"grpc.client.attempt.duration",
-		"grpc.client.call.duration",
-	}
-}
-
-func getCorrectMetricName() []metric.View {
-	views := []metric.View{}
-	for _, m := range getMetricsEnabledByDefault() {
-		// element is the element from someSlice for where we are
-		views = append(views, metric.NewView(metric.Instrument{
-			Name: m,
-		}, metric.Stream{Name: strings.ReplaceAll(m, ".", "/")}))
-	}
-	for _, m := range getMetricsToEnable() {
-		// element is the element from someSlice for where we are
-		views = append(views, metric.NewView(metric.Instrument{
-			Name: m,
-		}, metric.Stream{Name: strings.ReplaceAll(m, ".", "/")}))
-	}
-	return views
-}
 
 func TestMetrics(t *testing.T) {
 	// extend timeout
 	ctx := context.Background()
-	// reader := metric.NewManualReader()
-	// // provider := metric.NewMeterProvider(
-	// // 	metric.WithReader(metric.NewPeriodicReader(exp)))
-	// provider := metric.NewMeterProvider(metric.WithReader(reader))
 	// Test if using local impl.
 	// opentelemetry.Frank()
-	exporter, err := mexporter.New(mexporter.WithProjectID("spec-test-ruby-samples"), mexporter.WithMetricDescriptorTypeFormatter(func(m metricdata.Metrics) string {
-		return "storage.googleapis.com/client/" + m.Name
-	}), mexporter.WithCreateServiceTimeSeries(), mexporter.WithMonitoredResourceDescription("storage.googleapis.com/Client", []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}))
-	if err != nil {
-		log.Fatalf("Failed to create exporter: %v", err)
-	}
-
-	res, err := resource.New(
-		ctx,
-		// Use the GCP resource detector to detect information about the GCP platform
-		resource.WithDetectors(gcp.NewDetector()),
-		// Keep the default detectors
-		resource.WithTelemetrySDK(),
-		// Add attributes from environment variables
-		resource.WithFromEnv(),
-		// Add your own custom attributes to identify your application
-		resource.WithAttributes(
-			attribute.KeyValue{Key: "gcp.resource_type", Value: attribute.StringValue("storage.googleapis.com/Client")},
-			attribute.KeyValue{Key: "location", Value: attribute.StringValue("us-central1")},
-			attribute.KeyValue{Key: "cloud_platform", Value: attribute.StringValue("platform")},
-			attribute.KeyValue{Key: "host_id", Value: attribute.StringValue("host")},
-			attribute.KeyValue{Key: "project_id", Value: attribute.StringValue("spec-test-ruby-samples")},
-			attribute.KeyValue{Key: "api", Value: attribute.StringValue("grpc")},
-			attribute.KeyValue{Key: "instance_id", Value: attribute.StringValue(("UUID"))},
-		),
-	)
-	if err != nil {
-		log.Fatalf("Failed to create resource: %v", err)
-	}
-	views := getCorrectMetricName()
-	// Construct the exporter using the above config
-	provider := sdkmetric.NewMeterProvider(
-		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(exporter)),
-		sdkmetric.WithResource(res),
-		sdkmetric.WithView(views...),
-	)
-
-	mo := opentelemetry.MetricsOptions{
-		MeterProvider:  provider,
-		Metrics:        opentelemetry.DefaultMetrics().Add("grpc.lb.wrr.rr_fallback", "grpc.lb.wrr.endpoint_weight_not_yet_usable", "grpc.lb.wrr.endpoint_weight_stale", "grpc.lb.wrr.endpoint_weights"),
-		OptionalLabels: []string{"grpc.lb.locality"},
-	}
-	do := opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo})
-
-	grpcClient, err := NewGRPCClient(ctx, option.WithGRPCDialOption(do))
+	grpcClient, err := NewGRPCClient(ctx)
 	if err != nil {
 		log.Fatalf("Error setting up gRPC client for emulator tests: %v", err)
 	}
@@ -145,11 +46,116 @@ func TestMetrics(t *testing.T) {
 			if err != nil {
 				log.Fatalf("Failed: %v", err)
 			}
-			// log.Printf("Buckets: %v\n", battrs.Name)
-			// rm := &metricdata.ResourceMetrics{}
-			// reader.Collect(ctx, rm)
-			// log.Printf("metric: %v\n", rm)
-
 		}
+	}
+
+	grpcClient.Close()
+}
+
+func TestGetViewMasks(t *testing.T) {
+	testMetricName := estats.Metric("test.metric.name")
+	views := getViewMasks([]estats.Metric{testMetricName})
+	for _, mask := range views {
+		got, ok := mask(sdkmetric.Instrument{Name: string(testMetricName)})
+		if !ok {
+			t.Errorf("getViewMasks: did not find %v", testMetricName)
+		}
+		want := "test/metric/name"
+		if got.Name != want {
+			t.Errorf("got: %v, want: %v\n", got, want)
+		}
+	}
+}
+
+func TestMetricFormatter(t *testing.T) {
+	want := "storage.googleapis.com/client/t"
+	s := metricdata.Metrics{Name: "t", Description: "", Unit: "", Data: nil}
+	got := metricFormatter(s)
+	if want != got {
+		t.Errorf("got: %v, want %v", got, want)
+	}
+}
+
+func TestGetPreparedResource(t *testing.T) {
+	ctx := context.Background()
+	for _, test := range []struct {
+		desc               string
+		detectedAttributes []attribute.KeyValue
+		wantAttributes     attribute.Set
+	}{
+		{
+			desc: "default values set when GCP attributes are not detected",
+			wantAttributes: attribute.NewSet(attribute.KeyValue{
+				Key:   "location",
+				Value: attribute.StringValue("global"),
+			}, attribute.KeyValue{
+				Key:   "cloud_platform",
+				Value: attribute.StringValue("unknown"),
+			}, attribute.KeyValue{
+				Key:   "host_id",
+				Value: attribute.StringValue("unknown"),
+			}),
+		},
+		{
+			desc: "use detected values when GCP attributes are detected",
+			detectedAttributes: []attribute.KeyValue{
+				{Key: "location",
+					Value: attribute.StringValue("us-central1")},
+				{Key: "cloud_platform",
+					Value: attribute.StringValue("gcp")},
+				{Key: "host_id",
+					Value: attribute.StringValue("gce-instance-id")},
+			},
+			wantAttributes: attribute.NewSet(attribute.KeyValue{
+				Key:   "location",
+				Value: attribute.StringValue("us-central1"),
+			}, attribute.KeyValue{
+				Key:   "cloud_platform",
+				Value: attribute.StringValue("gcp"),
+			}, attribute.KeyValue{
+				Key:   "host_id",
+				Value: attribute.StringValue("gce-instance-id"),
+			}),
+		}, {
+			desc: "use default when value is empty string",
+			detectedAttributes: []attribute.KeyValue{
+				{Key: "location",
+					Value: attribute.StringValue("us-central1")},
+				{Key: "cloud_platform",
+					Value: attribute.StringValue("")},
+				{Key: "host_id",
+					Value: attribute.StringValue("")},
+			},
+			wantAttributes: attribute.NewSet(attribute.KeyValue{
+				Key:   "location",
+				Value: attribute.StringValue("us-central1"),
+			}, attribute.KeyValue{
+				Key:   "cloud_platform",
+				Value: attribute.StringValue("unknown"),
+			}, attribute.KeyValue{
+				Key:   "host_id",
+				Value: attribute.StringValue("unknown"),
+			}),
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			resourceOptions := []resource.Option{resource.WithAttributes(test.detectedAttributes...)}
+			result, err := getPreparedResource(ctx, "project", resourceOptions)
+			if err != nil {
+				t.Errorf("getPreparedResource: %v", err)
+			}
+			resultSet := result.Set()
+			for _, want := range test.wantAttributes.ToSlice() {
+				got, exists := resultSet.Value(want.Key)
+				if !exists {
+					t.Errorf("getPreparedResource: %v not set", want.Key)
+					continue
+				}
+				if got != want.Value {
+					t.Errorf("getPreparedResource: want[%v] = %v, got: %v", want.Key, want.Value, got)
+					continue
+				}
+			}
+		})
 	}
 }
