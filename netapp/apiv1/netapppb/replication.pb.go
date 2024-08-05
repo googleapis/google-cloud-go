@@ -232,7 +232,7 @@ const (
 	Replication_MIRRORED Replication_MirrorState = 2
 	// Destination volume is not receiving replication transfers.
 	Replication_STOPPED Replication_MirrorState = 3
-	// Replication is in progress.
+	// Incremental replication is in progress.
 	Replication_TRANSFERRING Replication_MirrorState = 4
 )
 
@@ -287,9 +287,10 @@ type TransferStats struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// bytes trasferred so far in current transfer.
+	// Cumulative bytes trasferred so far for the replication relatinonship.
 	TransferBytes *int64 `protobuf:"varint,1,opt,name=transfer_bytes,json=transferBytes,proto3,oneof" json:"transfer_bytes,omitempty"`
-	// Total time taken during transfer.
+	// Cumulative time taken across all transfers for the replication
+	// relationship.
 	TotalTransferDuration *durationpb.Duration `protobuf:"bytes,2,opt,name=total_transfer_duration,json=totalTransferDuration,proto3,oneof" json:"total_transfer_duration,omitempty"`
 	// Last transfer size in bytes.
 	LastTransferBytes *int64 `protobuf:"varint,3,opt,name=last_transfer_bytes,json=lastTransferBytes,proto3,oneof" json:"last_transfer_bytes,omitempty"`
@@ -868,9 +869,10 @@ type CreateReplicationRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. A replication resource
 	Replication *Replication `protobuf:"bytes,2,opt,name=replication,proto3" json:"replication,omitempty"`
-	// Required. ID of the replication to create.
-	// This value must start with a lowercase letter followed by up to 62
-	// lowercase letters, numbers, or hyphens, and cannot end with a hyphen.
+	// Required. ID of the replication to create. Must be unique within the parent
+	// resource. Must contain only letters, numbers, underscore and hyphen, with
+	// the first character a letter or underscore, the last a letter or underscore
+	// or a number, and a 63 character maximum.
 	ReplicationId string `protobuf:"bytes,3,opt,name=replication_id,json=replicationId,proto3" json:"replication_id,omitempty"`
 }
 
