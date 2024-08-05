@@ -74,7 +74,11 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 			return true, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *retry.maxAttempts, err)
 		}
 		attempts++
-		return !errorFunc(err), err
+		retryable := errorFunc(err)
+		if ctxErr := ctx.Err(); errors.Is(ctxErr, context.Canceled) || errors.Is(ctxErr, context.DeadlineExceeded) {
+			retryable = false
+		}
+		return !retryable, err
 	})
 }
 
@@ -129,9 +133,9 @@ func ShouldRetry(err error) bool {
 			return true
 		}
 	}
-	// UNAVAILABLE, RESOURCE_EXHAUSTED, and INTERNAL codes are all retryable for gRPC.
+	// UNAVAILABLE, RESOURCE_EXHAUSTED, INTERNAL, and DEADLINE_EXCEEDED codes are all retryable for gRPC.
 	if st, ok := status.FromError(err); ok {
-		if code := st.Code(); code == codes.Unavailable || code == codes.ResourceExhausted || code == codes.Internal {
+		if code := st.Code(); code == codes.Unavailable || code == codes.ResourceExhausted || code == codes.Internal || code == codes.DeadlineExceeded {
 			return true
 		}
 	}
