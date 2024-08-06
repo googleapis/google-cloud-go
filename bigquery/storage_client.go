@@ -36,20 +36,6 @@ type readClient struct {
 	settings readClientSettings
 }
 
-type readClientSettings struct {
-	maxStreamCount int
-	maxWorkerCount int
-}
-
-func defaultReadClientSettings() readClientSettings {
-	maxWorkerCount := runtime.GOMAXPROCS(0)
-	return readClientSettings{
-		// with zero, the server will provide a value of streams so as to produce reasonable throughput
-		maxStreamCount: 0,
-		maxWorkerCount: maxWorkerCount,
-	}
-}
-
 // newReadClient instantiates a new storage read client.
 func newReadClient(ctx context.Context, projectID string, opts ...option.ClientOption) (c *readClient, err error) {
 	numConns := runtime.GOMAXPROCS(0)
@@ -74,11 +60,10 @@ func newReadClient(ctx context.Context, projectID string, opts ...option.ClientO
 		return nil, err
 	}
 
-	settings := defaultReadClientSettings()
 	rc := &readClient{
 		rawClient: rawClient,
 		projectID: projectID,
-		settings:  settings,
+		settings:  newReaderClientSettings(opts...),
 	}
 
 	return rc, nil
