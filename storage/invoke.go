@@ -75,6 +75,10 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		}
 		attempts++
 		retryable := errorFunc(err)
+		// Explicitly check context cancellation so that we can distinguish between a
+		// DEADLINE_EXCEEDED error from the server and a user-set context deadline.
+		// Unfortunately gRPC will codes.DeadlineExceeded (which may be retryable if it's
+		// sent by the server) in both cases.
 		if ctxErr := ctx.Err(); errors.Is(ctxErr, context.Canceled) || errors.Is(ctxErr, context.DeadlineExceeded) {
 			retryable = false
 		}
