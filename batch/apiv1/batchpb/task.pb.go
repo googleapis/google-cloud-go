@@ -21,14 +21,13 @@
 package batchpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -265,7 +264,7 @@ func (x *ComputeResource) GetBootDiskMib() int64 {
 	return 0
 }
 
-// Status event
+// Status event.
 type StatusEvent struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -277,9 +276,12 @@ type StatusEvent struct {
 	Description string `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
 	// The time this event occurred.
 	EventTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=event_time,json=eventTime,proto3" json:"event_time,omitempty"`
-	// Task Execution
+	// Task Execution.
+	// This field is only defined for task-level status events where the task
+	// fails.
 	TaskExecution *TaskExecution `protobuf:"bytes,4,opt,name=task_execution,json=taskExecution,proto3" json:"task_execution,omitempty"`
-	// Task State
+	// Task State.
+	// This field is only defined for task-level status events.
 	TaskState TaskStatus_State `protobuf:"varint,5,opt,name=task_state,json=taskState,proto3,enum=google.cloud.batch.v1.TaskStatus_State" json:"task_state,omitempty"`
 }
 
@@ -410,13 +412,13 @@ func (x *TaskExecution) GetExitCode() int32 {
 	return 0
 }
 
-// Status of a task
+// Status of a task.
 type TaskStatus struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Task state
+	// Task state.
 	State TaskStatus_State `protobuf:"varint,1,opt,name=state,proto3,enum=google.cloud.batch.v1.TaskStatus_State" json:"state,omitempty"`
 	// Detailed info about why the state is reached.
 	StatusEvents []*StatusEvent `protobuf:"bytes,2,rep,name=status_events,json=statusEvents,proto3" json:"status_events,omitempty"`
