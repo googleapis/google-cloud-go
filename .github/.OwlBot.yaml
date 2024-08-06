@@ -59,6 +59,8 @@ deep-remove-regex:
   - /bigquery/storage/apiv1/
   - /bigquery/storage/apiv1beta1/
   - /bigquery/storage/apiv1beta2/
+  - /bigtable/admin/apiv2/
+  - /bigtable/apiv2/
   - /billing/apiv1/
   - /billing/budgets/apiv1/
   - /billing/budgets/apiv1beta1/
@@ -320,6 +322,7 @@ deep-remove-regex:
   - /internal/generated/snippets/policytroubleshooter/apiv1/
   - /internal/generated/snippets/policytroubleshooter/iam/apiv3/
   - /internal/generated/snippets/privatecatalog/apiv1beta1/
+  - /internal/generated/snippets/privilegedaccessmanager/apiv1/
   - /internal/generated/snippets/pubsub/apiv1/
   - /internal/generated/snippets/pubsublite/apiv1/
   - /internal/generated/snippets/rapidmigrationassessment/apiv1/
@@ -467,6 +470,7 @@ deep-remove-regex:
   - /policytroubleshooter/apiv1/
   - /policytroubleshooter/iam/apiv3/
   - /privatecatalog/apiv1beta1/
+  - /privilegedaccessmanager/apiv1/
   - /pubsub/apiv1/
   - /pubsublite/apiv1/
   - /rapidmigrationassessment/apiv1/
@@ -659,6 +663,11 @@ deep-copy-regex:
     dest: /
   - source: /google/area120/tables/v1alpha1/cloud.google.com/go
     dest: /
+  # Just copy the bigtable protos for now
+  - source: /google/bigtable/admin/v2/cloud.google.com/go/bigtable/admin/apiv2/adminpb
+    dest: /bigtable/admin/apiv2/adminpb
+  - source: /google/bigtable/v2/cloud.google.com/go/bigtable/apiv2/bigtablepb
+    dest: /bigtable/apiv2/bigtablepb
   - source: /google/devtools/artifactregistry/v1/cloud.google.com/go
     dest: /
   - source: /google/devtools/artifactregistry/v1beta2/cloud.google.com/go
@@ -980,6 +989,8 @@ deep-copy-regex:
   - source: /google/cloud/policytroubleshooter/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/privatecatalog/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/privilegedaccessmanager/v1/cloud.google.com/go
     dest: /
   - source: /google/pubsub/v1/cloud.google.com/go
     dest: /

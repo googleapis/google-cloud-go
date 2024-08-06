@@ -103,6 +103,7 @@ type IntegrationEnv interface {
 	// NewInstanceAdminClient will return nil if instance administration is unsupported in this environment
 	NewInstanceAdminClient() (*InstanceAdminClient, error)
 	NewClient() (*Client, error)
+	NewClientWithConfig(ClientConfig) (*Client, error)
 	Close()
 	Peer() *peer.Peer
 }
@@ -240,6 +241,15 @@ func (e *EmulatedEnv) NewInstanceAdminClient() (*InstanceAdminClient, error) {
 
 // NewClient builds a new connected data client for this environment
 func (e *EmulatedEnv) NewClient() (*Client, error) {
+	return e.newEmulatedClient(ClientConfig{})
+}
+
+// NewClient builds a new connected data client with provided config for this environment
+func (e *EmulatedEnv) NewClientWithConfig(config ClientConfig) (*Client, error) {
+	return e.newEmulatedClient(config)
+}
+
+func (e *EmulatedEnv) newEmulatedClient(config ClientConfig) (*Client, error) {
 	o, err := btopt.DefaultClientOptions(e.server.Addr, e.server.Addr, Scope, clientUserAgent)
 	if err != nil {
 		return nil, err
@@ -263,7 +273,7 @@ func (e *EmulatedEnv) NewClient() (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewClient(ctx, e.config.Project, e.config.Instance, option.WithGRPCConn(conn))
+	return NewClientWithConfig(ctx, e.config.Project, e.config.Instance, config, option.WithGRPCConn(conn))
 }
 
 // ProdEnv encapsulates the state necessary to connect to the external Bigtable service
@@ -334,6 +344,15 @@ func (e *ProdEnv) NewInstanceAdminClient() (*InstanceAdminClient, error) {
 
 // NewClient builds a connected data client for this environment
 func (e *ProdEnv) NewClient() (*Client, error) {
+	return e.newProdClient(ClientConfig{})
+}
+
+// NewClientWithConfig builds a connected data client with provided config for this environment
+func (e *ProdEnv) NewClientWithConfig(config ClientConfig) (*Client, error) {
+	return e.newProdClient(config)
+}
+
+func (e *ProdEnv) newProdClient(config ClientConfig) (*Client, error) {
 	clientOpts := headersInterceptor.CallOptions()
 	if endpoint := e.config.DataEndpoint; endpoint != "" {
 		clientOpts = append(clientOpts, option.WithEndpoint(endpoint))
@@ -343,6 +362,5 @@ func (e *ProdEnv) NewClient() (*Client, error) {
 		// For DirectPath tests, we need to add an interceptor to check the peer IP.
 		clientOpts = append(clientOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(e.peerInfo))))
 	}
-
-	return NewClient(context.Background(), e.config.Project, e.config.Instance, clientOpts...)
+	return NewClientWithConfig(context.Background(), e.config.Project, e.config.Instance, config, clientOpts...)
 }

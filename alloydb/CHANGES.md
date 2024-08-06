@@ -2,6 +2,20 @@
 
 
 
+## [1.10.6](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.10.5...alloydb/v1.10.6) (2024-07-24)
+
+
+### Bug Fixes
+
+* **alloydb:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.10.5](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.10.4...alloydb/v1.10.5) (2024-07-10)
+
+
+### Bug Fixes
+
+* **alloydb:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.10.4](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.10.3...alloydb/v1.10.4) (2024-07-01)
 
 

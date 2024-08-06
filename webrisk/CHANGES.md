@@ -1,5 +1,19 @@
 # Changes
 
+## [1.9.11](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.9.10...webrisk/v1.9.11) (2024-07-24)
+
+
+### Bug Fixes
+
+* **webrisk:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.9.10](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.9.9...webrisk/v1.9.10) (2024-07-10)
+
+
+### Bug Fixes
+
+* **webrisk:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.9.9](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.9.8...webrisk/v1.9.9) (2024-07-01)
 
 

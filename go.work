@@ -124,6 +124,7 @@ use (
 	./policysimulator
 	./policytroubleshooter
 	./privatecatalog
+	./privilegedaccessmanager
 	./profiler
 	./pubsub
 	./pubsublite

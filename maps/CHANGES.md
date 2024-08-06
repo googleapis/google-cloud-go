@@ -2,6 +2,32 @@
 
 
 
+## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.5...maps/v1.11.6) (2024-08-01)
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Document that delivery_vehicle.type can be set on CreateDeliveryVehicle ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
+## [1.11.5](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.4...maps/v1.11.5) (2024-07-24)
+
+
+### Bug Fixes
+
+* **maps:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Clarify behavior of UpdateDeliveryVehicle ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.3...maps/v1.11.4) (2024-07-10)
+
+
+### Bug Fixes
+
+* **maps:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.2...maps/v1.11.3) (2024-07-01)
 
 

@@ -30,11 +30,11 @@ import (
 
 	"google.golang.org/grpc/metadata"
 
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -274,11 +274,25 @@ func TestSampleRowKeys(t *testing.T) {
 	if len(mock.responses) == 0 {
 		t.Fatal("Response count: got 0, want > 0")
 	}
-	// Make sure the offset of the final response is the offset of the final row
-	got := mock.responses[len(mock.responses)-1].OffsetBytes
+	// Make sure the offset of the penultimate response is the offset of the final row
+	got := mock.responses[len(mock.responses)-2].OffsetBytes
 	want := int64((rowCount - 1) * len(val))
 	if got != want {
-		t.Errorf("Invalid offset: got %d, want %d", got, want)
+		t.Errorf("Invalid penultimate offset: got %d, want %d", got, want)
+	}
+
+	// Make sure the offset of the final response is the offset of all the rows
+	got = mock.responses[len(mock.responses)-1].OffsetBytes
+	want = int64(rowCount * len(val))
+	if got != want {
+		t.Errorf("Invalid final offset: got %d, want %d", got, want)
+	}
+
+	// Make sure the key of the final response is empty
+	gotLastKey := mock.responses[len(mock.responses)-1].RowKey
+	wantLastKey := ""
+	if got != want {
+		t.Errorf("Invalid final RowKey: got %s, want %s", gotLastKey, wantLastKey)
 	}
 }
 
@@ -1794,7 +1808,7 @@ func TestFilters(t *testing.T) {
 	}
 }
 
-func TestMutateRowsAggregate(t *testing.T) {
+func TestMutateRowsAggregate_AddToCell(t *testing.T) {
 	ctx := context.Background()
 
 	s := &server{
@@ -1858,6 +1872,96 @@ func TestMutateRowsAggregate(t *testing.T) {
 				ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte("col1")}},
 				Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: 0}},
 				Input:           &btpb.Value{Kind: &btpb.Value_IntValue{IntValue: 2}},
+			}},
+		}},
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	mock := &MockReadRowsServer{}
+	err = s.ReadRows(&btpb.ReadRowsRequest{
+		TableName: tblInfo.GetName(),
+		Rows: &btpb.RowSet{
+			RowKeys: [][]byte{
+				[]byte("row1"),
+			},
+		}}, mock)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := mock.responses[0]
+
+	if !bytes.Equal(got.Chunks[0].Value, binary.BigEndian.AppendUint64([]byte{}, 3)) {
+		t.Error()
+	}
+}
+
+func TestMutateRowsAggregate_MergeToCell(t *testing.T) {
+	ctx := context.Background()
+
+	s := &server{
+		tables: make(map[string]*table),
+	}
+
+	tblInfo, err := populateTable(ctx, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.ModifyColumnFamilies(ctx, &btapb.ModifyColumnFamiliesRequest{
+		Name: tblInfo.Name,
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id: "sum",
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{
+				Create: &btapb.ColumnFamily{
+					ValueType: &btapb.Type{
+						Kind: &btapb.Type_AggregateType{
+							AggregateType: &btapb.Type_Aggregate{
+								InputType: &btapb.Type{
+									Kind: &btapb.Type_Int64Type{},
+								},
+								Aggregator: &btapb.Type_Aggregate_Sum_{
+									Sum: &btapb.Type_Aggregate_Sum{},
+								},
+							},
+						},
+					},
+				},
+			}},
+		}})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.MutateRow(ctx, &btpb.MutateRowRequest{
+		TableName: tblInfo.GetName(),
+		RowKey:    []byte("row1"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_MergeToCell_{MergeToCell: &btpb.Mutation_MergeToCell{
+				FamilyName:      "sum",
+				ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte("col1")}},
+				Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: 0}},
+				Input:           &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: binary.BigEndian.AppendUint64([]byte{}, 1)}},
+			}},
+		}},
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.MutateRow(ctx, &btpb.MutateRowRequest{
+		TableName: tblInfo.GetName(),
+		RowKey:    []byte("row1"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_MergeToCell_{MergeToCell: &btpb.Mutation_MergeToCell{
+				FamilyName:      "sum",
+				ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte("col1")}},
+				Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: 0}},
+				Input:           &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: binary.BigEndian.AppendUint64([]byte{}, 2)}},
 			}},
 		}},
 	})
@@ -2502,5 +2606,46 @@ func TestFilterRowCellsPerRowLimitFilterTruthiness(t *testing.T) {
 		if got != test.want {
 			t.Errorf("%s: got %t, want %t", prototext.Format(test.filter), got, test.want)
 		}
+	}
+}
+
+func TestAuthorizedViewApis(t *testing.T) {
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	ctx := context.Background()
+	_, err := populateTable(ctx, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.CreateAuthorizedView(ctx, &btapb.CreateAuthorizedViewRequest{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
+	}
+
+	_, err = s.GetAuthorizedView(ctx, &btapb.GetAuthorizedViewRequest{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
+	}
+
+	_, err = s.ListAuthorizedViews(ctx, &btapb.ListAuthorizedViewsRequest{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
+	}
+
+	_, err = s.UpdateAuthorizedView(ctx, &btapb.UpdateAuthorizedViewRequest{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
+	}
+
+	_, err = s.DeleteAuthorizedView(ctx, &btapb.DeleteAuthorizedViewRequest{Name: "av_name"})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
 	}
 }

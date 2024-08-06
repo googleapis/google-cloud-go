@@ -1,5 +1,19 @@
 # Changes
 
+## [1.16.4](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.3...redis/v1.16.4) (2024-07-24)
+
+
+### Bug Fixes
+
+* **redis:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.16.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.2...redis/v1.16.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **redis:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.1...redis/v1.16.2) (2024-07-01)
 
 

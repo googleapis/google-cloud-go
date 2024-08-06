@@ -1,5 +1,19 @@
 # Changes
 
+## [1.27.4](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.3...compute/v1.27.4) (2024-07-24)
+
+
+### Bug Fixes
+
+* **compute:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.27.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.2...compute/v1.27.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **compute:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.27.2](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.1...compute/v1.27.2) (2024-07-01)
 
 

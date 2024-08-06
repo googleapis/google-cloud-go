@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.2.10](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.9...baremetalsolution/v1.2.10) (2024-07-24)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.2.9](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.8...baremetalsolution/v1.2.9) (2024-07-10)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.2.8](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.7...baremetalsolution/v1.2.8) (2024-07-01)
 
 

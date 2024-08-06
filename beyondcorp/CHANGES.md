@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.0.10](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v1.0.9...beyondcorp/v1.0.10) (2024-07-24)
+
+
+### Bug Fixes
+
+* **beyondcorp:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.0.9](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v1.0.8...beyondcorp/v1.0.9) (2024-07-10)
+
+
+### Bug Fixes
+
+* **beyondcorp:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.0.8](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v1.0.7...beyondcorp/v1.0.8) (2024-07-01)
 
 

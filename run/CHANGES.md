@@ -1,6 +1,32 @@
 # Changelog
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.10...run/v1.4.0) (2024-07-24)
+
+
+### Features
+
+* **run:** Add Job ExecutionReference.completion_status to show status of the most recent execution ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+* **run:** Add Job start_execution_token and run_execution_token to execute jobs immediately on creation ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+* **run:** Support update_mask in Cloud Run UpdateService ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+
+### Bug Fixes
+
+* **run:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **run:** Clarify optional fields in Cloud Run requests ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+## [1.3.10](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.9...run/v1.3.10) (2024-07-10)
+
+
+### Bug Fixes
+
+* **run:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.3.9](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.8...run/v1.3.9) (2024-07-01)
 
 

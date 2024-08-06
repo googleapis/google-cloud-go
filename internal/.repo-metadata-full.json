@@ -589,6 +589,26 @@
     "release_level": "stable",
     "library_type": "GAPIC_MANUAL"
   },
+  "cloud.google.com/go/bigtable/admin/apiv2": {
+    "api_shortname": "bigtableadmin",
+    "distribution_name": "cloud.google.com/go/bigtable/admin/apiv2",
+    "description": "Cloud Bigtable Admin API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigtable/latest/admin/apiv2",
+    "release_level": "stable",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/bigtable/apiv2": {
+    "api_shortname": "bigtable",
+    "distribution_name": "cloud.google.com/go/bigtable/apiv2",
+    "description": "Cloud Bigtable API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigtable/latest/apiv2",
+    "release_level": "stable",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/billing/apiv1": {
     "api_shortname": "cloudbilling",
     "distribution_name": "cloud.google.com/go/billing/apiv1",
@@ -1956,6 +1976,16 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/privatecatalog/latest/apiv1beta1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/privilegedaccessmanager/apiv1": {
+    "api_shortname": "privilegedaccessmanager",
+    "distribution_name": "cloud.google.com/go/privilegedaccessmanager/apiv1",
+    "description": "Privileged Access Manager API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/privilegedaccessmanager/latest/apiv1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },

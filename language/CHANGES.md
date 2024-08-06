@@ -1,6 +1,32 @@
 # Changes
 
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.9...language/v1.13.0) (2024-08-01)
+
+
+### Features
+
+* **language:** Add model_version in ModerateTextRequest and expose severity score in ClassificationCategory ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
+
+### Documentation
+
+* **language:** Minor update on documentation ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
+## [1.12.9](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.8...language/v1.12.9) (2024-07-24)
+
+
+### Bug Fixes
+
+* **language:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.12.8](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.7...language/v1.12.8) (2024-07-10)
+
+
+### Bug Fixes
+
+* **language:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.12.7](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.6...language/v1.12.7) (2024-07-01)
 
 

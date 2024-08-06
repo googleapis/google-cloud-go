@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/chat/apiv1",
-    "version": "0.1.3",
+    "version": "0.3.0",
     "language": "GO",
     "apis": [
       {
@@ -653,6 +653,52 @@
       ]
     },
     {
+      "regionTag": "chat_v1_generated_ChatService_GetSpaceEvent_sync",
+      "title": "chat GetSpaceEvent Sample",
+      "description": "GetSpaceEvent returns an event from a Google Chat space. The [event\npayload](https: //developers.google.com/workspace/chat/api/reference/rest/v1/spaces.spaceEvents#SpaceEvent.FIELDS.oneof_payload)\ncontains the most recent version of the resource that changed. For example,\nif you request an event about a new message but the message was later\nupdated, the server returns the updated `Message` resource in the event\npayload.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\nTo get an event, the authenticated user must be a member of the space.\n\nFor an example, see [Get details about an\nevent from a Google Chat\nspace](https: //developers.google.com/workspace/chat/get-space-event).",
+      "file": "Client/GetSpaceEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSpaceEvent",
+        "fullName": "google.chat.v1.Client.GetSpaceEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.GetSpaceEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.SpaceEvent",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSpaceEvent",
+          "fullName": "google.chat.v1.ChatService.GetSpaceEvent",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "chat_v1_generated_ChatService_GetSpaceReadState_sync",
       "title": "chat GetSpaceReadState Sample",
       "description": "GetSpaceReadState returns details about a user's read state within a space, used to identify\nread and unread messages. For an example, see [Get details about a user's\nspace read\nstate](https: //developers.google.com/workspace/chat/get-space-read-state).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
@@ -867,6 +913,52 @@
         "method": {
           "shortName": "ListReactions",
           "fullName": "google.chat.v1.ChatService.ListReactions",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_ListSpaceEvents_sync",
+      "title": "chat ListSpaceEvents Sample",
+      "description": "ListSpaceEvents lists events from a Google Chat space. For each event, the\n[payload](https: //developers.google.com/workspace/chat/api/reference/rest/v1/spaces.spaceEvents#SpaceEvent.FIELDS.oneof_payload)\ncontains the most recent version of the Chat resource. For example, if you\nlist events about new space members, the server returns `Membership`\nresources that contain the latest membership details. If new members were\nremoved during the requested period, the event payload contains an empty\n`Membership` resource.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\nTo list events, the authenticated user must be a member of the space.\n\nFor an example, see [List events from a Google Chat\nspace](https: //developers.google.com/workspace/chat/list-space-events).",
+      "file": "Client/ListSpaceEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSpaceEvents",
+        "fullName": "google.chat.v1.Client.ListSpaceEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.ListSpaceEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SpaceEventIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "ListSpaceEvents",
+          "fullName": "google.chat.v1.ChatService.ListSpaceEvents",
           "service": {
             "shortName": "ChatService",
             "fullName": "google.chat.v1.ChatService"

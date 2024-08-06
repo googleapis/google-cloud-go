@@ -1,5 +1,32 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.5...datacatalog/v1.21.0) (2024-08-01)
+
+
+### Features
+
+* **datacatalog:** Add DataplexTransferStatus enum and field to TagTemplate ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+
+### Documentation
+
+* **datacatalog:** Mark DataplexTransferStatus.MIGRATED as deprecated ([#10621](https://github.com/googleapis/google-cloud-go/issues/10621)) ([6b51942](https://github.com/googleapis/google-cloud-go/commit/6b519428182e8b17ff30fa09e0e3c18716269f1c))
+* **datacatalog:** Update field comments for updated IDENTIFIER field behavior ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+## [1.20.5](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.4...datacatalog/v1.20.5) (2024-07-24)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.3...datacatalog/v1.20.4) (2024-07-10)
+
+
+### Bug Fixes
+
+* **datacatalog:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.2...datacatalog/v1.20.3) (2024-07-01)
 
 
