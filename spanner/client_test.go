@@ -140,6 +140,75 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 	}
 }
 
+func setupMockedTestServerWithoutWaitingForMultiplexedSessionInit(t *testing.T) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
+	config := ClientConfig{}
+	clientOptions := []option.ClientOption{}
+	var poolCfg *grpc_gcp.ChannelPoolConfig
+	grpcHeaderChecker := &itestutil.HeadersEnforcer{
+		OnFailure: t.Fatalf,
+		Checkers: []*itestutil.HeaderChecker{
+			{
+				Key: "x-goog-api-client",
+				ValuesValidator: func(token ...string) error {
+					if len(token) != 1 {
+						return status.Errorf(codes.Internal, "unexpected number of api client token headers: %v", len(token))
+					}
+					if !strings.HasPrefix(token[0], "gl-go/") {
+						return status.Errorf(codes.Internal, "unexpected api client token: %v", token[0])
+					}
+					if !strings.Contains(token[0], "gccl/") {
+						return status.Errorf(codes.Internal, "unexpected api client token: %v", token[0])
+					}
+					return nil
+				},
+			},
+		},
+	}
+	if config.Compression == gzip.Name {
+		grpcHeaderChecker.Checkers = append(grpcHeaderChecker.Checkers, &itestutil.HeaderChecker{
+			Key: "x-response-encoding",
+			ValuesValidator: func(token ...string) error {
+				if len(token) != 1 {
+					return status.Errorf(codes.Internal, "unexpected number of compression headers: %v", len(token))
+				}
+				if token[0] != gzip.Name {
+					return status.Errorf(codes.Internal, "unexpected compression: %v", token[0])
+				}
+				return nil
+			},
+		})
+	}
+	clientOptions = append(clientOptions, grpcHeaderChecker.CallOptions()...)
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	opts = append(opts, clientOptions...)
+	ctx := context.Background()
+	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
+	var err error
+	if useGRPCgcp {
+		gmeCfg := &grpcgcp.GCPMultiEndpointOptions{
+			GRPCgcpConfig: &grpc_gcp.ApiConfig{
+				ChannelPool: poolCfg,
+			},
+			MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+				"default": {
+					Endpoints: []string{server.ServerAddress},
+				},
+			},
+			Default: "default",
+		}
+		client, _, err = NewMultiEndpointClientWithConfig(ctx, formattedDatabase, config, gmeCfg, opts...)
+	} else {
+		client, err = NewClientWithConfig(ctx, formattedDatabase, config, opts...)
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	return server, client, func() {
+		client.Close()
+		serverTeardown()
+	}
+}
+
 func makeClient(ctx context.Context, database string, target string, opts ...option.ClientOption) (*Client, error) {
 	if !useGRPCgcp {
 		return NewClient(ctx, database, opts...)
@@ -509,7 +578,7 @@ func TestClient_MultiplexedSession(t *testing.T) {
 					expectedSessionCount = uint(25) // BatchCreateSession request from regular session pool
 				}
 				if !testEqual(expectedSessionCount, server.TotalSessionsCreated()) {
-					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), 25, server.TotalSessionsCreated())
+					t.Errorf("TestClient_MultiplexedSession expected session creation with multiplexed=%s should be=%v, got: %v", strconv.FormatBool(isMultiplexEnabled), expectedSessionCount, server.TotalSessionsCreated())
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
@@ -553,7 +622,7 @@ func TestClient_MultiplexedSession(t *testing.T) {
 					switch s.(type) {
 					case *sppb.ReadRequest:
 						req, _ := s.(*sppb.ReadRequest)
-						// Validate the session is not multiplexed
+						// Verify that a multiplexed session is used when that is enabled.
 						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
 						}

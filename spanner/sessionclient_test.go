@@ -52,14 +52,14 @@ type testConsumer struct {
 	receivedAll chan struct{}
 }
 
-func (tc *testConsumer) sessionReady(s *session) {
+func (tc *testConsumer) sessionReady(_ context.Context, s *session) {
 	tc.mu.Lock()
 	defer tc.mu.Unlock()
 	tc.sessions = append(tc.sessions, s)
 	tc.checkReceivedAll()
 }
 
-func (tc *testConsumer) sessionCreationFailed(err error, num int32, _ bool) {
+func (tc *testConsumer) sessionCreationFailed(_ context.Context, err error, num int32, _ bool) {
 	tc.mu.Lock()
 	defer tc.mu.Unlock()
 	tc.errors = append(tc.errors, &testSessionCreateError{
@@ -309,7 +309,7 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 				if isMultiplexEnabled {
 					// The multiplexed session creation will use one of the connections
 					if c != 2 {
-						t.Fatalf("connection %q used an unexpected number of times\ngot: %v\nwant %v", a, c, 1)
+						t.Fatalf("connection %q used an unexpected number of times\ngot: %v\nwant %v", a, c, 2)
 					}
 				} else {
 					t.Fatalf("connection %q used an unexpected number of times\ngot: %v\nwant %v", a, c, 1)

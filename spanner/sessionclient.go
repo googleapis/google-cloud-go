@@ -71,13 +71,13 @@ func (cg *clientIDGenerator) nextID(database string) string {
 type sessionConsumer interface {
 	// sessionReady is called when a session has been created and is ready for
 	// use.
-	sessionReady(s *session)
+	sessionReady(ctx context.Context, s *session)
 
 	// sessionCreationFailed is called when the creation of a sub-batch of
 	// sessions failed. The numSessions argument specifies the number of
 	// sessions that could not be created as a result of this error. A
 	// consumer may receive multiple errors per batch.
-	sessionCreationFailed(err error, numSessions int32, isMultiplexed bool)
+	sessionCreationFailed(ctx context.Context, err error, numSessions int32, isMultiplexed bool)
 }
 
 // sessionClient creates sessions for a database, either in batches or one at a
@@ -254,12 +254,12 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 		if closed {
 			err := spannerErrorf(codes.Canceled, "Session client closed")
 			trace.TracePrintf(ctx, nil, "Session client closed while creating a batch of %d sessions: %v", createCount, err)
-			consumer.sessionCreationFailed(err, remainingCreateCount, false)
+			consumer.sessionCreationFailed(ctx, err, remainingCreateCount, false)
 			break
 		}
 		if ctx.Err() != nil {
 			trace.TracePrintf(ctx, nil, "Context error while creating a batch of %d sessions: %v", createCount, ctx.Err())
-			consumer.sessionCreationFailed(ToSpannerError(ctx.Err()), remainingCreateCount, false)
+			consumer.sessionCreationFailed(ctx, ToSpannerError(ctx.Err()), remainingCreateCount, false)
 			break
 		}
 		var mdForGFELatency metadata.MD
@@ -294,13 +294,13 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 		}
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error creating a batch of %d sessions: %v", remainingCreateCount, err)
-			consumer.sessionCreationFailed(ToSpannerError(err), remainingCreateCount, false)
+			consumer.sessionCreationFailed(ctx, ToSpannerError(err), remainingCreateCount, false)
 			break
 		}
 		actuallyCreated := int32(len(response.Session))
 		trace.TracePrintf(ctx, nil, "Received a batch of %d sessions", actuallyCreated)
 		for _, s := range response.Session {
-			consumer.sessionReady(&session{valid: true, client: client, id: s.Name, createTime: time.Now(), md: md, logger: sc.logger})
+			consumer.sessionReady(ctx, &session{valid: true, client: client, id: s.Name, createTime: time.Now(), md: md, logger: sc.logger})
 		}
 		if actuallyCreated < remainingCreateCount {
 			// Spanner could return less sessions than requested. In that case, we
@@ -327,7 +327,7 @@ func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, cl
 	}
 	if ctx.Err() != nil {
 		trace.TracePrintf(ctx, nil, "Context error while creating a multiplexed session: %v", ctx.Err())
-		consumer.sessionCreationFailed(ToSpannerError(ctx.Err()), 1, true)
+		consumer.sessionCreationFailed(ctx, ToSpannerError(ctx.Err()), 1, true)
 		return
 	}
 	var mdForGFELatency metadata.MD
@@ -362,10 +362,10 @@ func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, cl
 	}
 	if err != nil {
 		trace.TracePrintf(ctx, nil, "Error creating a multiplexed sessions: %v", err)
-		consumer.sessionCreationFailed(ToSpannerError(err), 1, true)
+		consumer.sessionCreationFailed(ctx, ToSpannerError(err), 1, true)
 		return
 	}
-	consumer.sessionReady(&session{valid: true, client: client, id: response.Name, createTime: time.Now(), md: md, logger: sc.logger, isMultiplexed: response.Multiplexed})
+	consumer.sessionReady(ctx, &session{valid: true, client: client, id: response.Name, createTime: time.Now(), md: md, logger: sc.logger, isMultiplexed: response.Multiplexed})
 	trace.TracePrintf(ctx, nil, "Finished creating multiplexed sessions")
 }
 

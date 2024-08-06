@@ -1712,7 +1712,7 @@ func TestMultiplexSessionWorker(t *testing.T) {
 	// Will cause session creation RPC to be fail.
 	server.TestSpanner.PutExecutionTime(MethodCreateSession,
 		SimulatedExecutionTime{
-			Errors:    []error{status.Errorf(codes.Unavailable, "try later")},
+			Errors:    []error{status.Errorf(codes.PermissionDenied, "try later")},
 			KeepError: true,
 		})
 	// To save test time, update the multiplex session creation time to trigger refresh.
