@@ -31,8 +31,10 @@ import (
 	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
 	grpcgcppb "github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/grpc_gcp"
 	"github.com/googleapis/gax-go/v2"
+	go_grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/noop"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -42,6 +44,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/peer"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/internal"
@@ -96,6 +99,9 @@ func parseDatabaseName(db string) (project, instance, database string, err error
 	return matches[1], matches[2], matches[3], nil
 }
 
+// PeerKey is a key used to store peer information in a context.
+type PeerKey struct{}
+
 // Client is a client for reading and writing data to a Cloud Spanner database.
 // A client is safe to use concurrently, except for its Close method.
 type Client struct {
@@ -111,6 +117,7 @@ type Client struct {
 	disableRouteToLeader bool
 	dro                  *sppb.DirectedReadOptions
 	otConfig             *openTelemetryConfig
+	metricsTracerFactory *builtinMetricsTracerFactory
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -461,6 +468,21 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc.otConfig = otConfig
 	sc.mu.Unlock()
 
+	metricsProvider := otConfig.meterProvider
+	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
+		// Do not emit metrics when emulator is being used
+		metricsProvider = noop.NewMeterProvider()
+	}
+
+	// Create a OpenTelemetry metrics configuration
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider)
+	if err != nil {
+		metricsProvider = noop.NewMeterProvider()
+	}
+	sc.mu.Lock()
+	sc.metricsTracerFactory = metricsTracerFactory
+	sc.mu.Unlock()
+
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
 	sp, err := newSessionPool(sc, config.SessionPoolConfig)
@@ -482,6 +504,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		disableRouteToLeader: config.DisableRouteToLeader,
 		dro:                  config.DirectedReadOptions,
 		otConfig:             otConfig,
+		metricsTracerFactory: metricsTracerFactory,
 	}
 	return c, nil
 }
@@ -540,6 +563,8 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 	}
 	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
+		clientDefaultOpts = append(clientDefaultOpts, option.WithGRPCDialOption(grpc.WithUnaryInterceptor(AddUnaryPeerInterceptor())),
+			option.WithGRPCDialOption(grpc.WithStreamInterceptor(AddStreamPeerInterceptor())))
 	}
 	if compression == "gzip" {
 		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -547,6 +572,45 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 	}
 	allDefaultOpts := append(generatedDefaultOpts, clientDefaultOpts...)
 	return append(allDefaultOpts, userOpts...)
+}
+
+func unaryPeerSetter() grpc.UnaryClientInterceptor {
+	return func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn,
+		invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		p, ok := ctx.Value(PeerKey{}).(*peer.Peer)
+		if ok {
+			opts = append(opts, grpc.Peer(p))
+		}
+
+		return invoker(ctx, method, req, reply, cc, opts...)
+	}
+}
+
+// streamPeerSetter makes the grpc connection include peer information in a context variable keyed by PeerKey{} if it exists.
+func streamPeerSetter() grpc.StreamClientInterceptor {
+	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string,
+		streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		p, ok := ctx.Value(PeerKey{}).(*peer.Peer)
+		if ok {
+			opts = append(opts, grpc.Peer(p))
+		}
+
+		return streamer(ctx, desc, cc, method, opts...)
+	}
+}
+
+// AddUnaryPeerInterceptor intercepts unary requests and add PeerKey.
+func AddUnaryPeerInterceptor() grpc.UnaryClientInterceptor {
+	unaryInterceptors := []grpc.UnaryClientInterceptor{}
+	unaryInterceptors = append(unaryInterceptors, unaryPeerSetter())
+	return go_grpc_middleware.ChainUnaryClient(unaryInterceptors...)
+}
+
+// AddStreamPeerInterceptor intercepts stream requests and add PeerKey.
+func AddStreamPeerInterceptor() grpc.StreamClientInterceptor {
+	streamInterceptors := []grpc.StreamClientInterceptor{}
+	streamInterceptors = append(streamInterceptors, streamPeerSetter())
+	return go_grpc_middleware.ChainStreamClient(streamInterceptors...)
 }
 
 // getQueryOptions returns the query options overwritten by the environment
@@ -570,6 +634,9 @@ func getQueryOptions(opts QueryOptions) QueryOptions {
 
 // Close closes the client.
 func (c *Client) Close() {
+	if c.metricsTracerFactory != nil {
+		c.metricsTracerFactory.shutdown()
+	}
 	if c.idleSessions != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()

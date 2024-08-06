@@ -63,9 +63,6 @@ import (
 )
 
 const (
-	directPathIPV6Prefix = "[2001:4860:8040"
-	directPathIPV4Prefix = "34.126"
-
 	singerDDLStatements               = "SINGER_DDL_STATEMENTS"
 	simpleDDLStatements               = "SIMPLE_DDL_STATEMENTS"
 	readDDLStatements                 = "READ_DDL_STATEMENTS"

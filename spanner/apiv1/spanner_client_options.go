@@ -23,3 +23,11 @@ import "google.golang.org/api/option"
 func DefaultClientOptions() []option.ClientOption {
 	return defaultGRPCClientOptions()
 }
+
+// Returns the default call options used by the generated Spanner client.
+//
+// This function is only intended for use by the client library, and may be
+// removed at any time without any warning.
+func DefaultCallOptions() *CallOptions {
+	return defaultCallOptions()
+}

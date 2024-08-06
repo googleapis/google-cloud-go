@@ -25,7 +25,6 @@ import (
 	"testing"
 	"time"
 
-	vkit "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/googleapis/gax-go/v2"
@@ -1774,7 +1773,7 @@ func TestIteratorWithError(t *testing.T) {
 	}
 }
 
-func createSession(client *vkit.Client) (*sppb.Session, error) {
+func createSession(client spannerClient) (*sppb.Session, error) {
 	var formattedDatabase string = fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
 	var request = &sppb.CreateSessionRequest{
 		Database: formattedDatabase,
