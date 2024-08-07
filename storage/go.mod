@@ -4,9 +4,9 @@ go 1.21
 
 retract [v1.25.0, v1.27.0] // due to https://github.com/googleapis/google-cloud-go/issues/6857
 
-replace google.golang.org/grpc => /home/franknatividad/Documents/grpc-go
+// replace google.golang.org/grpc => /home/franknatividad/Documents/grpc-go
 
-replace google.golang.org/grpc/stats/opentelemetry => /home/franknatividad/Documents/grpc-go/stats/opentelemetry
+// replace google.golang.org/grpc/stats/opentelemetry => /home/franknatividad/Documents/grpc-go/stats/opentelemetry
 
 require (
 	cloud.google.com/go v0.115.0
@@ -25,8 +25,8 @@ require (
 	google.golang.org/api v0.191.0
 	google.golang.org/genproto v0.0.0-20240730163845-b1a4ccb954bf
 	google.golang.org/genproto/googleapis/api v0.0.0-20240725223205-93522f1f2a9f
-	google.golang.org/grpc v1.64.1
-	google.golang.org/grpc/stats/opentelemetry v0.0.0-20240730224927-1b1230bb69fb
+	google.golang.org/grpc v1.66.0-dev.0.20240806183052-e6b6318ad908
+	google.golang.org/grpc/stats/opentelemetry v0.0.0-20240806183052-e6b6318ad908
 	google.golang.org/protobuf v1.34.2
 )
 
