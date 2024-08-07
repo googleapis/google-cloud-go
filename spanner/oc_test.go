@@ -52,6 +52,19 @@ func TestOCStats(t *testing.T) {
 func TestOCStats_SessionPool(t *testing.T) {
 	skipForPGTest(t)
 	DisableGfeLatencyAndHeaderMissingCountViews()
+	// expectedValues is a map of expected values for different configurations of
+	// multiplexed session env="GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS".
+	expectedValues := map[string]map[bool]string{
+		"open_session_count": {
+			false: "25",
+			// since we are doing only R/O operations and MinOpened=0, we should have only one session.
+			true: "1",
+		},
+		"max_in_use_sessions": {
+			false: "1",
+			true:  "0",
+		},
+	}
 	for _, test := range []struct {
 		name    string
 		view    *view.View
@@ -62,7 +75,7 @@ func TestOCStats_SessionPool(t *testing.T) {
 			"OpenSessionCount",
 			OpenSessionCountView,
 			"open_session_count",
-			"25",
+			expectedValues["open_session_count"][isMultiplexEnabled],
 		},
 		{
 			"MaxAllowedSessionsCount",
@@ -74,7 +87,7 @@ func TestOCStats_SessionPool(t *testing.T) {
 			"MaxInUseSessionsCount",
 			MaxInUseSessionsCountView,
 			"max_in_use_sessions",
-			"1",
+			expectedValues["max_in_use_sessions"][isMultiplexEnabled],
 		},
 		{
 			"AcquiredSessionsCount",
@@ -167,11 +180,16 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 	})
 	client.Single().ReadRow(context.Background(), "Users", Key{"alice"}, []string{"email"})
 
+	expectedStats := 2
+	if isMultiplexEnabled {
+		// num_in_use_sessions is not exported when multiplexed sessions are enabled and only ReadOnly transactions are performed.
+		expectedStats = 1
+	}
 	// Wait for a while to see all exported metrics.
 	waitFor(t, func() error {
 		select {
 		case stat := <-te.Stats:
-			if len(stat.Rows) >= 2 {
+			if len(stat.Rows) >= expectedStats {
 				return nil
 			}
 		}
@@ -183,7 +201,7 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 	case stat := <-te.Stats:
 		// There are 4 types for this metric, so we should see at least four
 		// rows.
-		if len(stat.Rows) < 2 {
+		if len(stat.Rows) < expectedStats {
 			t.Fatal("No enough metrics are exported")
 		}
 		if got, want := stat.View.Measure.Name(), statsPrefix+"num_sessions_in_pool"; got != want {
@@ -220,14 +238,17 @@ func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 	te := testutil.NewTestExporter(GetSessionTimeoutsCountView)
 	defer te.Unregister()
 
-	server, client, teardown := setupMockedTestServer(t)
+	server, client, teardown := setupMockedTestServerWithoutWaitingForMultiplexedSessionInit(t)
 	defer teardown()
 
 	server.TestSpanner.PutExecutionTime(stestutil.MethodBatchCreateSession,
 		stestutil.SimulatedExecutionTime{
 			MinimumExecutionTime: 2 * time.Millisecond,
 		})
-
+	server.TestSpanner.PutExecutionTime(stestutil.MethodCreateSession,
+		stestutil.SimulatedExecutionTime{
+			MinimumExecutionTime: 2 * time.Millisecond,
+		})
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
 	defer cancel()
 	client.Single().ReadRow(ctx, "Users", Key{"alice"}, []string{"email"})

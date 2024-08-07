@@ -5354,7 +5354,7 @@ func TestIntegration_HMACKey(t *testing.T) {
 		}
 
 		_, err = hkh.Get(ctx)
-		if err != nil && !strings.Contains(err.Error(), "404") {
+		if err != nil && !errorIsStatusCode(err, http.StatusNotFound, codes.NotFound) {
 			// If the deleted key has already been garbage collected, a 404 is expected.
 			// Other errors should cause a failure and are not expected.
 			t.Fatalf("Unexpected error: %v", err)
