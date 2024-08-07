@@ -5604,9 +5604,6 @@ func TestClient_BatchWrite(t *testing.T) {
 
 func TestClient_BatchWrite_SessionNotFound(t *testing.T) {
 	t.Parallel()
-	if isMultiplexEnabled {
-		t.Skip("TestClient_BatchWrite_SessionNotFound not applicable in multiplexed sessions")
-	}
 
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
