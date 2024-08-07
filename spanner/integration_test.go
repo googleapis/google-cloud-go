@@ -1906,6 +1906,7 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, SessionPoolConfig{}, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 	if isMultiplexEnabled {
+		// TODO: confirm that this is the valid scenario for multiplexed sessions, and what's expected behavior.
 		// wait for the multiplexed session to be created.
 		waitFor(t, func() error {
 			client.idleSessions.mu.Lock()
