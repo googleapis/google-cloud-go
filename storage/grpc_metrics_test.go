@@ -28,24 +28,20 @@ import (
 )
 
 func TestMetrics(t *testing.T) {
-	// extend timeout
 	ctx := context.Background()
-	// Test if using local impl.
-	// opentelemetry.Frank()
 	grpcClient, err := NewGRPCClient(ctx)
 	if err != nil {
-		log.Fatalf("Error setting up gRPC client for emulator tests: %v", err)
+		log.Fatalf("Error setting up gRPC client: %v", err)
 	}
 	it := grpcClient.Buckets(ctx, "spec-test-ruby-samples")
+
 	for {
-		for {
-			_, err := it.Next()
-			if err == iterator.Done {
-				break
-			}
-			if err != nil {
-				log.Fatalf("Failed: %v", err)
-			}
+		_, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Failed: %v", err)
 		}
 	}
 
