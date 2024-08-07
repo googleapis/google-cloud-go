@@ -466,12 +466,17 @@ func TestOptionsValidate(t *testing.T) {
 }
 
 func TestClient(t *testing.T) {
-	goodCertConfig := credsfile.CertificateConfig{
+	goodCertConfigFileLocation := credsfile.CertificateConfig{
 		CertificateConfigLocation: "testdata/certificate_config_workload.json",
+	}
+	goodCertConfigEnvLocation := credsfile.CertificateConfig{
+		UseDefaultCertificateConfig: true,
 	}
 	badCertConfig := credsfile.CertificateConfig{
 		CertificateConfigLocation: "bad_file.json",
 	}
+	t.Setenv("GOOGLE_API_CERTIFICATE_CONFIG", "testdata/certificate_config_workload.json")
+
 	client := internal.CloneDefaultClient()
 
 	tests := []struct {
@@ -514,7 +519,7 @@ func TestClient(t *testing.T) {
 			wantClientChanged: false,
 		},
 		{
-			name: "isDefault false with certificate config",
+			name: "isDefault false with override certificate config",
 			o: &Options{
 				SubjectTokenType:               jwtTokenType,
 				TokenURL:                       "http://localhost:8080/v1/token",
@@ -524,13 +529,13 @@ func TestClient(t *testing.T) {
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
 				Client:                         client,
 				IsDefaultClient:                false,
-				CredentialSource:               &credsfile.CredentialSource{Certificate: &goodCertConfig},
+				CredentialSource:               &credsfile.CredentialSource{Certificate: &goodCertConfigFileLocation},
 			},
 			wantErr:           false,
-			wantClientChanged: false,
+			wantClientChanged: true,
 		},
 		{
-			name: "isDefault true with certificate config",
+			name: "isDefault true with override certificate config",
 			o: &Options{
 				SubjectTokenType:               jwtTokenType,
 				TokenURL:                       "http://localhost:8080/v1/token",
@@ -540,7 +545,39 @@ func TestClient(t *testing.T) {
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
 				Client:                         client,
 				IsDefaultClient:                true,
-				CredentialSource:               &credsfile.CredentialSource{Certificate: &goodCertConfig},
+				CredentialSource:               &credsfile.CredentialSource{Certificate: &goodCertConfigFileLocation},
+			},
+			wantErr:           false,
+			wantClientChanged: true,
+		},
+		{
+			name: "isDefault false with default certificate config",
+			o: &Options{
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         client,
+				IsDefaultClient:                false,
+				CredentialSource:               &credsfile.CredentialSource{Certificate: &goodCertConfigEnvLocation},
+			},
+			wantErr:           false,
+			wantClientChanged: false,
+		},
+		{
+			name: "isDefault true with default certificate config",
+			o: &Options{
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         client,
+				IsDefaultClient:                true,
+				CredentialSource:               &credsfile.CredentialSource{Certificate: &goodCertConfigEnvLocation},
 			},
 			wantErr:           false,
 			wantClientChanged: true,
@@ -558,8 +595,8 @@ func TestClient(t *testing.T) {
 				IsDefaultClient:                false,
 				CredentialSource:               &credsfile.CredentialSource{Certificate: &badCertConfig},
 			},
-			wantErr:           false,
-			wantClientChanged: false,
+			wantErr:           true,
+			wantClientChanged: true,
 		},
 		{
 			name: "isDefault true with bad certificate config",
@@ -584,7 +621,7 @@ func TestClient(t *testing.T) {
 			t.Fatalf("o.validate() = nil, want error")
 		}
 		if err != nil && !tc.wantErr {
-			t.Fatalf("o.validate() = non-nil error, want error")
+			t.Fatalf(err.Error())
 		}
 
 		if tc.wantClientChanged {
