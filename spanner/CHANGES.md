@@ -1,5 +1,14 @@
 # Changes
 
+## [1.66.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.65.0...spanner/v1.66.0) (2024-08-07)
+
+
+### Features
+
+* **spanner/admin/database:** Add support for Cloud Spanner Incremental Backups ([d949cc0](https://github.com/googleapis/google-cloud-go/commit/d949cc0e5d44af62154d9d5fd393f25a852f93ed))
+* **spanner:** Add support of multiplexed session support in writeAtleastOnce mutations ([#10646](https://github.com/googleapis/google-cloud-go/issues/10646)) ([54009ea](https://github.com/googleapis/google-cloud-go/commit/54009eab1c3b11a28531ad9e621917d01c9e5339))
+* **spanner:** Add support of using multiplexed session with ReadOnlyTransactions ([#10269](https://github.com/googleapis/google-cloud-go/issues/10269)) ([7797022](https://github.com/googleapis/google-cloud-go/commit/7797022e51d1ac07b8d919c421a8bfdf34a1d53c))
+
 ## [1.65.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.64.0...spanner/v1.65.0) (2024-07-29)
 
 
