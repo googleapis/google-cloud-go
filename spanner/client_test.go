@@ -3555,15 +3555,21 @@ func TestClient_ApplyAtLeastOnceReuseSession(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		expectedIdleSesions := sp.incStep
+		if isMultiplexEnabled {
+			expectedIdleSesions = 0
+		}
 		sp.mu.Lock()
-		if g, w := uint64(sp.idleList.Len())+sp.createReqs, sp.incStep; g != w {
+		if g, w := uint64(sp.idleList.Len())+sp.createReqs, expectedIdleSesions; g != w {
+			sp.mu.Unlock()
 			t.Fatalf("idle session count mismatch:\nGot: %v\nWant: %v", g, w)
 		}
-		expectedSessions := sp.incStep
+		expectedSessions := expectedIdleSesions
 		if isMultiplexEnabled {
 			expectedSessions++
 		}
 		if g, w := uint64(len(server.TestSpanner.DumpSessions())), expectedSessions; g != w {
+			sp.mu.Unlock()
 			t.Fatalf("server session count mismatch:\nGot: %v\nWant: %v", g, w)
 		}
 		sp.mu.Unlock()
@@ -3602,14 +3608,20 @@ func TestClient_ApplyAtLeastOnceInvalidArgument(t *testing.T) {
 			t.Fatal(err)
 		}
 		sp.mu.Lock()
-		if g, w := uint64(sp.idleList.Len())+sp.createReqs, sp.incStep; g != w {
+		expectedIdleSesions := sp.incStep
+		if isMultiplexEnabled {
+			expectedIdleSesions = 0
+		}
+		if g, w := uint64(sp.idleList.Len())+sp.createReqs, expectedIdleSesions; g != w {
+			sp.mu.Unlock()
 			t.Fatalf("idle session count mismatch:\nGot: %v\nWant: %v", g, w)
 		}
 		var countMuxSess uint64
 		if isMultiplexEnabled {
 			countMuxSess = 1
 		}
-		if g, w := uint64(len(server.TestSpanner.DumpSessions())), sp.incStep+countMuxSess; g != w {
+		if g, w := uint64(len(server.TestSpanner.DumpSessions())), expectedIdleSesions+countMuxSess; g != w {
+			sp.mu.Unlock()
 			t.Fatalf("server session count mismatch:\nGot: %v\nWant: %v", g, w)
 		}
 		sp.mu.Unlock()
@@ -6277,18 +6289,30 @@ func TestClient_ApplyAtLeastOnceExcludeTxnFromChangeStreams(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests([]interface{}{
+
+	expectedReqs := []interface{}{
 		&sppb.BatchCreateSessionsRequest{},
-		&sppb.CommitRequest{}}, requests); err != nil {
+		&sppb.CommitRequest{},
+	}
+	if isMultiplexEnabled {
+		expectedReqs = []interface{}{
+			&sppb.CreateSessionRequest{},
+			&sppb.CommitRequest{},
+		}
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests(expectedReqs, requests); err != nil {
 		t.Fatal(err)
 	}
-	muxCreateBuffer := 0
-	if isMultiplexEnabled {
-		muxCreateBuffer = 1
-	}
-	if !requests[1+muxCreateBuffer].(*sppb.CommitRequest).Transaction.(*sppb.CommitRequest_SingleUseTransaction).SingleUseTransaction.ExcludeTxnFromChangeStreams {
-		t.Fatal("Transaction is not set to be excluded from change streams")
+	for _, req := range requests {
+		if request, ok := req.(*sppb.CommitRequest); ok {
+			if !request.Transaction.(*sppb.CommitRequest_SingleUseTransaction).SingleUseTransaction.ExcludeTxnFromChangeStreams {
+				t.Fatal("Transaction is not set to be excluded from change streams")
+			}
+			if !testEqual(isMultiplexEnabled, strings.Contains(request.GetSession(), "multiplexed")) {
+				t.Errorf("TestClient_ApplyAtLeastOnceExcludeTxnFromChangeStreams expected multiplexed session to be used, got: %v", request.GetSession())
+			}
+		}
 	}
 }
 
