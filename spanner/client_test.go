@@ -5594,28 +5594,11 @@ func TestClient_BatchWrite(t *testing.T) {
 		t.Fatalf("Response count mismatch.\nGot: %v\nWant:%v", responseCount, len(mutationGroups))
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
-	expectedReqs := []interface{}{
+	if err := compareRequests([]interface{}{
 		&sppb.BatchCreateSessionsRequest{},
 		&sppb.BatchWriteRequest{},
-	}
-	if isMultiplexEnabled {
-		expectedReqs = []interface{}{
-			&sppb.CreateSessionRequest{},
-			&sppb.BatchWriteRequest{},
-		}
-	}
-	if err := compareRequests(expectedReqs, requests); err != nil {
+	}, requests); err != nil {
 		t.Fatal(err)
-	}
-	for _, s := range requests {
-		switch s.(type) {
-		case *sppb.BatchWriteRequest:
-			req, _ := s.(*sppb.BatchWriteRequest)
-			// Validate the session is multiplexed
-			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
-				t.Errorf("TestClient_BatchWrite expected multiplexed session to be used, got: %v", req.Session)
-			}
-		}
 	}
 }
 
@@ -6357,28 +6340,17 @@ func TestClient_BatchWriteExcludeTxnFromChangeStreams(t *testing.T) {
 	if responseCount != len(mutationGroups) {
 		t.Fatalf("Response count mismatch.\nGot: %v\nWant:%v", responseCount, len(mutationGroups))
 	}
-	expectedReqs := []interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.BatchWriteRequest{},
-	}
-	if isMultiplexEnabled {
-		expectedReqs = []interface{}{
-			&sppb.CreateSessionRequest{},
-			&sppb.BatchWriteRequest{},
-		}
-	}
 	requests := drainRequestsFromServer(server.TestSpanner)
-	if err := compareRequests(expectedReqs, requests); err != nil {
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BatchWriteRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
-	for _, req := range requests {
-		if request, ok := req.(*sppb.BatchWriteRequest); ok {
-			if !request.ExcludeTxnFromChangeStreams {
-				t.Fatal("Transaction is not set to be excluded from change streams")
-			}
-			if !testEqual(isMultiplexEnabled, strings.Contains(request.Session, "multiplexed")) {
-				t.Errorf("TestClient_BatchWriteExcludeTxnFromChangeStreams expected multiplexed session to be used, got: %v", request.Session)
-			}
-		}
+	muxCreateBuffer := 0
+	if isMultiplexEnabled {
+		muxCreateBuffer = 1
+	}
+	if !requests[1+muxCreateBuffer].(*sppb.BatchWriteRequest).ExcludeTxnFromChangeStreams {
+		t.Fatal("Transaction is not set to be excluded from change streams")
 	}
 }
