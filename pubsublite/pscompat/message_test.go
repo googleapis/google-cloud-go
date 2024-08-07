@@ -22,12 +22,12 @@ import (
 	"cloud.google.com/go/pubsub"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func encodeTimestamp(seconds int64, nanos int32) string {
-	val, err := encodeEventTimestamp(&tspb.Timestamp{
+	val, err := EncodeEventTimeAttribute(&tspb.Timestamp{
 		Seconds: seconds,
 		Nanos:   nanos,
 	})

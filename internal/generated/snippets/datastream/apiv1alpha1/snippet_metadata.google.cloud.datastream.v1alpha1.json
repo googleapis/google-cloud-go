@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datastream/apiv1alpha1",
-    "version": "1.3.0",
+    "version": "1.10.10",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -198,7 +198,7 @@
     {
       "regionTag": "datastream_v1alpha1_generated_Datastream_DeleteConnectionProfile_sync",
       "title": "datastream DeleteConnectionProfile Sample",
-      "description": "DeleteConnectionProfile use this method to delete a connection profile…",
+      "description": "DeleteConnectionProfile use this method to delete a connection profile..",
       "file": "Client/DeleteConnectionProfile/main.go",
       "language": "GO",
       "clientMethod": {
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -374,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -382,7 +382,7 @@
     {
       "regionTag": "datastream_v1alpha1_generated_Datastream_DiscoverConnectionProfile_sync",
       "title": "datastream DiscoverConnectionProfile Sample",
-      "description": "DiscoverConnectionProfile use this method to discover a connection profile.\nThe discover API call exposes the data objects and metadata belonging to\nthe profile. Typically, a request returns children data objects under a\nparent data object that’s optionally supplied in the request.",
+      "description": "DiscoverConnectionProfile use this method to discover a connection profile.\nThe discover API call exposes the data objects and metadata belonging to\nthe profile. Typically, a request returns children data objects under a\nparent data object that's optionally supplied in the request.",
       "file": "Client/DiscoverConnectionProfile/main.go",
       "language": "GO",
       "clientMethod": {
@@ -402,7 +402,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.DiscoverConnectionProfileResponse",
+        "resultType": "*datastreampb.DiscoverConnectionProfileResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1alpha1.Client"
@@ -420,7 +420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -466,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -474,7 +474,7 @@
     {
       "regionTag": "datastream_v1alpha1_generated_Datastream_FetchStaticIps_sync",
       "title": "datastream FetchStaticIps Sample",
-      "description": "FetchStaticIps the FetchStaticIps API call exposes the static ips used by Datastream.\nTypically, a request returns children data objects under\na parent data object that’s optionally supplied in the request.",
+      "description": "FetchStaticIps the FetchStaticIps API call exposes the static ips used by Datastream.\nTypically, a request returns children data objects under\na parent data object that's optionally supplied in the request.",
       "file": "Client/FetchStaticIps/main.go",
       "language": "GO",
       "clientMethod": {
@@ -512,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -540,7 +540,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.ConnectionProfile",
+        "resultType": "*datastreampb.ConnectionProfile",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1alpha1.Client"
@@ -558,7 +558,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -586,7 +586,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.PrivateConnection",
+        "resultType": "*datastreampb.PrivateConnection",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1alpha1.Client"
@@ -604,7 +604,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -632,7 +632,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.Route",
+        "resultType": "*datastreampb.Route",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1alpha1.Client"
@@ -650,7 +650,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -678,7 +678,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.Stream",
+        "resultType": "*datastreampb.Stream",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1alpha1.Client"
@@ -696,7 +696,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -742,7 +742,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -788,7 +788,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -834,7 +834,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -880,7 +880,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -926,7 +926,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -972,7 +972,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]

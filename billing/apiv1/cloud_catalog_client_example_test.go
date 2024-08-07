@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	billing "cloud.google.com/go/billing/apiv1"
+	billingpb "cloud.google.com/go/billing/apiv1/billingpb"
 	"google.golang.org/api/iterator"
-	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
 )
 
 func ExampleNewCloudCatalogClient() {
@@ -32,6 +32,23 @@ func ExampleNewCloudCatalogClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := billing.NewCloudCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewCloudCatalogRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := billing.NewCloudCatalogRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -56,7 +73,7 @@ func ExampleCloudCatalogClient_ListServices() {
 
 	req := &billingpb.ListServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#ListServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -69,6 +86,12 @@ func ExampleCloudCatalogClient_ListServices() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*billingpb.ListServicesResponse)
 	}
 }
 
@@ -87,7 +110,7 @@ func ExampleCloudCatalogClient_ListSkus() {
 
 	req := &billingpb.ListSkusRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#ListSkusRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#ListSkusRequest.
 	}
 	it := c.ListSkus(ctx, req)
 	for {
@@ -100,5 +123,11 @@ func ExampleCloudCatalogClient_ListSkus() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*billingpb.ListSkusResponse)
 	}
 }

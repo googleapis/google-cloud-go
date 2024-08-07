@@ -29,7 +29,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	structpb "github.com/golang/protobuf/ptypes/struct"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
@@ -461,10 +461,16 @@ func slurp(t *testing.T, ri rowIter) (all [][]interface{}) {
 }
 
 func listV(vs ...*structpb.Value) *structpb.ListValue { return &structpb.ListValue{Values: vs} }
-func stringV(s string) *structpb.Value                { return &structpb.Value{Kind: &structpb.Value_StringValue{s}} }
-func floatV(f float64) *structpb.Value                { return &structpb.Value{Kind: &structpb.Value_NumberValue{f}} }
-func boolV(b bool) *structpb.Value                    { return &structpb.Value{Kind: &structpb.Value_BoolValue{b}} }
-func nullV() *structpb.Value                          { return &structpb.Value{Kind: &structpb.Value_NullValue{}} }
+func stringV(s string) *structpb.Value {
+	return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: s}}
+}
+func floatV(f float64) *structpb.Value {
+	return &structpb.Value{Kind: &structpb.Value_NumberValue{NumberValue: f}}
+}
+func boolV(b bool) *structpb.Value {
+	return &structpb.Value{Kind: &structpb.Value_BoolValue{BoolValue: b}}
+}
+func nullV() *structpb.Value { return &structpb.Value{Kind: &structpb.Value_NullValue{}} }
 
 func boolParam(b bool) queryParam     { return queryParam{Value: b, Type: boolType} }
 func stringParam(s string) queryParam { return queryParam{Value: s, Type: stringType} }
@@ -731,26 +737,26 @@ func TestAddBackQuoteForHypen(t *testing.T) {
 
 func TestCreateAndManageChangeStream(t *testing.T) {
 	// Testing Create Change Stream
-	ddl, err := spansql.ParseDDL("filename", "CREATE CHANGE STREAM SingerAlbumStream FOR Singers(FirstName, LastName), Albums OPTIONS( retention_period = '36h' )")
+	ddl, err := spansql.ParseDDL("filename", "CREATE CHANGE STREAM SingerAlbumStream FOR Singers(FirstName, LastName), Albums OPTIONS (retention_period = '36h')")
 	if err != nil {
 		t.Fatalf("%s: Bad DDL", err)
 	}
 
 	got := ddl.List[0].SQL()
-	want := "CREATE CHANGE STREAM SingerAlbumStream FOR Singers(FirstName, LastName), Albums OPTIONS( retention_period='36h' )"
+	want := "CREATE CHANGE STREAM SingerAlbumStream FOR Singers(FirstName, LastName), Albums OPTIONS (retention_period='36h')"
 
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Generated SQL statement incorrect.\n got %v\nwant %v", got, want)
 	}
 
 	// Testing Alter Change Stream Options
-	ddl, err = spansql.ParseDDL("filename", "ALTER CHANGE STREAM SingerAlbumStream SET OPTIONS( retention_period = '20h' )")
+	ddl, err = spansql.ParseDDL("filename", "ALTER CHANGE STREAM SingerAlbumStream SET OPTIONS (retention_period = '20h')")
 	if err != nil {
 		t.Fatalf("%s: Bad DDL", err)
 	}
 
 	got = ddl.List[0].SQL()
-	want = "ALTER CHANGE STREAM SingerAlbumStream SET OPTIONS( retention_period='20h' )"
+	want = "ALTER CHANGE STREAM SingerAlbumStream SET OPTIONS (retention_period='20h')"
 
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Generated SQL statement incorrect.\n got %v\nwant %v", got, want)

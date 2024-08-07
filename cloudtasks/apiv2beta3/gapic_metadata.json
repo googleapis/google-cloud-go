@@ -35,6 +35,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetQueue": {
               "methods": [
                 "GetQueue"
@@ -43,6 +48,11 @@
             "GetTask": {
               "methods": [
                 "GetTask"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListQueues": {
@@ -120,6 +130,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetQueue": {
               "methods": [
                 "GetQueue"
@@ -128,6 +143,11 @@
             "GetTask": {
               "methods": [
                 "GetTask"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListQueues": {

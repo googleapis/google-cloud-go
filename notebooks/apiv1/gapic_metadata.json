@@ -10,9 +10,19 @@
         "grpc": {
           "libraryClient": "ManagedNotebookClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateRuntime": {
               "methods": [
                 "CreateRuntime"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "DeleteRuntime": {
@@ -20,9 +30,39 @@
                 "DeleteRuntime"
               ]
             },
+            "DiagnoseRuntime": {
+              "methods": [
+                "DiagnoseRuntime"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetRuntime": {
               "methods": [
                 "GetRuntime"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListRuntimes": {
@@ -45,6 +85,11 @@
                 "ResetRuntime"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
             "StartRuntime": {
               "methods": [
                 "StartRuntime"
@@ -59,6 +104,21 @@
               "methods": [
                 "SwitchRuntime"
               ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateRuntime": {
+              "methods": [
+                "UpdateRuntime"
+              ]
+            },
+            "UpgradeRuntime": {
+              "methods": [
+                "UpgradeRuntime"
+              ]
             }
           }
         }
@@ -69,6 +129,11 @@
         "grpc": {
           "libraryClient": "NotebookClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateEnvironment": {
               "methods": [
                 "CreateEnvironment"
@@ -104,9 +169,19 @@
                 "DeleteInstance"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteSchedule": {
               "methods": [
                 "DeleteSchedule"
+              ]
+            },
+            "DiagnoseInstance": {
+              "methods": [
+                "DiagnoseInstance"
               ]
             },
             "GetEnvironment": {
@@ -119,6 +194,11 @@
                 "GetExecution"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetInstance": {
               "methods": [
                 "GetInstance"
@@ -127,6 +207,16 @@
             "GetInstanceHealth": {
               "methods": [
                 "GetInstanceHealth"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetSchedule": {
@@ -154,6 +244,16 @@
                 "ListInstances"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListSchedules": {
               "methods": [
                 "ListSchedules"
@@ -179,6 +279,11 @@
                 "RollbackInstance"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
             "SetInstanceAccelerator": {
               "methods": [
                 "SetInstanceAccelerator"
@@ -202,6 +307,11 @@
             "StopInstance": {
               "methods": [
                 "StopInstance"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "TriggerSchedule": {

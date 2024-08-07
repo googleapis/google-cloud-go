@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -35,7 +35,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -49,10 +48,13 @@ type PublicCertificateAuthorityCallOptions struct {
 func defaultPublicCertificateAuthorityGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("publicca.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("publicca.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("publicca.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://publicca.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -61,6 +63,7 @@ func defaultPublicCertificateAuthorityGRPCClientOptions() []option.ClientOption 
 func defaultPublicCertificateAuthorityCallOptions() *PublicCertificateAuthorityCallOptions {
 	return &PublicCertificateAuthorityCallOptions{
 		CreateExternalAccountKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -77,6 +80,7 @@ func defaultPublicCertificateAuthorityCallOptions() *PublicCertificateAuthorityC
 func defaultPublicCertificateAuthorityRESTCallOptions() *PublicCertificateAuthorityCallOptions {
 	return &PublicCertificateAuthorityCallOptions{
 		CreateExternalAccountKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -146,9 +150,6 @@ type publicCertificateAuthorityGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PublicCertificateAuthorityClient
 	CallOptions **PublicCertificateAuthorityCallOptions
 
@@ -156,7 +157,7 @@ type publicCertificateAuthorityGRPCClient struct {
 	publicCertificateAuthorityClient publiccapb.PublicCertificateAuthorityServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewPublicCertificateAuthorityClient creates a new public certificate authority service client based on gRPC.
@@ -175,11 +176,6 @@ func NewPublicCertificateAuthorityClient(ctx context.Context, opts ...option.Cli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -188,7 +184,6 @@ func NewPublicCertificateAuthorityClient(ctx context.Context, opts ...option.Cli
 
 	c := &publicCertificateAuthorityGRPCClient{
 		connPool:                         connPool,
-		disableDeadlines:                 disableDeadlines,
 		publicCertificateAuthorityClient: publiccapb.NewPublicCertificateAuthorityServiceClient(connPool),
 		CallOptions:                      &client.CallOptions,
 	}
@@ -211,9 +206,11 @@ func (c *publicCertificateAuthorityGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *publicCertificateAuthorityGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -230,8 +227,8 @@ type publicCertificateAuthorityRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing PublicCertificateAuthorityClient
 	CallOptions **PublicCertificateAuthorityCallOptions
@@ -263,9 +260,12 @@ func NewPublicCertificateAuthorityRESTClient(ctx context.Context, opts ...option
 func defaultPublicCertificateAuthorityRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://publicca.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://publicca.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://publicca.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://publicca.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -273,9 +273,11 @@ func defaultPublicCertificateAuthorityRESTClientOptions() []option.ClientOption 
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *publicCertificateAuthorityRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -293,14 +295,10 @@ func (c *publicCertificateAuthorityRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *publicCertificateAuthorityGRPCClient) CreateExternalAccountKey(ctx context.Context, req *publiccapb.CreateExternalAccountKeyRequest, opts ...gax.CallOption) (*publiccapb.ExternalAccountKey, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateExternalAccountKey[0:len((*c.CallOptions).CreateExternalAccountKey):len((*c.CallOptions).CreateExternalAccountKey)], opts...)
 	var resp *publiccapb.ExternalAccountKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -329,10 +327,17 @@ func (c *publicCertificateAuthorityRESTClient) CreateExternalAccountKey(ctx cont
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/externalAccountKeys", req.GetParent())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateExternalAccountKey[0:len((*c.CallOptions).CreateExternalAccountKey):len((*c.CallOptions).CreateExternalAccountKey)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publiccapb.ExternalAccountKey{}
@@ -357,13 +362,13 @@ func (c *publicCertificateAuthorityRESTClient) CreateExternalAccountKey(ctx cont
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

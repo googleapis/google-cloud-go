@@ -91,6 +91,18 @@ var (
 				{Name: "value", Type: bigquery.StringFieldType, Repeated: true},
 			},
 		},
+		{
+			// range is a compound representation, but not quite a struct.
+			Name: "range_type",
+			Type: bigquery.RangeFieldType,
+			RangeElementType: &bigquery.RangeElementType{
+				Type: bigquery.TimestampFieldType,
+			},
+		},
+		{
+			Name: "json_type",
+			Type: bigquery.JSONFieldType,
+		},
 	}
 
 	// We currently follow proto2 rules here, hence the well known types getting treated as records.
@@ -270,6 +282,64 @@ var (
 		{
 			Name: "特別コラム",
 			Type: bigquery.StringFieldType,
+		},
+	}
+
+	ExampleEmployeeSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name: "id",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "username",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "given_name",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name:     "departments",
+			Type:     bigquery.StringFieldType,
+			Repeated: true,
+		},
+		{
+			Name: "salary",
+			Type: bigquery.IntegerFieldType,
+		},
+	}
+
+	DefaultValueSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name: "id",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "strcol",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name:                   "strcol_withdef",
+			Type:                   bigquery.StringFieldType,
+			DefaultValueExpression: "\"defaultvalue\"",
+		},
+		{
+			Name: "intcol",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name:                   "intcol_withdef",
+			Type:                   bigquery.IntegerFieldType,
+			DefaultValueExpression: "-99",
+		},
+		{
+			Name: "otherstr",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name:                   "otherstr_withdef",
+			Type:                   bigquery.StringFieldType,
+			DefaultValueExpression: "\"otherval\"",
 		},
 	}
 )

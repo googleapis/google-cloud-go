@@ -192,6 +192,9 @@ as a query.
 
 	iter = client.Collection("States").Documents(ctx)
 
+Firestore supports similarity search over embedding vectors. See [Query.FindNearest]
+for details.
+
 # Collection Group Partition Queries
 
 You can partition the documents of a Collection Group allowing for smaller subqueries.
@@ -247,5 +250,17 @@ directed to the emulator instead of the production Firestore service.
 To install and run the emulator and its environment variables, see the documentation
 at https://cloud.google.com/sdk/gcloud/reference/beta/emulators/firestore/. Once the
 emulator is running, set FIRESTORE_EMULATOR_HOST to the API endpoint.
+
+	// Set FIRESTORE_EMULATOR_HOST environment variable.
+	err := os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:9000")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Create client as usual.
+	client, err := firestore.NewClient(ctx, "my-project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer client.Close()
 */
 package firestore

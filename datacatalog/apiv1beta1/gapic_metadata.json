@@ -105,6 +105,11 @@
                 "RenameTagTemplateField"
               ]
             },
+            "RenameTagTemplateFieldEnumValue": {
+              "methods": [
+                "RenameTagTemplateFieldEnumValue"
+              ]
+            },
             "SearchCatalog": {
               "methods": [
                 "SearchCatalog"
@@ -243,6 +248,11 @@
             "RenameTagTemplateField": {
               "methods": [
                 "RenameTagTemplateField"
+              ]
+            },
+            "RenameTagTemplateFieldEnumValue": {
+              "methods": [
+                "RenameTagTemplateFieldEnumValue"
               ]
             },
             "SearchCatalog": {

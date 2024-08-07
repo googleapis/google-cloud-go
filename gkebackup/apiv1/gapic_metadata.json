@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "BackupForGKEClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateBackup": {
               "methods": [
                 "CreateBackup"
@@ -40,6 +45,11 @@
                 "DeleteBackupPlan"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteRestore": {
               "methods": [
                 "DeleteRestore"
@@ -55,9 +65,29 @@
                 "GetBackup"
               ]
             },
+            "GetBackupIndexDownloadUrl": {
+              "methods": [
+                "GetBackupIndexDownloadUrl"
+              ]
+            },
             "GetBackupPlan": {
               "methods": [
                 "GetBackupPlan"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetRestore": {
@@ -90,6 +120,16 @@
                 "ListBackups"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListRestorePlans": {
               "methods": [
                 "ListRestorePlans"
@@ -108,6 +148,191 @@
             "ListVolumeRestores": {
               "methods": [
                 "ListVolumeRestores"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateBackup": {
+              "methods": [
+                "UpdateBackup"
+              ]
+            },
+            "UpdateBackupPlan": {
+              "methods": [
+                "UpdateBackupPlan"
+              ]
+            },
+            "UpdateRestore": {
+              "methods": [
+                "UpdateRestore"
+              ]
+            },
+            "UpdateRestorePlan": {
+              "methods": [
+                "UpdateRestorePlan"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "BackupForGKEClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBackup": {
+              "methods": [
+                "CreateBackup"
+              ]
+            },
+            "CreateBackupPlan": {
+              "methods": [
+                "CreateBackupPlan"
+              ]
+            },
+            "CreateRestore": {
+              "methods": [
+                "CreateRestore"
+              ]
+            },
+            "CreateRestorePlan": {
+              "methods": [
+                "CreateRestorePlan"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteBackupPlan": {
+              "methods": [
+                "DeleteBackupPlan"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteRestore": {
+              "methods": [
+                "DeleteRestore"
+              ]
+            },
+            "DeleteRestorePlan": {
+              "methods": [
+                "DeleteRestorePlan"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupIndexDownloadUrl": {
+              "methods": [
+                "GetBackupIndexDownloadUrl"
+              ]
+            },
+            "GetBackupPlan": {
+              "methods": [
+                "GetBackupPlan"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRestore": {
+              "methods": [
+                "GetRestore"
+              ]
+            },
+            "GetRestorePlan": {
+              "methods": [
+                "GetRestorePlan"
+              ]
+            },
+            "GetVolumeBackup": {
+              "methods": [
+                "GetVolumeBackup"
+              ]
+            },
+            "GetVolumeRestore": {
+              "methods": [
+                "GetVolumeRestore"
+              ]
+            },
+            "ListBackupPlans": {
+              "methods": [
+                "ListBackupPlans"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRestorePlans": {
+              "methods": [
+                "ListRestorePlans"
+              ]
+            },
+            "ListRestores": {
+              "methods": [
+                "ListRestores"
+              ]
+            },
+            "ListVolumeBackups": {
+              "methods": [
+                "ListVolumeBackups"
+              ]
+            },
+            "ListVolumeRestores": {
+              "methods": [
+                "ListVolumeRestores"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateBackup": {

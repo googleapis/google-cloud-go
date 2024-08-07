@@ -1,18 +1,20 @@
 module cloud.google.com/go/internal/examples/mock
 
-go 1.17
+go 1.20
 
 require (
-	github.com/googleapis/gax-go/v2 v2.5.1
-	google.golang.org/genproto v0.0.0-20221010155953-15ba04fc1c0e
+	cloud.google.com/go/translate v1.10.3
+	github.com/googleapis/gax-go/v2 v2.13.0
 )
 
 require (
-	github.com/golang/protobuf v1.5.2 // indirect
-	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
-	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
-	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/api v0.98.0 // indirect
-	google.golang.org/grpc v1.49.0 // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
+	cloud.google.com/go/longrunning v0.5.6 // indirect
+	golang.org/x/net v0.27.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
+	google.golang.org/api v0.189.0 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240722135656-d784300faade // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240722135656-d784300faade // indirect
+	google.golang.org/grpc v1.64.1 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 )

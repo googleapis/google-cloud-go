@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/reservation/apiv1",
-    "version": "1.42.0",
+    "version": "1.62.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_CreateAssignment_sync",
       "title": "bigqueryreservation CreateAssignment Sample",
-      "description": "CreateAssignment creates an assignment object which allows the given project to submit jobs\nof a certain type using slots from the specified reservation.\n\nCurrently a\nresource (project, folder, organization) can only have one assignment per\neach (job_type, location) combination, and that reservation will be used\nfor all jobs of the matching type.\n\nDifferent assignments can be created on different levels of the\nprojects, folders or organization hierarchy.  During query execution,\nthe assignment is looked up at the project, folder and organization levels\nin that order. The first assignment found is applied to the query.\n\nWhen creating assignments, it does not matter if other assignments exist at\nhigher levels.\n\nExample: \n\n\tThe organization organizationA contains two projects, project1\n\tand project2.\n\n\tAssignments for all three entities (organizationA, project1, and\n\tproject2) could all be created and mapped to the same or different\n\treservations.\n\n“None” assignments represent an absence of the assignment. Projects\nassigned to None use on-demand pricing. To create a “None” assignment, use\n“none” as a reservation_id in the parent. Example parent: \nprojects/myproject/locations/US/reservations/none.\n\nReturns google.rpc.Code.PERMISSION_DENIED if user does not have\n‘bigquery.admin’ permissions on the project using the reservation\nand the project that owns this reservation.\n\nReturns google.rpc.Code.INVALID_ARGUMENT when location of the assignment\ndoes not match location of the reservation.",
+      "description": "CreateAssignment creates an assignment object which allows the given project to submit jobs\nof a certain type using slots from the specified reservation.\n\nCurrently a\nresource (project, folder, organization) can only have one assignment per\neach (job_type, location) combination, and that reservation will be used\nfor all jobs of the matching type.\n\nDifferent assignments can be created on different levels of the\nprojects, folders or organization hierarchy.  During query execution,\nthe assignment is looked up at the project, folder and organization levels\nin that order. The first assignment found is applied to the query.\n\nWhen creating assignments, it does not matter if other assignments exist at\nhigher levels.\n\nExample: \n\n* The organization `organizationA` contains two projects, `project1`\nand `project2`.\n* Assignments for all three entities (`organizationA`, `project1`, and\n`project2`) could all be created and mapped to the same or different\nreservations.\n\n\"None\" assignments represent an absence of the assignment. Projects\nassigned to None use on-demand pricing. To create a \"None\" assignment, use\n\"none\" as a reservation_id in the parent. Example parent: \n`projects/myproject/locations/US/reservations/none`.\n\nReturns `google.rpc.Code.PERMISSION_DENIED` if user does not have\n'bigquery.admin' permissions on the project using the reservation\nand the project that owns this reservation.\n\nReturns `google.rpc.Code.INVALID_ARGUMENT` when location of the assignment\ndoes not match location of the reservation.",
       "file": "Client/CreateAssignment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "reservationpb.Assignment",
+        "resultType": "*reservationpb.Assignment",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.reservation.v1.Client"
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "reservationpb.CapacityCommitment",
+        "resultType": "*reservationpb.CapacityCommitment",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.reservation.v1.Client"
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "reservationpb.Reservation",
+        "resultType": "*reservationpb.Reservation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.reservation.v1.Client"
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -152,7 +152,7 @@
     {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_DeleteAssignment_sync",
       "title": "bigqueryreservation DeleteAssignment Sample",
-      "description": "DeleteAssignment deletes a assignment. No expansion will happen.\n\nExample: \n\n\tOrganization organizationA contains two projects, project1 and\n\tproject2.\n\n\tReservation res1 exists and was created previously.\n\n\tCreateAssignment was used previously to define the following\n\tassociations between entities and reservations: <organizationA, res1>\n\tand <project1, res1>\n\nIn this example, deletion of the <organizationA, res1> assignment won’t\naffect the other assignment <project1, res1>. After said deletion,\nqueries from project1 will still use res1 while queries from\nproject2 will switch to use on-demand mode.",
+      "description": "DeleteAssignment deletes a assignment. No expansion will happen.\n\nExample: \n\n* Organization `organizationA` contains two projects, `project1` and\n`project2`.\n* Reservation `res1` exists and was created previously.\n* CreateAssignment was used previously to define the following\nassociations between entities and reservations: `<organizationA, res1>`\nand `<project1, res1>`\n\nIn this example, deletion of the `<organizationA, res1>` assignment won't\naffect the other assignment `<project1, res1>`. After said deletion,\nqueries from `project1` will still use `res1` while queries from\n`project2` will switch to use on-demand mode.",
       "file": "Client/DeleteAssignment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -197,7 +197,7 @@
     {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_DeleteCapacityCommitment_sync",
       "title": "bigqueryreservation DeleteCapacityCommitment Sample",
-      "description": "DeleteCapacityCommitment deletes a capacity commitment. Attempting to delete capacity commitment\nbefore its commitment_end_time will fail with the error code\ngoogle.rpc.Code.FAILED_PRECONDITION.",
+      "description": "DeleteCapacityCommitment deletes a capacity commitment. Attempting to delete capacity commitment\nbefore its commitment_end_time will fail with the error code\n`google.rpc.Code.FAILED_PRECONDITION`.",
       "file": "Client/DeleteCapacityCommitment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -242,7 +242,7 @@
     {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_DeleteReservation_sync",
       "title": "bigqueryreservation DeleteReservation Sample",
-      "description": "DeleteReservation deletes a reservation.\nReturns google.rpc.Code.FAILED_PRECONDITION when reservation has\nassignments.",
+      "description": "DeleteReservation deletes a reservation.\nReturns `google.rpc.Code.FAILED_PRECONDITION` when reservation has\nassignments.",
       "file": "Client/DeleteReservation/main.go",
       "language": "GO",
       "clientMethod": {
@@ -279,7 +279,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -307,7 +307,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "reservationpb.BiReservation",
+        "resultType": "*reservationpb.BiReservation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.reservation.v1.Client"
@@ -325,7 +325,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -353,7 +353,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "reservationpb.CapacityCommitment",
+        "resultType": "*reservationpb.CapacityCommitment",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.reservation.v1.Client"
@@ -371,7 +371,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -399,7 +399,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "reservationpb.Reservation",
+        "resultType": "*reservationpb.Reservation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.reservation.v1.Client"
@@ -417,7 +417,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -425,7 +425,7 @@
     {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_ListAssignments_sync",
       "title": "bigqueryreservation ListAssignments Sample",
-      "description": "ListAssignments lists assignments.\n\nOnly explicitly created assignments will be returned.\n\nExample: \n\n\tOrganization organizationA contains two projects, project1 and\n\tproject2.\n\n\tReservation res1 exists and was created previously.\n\n\tCreateAssignment was used previously to define the following\n\tassociations between entities and reservations: <organizationA, res1>\n\tand <project1, res1>\n\nIn this example, ListAssignments will just return the above two assignments\nfor reservation res1, and no expansion/merge will happen.\n\nThe wildcard “-” can be used for\nreservations in the request. In that case all assignments belongs to the\nspecified project and location will be listed.\n\nNote \"-\" cannot be used for projects nor locations.",
+      "description": "ListAssignments lists assignments.\n\nOnly explicitly created assignments will be returned.\n\nExample: \n\n* Organization `organizationA` contains two projects, `project1` and\n`project2`.\n* Reservation `res1` exists and was created previously.\n* CreateAssignment was used previously to define the following\nassociations between entities and reservations: `<organizationA, res1>`\nand `<project1, res1>`\n\nIn this example, ListAssignments will just return the above two assignments\nfor reservation `res1`, and no expansion/merge will happen.\n\nThe wildcard \"-\" can be used for\nreservations in the request. In that case all assignments belongs to the\nspecified project and location will be listed.\n\n**Note** \"-\" cannot be used for projects nor locations.",
       "file": "Client/ListAssignments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -463,7 +463,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -509,7 +509,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -555,7 +555,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -563,7 +563,7 @@
     {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_MergeCapacityCommitments_sync",
       "title": "bigqueryreservation MergeCapacityCommitments Sample",
-      "description": "MergeCapacityCommitments merges capacity commitments of the same plan into a single commitment.\n\nThe resulting capacity commitment has the greater commitment_end_time\nout of the to-be-merged capacity commitments.\n\nAttempting to merge capacity commitments of different plan will fail\nwith the error code google.rpc.Code.FAILED_PRECONDITION.",
+      "description": "MergeCapacityCommitments merges capacity commitments of the same plan into a single commitment.\n\nThe resulting capacity commitment has the greater commitment_end_time\nout of the to-be-merged capacity commitments.\n\nAttempting to merge capacity commitments of different plan will fail\nwith the error code `google.rpc.Code.FAILED_PRECONDITION`.",
       "file": "Client/MergeCapacityCommitments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -583,7 +583,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "reservationpb.CapacityCommitment",
+        "resultType": "*reservationpb.CapacityCommitment",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.reservation.v1.Client"
@@ -601,7 +601,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -629,7 +629,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "reservationpb.Assignment",
+        "resultType": "*reservationpb.Assignment",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.reservation.v1.Client"
@@ -647,7 +647,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -655,7 +655,7 @@
     {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_SearchAllAssignments_sync",
       "title": "bigqueryreservation SearchAllAssignments Sample",
-      "description": "SearchAllAssignments looks up assignments for a specified resource for a particular region.\nIf the request is about a project: \n\nAssignments created on the project will be returned if they exist.\n\nOtherwise assignments created on the closest ancestor will be\nreturned.\n\nAssignments for different JobTypes will all be returned.\n\nThe same logic applies if the request is about a folder.\n\nIf the request is about an organization, then assignments created on the\norganization will be returned (organization doesn’t have ancestors).\n\nComparing to ListAssignments, there are some behavior\ndifferences: \n\npermission on the assignee will be verified in this API.\n\nHierarchy lookup (project->folder->organization) happens in this API.\n\nParent here is projects/*/locations/*, instead of\nprojects/*/locations/*reservations/*.",
+      "description": "SearchAllAssignments looks up assignments for a specified resource for a particular region.\nIf the request is about a project: \n\n1. Assignments created on the project will be returned if they exist.\n2. Otherwise assignments created on the closest ancestor will be\nreturned.\n3. Assignments for different JobTypes will all be returned.\n\nThe same logic applies if the request is about a folder.\n\nIf the request is about an organization, then assignments created on the\norganization will be returned (organization doesn't have ancestors).\n\nComparing to ListAssignments, there are some behavior\ndifferences: \n\n1. permission on the assignee will be verified in this API.\n2. Hierarchy lookup (project->folder->organization) happens in this API.\n3. Parent here is `projects/*/locations/*`, instead of\n`projects/*/locations/*reservations/*`.",
       "file": "Client/SearchAllAssignments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -693,7 +693,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -701,7 +701,7 @@
     {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_SearchAssignments_sync",
       "title": "bigqueryreservation SearchAssignments Sample",
-      "description": "SearchAssignments deprecated: Looks up assignments for a specified resource for a particular\nregion. If the request is about a project: \n\nAssignments created on the project will be returned if they exist.\n\nOtherwise assignments created on the closest ancestor will be\nreturned.\n\nAssignments for different JobTypes will all be returned.\n\nThe same logic applies if the request is about a folder.\n\nIf the request is about an organization, then assignments created on the\norganization will be returned (organization doesn’t have ancestors).\n\nComparing to ListAssignments, there are some behavior\ndifferences: \n\npermission on the assignee will be verified in this API.\n\nHierarchy lookup (project->folder->organization) happens in this API.\n\nParent here is projects/*/locations/*, instead of\nprojects/*/locations/*reservations/*.\n\nNote \"-\" cannot be used for projects\nnor locations.\n\nDeprecated: SearchAssignments may be removed in a future version.",
+      "description": "SearchAssignments deprecated: Looks up assignments for a specified resource for a particular\nregion. If the request is about a project: \n\n1. Assignments created on the project will be returned if they exist.\n2. Otherwise assignments created on the closest ancestor will be\nreturned.\n3. Assignments for different JobTypes will all be returned.\n\nThe same logic applies if the request is about a folder.\n\nIf the request is about an organization, then assignments created on the\norganization will be returned (organization doesn't have ancestors).\n\nComparing to ListAssignments, there are some behavior\ndifferences: \n\n1. permission on the assignee will be verified in this API.\n2. Hierarchy lookup (project->folder->organization) happens in this API.\n3. Parent here is `projects/*/locations/*`, instead of\n`projects/*/locations/*reservations/*`.\n\n**Note** \"-\" cannot be used for projects\nnor locations.\n\n\nDeprecated: SearchAssignments may be removed in a future version.",
       "file": "Client/SearchAssignments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -739,7 +739,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -747,7 +747,7 @@
     {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_SplitCapacityCommitment_sync",
       "title": "bigqueryreservation SplitCapacityCommitment Sample",
-      "description": "SplitCapacityCommitment splits capacity commitment to two commitments of the same plan and\ncommitment_end_time.\n\nA common use case is to enable downgrading commitments.\n\nFor example, in order to downgrade from 10000 slots to 8000, you might\nsplit a 10000 capacity commitment into commitments of 2000 and 8000. Then,\nyou delete the first one after the commitment end time passes.",
+      "description": "SplitCapacityCommitment splits capacity commitment to two commitments of the same plan and\n`commitment_end_time`.\n\nA common use case is to enable downgrading commitments.\n\nFor example, in order to downgrade from 10000 slots to 8000, you might\nsplit a 10000 capacity commitment into commitments of 2000 and 8000. Then,\nyou delete the first one after the commitment end time passes.",
       "file": "Client/SplitCapacityCommitment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -767,7 +767,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "reservationpb.SplitCapacityCommitmentResponse",
+        "resultType": "*reservationpb.SplitCapacityCommitmentResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.reservation.v1.Client"
@@ -785,7 +785,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -793,7 +793,7 @@
     {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_UpdateAssignment_sync",
       "title": "bigqueryreservation UpdateAssignment Sample",
-      "description": "UpdateAssignment updates an existing assignment.\n\nOnly the priority field can be updated.",
+      "description": "UpdateAssignment updates an existing assignment.\n\nOnly the `priority` field can be updated.",
       "file": "Client/UpdateAssignment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -813,7 +813,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "reservationpb.Assignment",
+        "resultType": "*reservationpb.Assignment",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.reservation.v1.Client"
@@ -831,7 +831,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -839,7 +839,7 @@
     {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_UpdateBiReservation_sync",
       "title": "bigqueryreservation UpdateBiReservation Sample",
-      "description": "UpdateBiReservation updates a BI reservation.\n\nOnly fields specified in the field_mask are updated.\n\nA singleton BI reservation always exists with default size 0.\nIn order to reserve BI capacity it needs to be updated to an amount\ngreater than 0. In order to release BI capacity reservation size\nmust be set to 0.",
+      "description": "UpdateBiReservation updates a BI reservation.\n\nOnly fields specified in the `field_mask` are updated.\n\nA singleton BI reservation always exists with default size 0.\nIn order to reserve BI capacity it needs to be updated to an amount\ngreater than 0. In order to release BI capacity reservation size\nmust be set to 0.",
       "file": "Client/UpdateBiReservation/main.go",
       "language": "GO",
       "clientMethod": {
@@ -859,7 +859,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "reservationpb.BiReservation",
+        "resultType": "*reservationpb.BiReservation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.reservation.v1.Client"
@@ -877,7 +877,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -885,7 +885,7 @@
     {
       "regionTag": "bigqueryreservation_v1_generated_ReservationService_UpdateCapacityCommitment_sync",
       "title": "bigqueryreservation UpdateCapacityCommitment Sample",
-      "description": "UpdateCapacityCommitment updates an existing capacity commitment.\n\nOnly plan and renewal_plan fields can be updated.\n\nPlan can only be changed to a plan of a longer commitment period.\nAttempting to change to a plan with shorter commitment period will fail\nwith the error code google.rpc.Code.FAILED_PRECONDITION.",
+      "description": "UpdateCapacityCommitment updates an existing capacity commitment.\n\nOnly `plan` and `renewal_plan` fields can be updated.\n\nPlan can only be changed to a plan of a longer commitment period.\nAttempting to change to a plan with shorter commitment period will fail\nwith the error code `google.rpc.Code.FAILED_PRECONDITION`.",
       "file": "Client/UpdateCapacityCommitment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -905,7 +905,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "reservationpb.CapacityCommitment",
+        "resultType": "*reservationpb.CapacityCommitment",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.reservation.v1.Client"
@@ -923,7 +923,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -951,7 +951,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "reservationpb.Reservation",
+        "resultType": "*reservationpb.Reservation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.reservation.v1.Client"
@@ -969,7 +969,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]

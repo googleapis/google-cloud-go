@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListVoices": {
               "methods": [
                 "ListVoices"
@@ -18,6 +28,75 @@
             "SynthesizeSpeech": {
               "methods": [
                 "SynthesizeSpeech"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListVoices": {
+              "methods": [
+                "ListVoices"
+              ]
+            },
+            "SynthesizeSpeech": {
+              "methods": [
+                "SynthesizeSpeech"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "TextToSpeechLongAudioSynthesize": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TextToSpeechLongAudioSynthesizeClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SynthesizeLongAudio": {
+              "methods": [
+                "SynthesizeLongAudio"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "TextToSpeechLongAudioSynthesizeClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SynthesizeLongAudio": {
+              "methods": [
+                "SynthesizeLongAudio"
               ]
             }
           }

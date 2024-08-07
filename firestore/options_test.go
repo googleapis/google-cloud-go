@@ -17,7 +17,7 @@ package firestore
 import (
 	"testing"
 
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 )
 
 func TestProcessPreconditionsForVerify(t *testing.T) {
@@ -36,11 +36,11 @@ func TestProcessPreconditionsForVerify(t *testing.T) {
 		},
 		{
 			in:   []Precondition{Exists},
-			want: &pb.Precondition{ConditionType: &pb.Precondition_Exists{true}},
+			want: &pb.Precondition{ConditionType: &pb.Precondition_Exists{Exists: true}},
 		},
 		{
 			in:   []Precondition{LastUpdateTime(aTime)},
-			want: &pb.Precondition{ConditionType: &pb.Precondition_UpdateTime{aTimestamp}},
+			want: &pb.Precondition{ConditionType: &pb.Precondition_UpdateTime{UpdateTime: aTimestamp}},
 		},
 		{
 			in:      []Precondition{Exists, LastUpdateTime(aTime)},
@@ -79,11 +79,11 @@ func TestProcessPreconditionsForDelete(t *testing.T) {
 		},
 		{
 			in:   []Precondition{Exists},
-			want: &pb.Precondition{ConditionType: &pb.Precondition_Exists{true}},
+			want: &pb.Precondition{ConditionType: &pb.Precondition_Exists{Exists: true}},
 		},
 		{
 			in:   []Precondition{LastUpdateTime(aTime)},
-			want: &pb.Precondition{ConditionType: &pb.Precondition_UpdateTime{aTimestamp}},
+			want: &pb.Precondition{ConditionType: &pb.Precondition_UpdateTime{UpdateTime: aTimestamp}},
 		},
 		{
 			in:      []Precondition{Exists, LastUpdateTime(aTime)},
@@ -114,11 +114,11 @@ func TestProcessPreconditionsForUpdate(t *testing.T) {
 	}{
 		{
 			in:   nil,
-			want: &pb.Precondition{ConditionType: &pb.Precondition_Exists{true}},
+			want: &pb.Precondition{ConditionType: &pb.Precondition_Exists{Exists: true}},
 		},
 		{
 			in:   []Precondition{},
-			want: &pb.Precondition{ConditionType: &pb.Precondition_Exists{true}},
+			want: &pb.Precondition{ConditionType: &pb.Precondition_Exists{Exists: true}},
 		},
 
 		{
@@ -127,7 +127,7 @@ func TestProcessPreconditionsForUpdate(t *testing.T) {
 		},
 		{
 			in:   []Precondition{LastUpdateTime(aTime)},
-			want: &pb.Precondition{ConditionType: &pb.Precondition_UpdateTime{aTimestamp}},
+			want: &pb.Precondition{ConditionType: &pb.Precondition_UpdateTime{UpdateTime: aTimestamp}},
 		},
 		{
 			in:      []Precondition{Exists, LastUpdateTime(aTime)},

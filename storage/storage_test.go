@@ -36,7 +36,7 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -118,6 +118,16 @@ func TestV4HeaderSanitization(t *testing.T) {
 			desc: "multiple spaces in value are stripped down to one",
 			in:   []string{"foo:bar        gaz"},
 			want: []string{"foo:bar gaz"},
+		},
+		{
+			desc: "headers with colons in value are preserved",
+			in:   []string{"x-goog-meta-start-time: 2023-02-10T02:00:00Z"},
+			want: []string{"x-goog-meta-start-time:2023-02-10T02:00:00Z"},
+		},
+		{
+			desc: "headers that end in a colon in value are preserved",
+			in:   []string{"x-goog-meta-start-time: 2023-02-10T02:"},
+			want: []string{"x-goog-meta-start-time:2023-02-10T02:"},
 		},
 	}
 	for _, test := range tests {
@@ -492,6 +502,7 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 			if err != nil {
 				s.Fatal(err)
 			}
+
 			if got != test.want {
 				s.Fatalf("\n\tgot:\t%v\n\twant:\t%v", got, test.want)
 			}
@@ -942,6 +953,10 @@ func TestConditionErrors(t *testing.T) {
 	}
 }
 
+func expectedAttempts(value int) *int {
+	return &value
+}
+
 // Test that ObjectHandle.Retryer correctly configures the retry configuration
 // in the ObjectHandle.
 func TestObjectRetryer(t *testing.T) {
@@ -966,6 +981,7 @@ func TestObjectRetryer(t *testing.T) {
 						Max:        30 * time.Second,
 						Multiplier: 3,
 					}),
+					WithMaxAttempts(5),
 					WithPolicy(RetryAlways),
 					WithErrorFunc(func(err error) bool { return false }))
 			},
@@ -975,6 +991,7 @@ func TestObjectRetryer(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
+				maxAttempts: expectedAttempts(5),
 				policy:      RetryAlways,
 				shouldRetry: func(err error) bool { return false },
 			},
@@ -999,6 +1016,15 @@ func TestObjectRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy: RetryNever,
+			},
+		},
+		{
+			name: "set max retry attempts only",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(WithMaxAttempts(11))
+			},
+			want: &retryConfig{
+				maxAttempts: expectedAttempts(11),
 			},
 		},
 		{
@@ -1052,6 +1078,7 @@ func TestClientSetRetry(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				}),
+				WithMaxAttempts(5),
 				WithPolicy(RetryAlways),
 				WithErrorFunc(func(err error) bool { return false }),
 			},
@@ -1061,6 +1088,7 @@ func TestClientSetRetry(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
+				maxAttempts: expectedAttempts(5),
 				policy:      RetryAlways,
 				shouldRetry: func(err error) bool { return false },
 			},
@@ -1087,6 +1115,15 @@ func TestClientSetRetry(t *testing.T) {
 			},
 		},
 		{
+			name: "set max retry attempts only",
+			clientOptions: []RetryOption{
+				WithMaxAttempts(7),
+			},
+			want: &retryConfig{
+				maxAttempts: expectedAttempts(7),
+			},
+		},
+		{
 			name: "set ErrorFunc only",
 			clientOptions: []RetryOption{
 				WithErrorFunc(func(err error) bool { return false }),
@@ -1098,7 +1135,7 @@ func TestClientSetRetry(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
-			c, err := NewClient(context.Background())
+			c, err := NewClient(context.Background(), option.WithoutAuthentication())
 			if err != nil {
 				t.Fatalf("NewClient: %v", err)
 			}
@@ -1139,10 +1176,12 @@ func TestRetryer(t *testing.T) {
 			name: "object retryer configures retry",
 			objectOptions: []RetryOption{
 				WithPolicy(RetryAlways),
+				WithMaxAttempts(5),
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
 				shouldRetry: ShouldRetry,
+				maxAttempts: expectedAttempts(5),
 				policy:      RetryAlways,
 			},
 		},
@@ -1155,6 +1194,7 @@ func TestRetryer(t *testing.T) {
 					Multiplier: 6,
 				}),
 				WithPolicy(RetryAlways),
+				WithMaxAttempts(11),
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
@@ -1164,6 +1204,7 @@ func TestRetryer(t *testing.T) {
 					Multiplier: 6,
 				},
 				shouldRetry: ShouldRetry,
+				maxAttempts: expectedAttempts(11),
 				policy:      RetryAlways,
 			},
 		},
@@ -1176,6 +1217,7 @@ func TestRetryer(t *testing.T) {
 					Multiplier: 6,
 				}),
 				WithPolicy(RetryAlways),
+				WithMaxAttempts(7),
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
@@ -1185,6 +1227,7 @@ func TestRetryer(t *testing.T) {
 					Multiplier: 6,
 				},
 				shouldRetry: ShouldRetry,
+				maxAttempts: expectedAttempts(7),
 				policy:      RetryAlways,
 			},
 		},
@@ -1195,10 +1238,12 @@ func TestRetryer(t *testing.T) {
 			},
 			objectOptions: []RetryOption{
 				WithPolicy(RetryNever),
+				WithMaxAttempts(5),
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
+				maxAttempts: expectedAttempts(5),
 				shouldRetry: ShouldRetry,
 			},
 		},
@@ -1209,10 +1254,12 @@ func TestRetryer(t *testing.T) {
 			},
 			objectOptions: []RetryOption{
 				WithPolicy(RetryNever),
+				WithMaxAttempts(11),
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
+				maxAttempts: expectedAttempts(11),
 				shouldRetry: ShouldRetry,
 			},
 		},
@@ -1232,9 +1279,11 @@ func TestRetryer(t *testing.T) {
 					Max:     time.Microsecond,
 				}),
 				WithErrorFunc(ShouldRetry),
+				WithMaxAttempts(5),
 			},
 			want: &retryConfig{
 				policy:      RetryAlways,
+				maxAttempts: expectedAttempts(5),
 				shouldRetry: ShouldRetry,
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
@@ -1269,6 +1318,7 @@ func TestRetryer(t *testing.T) {
 			bucketOptions: []RetryOption{
 				WithPolicy(RetryNever),
 				WithErrorFunc(ShouldRetry),
+				WithMaxAttempts(5),
 			},
 			objectOptions: []RetryOption{
 				WithBackoff(gax.Backoff{
@@ -1278,6 +1328,7 @@ func TestRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
+				maxAttempts: expectedAttempts(5),
 				shouldRetry: ShouldRetry,
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
@@ -1307,7 +1358,7 @@ func TestRetryer(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
 			ctx := context.Background()
-			c, err := NewClient(ctx)
+			c, err := NewClient(ctx, option.WithoutAuthentication())
 			if err != nil {
 				t.Fatalf("NewClient: %v", err)
 			}
@@ -1747,6 +1798,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 				TimeCreated:             "2019-03-31T19:32:10Z",
 				TimeDeleted:             "2019-03-31T19:33:39Z",
 				TemporaryHold:           true,
+				ComponentCount:          2,
 			},
 			want: &ObjectAttrs{
 				Bucket:                  "Test",
@@ -1763,6 +1815,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 				RetentionExpirationTime: time.Date(2019, 3, 31, 19, 33, 36, 0, time.UTC),
 				Size:                    1 << 20,
 				TemporaryHold:           true,
+				ComponentCount:          2,
 			},
 		},
 	}
@@ -1833,6 +1886,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 				CreateTime:          timestamppb.New(now),
 				DeleteTime:          timestamppb.New(now),
 				TemporaryHold:       true,
+				ComponentCount:      2,
 			},
 			want: &ObjectAttrs{
 				Bucket:                  "Test",
@@ -1848,6 +1902,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 				RetentionExpirationTime: now,
 				Size:                    1 << 20,
 				TemporaryHold:           true,
+				ComponentCount:          2,
 			},
 		},
 	}
@@ -1988,9 +2043,20 @@ func TestAttrToFieldMapCoverage(t *testing.T) {
 	}
 }
 
+func TestEmulatorWithCredentialsFile(t *testing.T) {
+	t.Setenv("STORAGE_EMULATOR_HOST", "localhost:1234")
+
+	client, err := NewClient(context.Background(), option.WithCredentialsFile("/path/to/key.json"))
+	if err != nil {
+		t.Fatalf("failed creating a client with credentials file when running agains an emulator: %v", err)
+		return
+	}
+	client.Close()
+}
+
 // Create a client using a combination of custom endpoint and
 // STORAGE_EMULATOR_HOST env variable and verify that raw.BasePath (used
-// for writes) and readHost and scheme (used for reads) are all set correctly.
+// for writes) and xmlHost and scheme (used for reads) are all set correctly.
 func TestWithEndpoint(t *testing.T) {
 	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
 	testCases := []struct {
@@ -1998,7 +2064,7 @@ func TestWithEndpoint(t *testing.T) {
 		CustomEndpoint      string
 		StorageEmulatorHost string
 		WantRawBasePath     string
-		WantReadHost        string
+		WantXMLHost         string
 		WantScheme          string
 	}{
 		{
@@ -2006,7 +2072,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "",
 			WantRawBasePath:     "https://storage.googleapis.com/storage/v1/",
-			WantReadHost:        "storage.googleapis.com",
+			WantXMLHost:         "storage.googleapis.com",
 			WantScheme:          "https",
 		},
 		{
@@ -2014,7 +2080,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "https://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "",
 			WantRawBasePath:     "https://fake.gcs.com:8080/storage/v1",
-			WantReadHost:        "fake.gcs.com:8080",
+			WantXMLHost:         "fake.gcs.com:8080",
 			WantScheme:          "https",
 		},
 		{
@@ -2022,7 +2088,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "http://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "",
 			WantRawBasePath:     "http://fake.gcs.com:8080/storage/v1",
-			WantReadHost:        "fake.gcs.com:8080",
+			WantXMLHost:         "fake.gcs.com:8080",
 			WantScheme:          "http",
 		},
 		{
@@ -2030,7 +2096,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "http://emu.com",
 			WantRawBasePath:     "http://emu.com/storage/v1/",
-			WantReadHost:        "emu.com",
+			WantXMLHost:         "emu.com",
 			WantScheme:          "http",
 		},
 		{
@@ -2038,7 +2104,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "emu.com",
 			WantRawBasePath:     "http://emu.com/storage/v1/",
-			WantReadHost:        "emu.com",
+			WantXMLHost:         "emu.com",
 			WantScheme:          "http",
 		},
 		{
@@ -2046,7 +2112,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "localhost:9000",
 			WantRawBasePath:     "http://localhost:9000/storage/v1/",
-			WantReadHost:        "localhost:9000",
+			WantXMLHost:         "localhost:9000",
 			WantScheme:          "http",
 		},
 		{
@@ -2054,7 +2120,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "https://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "http://emu.com",
 			WantRawBasePath:     "https://fake.gcs.com:8080/storage/v1",
-			WantReadHost:        "fake.gcs.com:8080",
+			WantXMLHost:         "fake.gcs.com:8080",
 			WantScheme:          "https",
 		},
 		{
@@ -2062,7 +2128,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "http://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "https://emu.com",
 			WantRawBasePath:     "http://fake.gcs.com:8080/storage/v1",
-			WantReadHost:        "fake.gcs.com:8080",
+			WantXMLHost:         "fake.gcs.com:8080",
 			WantScheme:          "http",
 		},
 		{
@@ -2070,7 +2136,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "http://localhost:8080/storage/v1",
 			StorageEmulatorHost: "https://localhost:9000",
 			WantRawBasePath:     "http://localhost:8080/storage/v1",
-			WantReadHost:        "localhost:8080",
+			WantXMLHost:         "localhost:8080",
 			WantScheme:          "http",
 		},
 		{
@@ -2078,14 +2144,14 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "http://localhost:8080/storage/v1",
 			StorageEmulatorHost: "localhost:9000",
 			WantRawBasePath:     "http://localhost:8080/storage/v1",
-			WantReadHost:        "localhost:8080",
+			WantXMLHost:         "localhost:8080",
 			WantScheme:          "http",
 		},
 	}
 	ctx := context.Background()
 	for _, tc := range testCases {
 		os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
-		c, err := NewClient(ctx, option.WithEndpoint(tc.CustomEndpoint))
+		c, err := NewClient(ctx, option.WithEndpoint(tc.CustomEndpoint), option.WithoutAuthentication())
 		if err != nil {
 			t.Fatalf("error creating client: %v", err)
 		}
@@ -2093,8 +2159,8 @@ func TestWithEndpoint(t *testing.T) {
 		if c.raw.BasePath != tc.WantRawBasePath {
 			t.Errorf("%s: raw.BasePath not set correctly\n\tgot %v, want %v", tc.desc, c.raw.BasePath, tc.WantRawBasePath)
 		}
-		if c.readHost != tc.WantReadHost {
-			t.Errorf("%s: readHost not set correctly\n\tgot %v, want %v", tc.desc, c.readHost, tc.WantReadHost)
+		if c.xmlHost != tc.WantXMLHost {
+			t.Errorf("%s: xmlHost not set correctly\n\tgot %v, want %v", tc.desc, c.xmlHost, tc.WantXMLHost)
 		}
 		if c.scheme != tc.WantScheme {
 			t.Errorf("%s: scheme not set correctly\n\tgot %v, want %v", tc.desc, c.scheme, tc.WantScheme)
@@ -2106,7 +2172,7 @@ func TestWithEndpoint(t *testing.T) {
 // Create a client using a combination of custom endpoint and STORAGE_EMULATOR_HOST
 // env variable and verify that the client hits the correct endpoint for several
 // different operations performe in sequence.
-// Verifies also that raw.BasePath, readHost and scheme are not changed
+// Verifies also that raw.BasePath, xmlHost and scheme are not changed
 // after running the operations.
 func TestOperationsWithEndpoint(t *testing.T) {
 	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
@@ -2188,7 +2254,7 @@ func TestOperationsWithEndpoint(t *testing.T) {
 					return
 				}
 				originalRawBasePath := c.raw.BasePath
-				originalReadHost := c.readHost
+				originalXMLHost := c.xmlHost
 				originalScheme := c.scheme
 
 				operations := []struct {
@@ -2272,9 +2338,9 @@ func TestOperationsWithEndpoint(t *testing.T) {
 					t.Errorf("raw.BasePath changed\n\tgot:\t\t%v\n\toriginal:\t%v",
 						c.raw.BasePath, originalRawBasePath)
 				}
-				if c.readHost != originalReadHost {
-					t.Errorf("readHost changed\n\tgot:\t\t%v\n\toriginal:\t%v",
-						c.readHost, originalReadHost)
+				if c.xmlHost != originalXMLHost {
+					t.Errorf("xmlHost changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+						c.xmlHost, originalXMLHost)
 				}
 				if c.scheme != originalScheme {
 					t.Errorf("scheme changed\n\tgot:\t\t%v\n\toriginal:\t%v",
@@ -2311,6 +2377,7 @@ func TestSignedURLOptionsClone(t *testing.T) {
 		Style:           VirtualHostedStyle(),
 		Insecure:        true,
 		Scheme:          SigningSchemeV2,
+		Hostname:        "localhost:8000",
 	}
 
 	// Check that all fields are set to a non-zero value, so we can check that
@@ -2334,7 +2401,7 @@ func TestSignedURLOptionsClone(t *testing.T) {
 		return reflect.ValueOf(a) == reflect.ValueOf(b)
 	}
 
-	if diff := cmp.Diff(opts, optsClone, cmp.Comparer(signBytesComp)); diff != "" {
+	if diff := cmp.Diff(opts, optsClone, cmp.Comparer(signBytesComp), cmp.AllowUnexported(SignedURLOptions{})); diff != "" {
 		t.Errorf("clone does not match (original: -, cloned: +):\n%s", diff)
 	}
 }
@@ -2354,6 +2421,57 @@ func TestParseProjectNumber(t *testing.T) {
 		if got := parseProjectNumber(tst.input); got != tst.want {
 			t.Errorf("For %q: got %v, expected %v", tst.input, got, tst.want)
 		}
+	}
+}
+
+func TestObjectValidate(t *testing.T) {
+	for _, c := range []struct {
+		name        string
+		bucket      string
+		object      string
+		wantSuccess bool
+	}{
+		{
+			name:        "valid object",
+			bucket:      "my-bucket",
+			object:      "my-object",
+			wantSuccess: true,
+		},
+		{
+			name:        "empty bucket name",
+			bucket:      "",
+			object:      "my-object",
+			wantSuccess: false,
+		},
+		{
+			name:        "empty object name",
+			bucket:      "my-bucket",
+			object:      "",
+			wantSuccess: false,
+		},
+		{
+			name:        "invalid utf-8",
+			bucket:      "my-bucket",
+			object:      "\xc3\x28",
+			wantSuccess: false,
+		},
+		{
+			name:        "object name .",
+			bucket:      "my-bucket",
+			object:      ".",
+			wantSuccess: false,
+		},
+	} {
+		t.Run(c.name, func(r *testing.T) {
+			b := &BucketHandle{name: c.bucket}
+			err := b.Object(c.object).validate()
+			if c.wantSuccess && err != nil {
+				r.Errorf("want success, got error %v", err)
+			}
+			if !c.wantSuccess && err == nil {
+				r.Errorf("want error, got nil")
+			}
+		})
 	}
 }
 

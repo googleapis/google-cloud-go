@@ -1,19 +1,19 @@
 module cloud.google.com/go/internal/aliasgen
 
-go 1.19
+go 1.20
 
 require (
-	github.com/google/go-cmp v0.5.8
-	golang.org/x/tools v0.1.12
-	google.golang.org/grpc v1.49.0
+	github.com/google/go-cmp v0.6.0
+	golang.org/x/tools v0.22.0
+	google.golang.org/grpc v1.64.1
 )
 
 require (
-	github.com/golang/protobuf v1.5.2 // indirect
-	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
-	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
-	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
-	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20221010155953-15ba04fc1c0e // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
+	golang.org/x/mod v0.18.0 // indirect
+	golang.org/x/net v0.27.0 // indirect
+	golang.org/x/sync v0.7.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240722135656-d784300faade // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 )

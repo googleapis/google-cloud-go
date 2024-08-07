@@ -24,8 +24,8 @@ import (
 	"strings"
 	"sync"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/fields"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // A FieldPath is a non-empty sequence of non-empty fields that reference a value.
@@ -149,7 +149,7 @@ func setAtPath(m map[string]*pb.Value, fp FieldPath, val *pb.Value) {
 	} else {
 		v, ok := m[fp[0]]
 		if !ok {
-			v = &pb.Value{ValueType: &pb.Value_MapValue{&pb.MapValue{Fields: map[string]*pb.Value{}}}}
+			v = &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: map[string]*pb.Value{}}}}
 			m[fp[0]] = v
 		}
 		// The type assertion below cannot fail, because setAtPath is only called

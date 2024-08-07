@@ -24,10 +24,10 @@ import (
 	"testing"
 
 	"cloud.google.com/go/bigtable"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/bttest"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
 	"google.golang.org/api/option"
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -36,7 +36,8 @@ import (
 
 const (
 	buffer           = 1024 * 1024
-	tableName        = "table"
+	tableName        = "projects/my-project/instances/my-instance/tables/table"
+	tableID          = "table"
 	columnFamily     = "cf"
 	testProxyClient  = "testProxyClient"
 	testProxyAddress = "localhost:9990"
@@ -70,7 +71,7 @@ func populateTable(bts *bttest.Server) error {
 	}
 	defer adminClient.Close()
 
-	if err := adminClient.CreateTable(ctx, tableName); err != nil {
+	if err := adminClient.CreateTable(ctx, tableID); err != nil {
 		return fmt.Errorf("testproxy setup: can't create table: %v", err)
 	}
 
@@ -78,19 +79,19 @@ func populateTable(bts *bttest.Server) error {
 	count := 3
 	for i := 0; i < count; i++ {
 		cfName := fmt.Sprintf("%s%d", columnFamily, i)
-		if err := adminClient.CreateColumnFamily(ctx, tableName, cfName); err != nil {
+		if err := adminClient.CreateColumnFamily(ctx, tableID, cfName); err != nil {
 			return fmt.Errorf("testproxy setup: can't create column family: %s", cfName)
 		}
 	}
 
-	dataClient, err := bigtable.NewClient(ctx, "client", "instance",
+	dataClient, err := bigtable.NewClientWithConfig(ctx, "client", "instance", bigtable.ClientConfig{MetricsProvider: bigtable.NoopMetricsProvider{}},
 		option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
 	if err != nil {
 		return fmt.Errorf("testproxy setup: can't create Bigtable client: %v", err)
 	}
 	defer dataClient.Close()
 
-	t := dataClient.Open(tableName)
+	t := dataClient.Open(tableID)
 
 	for fc := 0; fc < count; fc++ {
 		for cc := count; cc > 0; cc-- {
@@ -193,8 +194,7 @@ func TestCreateAndRemoveClient(t *testing.T) {
 	t.Log("testproxy test: client created successfully in test proxy")
 
 	_, err = client.RemoveClient(ctx, &pb.RemoveClientRequest{
-		ClientId:  cid,
-		CancelAll: true,
+		ClientId: cid,
 	})
 
 	if err != nil {
@@ -260,8 +260,8 @@ func TestBulkMutateRows(t *testing.T) {
 		t.Errorf("testproxy test: BulkMutateRows() didn't return OK; got %v", resp.Status.Code)
 	}
 
-	if len(resp.Entry) != 0 {
-		t.Errorf("testproxy test: BulkMutateRows() returned individual errors; got %v", resp.Entry)
+	if len(resp.Entries) != 0 {
+		t.Errorf("testproxy test: BulkMutateRows() returned individual errors; got %v", resp.Entries)
 	}
 }
 
@@ -315,8 +315,8 @@ func TestReadRows(t *testing.T) {
 		t.Errorf("testproxy test: ReadRows() didn't return OK; got %v", resp.Status.Code)
 	}
 
-	if len(resp.Row) != 1 {
-		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Row))
+	if len(resp.Rows) != 1 {
+		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Rows))
 
 	}
 }
@@ -388,8 +388,8 @@ func TestSampleRowKeys(t *testing.T) {
 		t.Errorf("testproxy test: SampleRowKeys() didn't return OK; got %v", resp.Status.Code)
 	}
 
-	if len(resp.Sample) != 1 {
-		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Sample))
+	if len(resp.Samples) != 1 {
+		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Samples))
 	}
 }
 

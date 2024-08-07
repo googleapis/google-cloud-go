@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,62 +58,6 @@ func ExampleNewHubRESTClient() {
 	_ = c
 }
 
-func ExampleHubClient_ListHubs() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkconnectivity.NewHubClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &networkconnectivitypb.ListHubsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#ListHubsRequest.
-	}
-	it := c.ListHubs(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleHubClient_GetHub() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkconnectivity.NewHubClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &networkconnectivitypb.GetHubRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#GetHubRequest.
-	}
-	resp, err := c.GetHub(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleHubClient_CreateHub() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -144,7 +88,7 @@ func ExampleHubClient_CreateHub() {
 	_ = resp
 }
 
-func ExampleHubClient_UpdateHub() {
+func ExampleHubClient_CreateSpoke() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -157,11 +101,11 @@ func ExampleHubClient_UpdateHub() {
 	}
 	defer c.Close()
 
-	req := &networkconnectivitypb.UpdateHubRequest{
+	req := &networkconnectivitypb.CreateSpokeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#UpdateHubRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#CreateSpokeRequest.
 	}
-	op, err := c.UpdateHub(ctx, req)
+	op, err := c.CreateSpoke(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -202,6 +146,121 @@ func ExampleHubClient_DeleteHub() {
 	}
 }
 
+func ExampleHubClient_DeleteSpoke() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkconnectivity.NewHubClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkconnectivitypb.DeleteSpokeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#DeleteSpokeRequest.
+	}
+	op, err := c.DeleteSpoke(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleHubClient_GetHub() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkconnectivity.NewHubClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkconnectivitypb.GetHubRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#GetHubRequest.
+	}
+	resp, err := c.GetHub(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleHubClient_GetSpoke() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkconnectivity.NewHubClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkconnectivitypb.GetSpokeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#GetSpokeRequest.
+	}
+	resp, err := c.GetSpoke(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleHubClient_ListHubs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkconnectivity.NewHubClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkconnectivitypb.ListHubsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#ListHubsRequest.
+	}
+	it := c.ListHubs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*networkconnectivitypb.ListHubsResponse)
+	}
+}
+
 func ExampleHubClient_ListSpokes() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -230,10 +289,16 @@ func ExampleHubClient_ListSpokes() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*networkconnectivitypb.ListSpokesResponse)
 	}
 }
 
-func ExampleHubClient_GetSpoke() {
+func ExampleHubClient_UpdateHub() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -246,36 +311,11 @@ func ExampleHubClient_GetSpoke() {
 	}
 	defer c.Close()
 
-	req := &networkconnectivitypb.GetSpokeRequest{
+	req := &networkconnectivitypb.UpdateHubRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#GetSpokeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#UpdateHubRequest.
 	}
-	resp, err := c.GetSpoke(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleHubClient_CreateSpoke() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkconnectivity.NewHubClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &networkconnectivitypb.CreateSpokeRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#CreateSpokeRequest.
-	}
-	op, err := c.CreateSpoke(ctx, req)
+	op, err := c.UpdateHub(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -316,32 +356,4 @@ func ExampleHubClient_UpdateSpoke() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleHubClient_DeleteSpoke() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkconnectivity.NewHubClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &networkconnectivitypb.DeleteSpokeRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#DeleteSpokeRequest.
-	}
-	op, err := c.DeleteSpoke(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }

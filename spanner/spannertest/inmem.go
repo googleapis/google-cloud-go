@@ -60,19 +60,18 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
-	anypb "github.com/golang/protobuf/ptypes/any"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	structpb "github.com/golang/protobuf/ptypes/struct"
-	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
-	lropb "google.golang.org/genproto/googleapis/longrunning"
-	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
+	lropb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	adminpb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
+	"cloud.google.com/go/spanner/apiv1/spannerpb"
+	anypb "google.golang.org/protobuf/types/known/anypb"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
@@ -139,11 +138,7 @@ func timestampProto(t time.Time) *timestamppb.Timestamp {
 	if t.IsZero() {
 		return nil
 	}
-	ts, err := ptypes.TimestampProto(t)
-	if err != nil {
-		return nil
-	}
-	return ts
+	return timestamppb.New(t)
 }
 
 // lro represents a Long-Running Operation, generally a schema change.
@@ -324,7 +319,7 @@ func (l *lro) Run(s *server, stmts []spansql.DDLStmt) {
 		if st := s.runOneDDL(ctx, stmt); st.Code() != codes.OK {
 			l.mu.Lock()
 			l.state.Done = true
-			l.state.Result = &lropb.Operation_Error{st.Proto()}
+			l.state.Result = &lropb.Operation_Error{Error: st.Proto()}
 			l.mu.Unlock()
 			return
 		}
@@ -332,7 +327,7 @@ func (l *lro) Run(s *server, stmts []spansql.DDLStmt) {
 
 	l.mu.Lock()
 	l.state.Done = true
-	l.state.Result = &lropb.Operation_Response{&anypb.Any{}}
+	l.state.Result = &lropb.Operation_Response{Response: &anypb.Any{}}
 	l.mu.Unlock()
 }
 
@@ -352,11 +347,20 @@ func (s *server) GetDatabaseDdl(ctx context.Context, req *adminpb.GetDatabaseDdl
 
 func (s *server) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest) (*spannerpb.Session, error) {
 	//s.logf("CreateSession(%q)", req.Database)
-	return s.newSession(), nil
+	isMultiplexed := false
+	if req.Session != nil && req.Session.Multiplexed {
+		isMultiplexed = true
+	}
+	sess := s.newSession(isMultiplexed)
+
+	return sess, nil
 }
 
-func (s *server) newSession() *spannerpb.Session {
+func (s *server) newSession(isMultiplexed bool) *spannerpb.Session {
 	id := genRandomSession()
+	if isMultiplexed {
+		id = "multiplexed-" + id
+	}
 	now := time.Now()
 	sess := &session{
 		name:         id,
@@ -364,13 +368,15 @@ func (s *server) newSession() *spannerpb.Session {
 		lastUse:      now,
 		transactions: make(map[string]*transaction),
 	}
+
 	sess.ctx, sess.cancel = context.WithCancel(context.Background())
 
 	s.mu.Lock()
 	s.sessions[id] = sess
 	s.mu.Unlock()
-
-	return sess.Proto()
+	sesspb := sess.Proto()
+	sesspb.Multiplexed = isMultiplexed
+	return sesspb
 }
 
 func (s *server) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest) (*spannerpb.BatchCreateSessionsResponse, error) {
@@ -378,7 +384,7 @@ func (s *server) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCr
 
 	var sessions []*spannerpb.Session
 	for i := int32(0); i < req.GetSessionCount(); i++ {
-		sessions = append(sessions, s.newSession())
+		sessions = append(sessions, s.newSession(false))
 	}
 
 	return &spannerpb.BatchCreateSessionsResponse{Session: sessions}, nil
@@ -491,6 +497,20 @@ func (s *server) readTx(ctx context.Context, session string, tsel *spannerpb.Tra
 			return nil, nil, fmt.Errorf("no transaction with id %q", sel.Id)
 		}
 		return tx, func() {}, nil
+	case *spannerpb.TransactionSelector_Begin:
+		tr, err := s.BeginTransaction(ctx, &spannerpb.BeginTransactionRequest{
+			Session: sess.name,
+		})
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed initializing the transaction %v", err)
+		}
+		sess.mu.Lock()
+		tx, ok := sess.transactions[string(tr.Id)]
+		sess.mu.Unlock()
+		if !ok {
+			return nil, nil, fmt.Errorf("no transaction with id %q", string(tr.Id))
+		}
+		return tx, func() {}, err
 	}
 }
 
@@ -508,11 +528,26 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 		return s.resultSet(ri)
 	}
 
+	var tid string
 	obj, ok := req.Transaction.Selector.(*spannerpb.TransactionSelector_Id)
-	if !ok {
-		return nil, fmt.Errorf("unsupported transaction type %T", req.Transaction.Selector)
+	if ok {
+		tid = string(obj.Id)
 	}
-	tid := string(obj.Id)
+	isTransactionBegin := false
+	if !ok {
+		if _, ok := req.Transaction.Selector.(*spannerpb.TransactionSelector_Begin); !ok {
+			return nil, fmt.Errorf("unsupported transaction type %T", req.Transaction.Selector)
+		}
+		isTransactionBegin = true
+		tx, err := s.BeginTransaction(ctx, &spannerpb.BeginTransactionRequest{
+			Session: req.Session,
+		})
+		if err != nil {
+			return nil, err
+		}
+		tid = string(tx.Id)
+	}
+
 	_ = tid // TODO: lookup an existing transaction by ID.
 
 	stmt, err := spansql.ParseDMLStmt(req.Sql)
@@ -533,11 +568,15 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 	if err != nil {
 		return nil, err
 	}
-	return &spannerpb.ResultSet{
+	rs := &spannerpb.ResultSet{
 		Stats: &spannerpb.ResultSetStats{
-			RowCount: &spannerpb.ResultSetStats_RowCountExact{int64(n)},
+			RowCount: &spannerpb.ResultSetStats_RowCountExact{RowCountExact: int64(n)},
 		},
-	}, nil
+	}
+	if isTransactionBegin {
+		rs.Metadata = &spannerpb.ResultSetMetadata{Transaction: &spannerpb.Transaction{Id: []byte(tid)}}
+	}
+	return rs, nil
 }
 
 func (s *server) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream spannerpb.Spanner_ExecuteStreamingSqlServer) error {
@@ -616,7 +655,7 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 }
 
 func (s *server) resultSet(ri rowIter) (*spannerpb.ResultSet, error) {
-	rsm, err := s.buildResultSetMetadata(ri)
+	rsm, err := s.buildResultSetMetadata(ri, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -645,11 +684,10 @@ func (s *server) resultSet(ri rowIter) (*spannerpb.ResultSet, error) {
 }
 
 func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spannerpb.PartialResultSet) error, ri rowIter) error {
-	rsm, err := s.buildResultSetMetadata(ri)
+	rsm, err := s.buildResultSetMetadata(ri, tx)
 	if err != nil {
 		return err
 	}
-
 	for {
 		row, err := ri.Next()
 		if err == io.EOF {
@@ -678,15 +716,23 @@ func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spa
 		// ResultSetMetadata is only set for the first PartialResultSet.
 		rsm = nil
 	}
-
+	if rsm != nil {
+		// If we didn't send any partial results, send the metadata
+		// which may contain an implicitly-opened transaction id.
+		return send(&spannerpb.PartialResultSet{
+			Metadata: rsm,
+		})
+	}
 	return nil
 }
 
-func (s *server) buildResultSetMetadata(ri rowIter) (*spannerpb.ResultSetMetadata, error) {
+func (s *server) buildResultSetMetadata(ri rowIter, tx *transaction) (*spannerpb.ResultSetMetadata, error) {
 	// Build the result set metadata.
 	rsm := &spannerpb.ResultSetMetadata{
 		RowType: &spannerpb.StructType{},
-		// TODO: transaction info?
+	}
+	if tx != nil {
+		rsm.Transaction = &spannerpb.Transaction{Id: []byte(tx.id)}
 	}
 	for _, ci := range ri.Cols() {
 		st, err := spannerTypeFromType(ci.Type)
@@ -712,15 +758,14 @@ func (s *server) BeginTransaction(ctx context.Context, req *spannerpb.BeginTrans
 		return nil, status.Errorf(codes.NotFound, "unknown session %q", req.Session)
 	}
 
-	id := genRandomTransaction()
 	tx := s.db.NewTransaction()
 
 	sess.mu.Lock()
 	sess.lastUse = time.Now()
-	sess.transactions[id] = tx
+	sess.transactions[tx.id] = tx
 	sess.mu.Unlock()
 
-	tr := &spannerpb.Transaction{Id: []byte(id)}
+	tr := &spannerpb.Transaction{Id: []byte(tx.id)}
 
 	if req.GetOptions().GetReadOnly().GetReturnReadTimestamp() {
 		// Return the last commit timestamp.
@@ -927,24 +972,24 @@ func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
 	default:
 		return nil, fmt.Errorf("unhandled database value type %T", x)
 	case bool:
-		return &structpb.Value{Kind: &structpb.Value_BoolValue{x}}, nil
+		return &structpb.Value{Kind: &structpb.Value_BoolValue{BoolValue: x}}, nil
 	case int64:
 		// The Spanner int64 is actually a decimal string.
 		s := strconv.FormatInt(x, 10)
-		return &structpb.Value{Kind: &structpb.Value_StringValue{s}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: s}}, nil
 	case float64:
-		return &structpb.Value{Kind: &structpb.Value_NumberValue{x}}, nil
+		return &structpb.Value{Kind: &structpb.Value_NumberValue{NumberValue: x}}, nil
 	case string:
-		return &structpb.Value{Kind: &structpb.Value_StringValue{x}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: x}}, nil
 	case []byte:
-		return &structpb.Value{Kind: &structpb.Value_StringValue{base64.StdEncoding.EncodeToString(x)}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: base64.StdEncoding.EncodeToString(x)}}, nil
 	case civil.Date:
 		// RFC 3339 date format.
-		return &structpb.Value{Kind: &structpb.Value_StringValue{x.String()}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: x.String()}}, nil
 	case time.Time:
 		// RFC 3339 timestamp format with zone Z.
 		s := x.Format("2006-01-02T15:04:05.999999999Z")
-		return &structpb.Value{Kind: &structpb.Value_StringValue{s}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: s}}, nil
 	case nil:
 		return &structpb.Value{Kind: &structpb.Value_NullValue{}}, nil
 	case []interface{}:
@@ -957,7 +1002,7 @@ func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
 			vs = append(vs, v)
 		}
 		return &structpb.Value{Kind: &structpb.Value_ListValue{
-			&structpb.ListValue{Values: vs},
+			ListValue: &structpb.ListValue{Values: vs},
 		}}, nil
 	}
 }

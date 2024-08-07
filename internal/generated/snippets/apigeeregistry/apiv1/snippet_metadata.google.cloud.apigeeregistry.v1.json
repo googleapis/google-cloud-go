@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/apigeeregistry/apiv1",
-    "version": "0.2.1",
+    "version": "0.8.9",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Provisioning",
-            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -177,10 +177,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Provisioning",
-            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -216,17 +216,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "ProvisioningClient",
           "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "Provisioning",
-            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -262,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.Instance",
+        "resultType": "*apigeeregistrypb.Instance",
         "client": {
           "shortName": "ProvisioningClient",
           "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -308,17 +308,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "ProvisioningClient",
           "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Provisioning",
-            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -354,17 +354,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "ProvisioningClient",
           "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Provisioning",
-            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -407,10 +407,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Provisioning",
-            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -453,10 +453,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Provisioning",
-            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -472,7 +472,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Provisioning_SetIamPolicy_sync",
       "title": "apigeeregistry SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "ProvisioningClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -492,17 +492,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "ProvisioningClient",
           "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "Provisioning",
-            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -518,7 +518,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Provisioning_TestIamPermissions_sync",
       "title": "apigeeregistry TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "ProvisioningClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -538,17 +538,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "ProvisioningClient",
           "fullName": "google.cloud.apigeeregistry.v1.ProvisioningClient"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.apigeeregistry.v1.Provisioning.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "Provisioning",
-            "fullName": "google.cloud.apigeeregistry.v1.Provisioning"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -556,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -590,10 +590,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.apigeeregistry.v1.Registry.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Registry",
-            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -601,7 +601,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -629,7 +629,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.Api",
+        "resultType": "*apigeeregistrypb.Api",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -647,7 +647,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -675,7 +675,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiDeployment",
+        "resultType": "*apigeeregistrypb.ApiDeployment",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -693,7 +693,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -721,7 +721,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiSpec",
+        "resultType": "*apigeeregistrypb.ApiSpec",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -739,7 +739,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -767,7 +767,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiVersion",
+        "resultType": "*apigeeregistrypb.ApiVersion",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -785,7 +785,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -813,7 +813,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.Artifact",
+        "resultType": "*apigeeregistrypb.Artifact",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -831,7 +831,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -876,7 +876,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -921,7 +921,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -949,7 +949,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiDeployment",
+        "resultType": "*apigeeregistrypb.ApiDeployment",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -967,7 +967,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1012,7 +1012,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1040,7 +1040,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiSpec",
+        "resultType": "*apigeeregistrypb.ApiSpec",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -1058,7 +1058,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1103,7 +1103,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1148,7 +1148,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1182,10 +1182,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.apigeeregistry.v1.Registry.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Registry",
-            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1193,7 +1193,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1221,7 +1221,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.Api",
+        "resultType": "*apigeeregistrypb.Api",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -1239,7 +1239,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1267,7 +1267,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiDeployment",
+        "resultType": "*apigeeregistrypb.ApiDeployment",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -1285,7 +1285,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1313,7 +1313,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiSpec",
+        "resultType": "*apigeeregistrypb.ApiSpec",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -1331,7 +1331,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1359,7 +1359,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "httpbodypb.HttpBody",
+        "resultType": "*httpbodypb.HttpBody",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -1377,7 +1377,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1405,7 +1405,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiVersion",
+        "resultType": "*apigeeregistrypb.ApiVersion",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -1423,7 +1423,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1451,7 +1451,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.Artifact",
+        "resultType": "*apigeeregistrypb.Artifact",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -1469,7 +1469,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1497,7 +1497,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "httpbodypb.HttpBody",
+        "resultType": "*httpbodypb.HttpBody",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -1515,7 +1515,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1543,17 +1543,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.apigeeregistry.v1.Registry.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "Registry",
-            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1561,7 +1561,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1589,17 +1589,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.apigeeregistry.v1.Registry.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Registry",
-            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1607,7 +1607,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1635,17 +1635,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.apigeeregistry.v1.Registry.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Registry",
-            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1653,7 +1653,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1699,7 +1699,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1745,7 +1745,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1791,7 +1791,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1837,7 +1837,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1883,7 +1883,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1929,7 +1929,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1975,7 +1975,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2010,10 +2010,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.apigeeregistry.v1.Registry.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Registry",
-            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -2021,7 +2021,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2056,10 +2056,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.apigeeregistry.v1.Registry.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Registry",
-            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2067,7 +2067,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2095,7 +2095,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.Artifact",
+        "resultType": "*apigeeregistrypb.Artifact",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -2113,7 +2113,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2141,7 +2141,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiDeployment",
+        "resultType": "*apigeeregistrypb.ApiDeployment",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -2159,7 +2159,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2187,7 +2187,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiSpec",
+        "resultType": "*apigeeregistrypb.ApiSpec",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -2205,7 +2205,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2213,7 +2213,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_SetIamPolicy_sync",
       "title": "apigeeregistry SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "RegistryClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2233,17 +2233,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.apigeeregistry.v1.Registry.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "Registry",
-            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -2251,7 +2251,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2279,7 +2279,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiDeployment",
+        "resultType": "*apigeeregistrypb.ApiDeployment",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -2297,7 +2297,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2325,7 +2325,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiSpec",
+        "resultType": "*apigeeregistrypb.ApiSpec",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -2343,7 +2343,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2351,7 +2351,7 @@
     {
       "regionTag": "apigeeregistry_v1_generated_Registry_TestIamPermissions_sync",
       "title": "apigeeregistry TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "RegistryClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2371,17 +2371,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.apigeeregistry.v1.Registry.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "Registry",
-            "fullName": "google.cloud.apigeeregistry.v1.Registry"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -2389,7 +2389,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2417,7 +2417,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.Api",
+        "resultType": "*apigeeregistrypb.Api",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -2435,7 +2435,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2463,7 +2463,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiDeployment",
+        "resultType": "*apigeeregistrypb.ApiDeployment",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -2481,7 +2481,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2509,7 +2509,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiSpec",
+        "resultType": "*apigeeregistrypb.ApiSpec",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -2527,7 +2527,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2555,7 +2555,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigeeregistrypb.ApiVersion",
+        "resultType": "*apigeeregistrypb.ApiVersion",
         "client": {
           "shortName": "RegistryClient",
           "fullName": "google.cloud.apigeeregistry.v1.RegistryClient"
@@ -2573,7 +2573,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]

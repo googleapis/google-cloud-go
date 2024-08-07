@@ -95,6 +95,19 @@ func TestQuery(t *testing.T) {
 			}(),
 		},
 		{
+			dst:         c.DatasetInProject("another-project", "dataset-id").Table("table-id"),
+			jobIDConfig: JobIDConfig{JobID: "jobID", ProjectID: "another-project"},
+			src:         &QueryConfig{Q: "query string"},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.DefaultDataset = nil
+				j.Configuration.Query.DestinationTable.ProjectId = "another-project"
+				j.JobReference.JobId = "jobID"
+				j.JobReference.ProjectId = "another-project"
+				return j
+			}(),
+		},
+		{
 			dst: &Table{},
 			src: defaultQuery,
 			want: func() *bq.Job {
@@ -401,6 +414,7 @@ func TestQuery(t *testing.T) {
 		diff := testutil.Diff(jc.(*QueryConfig), &wantConfig,
 			cmp.Comparer(tableEqual),
 			cmp.Comparer(externalDataEqual),
+			cmp.AllowUnexported(QueryConfig{}),
 		)
 		if diff != "" {
 			t.Errorf("#%d: (got=-, want=+:\n%s", i, diff)
@@ -414,10 +428,9 @@ func TestProbeFastPath(t *testing.T) {
 	}
 	pfalse := false
 	testCases := []struct {
-		inCfg    QueryConfig
-		inJobCfg JobIDConfig
-		wantReq  *bq.QueryRequest
-		wantErr  bool
+		inCfg   QueryConfig
+		wantReq *bq.QueryRequest
+		wantErr bool
 	}{
 		{
 			inCfg: QueryConfig{
@@ -426,6 +439,9 @@ func TestProbeFastPath(t *testing.T) {
 			wantReq: &bq.QueryRequest{
 				Query:        "foo",
 				UseLegacySql: &pfalse,
+				FormatOptions: &bq.DataFormatOptions{
+					UseInt64Timestamp: true,
+				},
 			},
 		},
 		{
@@ -460,6 +476,9 @@ func TestProbeFastPath(t *testing.T) {
 					},
 				},
 				UseQueryCache: &pfalse,
+				FormatOptions: &bq.DataFormatOptions{
+					UseInt64Timestamp: true,
+				},
 			},
 		},
 		{
@@ -489,7 +508,10 @@ func TestProbeFastPath(t *testing.T) {
 		},
 	}
 	for i, tc := range testCases {
-		in := &Query{tc.inJobCfg, tc.inCfg, c}
+		in := &Query{
+			QueryConfig: tc.inCfg,
+			client:      c,
+		}
 		gotReq, err := in.probeFastPath()
 		if tc.wantErr && err == nil {
 			t.Errorf("case %d wanted error, got nil", i)

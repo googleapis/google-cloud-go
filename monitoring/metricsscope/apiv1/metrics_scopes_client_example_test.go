@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"context"
 
 	metricsscope "cloud.google.com/go/monitoring/metricsscope/apiv1"
-	metricsscopepb "google.golang.org/genproto/googleapis/monitoring/metricsscope/v1"
+	metricsscopepb "cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb"
 )
 
 func ExampleNewMetricsScopesClient() {
@@ -40,56 +40,6 @@ func ExampleNewMetricsScopesClient() {
 	_ = c
 }
 
-func ExampleMetricsScopesClient_GetMetricsScope() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := metricsscope.NewMetricsScopesClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &metricsscopepb.GetMetricsScopeRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/metricsscope/v1#GetMetricsScopeRequest.
-	}
-	resp, err := c.GetMetricsScope(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleMetricsScopesClient_ListMetricsScopesByMonitoredProject() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := metricsscope.NewMetricsScopesClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &metricsscopepb.ListMetricsScopesByMonitoredProjectRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/metricsscope/v1#ListMetricsScopesByMonitoredProjectRequest.
-	}
-	resp, err := c.ListMetricsScopesByMonitoredProject(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleMetricsScopesClient_CreateMonitoredProject() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -105,7 +55,7 @@ func ExampleMetricsScopesClient_CreateMonitoredProject() {
 
 	req := &metricsscopepb.CreateMonitoredProjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/metricsscope/v1#CreateMonitoredProjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb#CreateMonitoredProjectRequest.
 	}
 	op, err := c.CreateMonitoredProject(ctx, req)
 	if err != nil {
@@ -135,7 +85,7 @@ func ExampleMetricsScopesClient_DeleteMonitoredProject() {
 
 	req := &metricsscopepb.DeleteMonitoredProjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/metricsscope/v1#DeleteMonitoredProjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb#DeleteMonitoredProjectRequest.
 	}
 	op, err := c.DeleteMonitoredProject(ctx, req)
 	if err != nil {
@@ -146,4 +96,54 @@ func ExampleMetricsScopesClient_DeleteMonitoredProject() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleMetricsScopesClient_GetMetricsScope() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metricsscope.NewMetricsScopesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &metricsscopepb.GetMetricsScopeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb#GetMetricsScopeRequest.
+	}
+	resp, err := c.GetMetricsScope(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleMetricsScopesClient_ListMetricsScopesByMonitoredProject() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metricsscope.NewMetricsScopesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &metricsscopepb.ListMetricsScopesByMonitoredProjectRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb#ListMetricsScopesByMonitoredProjectRequest.
+	}
+	resp, err := c.ListMetricsScopesByMonitoredProject(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

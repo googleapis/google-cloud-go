@@ -28,9 +28,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-	lrpb "google.golang.org/genproto/googleapis/longrunning"
+	lrpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // MockServer is an in-memory mock implementation of a Pub/Sub Lite service,

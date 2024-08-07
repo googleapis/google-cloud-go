@@ -24,6 +24,7 @@ import (
 	"math/big"
 	"net/http"
 	"os"
+	"reflect"
 	"sort"
 	"strings"
 	"testing"
@@ -32,6 +33,7 @@ import (
 	connection "cloud.google.com/go/bigquery/connection/apiv1"
 	"cloud.google.com/go/civil"
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
+	"cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/pretty"
@@ -45,7 +47,6 @@ import (
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 )
 
 const replayFilename = "bigquery.replay"
@@ -54,6 +55,7 @@ var record = flag.Bool("record", false, "record RPCs")
 
 var (
 	client                 *Client
+	storageOptimizedClient *Client
 	storageClient          *storage.Client
 	connectionsClient      *connection.Client
 	policyTagManagerClient *datacatalog.PolicyTagManagerClient
@@ -121,6 +123,14 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		storageOptimizedClient, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = storageOptimizedClient.EnableStorageReadClient(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
 		storageClient, err = storage.NewClient(ctx, option.WithHTTPClient(hc))
 		if err != nil {
 			log.Fatal(err)
@@ -145,6 +155,7 @@ func initIntegrationTest() func() {
 			log.Print("replay not supported for Go versions before 1.8")
 		}
 		client = nil
+		storageOptimizedClient = nil
 		storageClient = nil
 		connectionsClient = nil
 		return func() {}
@@ -204,6 +215,14 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
 		}
+		storageOptimizedClient, err = NewClient(ctx, projID, bqOpts...)
+		if err != nil {
+			log.Fatalf("NewClient: %v", err)
+		}
+		err = storageOptimizedClient.EnableStorageReadClient(ctx, bqOpts...)
+		if err != nil {
+			log.Fatalf("ConfigureStorageReadClient: %v", err)
+		}
 		storageClient, err = storage.NewClient(ctx, sOpts...)
 		if err != nil {
 			log.Fatalf("storage.NewClient: %v", err)
@@ -234,6 +253,14 @@ func initTestState(client *Client, t time.Time) func() {
 	// For replayability, seed the random source with t.
 	Seed(t.UnixNano())
 
+	prefixes := []string{
+		"dataset_",                    // bigquery package tests
+		"managedwriter_test_dataset_", // managedwriter package tests
+	}
+	for _, prefix := range prefixes {
+		deleteDatasets(ctx, prefix)
+	}
+
 	dataset = client.Dataset(datasetIDs.New())
 	otherDataset = client.Dataset(datasetIDs.New())
 
@@ -250,6 +277,44 @@ func initTestState(client *Client, t time.Time) func() {
 		}
 		if err := otherDataset.DeleteWithContents(ctx); err != nil {
 			log.Printf("could not delete %s", dataset.DatasetID)
+		}
+	}
+}
+
+// delete a resource if it is older than a day
+// that will prevent collisions with parallel CI test runs.
+func isResourceStale(t time.Time) bool {
+	return time.Since(t).Hours() >= 24
+}
+
+// delete old datasets
+func deleteDatasets(ctx context.Context, prefix string) {
+	it := client.Datasets(ctx)
+
+	for {
+		ds, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			fmt.Printf("failed to list project datasets: %v\n", err)
+			break
+		}
+		if !strings.HasPrefix(ds.DatasetID, prefix) {
+			continue
+		}
+
+		md, err := ds.Metadata(ctx)
+		if err != nil {
+			fmt.Printf("failed to get dataset `%s` metadata: %v\n", ds.DatasetID, err)
+			continue
+		}
+		if isResourceStale(md.CreationTime) {
+			fmt.Printf("found old dataset to delete: %s\n", ds.DatasetID)
+			err := ds.DeleteWithContents(ctx)
+			if err != nil {
+				fmt.Printf("failed to delete old dataset `%s`\n", ds.DatasetID)
+			}
 		}
 	}
 }
@@ -337,6 +402,26 @@ func TestIntegration_JobFrom(t *testing.T) {
 		}
 	}
 
+}
+
+func TestIntegration_QueryContextTimeout(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
+
+	q := client.Query("select count(*) from unnest(generate_array(1,1000000)), unnest(generate_array(1, 1000)) as foo")
+	q.DisableQueryCache = true
+	before := time.Now()
+	_, err := q.Read(ctx)
+	if err != context.DeadlineExceeded {
+		t.Errorf("Read() error, wanted %v, got %v", context.DeadlineExceeded, err)
+	}
+	wantMaxDur := 500 * time.Millisecond
+	if d := time.Since(before); d > wantMaxDur {
+		t.Errorf("return duration too long, wanted max %v got %v", wantMaxDur, d)
+	}
 }
 
 func TestIntegration_SnapshotRestoreClone(t *testing.T) {
@@ -563,6 +648,7 @@ func TestIntegration_RangePartitioning(t *testing.T) {
 		t.Errorf("Range.Interval: got %v, wanted %v", gotInt64, wantedRange.Interval)
 	}
 }
+
 func TestIntegration_RemoveTimePartitioning(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -690,6 +776,11 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
+	beforePreview := client.enableQueryPreview
+	// ensure we restore the preview setting on test exit
+	defer func() {
+		client.enableQueryPreview = beforePreview
+	}()
 	ctx := context.Background()
 
 	testCases := []struct {
@@ -712,7 +803,7 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			// in the job config, but switching to relying on jobs.getQueryResults allows the
 			// service to decide the behavior.
 			description: "ctas ddl",
-			query:       fmt.Sprintf("CREATE TABLE %s.%s AS SELECT 17 as foo", dataset.DatasetID, tableIDs.New()),
+			query:       fmt.Sprintf("CREATE OR REPLACE TABLE %s.%s AS SELECT 17 as foo", dataset.DatasetID, tableIDs.New()),
 			want:        nil,
 		},
 		{
@@ -721,19 +812,45 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			query:       "select count(*) from unnest(generate_array(1,1000000)), unnest(generate_array(1, 1000)) as foo",
 			want:        [][]Value{{int64(1000000000)}},
 		},
+		{
+			// Query doesn't yield a result.
+			description: "DML",
+			query:       fmt.Sprintf("CREATE OR REPLACE TABLE %s.%s (foo STRING, bar INT64)", dataset.DatasetID, tableIDs.New()),
+			want:        [][]Value{},
+		},
 	}
-	for _, tc := range testCases {
-		curCase := tc
-		t.Run(curCase.description, func(t *testing.T) {
-			t.Parallel()
-			q := client.Query(curCase.query)
-			it, err := q.Read(ctx)
-			if err != nil {
-				t.Fatalf("%s read error: %v", curCase.description, err)
-			}
-			checkReadAndTotalRows(t, curCase.description, it, curCase.want)
-		})
-	}
+
+	t.Run("nopreview_group", func(t *testing.T) {
+		client.enableQueryPreview = false
+		for _, tc := range testCases {
+			curCase := tc
+			t.Run(curCase.description, func(t *testing.T) {
+				t.Parallel()
+				q := client.Query(curCase.query)
+				it, err := q.Read(ctx)
+				if err != nil {
+					t.Fatalf("%s read error: %v", curCase.description, err)
+				}
+				checkReadAndTotalRows(t, curCase.description, it, curCase.want)
+			})
+		}
+	})
+	t.Run("preview_group", func(t *testing.T) {
+		client.enableQueryPreview = true
+		for _, tc := range testCases {
+			curCase := tc
+			t.Run(curCase.description, func(t *testing.T) {
+				t.Parallel()
+				q := client.Query(curCase.query)
+				it, err := q.Read(ctx)
+				if err != nil {
+					t.Fatalf("%s read error: %v", curCase.description, err)
+				}
+				checkReadAndTotalRows(t, curCase.description, it, curCase.want)
+			})
+		}
+	})
+
 }
 
 func TestIntegration_QueryIterationPager(t *testing.T) {
@@ -1044,18 +1161,20 @@ type SubTestStruct struct {
 }
 
 type TestStruct struct {
-	Name      string
-	Bytes     []byte
-	Integer   int64
-	Float     float64
-	Boolean   bool
-	Timestamp time.Time
-	Date      civil.Date
-	Time      civil.Time
-	DateTime  civil.DateTime
-	Numeric   *big.Rat
-	Geography string
-
+	Name           string
+	Bytes          []byte
+	Integer        int64
+	Float          float64
+	Boolean        bool
+	Timestamp      time.Time
+	Date           civil.Date
+	Time           civil.Time
+	DateTime       civil.DateTime
+	Numeric        *big.Rat
+	Geography      string
+	RangeDate      *RangeValue `bigquery:"rangedate"` //TODO: remove tags when field normalization works
+	RangeDateTime  *RangeValue `bigquery:"rangedatetime"`
+	RangeTimestamp *RangeValue `bigquery:"rangetimestamp"`
 	StringArray    []string
 	IntegerArray   []int64
 	FloatArray     []float64
@@ -1084,6 +1203,19 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// Finish declaring the ambigous range element types.
+	for idx, typ := range map[int]FieldType{
+		11: DateFieldType,
+		12: DateTimeFieldType,
+		13: TimestampFieldType,
+	} {
+		if schema[idx].Type != RangeFieldType {
+			t.Fatalf("mismatch in expected RANGE element in schema field %d", idx)
+		} else {
+			schema[idx].RangeElementType = &RangeElementType{Type: typ}
+		}
+	}
+
 	ctx := context.Background()
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
@@ -1098,6 +1230,15 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 	dtm2 := civil.DateTime{Date: d2, Time: tm2}
 	g := "POINT(-122.350220 47.649154)"
 	g2 := "POINT(-122.0836791 37.421827)"
+	rangedate := &RangeValue{Start: civil.Date{Year: 2024, Month: 04, Day: 11}}
+	rangedatetime := &RangeValue{
+		End: civil.DateTime{
+			Date: civil.Date{Year: 2024, Month: 04, Day: 11},
+			Time: civil.Time{Hour: 2, Minute: 4, Second: 6, Nanosecond: 0}},
+	}
+	rangetimestamp := &RangeValue{
+		Start: time.Date(2016, 3, 20, 15, 4, 5, 6000, time.UTC),
+	}
 
 	// Populate the table.
 	ins := table.Inserter()
@@ -1114,6 +1255,9 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			dtm,
 			big.NewRat(57, 100),
 			g,
+			rangedate,
+			rangedatetime,
+			rangetimestamp,
 			[]string{"a", "b"},
 			[]int64{1, 2},
 			[]float64{1, 1.41},
@@ -1139,16 +1283,19 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			},
 		},
 		{
-			Name:      "b",
-			Bytes:     []byte("byte2"),
-			Integer:   24,
-			Float:     4.13,
-			Boolean:   false,
-			Timestamp: ts,
-			Date:      d,
-			Time:      tm,
-			DateTime:  dtm,
-			Numeric:   big.NewRat(4499, 10000),
+			Name:           "b",
+			Bytes:          []byte("byte2"),
+			Integer:        24,
+			Float:          4.13,
+			Boolean:        false,
+			Timestamp:      ts,
+			Date:           d,
+			Time:           tm,
+			DateTime:       dtm,
+			Numeric:        big.NewRat(4499, 10000),
+			RangeDate:      rangedate,
+			RangeDateTime:  rangedatetime,
+			RangeTimestamp: rangetimestamp,
 		},
 	}
 	var savers []*StructSaver
@@ -1376,6 +1523,10 @@ func TestIntegration_Load(t *testing.T) {
 	loader := table.LoaderFrom(rs)
 	loader.WriteDisposition = WriteTruncate
 	loader.Labels = map[string]string{"test": "go"}
+	loader.MediaOptions = []googleapi.MediaOption{
+		googleapi.ContentType("text/csv"),
+		googleapi.ChunkSize(googleapi.MinUploadChunkSize),
+	}
 	job, err := loader.Run(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -1395,7 +1546,8 @@ func TestIntegration_Load(t *testing.T) {
 		cmp.AllowUnexported(Table{}),
 		cmpopts.IgnoreUnexported(Client{}, ReaderSource{}),
 		// returned schema is at top level, not in the config
-		cmpopts.IgnoreFields(FileConfig{}, "Schema"))
+		cmpopts.IgnoreFields(FileConfig{}, "Schema"),
+		cmpopts.IgnoreFields(LoadConfig{}, "MediaOptions"))
 	if diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
@@ -1403,7 +1555,88 @@ func TestIntegration_Load(t *testing.T) {
 		t.Fatal(err)
 	}
 	checkReadAndTotalRows(t, "reader load", table.Read(ctx), wantRows)
+}
 
+func TestIntegration_LoadWithSessionSupport(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+
+	ctx := context.Background()
+	sessionDataset := client.Dataset("_SESSION")
+	sessionTable := sessionDataset.Table("test_temp_destination_table")
+
+	schema := Schema{
+		{Name: "username", Type: StringFieldType, Required: false},
+		{Name: "tweet", Type: StringFieldType, Required: false},
+		{Name: "timestamp", Type: StringFieldType, Required: false},
+		{Name: "likes", Type: IntegerFieldType, Required: false},
+	}
+	sourceURIs := []string{
+		"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/a-twitter.parquet",
+	}
+
+	source := NewGCSReference(sourceURIs...)
+	source.SourceFormat = Parquet
+	source.Schema = schema
+	loader := sessionTable.LoaderFrom(source)
+	loader.CreateSession = true
+	loader.CreateDisposition = CreateIfNeeded
+
+	job, err := loader.Run(ctx)
+	if err != nil {
+		t.Fatalf("loader.Run: %v", err)
+	}
+	err = wait(ctx, job)
+	if err != nil {
+		t.Fatalf("wait: %v", err)
+	}
+
+	sessionInfo := job.lastStatus.Statistics.SessionInfo
+	if sessionInfo == nil {
+		t.Fatalf("empty job.lastStatus.Statistics.SessionInfo: %v", sessionInfo)
+	}
+
+	sessionID := sessionInfo.SessionID
+	loaderWithSession := sessionTable.LoaderFrom(source)
+	loaderWithSession.CreateDisposition = CreateIfNeeded
+	loaderWithSession.ConnectionProperties = []*ConnectionProperty{
+		{
+			Key:   "session_id",
+			Value: sessionID,
+		},
+	}
+	jobWithSession, err := loaderWithSession.Run(ctx)
+	if err != nil {
+		t.Fatalf("loaderWithSession.Run: %v", err)
+	}
+	err = wait(ctx, jobWithSession)
+	if err != nil {
+		t.Fatalf("wait: %v", err)
+	}
+
+	sessionJobInfo := jobWithSession.lastStatus.Statistics.SessionInfo
+	if sessionJobInfo == nil {
+		t.Fatalf("empty jobWithSession.lastStatus.Statistics.SessionInfo: %v", sessionJobInfo)
+	}
+
+	if sessionID != sessionJobInfo.SessionID {
+		t.Fatalf("expected session ID %q, but found %q", sessionID, sessionJobInfo.SessionID)
+	}
+
+	sql := "SELECT * FROM _SESSION.test_temp_destination_table;"
+	q := client.Query(sql)
+	q.ConnectionProperties = []*ConnectionProperty{
+		{
+			Key:   "session_id",
+			Value: sessionID,
+		},
+	}
+	sessionQueryJob, err := q.Run(ctx)
+	err = wait(ctx, sessionQueryJob)
+	if err != nil {
+		t.Fatalf("wait: %v", err)
+	}
 }
 
 func TestIntegration_LoadWithReferenceSchemaFile(t *testing.T) {
@@ -1641,36 +1874,43 @@ func TestIntegration_StandardQuery(t *testing.T) {
 	}
 
 	testCases := []struct {
+		name    string
 		query   string
 		wantRow []Value
 	}{
-		{"SELECT 1", ints(1)},
-		{"SELECT 1.3", []Value{1.3}},
-		{"SELECT CAST(1.3  AS NUMERIC)", []Value{big.NewRat(13, 10)}},
-		{"SELECT NUMERIC '0.25'", []Value{big.NewRat(1, 4)}},
-		{"SELECT TRUE", []Value{true}},
-		{"SELECT 'ABC'", []Value{"ABC"}},
-		{"SELECT CAST('foo' AS BYTES)", []Value{[]byte("foo")}},
-		{fmt.Sprintf("SELECT TIMESTAMP '%s'", dtm), []Value{ts}},
-		{fmt.Sprintf("SELECT [TIMESTAMP '%s', TIMESTAMP '%s']", dtm, dtm), []Value{[]Value{ts, ts}}},
-		{fmt.Sprintf("SELECT ('hello', TIMESTAMP '%s')", dtm), []Value{[]Value{"hello", ts}}},
-		{fmt.Sprintf("SELECT DATETIME(TIMESTAMP '%s')", dtm), []Value{civil.DateTime{Date: d, Time: tm}}},
-		{fmt.Sprintf("SELECT DATE(TIMESTAMP '%s')", dtm), []Value{d}},
-		{fmt.Sprintf("SELECT TIME(TIMESTAMP '%s')", dtm), []Value{tm}},
-		{"SELECT (1, 2)", []Value{ints(1, 2)}},
-		{"SELECT [1, 2, 3]", []Value{ints(1, 2, 3)}},
-		{"SELECT ([1, 2], 3, [4, 5])", []Value{[]Value{ints(1, 2), int64(3), ints(4, 5)}}},
-		{"SELECT [(1, 2, 3), (4, 5, 6)]", []Value{[]Value{ints(1, 2, 3), ints(4, 5, 6)}}},
-		{"SELECT [([1, 2, 3], 4), ([5, 6], 7)]", []Value{[]Value{[]Value{ints(1, 2, 3), int64(4)}, []Value{ints(5, 6), int64(7)}}}},
-		{"SELECT ARRAY(SELECT STRUCT([1, 2]))", []Value{[]Value{[]Value{ints(1, 2)}}}},
+		{"Ints", "SELECT 1", ints(1)},
+		{"Float", "SELECT 1.3", []Value{1.3}},
+		{"NumericCast", "SELECT CAST(1.3  AS NUMERIC)", []Value{big.NewRat(13, 10)}},
+		{"NumericLiteral", "SELECT NUMERIC '0.25'", []Value{big.NewRat(1, 4)}},
+		{"Boolean", "SELECT TRUE", []Value{true}},
+		{"String", "SELECT 'ABC'", []Value{"ABC"}},
+		{"Bytes", "SELECT CAST('foo' AS BYTES)", []Value{[]byte("foo")}},
+		{"Timestamp", fmt.Sprintf("SELECT TIMESTAMP '%s'", dtm), []Value{ts}},
+		{"TimestampArray", fmt.Sprintf("SELECT [TIMESTAMP '%s', TIMESTAMP '%s']", dtm, dtm), []Value{[]Value{ts, ts}}},
+		{"AnonStruct", fmt.Sprintf("SELECT ('hello', TIMESTAMP '%s')", dtm), []Value{[]Value{"hello", ts}}},
+		{"DatetimeCast", fmt.Sprintf("SELECT DATETIME(TIMESTAMP '%s')", dtm), []Value{civil.DateTime{Date: d, Time: tm}}},
+		{"DateCast", fmt.Sprintf("SELECT DATE(TIMESTAMP '%s')", dtm), []Value{d}},
+		{"TimeCast", fmt.Sprintf("SELECT TIME(TIMESTAMP '%s')", dtm), []Value{tm}},
+		{"StructOfInts", "SELECT (1, 2)", []Value{ints(1, 2)}},
+		{"IntArray", "SELECT [1, 2, 3]", []Value{ints(1, 2, 3)}},
+		{"StructOfArrays", "SELECT ([1, 2], 3, [4, 5])", []Value{[]Value{ints(1, 2), int64(3), ints(4, 5)}}},
+		{"ArrayOfStructs", "SELECT [(1, 2, 3), (4, 5, 6)]", []Value{[]Value{ints(1, 2, 3), ints(4, 5, 6)}}},
+		{"ComplexNested", "SELECT [([1, 2, 3], 4), ([5, 6], 7)]", []Value{[]Value{[]Value{ints(1, 2, 3), int64(4)}, []Value{ints(5, 6), int64(7)}}}},
+		{"SubSelectArray", "SELECT ARRAY(SELECT STRUCT([1, 2]))", []Value{[]Value{[]Value{ints(1, 2)}}}},
+		{"RangeOofDateLiteral",
+			"SELECT RANGE(DATE '2023-03-01', DATE '2024-04-16')",
+			[]Value{&RangeValue{Start: civil.Date{Year: 2023, Month: 03, Day: 01}, End: civil.Date{Year: 2024, Month: 04, Day: 16}}},
+		},
 	}
-	for _, c := range testCases {
-		q := client.Query(c.query)
-		it, err := q.Read(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		checkRead(t, "StandardQuery", it, [][]Value{c.wantRow})
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			q := client.Query(tc.query)
+			it, err := q.Read(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			checkRead(t, "StandardQuery", it, [][]Value{tc.wantRow})
+		})
 	}
 }
 
@@ -1684,26 +1924,27 @@ func TestIntegration_LegacyQuery(t *testing.T) {
 	dtm := ts.Format("2006-01-02 15:04:05")
 
 	testCases := []struct {
+		name    string
 		query   string
 		wantRow []Value
 	}{
-		{"SELECT 1", []Value{int64(1)}},
-		{"SELECT 1.3", []Value{1.3}},
-		{"SELECT TRUE", []Value{true}},
-		{"SELECT 'ABC'", []Value{"ABC"}},
-		{"SELECT CAST('foo' AS BYTES)", []Value{[]byte("foo")}},
-		{fmt.Sprintf("SELECT TIMESTAMP('%s')", dtm), []Value{ts}},
-		{fmt.Sprintf("SELECT DATE(TIMESTAMP('%s'))", dtm), []Value{"2016-03-20"}},
-		{fmt.Sprintf("SELECT TIME(TIMESTAMP('%s'))", dtm), []Value{"15:04:05"}},
+		{"Int", "SELECT 1", []Value{int64(1)}},
+		{"Float", "SELECT 1.3", []Value{1.3}},
+		{"Boolean", "SELECT TRUE", []Value{true}},
+		{"String", "SELECT 'ABC'", []Value{"ABC"}},
+		{"Bytes", "SELECT CAST('foo' AS BYTES)", []Value{[]byte("foo")}},
+		{"Timestamp", fmt.Sprintf("SELECT TIMESTAMP('%s')", dtm), []Value{ts}},
+		{"Date", fmt.Sprintf("SELECT DATE(TIMESTAMP('%s'))", dtm), []Value{"2016-03-20"}},
+		{"Time", fmt.Sprintf("SELECT TIME(TIMESTAMP('%s'))", dtm), []Value{"15:04:05"}},
 	}
-	for _, c := range testCases {
-		q := client.Query(c.query)
+	for _, tc := range testCases {
+		q := client.Query(tc.query)
 		q.UseLegacySQL = true
 		it, err := q.Read(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}
-		checkRead(t, "LegacyQuery", it, [][]Value{c.wantRow})
+		checkRead(t, "LegacyQuery", it, [][]Value{tc.wantRow})
 	}
 }
 
@@ -1902,12 +2143,19 @@ func TestIntegration_QuerySessionSupport(t *testing.T) {
 
 }
 
-func TestIntegration_QueryParameters(t *testing.T) {
-	if client == nil {
-		t.Skip("Integration tests skipped")
-	}
-	ctx := context.Background()
+type queryParameterTestCase struct {
+	name       string
+	query      string
+	parameters []QueryParameter
+	wantRow    []Value
+	wantConfig interface{}
+}
 
+var (
+	queryParameterTestCases = []queryParameterTestCase{}
+)
+
+func initQueryParameterTestCases() {
 	d := civil.Date{Year: 2016, Month: 3, Day: 20}
 	tm := civil.Time{Hour: 15, Minute: 04, Second: 05, Nanosecond: 3008}
 	rtm := tm
@@ -1916,6 +2164,12 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	rat := big.NewRat(13, 10)
 	bigRat := big.NewRat(12345, 10e10)
+	rangeTimestamp1 := &RangeValue{
+		Start: time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC),
+	}
+	rangeTimestamp2 := &RangeValue{
+		End: time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC),
+	}
 
 	type ss struct {
 		String string
@@ -1928,79 +2182,143 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		SubStructArray []ss
 	}
 
-	testCases := []struct {
-		query      string
-		parameters []QueryParameter
-		wantRow    []Value
-		wantConfig interface{}
-	}{
+	queryParameterTestCases = []queryParameterTestCase{
 		{
+			"Int64Param",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: 1}},
 			[]Value{int64(1)},
 			int64(1),
 		},
 		{
+			"FloatParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: 1.3}},
 			[]Value{1.3},
 			1.3,
 		},
 		{
+			"BigRatParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: rat}},
 			[]Value{rat},
 			rat,
 		},
 		{
+			"BoolParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: true}},
 			[]Value{true},
 			true,
 		},
 		{
+			"StringParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: "ABC"}},
 			[]Value{"ABC"},
 			"ABC",
 		},
 		{
+			"ByteParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: []byte("foo")}},
 			[]Value{[]byte("foo")},
 			[]byte("foo"),
 		},
 		{
+			"TimestampParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: ts}},
 			[]Value{ts},
 			ts,
 		},
 		{
+			"TimestampArrayParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: []time.Time{ts, ts}}},
 			[]Value{[]Value{ts, ts}},
 			[]interface{}{ts, ts},
 		},
 		{
+			"DatetimeParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: dtm}},
 			[]Value{civil.DateTime{Date: d, Time: rtm}},
 			civil.DateTime{Date: d, Time: rtm},
 		},
 		{
+			"DateParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: d}},
 			[]Value{d},
 			d,
 		},
 		{
+			"TimeParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: tm}},
 			[]Value{rtm},
 			rtm,
 		},
 		{
+			"JsonParam",
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "JSON",
+						},
+						Value: "{\"alpha\":\"beta\"}",
+					},
+				},
+			},
+			[]Value{"{\"alpha\":\"beta\"}"},
+			"{\"alpha\":\"beta\"}",
+		},
+		{
+			"RangeUnboundedStart",
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "RANGE",
+							RangeElementType: &StandardSQLDataType{
+								TypeKind: "TIMESTAMP",
+							},
+						},
+						Value: rangeTimestamp1,
+					},
+				},
+			},
+			[]Value{rangeTimestamp1},
+			rangeTimestamp1,
+		},
+		{
+			"RangeUnboundedEnd",
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "RANGE",
+							RangeElementType: &StandardSQLDataType{
+								TypeKind: "TIMESTAMP",
+							},
+						},
+						Value: rangeTimestamp2,
+					},
+				},
+			},
+			[]Value{rangeTimestamp2},
+			rangeTimestamp2,
+		},
+		{
+			"NestedStructParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: s{ts, []string{"a", "b"}, ss{"c"}, []ss{{"d"}, {"e"}}}}},
 			[]Value{[]Value{ts, []Value{"a", "b"}, []Value{"c"}, []Value{[]Value{"d"}, []Value{"e"}}}},
@@ -2015,6 +2333,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			},
 		},
 		{
+			"StructFieldParam",
 			"SELECT @val.Timestamp, @val.SubStruct.String",
 			[]QueryParameter{{Name: "val", Value: s{Timestamp: ts, SubStruct: ss{"a"}}}},
 			[]Value{ts, "a"},
@@ -2026,6 +2345,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			},
 		},
 		{
+			"BigNumericExplicitParam",
 			"SELECT @val",
 			[]QueryParameter{
 				{
@@ -2042,6 +2362,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			bigRat,
 		},
 		{
+			"StringArrayExplicitParam",
 			"SELECT @val",
 			[]QueryParameter{
 				{
@@ -2063,6 +2384,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			[]interface{}{"a", "b"},
 		},
 		{
+			"StructExplicitParam",
 			"SELECT @val",
 			[]QueryParameter{
 				{
@@ -2167,29 +2489,72 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			},
 		},
 	}
-	for _, c := range testCases {
-		q := client.Query(c.query)
-		q.Parameters = c.parameters
-		job, err := q.Run(ctx)
-		if err != nil {
-			t.Fatal(err)
+}
+
+func TestIntegration_QueryParameters(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	initQueryParameterTestCases()
+
+	for _, tc := range queryParameterTestCases {
+		t.Run(tc.name, func(t *testing.T) {
+			q := client.Query(tc.query)
+			q.Parameters = tc.parameters
+			job, err := q.Run(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if job.LastStatus() == nil {
+				t.Error("no LastStatus")
+			}
+			it, err := job.Read(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			checkRead(t, "QueryParameters", it, [][]Value{tc.wantRow})
+			config, err := job.Config()
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := config.(*QueryConfig).Parameters[0].Value
+			if !testutil.Equal(got, tc.wantConfig) {
+				t.Errorf("param %[1]v (%[1]T): config:\ngot %[2]v (%[2]T)\nwant %[3]v (%[3]T)",
+					tc.parameters[0].Value, got, tc.wantConfig)
+			}
+		})
+	}
+}
+
+func TestIntegration_QueryEmptyArrays(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	q := client.Query("SELECT ARRAY<string>[] as a, ARRAY<STRUCT<name string>>[] as b")
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for {
+		vals := map[string]Value{}
+		if err := it.Next(&vals); err != nil {
+			if errors.Is(err, iterator.Done) {
+				break
+			}
 		}
-		if job.LastStatus() == nil {
-			t.Error("no LastStatus")
+
+		valueOfA := reflect.ValueOf(vals["a"])
+		if testutil.Equal(vals["a"], nil) || valueOfA.IsNil() {
+			t.Fatalf("expected empty string array to not return nil, but found %v %v %T", valueOfA, vals["a"], vals["a"])
 		}
-		it, err := job.Read(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		checkRead(t, "QueryParameters", it, [][]Value{c.wantRow})
-		config, err := job.Config()
-		if err != nil {
-			t.Fatal(err)
-		}
-		got := config.(*QueryConfig).Parameters[0].Value
-		if !testutil.Equal(got, c.wantConfig) {
-			t.Errorf("param %[1]v (%[1]T): config:\ngot %[2]v (%[2]T)\nwant %[3]v (%[3]T)",
-				c.parameters[0].Value, got, c.wantConfig)
+
+		valueOfB := reflect.ValueOf(vals["b"])
+		if testutil.Equal(vals["b"], nil) || valueOfB.IsNil() {
+			t.Fatalf("expected empty struct array to not return nil, but found %v %v %T", valueOfB, vals["b"], vals["b"])
 		}
 	}
 }
@@ -2204,12 +2569,14 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 	ts := time.Date(2020, 10, 15, 15, 04, 05, 0, time.UTC)
 
 	testCases := []struct {
+		name       string
 		query      string
 		parameters []*bq.QueryParameter
 		wantRow    []Value
 		wantConfig interface{}
 	}{
 		{
+			"Literal",
 			"SELECT @val",
 			[]*bq.QueryParameter{
 				{
@@ -2226,6 +2593,7 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 			ts,
 		},
 		{
+			"RFC3339Nano",
 			"SELECT @val",
 			[]*bq.QueryParameter{
 				{
@@ -2242,6 +2610,24 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 			ts,
 		},
 		{
+			"DatetimeFormat",
+			"SELECT @val",
+			[]*bq.QueryParameter{
+				{
+					Name: "val",
+					ParameterType: &bq.QueryParameterType{
+						Type: "TIMESTAMP",
+					},
+					ParameterValue: &bq.QueryParameterValue{
+						Value: ts.Format(dateTimeFormat),
+					},
+				},
+			},
+			[]Value{ts},
+			ts,
+		},
+		{
+			"RFC3339",
 			"SELECT @val",
 			[]*bq.QueryParameter{
 				{
@@ -2258,35 +2644,37 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 			ts,
 		},
 	}
-	for _, c := range testCases {
-		q := client.Query(c.query)
-		bqJob, err := q.newJob()
-		if err != nil {
-			t.Fatal(err)
-		}
-		bqJob.Configuration.Query.QueryParameters = c.parameters
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			q := client.Query(tc.query)
+			bqJob, err := q.newJob()
+			if err != nil {
+				t.Fatal(err)
+			}
+			bqJob.Configuration.Query.QueryParameters = tc.parameters
 
-		job, err := q.client.insertJob(ctx, bqJob, nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if job.LastStatus() == nil {
-			t.Error("no LastStatus")
-		}
-		it, err := job.Read(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		checkRead(t, "QueryParameters", it, [][]Value{c.wantRow})
-		config, err := job.Config()
-		if err != nil {
-			t.Fatal(err)
-		}
-		got := config.(*QueryConfig).Parameters[0].Value
-		if !testutil.Equal(got, c.wantConfig) {
-			t.Errorf("param %[1]v (%[1]T): config:\ngot %[2]v (%[2]T)\nwant %[3]v (%[3]T)",
-				c.parameters[0].ParameterValue.Value, got, c.wantConfig)
-		}
+			job, err := q.client.insertJob(ctx, bqJob, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if job.LastStatus() == nil {
+				t.Error("no LastStatus")
+			}
+			it, err := job.Read(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			checkRead(t, "QueryParameters", it, [][]Value{tc.wantRow})
+			config, err := job.Config()
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := config.(*QueryConfig).Parameters[0].Value
+			if !testutil.Equal(got, tc.wantConfig) {
+				t.Errorf("param %[1]v (%[1]T): config:\ngot %[2]v (%[2]T)\nwant %[3]v (%[3]T)",
+					tc.parameters[0].ParameterValue.Value, got, tc.wantConfig)
+			}
+		})
 	}
 }
 
@@ -2511,6 +2899,77 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 	md.ExternalDataConfig.Schema = md.Schema
 	if diff := testutil.Diff(md.ExternalDataConfig, edc); diff != "" {
 		t.Errorf("got=-, want=+\n%s", diff)
+	}
+}
+
+func TestIntegration_ExportDataStatistics(t *testing.T) {
+	// Create a table, extract it to GCS using EXPORT DATA statement.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	schema := Schema{
+		{Name: "name", Type: StringFieldType},
+		{Name: "num", Type: IntegerFieldType},
+	}
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+
+	// Extract to a GCS object as CSV.
+	bucketName := testutil.ProjID()
+	uri := fmt.Sprintf("gs://%s/bq-export-test-*.csv", bucketName)
+	defer func() {
+		it := storageClient.Bucket(bucketName).Objects(ctx, &storage.Query{
+			MatchGlob: "bq-export-test-*.csv",
+		})
+		for {
+			obj, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Logf("failed to iterate through bucket %q: %v", bucketName, err)
+				continue
+			}
+			err = storageClient.Bucket(bucketName).Object(obj.Name).Delete(ctx)
+		}
+	}()
+
+	// EXPORT DATA to GCS object.
+	sql := fmt.Sprintf(`EXPORT DATA
+		OPTIONS (
+			uri = '%s',
+			format = 'CSV',
+			overwrite = true,
+			header = true,
+			field_delimiter = ';'
+		)
+		AS (
+			SELECT 'a' as name, 1 as num
+			UNION ALL
+			SELECT 'b' as name, 2 as num
+			UNION ALL
+			SELECT 'c' as name, 3 as num
+		);`,
+		uri)
+	stats, _, err := runQuerySQL(ctx, sql)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	qStats, ok := stats.Details.(*QueryStatistics)
+	if !ok {
+		t.Fatalf("expected query statistics not present")
+	}
+
+	if qStats.ExportDataStatistics == nil {
+		t.Fatal("jobStatus missing ExportDataStatistics")
+	}
+	if qStats.ExportDataStatistics.FileCount != 1 {
+		t.Fatalf("expected ExportDataStatistics to have 1 file, but got %d files", qStats.ExportDataStatistics.FileCount)
+	}
+	if qStats.ExportDataStatistics.RowCount != 3 {
+		t.Fatalf("expected ExportDataStatistics to have 3 rows, got %d rows", qStats.ExportDataStatistics.RowCount)
 	}
 }
 
@@ -2945,7 +3404,7 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 		CREATE MODEL %s
 		OPTIONS (
 			model_type='linear_reg',
-			max_iteration=1,
+			max_iterations=1,
 			learn_rate=0.4,
 			learn_rate_strategy='constant'
 		) AS (
@@ -3083,21 +3542,28 @@ func checkReadAndTotalRows(t *testing.T, msg string, it *RowIterator, want [][]V
 
 func compareRead(it *RowIterator, want [][]Value, compareTotalRows bool) (msg string, ok bool) {
 	got, _, totalRows, err := readAll(it)
+	jobStr := ""
+	if it.SourceJob() != nil {
+		jobStr = it.SourceJob().jobID
+	}
+	if jobStr != "" {
+		jobStr = fmt.Sprintf("(Job: %s)", jobStr)
+	}
 	if err != nil {
 		return err.Error(), false
 	}
 	if len(got) != len(want) {
-		return fmt.Sprintf("got %d rows, want %d", len(got), len(want)), false
+		return fmt.Sprintf("%s got %d rows, want %d", jobStr, len(got), len(want)), false
 	}
 	if compareTotalRows && len(got) != int(totalRows) {
-		return fmt.Sprintf("got %d rows, but totalRows = %d", len(got), totalRows), false
+		return fmt.Sprintf("%s got %d rows, but totalRows = %d", jobStr, len(got), totalRows), false
 	}
 	sort.Sort(byCol0(got))
 	for i, r := range got {
 		gotRow := []Value(r)
 		wantRow := want[i]
 		if !testutil.Equal(gotRow, wantRow) {
-			return fmt.Sprintf("#%d: got %#v, want %#v", i, gotRow, wantRow), false
+			return fmt.Sprintf("%s #%d: got %#v, want %#v", jobStr, i, gotRow, wantRow), false
 		}
 	}
 	return "", true

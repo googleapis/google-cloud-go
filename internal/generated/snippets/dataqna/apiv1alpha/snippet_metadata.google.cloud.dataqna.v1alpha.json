@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataqna/apiv1alpha",
-    "version": "0.6.0",
+    "version": "0.8.10",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataqnapb.SuggestQueriesResponse",
+        "resultType": "*dataqnapb.SuggestQueriesResponse",
         "client": {
           "shortName": "AutoSuggestionClient",
           "fullName": "google.cloud.dataqna.v1alpha.AutoSuggestionClient"
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataqnapb.Question",
+        "resultType": "*dataqnapb.Question",
         "client": {
           "shortName": "QuestionClient",
           "fullName": "google.cloud.dataqna.v1alpha.QuestionClient"
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataqnapb.Question",
+        "resultType": "*dataqnapb.Question",
         "client": {
           "shortName": "QuestionClient",
           "fullName": "google.cloud.dataqna.v1alpha.QuestionClient"
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataqnapb.Question",
+        "resultType": "*dataqnapb.Question",
         "client": {
           "shortName": "QuestionClient",
           "fullName": "google.cloud.dataqna.v1alpha.QuestionClient"
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataqnapb.UserFeedback",
+        "resultType": "*dataqnapb.UserFeedback",
         "client": {
           "shortName": "QuestionClient",
           "fullName": "google.cloud.dataqna.v1alpha.QuestionClient"
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataqnapb.UserFeedback",
+        "resultType": "*dataqnapb.UserFeedback",
         "client": {
           "shortName": "QuestionClient",
           "fullName": "google.cloud.dataqna.v1alpha.QuestionClient"
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]

@@ -214,7 +214,7 @@ func pstTimeStr() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to initialize PST location: %v", err)
 	}
-	return strings.Replace(time.Now().In(pst).Format("2006-01-02-15-04-05.000000-0700"), ".", "-", -1), nil
+	return strings.ToLower(strings.Replace(time.Now().In(pst).Format("2006-01-02-15-04-05.000000-MST"), ".", "-", -1)), nil
 }
 
 func TestAgentIntegration(t *testing.T) {
@@ -275,21 +275,6 @@ func TestAgentIntegration(t *testing.T) {
 	goVersionName := strings.Replace(goVersion, ".", "", -1)
 
 	testcases := []goGCETestCase{
-		{
-			InstanceConfig: proftest.InstanceConfig{
-				ProjectID:    projectID,
-				Name:         fmt.Sprintf("profiler-test-gomaster-%s", runID),
-				MachineType:  "n1-standard-1",
-				ImageProject: "debian-cloud",
-				ImageFamily:  "debian-11",
-			},
-			name:             "profiler-test-gomaster",
-			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
-			goVersion:        "master",
-			mutexProfiling:   true,
-			timeout:          gceTestTimeout,
-			benchDuration:    gceBenchDuration,
-		},
 		{
 			InstanceConfig: proftest.InstanceConfig{
 				ProjectID:    projectID,

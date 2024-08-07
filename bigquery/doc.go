@@ -33,15 +33,19 @@ To start working with this package, create a client:
 
 # Querying
 
-To query existing tables, create a Query and call its Read method:
+To query existing tables, create a Query and call its Read method, which starts the
+query and waits for it to complete:
 
 	q := client.Query(`
 	    SELECT year, SUM(number) as num
-	    FROM ` + "`bigquery-public-data.usa_names.usa_1910_2013`" + `
-	    WHERE name = "William"
+	    FROM bigquery-public-data.usa_names.usa_1910_2013
+	    WHERE name = @name
 	    GROUP BY year
 	    ORDER BY year
 	`)
+	q.Parameters = []bigquery.QueryParameter{
+		{Name: "name", Value: "William"},
+	}
 	it, err := q.Read(ctx)
 	if err != nil {
 	    // TODO: Handle error.
@@ -104,7 +108,9 @@ To retrieve the job's results from the ID, first look up the Job:
 	}
 
 Use the Job.Read method to obtain an iterator, and loop over the rows.
-Query.Read is just a convenience method that combines Query.Run and Job.Read.
+Calling Query.Read is preferred for queries with a relatively small result set,
+as it will call BigQuery jobs.query API for a optimized query path. If the query
+doesn't meet that criteria, the method will just combine Query.Run and Job.Read.
 
 	it, err = job.Read(ctx)
 	if err != nil {
@@ -254,6 +260,21 @@ it as well, and call its Run method.
 To upload, first define a type that implements the ValueSaver interface, which has a single method named Save.
 Then create an Inserter, and call its Put method with a slice of values.
 
+	type Item struct {
+		Name  string
+		Size  float64
+		Count int
+	}
+
+	// Save implements the ValueSaver interface.
+	func (i *Item) Save() (map[string]bigquery.Value, string, error) {
+		return map[string]bigquery.Value{
+			"Name":  i.Name,
+			"Size":  i.Size,
+			"Count": i.Count,
+		}, "", nil
+	}
+
 	u := table.Inserter()
 	// Item implements the ValueSaver interface.
 	items := []*Item{
@@ -266,15 +287,33 @@ Then create an Inserter, and call its Put method with a slice of values.
 	}
 
 You can also upload a struct that doesn't implement ValueSaver. Use the StructSaver type
-to specify the schema and insert ID by hand, or just supply the struct or struct pointer
-directly and the schema will be inferred:
+to specify the schema and insert ID by hand:
+
+	type item struct {
+		Name string
+		Num  int
+	}
+
+	// Assume schema holds the table's schema.
+	savers := []*bigquery.StructSaver{
+		{Struct: score{Name: "n1", Num: 12}, Schema: schema, InsertID: "id1"},
+		{Struct: score{Name: "n2", Num: 31}, Schema: schema, InsertID: "id2"},
+		{Struct: score{Name: "n3", Num: 7}, Schema: schema, InsertID: "id3"},
+	}
+
+	if err := u.Put(ctx, savers); err != nil {
+	    // TODO: Handle error.
+	}
+
+Lastly, but not least, you can just supply the struct or struct pointer directly and the schema will be inferred:
 
 	type Item2 struct {
 	    Name  string
 	    Size  float64
 	    Count int
 	}
-	// Item implements the ValueSaver interface.
+
+	// Item2 doesn't implement ValueSaver interface, so schema will be inferred.
 	items2 := []*Item2{
 	    {Name: "n1", Size: 32.6, Count: 7},
 	    {Name: "n2", Size: 4, Count: 2},

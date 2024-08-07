@@ -23,15 +23,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/duration"
+	pb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	pb "google.golang.org/genproto/googleapis/longrunning"
+	"github.com/googleapis/gax-go/v2/apierror"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	rpcstatus "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 type getterService struct {
@@ -65,8 +67,8 @@ func (s *getterService) sleeper() sleeper {
 }
 
 func TestWait(t *testing.T) {
-	responseDur := ptypes.DurationProto(42 * time.Second)
-	responseAny, err := ptypes.MarshalAny(responseDur)
+	responseDur := durationpb.New(42 * time.Second)
+	responseAny, err := anypb.New(responseDur)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -95,7 +97,7 @@ func TestWait(t *testing.T) {
 		t.Fatal("operation should not have completed yet")
 	}
 
-	var resp duration.Duration
+	var resp durationpb.Duration
 	bo := gax.Backoff{
 		Initial: 1 * time.Second,
 		Max:     3 * time.Second,
@@ -104,7 +106,7 @@ func TestWait(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !proto.Equal(&resp, responseDur) {
-		t.Errorf("response, got %v, want %v", resp, responseDur)
+		t.Errorf("response, got %v, want %v", &resp, responseDur)
 	}
 	if !op.Done() {
 		t.Errorf("operation should have completed")
@@ -150,6 +152,11 @@ func TestPollErrorResult(t *testing.T) {
 		errCode = codes.NotFound
 		errMsg  = "my error"
 	)
+	details := &errdetails.ErrorInfo{Reason: "things happen"}
+	a, err := anypb.New(details)
+	if err != nil {
+		t.Fatalf("anypb.New() = %v", err)
+	}
 	op := &Operation{
 		proto: &pb.Operation{
 			Name: "foo",
@@ -158,11 +165,12 @@ func TestPollErrorResult(t *testing.T) {
 				Error: &rpcstatus.Status{
 					Code:    int32(errCode),
 					Message: errMsg,
+					Details: []*anypb.Any{a},
 				},
 			},
 		},
 	}
-	err := op.Poll(context.Background(), nil)
+	err = op.Poll(context.Background(), nil)
 	if got := status.Code(err); got != errCode {
 		t.Errorf("error code, want %s, got %s", errCode, got)
 	}
@@ -171,6 +179,11 @@ func TestPollErrorResult(t *testing.T) {
 	}
 	if !op.Done() {
 		t.Errorf("operation should have completed")
+	}
+	var ae *apierror.APIError
+	errors.As(err, &ae)
+	if got := ae.Details().ErrorInfo.Reason; got != details.Reason {
+		t.Errorf("got %q, want %q", got, details.Reason)
 	}
 }
 

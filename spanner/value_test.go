@@ -17,20 +17,26 @@ limitations under the License.
 package spanner
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"math"
 	"math/big"
 	"reflect"
+	"strconv"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/proto"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	pb "cloud.google.com/go/spanner/testdata/protos"
 	"github.com/google/go-cmp/cmp"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/testing/protocmp"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 var (
@@ -194,6 +200,30 @@ func (c *customStructToNull) DecodeSpanner(val interface{}) (err error) {
 	return fmt.Errorf("val mismatch: expected nil, got %v", val)
 }
 
+// e.g. a clock face time HH:MM
+type customArray [4]uint8
+
+// Convert to customArray from structpb.ListValue<structpb.StringValue>
+func (c *customArray) DecodeSpanner(val interface{}) error {
+	listVal, ok := val.(*structpb.ListValue)
+	if !ok {
+		return fmt.Errorf("failed to decode customArray: unexpected type of %v", val)
+	}
+	asSlice := listVal.AsSlice()
+	if len(asSlice) != 4 {
+		return fmt.Errorf("failed to decode customArray: expected array of length 4")
+	}
+	for i, vI := range asSlice {
+		vStr, ok := vI.(string)
+		if !ok {
+			return fmt.Errorf("failed to decode customArray: got non string value: %v", vI)
+		}
+		vInt, _ := strconv.Atoi(vStr)
+		c[i] = uint8(vInt)
+	}
+	return nil
+}
+
 // Test encoding Values.
 func TestEncodeValue(t *testing.T) {
 	type CustomString string
@@ -205,6 +235,7 @@ func TestEncodeValue(t *testing.T) {
 	type CustomDate civil.Date
 	type CustomNumeric big.Rat
 	type CustomPGNumeric PGNumeric
+	type CustomPGJSONB PGJsonB
 
 	type CustomNullString NullString
 	type CustomNullInt64 NullInt64
@@ -237,6 +268,8 @@ func TestEncodeValue(t *testing.T) {
 	var bNilPtr *bool
 	fValue := 3.14
 	var fNilPtr *float64
+	f32Value := float32(3.14)
+	var f32NilPtr *float32
 	tValue := t1
 	var tNilPtr *time.Time
 	dValue := d1
@@ -247,17 +280,39 @@ func TestEncodeValue(t *testing.T) {
 	maxNumValuePtr, _ := (&big.Rat{}).SetString("99999999999999999999999999999.999999999")
 	minNumValuePtr, _ := (&big.Rat{}).SetString("-99999999999999999999999999999.999999999")
 
+	singer1ProtoEnum := pb.Genre_ROCK
+	singer1ProtoMsg := &pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singer1ProtoEnum,
+	}
+
+	singer2ProtoEnum := pb.Genre_FOLK
+	singer2ProtoMsg := &pb.SingerInfo{
+		SingerId:    proto.Int64(2),
+		BirthDate:   proto.String("February"),
+		Nationality: proto.String("Country2"),
+		Genre:       &singer2ProtoEnum,
+	}
+	protoMessagefqn := "examples.spanner.music.SingerInfo"
+	protoEnumfqn := "examples.spanner.music.Genre"
+
 	var (
-		tString    = stringType()
-		tInt       = intType()
-		tBool      = boolType()
-		tFloat     = floatType()
-		tBytes     = bytesType()
-		tTime      = timeType()
-		tDate      = dateType()
-		tNumeric   = numericType()
-		tJSON      = jsonType()
-		tPGNumeric = pgNumericType()
+		tString       = stringType()
+		tInt          = intType()
+		tBool         = boolType()
+		tFloat        = floatType()
+		tFloat32      = float32Type()
+		tBytes        = bytesType()
+		tTime         = timeType()
+		tDate         = dateType()
+		tNumeric      = numericType()
+		tJSON         = jsonType()
+		tPGNumeric    = pgNumericType()
+		tPGJsonb      = pgJsonbType()
+		tProtoMessage = protoMessageType(protoMessagefqn)
+		tProtoEnum    = protoEnumType(protoEnumfqn)
 	)
 	for i, test := range []struct {
 		in       interface{}
@@ -313,6 +368,17 @@ func TestEncodeValue(t *testing.T) {
 		{[]float64{3.141, 0.618, math.Inf(-1)}, listProto(floatProto(3.141), floatProto(0.618), floatProto(math.Inf(-1))), listType(tFloat), "[]float64"},
 		{[]NullFloat64{{3.141, true}, {0.618, false}}, listProto(floatProto(3.141), nullProto()), listType(tFloat), "[]NullFloat64"},
 		{[]*float64{&fValue, fNilPtr}, listProto(floatProto(3.14), nullProto()), listType(tFloat), "[]NullFloat64"},
+		// FLOAT32 / FLOAT32 ARRAY
+		{float32(3.14), float32Proto(3.14), tFloat32, "float32"},
+		{NullFloat32{3.14, true}, float32Proto(3.14), tFloat32, "NullFloat32 with value"},
+		{NullFloat32{float32(math.Inf(1)), true}, float32Proto(float32(math.Inf(1))), tFloat32, "NullFloat32 with infinity"},
+		{NullFloat32{3.14, false}, nullProto(), tFloat32, "NullFloat32 with null"},
+		{&f32Value, float32Proto(3.14), tFloat32, "*float32 with value"},
+		{f32NilPtr, nullProto(), tFloat32, "*float32 with null"},
+		{[]float32(nil), nullProto(), listType(tFloat32), "null []float32"},
+		{[]float32{3.14, 0.618, float32(math.Inf(-1))}, listProto(float32Proto(3.14), float32Proto(0.618), float32Proto(float32(math.Inf(-1)))), listType(tFloat32), "[]float32"},
+		{[]NullFloat32{{3.14, true}, {0.618, false}}, listProto(float32Proto(3.14), nullProto()), listType(tFloat32), "[]NullFloat"},
+		{[]*float32{&f32Value, f32NilPtr}, listProto(float32Proto(3.14), nullProto()), listType(tFloat32), "[]NullFloat32"},
 		// NUMERIC / NUMERIC ARRAY
 		{*numValuePtr, numericProto(numValuePtr), tNumeric, "big.Rat"},
 		{numValuePtr, numericProto(numValuePtr), tNumeric, "*big.Rat"},
@@ -333,6 +399,13 @@ func TestEncodeValue(t *testing.T) {
 		{[]NullJSON{{msg, true}, {msg, false}}, listProto(stringProto(jsonStr), nullProto()), listType(tJSON), "[]NullJSON"},
 		{NullJSON{[]Message{}, true}, stringProto(emptyArrayJSONStr), tJSON, "a json string with empty array to NullJSON"},
 		{NullJSON{ptrMsg, true}, stringProto(nullValueJSONStr), tJSON, "a json string with null value to NullJSON"},
+		// PG JSONB
+		{PGJsonB{Value: msg, Valid: true}, stringProto(jsonStr), tPGJsonb, "PGJsonB with value"},
+		{PGJsonB{Value: msg, Valid: false}, nullProto(), tPGJsonb, "PGJsonB with null"},
+		{[]PGJsonB(nil), nullProto(), listType(tPGJsonb), "null []PGJsonB"},
+		{[]PGJsonB{{Value: msg, Valid: true}, {Value: msg, Valid: false}}, listProto(stringProto(jsonStr), nullProto()), listType(tPGJsonb), "[]PGJsonB"},
+		{PGJsonB{Value: []Message{}, Valid: true}, stringProto(emptyArrayJSONStr), tPGJsonb, "a json string with empty array to PGJsonB"},
+		{PGJsonB{Value: ptrMsg, Valid: true}, stringProto(nullValueJSONStr), tPGJsonb, "a json string with null value to PGJsonB"},
 		// PG NUMERIC
 		{PGNumeric{"123.456", true}, stringProto("123.456"), tPGNumeric, "PG Numeric"},
 		{PGNumeric{Valid: false}, nullProto(), tPGNumeric, "PG Numeric with a null value"},
@@ -459,6 +532,37 @@ func TestEncodeValue(t *testing.T) {
 		{CustomPGNumeric{Valid: false}, nullProto(), tPGNumeric, "PG Numeric with a null value"},
 		{[]CustomPGNumeric(nil), nullProto(), listType(tPGNumeric), "null []PGNumeric"},
 		{[]CustomPGNumeric{{"123.456", true}, {Valid: false}}, listProto(stringProto("123.456"), nullProto()), listType(tPGNumeric), "[]PGNumeric"},
+		// CUSTOM PG JSONB
+		{CustomPGJSONB{Value: msg, Valid: true}, stringProto(jsonStr), tPGJsonb, "CustomPGJSONB with value"},
+		{CustomPGJSONB{Value: msg, Valid: false}, nullProto(), tPGJsonb, "CustomPGJSONB with null"},
+		{[]CustomPGJSONB(nil), nullProto(), listType(tPGJsonb), "null []CustomPGJSONB"},
+		{[]CustomPGJSONB{{Value: msg, Valid: true}, {Value: msg, Valid: false}}, listProto(stringProto(jsonStr), nullProto()), listType(tPGJsonb), "[]CustomPGJSONB"},
+		// PROTO MESSAGE AND PROTO ENUM
+		{singer1ProtoMsg, protoMessageProto(singer1ProtoMsg), tProtoMessage, "Proto Message"},
+		{singer1ProtoEnum, protoEnumProto(singer1ProtoEnum), tProtoEnum, "Proto Enum"},
+		{(*pb.SingerInfo)(nil), nullProto(), tProtoMessage, "Proto Message with nil"},
+		{(*pb.Genre)(nil), nullProto(), tProtoEnum, "Proto Enum with nil"},
+		{NullProtoMessage{singer1ProtoMsg, true}, protoMessageProto(singer1ProtoMsg), tProtoMessage, "NullProto with value"},
+		{NullProtoEnum{singer1ProtoEnum, true}, protoEnumProto(singer1ProtoEnum), tProtoEnum, "NullEnum with value"},
+		{NullProtoMessage{(*pb.SingerInfo)(nil), true}, nullProto(), tProtoMessage, "NullProto with value nil"},
+		{NullProtoEnum{(*pb.Genre)(nil), true}, nullProto(), tProtoEnum, "NullEnum with value nil"},
+		// ARRAY OF PROTO MESSAGES AND PROTO ENUM
+		{[]*pb.SingerInfo{singer1ProtoMsg, singer2ProtoMsg}, listProto(protoMessageProto(singer1ProtoMsg), protoMessageProto(singer2ProtoMsg)), listType(tProtoMessage), "Array of Proto Message"},
+		{[]*pb.SingerInfo{singer1ProtoMsg, singer2ProtoMsg, nil, (*pb.SingerInfo)(nil)}, listProto(protoMessageProto(singer1ProtoMsg), protoMessageProto(singer2ProtoMsg), nullProto(), nullProto()), listType(tProtoMessage), "Array of Proto Message with nil values"},
+		{[]*pb.Genre{&singer1ProtoEnum, &singer2ProtoEnum}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum)), listType(tProtoEnum), "Array of Proto Enum 1"},
+		{[]pb.Genre{singer1ProtoEnum, singer2ProtoEnum}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum)), listType(tProtoEnum), "Array of Proto Enum 2"},
+		{[]*pb.Genre{&singer1ProtoEnum, &singer2ProtoEnum, nil, (*pb.Genre)(nil)}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum), nullProto(), nullProto()), listType(tProtoEnum), "Array of Proto Enum with nil values"},
+		{[]*pb.SingerInfo{}, listProto(), listType(tProtoMessage), "Empty Array of Proto Message"},
+		{[]*pb.SingerInfo(nil), nullProto(), listType(tProtoMessage), "Nil array of Proto Message"},
+		{[]*pb.Genre{}, listProto(), listType(tProtoEnum), "Empty Array of Proto Enum 1"},
+		{[]*pb.Genre(nil), nullProto(), listType(tProtoEnum), "Nil Array of Proto Enum 1"},
+		{[]pb.Genre{}, listProto(), listType(tProtoEnum), "Empty Array of Proto Enum 2"},
+		{[]pb.Genre(nil), nullProto(), listType(tProtoEnum), "Nil Array of Proto Enum 2"},
+		// Null elements in ARRAY OF PROTO MESSAGES AND PROTO ENUM
+		{[]*pb.SingerInfo{nil, (*pb.SingerInfo)(nil)}, listProto(nullProto(), nullProto()), listType(tProtoMessage), "Array of Proto Message with nil values"},
+		{[]*pb.Genre{nil, (*pb.Genre)(nil)}, listProto(nullProto(), nullProto()), listType(tProtoEnum), "Array of Proto Enum with nil values"},
+		{[]*pb.SingerInfo{singer1ProtoMsg, singer2ProtoMsg, nil, (*pb.SingerInfo)(nil)}, listProto(protoMessageProto(singer1ProtoMsg), protoMessageProto(singer2ProtoMsg), nullProto(), nullProto()), listType(tProtoMessage), "Array of Proto Message with non-nil and nil values"},
+		{[]*pb.Genre{&singer1ProtoEnum, &singer2ProtoEnum, nil, (*pb.Genre)(nil)}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum), nullProto(), nullProto()), listType(tProtoEnum), "Array of Proto Enum with non-nil and nil values"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -501,6 +605,9 @@ func TestEncodeInvalidValues(t *testing.T) {
 		// CUSTOM NUMERIC
 		{desc: "custom numeric type with invalid scale component", in: CustomNumeric(*invalidNumPtr1), errMsg: "max scale for a numeric is 9. The requested numeric has more"},
 		{desc: "custom numeric type with invalid whole component", in: CustomNumeric(*invalidNumPtr2), errMsg: "max precision for the whole component of a numeric is 29. The requested numeric has a whole component with precision 30"},
+		// PROTO MESSAGE AND PROTO ENUM
+		{desc: "Invalid Null Proto", in: NullProtoMessage{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"field \\\"Valid\\\" of spanner.NullProtoMessage cannot be set to false when writing data to Cloud Spanner. Use typed nil in spanner.NullProtoMessage to write null values to Cloud Spanner\""},
+		{desc: "Invalid Null Enum", in: NullProtoEnum{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"field \\\"Valid\\\" of spanner.NullProtoEnum cannot be set to false when writing data to Cloud Spanner. Use typed nil in spanner.NullProtoEnum to write null values to Cloud Spanner\""},
 	} {
 		_, _, err := encodeValue(test.in)
 		if err == nil {
@@ -885,6 +992,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 	type CustomInt64 int64
 	type CustomBool bool
 	type CustomFloat64 float64
+	type CustomFloat32 float32
 	type CustomTime time.Time
 	type CustomDate civil.Date
 
@@ -892,6 +1000,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 	type CustomNullInt64 NullInt64
 	type CustomNullBool NullBool
 	type CustomNullFloat64 NullFloat64
+	type CustomNullFloat32 NullFloat32
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
 
@@ -899,6 +1008,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 	iValue := int64(300)
 	bValue := false
 	fValue := 3.45
+	f32Value := float32(3.14)
 	tValue := t1
 	dValue := d1
 
@@ -907,6 +1017,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		mkField("Intf", intType()),
 		mkField("Boolf", boolType()),
 		mkField("Floatf", floatType()),
+		mkField("Float32f", float32Type()),
 		mkField("Bytef", bytesType()),
 		mkField("Timef", timeType()),
 		mkField("Datef", dateType()))
@@ -915,19 +1026,21 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		{
 			"Basic types.",
 			struct {
-				Stringf string
-				Intf    int
-				Boolf   bool
-				Floatf  float64
-				Bytef   []byte
-				Timef   time.Time
-				Datef   civil.Date
-			}{"abc", 300, false, 3.45, []byte("foo"), t1, d1},
+				Stringf  string
+				Intf     int
+				Boolf    bool
+				Floatf   float64
+				Float32f float32
+				Bytef    []byte
+				Timef    time.Time
+				Datef    civil.Date
+			}{"abc", 300, false, 3.45, float32(3.14), []byte("foo"), t1, d1},
 			listProto(
 				stringProto("abc"),
 				intProto(300),
 				boolProto(false),
 				floatProto(3.45),
+				float32Proto(3.14),
 				bytesProto([]byte("foo")),
 				timeProto(t1),
 				dateProto(d1)),
@@ -936,19 +1049,21 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		{
 			"Pointers to basic types.",
 			struct {
-				Stringf *string
-				Intf    *int64
-				Boolf   *bool
-				Floatf  *float64
-				Bytef   []byte
-				Timef   *time.Time
-				Datef   *civil.Date
-			}{&sValue, &iValue, &bValue, &fValue, []byte("foo"), &tValue, &dValue},
+				Stringf  *string
+				Intf     *int64
+				Boolf    *bool
+				Floatf   *float64
+				Float32f *float32
+				Bytef    []byte
+				Timef    *time.Time
+				Datef    *civil.Date
+			}{&sValue, &iValue, &bValue, &fValue, &f32Value, []byte("foo"), &tValue, &dValue},
 			listProto(
 				stringProto("abc"),
 				intProto(300),
 				boolProto(false),
 				floatProto(3.45),
+				float32Proto(3.14),
 				bytesProto([]byte("foo")),
 				timeProto(t1),
 				dateProto(d1)),
@@ -957,15 +1072,17 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		{
 			"Pointers to basic types with null values.",
 			struct {
-				Stringf *string
-				Intf    *int64
-				Boolf   *bool
-				Floatf  *float64
-				Bytef   []byte
-				Timef   *time.Time
-				Datef   *civil.Date
-			}{nil, nil, nil, nil, nil, nil, nil},
+				Stringf  *string
+				Intf     *int64
+				Boolf    *bool
+				Floatf   *float64
+				Float32f *float32
+				Bytef    []byte
+				Timef    *time.Time
+				Datef    *civil.Date
+			}{nil, nil, nil, nil, nil, nil, nil, nil},
 			listProto(
+				nullProto(),
 				nullProto(),
 				nullProto(),
 				nullProto(),
@@ -978,19 +1095,21 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		{
 			"Basic custom types.",
 			struct {
-				Stringf CustomString
-				Intf    CustomInt64
-				Boolf   CustomBool
-				Floatf  CustomFloat64
-				Bytef   CustomBytes
-				Timef   CustomTime
-				Datef   CustomDate
-			}{"abc", 300, false, 3.45, []byte("foo"), CustomTime(t1), CustomDate(d1)},
+				Stringf  CustomString
+				Intf     CustomInt64
+				Boolf    CustomBool
+				Floatf   CustomFloat64
+				Float32f CustomFloat32
+				Bytef    CustomBytes
+				Timef    CustomTime
+				Datef    CustomDate
+			}{"abc", 300, false, 3.45, CustomFloat32(3.14), []byte("foo"), CustomTime(t1), CustomDate(d1)},
 			listProto(
 				stringProto("abc"),
 				intProto(300),
 				boolProto(false),
 				floatProto(3.45),
+				float32Proto(3.14),
 				bytesProto([]byte("foo")),
 				timeProto(t1),
 				dateProto(d1)),
@@ -999,23 +1118,26 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		{
 			"Basic types null values.",
 			struct {
-				Stringf NullString
-				Intf    NullInt64
-				Boolf   NullBool
-				Floatf  NullFloat64
-				Bytef   []byte
-				Timef   NullTime
-				Datef   NullDate
+				Stringf  NullString
+				Intf     NullInt64
+				Boolf    NullBool
+				Floatf   NullFloat64
+				Float32f NullFloat32
+				Bytef    []byte
+				Timef    NullTime
+				Datef    NullDate
 			}{
 				NullString{"abc", false},
 				NullInt64{4, false},
 				NullBool{false, false},
 				NullFloat64{5.6, false},
+				NullFloat32{3.14, false},
 				nil,
 				NullTime{t1, false},
 				NullDate{d1, false},
 			},
 			listProto(
+				nullProto(),
 				nullProto(),
 				nullProto(),
 				nullProto(),
@@ -1028,23 +1150,26 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		{
 			"Basic custom types null values.",
 			struct {
-				Stringf CustomNullString
-				Intf    CustomNullInt64
-				Boolf   CustomNullBool
-				Floatf  CustomNullFloat64
-				Bytef   CustomBytes
-				Timef   CustomNullTime
-				Datef   CustomNullDate
+				Stringf  CustomNullString
+				Intf     CustomNullInt64
+				Boolf    CustomNullBool
+				Floatf   CustomNullFloat64
+				Float32f CustomNullFloat32
+				Bytef    CustomBytes
+				Timef    CustomNullTime
+				Datef    CustomNullDate
 			}{
 				CustomNullString{"abc", false},
 				CustomNullInt64{4, false},
 				CustomNullBool{false, false},
 				CustomNullFloat64{5.6, false},
+				CustomNullFloat32{3.14, false},
 				nil,
 				CustomNullTime{t1, false},
 				CustomNullDate{d1, false},
 			},
 			listProto(
+				nullProto(),
 				nullProto(),
 				nullProto(),
 				nullProto(),
@@ -1381,6 +1506,10 @@ func TestDecodeValue(t *testing.T) {
 	var fNilPtr *float64
 	f2Value := 6.626
 
+	f32Value := float32(3.14)
+	var f32NilPtr *float32
+	f32Value2 := float32(6.626)
+
 	numValuePtr := big.NewRat(12345, 1e3)
 	var numNilPtr *big.Rat
 	num2ValuePtr := big.NewRat(12345, 1e4)
@@ -1392,6 +1521,23 @@ func TestDecodeValue(t *testing.T) {
 	dValue := d1
 	var dNilPtr *civil.Date
 	d2Value := d2
+
+	singerEnumValue := pb.Genre_ROCK
+	singerProtoMsg := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerEnumValue,
+	}
+	singer2ProtoEnum := pb.Genre_FOLK
+	singer2ProtoMsg := pb.SingerInfo{
+		SingerId:    proto.Int64(2),
+		BirthDate:   proto.String("February"),
+		Nationality: proto.String("Country2"),
+		Genre:       &singer2ProtoEnum,
+	}
+	protoMessagefqn := "examples.spanner.music.SingerInfo"
+	protoEnumfqn := "examples.spanner.music.Genre"
 
 	for _, test := range []struct {
 		desc      string
@@ -1466,6 +1612,21 @@ func TestDecodeValue(t *testing.T) {
 		// FLOAT64 ARRAY with []*float64
 		{desc: "decode ARRAY<FLOAT64> to []*float64", proto: listProto(floatProto(fValue), nullProto(), floatProto(f2Value)), protoType: listType(floatType()), want: []*float64{&fValue, nil, &f2Value}},
 		{desc: "decode NULL to []*float64", proto: nullProto(), protoType: listType(floatType()), want: []*float64(nil)},
+		// FLOAT32
+		{desc: "decode FLOAT32 to float32", proto: float32Proto(3.14), protoType: float32Type(), want: float32(3.14)},
+		{desc: "decode NULL to float32", proto: nullProto(), protoType: float32Type(), want: 0.00, wantErr: true},
+		{desc: "decode FLOAT32 to *float32", proto: float32Proto(3.14), protoType: float32Type(), want: &f32Value},
+		{desc: "decode NULL to *float32", proto: nullProto(), protoType: float32Type(), want: f32NilPtr},
+		{desc: "decode FLOAT32 to NullFloat32", proto: float32Proto(3.14), protoType: float32Type(), want: NullFloat32{3.14, true}},
+		{desc: "decode NULL to NullFloat32", proto: nullProto(), protoType: float32Type(), want: NullFloat32{}},
+		// FLOAT64 ARRAY with []NullFloat32
+		{desc: "decode ARRAY<FLOAT32> to []NullFloat32", proto: listProto(float32Proto(float32(math.Inf(1))), float32Proto(float32(math.Inf(-1))), nullProto(), float32Proto(3.1)), protoType: listType(float32Type()), want: []NullFloat32{{float32(math.Inf(1)), true}, {float32(math.Inf(-1)), true}, {}, {3.1, true}}},
+		{desc: "decode NULL to []NullFloat32", proto: nullProto(), protoType: listType(float32Type()), want: []NullFloat32(nil)},
+		// FLOAT32 ARRAY with []float32
+		{desc: "decode ARRAY<FLOAT32> to []float32", proto: listProto(float32Proto(float32(math.Inf(1))), float32Proto(float32(math.Inf(-1))), float32Proto(3.1)), protoType: listType(float32Type()), want: []float32{float32(math.Inf(1)), float32(math.Inf(-1)), 3.1}},
+		// FLOAT64 ARRAY with []*float32
+		{desc: "decode ARRAY<FLOAT32> to []*float32", proto: listProto(float32Proto(f32Value), nullProto(), float32Proto(f32Value2)), protoType: listType(float32Type()), want: []*float32{&f32Value, nil, &f32Value2}},
+		{desc: "decode NULL to []*float32", proto: nullProto(), protoType: listType(float32Type()), want: []*float32(nil)},
 		// NUMERIC
 		{desc: "decode NUMERIC to big.Rat", proto: numericProto(numValuePtr), protoType: numericType(), want: *numValuePtr},
 		{desc: "decode NUMERIC to NullNumeric", proto: numericProto(numValuePtr), protoType: numericType(), want: NullNumeric{*numValuePtr, true}},
@@ -1497,6 +1658,21 @@ func TestDecodeValue(t *testing.T) {
 		// PG NUMERIC ARRAY with []PGNumeric
 		{desc: "decode ARRAY<PG Numeric> to []PGNumeric", proto: listProto(stringProto("123.456"), stringProto("NaN"), nullProto()), protoType: listType(pgNumericType()), want: []PGNumeric{{"123.456", true}, {"NaN", true}, {}}},
 		{desc: "decode NULL to []PGNumeric", proto: nullProto(), protoType: listType(pgNumericType()), want: []PGNumeric(nil)},
+		// PG OID
+		{desc: "decode PG OID to int64", proto: intProto(15), protoType: pgOidType(), want: int64(15)},
+		{desc: "decode PG OID NULL to int64", proto: nullProto(), protoType: pgOidType(), want: int64(0), wantErr: true},
+		{desc: "decode PG OID to *int64", proto: intProto(15), protoType: pgOidType(), want: &iValue},
+		{desc: "decode PG OID NULL to *int64", proto: nullProto(), protoType: pgOidType(), want: iNilPtr},
+		{desc: "decode PG OID to NullInt64", proto: intProto(15), protoType: pgOidType(), want: NullInt64{15, true}},
+		{desc: "decode PG OID NULL to NullInt64", proto: nullProto(), protoType: pgOidType(), want: NullInt64{}},
+		// PG OID ARRAY with []NullInt64
+		{desc: "decode ARRAY<PG OID> to []NullInt64", proto: listProto(intProto(91), nullProto(), intProto(87)), protoType: listType(pgOidType()), want: []NullInt64{{91, true}, {}, {87, true}}},
+		{desc: "decode PG OID NULL to []NullInt64", proto: nullProto(), protoType: listType(pgOidType()), want: []NullInt64(nil)},
+		// PG OID ARRAY with []int64
+		{desc: "decode ARRAY<PG OID> to []int64", proto: listProto(intProto(91), intProto(87)), protoType: listType(pgOidType()), want: []int64{91, 87}},
+		// PG OID ARRAY with []*int64
+		{desc: "decode ARRAY<PG OID> to []*int64", proto: listProto(intProto(91), nullProto(), intProto(87)), protoType: listType(pgOidType()), want: []*int64{&i1Value, nil, &i2Value}},
+		{desc: "decode PG OID NULL to []*int64", proto: nullProto(), protoType: listType(pgOidType()), want: []*int64(nil)},
 		// TIMESTAMP
 		{desc: "decode TIMESTAMP to time.Time", proto: timeProto(t1), protoType: timeType(), want: t1},
 		{desc: "decode TIMESTAMP to NullTime", proto: timeProto(t1), protoType: timeType(), want: NullTime{t1, true}},
@@ -1711,6 +1887,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode TIMESTAMP to CustomNullTime", proto: timeProto(t1), protoType: timeType(), want: CustomNullTime{t1, true}},
 		{desc: "decode DATE to CustomNullDate", proto: dateProto(d1), protoType: dateType(), want: CustomNullDate{d1, true}},
 		{desc: "decode PG NUMERIC to CustomPGNumeric", proto: stringProto("123.456"), protoType: pgNumericType(), want: CustomPGNumeric{"123.456", true}},
+		{desc: "decode PG OID to CustomNullInt64", proto: intProto(-100), protoType: pgOidType(), want: CustomNullInt64{-100, true}},
 
 		{desc: "decode NULL to CustomNullString", proto: nullProto(), protoType: stringType(), want: CustomNullString{}},
 		{desc: "decode NULL to CustomNullInt64", proto: nullProto(), protoType: intType(), want: CustomNullInt64{}},
@@ -1721,6 +1898,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL to CustomNullTime", proto: nullProto(), protoType: timeType(), want: CustomNullTime{}},
 		{desc: "decode NULL to CustomNullDate", proto: nullProto(), protoType: dateType(), want: CustomNullDate{}},
 		{desc: "decode NULL to CustomPGNumeric", proto: nullProto(), protoType: pgNumericType(), want: CustomPGNumeric{}},
+		{desc: "decode PG OID NULL to CustomNullInt64", proto: nullProto(), protoType: pgOidType(), want: CustomNullInt64{}},
 
 		// STRING ARRAY
 		{desc: "decode NULL to []CustomString", proto: nullProto(), protoType: listType(stringType()), want: []CustomString(nil)},
@@ -1787,6 +1965,37 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL array of bool to CustomStructToNull", proto: nullProto(), protoType: listType(boolType()), want: customStructToNull{}},
 		{desc: "decode NULL array of float to CustomStructToNull", proto: nullProto(), protoType: listType(floatType()), want: customStructToNull{}},
 		{desc: "decode NULL array of string to CustomStructToNull", proto: nullProto(), protoType: listType(stringType()), want: customStructToNull{}},
+		// CUSTOM ARRAY
+		{desc: "decode ARRAY<INT64> to CustomArray", proto: listProto(intProto(0), intProto(6), intProto(3), intProto(5)), protoType: listType(intType()), want: customArray([4]uint8{0, 6, 3, 5})},
+		// PROTO MESSAGE AND PROTO ENUM
+		{desc: "decode PROTO to proto.Message", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn),
+			want: pb.SingerInfo{
+				SingerId:    proto.Int64(1),
+				BirthDate:   proto.String("January"),
+				Nationality: proto.String("Country1"),
+				Genre:       &singerEnumValue,
+			},
+		},
+		{desc: "decode ENUM to protoreflect.Enum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: singerEnumValue},
+		{desc: "decode PROTO to NullProto", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{&singerProtoMsg, true}},
+		{desc: "decode NULL to NullProto", proto: nullProto(), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{}},
+		{desc: "decode ENUM to NullEnum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{&singerEnumValue, true}},
+		{desc: "decode NULL to NullEnum", proto: nullProto(), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{}},
+		// ARRAY OF PROTO MESSAGES AND PROTO ENUM
+		{desc: "decode ARRAY<PROTO<>> to []*pb.SingerInfo", proto: listProto(protoMessageProto(&singerProtoMsg), protoMessageProto(&singer2ProtoMsg)), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo{&singerProtoMsg, &singer2ProtoMsg}},
+		{desc: "decode ARRAY<ENUM<>> to []*pb.Genre", proto: listProto(protoEnumProto(pb.Genre_ROCK), protoEnumProto(pb.Genre_FOLK)), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{&singerEnumValue, &singer2ProtoEnum}},
+		{desc: "decode ARRAY<ENUM<>> to []pb.Genre", proto: listProto(protoEnumProto(pb.Genre_ROCK), protoEnumProto(pb.Genre_FOLK)), protoType: listType(protoEnumType(protoEnumfqn)), want: []pb.Genre{singerEnumValue, singer2ProtoEnum}},
+		{desc: "decode NULL to []*pb.SingerInfo", proto: nullProto(), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo(nil)},
+		{desc: "decode NULL to []*pb.Genre", proto: nullProto(), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre(nil)},
+		{desc: "decode NULL to []pb.Genre", proto: nullProto(), protoType: listType(protoEnumType(protoEnumfqn)), want: []pb.Genre(nil)},
+		{desc: "decode empty array to []*pb.SingerInfo", proto: listProto(), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo{}},
+		{desc: "decode empty array to []*pb.Genre", proto: listProto(), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{}},
+		{desc: "decode empty array to []pb.Genre", proto: listProto(), protoType: listType(protoEnumType(protoEnumfqn)), want: []pb.Genre{}},
+		// Null elements in ARRAY OF PROTO MESSAGES AND PROTO ENUM
+		{desc: "decode ARRAY<PROTO<>> to []*pb.SingerInfo", proto: listProto(nullProto(), protoMessageProto(&singerProtoMsg), protoMessageProto(&singer2ProtoMsg)), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo{nil, &singerProtoMsg, &singer2ProtoMsg}},
+		{desc: "decode all NULL elements in ARRAY<PROTO<>> to []*pb.SingerInfo", proto: listProto(nullProto(), nullProto()), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo{nil, nil}},
+		{desc: "decode ARRAY<ENUM<>> to []*pb.Genre", proto: listProto(nullProto(), protoEnumProto(pb.Genre_ROCK), protoEnumProto(pb.Genre_FOLK)), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{nil, &singerEnumValue, &singer2ProtoEnum}},
+		{desc: "decode all NULL elements in ARRAY<ENUM<>> to []*pb.Genre", proto: listProto(nullProto(), nullProto()), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{nil, nil}},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()
@@ -1806,6 +2015,11 @@ func TestDecodeValue(t *testing.T) {
 			nullValue.Time = time.Unix(100, 100)
 		case *NullDate:
 			nullValue.Date = civil.DateOf(time.Unix(100, 200))
+		case *NullProtoMessage:
+			nullValue.ProtoMessageVal = &pb.SingerInfo{}
+		case *NullProtoEnum:
+			var singerProtoEnumDefault pb.Genre
+			nullValue.ProtoEnumVal = &singerProtoEnumDefault
 		default:
 		}
 		err := decodeValue(test.proto, test.protoType, v)
@@ -1820,8 +2034,15 @@ func TestDecodeValue(t *testing.T) {
 			continue
 		}
 		got := reflect.Indirect(gotp).Interface()
-		if !testutil.Equal(got, test.want, cmp.AllowUnexported(CustomNumeric{}, CustomTime{}, CustomDate{}, Row{}, big.Rat{}, big.Int{}, customStructToNull{})) {
-			t.Errorf("%s: unexpected decoding result - got %v (%T), want %v (%T)", test.desc, got, got, test.want, test.want)
+		switch v.(type) {
+		case proto.Message:
+			if diff := cmp.Diff(got, test.want, protocmp.Transform()); diff != "" {
+				t.Errorf("unexpected difference in proto message :\n%v", diff)
+			}
+		default:
+			if !testutil.Equal(got, test.want, cmp.AllowUnexported(CustomNumeric{}, CustomTime{}, CustomDate{}, Row{}, big.Rat{}, big.Int{}, customStructToNull{})) {
+				t.Errorf("%s: unexpected decoding result - got %v (%T), want %v (%T)", test.desc, got, got, test.want, test.want)
+			}
 		}
 	}
 }
@@ -1850,6 +2071,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 	type CustomInt64 int64
 	type CustomBool bool
 	type CustomFloat64 float64
+	type CustomFloat32 float32
 	type CustomTime time.Time
 	type CustomDate civil.Date
 	type CustomNumeric big.Rat
@@ -1858,6 +2080,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 	type CustomNullInt64 NullInt64
 	type CustomNullBool NullBool
 	type CustomNullFloat64 NullFloat64
+	type CustomNullFloat32 NullFloat32
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
 	type CustomNullNumeric NullNumeric
@@ -1879,12 +2102,14 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{int64(123), spannerTypeNonNullInt64},
 		{true, spannerTypeNonNullBool},
 		{3.14, spannerTypeNonNullFloat64},
+		{float32(3.14), spannerTypeNonNullFloat32},
 		{time.Now(), spannerTypeNonNullTime},
 		{civil.DateOf(time.Now()), spannerTypeNonNullDate},
 		{NullString{}, spannerTypeNullString},
 		{NullInt64{}, spannerTypeNullInt64},
 		{NullBool{}, spannerTypeNullBool},
 		{NullFloat64{}, spannerTypeNullFloat64},
+		{NullFloat32{}, spannerTypeNullFloat32},
 		{NullTime{}, spannerTypeNullTime},
 		{NullDate{}, spannerTypeNullDate},
 		{*big.NewRat(1234, 1000), spannerTypeNonNullNumeric},
@@ -1897,12 +2122,14 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]int64{int64(123)}, spannerTypeArrayOfNonNullInt64},
 		{[]bool{true}, spannerTypeArrayOfNonNullBool},
 		{[]float64{3.14}, spannerTypeArrayOfNonNullFloat64},
+		{[]float32{3.14}, spannerTypeArrayOfNonNullFloat32},
 		{[]time.Time{time.Now()}, spannerTypeArrayOfNonNullTime},
 		{[]civil.Date{civil.DateOf(time.Now())}, spannerTypeArrayOfNonNullDate},
 		{[]NullString{}, spannerTypeArrayOfNullString},
 		{[]NullInt64{}, spannerTypeArrayOfNullInt64},
 		{[]NullBool{}, spannerTypeArrayOfNullBool},
 		{[]NullFloat64{}, spannerTypeArrayOfNullFloat64},
+		{[]NullFloat32{}, spannerTypeArrayOfNullFloat32},
 		{[]NullTime{}, spannerTypeArrayOfNullTime},
 		{[]NullDate{}, spannerTypeArrayOfNullDate},
 		{[]big.Rat{}, spannerTypeArrayOfNonNullNumeric},
@@ -1913,6 +2140,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{CustomInt64(-100), spannerTypeNonNullInt64},
 		{CustomBool(true), spannerTypeNonNullBool},
 		{CustomFloat64(3.141592), spannerTypeNonNullFloat64},
+		{CustomFloat32(3.141592), spannerTypeNonNullFloat32},
 		{CustomTime(time.Now()), spannerTypeNonNullTime},
 		{CustomDate(civil.DateOf(time.Now())), spannerTypeNonNullDate},
 		{CustomNumeric(*big.NewRat(1234, 1000)), spannerTypeNonNullNumeric},
@@ -1921,6 +2149,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]CustomInt64{}, spannerTypeArrayOfNonNullInt64},
 		{[]CustomBool{}, spannerTypeArrayOfNonNullBool},
 		{[]CustomFloat64{}, spannerTypeArrayOfNonNullFloat64},
+		{[]CustomFloat32{}, spannerTypeArrayOfNonNullFloat32},
 		{[]CustomTime{}, spannerTypeArrayOfNonNullTime},
 		{[]CustomDate{}, spannerTypeArrayOfNonNullDate},
 		{[]CustomNumeric{}, spannerTypeArrayOfNonNullNumeric},
@@ -1929,6 +2158,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{CustomNullInt64{}, spannerTypeNullInt64},
 		{CustomNullBool{}, spannerTypeNullBool},
 		{CustomNullFloat64{}, spannerTypeNullFloat64},
+		{CustomNullFloat32{}, spannerTypeNullFloat32},
 		{CustomNullTime{}, spannerTypeNullTime},
 		{CustomNullDate{}, spannerTypeNullDate},
 		{CustomNullNumeric{}, spannerTypeNullNumeric},
@@ -1937,6 +2167,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]CustomNullInt64{}, spannerTypeArrayOfNullInt64},
 		{[]CustomNullBool{}, spannerTypeArrayOfNullBool},
 		{[]CustomNullFloat64{}, spannerTypeArrayOfNullFloat64},
+		{[]CustomNullFloat32{}, spannerTypeArrayOfNullFloat32},
 		{[]CustomNullTime{}, spannerTypeArrayOfNullTime},
 		{[]CustomNullDate{}, spannerTypeArrayOfNullDate},
 		{[]CustomNullNumeric{}, spannerTypeArrayOfNullNumeric},
@@ -1993,6 +2224,52 @@ func TestNaN(t *testing.T) {
 	}
 	// From NullFloat64
 	v, _, err = encodeValue(NullFloat64{math.NaN(), true})
+	if err != nil {
+		t.Errorf("encodeValue returns %q for NaN, want nil", err)
+	}
+	x, ok = v.GetKind().(*proto3.Value_NumberValue)
+	if !ok {
+		t.Errorf("incorrect type for v.GetKind(): %T, want *proto3.Value_NumberValue", v.GetKind())
+	}
+	if !math.IsNaN(x.NumberValue) {
+		t.Errorf("x.NumberValue = %v, want %v", x.NumberValue, math.NaN())
+	}
+}
+
+// Test Float32 NaN encoding/decoding.
+func TestFloat32NaN(t *testing.T) {
+	// Decode NaN value.
+	f := float32(0.0)
+	nf := NullFloat32{}
+	// To float32
+	if err := decodeValue(float32Proto(float32(math.NaN())), float32Type(), &f); err != nil {
+		t.Errorf("decodeValue returns %q for %v, want nil", err, float32Proto(float32(math.NaN())))
+	}
+	if !math.IsNaN(float64(f)) {
+		t.Errorf("f = %v, want %v", f, math.NaN())
+	}
+	// To NullFloat32
+	if err := decodeValue(float32Proto(float32(math.NaN())), float32Type(), &nf); err != nil {
+		t.Errorf("decodeValue returns %q for %v, want nil", err, float32Proto(float32(math.NaN())))
+	}
+	if !math.IsNaN(float64(nf.Float32)) || !nf.Valid {
+		t.Errorf("f = %v, want %v", f, NullFloat32{float32(math.NaN()), true})
+	}
+	// Encode NaN value
+	// From float32
+	v, _, err := encodeValue(float32(math.NaN()))
+	if err != nil {
+		t.Errorf("encodeValue returns %q for NaN, want nil", err)
+	}
+	x, ok := v.GetKind().(*proto3.Value_NumberValue)
+	if !ok {
+		t.Errorf("incorrect type for v.GetKind(): %T, want *proto3.Value_NumberValue", v.GetKind())
+	}
+	if !math.IsNaN(x.NumberValue) {
+		t.Errorf("x.NumberValue = %v, want %v", x.NumberValue, math.NaN())
+	}
+	// From NullFloat32
+	v, _, err = encodeValue(NullFloat32{float32(math.NaN()), true})
 	if err != nil {
 		t.Errorf("encodeValue returns %q for NaN, want nil", err)
 	}
@@ -2603,7 +2880,15 @@ func TestBindParamsDynamic(t *testing.T) {
 		gotParamField := gotParams.Fields["var"]
 		if !proto.Equal(gotParamField, test.wantField) {
 			// handle NaN
-			if test.wantType.Code == floatType().Code && proto.MarshalTextString(gotParamField) == proto.MarshalTextString(test.wantField) {
+			gotParamFieldText, err := prototext.Marshal(gotParamField)
+			if err != nil {
+				t.Fatal(err)
+			}
+			wantParamFieldText, err := prototext.Marshal(test.wantField)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if test.wantType.Code == floatType().Code && bytes.Equal(gotParamFieldText, wantParamFieldText) {
 				continue
 			}
 			t.Errorf("%#v: got %v, want %v\n", test.val, gotParamField, test.wantField)
@@ -2624,6 +2909,15 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 	}
 	msg := Message{"Alice", "Hello", 1294706395881547000}
 	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
+
+	singerProtoEnum := pb.Genre_ROCK
+	singerProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerProtoEnum,
+	}
+	singerProtoMessageJSONStr := `{"singer_id":1,"birth_date":"January","nationality":"Country1","genre":3}`
 
 	type testcase struct {
 		input  interface{}
@@ -2659,6 +2953,15 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 				{input: &NullFloat64{float64(123.123), true}, expect: "123.123"},
 				{input: &NullFloat64{float64(123.123), false}, expect: "null"},
 				{input: NullFloat64{}, expect: "null"},
+			},
+		},
+		{
+			"NullFloat32",
+			[]testcase{
+				{input: NullFloat32{float32(3.14), true}, expect: "3.14"},
+				{input: &NullFloat32{float32(123.123), true}, expect: "123.123"},
+				{input: &NullFloat32{float32(123.123), false}, expect: "null"},
+				{input: NullFloat32{}, expect: "null"},
 			},
 		},
 		{
@@ -2716,6 +3019,27 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 				{input: PGNumeric{}, expect: "null"},
 			},
 		},
+		{
+			"NullProtoMessage",
+			[]testcase{
+				{input: NullProtoMessage{&singerProtoMessage, true}, expect: singerProtoMessageJSONStr},
+				{input: &NullProtoMessage{&singerProtoMessage, true}, expect: singerProtoMessageJSONStr},
+				{input: &NullProtoMessage{&singerProtoMessage, false}, expect: "null"},
+				{input: NullProtoMessage{}, expect: "null"},
+			},
+		},
+		{
+			"NullProtoEnum",
+			[]testcase{
+				{input: NullProtoEnum{singerProtoEnum, true}, expect: "3"},
+				{input: NullProtoEnum{&singerProtoEnum, true}, expect: "3"},
+				{input: &NullProtoEnum{singerProtoEnum, true}, expect: "3"},
+				{input: &NullProtoEnum{&singerProtoEnum, true}, expect: "3"},
+				{input: NullProtoEnum{singerProtoEnum, false}, expect: "null"},
+				{input: NullProtoEnum{nil, true}, expect: "null"},
+				{input: NullProtoEnum{}, expect: "null"},
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			for _, tc := range test.cases {
@@ -2732,6 +3056,14 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 // Test converting json strings to nullable types.
 func TestJSONUnmarshal_NullTypes(t *testing.T) {
 	jsonStr := `{"Body":"Hello","Name":"Alice","Time":1294706395881547000}`
+	singerProtoEnum := pb.Genre_ROCK
+	singerProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerProtoEnum,
+	}
+	singerProtoMessageJSONStr := `{"singer_id":1,"birth_date":"January","nationality":"Country1","genre":3}`
 
 	type testcase struct {
 		input       []byte
@@ -2775,6 +3107,16 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 				{input: nil, got: NullFloat64{}, isNull: true, expect: nullString, expectError: true},
 				{input: []byte(""), got: NullFloat64{}, isNull: true, expect: nullString, expectError: true},
 				{input: []byte(`"hello`), got: NullFloat64{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
+		{
+			"NullFloat32",
+			[]testcase{
+				{input: []byte("3.14"), got: NullFloat32{}, isNull: false, expect: "3.14", expectError: false},
+				{input: []byte("null"), got: NullFloat32{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullFloat32{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullFloat32{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullFloat32{}, isNull: true, expect: nullString, expectError: true},
 			},
 		},
 		{
@@ -2838,6 +3180,26 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 				{input: []byte(`"123.456`), got: PGNumeric{}, isNull: true, expect: nullString, expectError: true},
 			},
 		},
+		{
+			"NullProtoMessage",
+			[]testcase{
+				{input: []byte(singerProtoMessageJSONStr), got: NullProtoMessage{&pb.SingerInfo{}, true}, isNull: false, expect: singerProtoMessage.String(), expectError: false},
+				{input: []byte("null"), got: NullProtoMessage{&pb.SingerInfo{}, true}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullProtoMessage{&pb.SingerInfo{}, true}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullProtoMessage{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`{invalid_json_string}`), got: NullProtoMessage{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
+		{
+			"NullProtoEnum",
+			[]testcase{
+				{input: []byte("3"), got: NullProtoEnum{&singerProtoEnum, true}, isNull: false, expect: singerProtoEnum.String(), expectError: false},
+				{input: []byte("null"), got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			for _, tc := range test.cases {
@@ -2849,6 +3211,9 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case NullFloat64:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullFloat32:
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case NullBool:
@@ -2867,6 +3232,12 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case PGNumeric:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullProtoMessage:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullProtoEnum:
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				default:

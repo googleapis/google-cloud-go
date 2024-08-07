@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewTargetSslProxiesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleTargetSslProxiesClient_Delete() {
 
 	req := &computepb.DeleteTargetSslProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteTargetSslProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteTargetSslProxyRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleTargetSslProxiesClient_Get() {
 
 	req := &computepb.GetTargetSslProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetTargetSslProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetTargetSslProxyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,7 +109,7 @@ func ExampleTargetSslProxiesClient_Insert() {
 
 	req := &computepb.InsertTargetSslProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertTargetSslProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertTargetSslProxyRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleTargetSslProxiesClient_List() {
 
 	req := &computepb.ListTargetSslProxiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListTargetSslProxiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListTargetSslProxiesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -150,6 +150,12 @@ func ExampleTargetSslProxiesClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.TargetSslProxyList)
 	}
 }
 
@@ -168,7 +174,7 @@ func ExampleTargetSslProxiesClient_SetBackendService() {
 
 	req := &computepb.SetBackendServiceTargetSslProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetBackendServiceTargetSslProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetBackendServiceTargetSslProxyRequest.
 	}
 	op, err := c.SetBackendService(ctx, req)
 	if err != nil {
@@ -196,7 +202,7 @@ func ExampleTargetSslProxiesClient_SetCertificateMap() {
 
 	req := &computepb.SetCertificateMapTargetSslProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetCertificateMapTargetSslProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetCertificateMapTargetSslProxyRequest.
 	}
 	op, err := c.SetCertificateMap(ctx, req)
 	if err != nil {
@@ -224,7 +230,7 @@ func ExampleTargetSslProxiesClient_SetProxyHeader() {
 
 	req := &computepb.SetProxyHeaderTargetSslProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetProxyHeaderTargetSslProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetProxyHeaderTargetSslProxyRequest.
 	}
 	op, err := c.SetProxyHeader(ctx, req)
 	if err != nil {
@@ -252,7 +258,7 @@ func ExampleTargetSslProxiesClient_SetSslCertificates() {
 
 	req := &computepb.SetSslCertificatesTargetSslProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetSslCertificatesTargetSslProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetSslCertificatesTargetSslProxyRequest.
 	}
 	op, err := c.SetSslCertificates(ctx, req)
 	if err != nil {
@@ -280,7 +286,7 @@ func ExampleTargetSslProxiesClient_SetSslPolicy() {
 
 	req := &computepb.SetSslPolicyTargetSslProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetSslPolicyTargetSslProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetSslPolicyTargetSslProxyRequest.
 	}
 	op, err := c.SetSslPolicy(ctx, req)
 	if err != nil {

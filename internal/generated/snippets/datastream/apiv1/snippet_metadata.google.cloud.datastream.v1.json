@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datastream/apiv1",
-    "version": "1.3.0",
+    "version": "1.10.10",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.datastream.v1.Datastream.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -235,7 +235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -281,7 +281,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -315,10 +315,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.datastream.v1.Datastream.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -472,7 +472,7 @@
     {
       "regionTag": "datastream_v1_generated_Datastream_DiscoverConnectionProfile_sync",
       "title": "datastream DiscoverConnectionProfile Sample",
-      "description": "DiscoverConnectionProfile use this method to discover a connection profile.\nThe discover API call exposes the data objects and metadata belonging to\nthe profile. Typically, a request returns children data objects of a\nparent data object that’s optionally supplied in the request.",
+      "description": "DiscoverConnectionProfile use this method to discover a connection profile.\nThe discover API call exposes the data objects and metadata belonging to\nthe profile. Typically, a request returns children data objects of a\nparent data object that's optionally supplied in the request.",
       "file": "Client/DiscoverConnectionProfile/main.go",
       "language": "GO",
       "clientMethod": {
@@ -492,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.DiscoverConnectionProfileResponse",
+        "resultType": "*datastreampb.DiscoverConnectionProfileResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -556,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -584,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.ConnectionProfile",
+        "resultType": "*datastreampb.ConnectionProfile",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -630,17 +630,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.datastream.v1.Datastream.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -676,17 +676,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.datastream.v1.Datastream.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -694,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -722,7 +722,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.PrivateConnection",
+        "resultType": "*datastreampb.PrivateConnection",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -740,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -768,7 +768,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.Route",
+        "resultType": "*datastreampb.Route",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -786,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -814,7 +814,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.Stream",
+        "resultType": "*datastreampb.Stream",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -832,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -860,7 +860,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.StreamObject",
+        "resultType": "*datastreampb.StreamObject",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -878,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -924,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -959,10 +959,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.datastream.v1.Datastream.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -970,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1005,10 +1005,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.datastream.v1.Datastream.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1016,7 +1016,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1062,7 +1062,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1108,7 +1108,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1154,7 +1154,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1200,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1228,7 +1228,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.StreamObject",
+        "resultType": "*datastreampb.StreamObject",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -1246,7 +1246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1274,7 +1274,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.StartBackfillJobResponse",
+        "resultType": "*datastreampb.StartBackfillJobResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -1292,7 +1292,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1320,7 +1320,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.StopBackfillJobResponse",
+        "resultType": "*datastreampb.StopBackfillJobResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -1338,7 +1338,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1384,7 +1384,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1430,7 +1430,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]

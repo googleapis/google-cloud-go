@@ -20,8 +20,8 @@ import (
 	"log"
 	"os"
 
+	"cloud.google.com/go/translate/apiv3/translatepb"
 	"github.com/googleapis/gax-go/v2"
-	translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
 )
 
 // TranslationClient is used to translate text.

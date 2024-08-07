@@ -21,18 +21,23 @@ import (
 	"log"
 	"os"
 	"reflect"
+	"time"
 
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/api/transport"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
-	prodAddr  = "datastore.googleapis.com:443"
-	userAgent = "gcloud-golang-datastore/20160401"
+	prodEndpointTemplate = "datastore.UNIVERSE_DOMAIN:443"
+	prodUniverseDomain   = "googleapis.com"
+	prodMtlsAddr         = "datastore.mtls.googleapis.com:443"
+	userAgent            = "gcloud-golang-datastore/20160401"
 )
 
 // ScopeDatastore grants permissions to view and/or manage datastore entities
@@ -51,11 +56,25 @@ const DetectProjectID = "*detect-project-id*"
 // the resource being operated on.
 const resourcePrefixHeader = "google-cloud-resource-prefix"
 
+// reqParamsHeader is routing header required to access named databases
+const reqParamsHeader = "x-goog-request-params"
+
+// DefaultDatabaseID is ID of the default database denoted by an empty string
+const DefaultDatabaseID = ""
+
+var (
+	gtransportDialPoolFn = gtransport.DialPool
+	detectProjectIDFn    = detectProjectID
+)
+
 // Client is a client for reading and writing data in a datastore dataset.
 type Client struct {
-	connPool gtransport.ConnPool
-	client   pb.DatastoreClient
-	dataset  string // Called dataset by the datastore API, synonym for project ID.
+	connPool     gtransport.ConnPool
+	client       pb.DatastoreClient
+	dataset      string // Called dataset by the datastore API, synonym for project ID.
+	databaseID   string // Default value is empty string
+	readSettings *readSettings
+	config       *datastoreConfig
 }
 
 // NewClient creates a new Client for a given dataset.  If the project ID is
@@ -66,6 +85,21 @@ type Client struct {
 // NewClient to detect the project ID from the credentials.
 // Call (*Client).Close() when done with the client.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+	client, err := NewClientWithDatabase(ctx, projectID, DefaultDatabaseID, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
+}
+
+// NewClientWithDatabase creates a new Client for given dataset and database.
+// If the project ID is empty, it is derived from the DATASTORE_PROJECT_ID environment variable.
+// If the DATASTORE_EMULATOR_HOST environment variable is set, client will use
+// its value to connect to a locally-running datastore emulator.
+// DetectProjectID can be passed as the projectID argument to instruct
+// NewClientWithDatabase to detect the project ID from the credentials.
+// Call (*Client).Close() when done with the client.
+func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, opts ...option.ClientOption) (*Client, error) {
 	var o []option.ClientOption
 	// Environment variables for gcd emulator:
 	// https://cloud.google.com/datastore/docs/tools/datastore-emulator
@@ -77,14 +111,16 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 		}
 		if projectID == DetectProjectID {
-			projectID, _ = detectProjectID(ctx, opts...)
+			projectID, _ = detectProjectIDFn(ctx, opts...)
 			if projectID == "" {
 				projectID = "dummy-emulator-datastore-project"
 			}
 		}
 	} else {
 		o = []option.ClientOption{
-			option.WithEndpoint(prodAddr),
+			internaloption.WithDefaultEndpointTemplate(prodEndpointTemplate),
+			internaloption.WithDefaultUniverseDomain(prodUniverseDomain),
+			internaloption.WithDefaultMTLSEndpoint(prodMtlsAddr),
 			option.WithScopes(ScopeDatastore),
 			option.WithUserAgent(userAgent),
 		}
@@ -103,7 +139,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	o = append(o, opts...)
 
 	if projectID == DetectProjectID {
-		detected, err := detectProjectID(ctx, opts...)
+		detected, err := detectProjectIDFn(ctx, opts...)
 		if err != nil {
 			return nil, err
 		}
@@ -113,14 +149,19 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	if projectID == "" {
 		return nil, errors.New("datastore: missing project/dataset id")
 	}
-	connPool, err := gtransport.DialPool(ctx, o...)
+	connPool, err := gtransportDialPoolFn(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
+
+	config := newDatastoreConfig(o...)
 	return &Client{
-		connPool: connPool,
-		client:   newDatastoreClient(connPool, projectID),
-		dataset:  projectID,
+		connPool:     connPool,
+		client:       newDatastoreClient(connPool, projectID, databaseID),
+		dataset:      projectID,
+		readSettings: &readSettings{},
+		databaseID:   databaseID,
+		config:       &config,
 	}, nil
 }
 
@@ -143,6 +184,8 @@ var (
 	ErrInvalidKey = errors.New("datastore: invalid key")
 	// ErrNoSuchEntity is returned when no entity was found for a given key.
 	ErrNoSuchEntity = errors.New("datastore: no such entity")
+	// ErrDifferentKeyAndDstLength is returned when the length of dst and key are different.
+	ErrDifferentKeyAndDstLength = errors.New("datastore: keys and dst slices have different length")
 )
 
 type multiArgType int
@@ -323,6 +366,48 @@ func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
 	return multiArgTypeInvalid, nil
 }
 
+// processFieldMismatchError ignore FieldMismatchErr if WithIgnoreFieldMismatch client option is provided by user
+func (c *Client) processFieldMismatchError(err error) error {
+	if c.config == nil || !c.config.ignoreFieldMismatchErrors {
+		return err
+	}
+	return ignoreFieldMismatchErrs(err)
+}
+
+func ignoreFieldMismatchErrs(err error) error {
+	if err == nil {
+		return err
+	}
+
+	multiErr, isMultiErr := err.(MultiError)
+	if isMultiErr {
+		foundErr := false
+		for i, e := range multiErr {
+			multiErr[i] = ignoreFieldMismatchErr(e)
+			if multiErr[i] != nil {
+				foundErr = true
+			}
+		}
+		if !foundErr {
+			return nil
+		}
+		return multiErr
+	}
+
+	return ignoreFieldMismatchErr(err)
+}
+
+func ignoreFieldMismatchErr(err error) error {
+	if err == nil {
+		return err
+	}
+	_, isFieldMismatchErr := err.(*ErrFieldMismatch)
+	if isFieldMismatchErr {
+		return nil
+	}
+	return err
+}
+
 // Close closes the Client. Call Close to clean up resources when done with the
 // Client.
 func (c *Client) Close() error {
@@ -346,13 +431,26 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	if dst == nil { // get catches nil interfaces; we need to catch nil ptr here
-		return ErrInvalidEntityType
+		return fmt.Errorf("%w: dst cannot be nil", ErrInvalidEntityType)
 	}
-	err = c.get(ctx, []*Key{key}, []interface{}{dst}, nil)
+
+	var opts *pb.ReadOptions
+	if !c.readSettings.readTime.IsZero() {
+		opts = &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_ReadTime{
+				// Timestamp cannot be less than microseconds accuracy. See #6938
+				ReadTime: &timestamppb.Timestamp{Seconds: c.readSettings.readTime.Unix()},
+			},
+		}
+	}
+
+	// Since opts does not contain Transaction option, 'get' call below will return nil
+	// as transaction id which can be ignored
+	_, err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
-		return me[0]
+		return c.processFieldMismatchError(me[0])
 	}
-	return err
+	return c.processFieldMismatchError(err)
 }
 
 // GetMulti is a batch version of Get.
@@ -371,22 +469,62 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.GetMulti")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	return c.get(ctx, keys, dst, nil)
+	var opts *pb.ReadOptions
+	if c.readSettings != nil && !c.readSettings.readTime.IsZero() {
+		opts = &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_ReadTime{
+				// Timestamp cannot be less than microseconds accuracy. See #6938
+				ReadTime: &timestamppb.Timestamp{Seconds: c.readSettings.readTime.Unix()},
+			},
+		}
+	}
+
+	// Since opts does not contain Transaction option, 'get' call below will return nil
+	// as transaction id which can be ignored
+	_, err = c.get(ctx, keys, dst, opts)
+	return c.processFieldMismatchError(err)
 }
 
-func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) error {
+func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) ([]byte, error) {
 	v := reflect.ValueOf(dst)
-	multiArgType, _ := checkMultiArg(v)
 
-	// Confidence checks
-	if multiArgType == multiArgTypeInvalid {
-		return errors.New("datastore: dst has invalid type")
+	var multiArgType multiArgType
+
+	// If kind is of type slice, return error
+	if kind := v.Kind(); kind != reflect.Slice {
+		return nil, fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
 	}
-	if len(keys) != v.Len() {
-		return errors.New("datastore: keys and dst slices have different length")
+
+	// if type is a type which implements PropertyList, return error
+	if argType := v.Type(); argType == typeOfPropertyList {
+		return nil, fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
 	}
+
+	elemType := v.Type().Elem()
+	if reflect.PtrTo(elemType).Implements(typeOfPropertyLoadSaver) {
+		multiArgType = multiArgTypePropertyLoadSaver
+	}
+
+	switch elemType.Kind() {
+	case reflect.Struct:
+		multiArgType = multiArgTypeStruct
+	case reflect.Interface:
+		multiArgType = multiArgTypeInterface
+	case reflect.Ptr:
+		elemType = elemType.Elem()
+		if elemType.Kind() == reflect.Struct {
+			multiArgType = multiArgTypeStructPtr
+		}
+	}
+
+	dstLen := v.Len()
+
+	if keysLen := len(keys); keysLen != dstLen {
+		return nil, fmt.Errorf("%w: key length = %d, dst length = %d", ErrDifferentKeyAndDstLength, keysLen, v.Len())
+	}
+
 	if len(keys) == 0 {
-		return nil
+		return nil, nil
 	}
 
 	// Go through keys, validate them, serialize then, and create a dict mapping them to their indices.
@@ -410,17 +548,20 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		}
 	}
 	if any {
-		return multiErr
+		return nil, multiErr
 	}
 	req := &pb.LookupRequest{
 		ProjectId:   c.dataset,
+		DatabaseId:  c.databaseID,
 		Keys:        pbKeys,
 		ReadOptions: opts,
 	}
 	resp, err := c.client.Lookup(ctx, req)
+
 	if err != nil {
-		return err
+		return nil, err
 	}
+	txnID := resp.Transaction
 	found := resp.Found
 	missing := resp.Missing
 	// Upper bound 1000 iterations to prevent infinite loop. This matches the max
@@ -431,7 +572,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		req.Keys = resp.Deferred
 		resp, err = c.client.Lookup(ctx, req)
 		if err != nil {
-			return err
+			return txnID, err
 		}
 		found = append(found, resp.Found...)
 		missing = append(missing, resp.Missing...)
@@ -441,7 +582,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	for _, e := range found {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
-			return errors.New("datastore: internal error: server returned an invalid key")
+			return txnID, errors.New("datastore: internal error: server returned an invalid key")
 		}
 		filled += len(keyMap[k.String()])
 		for _, index := range keyMap[k.String()] {
@@ -461,7 +602,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	for _, e := range missing {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
-			return errors.New("datastore: internal error: server returned an invalid key")
+			return txnID, errors.New("datastore: internal error: server returned an invalid key")
 		}
 		filled += len(keyMap[k.String()])
 		for _, index := range keyMap[k.String()] {
@@ -471,13 +612,13 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	}
 
 	if filled != len(keys) {
-		return errors.New("datastore: internal error: server returned the wrong number of entities")
+		return txnID, errors.New("datastore: internal error: server returned the wrong number of entities")
 	}
 
 	if any {
-		return multiErr
+		return txnID, multiErr
 	}
-	return nil
+	return txnID, nil
 }
 
 // Put saves the entity src into the datastore with the given key. src must be
@@ -511,9 +652,10 @@ func (c *Client) PutMulti(ctx context.Context, keys []*Key, src interface{}) (re
 
 	// Make the request.
 	req := &pb.CommitRequest{
-		ProjectId: c.dataset,
-		Mutations: mutations,
-		Mode:      pb.CommitRequest_NON_TRANSACTIONAL,
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
+		Mutations:  mutations,
+		Mode:       pb.CommitRequest_NON_TRANSACTIONAL,
 	}
 	resp, err := c.client.Commit(ctx, req)
 	if err != nil {
@@ -538,13 +680,43 @@ func (c *Client) PutMulti(ctx context.Context, keys []*Key, src interface{}) (re
 
 func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 	v := reflect.ValueOf(src)
-	multiArgType, _ := checkMultiArg(v)
+	var multiArgType multiArgType
+
+	// If kind is of type slice, return error
+	if kind := v.Kind(); kind != reflect.Slice {
+		return nil, fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
+	}
+
+	// if type is a type which implements PropertyList, return error
+	if argType := v.Type(); argType == typeOfPropertyList {
+		return nil, fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
+	}
+
+	elemType := v.Type().Elem()
+	if reflect.PtrTo(elemType).Implements(typeOfPropertyLoadSaver) {
+		multiArgType = multiArgTypePropertyLoadSaver
+	}
+
+	switch elemType.Kind() {
+	case reflect.Struct:
+		multiArgType = multiArgTypeStruct
+	case reflect.Interface:
+		multiArgType = multiArgTypeInterface
+	case reflect.Ptr:
+		elemType = elemType.Elem()
+		if elemType.Kind() == reflect.Struct {
+			multiArgType = multiArgTypeStructPtr
+		}
+	}
 	if multiArgType == multiArgTypeInvalid {
-		return nil, errors.New("datastore: src has invalid type")
+		return nil, fmt.Errorf("datastore: src has invalid type")
 	}
-	if len(keys) != v.Len() {
-		return nil, errors.New("datastore: key and src slices have different length")
+	dstLen := v.Len()
+
+	if keysLen := len(keys); keysLen != dstLen {
+		return nil, fmt.Errorf("%w: key length = %d, dst length = %d", ErrDifferentKeyAndDstLength, keysLen, v.Len())
 	}
+
 	if len(keys) == 0 {
 		return nil, nil
 	}
@@ -604,9 +776,10 @@ func (c *Client) DeleteMulti(ctx context.Context, keys []*Key) (err error) {
 	}
 
 	req := &pb.CommitRequest{
-		ProjectId: c.dataset,
-		Mutations: mutations,
-		Mode:      pb.CommitRequest_NON_TRANSACTIONAL,
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
+		Mutations:  mutations,
+		Mode:       pb.CommitRequest_NON_TRANSACTIONAL,
 	}
 	_, err = c.client.Commit(ctx, req)
 	return err
@@ -656,9 +829,10 @@ func (c *Client) Mutate(ctx context.Context, muts ...*Mutation) (ret []*Key, err
 		return nil, err
 	}
 	req := &pb.CommitRequest{
-		ProjectId: c.dataset,
-		Mutations: pmuts,
-		Mode:      pb.CommitRequest_NON_TRANSACTIONAL,
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
+		Mutations:  pmuts,
+		Mode:       pb.CommitRequest_NON_TRANSACTIONAL,
 	}
 	resp, err := c.client.Commit(ctx, req)
 	if err != nil {
@@ -678,4 +852,36 @@ func (c *Client) Mutate(ctx context.Context, muts ...*Mutation) (ret []*Key, err
 		}
 	}
 	return ret, nil
+}
+
+// ReadTime specifies a snapshot (time) of the database to read.
+func ReadTime(t time.Time) ReadOption {
+	return docReadTime(t)
+}
+
+type docReadTime time.Time
+
+func (drt docReadTime) apply(rs *readSettings) {
+	rs.readTime = time.Time(drt)
+}
+
+// ReadOption provides specific instructions for how to access documents in the database.
+// Currently, only ReadTime is supported.
+type ReadOption interface {
+	apply(*readSettings)
+}
+
+type readSettings struct {
+	readTime time.Time
+}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+// The client uses this value for subsequent reads, unless additional ReadOptions
+// are provided.
+func (c *Client) WithReadOptions(ro ...ReadOption) *Client {
+	for _, r := range ro {
+		r.apply(c.readSettings)
+	}
+	return c
 }

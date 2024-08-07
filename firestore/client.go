@@ -19,28 +19,41 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"strings"
 	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/firestore/internal"
 	"cloud.google.com/go/internal/trace"
-	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // resourcePrefixHeader is the name of the metadata header used to indicate
 // the resource being operated on.
 const resourcePrefixHeader = "google-cloud-resource-prefix"
+
+// requestParamsHeader is routing header required to access named databases
+const reqParamsHeader = "x-goog-request-params"
+
+// reqParamsHeaderVal constructs header from dbPath
+// dbPath is of the form projects/{project_id}/databases/{database_id}
+func reqParamsHeaderVal(dbPath string) string {
+	splitPath := strings.Split(dbPath, "/")
+	projectID := splitPath[1]
+	databaseID := splitPath[3]
+	return fmt.Sprintf("project_id=%s&database_id=%s", url.QueryEscape(projectID), url.QueryEscape(databaseID))
+}
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
 // project ID. It is given in place of the projectID argument. NewClient will
@@ -51,11 +64,15 @@ const resourcePrefixHeader = "google-cloud-resource-prefix"
 // does not have the project ID encoded.
 const DetectProjectID = "*detect-project-id*"
 
+// DefaultDatabaseID is name of the default database
+const DefaultDatabaseID = "(default)"
+
 // A Client provides access to the Firestore service.
 type Client struct {
-	c          *vkit.Client
-	projectID  string
-	databaseID string // A client is tied to a single database.
+	c            *vkit.Client
+	projectID    string
+	databaseID   string        // A client is tied to a single database.
+	readSettings *readSettings // readSettings allows setting a snapshot time to read the database
 }
 
 // NewClient creates a new Firestore client that uses the given project.
@@ -94,11 +111,28 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}
 	vc.SetGoogleClientInfo("gccl", internal.Version)
 	c := &Client{
-		c:          vc,
-		projectID:  projectID,
-		databaseID: "(default)", // always "(default)", for now
+		c:            vc,
+		projectID:    projectID,
+		databaseID:   DefaultDatabaseID,
+		readSettings: &readSettings{},
 	}
 	return c, nil
+}
+
+// NewClientWithDatabase creates a new Firestore client that accesses the
+// specified database.
+func NewClientWithDatabase(ctx context.Context, projectID string, databaseID string, opts ...option.ClientOption) (*Client, error) {
+	if databaseID == "" {
+		return nil, fmt.Errorf("firestore: To create a client using the %s database, please use NewClient", DefaultDatabaseID)
+	}
+
+	client, err := NewClient(ctx, projectID, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	client.databaseID = databaseID
+	return client, nil
 }
 
 func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
@@ -124,9 +158,22 @@ func (c *Client) path() string {
 }
 
 func withResourceHeader(ctx context.Context, resource string) context.Context {
-	md, _ := metadata.FromOutgoingContext(ctx)
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		md = metadata.New(nil)
+	}
 	md = md.Copy()
 	md[resourcePrefixHeader] = []string{resource}
+	return metadata.NewOutgoingContext(ctx, md)
+}
+
+func withRequestParamsHeader(ctx context.Context, requestParams string) context.Context {
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		md = metadata.New(nil)
+	}
+	md = md.Copy()
+	md[reqParamsHeader] = []string{requestParams}
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
@@ -199,10 +246,10 @@ func (c *Client) GetAll(ctx context.Context, docRefs []*DocumentRef) (_ []*Docum
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.GetAll")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	return c.getAll(ctx, docRefs, nil)
+	return c.getAll(ctx, docRefs, nil, nil)
 }
 
-func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte) (_ []*DocumentSnapshot, err error) {
+func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte, rs *readSettings) (_ []*DocumentSnapshot, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.BatchGetDocuments")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -219,10 +266,21 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte)
 		Database:  c.path(),
 		Documents: docNames,
 	}
-	if tid != nil {
-		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_Transaction{tid}
+
+	// Note that transaction ID and other consistency selectors are mutually exclusive.
+	// We respect the transaction first, any read options passed by the caller second,
+	// and any read options stored in the client third.
+	if rt, hasOpts := parseReadTime(c, rs); hasOpts {
+		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_ReadTime{ReadTime: rt}
 	}
-	streamClient, err := c.c.BatchGetDocuments(withResourceHeader(ctx, req.Database), req)
+
+	if tid != nil {
+		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_Transaction{Transaction: tid}
+	}
+
+	batchGetDocsCtx := withResourceHeader(ctx, req.Database)
+	batchGetDocsCtx = withRequestParamsHeader(batchGetDocsCtx, reqParamsHeaderVal(c.path()))
+	streamClient, err := c.c.BatchGetDocuments(batchGetDocsCtx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -306,6 +364,15 @@ func (c *Client) BulkWriter(ctx context.Context) *BulkWriter {
 	return bw
 }
 
+// WithReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+func (c *Client) WithReadOptions(opts ...ReadOption) *Client {
+	for _, ro := range opts {
+		ro.apply(c.readSettings)
+	}
+	return c
+}
+
 // commit calls the Commit RPC outside of a transaction.
 func (c *Client) commit(ctx context.Context, ws []*pb.Write) (_ []*WriteResult, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.commit")
@@ -350,10 +417,10 @@ type WriteResult struct {
 }
 
 func writeResultFromProto(wr *pb.WriteResult) (*WriteResult, error) {
-	t, err := ptypes.Timestamp(wr.UpdateTime)
-	if err != nil {
-		t = time.Time{}
-		// TODO(jba): Follow up if Delete is supposed to return a nil timestamp.
+	// TODO(jba): Follow up if Delete is supposed to return a nil timestamp.
+	var t time.Time
+	if err := wr.GetUpdateTime().CheckValid(); err == nil {
+		t = wr.GetUpdateTime().AsTime()
 	}
 	return &WriteResult{UpdateTime: t}, nil
 }
@@ -380,4 +447,36 @@ func (ec emulatorCreds) GetRequestMetadata(ctx context.Context, uri ...string) (
 }
 func (ec emulatorCreds) RequireTransportSecurity() bool {
 	return false
+}
+
+// ReadTime specifies a time-specific snapshot of the database to read.
+func ReadTime(t time.Time) ReadOption {
+	return readTime(t)
+}
+
+type readTime time.Time
+
+func (rt readTime) apply(rs *readSettings) {
+	rs.readTime = time.Time(rt)
+}
+
+// ReadOption interface allows for abstraction of computing read time settings.
+type ReadOption interface {
+	apply(*readSettings)
+}
+
+// readSettings contains the ReadOptions for a read operation
+type readSettings struct {
+	readTime time.Time
+}
+
+// parseReadTime ensures that fallback order of read options is respected.
+func parseReadTime(c *Client, rs *readSettings) (*timestamppb.Timestamp, bool) {
+	if rs != nil && !rs.readTime.IsZero() {
+		return &timestamppb.Timestamp{Seconds: int64(rs.readTime.Unix())}, true
+	}
+	if c.readSettings != nil && !c.readSettings.readTime.IsZero() {
+		return &timestamppb.Timestamp{Seconds: int64(c.readSettings.readTime.Unix())}, true
+	}
+	return nil, false
 }

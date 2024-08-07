@@ -20,8 +20,8 @@ import (
 	"strings"
 	"time"
 
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
-	fmpb "google.golang.org/genproto/protobuf/field_mask"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

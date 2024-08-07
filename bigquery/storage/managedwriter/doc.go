@@ -13,11 +13,8 @@
 // limitations under the License.
 
 /*
-Package managedwriter provides an EXPERIMENTAL thick client around the BigQuery storage API's BigQueryWriteClient.
+Package managedwriter provides a thick client around the BigQuery storage API's BigQueryWriteClient.
 More information about this new write client may also be found in the public documentation: https://cloud.google.com/bigquery/docs/write-api
-
-It is EXPERIMENTAL and subject to change or removal without notice.  This is primarily to signal that this
-package may still make breaking changes to existing methods and functionality.
 
 Currently, this client targets the BigQueryWriteClient present in the v1 endpoint, and is intended as a more
 feature-rich successor to the classic BigQuery streaming interface, which is presented as the Inserter abstraction
@@ -211,5 +208,75 @@ With write retries enabled, failed writes will be automatically attempted a fini
 In support of the retry changes, the AppendResult returned as part of an append call now includes
 TotalAttempts(), which returns the number of times that specific append was enqueued to the service.
 Values larger than 1 are indicative of a specific append being enqueued multiple times.
+
+# Usage of Contexts
+
+The underlying rpc mechanism used to transmit requests and responses between this client and
+the service uses a gRPC bidirectional streaming protocol, and the context provided when invoking
+NewClient to instantiate the client is used to maintain those background connections.
+
+This package also exposes context when instantiating a new writer (NewManagedStream), as well as
+allowing a per-request context when invoking the AppendRows function to send a set of rows.  If the
+context becomes invalid on the writer all subsequent AppendRows requests will be blocked.
+
+Finally, there is a per-request context supplied as part of the AppendRows call on the ManagedStream
+writer itself, useful for bounding individual requests.
+
+# Connection Sharing (Multiplexing)
+
+Note: This feature is EXPERIMENTAL and subject to change.
+
+The BigQuery Write API enforces a limit on the number of concurrent open connections, documented
+here: https://cloud.google.com/bigquery/quotas#write-api-limits
+
+Users can now choose to enable connection sharing (multiplexing) when using ManagedStream writers
+that use default streams.  The intent of this feature is to simplify connection management for users
+who wish to write to many tables, at a cardinality beyond the open connection quota.  Please note that
+explicit streams (Committed, Buffered, and Pending) cannot leverage the connection sharing feature.
+
+Multiplexing features are controlled by the package-specific custom ClientOption options exposed within
+this package.  Additionally, some of the connection-related WriterOptions that can be specified when
+constructing ManagedStream writers are ignored for writers that leverage the shared multiplex connections.
+
+At a high level, multiplexing uses some heuristics based on the flow control of the shared connections
+to infer whether the pool should add additional connections up to a user-specific limit per region,
+and attempts to balance traffic from writers to those connections.
+
+To enable multiplexing for writes to default streams, simply instantiate the client with the desired options:
+
+	ctx := context.Background()
+	client, err := managedwriter.NewClient(ctx, projectID,
+		WithMultiplexing,
+		WithMultiplexPoolLimit(3),
+	)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+Special Consideration:  The gRPC architecture is capable of its own sharing of underlying HTTP/2 connections.
+For users who are sending significant traffic on multiple writers (independent of whether they're leveraging
+multiplexing or not) may also wish to consider further tuning of this behavior.  The managedwriter library
+sets a reasonable default, but this can be tuned further by leveraging the WithGRPCConnectionPool ClientOption,
+documented here:
+https://pkg.go.dev/google.golang.org/api/option#WithGRPCConnectionPool
+
+A reasonable upper bound for the connection pool size is the number of concurrent writers for explicit stream
+plus the configured size of the multiplex pool.
+
+# Writing JSON Data
+
+As an example, you can refer to this integration test that demonstrates writing JSON data to a stream:
+https://github.com/googleapis/google-cloud-go/blob/7a46b5428f239871993d66be2c7c667121f60a6f/bigquery/storage/managedwriter/integration_test.go#L397
+
+This integration test assumes the destination table already exists. In addition, it relies upon having a definition of
+a BigQuery schema that is compatible with this table (for this example the schema is defined here:
+https://github.com/googleapis/google-cloud-go/blob/2020edff24e3ffe127248cf9a90c67593c303e18/bigquery/storage/managedwriter/testdata/schemas.go#L31).
+Given the schema, this test first utilizes the function setupDynamicDescriptors() to derive both a MessageDescriptor
+and DescriptorProto from the schema. This function is defined here:
+https://github.com/googleapis/google-cloud-go/blob/7a46b5428f239871993d66be2c7c667121f60a6f/bigquery/storage/managedwriter/integration_test.go#L100
+The test initializes the ManagedStream it will write to with the derived DescriptorProto. The test then iterates
+through each of the JSON rows to be written. For each row, it first dynamically creates an empty Message based on
+the derived MessageDescriptor. Then it loads the JSON row into the Message. Finally it generates protocol buffer
+bytes from the Message. These bytes are then sent to the ManagedStream within an AppendRows request.
 */
 package managedwriter

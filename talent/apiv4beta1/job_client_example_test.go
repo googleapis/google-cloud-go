@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package talent_test
 import (
 	"context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	talent "cloud.google.com/go/talent/apiv4beta1"
 	talentpb "cloud.google.com/go/talent/apiv4beta1/talentpb"
 	"google.golang.org/api/iterator"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewJobClient() {
@@ -59,31 +59,6 @@ func ExampleNewJobRESTClient() {
 	_ = c
 }
 
-func ExampleJobClient_CreateJob() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := talent.NewJobClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &talentpb.CreateJobRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4beta1/talentpb#CreateJobRequest.
-	}
-	resp, err := c.CreateJob(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleJobClient_BatchCreateJobs() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -114,7 +89,7 @@ func ExampleJobClient_BatchCreateJobs() {
 	_ = resp
 }
 
-func ExampleJobClient_GetJob() {
+func ExampleJobClient_BatchDeleteJobs() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -127,41 +102,14 @@ func ExampleJobClient_GetJob() {
 	}
 	defer c.Close()
 
-	req := &talentpb.GetJobRequest{
+	req := &talentpb.BatchDeleteJobsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4beta1/talentpb#GetJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4beta1/talentpb#BatchDeleteJobsRequest.
 	}
-	resp, err := c.GetJob(ctx, req)
+	err = c.BatchDeleteJobs(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleJobClient_UpdateJob() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := talent.NewJobClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &talentpb.UpdateJobRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4beta1/talentpb#UpdateJobRequest.
-	}
-	resp, err := c.UpdateJob(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleJobClient_BatchUpdateJobs() {
@@ -194,6 +142,31 @@ func ExampleJobClient_BatchUpdateJobs() {
 	_ = resp
 }
 
+func ExampleJobClient_CreateJob() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := talent.NewJobClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &talentpb.CreateJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4beta1/talentpb#CreateJobRequest.
+	}
+	resp, err := c.CreateJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleJobClient_DeleteJob() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -217,7 +190,7 @@ func ExampleJobClient_DeleteJob() {
 	}
 }
 
-func ExampleJobClient_BatchDeleteJobs() {
+func ExampleJobClient_GetJob() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -230,14 +203,16 @@ func ExampleJobClient_BatchDeleteJobs() {
 	}
 	defer c.Close()
 
-	req := &talentpb.BatchDeleteJobsRequest{
+	req := &talentpb.GetJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4beta1/talentpb#BatchDeleteJobsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4beta1/talentpb#GetJobRequest.
 	}
-	err = c.BatchDeleteJobs(ctx, req)
+	resp, err := c.GetJob(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleJobClient_ListJobs() {
@@ -268,6 +243,12 @@ func ExampleJobClient_ListJobs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*talentpb.ListJobsResponse)
 	}
 }
 
@@ -324,7 +305,38 @@ func ExampleJobClient_SearchJobsForAlert() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*talentpb.SearchJobsResponse)
 	}
+}
+
+func ExampleJobClient_UpdateJob() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := talent.NewJobClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &talentpb.UpdateJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4beta1/talentpb#UpdateJobRequest.
+	}
+	resp, err := c.UpdateJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleJobClient_GetOperation() {
@@ -342,7 +354,7 @@ func ExampleJobClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {

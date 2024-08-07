@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "BulkAnalyzeConversations": {
+              "methods": [
+                "BulkAnalyzeConversations"
+              ]
+            },
+            "BulkDeleteConversations": {
+              "methods": [
+                "BulkDeleteConversations"
+              ]
+            },
             "CalculateIssueModelStats": {
               "methods": [
                 "CalculateIssueModelStats"
@@ -58,6 +68,11 @@
             "DeleteConversation": {
               "methods": [
                 "DeleteConversation"
+              ]
+            },
+            "DeleteIssue": {
+              "methods": [
+                "DeleteIssue"
               ]
             },
             "DeleteIssueModel": {
@@ -123,6 +138,11 @@
             "GetView": {
               "methods": [
                 "GetView"
+              ]
+            },
+            "IngestConversations": {
+              "methods": [
+                "IngestConversations"
               ]
             },
             "ListAnalyses": {
@@ -193,6 +213,226 @@
             "UpdateView": {
               "methods": [
                 "UpdateView"
+              ]
+            },
+            "UploadConversation": {
+              "methods": [
+                "UploadConversation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BulkAnalyzeConversations": {
+              "methods": [
+                "BulkAnalyzeConversations"
+              ]
+            },
+            "BulkDeleteConversations": {
+              "methods": [
+                "BulkDeleteConversations"
+              ]
+            },
+            "CalculateIssueModelStats": {
+              "methods": [
+                "CalculateIssueModelStats"
+              ]
+            },
+            "CalculateStats": {
+              "methods": [
+                "CalculateStats"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAnalysis": {
+              "methods": [
+                "CreateAnalysis"
+              ]
+            },
+            "CreateConversation": {
+              "methods": [
+                "CreateConversation"
+              ]
+            },
+            "CreateIssueModel": {
+              "methods": [
+                "CreateIssueModel"
+              ]
+            },
+            "CreatePhraseMatcher": {
+              "methods": [
+                "CreatePhraseMatcher"
+              ]
+            },
+            "CreateView": {
+              "methods": [
+                "CreateView"
+              ]
+            },
+            "DeleteAnalysis": {
+              "methods": [
+                "DeleteAnalysis"
+              ]
+            },
+            "DeleteConversation": {
+              "methods": [
+                "DeleteConversation"
+              ]
+            },
+            "DeleteIssue": {
+              "methods": [
+                "DeleteIssue"
+              ]
+            },
+            "DeleteIssueModel": {
+              "methods": [
+                "DeleteIssueModel"
+              ]
+            },
+            "DeletePhraseMatcher": {
+              "methods": [
+                "DeletePhraseMatcher"
+              ]
+            },
+            "DeleteView": {
+              "methods": [
+                "DeleteView"
+              ]
+            },
+            "DeployIssueModel": {
+              "methods": [
+                "DeployIssueModel"
+              ]
+            },
+            "ExportInsightsData": {
+              "methods": [
+                "ExportInsightsData"
+              ]
+            },
+            "GetAnalysis": {
+              "methods": [
+                "GetAnalysis"
+              ]
+            },
+            "GetConversation": {
+              "methods": [
+                "GetConversation"
+              ]
+            },
+            "GetIssue": {
+              "methods": [
+                "GetIssue"
+              ]
+            },
+            "GetIssueModel": {
+              "methods": [
+                "GetIssueModel"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPhraseMatcher": {
+              "methods": [
+                "GetPhraseMatcher"
+              ]
+            },
+            "GetSettings": {
+              "methods": [
+                "GetSettings"
+              ]
+            },
+            "GetView": {
+              "methods": [
+                "GetView"
+              ]
+            },
+            "IngestConversations": {
+              "methods": [
+                "IngestConversations"
+              ]
+            },
+            "ListAnalyses": {
+              "methods": [
+                "ListAnalyses"
+              ]
+            },
+            "ListConversations": {
+              "methods": [
+                "ListConversations"
+              ]
+            },
+            "ListIssueModels": {
+              "methods": [
+                "ListIssueModels"
+              ]
+            },
+            "ListIssues": {
+              "methods": [
+                "ListIssues"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPhraseMatchers": {
+              "methods": [
+                "ListPhraseMatchers"
+              ]
+            },
+            "ListViews": {
+              "methods": [
+                "ListViews"
+              ]
+            },
+            "UndeployIssueModel": {
+              "methods": [
+                "UndeployIssueModel"
+              ]
+            },
+            "UpdateConversation": {
+              "methods": [
+                "UpdateConversation"
+              ]
+            },
+            "UpdateIssue": {
+              "methods": [
+                "UpdateIssue"
+              ]
+            },
+            "UpdateIssueModel": {
+              "methods": [
+                "UpdateIssueModel"
+              ]
+            },
+            "UpdatePhraseMatcher": {
+              "methods": [
+                "UpdatePhraseMatcher"
+              ]
+            },
+            "UpdateSettings": {
+              "methods": [
+                "UpdateSettings"
+              ]
+            },
+            "UpdateView": {
+              "methods": [
+                "UpdateView"
+              ]
+            },
+            "UploadConversation": {
+              "methods": [
+                "UploadConversation"
               ]
             }
           }

@@ -23,26 +23,30 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 
 	"cloud.google.com/go/httpreplay/internal/proxy"
 	"github.com/google/martian/v3/martianhttp"
 )
 
 var (
-	port         = flag.Int("port", 8080, "port of the proxy")
-	controlPort  = flag.Int("control-port", 8181, "port for controlling the proxy")
-	record       = flag.String("record", "", "record traffic and save to filename")
-	replay       = flag.String("replay", "", "read filename and replay traffic")
-	debugHeaders = flag.Bool("debug-headers", false, "log header mismatches")
+	port          = flag.Int("port", 8080, "port of the proxy")
+	controlPort   = flag.Int("control-port", 8181, "port for controlling the proxy")
+	record        = flag.String("record", "", "record traffic and save to filename")
+	replay        = flag.String("replay", "", "read filename and replay traffic")
+	debugHeaders  = flag.Bool("debug-headers", false, "log header mismatches")
+	ignoreHeaders repeatedString
 )
 
 func main() {
+	flag.Var(&ignoreHeaders, "ignore-header", "header key(s) to ignore when matching")
+
 	flag.Parse()
 	if *record == "" && *replay == "" {
 		log.Fatal("provide either -record or -replay")
@@ -63,6 +67,9 @@ func main() {
 		log.Fatal(err)
 	}
 	proxy.DebugHeaders = *debugHeaders
+	for _, key := range ignoreHeaders {
+		pr.IgnoreHeader(key)
+	}
 
 	// Expose handlers on the control port.
 	mux := http.NewServeMux()
@@ -94,7 +101,7 @@ func handleInitial(pr *proxy.Proxy) http.HandlerFunc {
 			}
 
 		case "POST":
-			bytes, err := ioutil.ReadAll(req.Body)
+			bytes, err := io.ReadAll(req.Body)
 			req.Body.Close()
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
@@ -107,4 +114,19 @@ func handleInitial(pr *proxy.Proxy) http.HandlerFunc {
 			fmt.Fprint(w, "use GET to retrieve initial or POST to set it")
 		}
 	}
+}
+
+type repeatedString []string
+
+func (i *repeatedString) String() string {
+	v := make([]string, 0)
+	if i != nil {
+		v = *i
+	}
+	return strings.Join(v, ",")
+}
+
+func (i *repeatedString) Set(value string) error {
+	*i = append(*i, value)
+	return nil
 }

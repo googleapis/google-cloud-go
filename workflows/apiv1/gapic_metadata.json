@@ -15,14 +15,94 @@
                 "CreateWorkflow"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteWorkflow": {
               "methods": [
                 "DeleteWorkflow"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetWorkflow": {
               "methods": [
                 "GetWorkflow"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListWorkflows": {
+              "methods": [
+                "ListWorkflows"
+              ]
+            },
+            "UpdateWorkflow": {
+              "methods": [
+                "UpdateWorkflow"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateWorkflow": {
+              "methods": [
+                "CreateWorkflow"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteWorkflow": {
+              "methods": [
+                "DeleteWorkflow"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetWorkflow": {
+              "methods": [
+                "GetWorkflow"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListWorkflows": {

@@ -10,9 +10,64 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CreateNfsShare": {
+              "methods": [
+                "CreateNfsShare"
+              ]
+            },
+            "CreateProvisioningConfig": {
+              "methods": [
+                "CreateProvisioningConfig"
+              ]
+            },
+            "CreateSSHKey": {
+              "methods": [
+                "CreateSSHKey"
+              ]
+            },
+            "CreateVolumeSnapshot": {
+              "methods": [
+                "CreateVolumeSnapshot"
+              ]
+            },
+            "DeleteNfsShare": {
+              "methods": [
+                "DeleteNfsShare"
+              ]
+            },
+            "DeleteSSHKey": {
+              "methods": [
+                "DeleteSSHKey"
+              ]
+            },
+            "DeleteVolumeSnapshot": {
+              "methods": [
+                "DeleteVolumeSnapshot"
+              ]
+            },
             "DetachLun": {
               "methods": [
                 "DetachLun"
+              ]
+            },
+            "DisableInteractiveSerialConsole": {
+              "methods": [
+                "DisableInteractiveSerialConsole"
+              ]
+            },
+            "EnableInteractiveSerialConsole": {
+              "methods": [
+                "EnableInteractiveSerialConsole"
+              ]
+            },
+            "EvictLun": {
+              "methods": [
+                "EvictLun"
+              ]
+            },
+            "EvictVolume": {
+              "methods": [
+                "EvictVolume"
               ]
             },
             "GetInstance": {
@@ -40,9 +95,19 @@
                 "GetNfsShare"
               ]
             },
+            "GetProvisioningConfig": {
+              "methods": [
+                "GetProvisioningConfig"
+              ]
+            },
             "GetVolume": {
               "methods": [
                 "GetVolume"
+              ]
+            },
+            "GetVolumeSnapshot": {
+              "methods": [
+                "GetVolumeSnapshot"
               ]
             },
             "ListInstances": {
@@ -75,9 +140,49 @@
                 "ListNfsShares"
               ]
             },
+            "ListOSImages": {
+              "methods": [
+                "ListOSImages"
+              ]
+            },
+            "ListProvisioningQuotas": {
+              "methods": [
+                "ListProvisioningQuotas"
+              ]
+            },
+            "ListSSHKeys": {
+              "methods": [
+                "ListSSHKeys"
+              ]
+            },
+            "ListVolumeSnapshots": {
+              "methods": [
+                "ListVolumeSnapshots"
+              ]
+            },
             "ListVolumes": {
               "methods": [
                 "ListVolumes"
+              ]
+            },
+            "RenameInstance": {
+              "methods": [
+                "RenameInstance"
+              ]
+            },
+            "RenameNetwork": {
+              "methods": [
+                "RenameNetwork"
+              ]
+            },
+            "RenameNfsShare": {
+              "methods": [
+                "RenameNfsShare"
+              ]
+            },
+            "RenameVolume": {
+              "methods": [
+                "RenameVolume"
               ]
             },
             "ResetInstance": {
@@ -90,6 +195,11 @@
                 "ResizeVolume"
               ]
             },
+            "RestoreVolumeSnapshot": {
+              "methods": [
+                "RestoreVolumeSnapshot"
+              ]
+            },
             "StartInstance": {
               "methods": [
                 "StartInstance"
@@ -98,6 +208,11 @@
             "StopInstance": {
               "methods": [
                 "StopInstance"
+              ]
+            },
+            "SubmitProvisioningConfig": {
+              "methods": [
+                "SubmitProvisioningConfig"
               ]
             },
             "UpdateInstance": {
@@ -113,6 +228,246 @@
             "UpdateNfsShare": {
               "methods": [
                 "UpdateNfsShare"
+              ]
+            },
+            "UpdateProvisioningConfig": {
+              "methods": [
+                "UpdateProvisioningConfig"
+              ]
+            },
+            "UpdateVolume": {
+              "methods": [
+                "UpdateVolume"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateNfsShare": {
+              "methods": [
+                "CreateNfsShare"
+              ]
+            },
+            "CreateProvisioningConfig": {
+              "methods": [
+                "CreateProvisioningConfig"
+              ]
+            },
+            "CreateSSHKey": {
+              "methods": [
+                "CreateSSHKey"
+              ]
+            },
+            "CreateVolumeSnapshot": {
+              "methods": [
+                "CreateVolumeSnapshot"
+              ]
+            },
+            "DeleteNfsShare": {
+              "methods": [
+                "DeleteNfsShare"
+              ]
+            },
+            "DeleteSSHKey": {
+              "methods": [
+                "DeleteSSHKey"
+              ]
+            },
+            "DeleteVolumeSnapshot": {
+              "methods": [
+                "DeleteVolumeSnapshot"
+              ]
+            },
+            "DetachLun": {
+              "methods": [
+                "DetachLun"
+              ]
+            },
+            "DisableInteractiveSerialConsole": {
+              "methods": [
+                "DisableInteractiveSerialConsole"
+              ]
+            },
+            "EnableInteractiveSerialConsole": {
+              "methods": [
+                "EnableInteractiveSerialConsole"
+              ]
+            },
+            "EvictLun": {
+              "methods": [
+                "EvictLun"
+              ]
+            },
+            "EvictVolume": {
+              "methods": [
+                "EvictVolume"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetLun": {
+              "methods": [
+                "GetLun"
+              ]
+            },
+            "GetNetwork": {
+              "methods": [
+                "GetNetwork"
+              ]
+            },
+            "GetNfsShare": {
+              "methods": [
+                "GetNfsShare"
+              ]
+            },
+            "GetProvisioningConfig": {
+              "methods": [
+                "GetProvisioningConfig"
+              ]
+            },
+            "GetVolume": {
+              "methods": [
+                "GetVolume"
+              ]
+            },
+            "GetVolumeSnapshot": {
+              "methods": [
+                "GetVolumeSnapshot"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListLuns": {
+              "methods": [
+                "ListLuns"
+              ]
+            },
+            "ListNetworkUsage": {
+              "methods": [
+                "ListNetworkUsage"
+              ]
+            },
+            "ListNetworks": {
+              "methods": [
+                "ListNetworks"
+              ]
+            },
+            "ListNfsShares": {
+              "methods": [
+                "ListNfsShares"
+              ]
+            },
+            "ListOSImages": {
+              "methods": [
+                "ListOSImages"
+              ]
+            },
+            "ListProvisioningQuotas": {
+              "methods": [
+                "ListProvisioningQuotas"
+              ]
+            },
+            "ListSSHKeys": {
+              "methods": [
+                "ListSSHKeys"
+              ]
+            },
+            "ListVolumeSnapshots": {
+              "methods": [
+                "ListVolumeSnapshots"
+              ]
+            },
+            "ListVolumes": {
+              "methods": [
+                "ListVolumes"
+              ]
+            },
+            "RenameInstance": {
+              "methods": [
+                "RenameInstance"
+              ]
+            },
+            "RenameNetwork": {
+              "methods": [
+                "RenameNetwork"
+              ]
+            },
+            "RenameNfsShare": {
+              "methods": [
+                "RenameNfsShare"
+              ]
+            },
+            "RenameVolume": {
+              "methods": [
+                "RenameVolume"
+              ]
+            },
+            "ResetInstance": {
+              "methods": [
+                "ResetInstance"
+              ]
+            },
+            "ResizeVolume": {
+              "methods": [
+                "ResizeVolume"
+              ]
+            },
+            "RestoreVolumeSnapshot": {
+              "methods": [
+                "RestoreVolumeSnapshot"
+              ]
+            },
+            "StartInstance": {
+              "methods": [
+                "StartInstance"
+              ]
+            },
+            "StopInstance": {
+              "methods": [
+                "StopInstance"
+              ]
+            },
+            "SubmitProvisioningConfig": {
+              "methods": [
+                "SubmitProvisioningConfig"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            },
+            "UpdateNetwork": {
+              "methods": [
+                "UpdateNetwork"
+              ]
+            },
+            "UpdateNfsShare": {
+              "methods": [
+                "UpdateNfsShare"
+              ]
+            },
+            "UpdateProvisioningConfig": {
+              "methods": [
+                "UpdateProvisioningConfig"
               ]
             },
             "UpdateVolume": {

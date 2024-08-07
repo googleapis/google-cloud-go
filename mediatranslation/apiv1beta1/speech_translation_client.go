@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,18 +18,14 @@ package mediatranslation
 
 import (
 	"context"
-	"fmt"
 	"math"
-	"net/http"
 
 	mediatranslationpb "cloud.google.com/go/mediatranslation/apiv1beta1/mediatranslationpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 var newSpeechTranslationClientHook clientHook
@@ -42,22 +38,19 @@ type SpeechTranslationCallOptions struct {
 func defaultSpeechTranslationGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("mediatranslation.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("mediatranslation.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("mediatranslation.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://mediatranslation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
 func defaultSpeechTranslationCallOptions() *SpeechTranslationCallOptions {
-	return &SpeechTranslationCallOptions{
-		StreamingTranslateSpeech: []gax.CallOption{},
-	}
-}
-
-func defaultSpeechTranslationRESTCallOptions() *SpeechTranslationCallOptions {
 	return &SpeechTranslationCallOptions{
 		StreamingTranslateSpeech: []gax.CallOption{},
 	}
@@ -119,9 +112,6 @@ type speechTranslationGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing SpeechTranslationClient
 	CallOptions **SpeechTranslationCallOptions
 
@@ -129,7 +119,7 @@ type speechTranslationGRPCClient struct {
 	speechTranslationClient mediatranslationpb.SpeechTranslationServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewSpeechTranslationClient creates a new speech translation service client based on gRPC.
@@ -146,11 +136,6 @@ func NewSpeechTranslationClient(ctx context.Context, opts ...option.ClientOption
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -159,7 +144,6 @@ func NewSpeechTranslationClient(ctx context.Context, opts ...option.ClientOption
 
 	c := &speechTranslationGRPCClient{
 		connPool:                connPool,
-		disableDeadlines:        disableDeadlines,
 		speechTranslationClient: mediatranslationpb.NewSpeechTranslationServiceClient(connPool),
 		CallOptions:             &client.CallOptions,
 	}
@@ -182,9 +166,11 @@ func (c *speechTranslationGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *speechTranslationGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -193,76 +179,8 @@ func (c *speechTranslationGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type speechTranslationRESTClient struct {
-	// The http endpoint to connect to.
-	endpoint string
-
-	// The http client.
-	httpClient *http.Client
-
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
-
-	// Points back to the CallOptions field of the containing SpeechTranslationClient
-	CallOptions **SpeechTranslationCallOptions
-}
-
-// NewSpeechTranslationRESTClient creates a new speech translation service rest client.
-//
-// Provides translation from/to media types.
-func NewSpeechTranslationRESTClient(ctx context.Context, opts ...option.ClientOption) (*SpeechTranslationClient, error) {
-	clientOpts := append(defaultSpeechTranslationRESTClientOptions(), opts...)
-	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
-	if err != nil {
-		return nil, err
-	}
-
-	callOpts := defaultSpeechTranslationRESTCallOptions()
-	c := &speechTranslationRESTClient{
-		endpoint:    endpoint,
-		httpClient:  httpClient,
-		CallOptions: &callOpts,
-	}
-	c.setGoogleClientInfo()
-
-	return &SpeechTranslationClient{internalClient: c, CallOptions: callOpts}, nil
-}
-
-func defaultSpeechTranslationRESTClientOptions() []option.ClientOption {
-	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("https://mediatranslation.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("https://mediatranslation.mtls.googleapis.com"),
-		internaloption.WithDefaultAudience("https://mediatranslation.googleapis.com/"),
-		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-	}
-}
-
-// setGoogleClientInfo sets the name and version of the application in
-// the `x-goog-api-client` header passed on each request. Intended for
-// use by Google-written clients.
-func (c *speechTranslationRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *speechTranslationRESTClient) Close() error {
-	// Replace httpClient with nil to force cleanup.
-	c.httpClient = nil
-	return nil
-}
-
-// Connection returns a connection to the API service.
-//
-// Deprecated: This method always returns nil.
-func (c *speechTranslationRESTClient) Connection() *grpc.ClientConn {
-	return nil
-}
 func (c *speechTranslationGRPCClient) StreamingTranslateSpeech(ctx context.Context, opts ...gax.CallOption) (mediatranslationpb.SpeechTranslationService_StreamingTranslateSpeechClient, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	var resp mediatranslationpb.SpeechTranslationService_StreamingTranslateSpeechClient
 	opts = append((*c.CallOptions).StreamingTranslateSpeech[0:len((*c.CallOptions).StreamingTranslateSpeech):len((*c.CallOptions).StreamingTranslateSpeech)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -274,10 +192,4 @@ func (c *speechTranslationGRPCClient) StreamingTranslateSpeech(ctx context.Conte
 		return nil, err
 	}
 	return resp, nil
-}
-
-// StreamingTranslateSpeech performs bidirectional streaming speech translation: receive results while
-// sending audio. This method is only available via the gRPC API (not REST).
-func (c *speechTranslationRESTClient) StreamingTranslateSpeech(ctx context.Context, opts ...gax.CallOption) (mediatranslationpb.SpeechTranslationService_StreamingTranslateSpeechClient, error) {
-	return nil, fmt.Errorf("StreamingTranslateSpeech not yet supported for REST clients")
 }

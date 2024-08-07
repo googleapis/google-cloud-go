@@ -33,12 +33,12 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/errorreporting/apiv1beta1"
+	pb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
 	"cloud.google.com/go/errorreporting/internal"
-	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
-	pb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Config is additional configuration for Client.
@@ -102,7 +102,7 @@ func NewClient(ctx context.Context, projectID string, cfg Config, opts ...option
 	}
 	c, err := newClient(ctx, opts...)
 	if err != nil {
-		return nil, fmt.Errorf("creating client: %v", err)
+		return nil, fmt.Errorf("creating client: %w", err)
 	}
 
 	client := &Client{
@@ -205,7 +205,7 @@ func (c *Client) newRequest(e Entry) *pb.ReportErrorEventRequest {
 	return &pb.ReportErrorEventRequest{
 		ProjectName: c.projectName,
 		Event: &pb.ReportedErrorEvent{
-			EventTime:      ptypes.TimestampNow(),
+			EventTime:      timestamppb.New(time.Now()),
 			ServiceContext: c.serviceContext,
 			Message:        message,
 			Context:        errorContext,

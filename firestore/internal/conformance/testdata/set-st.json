@@ -2,7 +2,7 @@
   "tests": [
     {
       "description": "set: ServerTimestamp with data",
-      "comment": "A key with the special ServerTimestamp sentinel is removed from\nthe data in the update operation. Instead it appears in a separate Transform operation.\nNote that in these tests, the string \"ServerTimestamp\" should be replaced with the\nspecial ServerTimestamp value.",
+      "comment": "A key with the special ServerTimestamp sentinel is removed from\nthe fields in the update operation. Instead it appears in update transformS.\nNote that in these tests, the string \"ServerTimestamp\" should be replaced with the\nspecial ServerTimestamp value.",
       "set": {
         "docRefPath": "projects/projectID/databases/(default)/documents/C/d",
         "jsonData": "{\"a\": 1, \"b\": \"ServerTimestamp\"}",
@@ -17,18 +17,13 @@
                     "integerValue": "1"
                   }
                 }
-              }
-            },
-            {
-              "transform": {
-                "document": "projects/projectID/databases/(default)/documents/C/d",
-                "fieldTransforms": [
-                  {
-                    "fieldPath": "b",
-                    "setToServerValue": "REQUEST_TIME"
-                  }
-                ]
-              }
+              },
+              "updateTransforms": [
+                {
+                  "fieldPath": "b",
+                  "setToServerValue": "REQUEST_TIME"
+                }
+              ]
             }
           ]
         }

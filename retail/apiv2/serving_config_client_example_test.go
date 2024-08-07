@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package retail_test
 import (
 	"context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retail "cloud.google.com/go/retail/apiv2"
+	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewServingConfigClient() {
@@ -42,6 +42,31 @@ func ExampleNewServingConfigClient() {
 	_ = c
 }
 
+func ExampleServingConfigClient_AddControl() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewServingConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.AddControlRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#AddControlRequest.
+	}
+	resp, err := c.AddControl(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleServingConfigClient_CreateServingConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -57,7 +82,7 @@ func ExampleServingConfigClient_CreateServingConfig() {
 
 	req := &retailpb.CreateServingConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#CreateServingConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#CreateServingConfigRequest.
 	}
 	resp, err := c.CreateServingConfig(ctx, req)
 	if err != nil {
@@ -82,37 +107,12 @@ func ExampleServingConfigClient_DeleteServingConfig() {
 
 	req := &retailpb.DeleteServingConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#DeleteServingConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#DeleteServingConfigRequest.
 	}
 	err = c.DeleteServingConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-}
-
-func ExampleServingConfigClient_UpdateServingConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := retail.NewServingConfigClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &retailpb.UpdateServingConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#UpdateServingConfigRequest.
-	}
-	resp, err := c.UpdateServingConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleServingConfigClient_GetServingConfig() {
@@ -130,7 +130,7 @@ func ExampleServingConfigClient_GetServingConfig() {
 
 	req := &retailpb.GetServingConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetServingConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#GetServingConfigRequest.
 	}
 	resp, err := c.GetServingConfig(ctx, req)
 	if err != nil {
@@ -155,7 +155,7 @@ func ExampleServingConfigClient_ListServingConfigs() {
 
 	req := &retailpb.ListServingConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#ListServingConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#ListServingConfigsRequest.
 	}
 	it := c.ListServingConfigs(ctx, req)
 	for {
@@ -168,32 +168,13 @@ func ExampleServingConfigClient_ListServingConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
-	}
-}
 
-func ExampleServingConfigClient_AddControl() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := retail.NewServingConfigClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*retailpb.ListServingConfigsResponse)
 	}
-	defer c.Close()
-
-	req := &retailpb.AddControlRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#AddControlRequest.
-	}
-	resp, err := c.AddControl(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleServingConfigClient_RemoveControl() {
@@ -211,9 +192,34 @@ func ExampleServingConfigClient_RemoveControl() {
 
 	req := &retailpb.RemoveControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#RemoveControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#RemoveControlRequest.
 	}
 	resp, err := c.RemoveControl(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleServingConfigClient_UpdateServingConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewServingConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.UpdateServingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#UpdateServingConfigRequest.
+	}
+	resp, err := c.UpdateServingConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -236,7 +242,7 @@ func ExampleServingConfigClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -261,7 +267,7 @@ func ExampleServingConfigClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {
@@ -274,5 +280,11 @@ func ExampleServingConfigClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

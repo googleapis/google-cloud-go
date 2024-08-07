@@ -17,16 +17,57 @@ package firestore
 import (
 	"context"
 	"testing"
+	"time"
 
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var testClient = &Client{
-	projectID:  "projectID",
-	databaseID: "(default)",
+	projectID:    "projectID",
+	databaseID:   "(default)",
+	readSettings: &readSettings{},
+}
+
+func TestNewClientWithDatabase(t *testing.T) {
+	for _, tc := range []struct {
+		desc       string
+		databaseID string
+		projectID  string
+		wantErr    bool
+	}{
+		{
+			desc:       "Empty databaseID",
+			databaseID: "",
+			projectID:  "p1",
+			wantErr:    true,
+		},
+		{
+			desc:       "Error from NewClient bubbled to NewClientWithDatabase",
+			databaseID: "db1",
+			projectID:  "",
+			wantErr:    true,
+		},
+		{
+			desc:       "Valid databaseID",
+			databaseID: "db1",
+			projectID:  "p1",
+			wantErr:    false,
+		},
+	} {
+		client, err := NewClientWithDatabase(context.Background(), tc.projectID, tc.databaseID)
+
+		if err != nil && !tc.wantErr {
+			t.Errorf("NewClientWithDatabase: %s got %v want nil", tc.desc, err)
+		} else if err == nil && tc.wantErr {
+			t.Errorf("NewClientWithDatabase: %s got %v wanted error", tc.desc, err)
+		} else if err == nil && tc.databaseID != client.databaseID {
+			t.Errorf("NewClientWithDatabase: %s got %v want %v", tc.desc, client.databaseID, tc.databaseID)
+		}
+
+	}
 }
 
 func TestClientCollectionAndDoc(t *testing.T) {
@@ -45,16 +86,18 @@ func TestClientCollectionAndDoc(t *testing.T) {
 			path:         "projects/projectID/databases/(default)/documents/X",
 			parentPath:   db + "/documents",
 		},
+		readSettings: &readSettings{},
 	}
 	if !testEqual(coll1, wantc1) {
 		t.Fatalf("got\n%+v\nwant\n%+v", coll1, wantc1)
 	}
 	doc1 := testClient.Doc("X/a")
 	wantd1 := &DocumentRef{
-		Parent:    coll1,
-		ID:        "a",
-		Path:      "projects/projectID/databases/(default)/documents/X/a",
-		shortPath: "X/a",
+		Parent:       coll1,
+		ID:           "a",
+		Path:         "projects/projectID/databases/(default)/documents/X/a",
+		shortPath:    "X/a",
+		readSettings: &readSettings{},
 	}
 
 	if !testEqual(doc1, wantd1) {
@@ -145,15 +188,15 @@ func testGetAll(t *testing.T, c *Client, srv *mockServer, dbPath string, getAll 
 		[]interface{}{
 			// deliberately put these out of order
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Found{wantPBDocs[2]},
+				Result:   &pb.BatchGetDocumentsResponse_Found{Found: wantPBDocs[2]},
 				ReadTime: aTimestamp3,
 			},
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Found{wantPBDocs[0]},
+				Result:   &pb.BatchGetDocumentsResponse_Found{Found: wantPBDocs[0]},
 				ReadTime: aTimestamp,
 			},
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Missing{dbPath + "/documents/C/b"},
+				Result:   &pb.BatchGetDocumentsResponse_Missing{Missing: dbPath + "/documents/C/b"},
 				ReadTime: aTimestamp2,
 			},
 		},
@@ -223,15 +266,15 @@ func testGetAllWithEqualRefs(t *testing.T, c *Client, srv *mockServer, dbPath st
 		[]interface{}{
 			// deliberately put these out of order
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Found{wantPBDocs[1]},
+				Result:   &pb.BatchGetDocumentsResponse_Found{Found: wantPBDocs[1]},
 				ReadTime: aTimestamp3,
 			},
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Found{wantPBDocs[0]},
+				Result:   &pb.BatchGetDocumentsResponse_Found{Found: wantPBDocs[0]},
 				ReadTime: aTimestamp,
 			},
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Missing{dbPath + "/documents/C/b"},
+				Result:   &pb.BatchGetDocumentsResponse_Missing{Missing: dbPath + "/documents/C/b"},
 				ReadTime: aTimestamp2,
 			},
 		},
@@ -296,16 +339,57 @@ func TestGetAllErrors(t *testing.T) {
 		},
 		[]interface{}{
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Found{&pb.Document{Name: docPath}},
+				Result:   &pb.BatchGetDocumentsResponse_Found{Found: &pb.Document{Name: docPath}},
 				ReadTime: aTimestamp,
 			},
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Missing{docPath},
+				Result:   &pb.BatchGetDocumentsResponse_Missing{Missing: docPath},
 				ReadTime: aTimestamp,
 			},
 		},
 	)
 	if _, err := c.GetAll(ctx, []*DocumentRef{c.Doc("C/a")}); err == nil {
 		t.Error("got nil, want error")
+	}
+}
+
+func TestClient_WithReadOptions(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const dbPath = "projects/projectID/databases/(default)"
+	const docPath = dbPath + "/documents/C/a"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+
+	dr := &DocumentRef{
+		Parent: &CollectionRef{
+			c: c,
+		},
+		ID:   "123",
+		Path: docPath,
+	}
+
+	srv.addRPC(&pb.BatchGetDocumentsRequest{
+		Database:  dbPath,
+		Documents: []string{docPath},
+		ConsistencySelector: &pb.BatchGetDocumentsRequest_ReadTime{
+			ReadTime: &tspb.Timestamp{Seconds: tm.Unix()},
+		},
+	}, []interface{}{
+		&pb.BatchGetDocumentsResponse{
+			ReadTime: &tspb.Timestamp{Seconds: tm.Unix()},
+			Result: &pb.BatchGetDocumentsResponse_Found{
+				Found: &pb.Document{},
+			},
+		},
+	})
+
+	_, err := c.WithReadOptions(ReadTime(tm)).GetAll(ctx, []*DocumentRef{
+		dr,
+	})
+
+	if err != nil {
+		t.Fatal(err)
 	}
 }

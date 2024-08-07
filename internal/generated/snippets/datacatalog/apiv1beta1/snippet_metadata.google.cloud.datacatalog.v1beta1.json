@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datacatalog/apiv1beta1",
-    "version": "1.6.0",
+    "version": "1.21.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateEntry_sync",
       "title": "datacatalog CreateEntry Sample",
-      "description": "CreateEntry creates an entry. Only entries of ‘FILESET’ type or user-specified type can\nbe created.\n\nUsers should enable the Data Catalog API in the project identified by\nthe parent parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)) for\nmore information).\n\nA maximum of 100,000 entries may be created per entry group.",
+      "description": "CreateEntry creates an entry. Only entries of 'FILESET' type or user-specified type can\nbe created.\n\nUsers should enable the Data Catalog API in the project identified by\nthe `parent` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).\n\nA maximum of 100,000 entries may be created per entry group.",
       "file": "Client/CreateEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Entry",
+        "resultType": "*datacatalogpb.Entry",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -60,7 +60,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateEntryGroup_sync",
       "title": "datacatalog CreateEntryGroup Sample",
-      "description": "CreateEntryGroup a maximum of 10,000 entry groups may be created per organization across all\nlocations.\n\nUsers should enable the Data Catalog API in the project identified by\nthe parent parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)) for\nmore information).",
+      "description": "CreateEntryGroup a maximum of 10,000 entry groups may be created per organization across all\nlocations.\n\nUsers should enable the Data Catalog API in the project identified by\nthe `parent` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
       "file": "Client/CreateEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.EntryGroup",
+        "resultType": "*datacatalogpb.EntryGroup",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -106,7 +106,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTag_sync",
       "title": "datacatalog CreateTag Sample",
-      "description": "CreateTag creates a tag on an Entry.\nNote: The project identified by the parent parameter for the\ntag (at https: //cloud.google.com/data-catalog/docs/reference/rest/v1beta1/projects.locations.entryGroups.entries.tags/create#path-parameters)\nand the\ntag\ntemplate (at https: //cloud.google.com/data-catalog/docs/reference/rest/v1beta1/projects.locations.tagTemplates/create#path-parameters)\nused to create the tag must be from the same organization.",
+      "description": "CreateTag creates a tag on an [Entry][google.cloud.datacatalog.v1beta1.Entry].\nNote: The project identified by the `parent` parameter for the\n[tag](https: //cloud.google.com/data-catalog/docs/reference/rest/v1beta1/projects.locations.entryGroups.entries.tags/create#path-parameters)\nand the\n[tag\ntemplate](https: //cloud.google.com/data-catalog/docs/reference/rest/v1beta1/projects.locations.tagTemplates/create#path-parameters)\nused to create the tag must be from the same organization.",
       "file": "Client/CreateTag/main.go",
       "language": "GO",
       "clientMethod": {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Tag",
+        "resultType": "*datacatalogpb.Tag",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -152,7 +152,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTagTemplate_sync",
       "title": "datacatalog CreateTagTemplate Sample",
-      "description": "CreateTagTemplate creates a tag template. The user should enable the Data Catalog API in\nthe project identified by the parent parameter (see Data Catalog\nResource\nProject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).",
+      "description": "CreateTagTemplate creates a tag template. The user should enable the Data Catalog API in\nthe project identified by the `parent` parameter (see [Data Catalog\nResource\nProject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).",
       "file": "Client/CreateTagTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.TagTemplate",
+        "resultType": "*datacatalogpb.TagTemplate",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -198,7 +198,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTagTemplateField_sync",
       "title": "datacatalog CreateTagTemplateField Sample",
-      "description": "CreateTagTemplateField creates a field in a tag template. The user should enable the Data Catalog\nAPI in the project identified by the parent parameter (see\nData Catalog Resource\nProject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).",
+      "description": "CreateTagTemplateField creates a field in a tag template. The user should enable the Data Catalog\nAPI in the project identified by the `parent` parameter (see\n[Data Catalog Resource\nProject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).",
       "file": "Client/CreateTagTemplateField/main.go",
       "language": "GO",
       "clientMethod": {
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.TagTemplateField",
+        "resultType": "*datacatalogpb.TagTemplateField",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -244,7 +244,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteEntry_sync",
       "title": "datacatalog DeleteEntry Sample",
-      "description": "DeleteEntry deletes an existing entry. Only entries created through\nCreateEntry\nmethod can be deleted.\nUsers should enable the Data Catalog API in the project identified by\nthe name parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)) for\nmore information).",
+      "description": "DeleteEntry deletes an existing entry. Only entries created through\n[CreateEntry][google.cloud.datacatalog.v1beta1.DataCatalog.CreateEntry]\nmethod can be deleted.\nUsers should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
       "file": "Client/DeleteEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -281,7 +281,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -289,7 +289,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteEntryGroup_sync",
       "title": "datacatalog DeleteEntryGroup Sample",
-      "description": "DeleteEntryGroup deletes an EntryGroup. Only entry groups that do not contain entries can be\ndeleted. Users should enable the Data Catalog API in the project\nidentified by the name parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)) for\nmore information).",
+      "description": "DeleteEntryGroup deletes an EntryGroup. Only entry groups that do not contain entries can be\ndeleted. Users should enable the Data Catalog API in the project\nidentified by the `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
       "file": "Client/DeleteEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -371,7 +371,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -379,7 +379,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTagTemplate_sync",
       "title": "datacatalog DeleteTagTemplate Sample",
-      "description": "DeleteTagTemplate deletes a tag template and all tags using the template.\nUsers should enable the Data Catalog API in the project identified by\nthe name parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)) for\nmore information).",
+      "description": "DeleteTagTemplate deletes a tag template and all tags using the template.\nUsers should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
       "file": "Client/DeleteTagTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -416,7 +416,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -424,7 +424,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTagTemplateField_sync",
       "title": "datacatalog DeleteTagTemplateField Sample",
-      "description": "DeleteTagTemplateField deletes a field in a tag template and all uses of that field.\nUsers should enable the Data Catalog API in the project identified by\nthe name parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)) for\nmore information).",
+      "description": "DeleteTagTemplateField deletes a field in a tag template and all uses of that field.\nUsers should enable the Data Catalog API in the project identified by\nthe `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
       "file": "Client/DeleteTagTemplateField/main.go",
       "language": "GO",
       "clientMethod": {
@@ -461,7 +461,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -489,7 +489,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Entry",
+        "resultType": "*datacatalogpb.Entry",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -507,7 +507,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -535,7 +535,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.EntryGroup",
+        "resultType": "*datacatalogpb.EntryGroup",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -553,7 +553,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -561,7 +561,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetIamPolicy_sync",
       "title": "datacatalog GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for a resource. A NOT_FOUND error\nis returned if the resource does not exist. An empty policy is returned\nif the resource exists but does not have a policy set on it.\n\nSupported resources are: \n\n\tTag templates.\n\n\tEntries.\n\n\tEntry groups.\n\tNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\n\tand any external Google Cloud Platform resources synced to Data Catalog.\n\nCallers must have following Google IAM permission\n\n\tdatacatalog.tagTemplates.getIamPolicy to get policies on tag\n\ttemplates.\n\n\tdatacatalog.entries.getIamPolicy to get policies on entries.\n\n\tdatacatalog.entryGroups.getIamPolicy to get policies on entry groups.",
+      "description": "GetIamPolicy gets the access control policy for a resource. A `NOT_FOUND` error\nis returned if the resource does not exist. An empty policy is returned\nif the resource exists but does not have a policy set on it.\n\nSupported resources are: \n- Tag templates.\n- Entries.\n- Entry groups.\nNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\nand any external Google Cloud Platform resources synced to Data Catalog.\n\nCallers must have following Google IAM permission\n- `datacatalog.tagTemplates.getIamPolicy` to get policies on tag\ntemplates.\n- `datacatalog.entries.getIamPolicy` to get policies on entries.\n- `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.",
       "file": "Client/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -581,7 +581,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -599,7 +599,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -627,7 +627,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.TagTemplate",
+        "resultType": "*datacatalogpb.TagTemplate",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -645,7 +645,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -691,7 +691,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -737,7 +737,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -745,7 +745,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListTags_sync",
       "title": "datacatalog ListTags Sample",
-      "description": "ListTags lists the tags on an Entry.",
+      "description": "ListTags lists tags assigned to an [Entry][google.cloud.datacatalog.v1beta1.Entry].\nThe [columns][google.cloud.datacatalog.v1beta1.Tag.column] in the response\nare lowercased.",
       "file": "Client/ListTags/main.go",
       "language": "GO",
       "clientMethod": {
@@ -783,7 +783,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -811,7 +811,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Entry",
+        "resultType": "*datacatalogpb.Entry",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -829,7 +829,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -837,7 +837,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_RenameTagTemplateField_sync",
       "title": "datacatalog RenameTagTemplateField Sample",
-      "description": "RenameTagTemplateField renames a field in a tag template. The user should enable the Data Catalog\nAPI in the project identified by the name parameter (see Data Catalog\nResource\nProject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).",
+      "description": "RenameTagTemplateField renames a field in a tag template. The user should enable the Data Catalog\nAPI in the project identified by the `name` parameter (see [Data Catalog\nResource\nProject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project)\nfor more information).",
       "file": "Client/RenameTagTemplateField/main.go",
       "language": "GO",
       "clientMethod": {
@@ -857,7 +857,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.TagTemplateField",
+        "resultType": "*datacatalogpb.TagTemplateField",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -875,7 +875,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_RenameTagTemplateFieldEnumValue_sync",
+      "title": "datacatalog RenameTagTemplateFieldEnumValue Sample",
+      "description": "RenameTagTemplateFieldEnumValue renames an enum value in a tag template. The enum values have to be unique\nwithin one enum field. Thus, an enum value cannot be renamed with a name\nused in any other enum value within the same enum field.",
+      "file": "Client/RenameTagTemplateFieldEnumValue/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RenameTagTemplateFieldEnumValue",
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.RenameTagTemplateFieldEnumValue",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datacatalogpb.RenameTagTemplateFieldEnumValueRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datacatalogpb.TagTemplateField",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datacatalog.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "RenameTagTemplateFieldEnumValue",
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.RenameTagTemplateFieldEnumValue",
+          "service": {
+            "shortName": "DataCatalog",
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -883,7 +929,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_SearchCatalog_sync",
       "title": "datacatalog SearchCatalog Sample",
-      "description": "SearchCatalog searches Data Catalog for multiple resources like entries, tags that\nmatch a query.\n\nThis is a custom method\n(https: //cloud.google.com/apis/design/custom_methods (at https: //cloud.google.com/apis/design/custom_methods)) and does not return\nthe complete resource, only the resource identifier and high level\nfields. Clients can subsequentally call Get methods.\n\nNote that Data Catalog search queries do not guarantee full recall. Query\nresults that match your query may not be returned, even in subsequent\nresult pages. Also note that results returned (and not returned) can vary\nacross repeated search queries.\n\nSee Data Catalog Search\nSyntax (at https: //cloud.google.com/data-catalog/docs/how-to/search-reference)\nfor more information.",
+      "description": "SearchCatalog searches Data Catalog for multiple resources like entries, tags that\nmatch a query.\n\nThis is a custom method\n(https: //cloud.google.com/apis/design/custom_methods) and does not return\nthe complete resource, only the resource identifier and high level\nfields. Clients can subsequently call `Get` methods.\n\nNote that Data Catalog search queries do not guarantee full recall. Query\nresults that match your query may not be returned, even in subsequent\nresult pages. Also note that results returned (and not returned) can vary\nacross repeated search queries.\n\nSee [Data Catalog Search\nSyntax](https: //cloud.google.com/data-catalog/docs/how-to/search-reference)\nfor more information.",
       "file": "Client/SearchCatalog/main.go",
       "language": "GO",
       "clientMethod": {
@@ -921,7 +967,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -929,7 +975,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_SetIamPolicy_sync",
       "title": "datacatalog SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy for a resource. Replaces any existing\npolicy.\nSupported resources are: \n\n\tTag templates.\n\n\tEntries.\n\n\tEntry groups.\n\tNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\n\tand any external Google Cloud Platform resources synced to Data Catalog.\n\nCallers must have following Google IAM permission\n\n\tdatacatalog.tagTemplates.setIamPolicy to set policies on tag\n\ttemplates.\n\n\tdatacatalog.entries.setIamPolicy to set policies on entries.\n\n\tdatacatalog.entryGroups.setIamPolicy to set policies on entry groups.",
+      "description": "SetIamPolicy sets the access control policy for a resource. Replaces any existing\npolicy.\nSupported resources are: \n- Tag templates.\n- Entries.\n- Entry groups.\nNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\nand any external Google Cloud Platform resources synced to Data Catalog.\n\nCallers must have following Google IAM permission\n- `datacatalog.tagTemplates.setIamPolicy` to set policies on tag\ntemplates.\n- `datacatalog.entries.setIamPolicy` to set policies on entries.\n- `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.",
       "file": "Client/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -949,7 +995,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -967,7 +1013,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -975,7 +1021,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_TestIamPermissions_sync",
       "title": "datacatalog TestIamPermissions Sample",
-      "description": "TestIamPermissions returns the caller’s permissions on a resource.\nIf the resource does not exist, an empty set of permissions is returned\n(We don’t return a NOT_FOUND error).\n\nSupported resources are: \n\n\tTag templates.\n\n\tEntries.\n\n\tEntry groups.\n\tNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\n\tand any external Google Cloud Platform resources synced to Data Catalog.\n\nA caller is not required to have Google IAM permission to make this\nrequest.",
+      "description": "TestIamPermissions returns the caller's permissions on a resource.\nIf the resource does not exist, an empty set of permissions is returned\n(We don't return a `NOT_FOUND` error).\n\nSupported resources are: \n- Tag templates.\n- Entries.\n- Entry groups.\nNote, this method cannot be used to manage policies for BigQuery, Pub/Sub\nand any external Google Cloud Platform resources synced to Data Catalog.\n\nA caller is not required to have Google IAM permission to make this\nrequest.",
       "file": "Client/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -995,7 +1041,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -1013,7 +1059,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1021,7 +1067,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateEntry_sync",
       "title": "datacatalog UpdateEntry Sample",
-      "description": "UpdateEntry updates an existing entry.\nUsers should enable the Data Catalog API in the project identified by\nthe entry.name parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)) for\nmore information).",
+      "description": "UpdateEntry updates an existing entry.\nUsers should enable the Data Catalog API in the project identified by\nthe `entry.name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
       "file": "Client/UpdateEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1041,7 +1087,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Entry",
+        "resultType": "*datacatalogpb.Entry",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -1059,7 +1105,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1067,7 +1113,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateEntryGroup_sync",
       "title": "datacatalog UpdateEntryGroup Sample",
-      "description": "UpdateEntryGroup updates an EntryGroup. The user should enable the Data Catalog API in the\nproject identified by the entry_group.name parameter (see [Data Catalog\nResource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)) for\nmore information).",
+      "description": "UpdateEntryGroup updates an EntryGroup. The user should enable the Data Catalog API in the\nproject identified by the `entry_group.name` parameter (see [Data Catalog\nResource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
       "file": "Client/UpdateEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1087,7 +1133,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.EntryGroup",
+        "resultType": "*datacatalogpb.EntryGroup",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -1105,7 +1151,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1133,7 +1179,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Tag",
+        "resultType": "*datacatalogpb.Tag",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -1151,7 +1197,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1159,7 +1205,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTagTemplate_sync",
       "title": "datacatalog UpdateTagTemplate Sample",
-      "description": "UpdateTagTemplate updates a tag template. This method cannot be used to update the fields of\na template. The tag template fields are represented as separate resources\nand should be updated using their own create/update/delete methods.\nUsers should enable the Data Catalog API in the project identified by\nthe tag_template.name parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)) for\nmore information).",
+      "description": "UpdateTagTemplate updates a tag template. This method cannot be used to update the fields of\na template. The tag template fields are represented as separate resources\nand should be updated using their own create/update/delete methods.\nUsers should enable the Data Catalog API in the project identified by\nthe `tag_template.name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
       "file": "Client/UpdateTagTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1179,7 +1225,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.TagTemplate",
+        "resultType": "*datacatalogpb.TagTemplate",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -1197,7 +1243,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1205,7 +1251,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTagTemplateField_sync",
       "title": "datacatalog UpdateTagTemplateField Sample",
-      "description": "UpdateTagTemplateField updates a field in a tag template. This method cannot be used to update the\nfield type. Users should enable the Data Catalog API in the project\nidentified by the name parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)) for\nmore information).",
+      "description": "UpdateTagTemplateField updates a field in a tag template. This method cannot be used to update the\nfield type. Users should enable the Data Catalog API in the project\nidentified by the `name` parameter (see [Data Catalog Resource Project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project) for\nmore information).",
       "file": "Client/UpdateTagTemplateField/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1225,7 +1271,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.TagTemplateField",
+        "resultType": "*datacatalogpb.TagTemplateField",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1beta1.Client"
@@ -1243,7 +1289,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1271,7 +1317,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.PolicyTag",
+        "resultType": "*datacatalogpb.PolicyTag",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
@@ -1289,7 +1335,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1317,7 +1363,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Taxonomy",
+        "resultType": "*datacatalogpb.Taxonomy",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
@@ -1335,7 +1381,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1380,7 +1426,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1425,7 +1471,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1453,7 +1499,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
@@ -1471,7 +1517,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1499,7 +1545,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.PolicyTag",
+        "resultType": "*datacatalogpb.PolicyTag",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
@@ -1517,7 +1563,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1545,7 +1591,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Taxonomy",
+        "resultType": "*datacatalogpb.Taxonomy",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
@@ -1563,7 +1609,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1609,7 +1655,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1655,7 +1701,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1683,7 +1729,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
@@ -1701,7 +1747,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1729,7 +1775,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
@@ -1747,7 +1793,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1775,7 +1821,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.PolicyTag",
+        "resultType": "*datacatalogpb.PolicyTag",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
@@ -1793,7 +1839,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1821,7 +1867,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Taxonomy",
+        "resultType": "*datacatalogpb.Taxonomy",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerClient"
@@ -1839,7 +1885,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1867,7 +1913,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.ExportTaxonomiesResponse",
+        "resultType": "*datacatalogpb.ExportTaxonomiesResponse",
         "client": {
           "shortName": "PolicyTagManagerSerializationClient",
           "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerializationClient"
@@ -1885,7 +1931,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1913,7 +1959,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.ImportTaxonomiesResponse",
+        "resultType": "*datacatalogpb.ImportTaxonomiesResponse",
         "client": {
           "shortName": "PolicyTagManagerSerializationClient",
           "fullName": "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerializationClient"
@@ -1931,7 +1977,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]

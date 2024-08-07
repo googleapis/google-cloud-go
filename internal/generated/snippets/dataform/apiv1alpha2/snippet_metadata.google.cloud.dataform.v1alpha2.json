@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataform/apiv1alpha2",
-    "version": "0.4.0",
+    "version": "0.9.8",
     "language": "GO",
     "apis": [
       {
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -96,7 +96,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -124,7 +124,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.CompilationResult",
+        "resultType": "*dataformpb.CompilationResult",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -142,7 +142,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -170,7 +170,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.Repository",
+        "resultType": "*dataformpb.Repository",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -216,7 +216,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.WorkflowInvocation",
+        "resultType": "*dataformpb.WorkflowInvocation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -262,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.Workspace",
+        "resultType": "*dataformpb.Workspace",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -325,7 +325,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -370,7 +370,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -415,7 +415,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -443,7 +443,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.FetchFileDiffResponse",
+        "resultType": "*dataformpb.FetchFileDiffResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -461,7 +461,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -489,7 +489,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.FetchFileGitStatusesResponse",
+        "resultType": "*dataformpb.FetchFileGitStatusesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -507,7 +507,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -535,7 +535,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.FetchGitAheadBehindResponse",
+        "resultType": "*dataformpb.FetchGitAheadBehindResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -553,7 +553,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -561,7 +561,7 @@
     {
       "regionTag": "dataform_v1alpha2_generated_Dataform_FetchRemoteBranches_sync",
       "title": "dataform FetchRemoteBranches Sample",
-      "description": "FetchRemoteBranches fetches a Repository’s remote branches.",
+      "description": "FetchRemoteBranches fetches a Repository's remote branches.",
       "file": "Client/FetchRemoteBranches/main.go",
       "language": "GO",
       "clientMethod": {
@@ -581,7 +581,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.FetchRemoteBranchesResponse",
+        "resultType": "*dataformpb.FetchRemoteBranchesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -599,7 +599,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -627,7 +627,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.CompilationResult",
+        "resultType": "*dataformpb.CompilationResult",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -645,7 +645,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -673,17 +673,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.dataform.v1alpha2.Dataform.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "Dataform",
-            "fullName": "google.cloud.dataform.v1alpha2.Dataform"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -691,7 +691,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -719,17 +719,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dataform.v1alpha2.Dataform.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Dataform",
-            "fullName": "google.cloud.dataform.v1alpha2.Dataform"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -737,7 +737,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -765,7 +765,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.Repository",
+        "resultType": "*dataformpb.Repository",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -783,7 +783,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -811,7 +811,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.WorkflowInvocation",
+        "resultType": "*dataformpb.WorkflowInvocation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -829,7 +829,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -857,7 +857,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.Workspace",
+        "resultType": "*dataformpb.Workspace",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -875,7 +875,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -903,7 +903,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.InstallNpmPackagesResponse",
+        "resultType": "*dataformpb.InstallNpmPackagesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -921,7 +921,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -967,7 +967,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1002,10 +1002,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dataform.v1alpha2.Dataform.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Dataform",
-            "fullName": "google.cloud.dataform.v1alpha2.Dataform"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1013,7 +1013,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1059,7 +1059,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1105,7 +1105,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1151,7 +1151,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1179,7 +1179,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.MakeDirectoryResponse",
+        "resultType": "*dataformpb.MakeDirectoryResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -1197,7 +1197,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1225,7 +1225,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.MoveDirectoryResponse",
+        "resultType": "*dataformpb.MoveDirectoryResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -1243,7 +1243,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1271,7 +1271,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.MoveFileResponse",
+        "resultType": "*dataformpb.MoveFileResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -1289,7 +1289,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1297,7 +1297,7 @@
     {
       "regionTag": "dataform_v1alpha2_generated_Dataform_PullGitCommits_sync",
       "title": "dataform PullGitCommits Sample",
-      "description": "PullGitCommits pulls Git commits from the Repository’s remote into a Workspace.",
+      "description": "PullGitCommits pulls Git commits from the Repository's remote into a Workspace.",
       "file": "Client/PullGitCommits/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1334,7 +1334,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1342,7 +1342,7 @@
     {
       "regionTag": "dataform_v1alpha2_generated_Dataform_PushGitCommits_sync",
       "title": "dataform PushGitCommits Sample",
-      "description": "PushGitCommits pushes Git commits from a Workspace to the Repository’s remote.",
+      "description": "PushGitCommits pushes Git commits from a Workspace to the Repository's remote.",
       "file": "Client/PushGitCommits/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1379,7 +1379,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1425,7 +1425,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1471,7 +1471,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1517,7 +1517,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1545,7 +1545,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.ReadFileResponse",
+        "resultType": "*dataformpb.ReadFileResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -1563,7 +1563,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1608,7 +1608,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1653,7 +1653,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1698,7 +1698,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1706,7 +1706,7 @@
     {
       "regionTag": "dataform_v1alpha2_generated_Dataform_SetIamPolicy_sync",
       "title": "dataform SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "Client/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1726,17 +1726,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.dataform.v1alpha2.Dataform.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "Dataform",
-            "fullName": "google.cloud.dataform.v1alpha2.Dataform"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1744,7 +1744,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1752,7 +1752,7 @@
     {
       "regionTag": "dataform_v1alpha2_generated_Dataform_TestIamPermissions_sync",
       "title": "dataform TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "Client/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1772,17 +1772,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.dataform.v1alpha2.Dataform.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "Dataform",
-            "fullName": "google.cloud.dataform.v1alpha2.Dataform"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1790,7 +1790,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1818,7 +1818,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.Repository",
+        "resultType": "*dataformpb.Repository",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -1836,7 +1836,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1864,7 +1864,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.WriteFileResponse",
+        "resultType": "*dataformpb.WriteFileResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1alpha2.Client"
@@ -1882,7 +1882,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]

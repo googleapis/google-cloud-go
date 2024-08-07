@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build go1.15
-// +build go1.15
-
 /*
 Command godocfx generates DocFX YAML for Go code.
 
@@ -52,7 +49,7 @@ import (
 	"time"
 
 	"golang.org/x/tools/go/packages"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 func main() {
@@ -105,30 +102,14 @@ func main() {
 		os.RemoveAll(*outDir)
 	}
 	if len(mods) == 0 {
-		log.Println("No new modules to process")
+		log.Println("No modules to process")
 		return
 	}
-	// Create a temp module so we can get the exact version asked for.
-	workingDir, err := ioutil.TempDir("", "godocfx-*")
-	if err != nil {
-		log.Fatalf("ioutil.TempDir: %v", err)
+	namer := &friendlyAPINamer{
+		metaURL: "https://raw.githubusercontent.com/googleapis/google-cloud-go/main/internal/.repo-metadata-full.json",
 	}
-	// Use a fake module that doesn't start with cloud.google.com/go.
-	runCmd(workingDir, "go", "mod", "init", "cloud.google.com/lets-build-some-docs")
-
-	failed := false
-	for _, m := range mods {
-		log.Printf("Processing %s@%s", m.Path, m.Version)
-
-		// Always output to specific directory.
-		path := filepath.Join(*outDir, fmt.Sprintf("%s@%s", m.Path, m.Version))
-		if err := process(m, workingDir, path, *print); err != nil {
-			log.Printf("Failed to process %v: %v", m, err)
-			failed = true
-		}
-		log.Printf("Done with %s@%s", m.Path, m.Version)
-	}
-	if failed {
+	optionalExtraFiles := []string{}
+	if ok := processMods(mods, *outDir, namer, optionalExtraFiles, *print); !ok {
 		os.Exit(1)
 	}
 }
@@ -148,7 +129,31 @@ func runCmd(dir, name string, args ...string) error {
 	return nil
 }
 
-func process(mod indexEntry, workingDir, outDir string, print bool) error {
+func processMods(mods []indexEntry, outDir string, namer *friendlyAPINamer, optionalExtraFiles []string, print bool) bool {
+	// Create a temp module so we can get the exact version asked for.
+	workingDir, err := ioutil.TempDir("", "godocfx-*")
+	if err != nil {
+		log.Fatalf("ioutil.TempDir: %v", err)
+	}
+	// Use a fake module that doesn't start with cloud.google.com/go.
+	runCmd(workingDir, "go", "mod", "init", "cloud.google.com/lets-build-some-docs")
+
+	ok := true
+	for _, m := range mods {
+		log.Printf("Processing %s@%s", m.Path, m.Version)
+
+		// Always output to specific directory.
+		path := filepath.Join(outDir, fmt.Sprintf("%s@%s", m.Path, m.Version))
+		if err := process(m, workingDir, path, namer, optionalExtraFiles, print); err != nil {
+			log.Printf("Failed to process %v: %v", m, err)
+			ok = false
+		}
+		log.Printf("Done with %s@%s", m.Path, m.Version)
+	}
+	return ok
+}
+
+func process(mod indexEntry, workingDir, outDir string, namer *friendlyAPINamer, optionalExtraFiles []string, print bool) error {
 	filter := []string{
 		"cloud.google.com/go/analytics",
 		"cloud.google.com/go/area120",
@@ -171,10 +176,6 @@ func process(mod indexEntry, workingDir, outDir string, print bool) error {
 	}
 
 	log.Println("Starting to parse")
-	optionalExtraFiles := []string{}
-	namer := &friendlyAPINamer{
-		metaURL: "https://raw.githubusercontent.com/googleapis/google-cloud-go/main/internal/.repo-metadata-full.json",
-	}
 	r, err := parse(mod.Path+"/...", workingDir, optionalExtraFiles, filter, namer)
 	if err != nil {
 		return fmt.Errorf("parse: %v", err)
@@ -289,5 +290,7 @@ language: "go"
 		fmt.Fprintf(w, "stem: \"/appengine/docs/legacy/standard/go111/reference\"\n")
 	case "google.golang.org/appengine/v2":
 		fmt.Fprintf(w, "stem: \"/appengine/docs/standard/go/reference/services/bundled\"\n")
+	case "cloud.google.com/go/vertexai":
+		fmt.Fprintf(w, "stem: \"/vertex-ai/generative-ai/docs/reference/go\"\n")
 	}
 }

@@ -17,7 +17,7 @@ package proxy
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"sync"
@@ -157,7 +157,7 @@ func toHTTPResponse(lr *Response, req *http.Request) *http.Response {
 		ProtoMajor:    lr.ProtoMajor,
 		ProtoMinor:    lr.ProtoMinor,
 		Header:        lr.Header,
-		Body:          ioutil.NopCloser(bytes.NewReader(lr.Body)),
+		Body:          io.NopCloser(bytes.NewReader(lr.Body)),
 		ContentLength: int64(len(lr.Body)),
 	}
 	res.Request = req

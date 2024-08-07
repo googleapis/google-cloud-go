@@ -1,5 +1,152 @@
 # Changes
 
+## [1.16.4](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.3...redis/v1.16.4) (2024-07-24)
+
+
+### Bug Fixes
+
+* **redis:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.16.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.2...redis/v1.16.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **redis:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.1...redis/v1.16.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **redis:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.0...redis/v1.16.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **redis:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.15.0...redis/v1.16.0) (2024-06-05)
+
+
+### Features
+
+* **redis/cluster:** [Memorystore for Redis Cluster] Add persistence support ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+* **redis/cluster:** [Memorystore for Redis Cluster] Add support for different node types ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+* **redis/cluster:** [Memorystore for Redis Cluster] Get details of certificate authority from redis cluster ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
+
+### Documentation
+
+* **redis/cluster:** [Memorystore for Redis Cluster] size_gb field shows the size of the cluster rounded up to the next integer, precise_size_gb field will show the exact size of the cluster ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.4...redis/v1.15.0) (2024-05-16)
+
+
+### Features
+
+* **redis/cluster:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.3...redis/v1.14.4) (2024-05-01)
+
+
+### Bug Fixes
+
+* **redis:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.2...redis/v1.14.3) (2024-03-14)
+
+
+### Bug Fixes
+
+* **redis:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.1...redis/v1.14.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **redis:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.0...redis/v1.14.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **redis:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.13.3...redis/v1.14.0) (2023-10-31)
+
+
+### Features
+
+* **redis:** New client(s) ([#8948](https://github.com/googleapis/google-cloud-go/issues/8948)) ([34103cb](https://github.com/googleapis/google-cloud-go/commit/34103cb4448dee49eac5342f46623839a8b240a0))
+
+## [1.13.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.13.2...redis/v1.13.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **redis:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/redis/v1.13.1...redis/v1.13.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **redis:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.13.0...redis/v1.13.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **redis:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.12.0...redis/v1.13.0) (2023-05-30)
+
+
+### Features
+
+* **redis:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.11.1...redis/v1.12.0) (2023-05-10)
+
+
+### Features
+
+* **redis:** [Cloud Memorystore for Redis] Add CMEK key field feat: [Cloud Memorystore for Redis] Add suspension_reasons field feat: [Cloud Memorystore for Redis] Add persistence support feat: [Cloud Memorystore for Redis] Add self service update maintenance version support ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.11.0...redis/v1.11.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **redis:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.10.0...redis/v1.11.0) (2023-01-04)
+
+
+### Features
+
+* **redis:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.9.0...redis/v1.10.0) (2022-11-03)
+
+
+### Features
+
+* **redis:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.8.0...redis/v1.9.0) (2022-10-25)
+
+
+### Features
+
+* **redis:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.7.0...redis/v1.8.0) (2022-09-21)
 
 

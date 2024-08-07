@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	osconfig "cloud.google.com/go/osconfig/apiv1"
+	osconfigpb "cloud.google.com/go/osconfig/apiv1/osconfigpb"
 	"google.golang.org/api/iterator"
-	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
 )
 
 func ExampleNewOsConfigZonalClient() {
@@ -32,6 +32,23 @@ func ExampleNewOsConfigZonalClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewOsConfigZonalRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := osconfig.NewOsConfigZonalRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -56,7 +73,7 @@ func ExampleOsConfigZonalClient_CreateOSPolicyAssignment() {
 
 	req := &osconfigpb.CreateOSPolicyAssignmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#CreateOSPolicyAssignmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#CreateOSPolicyAssignmentRequest.
 	}
 	op, err := c.CreateOSPolicyAssignment(ctx, req)
 	if err != nil {
@@ -71,7 +88,7 @@ func ExampleOsConfigZonalClient_CreateOSPolicyAssignment() {
 	_ = resp
 }
 
-func ExampleOsConfigZonalClient_UpdateOSPolicyAssignment() {
+func ExampleOsConfigZonalClient_DeleteOSPolicyAssignment() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -84,16 +101,39 @@ func ExampleOsConfigZonalClient_UpdateOSPolicyAssignment() {
 	}
 	defer c.Close()
 
-	req := &osconfigpb.UpdateOSPolicyAssignmentRequest{
+	req := &osconfigpb.DeleteOSPolicyAssignmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#UpdateOSPolicyAssignmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#DeleteOSPolicyAssignmentRequest.
 	}
-	op, err := c.UpdateOSPolicyAssignment(ctx, req)
+	op, err := c.DeleteOSPolicyAssignment(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	resp, err := op.Wait(ctx)
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleOsConfigZonalClient_GetInventory() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.GetInventoryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#GetInventoryRequest.
+	}
+	resp, err := c.GetInventory(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -116,7 +156,7 @@ func ExampleOsConfigZonalClient_GetOSPolicyAssignment() {
 
 	req := &osconfigpb.GetOSPolicyAssignmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#GetOSPolicyAssignmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#GetOSPolicyAssignmentRequest.
 	}
 	resp, err := c.GetOSPolicyAssignment(ctx, req)
 	if err != nil {
@@ -124,96 +164,6 @@ func ExampleOsConfigZonalClient_GetOSPolicyAssignment() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleOsConfigZonalClient_ListOSPolicyAssignments() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := osconfig.NewOsConfigZonalClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &osconfigpb.ListOSPolicyAssignmentsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#ListOSPolicyAssignmentsRequest.
-	}
-	it := c.ListOSPolicyAssignments(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleOsConfigZonalClient_ListOSPolicyAssignmentRevisions() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := osconfig.NewOsConfigZonalClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &osconfigpb.ListOSPolicyAssignmentRevisionsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#ListOSPolicyAssignmentRevisionsRequest.
-	}
-	it := c.ListOSPolicyAssignmentRevisions(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleOsConfigZonalClient_DeleteOSPolicyAssignment() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := osconfig.NewOsConfigZonalClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &osconfigpb.DeleteOSPolicyAssignmentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#DeleteOSPolicyAssignmentRequest.
-	}
-	op, err := c.DeleteOSPolicyAssignment(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }
 
 func ExampleOsConfigZonalClient_GetOSPolicyAssignmentReport() {
@@ -231,7 +181,7 @@ func ExampleOsConfigZonalClient_GetOSPolicyAssignmentReport() {
 
 	req := &osconfigpb.GetOSPolicyAssignmentReportRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#GetOSPolicyAssignmentReportRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#GetOSPolicyAssignmentReportRequest.
 	}
 	resp, err := c.GetOSPolicyAssignmentReport(ctx, req)
 	if err != nil {
@@ -241,7 +191,7 @@ func ExampleOsConfigZonalClient_GetOSPolicyAssignmentReport() {
 	_ = resp
 }
 
-func ExampleOsConfigZonalClient_ListOSPolicyAssignmentReports() {
+func ExampleOsConfigZonalClient_GetVulnerabilityReport() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -254,42 +204,11 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignmentReports() {
 	}
 	defer c.Close()
 
-	req := &osconfigpb.ListOSPolicyAssignmentReportsRequest{
+	req := &osconfigpb.GetVulnerabilityReportRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#ListOSPolicyAssignmentReportsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#GetVulnerabilityReportRequest.
 	}
-	it := c.ListOSPolicyAssignmentReports(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleOsConfigZonalClient_GetInventory() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := osconfig.NewOsConfigZonalClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &osconfigpb.GetInventoryRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#GetInventoryRequest.
-	}
-	resp, err := c.GetInventory(ctx, req)
+	resp, err := c.GetVulnerabilityReport(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -312,7 +231,7 @@ func ExampleOsConfigZonalClient_ListInventories() {
 
 	req := &osconfigpb.ListInventoriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#ListInventoriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#ListInventoriesRequest.
 	}
 	it := c.ListInventories(ctx, req)
 	for {
@@ -325,10 +244,16 @@ func ExampleOsConfigZonalClient_ListInventories() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListInventoriesResponse)
 	}
 }
 
-func ExampleOsConfigZonalClient_GetVulnerabilityReport() {
+func ExampleOsConfigZonalClient_ListOSPolicyAssignmentReports() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -341,16 +266,102 @@ func ExampleOsConfigZonalClient_GetVulnerabilityReport() {
 	}
 	defer c.Close()
 
-	req := &osconfigpb.GetVulnerabilityReportRequest{
+	req := &osconfigpb.ListOSPolicyAssignmentReportsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#GetVulnerabilityReportRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#ListOSPolicyAssignmentReportsRequest.
 	}
-	resp, err := c.GetVulnerabilityReport(ctx, req)
+	it := c.ListOSPolicyAssignmentReports(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListOSPolicyAssignmentReportsResponse)
+	}
+}
+
+func ExampleOsConfigZonalClient_ListOSPolicyAssignmentRevisions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+	defer c.Close()
+
+	req := &osconfigpb.ListOSPolicyAssignmentRevisionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#ListOSPolicyAssignmentRevisionsRequest.
+	}
+	it := c.ListOSPolicyAssignmentRevisions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListOSPolicyAssignmentRevisionsResponse)
+	}
+}
+
+func ExampleOsConfigZonalClient_ListOSPolicyAssignments() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.ListOSPolicyAssignmentsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#ListOSPolicyAssignmentsRequest.
+	}
+	it := c.ListOSPolicyAssignments(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListOSPolicyAssignmentsResponse)
+	}
 }
 
 func ExampleOsConfigZonalClient_ListVulnerabilityReports() {
@@ -368,7 +379,7 @@ func ExampleOsConfigZonalClient_ListVulnerabilityReports() {
 
 	req := &osconfigpb.ListVulnerabilityReportsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#ListVulnerabilityReportsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#ListVulnerabilityReportsRequest.
 	}
 	it := c.ListVulnerabilityReports(ctx, req)
 	for {
@@ -381,5 +392,41 @@ func ExampleOsConfigZonalClient_ListVulnerabilityReports() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListVulnerabilityReportsResponse)
 	}
+}
+
+func ExampleOsConfigZonalClient_UpdateOSPolicyAssignment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.UpdateOSPolicyAssignmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#UpdateOSPolicyAssignmentRequest.
+	}
+	op, err := c.UpdateOSPolicyAssignment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

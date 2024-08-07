@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/video/stitcher/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.video.stitcher.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "videostitcher_v1_generated_VideoStitcherService_CreateCdnKey_sync",
+      "title": "videostitcher CreateCdnKey Sample",
+      "description": "CreateCdnKey creates a new CDN key.",
+      "file": "VideoStitcherClient/CreateCdnKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCdnKey",
+        "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient.CreateCdnKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "stitcherpb.CreateCdnKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "stitcherpb.CdnKey",
+        "client": {
+          "shortName": "VideoStitcherClient",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient"
+        },
+        "method": {
+          "shortName": "CreateCdnKey",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService.CreateCdnKey",
+          "service": {
+            "shortName": "VideoStitcherService",
+            "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -18,7 +18,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"math"
 	"math/big"
 	"reflect"
 	"strconv"
@@ -82,6 +81,9 @@ func loadMap(m map[string]Value, vals []Value, s Schema) {
 				vs[j] = m2
 			}
 			v = vs
+		}
+		if f.Repeated && (v == nil || reflect.ValueOf(v).IsNil()) {
+			v = []Value{}
 		}
 
 		m[f.Name] = v
@@ -434,7 +436,16 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 				return setNull(v, x, func() interface{} { return x.(*big.Rat) })
 			}
 		}
+
+	case RangeFieldType:
+		if ftype == typeOfRangeValue {
+			return func(v reflect.Value, x interface{}) error {
+				return setNull(v, x, func() interface{} { return x.(*RangeValue) })
+			}
+		}
+
 	}
+
 	return nil
 }
 
@@ -766,6 +777,8 @@ func toUploadValueReflect(v reflect.Value, fs *FieldSchema) interface{} {
 		return formatUploadValue(v, fs, func(v reflect.Value) string {
 			return IntervalString(v.Interface().(*IntervalValue))
 		})
+	case RangeFieldType:
+		return v.Interface()
 	default:
 		if !fs.Repeated || v.Len() > 0 {
 			return v.Interface()
@@ -880,7 +893,17 @@ func convertRow(r *bq.TableRow, schema Schema) ([]Value, error) {
 	var values []Value
 	for i, cell := range r.F {
 		fs := schema[i]
-		v, err := convertValue(cell.V, fs.Type, fs.Schema)
+		var v Value
+		var err error
+		if fs.Type == RangeFieldType {
+			// interception range conversion here, as we don't propagate range element type more deeply.
+			if fs.RangeElementType == nil {
+				return nil, errors.New("bigquery: incomplete range schema for conversion")
+			}
+			v, err = convertRangeValue(cell.V.(string), fs.RangeElementType.Type)
+		} else {
+			v, err = convertValue(cell.V, fs.Type, fs.Schema)
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -955,15 +978,11 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 	case BooleanFieldType:
 		return strconv.ParseBool(val)
 	case TimestampFieldType:
-		f, err := strconv.ParseFloat(val, 64)
+		i, err := strconv.ParseInt(val, 10, 64)
 		if err != nil {
 			return nil, err
 		}
-		secs := math.Trunc(f)
-		// Timestamps in BigQuery have microsecond precision, so we must
-		// return a round number of microseconds.
-		micros := math.Trunc((f-secs)*1e6 + 0.5)
-		return Value(time.Unix(int64(secs), int64(micros)*1000).UTC()), nil
+		return time.UnixMicro(i).UTC(), nil
 	case DateFieldType:
 		return civil.ParseDate(val)
 	case TimeFieldType:
@@ -995,4 +1014,47 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 	default:
 		return nil, fmt.Errorf("unrecognized type: %s", typ)
 	}
+}
+
+// how BQ declares an unbounded RANGE.
+var unboundedRangeSentinel = "UNBOUNDED"
+
+// convertRangeValue aids in parsing the compound RANGE api data representation.
+// The format for a range value is: "[startval, endval)"
+func convertRangeValue(val string, elementType FieldType) (Value, error) {
+	supported := false
+	for _, t := range []FieldType{DateFieldType, DateTimeFieldType, TimestampFieldType} {
+		if elementType == t {
+			supported = true
+			break
+		}
+	}
+	if !supported {
+		return nil, fmt.Errorf("bigquery: invalid RANGE element type %q", elementType)
+	}
+	if !strings.HasPrefix(val, "[") || !strings.HasSuffix(val, ")") {
+		return nil, fmt.Errorf("bigquery: invalid RANGE value %q", val)
+	}
+	// trim the leading/trailing characters
+	val = val[1 : len(val)-1]
+	parts := strings.Split(val, ", ")
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("bigquery: invalid RANGE value %q", val)
+	}
+	rv := &RangeValue{}
+	if parts[0] != unboundedRangeSentinel {
+		sv, err := convertBasicType(parts[0], elementType)
+		if err != nil {
+			return nil, fmt.Errorf("bigquery: invalid RANGE start value %q", parts[0])
+		}
+		rv.Start = sv
+	}
+	if parts[1] != unboundedRangeSentinel {
+		ev, err := convertBasicType(parts[1], elementType)
+		if err != nil {
+			return nil, fmt.Errorf("bigquery: invalid RANGE end value %q", parts[1])
+		}
+		rv.End = ev
+	}
+	return rv, nil
 }

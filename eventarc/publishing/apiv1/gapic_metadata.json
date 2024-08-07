@@ -21,6 +21,21 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "PublisherClient",
+          "rpcs": {
+            "PublishChannelConnectionEvents": {
+              "methods": [
+                "PublishChannelConnectionEvents"
+              ]
+            },
+            "PublishEvents": {
+              "methods": [
+                "PublishEvents"
+              ]
+            }
+          }
         }
       }
     }

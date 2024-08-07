@@ -21,12 +21,14 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"log"
 	"os"
 	"strconv"
 
 	"cloud.google.com/go/internal/gapicgen"
+	"cloud.google.com/go/internal/gapicgen/generator"
 )
 
 func main() {
@@ -44,48 +46,32 @@ func main() {
 	localMode := flag.Bool("local", strToBool(os.Getenv("GENBOT_LOCAL_MODE")), "Enables generating sources locally. This mode will not open any pull requests.")
 	forceAll := flag.Bool("forceAll", strToBool(os.Getenv("GENBOT_FORCE_ALL")), "Enables regenerating everything regardless of changes in googleapis.")
 
-	aliasMode := flag.Bool("alias-mode", strToBool(os.Getenv("GENBOT_ALIAS_MODE")), "Enables updating aliases.")
-
 	// flags for local mode
 	googleapisDir := flag.String("googleapis-dir", os.Getenv("GOOGLEAPIS_DIR"), "Directory where sources of googleapis/googleapis resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
-	gocloudDir := flag.String("gocloud-dir", os.Getenv("GOCLOUD_DIR"), "Directory where sources of googleapis/google-cloud-go resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	genprotoDir := flag.String("genproto-dir", os.Getenv("GENPROTO_DIR"), "Directory where sources of googleapis/go-genproto resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	protoDir := flag.String("proto-dir", os.Getenv("PROTO_DIR"), "Directory where sources of google/protobuf resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
-	gapicToGenerate := flag.String("gapic", os.Getenv("GAPIC_TO_GENERATE"), `Specifies which gapic to generate. The value should be in the form of an import path (Ex: cloud.google.com/go/pubsub/apiv1). The default "" generates all gapics.`)
-	onlyGapics := flag.Bool("only-gapics", strToBool(os.Getenv("ONLY_GAPICS")), "Enabling stops regenerating genproto.")
 	regenOnly := flag.Bool("regen-only", strToBool(os.Getenv("REGEN_ONLY")), "Enabling means no vetting, manifest updates, or compilation.")
-	genModule := flag.Bool("generate-module", strToBool(os.Getenv("GENERATE_MODULE")), "Enabling means a new module will be generated for API being generated.")
 	genAlias := flag.Bool("generate-alias", strToBool(os.Getenv("GENERATE_ALIAS")), "Enabling means alias files will be generated.")
 
 	flag.Parse()
 
 	if *localMode {
 		if err := genLocal(ctx, localConfig{
-			googleapisDir:   *googleapisDir,
-			gocloudDir:      *gocloudDir,
-			genprotoDir:     *genprotoDir,
-			protoDir:        *protoDir,
-			gapicToGenerate: *gapicToGenerate,
-			onlyGapics:      *onlyGapics,
-			regenOnly:       *regenOnly,
-			forceAll:        *forceAll,
-			genModule:       *genModule,
-			genAlias:        *genAlias,
+			googleapisDir: *googleapisDir,
+			genprotoDir:   *genprotoDir,
+			protoDir:      *protoDir,
+			regenOnly:     *regenOnly,
+			forceAll:      *forceAll,
+			genAlias:      *genAlias,
 		}); err != nil {
+			if errors.Is(err, generator.ErrNoProcessing) {
+				log.Println(err)
+				os.Exit(0)
+				return
+			}
 			log.Fatal(err)
 		}
 		return
-	} else if *aliasMode {
-		if err := genAliasMode(ctx, aliasConfig{
-			githubAccessToken: *githubAccessToken,
-			githubUsername:    *githubUsername,
-			githubName:        *githubName,
-			githubEmail:       *githubEmail,
-			gocloudDir:        *gocloudDir,
-			genprotoDir:       *genprotoDir,
-		}); err != nil {
-			log.Fatal(err)
-		}
 	}
 	if err := genBot(ctx, botConfig{
 		githubAccessToken: *githubAccessToken,
@@ -94,6 +80,11 @@ func main() {
 		githubEmail:       *githubEmail,
 		forceAll:          *forceAll,
 	}); err != nil {
+		if errors.Is(err, generator.ErrNoProcessing) {
+			log.Println(err)
+			os.Exit(0)
+			return
+		}
 		log.Fatal(err)
 	}
 }

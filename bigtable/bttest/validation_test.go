@@ -19,7 +19,7 @@ package bttest
 import (
 	"testing"
 
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -164,7 +164,8 @@ func TestValidateReadRowsRequestSendsRPCError(t *testing.T) {
 			},
 		}
 
-		err := srv.ReadRows(badReq, nil)
+		stream := &MockReadRowsServer{}
+		err := srv.ReadRows(badReq, stream)
 		if err == nil {
 			t.Errorf("#%d: unexpectedly returned nil error", i)
 			continue

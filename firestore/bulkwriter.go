@@ -22,9 +22,11 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"golang.org/x/time/rate"
 	"google.golang.org/api/support/bundler"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -36,6 +38,14 @@ const (
 	defaultStartingMaximumOpsPerSecond = 500
 	// maxWritesPerSecond is the starting limit of writes allowed to callers per second
 	maxWritesPerSecond = maxBatchSize * defaultStartingMaximumOpsPerSecond
+)
+
+var (
+	batchWriteRetryCodes = map[codes.Code]bool{
+		codes.ResourceExhausted: true,
+		codes.Unavailable:       true,
+		codes.Aborted:           true,
+	}
 )
 
 // bulkWriterResult contains the WriteResult or error results from an individual
@@ -327,12 +337,13 @@ func (bw *BulkWriter) send(i interface{}) {
 				j.attempts++
 
 				// Do we need separate retry bundler?
-				if j.attempts < maxRetryAttempts {
+				_, isRetryable := batchWriteRetryCodes[codes.Code(s.Code)]
+				if j.attempts < maxRetryAttempts && isRetryable {
 					// ignore operation size constraints and related errors; job size can't be inferred at compile time
 					// Bundler is set to accept an unlimited amount of bytes
 					_ = bw.bundler.Add(j, 0)
 				} else {
-					j.setError(fmt.Errorf("firestore: write failed with status: %v", s))
+					j.setError(status.Error(codes.Code(s.Code), s.Message))
 				}
 				continue
 			}

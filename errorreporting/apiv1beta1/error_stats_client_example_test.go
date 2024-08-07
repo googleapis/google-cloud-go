@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	errorreporting "cloud.google.com/go/errorreporting/apiv1beta1"
+	errorreportingpb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
 	"google.golang.org/api/iterator"
-	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 )
 
 func ExampleNewErrorStatsClient() {
@@ -71,9 +71,9 @@ func ExampleErrorStatsClient_ListGroupStats() {
 	}
 	defer c.Close()
 
-	req := &clouderrorreportingpb.ListGroupStatsRequest{
+	req := &errorreportingpb.ListGroupStatsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#ListGroupStatsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb#ListGroupStatsRequest.
 	}
 	it := c.ListGroupStats(ctx, req)
 	for {
@@ -102,9 +102,9 @@ func ExampleErrorStatsClient_ListEvents() {
 	}
 	defer c.Close()
 
-	req := &clouderrorreportingpb.ListEventsRequest{
+	req := &errorreportingpb.ListEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#ListEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb#ListEventsRequest.
 	}
 	it := c.ListEvents(ctx, req)
 	for {
@@ -133,9 +133,9 @@ func ExampleErrorStatsClient_DeleteEvents() {
 	}
 	defer c.Close()
 
-	req := &clouderrorreportingpb.DeleteEventsRequest{
+	req := &errorreportingpb.DeleteEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#DeleteEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb#DeleteEventsRequest.
 	}
 	resp, err := c.DeleteEvents(ctx, req)
 	if err != nil {

@@ -136,6 +136,126 @@ type TableMetadata struct {
 	// ETag is the ETag obtained when reading metadata. Pass it to Table.Update to
 	// ensure that the metadata hasn't changed since it was read.
 	ETag string
+
+	// Defines the default collation specification of new STRING fields
+	// in the table. During table creation or update, if a STRING field is added
+	// to this table without explicit collation specified, then the table inherits
+	// the table default collation. A change to this field affects only fields
+	// added afterwards, and does not alter the existing fields.
+	// The following values are supported:
+	//   - 'und:ci': undetermined locale, case insensitive.
+	//   - '': empty string. Default to case-sensitive behavior.
+	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
+	DefaultCollation string
+
+	// TableConstraints contains table primary and foreign keys constraints.
+	// Present only if the table has primary or foreign keys.
+	TableConstraints *TableConstraints
+
+	// The tags associated with this table. Tag
+	// keys are globally unique. See additional information on tags
+	// (https://cloud.google.com/iam/docs/tags-access-control#definitions).
+	// An object containing a list of "key": value pairs. The key is the
+	// namespaced friendly name of the tag key, e.g. "12345/environment"
+	// where 12345 is parent id. The value is the friendly short name of the
+	// tag value, e.g. "production".
+	ResourceTags map[string]string
+}
+
+// TableConstraints defines the primary key and foreign key of a table.
+type TableConstraints struct {
+	// PrimaryKey constraint on a table's columns.
+	// Present only if the table has a primary key.
+	// The primary key is not enforced.
+	PrimaryKey *PrimaryKey
+
+	// ForeignKeys represent a list of foreign keys constraints.
+	// Foreign keys are not enforced.
+	ForeignKeys []*ForeignKey
+}
+
+// PrimaryKey represents the primary key constraint on a table's columns.
+type PrimaryKey struct {
+	// Columns that compose the primary key constraint.
+	Columns []string
+}
+
+func (pk *PrimaryKey) toBQ() *bq.TableConstraintsPrimaryKey {
+	return &bq.TableConstraintsPrimaryKey{
+		Columns: pk.Columns,
+	}
+}
+
+func bqToPrimaryKey(tc *bq.TableConstraints) *PrimaryKey {
+	if tc.PrimaryKey == nil {
+		return nil
+	}
+	return &PrimaryKey{
+		Columns: tc.PrimaryKey.Columns,
+	}
+}
+
+// ForeignKey represents a foreign key constraint on a table's columns.
+type ForeignKey struct {
+	// Foreign key constraint name.
+	Name string
+
+	// Table that holds the primary key and is referenced by this foreign key.
+	ReferencedTable *Table
+
+	// Columns that compose the foreign key.
+	ColumnReferences []*ColumnReference
+}
+
+func (fk *ForeignKey) toBQ() *bq.TableConstraintsForeignKeys {
+	colRefs := []*bq.TableConstraintsForeignKeysColumnReferences{}
+	for _, colRef := range fk.ColumnReferences {
+		colRefs = append(colRefs, colRef.toBQ())
+	}
+	return &bq.TableConstraintsForeignKeys{
+		Name: fk.Name,
+		ReferencedTable: &bq.TableConstraintsForeignKeysReferencedTable{
+			DatasetId: fk.ReferencedTable.DatasetID,
+			ProjectId: fk.ReferencedTable.ProjectID,
+			TableId:   fk.ReferencedTable.TableID,
+		},
+		ColumnReferences: colRefs,
+	}
+}
+
+func bqToForeignKeys(tc *bq.TableConstraints, c *Client) []*ForeignKey {
+	fks := []*ForeignKey{}
+	for _, fk := range tc.ForeignKeys {
+		colRefs := []*ColumnReference{}
+		for _, colRef := range fk.ColumnReferences {
+			colRefs = append(colRefs, &ColumnReference{
+				ReferencedColumn:  colRef.ReferencedColumn,
+				ReferencingColumn: colRef.ReferencingColumn,
+			})
+		}
+		fks = append(fks, &ForeignKey{
+			Name:             fk.Name,
+			ReferencedTable:  c.DatasetInProject(fk.ReferencedTable.ProjectId, fk.ReferencedTable.DatasetId).Table(fk.ReferencedTable.TableId),
+			ColumnReferences: colRefs,
+		})
+	}
+	return fks
+}
+
+// ColumnReference represents the pair of the foreign key column and primary key column.
+type ColumnReference struct {
+	// ReferencingColumn is the column in the current table that composes the foreign key.
+	ReferencingColumn string
+	// ReferencedColumn is the column in the primary key of the foreign table that
+	// is referenced by the ReferencingColumn.
+	ReferencedColumn string
+}
+
+func (colRef *ColumnReference) toBQ() *bq.TableConstraintsForeignKeysColumnReferences {
+	return &bq.TableConstraintsForeignKeysColumnReferences{
+		ReferencedColumn:  colRef.ReferencedColumn,
+		ReferencingColumn: colRef.ReferencingColumn,
+	}
 }
 
 // TableCreateDisposition specifies the circumstances under which destination table will be created.
@@ -206,19 +326,33 @@ type MaterializedViewDefinition struct {
 	// RefreshInterval defines the maximum frequency, in millisecond precision,
 	// at which this this materialized view will be refreshed.
 	RefreshInterval time.Duration
+
+	// AllowNonIncrementalDefinition for materialized view definition.
+	// The default value is false.
+	AllowNonIncrementalDefinition bool
+
+	// MaxStaleness of data that could be returned when materialized
+	// view is queried.
+	MaxStaleness *IntervalValue
 }
 
 func (mvd *MaterializedViewDefinition) toBQ() *bq.MaterializedViewDefinition {
 	if mvd == nil {
 		return nil
 	}
+	maxStaleness := ""
+	if mvd.MaxStaleness != nil {
+		maxStaleness = mvd.MaxStaleness.String()
+	}
 	return &bq.MaterializedViewDefinition{
-		EnableRefresh:     mvd.EnableRefresh,
-		Query:             mvd.Query,
-		LastRefreshTime:   mvd.LastRefreshTime.UnixNano() / 1e6,
-		RefreshIntervalMs: int64(mvd.RefreshInterval) / 1e6,
+		EnableRefresh:                 mvd.EnableRefresh,
+		Query:                         mvd.Query,
+		LastRefreshTime:               mvd.LastRefreshTime.UnixNano() / 1e6,
+		RefreshIntervalMs:             int64(mvd.RefreshInterval) / 1e6,
+		AllowNonIncrementalDefinition: mvd.AllowNonIncrementalDefinition,
+		MaxStaleness:                  maxStaleness,
 		// force sending the bool in all cases due to how Go handles false.
-		ForceSendFields: []string{"EnableRefresh"},
+		ForceSendFields: []string{"EnableRefresh", "AllowNonIncrementalDefinition"},
 	}
 }
 
@@ -226,11 +360,17 @@ func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *Materiali
 	if q == nil {
 		return nil
 	}
+	var maxStaleness *IntervalValue
+	if q.MaxStaleness != "" {
+		maxStaleness, _ = ParseInterval(q.MaxStaleness)
+	}
 	return &MaterializedViewDefinition{
-		EnableRefresh:   q.EnableRefresh,
-		Query:           q.Query,
-		LastRefreshTime: unixMillisToTime(q.LastRefreshTime),
-		RefreshInterval: time.Duration(q.RefreshIntervalMs) * time.Millisecond,
+		EnableRefresh:                 q.EnableRefresh,
+		Query:                         q.Query,
+		LastRefreshTime:               unixMillisToTime(q.LastRefreshTime),
+		RefreshInterval:               time.Duration(q.RefreshIntervalMs) * time.Millisecond,
+		AllowNonIncrementalDefinition: q.AllowNonIncrementalDefinition,
+		MaxStaleness:                  maxStaleness,
 	}
 }
 
@@ -663,6 +803,26 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	if tm.ETag != "" {
 		return nil, errors.New("cannot set ETag on create")
 	}
+	t.DefaultCollation = string(tm.DefaultCollation)
+
+	if tm.TableConstraints != nil {
+		t.TableConstraints = &bq.TableConstraints{}
+		if tm.TableConstraints.PrimaryKey != nil {
+			t.TableConstraints.PrimaryKey = tm.TableConstraints.PrimaryKey.toBQ()
+		}
+		if len(tm.TableConstraints.ForeignKeys) > 0 {
+			t.TableConstraints.ForeignKeys = make([]*bq.TableConstraintsForeignKeys, len(tm.TableConstraints.ForeignKeys))
+			for i, fk := range tm.TableConstraints.ForeignKeys {
+				t.TableConstraints.ForeignKeys[i] = fk.toBQ()
+			}
+		}
+	}
+	if tm.ResourceTags != nil {
+		t.ResourceTags = make(map[string]string)
+		for k, v := range tm.ResourceTags {
+			t.ResourceTags[k] = v
+		}
+	}
 	return t, nil
 }
 
@@ -743,6 +903,7 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 		CreationTime:           unixMillisToTime(t.CreationTime),
 		LastModifiedTime:       unixMillisToTime(int64(t.LastModifiedTime)),
 		ETag:                   t.Etag,
+		DefaultCollation:       t.DefaultCollation,
 		EncryptionConfig:       bqToEncryptionConfig(t.EncryptionConfiguration),
 		RequirePartitionFilter: t.RequirePartitionFilter,
 		SnapshotDefinition:     bqToSnapshotDefinition(t.SnapshotDefinition, c),
@@ -775,6 +936,18 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 		}
 		md.ExternalDataConfig = edc
 	}
+	if t.TableConstraints != nil {
+		md.TableConstraints = &TableConstraints{
+			PrimaryKey:  bqToPrimaryKey(t.TableConstraints),
+			ForeignKeys: bqToForeignKeys(t.TableConstraints, c),
+		}
+	}
+	if t.ResourceTags != nil {
+		md.ResourceTags = make(map[string]string)
+		for k, v := range t.ResourceTags {
+			md.ResourceTags[k] = v
+		}
+	}
 	return md, nil
 }
 
@@ -800,6 +973,12 @@ func (t *Table) Read(ctx context.Context) *RowIterator {
 }
 
 func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
+	if t.c.isStorageReadAvailable() {
+		it, err := newStorageRowIteratorFromTable(ctx, t, false)
+		if err == nil {
+			return it
+		}
+	}
 	return newRowIterator(ctx, &rowSource{t: t}, pf)
 }
 
@@ -924,6 +1103,32 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 		t.View.UseLegacySql = optional.ToBool(tm.UseLegacySQL)
 		t.View.ForceSendFields = append(t.View.ForceSendFields, "UseLegacySql")
 	}
+	if tm.DefaultCollation != nil {
+		t.DefaultCollation = optional.ToString(tm.DefaultCollation)
+		forceSend("DefaultCollation")
+	}
+	if tm.TableConstraints != nil {
+		t.TableConstraints = &bq.TableConstraints{}
+		if tm.TableConstraints.PrimaryKey != nil {
+			t.TableConstraints.PrimaryKey = tm.TableConstraints.PrimaryKey.toBQ()
+			t.TableConstraints.PrimaryKey.ForceSendFields = append(t.TableConstraints.PrimaryKey.ForceSendFields, "Columns")
+			t.TableConstraints.ForceSendFields = append(t.TableConstraints.ForceSendFields, "PrimaryKey")
+		}
+		if tm.TableConstraints.ForeignKeys != nil {
+			t.TableConstraints.ForeignKeys = make([]*bq.TableConstraintsForeignKeys, len(tm.TableConstraints.ForeignKeys))
+			for i, fk := range tm.TableConstraints.ForeignKeys {
+				t.TableConstraints.ForeignKeys[i] = fk.toBQ()
+			}
+			t.TableConstraints.ForceSendFields = append(t.TableConstraints.ForceSendFields, "ForeignKeys")
+		}
+	}
+	if tm.ResourceTags != nil {
+		t.ResourceTags = make(map[string]string)
+		for k, v := range tm.ResourceTags {
+			t.ResourceTags[k] = v
+		}
+		forceSend("ResourceTags")
+	}
 	labels, forces, nulls := tm.update()
 	t.Labels = labels
 	t.ForceSendFields = append(t.ForceSendFields, forces...)
@@ -996,6 +1201,23 @@ type TableMetadataToUpdate struct {
 	// RequirePartitionFilter governs whether the table enforces partition
 	// elimination when referenced in a query.
 	RequirePartitionFilter optional.Bool
+
+	// Defines the default collation specification of new STRING fields
+	// in the table.
+	DefaultCollation optional.String
+
+	// TableConstraints allows modification of table constraints
+	// such as primary and foreign keys.
+	TableConstraints *TableConstraints
+
+	// The tags associated with this table. Tag
+	// keys are globally unique. See additional information on tags
+	// (https://cloud.google.com/iam/docs/tags-access-control#definitions).
+	// An object containing a list of "key": value pairs. The key is the
+	// namespaced friendly name of the tag key, e.g. "12345/environment"
+	// where 12345 is parent id. The value is the friendly short name of the
+	// tag value, e.g. "production".
+	ResourceTags map[string]string
 
 	labelUpdater
 }

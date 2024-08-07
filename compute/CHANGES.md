@@ -1,5 +1,254 @@
 # Changes
 
+## [1.27.4](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.3...compute/v1.27.4) (2024-07-24)
+
+
+### Bug Fixes
+
+* **compute:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.27.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.2...compute/v1.27.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **compute:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.27.2](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.1...compute/v1.27.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **compute/metadata:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **compute:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.0...compute/v1.27.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **compute:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.26.0...compute/v1.27.0) (2024-05-16)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20240430 ([#900](https://github.com/googleapis/google-cloud-go/issues/900)) ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.25.1...compute/v1.26.0) (2024-05-01)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20240407 ([#890](https://github.com/googleapis/google-cloud-go/issues/890)) ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **compute:** Update Compute Engine API to revision 20240421 ([#899](https://github.com/googleapis/google-cloud-go/issues/899)) ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **compute:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.25.0...compute/v1.25.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **compute:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.24.0...compute/v1.25.0) (2024-03-04)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20240220 ([#886](https://github.com/googleapis/google-cloud-go/issues/886)) ([#9485](https://github.com/googleapis/google-cloud-go/issues/9485)) ([ae1f547](https://github.com/googleapis/google-cloud-go/commit/ae1f5472bff1b476c3fd58e590ec135185446daf))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.4...compute/v1.24.0) (2024-02-09)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20240130 ([#881](https://github.com/googleapis/google-cloud-go/issues/881)) ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+
+## [1.23.4](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.3...compute/v1.23.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **compute:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.23.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.2...compute/v1.23.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **compute:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.23.2](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.1...compute/v1.23.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **compute:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.0...compute/v1.23.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **compute:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.22.0...compute/v1.23.0) (2023-07-26)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20230711 ([#836](https://github.com/googleapis/google-cloud-go/issues/836)) ([08b151a](https://github.com/googleapis/google-cloud-go/commit/08b151a3fd9b614b6696e99d065ecda339ed00ff))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.21.0...compute/v1.22.0) (2023-07-18)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20230701 ([#821](https://github.com/googleapis/google-cloud-go/issues/821)) ([#8239](https://github.com/googleapis/google-cloud-go/issues/8239)) ([043dd8c](https://github.com/googleapis/google-cloud-go/commit/043dd8c1bfc436a6d1559c804883ed8b08087f3c))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.20.1...compute/v1.21.0) (2023-07-10)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20230610 ([#820](https://github.com/googleapis/google-cloud-go/issues/820)) ([14b95d3](https://github.com/googleapis/google-cloud-go/commit/14b95d33753d0b391d0b49533e92b551e5dc3072))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.20.0...compute/v1.20.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **compute:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.19.3...compute/v1.20.0) (2023-05-30)
+
+
+### Features
+
+* **compute:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.19.2...compute/v1.19.3) (2023-05-16)
+
+
+### Bug Fixes
+
+* **compute:** Emit errors found in Operations ([31421d5](https://github.com/googleapis/google-cloud-go/commit/31421d52c3bf3b7baa235fb6cb18bb8a786398df))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/compute/v1.19.1...compute/v1.19.2) (2023-05-08)
+
+
+### Bug Fixes
+
+* **compute:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.19.0...compute/v1.19.1) (2023-04-11)
+
+
+### Bug Fixes
+
+* **compute:** Add diregapic flag for compute ([#793](https://github.com/googleapis/google-cloud-go/issues/793)) ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.18.0...compute/v1.19.0) (2023-03-22)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20230307 ([#770](https://github.com/googleapis/google-cloud-go/issues/770)) ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/compute-v1.17.0...compute/v1.18.0) (2023-01-26)
+
+
+### Features
+
+* **compute:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **compute:** Rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+* **compute:** Start generating stubs dir ([5d0b405](https://github.com/googleapis/google-cloud-go/commit/5d0b405033f55023825ef90e5c539f1bcf2ddedb))
+* **compute:** Update Compute Engine API to revision 20220720 ([#723](https://github.com/googleapis/google-cloud-go/issues/723)) ([3db735c](https://github.com/googleapis/google-cloud-go/commit/3db735c3c35ab3473ceb1948cf4da09b87728ef9))
+* **compute:** Update Compute Engine API to revision 20220831 ([#729](https://github.com/googleapis/google-cloud-go/issues/729)) ([a679a5a](https://github.com/googleapis/google-cloud-go/commit/a679a5a9b1ea60cb155eb6c8be4afcc43d3b121f))
+* **compute:** Update Compute Engine API to revision 20221011 ([#736](https://github.com/googleapis/google-cloud-go/issues/736)) ([aad4787](https://github.com/googleapis/google-cloud-go/commit/aad478746bbc8e49f4449b62c7b9b238a1567292))
+* **compute:** Update Compute Engine API to revision 20221101 ([#751](https://github.com/googleapis/google-cloud-go/issues/751)) ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **compute:** Update Compute Engine API to revision 20221224 ([#760](https://github.com/googleapis/google-cloud-go/issues/760)) ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+* **compute:** Update Compute Engine API to revision 20230103 ([#769](https://github.com/googleapis/google-cloud-go/issues/769)) ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+
+
+### Bug Fixes
+
+* **compute:** Disable numeric enums ([#7231](https://github.com/googleapis/google-cloud-go/issues/7231)) ([30a277d](https://github.com/googleapis/google-cloud-go/commit/30a277dca8a94b24b967cebab847a01b6addf5aa)), refs [#7228](https://github.com/googleapis/google-cloud-go/issues/7228)
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/compute-v1.16.0...compute/v1.17.0) (2023-01-26)
+
+
+### Features
+
+* **compute:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **compute:** Rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+* **compute:** Start generating stubs dir ([5d0b405](https://github.com/googleapis/google-cloud-go/commit/5d0b405033f55023825ef90e5c539f1bcf2ddedb))
+* **compute:** Update Compute Engine API to revision 20220720 ([#723](https://github.com/googleapis/google-cloud-go/issues/723)) ([3db735c](https://github.com/googleapis/google-cloud-go/commit/3db735c3c35ab3473ceb1948cf4da09b87728ef9))
+* **compute:** Update Compute Engine API to revision 20220831 ([#729](https://github.com/googleapis/google-cloud-go/issues/729)) ([a679a5a](https://github.com/googleapis/google-cloud-go/commit/a679a5a9b1ea60cb155eb6c8be4afcc43d3b121f))
+* **compute:** Update Compute Engine API to revision 20221011 ([#736](https://github.com/googleapis/google-cloud-go/issues/736)) ([aad4787](https://github.com/googleapis/google-cloud-go/commit/aad478746bbc8e49f4449b62c7b9b238a1567292))
+* **compute:** Update Compute Engine API to revision 20221101 ([#751](https://github.com/googleapis/google-cloud-go/issues/751)) ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **compute:** Update Compute Engine API to revision 20221224 ([#760](https://github.com/googleapis/google-cloud-go/issues/760)) ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+* **compute:** Update Compute Engine API to revision 20230103 ([#769](https://github.com/googleapis/google-cloud-go/issues/769)) ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+
+
+### Bug Fixes
+
+* **compute:** Disable numeric enums ([#7231](https://github.com/googleapis/google-cloud-go/issues/7231)) ([30a277d](https://github.com/googleapis/google-cloud-go/commit/30a277dca8a94b24b967cebab847a01b6addf5aa)), refs [#7228](https://github.com/googleapis/google-cloud-go/issues/7228)
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.15.1...compute/v1.16.0) (2023-01-26)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20221224 ([#760](https://github.com/googleapis/google-cloud-go/issues/760)) ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+* **compute:** Update Compute Engine API to revision 20230103 ([#769](https://github.com/googleapis/google-cloud-go/issues/769)) ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.15.0...compute/v1.15.1) (2023-01-10)
+
+
+### Bug Fixes
+
+* **compute:** Disable numeric enums ([#7231](https://github.com/googleapis/google-cloud-go/issues/7231)) ([30a277d](https://github.com/googleapis/google-cloud-go/commit/30a277dca8a94b24b967cebab847a01b6addf5aa)), refs [#7228](https://github.com/googleapis/google-cloud-go/issues/7228)
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.14.0...compute/v1.15.0) (2023-01-04)
+
+
+### Features
+
+* **compute:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.13.0...compute/v1.14.0) (2022-12-05)
+
+
+### Features
+
+* **compute:** rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.12.1...compute/v1.13.0) (2022-12-01)
+
+
+### Features
+
+* **compute:** start generating stubs dir ([5d0b405](https://github.com/googleapis/google-cloud-go/commit/5d0b405033f55023825ef90e5c539f1bcf2ddedb))
+* **compute:** Update Compute Engine API to revision 20221101 ([#751](https://github.com/googleapis/google-cloud-go/issues/751)) ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.11.0...compute/v1.12.0) (2022-10-26)
+
+Compute metadata has been moved to its own module.
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.10.0...compute/v1.11.0) (2022-10-25)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20221011 ([#736](https://github.com/googleapis/google-cloud-go/issues/736)) ([aad4787](https://github.com/googleapis/google-cloud-go/commit/aad478746bbc8e49f4449b62c7b9b238a1567292))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.9.0...compute/v1.10.0) (2022-09-15)
 
 

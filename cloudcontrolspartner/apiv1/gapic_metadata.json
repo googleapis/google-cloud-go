@@ -1,0 +1,137 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.cloudcontrolspartner.v1",
+  "libraryPackage": "cloud.google.com/go/cloudcontrolspartner/apiv1",
+  "services": {
+    "CloudControlsPartnerCore": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudControlsPartnerCoreClient",
+          "rpcs": {
+            "GetCustomer": {
+              "methods": [
+                "GetCustomer"
+              ]
+            },
+            "GetEkmConnections": {
+              "methods": [
+                "GetEkmConnections"
+              ]
+            },
+            "GetPartner": {
+              "methods": [
+                "GetPartner"
+              ]
+            },
+            "GetPartnerPermissions": {
+              "methods": [
+                "GetPartnerPermissions"
+              ]
+            },
+            "GetWorkload": {
+              "methods": [
+                "GetWorkload"
+              ]
+            },
+            "ListAccessApprovalRequests": {
+              "methods": [
+                "ListAccessApprovalRequests"
+              ]
+            },
+            "ListCustomers": {
+              "methods": [
+                "ListCustomers"
+              ]
+            },
+            "ListWorkloads": {
+              "methods": [
+                "ListWorkloads"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CloudControlsPartnerCoreClient",
+          "rpcs": {
+            "GetCustomer": {
+              "methods": [
+                "GetCustomer"
+              ]
+            },
+            "GetEkmConnections": {
+              "methods": [
+                "GetEkmConnections"
+              ]
+            },
+            "GetPartner": {
+              "methods": [
+                "GetPartner"
+              ]
+            },
+            "GetPartnerPermissions": {
+              "methods": [
+                "GetPartnerPermissions"
+              ]
+            },
+            "GetWorkload": {
+              "methods": [
+                "GetWorkload"
+              ]
+            },
+            "ListAccessApprovalRequests": {
+              "methods": [
+                "ListAccessApprovalRequests"
+              ]
+            },
+            "ListCustomers": {
+              "methods": [
+                "ListCustomers"
+              ]
+            },
+            "ListWorkloads": {
+              "methods": [
+                "ListWorkloads"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "CloudControlsPartnerMonitoring": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudControlsPartnerMonitoringClient",
+          "rpcs": {
+            "GetViolation": {
+              "methods": [
+                "GetViolation"
+              ]
+            },
+            "ListViolations": {
+              "methods": [
+                "ListViolations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CloudControlsPartnerMonitoringClient",
+          "rpcs": {
+            "GetViolation": {
+              "methods": [
+                "GetViolation"
+              ]
+            },
+            "ListViolations": {
+              "methods": [
+                "ListViolations"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

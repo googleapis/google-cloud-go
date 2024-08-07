@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/functions/apiv2beta",
-    "version": "1.7.0",
+    "version": "1.16.6",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_CreateFunction_sync",
       "title": "cloudfunctions CreateFunction Sample",
-      "description": "CreateFunction creates a new function. If a function with the given name already exists in\nthe specified project, the long running operation will return\nALREADY_EXISTS error.",
+      "description": "CreateFunction creates a new function. If a function with the given name already exists in\nthe specified project, the long running operation will return\n`ALREADY_EXISTS` error.",
       "file": "FunctionClient/CreateFunction/main.go",
       "language": "GO",
       "clientMethod": {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -106,7 +106,7 @@
     {
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_GenerateDownloadUrl_sync",
       "title": "cloudfunctions GenerateDownloadUrl Sample",
-      "description": "GenerateDownloadUrl returns a signed URL for downloading deployed function source code.\nThe URL is only valid for a limited period and should be used within\n30 minutes of generation.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls (at https: //cloud.google.com/storage/docs/access-control/signed-urls)",
+      "description": "GenerateDownloadUrl returns a signed URL for downloading deployed function source code.\nThe URL is only valid for a limited period and should be used within\n30 minutes of generation.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls",
       "file": "FunctionClient/GenerateDownloadUrl/main.go",
       "language": "GO",
       "clientMethod": {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "functionspb.GenerateDownloadUrlResponse",
+        "resultType": "*functionspb.GenerateDownloadUrlResponse",
         "client": {
           "shortName": "FunctionClient",
           "fullName": "google.cloud.functions.v2beta.FunctionClient"
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -152,7 +152,7 @@
     {
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_GenerateUploadUrl_sync",
       "title": "cloudfunctions GenerateUploadUrl Sample",
-      "description": "GenerateUploadUrl returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls (at https: //cloud.google.com/storage/docs/access-control/signed-urls).\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.\n\nWhen uploading source code to the generated signed URL, please follow\nthese restrictions: \n\n\tSource file type should be a zip file.\n\n\tNo credentials should be attached - the signed URLs provide access to the\n\ttarget bucket using internal service identity; if credentials were\n\tattached, the identity from the credentials would be used, but that\n\tidentity does not have permissions to upload files to the URL.\n\nWhen making a HTTP PUT request, these two headers need to be specified: \n\n\tcontent-type: application/zip\n\nAnd this header SHOULD NOT be specified: \n\n\tAuthorization: Bearer YOUR_TOKEN",
+      "description": "GenerateUploadUrl returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls.\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.\n\nWhen uploading source code to the generated signed URL, please follow\nthese restrictions: \n\n* Source file type should be a zip file.\n* No credentials should be attached - the signed URLs provide access to the\ntarget bucket using internal service identity; if credentials were\nattached, the identity from the credentials would be used, but that\nidentity does not have permissions to upload files to the URL.\n\nWhen making a HTTP PUT request, these two headers need to be specified: \n\n* `content-type: application/zip`\n\nAnd this header SHOULD NOT be specified: \n\n* `Authorization: Bearer YOUR_TOKEN`",
       "file": "FunctionClient/GenerateUploadUrl/main.go",
       "language": "GO",
       "clientMethod": {
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "functionspb.GenerateUploadUrlResponse",
+        "resultType": "*functionspb.GenerateUploadUrlResponse",
         "client": {
           "shortName": "FunctionClient",
           "fullName": "google.cloud.functions.v2beta.FunctionClient"
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "functionspb.Function",
+        "resultType": "*functionspb.Function",
         "client": {
           "shortName": "FunctionClient",
           "fullName": "google.cloud.functions.v2beta.FunctionClient"
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -264,17 +264,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "FunctionClient",
           "fullName": "google.cloud.functions.v2beta.FunctionClient"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.functions.v2beta.FunctionService.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "FunctionService",
-            "fullName": "google.cloud.functions.v2beta.FunctionService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -310,17 +310,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "FunctionClient",
           "fullName": "google.cloud.functions.v2beta.FunctionClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.functions.v2beta.FunctionService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "FunctionService",
-            "fullName": "google.cloud.functions.v2beta.FunctionService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -374,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -409,10 +409,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.functions.v2beta.FunctionService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "FunctionService",
-            "fullName": "google.cloud.functions.v2beta.FunctionService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -420,7 +420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -455,10 +455,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.functions.v2beta.FunctionService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "FunctionService",
-            "fullName": "google.cloud.functions.v2beta.FunctionService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -466,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -494,7 +494,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "functionspb.ListRuntimesResponse",
+        "resultType": "*functionspb.ListRuntimesResponse",
         "client": {
           "shortName": "FunctionClient",
           "fullName": "google.cloud.functions.v2beta.FunctionClient"
@@ -512,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -520,7 +520,7 @@
     {
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_SetIamPolicy_sync",
       "title": "cloudfunctions SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "FunctionClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -540,17 +540,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "FunctionClient",
           "fullName": "google.cloud.functions.v2beta.FunctionClient"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.functions.v2beta.FunctionService.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "FunctionService",
-            "fullName": "google.cloud.functions.v2beta.FunctionService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -558,7 +558,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -566,7 +566,7 @@
     {
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_TestIamPermissions_sync",
       "title": "cloudfunctions TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "FunctionClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -586,17 +586,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "FunctionClient",
           "fullName": "google.cloud.functions.v2beta.FunctionClient"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.functions.v2beta.FunctionService.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "FunctionService",
-            "fullName": "google.cloud.functions.v2beta.FunctionService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -604,7 +604,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -650,7 +650,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]

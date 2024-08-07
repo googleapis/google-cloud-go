@@ -19,14 +19,17 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
 func TestBQToTableMetadata(t *testing.T) {
+	bqClient := &Client{}
 	aTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
 	aTimeMillis := aTime.UnixNano() / 1e6
 	aDurationMillis := int64(1800000)
 	aDuration := time.Duration(aDurationMillis) * time.Millisecond
+	aStalenessValue, _ := ParseInterval("8:0:0")
 	for _, test := range []struct {
 		in   *bq.Table
 		want *TableMetadata
@@ -51,10 +54,12 @@ func TestBQToTableMetadata(t *testing.T) {
 					OldestEntryTime: uint64(aTimeMillis),
 				},
 				MaterializedView: &bq.MaterializedViewDefinition{
-					EnableRefresh:     true,
-					Query:             "mat view query",
-					LastRefreshTime:   aTimeMillis,
-					RefreshIntervalMs: aDurationMillis,
+					EnableRefresh:                 true,
+					Query:                         "mat view query",
+					LastRefreshTime:               aTimeMillis,
+					RefreshIntervalMs:             aDurationMillis,
+					AllowNonIncrementalDefinition: true,
+					MaxStaleness:                  "8:0:0",
 				},
 				TimePartitioning: &bq.TimePartitioning{
 					ExpirationMs: 7890,
@@ -71,6 +76,31 @@ func TestBQToTableMetadata(t *testing.T) {
 				Labels:                  map[string]string{"a": "b"},
 				ExternalDataConfiguration: &bq.ExternalDataConfiguration{
 					SourceFormat: "GOOGLE_SHEETS",
+				},
+				TableConstraints: &bq.TableConstraints{
+					PrimaryKey: &bq.TableConstraintsPrimaryKey{
+						Columns: []string{"id"},
+					},
+					ForeignKeys: []*bq.TableConstraintsForeignKeys{
+						{
+							Name: "fk",
+							ColumnReferences: []*bq.TableConstraintsForeignKeysColumnReferences{
+								{
+									ReferencedColumn:  "id",
+									ReferencingColumn: "parent",
+								},
+							},
+							ReferencedTable: &bq.TableConstraintsForeignKeysReferencedTable{
+								DatasetId: "dataset_id",
+								ProjectId: "project_id",
+								TableId:   "table_id",
+							},
+						},
+					},
+				},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
 				},
 			},
 			&TableMetadata{
@@ -89,10 +119,12 @@ func TestBQToTableMetadata(t *testing.T) {
 				NumLongTermBytes:   23,
 				NumRows:            7,
 				MaterializedView: &MaterializedViewDefinition{
-					EnableRefresh:   true,
-					Query:           "mat view query",
-					LastRefreshTime: aTime,
-					RefreshInterval: aDuration,
+					EnableRefresh:                 true,
+					Query:                         "mat view query",
+					LastRefreshTime:               aTime,
+					RefreshInterval:               aDuration,
+					AllowNonIncrementalDefinition: true,
+					MaxStaleness:                  aStalenessValue,
 				},
 				TimePartitioning: &TimePartitioning{
 					Type:       DayPartitioningType,
@@ -110,14 +142,40 @@ func TestBQToTableMetadata(t *testing.T) {
 				},
 				EncryptionConfig: &EncryptionConfig{KMSKeyName: "keyName"},
 				ETag:             "etag",
+				TableConstraints: &TableConstraints{
+					PrimaryKey: &PrimaryKey{
+						Columns: []string{"id"},
+					},
+					ForeignKeys: []*ForeignKey{
+						{
+							Name: "fk",
+							ReferencedTable: &Table{
+								c:         bqClient,
+								ProjectID: "project_id",
+								DatasetID: "dataset_id",
+								TableID:   "table_id",
+							},
+							ColumnReferences: []*ColumnReference{
+								{
+									ReferencedColumn:  "id",
+									ReferencingColumn: "parent",
+								},
+							},
+						},
+					},
+				},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
 			},
 		},
 	} {
-		got, err := bqToTableMetadata(test.in, &Client{})
+		got, err := bqToTableMetadata(test.in, bqClient)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if diff := testutil.Diff(got, test.want); diff != "" {
+		if diff := testutil.Diff(got, test.want, cmp.AllowUnexported(Client{}, Table{})); diff != "" {
 			t.Errorf("%+v:\n, -got, +want:\n%s", test.in, diff)
 		}
 	}
@@ -143,6 +201,10 @@ func TestTableMetadataToBQ(t *testing.T) {
 				Labels:             map[string]string{"a": "b"},
 				ExternalDataConfig: &ExternalDataConfig{SourceFormat: Bigtable},
 				EncryptionConfig:   &EncryptionConfig{KMSKeyName: "keyName"},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
 			},
 			&bq.Table{
 				FriendlyName: "n",
@@ -156,6 +218,10 @@ func TestTableMetadataToBQ(t *testing.T) {
 				Labels:                    map[string]string{"a": "b"},
 				ExternalDataConfiguration: &bq.ExternalDataConfiguration{SourceFormat: "BIGTABLE"},
 				EncryptionConfiguration:   &bq.EncryptionConfiguration{KmsKeyName: "keyName"},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
 			},
 		},
 		{
@@ -403,6 +469,82 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 			tm: TableMetadataToUpdate{Clustering: &Clustering{Fields: []string{"foo", "bar"}}},
 			want: &bq.Table{
 				Clustering: &bq.Clustering{Fields: []string{"foo", "bar"}},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{
+				TableConstraints: &TableConstraints{
+					PrimaryKey: &PrimaryKey{
+						Columns: []string{"name"},
+					},
+				},
+			},
+			want: &bq.Table{
+				TableConstraints: &bq.TableConstraints{
+					PrimaryKey: &bq.TableConstraintsPrimaryKey{
+						Columns:         []string{"name"},
+						ForceSendFields: []string{"Columns"},
+					},
+					ForceSendFields: []string{"PrimaryKey"},
+				},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{
+				TableConstraints: &TableConstraints{
+					ForeignKeys: []*ForeignKey{
+						{
+							Name: "fk",
+							ReferencedTable: &Table{
+								ProjectID: "projectID",
+								DatasetID: "datasetID",
+								TableID:   "tableID",
+							},
+							ColumnReferences: []*ColumnReference{
+								{
+									ReferencedColumn:  "id",
+									ReferencingColumn: "other_table_id",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &bq.Table{
+				TableConstraints: &bq.TableConstraints{
+					ForceSendFields: []string{"ForeignKeys"},
+					ForeignKeys: []*bq.TableConstraintsForeignKeys{
+						{
+							Name: "fk",
+							ReferencedTable: &bq.TableConstraintsForeignKeysReferencedTable{
+								ProjectId: "projectID",
+								DatasetId: "datasetID",
+								TableId:   "tableID",
+							},
+							ColumnReferences: []*bq.TableConstraintsForeignKeysColumnReferences{
+								{
+									ReferencedColumn:  "id",
+									ReferencingColumn: "other_table_id",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
+			},
+			want: &bq.Table{
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
+				ForceSendFields: []string{"ResourceTags"},
 			},
 		},
 	} {

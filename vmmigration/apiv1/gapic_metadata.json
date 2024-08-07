@@ -25,6 +25,11 @@
                 "CancelCutoverJob"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateCloneJob": {
               "methods": [
                 "CreateCloneJob"
@@ -80,6 +85,11 @@
                 "DeleteMigratingVm"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteSource": {
               "methods": [
                 "DeleteSource"
@@ -125,9 +135,24 @@
                 "GetGroup"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetMigratingVm": {
               "methods": [
                 "GetMigratingVm"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReplicationCycle": {
+              "methods": [
+                "GetReplicationCycle"
               ]
             },
             "GetSource": {
@@ -165,9 +190,289 @@
                 "ListGroups"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ListMigratingVms": {
               "methods": [
                 "ListMigratingVms"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReplicationCycles": {
+              "methods": [
+                "ListReplicationCycles"
+              ]
+            },
+            "ListSources": {
+              "methods": [
+                "ListSources"
+              ]
+            },
+            "ListTargetProjects": {
+              "methods": [
+                "ListTargetProjects"
+              ]
+            },
+            "ListUtilizationReports": {
+              "methods": [
+                "ListUtilizationReports"
+              ]
+            },
+            "PauseMigration": {
+              "methods": [
+                "PauseMigration"
+              ]
+            },
+            "RemoveGroupMigration": {
+              "methods": [
+                "RemoveGroupMigration"
+              ]
+            },
+            "ResumeMigration": {
+              "methods": [
+                "ResumeMigration"
+              ]
+            },
+            "StartMigration": {
+              "methods": [
+                "StartMigration"
+              ]
+            },
+            "UpdateGroup": {
+              "methods": [
+                "UpdateGroup"
+              ]
+            },
+            "UpdateMigratingVm": {
+              "methods": [
+                "UpdateMigratingVm"
+              ]
+            },
+            "UpdateSource": {
+              "methods": [
+                "UpdateSource"
+              ]
+            },
+            "UpdateTargetProject": {
+              "methods": [
+                "UpdateTargetProject"
+              ]
+            },
+            "UpgradeAppliance": {
+              "methods": [
+                "UpgradeAppliance"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AddGroupMigration": {
+              "methods": [
+                "AddGroupMigration"
+              ]
+            },
+            "CancelCloneJob": {
+              "methods": [
+                "CancelCloneJob"
+              ]
+            },
+            "CancelCutoverJob": {
+              "methods": [
+                "CancelCutoverJob"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCloneJob": {
+              "methods": [
+                "CreateCloneJob"
+              ]
+            },
+            "CreateCutoverJob": {
+              "methods": [
+                "CreateCutoverJob"
+              ]
+            },
+            "CreateDatacenterConnector": {
+              "methods": [
+                "CreateDatacenterConnector"
+              ]
+            },
+            "CreateGroup": {
+              "methods": [
+                "CreateGroup"
+              ]
+            },
+            "CreateMigratingVm": {
+              "methods": [
+                "CreateMigratingVm"
+              ]
+            },
+            "CreateSource": {
+              "methods": [
+                "CreateSource"
+              ]
+            },
+            "CreateTargetProject": {
+              "methods": [
+                "CreateTargetProject"
+              ]
+            },
+            "CreateUtilizationReport": {
+              "methods": [
+                "CreateUtilizationReport"
+              ]
+            },
+            "DeleteDatacenterConnector": {
+              "methods": [
+                "DeleteDatacenterConnector"
+              ]
+            },
+            "DeleteGroup": {
+              "methods": [
+                "DeleteGroup"
+              ]
+            },
+            "DeleteMigratingVm": {
+              "methods": [
+                "DeleteMigratingVm"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSource": {
+              "methods": [
+                "DeleteSource"
+              ]
+            },
+            "DeleteTargetProject": {
+              "methods": [
+                "DeleteTargetProject"
+              ]
+            },
+            "DeleteUtilizationReport": {
+              "methods": [
+                "DeleteUtilizationReport"
+              ]
+            },
+            "FetchInventory": {
+              "methods": [
+                "FetchInventory"
+              ]
+            },
+            "FinalizeMigration": {
+              "methods": [
+                "FinalizeMigration"
+              ]
+            },
+            "GetCloneJob": {
+              "methods": [
+                "GetCloneJob"
+              ]
+            },
+            "GetCutoverJob": {
+              "methods": [
+                "GetCutoverJob"
+              ]
+            },
+            "GetDatacenterConnector": {
+              "methods": [
+                "GetDatacenterConnector"
+              ]
+            },
+            "GetGroup": {
+              "methods": [
+                "GetGroup"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetMigratingVm": {
+              "methods": [
+                "GetMigratingVm"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReplicationCycle": {
+              "methods": [
+                "GetReplicationCycle"
+              ]
+            },
+            "GetSource": {
+              "methods": [
+                "GetSource"
+              ]
+            },
+            "GetTargetProject": {
+              "methods": [
+                "GetTargetProject"
+              ]
+            },
+            "GetUtilizationReport": {
+              "methods": [
+                "GetUtilizationReport"
+              ]
+            },
+            "ListCloneJobs": {
+              "methods": [
+                "ListCloneJobs"
+              ]
+            },
+            "ListCutoverJobs": {
+              "methods": [
+                "ListCutoverJobs"
+              ]
+            },
+            "ListDatacenterConnectors": {
+              "methods": [
+                "ListDatacenterConnectors"
+              ]
+            },
+            "ListGroups": {
+              "methods": [
+                "ListGroups"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMigratingVms": {
+              "methods": [
+                "ListMigratingVms"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReplicationCycles": {
+              "methods": [
+                "ListReplicationCycles"
               ]
             },
             "ListSources": {
