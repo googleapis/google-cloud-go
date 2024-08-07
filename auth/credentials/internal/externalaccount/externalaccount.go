@@ -189,14 +189,12 @@ func (o *Options) validate() error {
 // is provided, then the client configured in the options will always be returned. If a default client
 // is provided and the options are configured for X509 credentials, a new client will be created.
 func (o *Options) client() (*http.Client, error) {
-	// If a client was explicitly provided or if there is no certificate configuration, return the client
-	// from the options.
-	if !o.IsDefaultClient || o.CredentialSource == nil || o.CredentialSource.Certificate == nil {
+	// If a client was provided and no override certificate config location was provided, use the provided client.
+	if o.CredentialSource == nil || o.CredentialSource.Certificate == nil || (!o.IsDefaultClient && o.CredentialSource.Certificate.CertificateConfigLocation == "") {
 		return o.Client, nil
 	}
 
-	// If the client was a default client, and a certificate source is present, validate and
-	// use that certificate source to create a new mTLS client.
+	// If a new client should be created, validate and use the certificate source to create a new mTLS client.
 	cert := o.CredentialSource.Certificate
 	if !cert.UseDefaultCertificateConfig && cert.CertificateConfigLocation == "" {
 		return nil, errors.New("credentials: \"certificate\" object must either specify a certificate_config_location or use_default_certificate_config should be true")
