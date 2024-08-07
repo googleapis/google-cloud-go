@@ -163,12 +163,29 @@ func TestApply_Single(t *testing.T) {
 	if _, e := client.Apply(ctx, ms, ApplyAtLeastOnce()); e != nil {
 		t.Fatalf("applyAtLeastOnce retry on abort, got %v, want nil.", e)
 	}
-
-	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+	requests := drainRequestsFromServer(server.TestSpanner)
+	expectedReqs := []interface{}{
 		&sppb.BatchCreateSessionsRequest{},
 		&sppb.CommitRequest{},
-	}); err != nil {
+	}
+	if isMultiplexEnabled {
+		expectedReqs = []interface{}{
+			&sppb.CreateSessionRequest{},
+			&sppb.CommitRequest{},
+		}
+	}
+	if err := compareRequests(expectedReqs, requests); err != nil {
 		t.Fatal(err)
+	}
+	for _, s := range requests {
+		switch s.(type) {
+		case *sppb.CommitRequest:
+			req, _ := s.(*sppb.CommitRequest)
+			// Validate the session is multiplexed
+			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
+				t.Errorf("TestApply_Single expected multiplexed session to be used, got: %v", req.Session)
+			}
+		}
 	}
 }
 
