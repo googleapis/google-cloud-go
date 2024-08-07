@@ -1890,7 +1890,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 		for {
 			if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 				// No usable session for doing the commit, take one from pool.
-				sh, err = t.sp.take(ctx)
+				sh, err = t.sp.takeMultiplexed(ctx)
 				if err != nil {
 					// sessionPool.Take already retries for session
 					// creations/retrivals.
@@ -1912,6 +1912,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 				RequestOptions: createRequestOptions(t.commitPriority, "", t.transactionTag),
 			})
 			if err != nil && !isAbortedErr(err) {
+				// should not be the case with multiplexed sessions
 				if isSessionNotFoundError(err) {
 					// Discard the bad session.
 					sh.destroy()

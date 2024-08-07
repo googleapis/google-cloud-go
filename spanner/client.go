@@ -1112,7 +1112,7 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 	}
 
 	var sh *sessionHandle
-	sh, err = c.idleSessions.take(ctx)
+	sh, err = c.idleSessions.takeMultiplexed(ctx)
 	if err != nil {
 		return &BatchWriteResponseIterator{err: err}
 	}
@@ -1143,7 +1143,7 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 			sh.destroy()
 		}
 		var sessionErr error
-		sh, sessionErr = c.idleSessions.take(ct)
+		sh, sessionErr = c.idleSessions.takeMultiplexed(ct)
 		return sessionErr
 	}
 
