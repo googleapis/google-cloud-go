@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/auth/v0.7.3...auth/v0.8.0) (2024-08-07)
+
+
+### Features
+
+* **auth:** Adds support for X509 workload identity federation ([#10373](https://github.com/googleapis/google-cloud-go/issues/10373)) ([5d07505](https://github.com/googleapis/google-cloud-go/commit/5d075056cbe27bb1da4072a26070c41f8999eb9b))
+
 ## [0.7.3](https://github.com/googleapis/google-cloud-go/compare/auth/v0.7.2...auth/v0.7.3) (2024-08-01)
 
 
