@@ -3,7 +3,7 @@ module main
 go 1.20
 
 require (
-	cloud.google.com/go/storage v1.42.0
+	cloud.google.com/go/storage v1.43.0
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.22.0
 	github.com/cloudprober/cloudprober v0.13.3
 	github.com/google/uuid v1.6.0
