@@ -773,6 +773,53 @@ func (it *EventCreateRuleIterator) takeBuf() interface{} {
 	return b
 }
 
+// EventEditRuleIterator manages a stream of *adminpb.EventEditRule.
+type EventEditRuleIterator struct {
+	items    []*adminpb.EventEditRule
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.EventEditRule, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *EventEditRuleIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *EventEditRuleIterator) Next() (*adminpb.EventEditRule, error) {
+	var item *adminpb.EventEditRule
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *EventEditRuleIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *EventEditRuleIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // ExpandedDataSetIterator manages a stream of *adminpb.ExpandedDataSet.
 type ExpandedDataSetIterator struct {
 	items    []*adminpb.ExpandedDataSet
@@ -909,6 +956,53 @@ func (it *GoogleAdsLinkIterator) bufLen() int {
 }
 
 func (it *GoogleAdsLinkIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// KeyEventIterator manages a stream of *adminpb.KeyEvent.
+type KeyEventIterator struct {
+	items    []*adminpb.KeyEvent
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.KeyEvent, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *KeyEventIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *KeyEventIterator) Next() (*adminpb.KeyEvent, error) {
+	var item *adminpb.KeyEvent
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *KeyEventIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *KeyEventIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

@@ -334,18 +334,20 @@ type ClientConfig struct {
 }
 
 type openTelemetryConfig struct {
-	meterProvider           metric.MeterProvider
-	attributeMap            []attribute.KeyValue
-	otMetricRegistration    metric.Registration
-	openSessionCount        metric.Int64ObservableGauge
-	maxAllowedSessionsCount metric.Int64ObservableGauge
-	sessionsCount           metric.Int64ObservableGauge
-	maxInUseSessionsCount   metric.Int64ObservableGauge
-	getSessionTimeoutsCount metric.Int64Counter
-	acquiredSessionsCount   metric.Int64Counter
-	releasedSessionsCount   metric.Int64Counter
-	gfeLatency              metric.Int64Histogram
-	gfeHeaderMissingCount   metric.Int64Counter
+	meterProvider                  metric.MeterProvider
+	attributeMap                   []attribute.KeyValue
+	attributeMapWithMultiplexed    []attribute.KeyValue
+	attributeMapWithoutMultiplexed []attribute.KeyValue
+	otMetricRegistration           metric.Registration
+	openSessionCount               metric.Int64ObservableGauge
+	maxAllowedSessionsCount        metric.Int64ObservableGauge
+	sessionsCount                  metric.Int64ObservableGauge
+	maxInUseSessionsCount          metric.Int64ObservableGauge
+	getSessionTimeoutsCount        metric.Int64Counter
+	acquiredSessionsCount          metric.Int64Counter
+	releasedSessionsCount          metric.Int64Counter
+	gfeLatency                     metric.Int64Histogram
+	gfeHeaderMissingCount          metric.Int64Counter
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
