@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.18.2...dataplex/v1.18.3) (2024-08-08)
+
+
+### Bug Fixes
+
+* **dataplex:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.18.1...dataplex/v1.18.2) (2024-07-24)
 
 

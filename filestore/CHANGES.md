@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.8.8](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.8.7...filestore/v1.8.8) (2024-08-08)
+
+
+### Bug Fixes
+
+* **filestore:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.8.7](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.8.6...filestore/v1.8.7) (2024-07-24)
 
 

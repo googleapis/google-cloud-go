@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.13.0...language/v1.13.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **language:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.9...language/v1.13.0) (2024-08-01)
 
 

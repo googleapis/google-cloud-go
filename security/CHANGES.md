@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.5](https://github.com/googleapis/google-cloud-go/compare/security/v1.17.4...security/v1.17.5) (2024-08-08)
+
+
+### Bug Fixes
+
+* **security:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/security/v1.17.3...security/v1.17.4) (2024-07-24)
 
 
