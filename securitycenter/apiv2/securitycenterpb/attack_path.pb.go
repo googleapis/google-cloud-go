@@ -175,10 +175,10 @@ type AttackPath_AttackPathNode struct {
 	// The name of the resource at this point in the attack path.
 	// The format of the name follows the Cloud Asset Inventory [resource
 	// name
-	// format]("https://cloud.google.com/asset-inventory/docs/resource-name-format")
+	// format](https://cloud.google.com/asset-inventory/docs/resource-name-format)
 	Resource string `protobuf:"bytes,1,opt,name=resource,proto3" json:"resource,omitempty"`
 	// The [supported resource
-	// type](https://cloud.google.com/asset-inventory/docs/supported-asset-types")
+	// type](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
 	ResourceType string `protobuf:"bytes,2,opt,name=resource_type,json=resourceType,proto3" json:"resource_type,omitempty"`
 	// Human-readable name of this resource.
 	DisplayName string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -330,7 +330,7 @@ type AttackPath_AttackPathNode_PathNodeAssociatedFinding struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Canonical name of the associated findings. Example:
-	// organizations/123/sources/456/findings/789
+	// `organizations/123/sources/456/findings/789`
 	CanonicalFinding string `protobuf:"bytes,1,opt,name=canonical_finding,json=canonicalFinding,proto3" json:"canonical_finding,omitempty"`
 	// The additional taxonomy group within findings from a given source.
 	FindingCategory string `protobuf:"bytes,2,opt,name=finding_category,json=findingCategory,proto3" json:"finding_category,omitempty"`

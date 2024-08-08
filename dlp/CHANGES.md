@@ -1,5 +1,37 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.15.0...dlp/v1.16.0) (2024-08-01)
+
+
+### Features
+
+* **dlp:** Add refresh frequency for data profiling ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **dlp:** GRPC config for get, list, and delete FileStoreDataProfiles ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **dlp:** Org-level connection bindings ([#10601](https://github.com/googleapis/google-cloud-go/issues/10601)) ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
+
+### Documentation
+
+* **dlp:** Replace HTML tags with CommonMark notation ([#10613](https://github.com/googleapis/google-cloud-go/issues/10613)) ([d949cc0](https://github.com/googleapis/google-cloud-go/commit/d949cc0e5d44af62154d9d5fd393f25a852f93ed))
+* **dlp:** Small improvements ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.14.3...dlp/v1.15.0) (2024-07-24)
+
+
+### Features
+
+* **dlp:** Add Cloud Storage discovery support ([#10527](https://github.com/googleapis/google-cloud-go/issues/10527)) ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+
+### Bug Fixes
+
+* **dlp:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **dlp:** Updated method documentation ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
 ## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.14.2...dlp/v1.14.3) (2024-07-10)
 
 

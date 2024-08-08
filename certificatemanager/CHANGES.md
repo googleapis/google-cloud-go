@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.5](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.8.4...certificatemanager/v1.8.5) (2024-07-24)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.8.3...certificatemanager/v1.8.4) (2024-07-10)
 
 

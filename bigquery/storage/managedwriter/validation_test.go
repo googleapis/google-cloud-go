@@ -456,9 +456,13 @@ func TestValidation_Values(t *testing.T) {
 			t.Errorf("%s append failed: %v", tc.description, err)
 			continue
 		}
-		if _, err = result.GetResult(ctx); err != nil {
+		resp, err := result.FullResponse(ctx)
+		if err != nil {
 			t.Errorf("%s append response error: %v", tc.description, err)
 			continue
+		}
+		if status := resp.GetError(); status != nil {
+			t.Errorf("%s append response embeds an error: %v", tc.description, status)
 		}
 		// Validate table.
 		validateTableConstraints(ctx, t, bqClient, testTable, tc.description, tc.constraints...)

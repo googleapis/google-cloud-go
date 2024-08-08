@@ -1,6 +1,39 @@
 # Changes
 
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.20.0...deploy/v1.21.0) (2024-08-01)
+
+
+### Features
+
+* **deploy:** Add support for different Pod selector labels when doing canaries ([#10581](https://github.com/googleapis/google-cloud-go/issues/10581)) ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+
+### Bug Fixes
+
+* **deploy:** Make changes to an API that is disabled on the server, but whose client libraries were prematurely published ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **deploy:** Remove an API that was mistakenly made public ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.19.3...deploy/v1.20.0) (2024-07-24)
+
+
+### Features
+
+* **deploy:** Added support for configuring a proxy_url to a Kubernetes server ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **deploy:** Added support for deploy policies ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **deploy:** Added support for new custom target type and deploy policy platform logs ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
+
+### Bug Fixes
+
+* **deploy:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **deploy:** Small Cloud Deploy API documentation updates ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **deploy:** Small corrections to Cloud Deploy API documentation ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
 ## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.19.2...deploy/v1.19.3) (2024-07-10)
 
 

@@ -4502,9 +4502,7 @@ type Document_ChunkedDocument_Chunk struct {
 
 	// ID of the chunk.
 	ChunkId string `protobuf:"bytes,1,opt,name=chunk_id,json=chunkId,proto3" json:"chunk_id,omitempty"`
-	// DO NOT USE.
-	// List of all parsed documents layout source blocks used to generate the
-	// chunk.
+	// Unused.
 	SourceBlockIds []string `protobuf:"bytes,2,rep,name=source_block_ids,json=sourceBlockIds,proto3" json:"source_block_ids,omitempty"`
 	// Text content of the chunk.
 	Content string `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
