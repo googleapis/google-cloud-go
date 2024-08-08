@@ -47,8 +47,11 @@ import (
 	_ "google.golang.org/grpc/balancer/rls"
 )
 
-const prodAddr = "bigtable.googleapis.com:443"
-const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
+const (
+	prodAddr           = "bigtable.googleapis.com:443"
+	mtlsProdAddr       = "bigtable.mtls.googleapis.com:443"
+	methodNameReadRows = "ReadRows"
+)
 
 // Client is a client for reading and writing data to tables in an instance.
 //
@@ -353,7 +356,7 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *builtinMetricsTracer, opts ...ReadOption) (err error) {
 	var prevRowKey string
 	attrMap := make(map[string]interface{})
-	err = gaxInvokeWithRecorder(ctx, mt, "ReadRows", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+	err = gaxInvokeWithRecorder(ctx, mt, methodNameReadRows, func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		req := &btpb.ReadRowsRequest{
 			AppProfileId: t.c.appProfile,
 		}
@@ -395,6 +398,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 		// Ignore error since header is only being used to record builtin metrics
 		// Failure to record metrics should not fail the operation
 		*headerMD, _ = stream.Header()
+		mt.currOp.setFirstRespTime(time.Now())
 		for {
 			res, err := stream.Recv()
 			if err == io.EOF {
@@ -1552,6 +1556,13 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 		// graph will be less confusing
 		mt.instrumentRetryCount.Add(mt.ctx, mt.currOp.attemptCount-1, metric.WithAttributes(retryCntAttrs...))
 	}
+
+	// Record first_reponse_latencies
+	firstRespLatAttrs, _ := mt.toOtelMetricAttrs(metricNameRetryCount)
+	if mt.method == methodNameReadRows {
+		elapsedTimeMs = convertToMs(mt.currOp.firstRespTime.Sub(mt.currOp.startTime))
+		mt.instrumentFirstRespLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributes(firstRespLatAttrs...))
+	}
 }
 
 // gaxInvokeWithRecorder:
@@ -1615,9 +1626,13 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
 	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributes(attemptLatAttrs...))
 
-	// Record server_latencies
+	// Record server_latencies and connectivity_error_count
+	connErrCountAttrs, _ := mt.toOtelMetricAttrs(metricNameConnErrCount)
 	serverLatAttrs, _ := mt.toOtelMetricAttrs(metricNameServerLatencies)
 	if mt.currOp.currAttempt.serverLatencyErr == nil {
 		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributes(serverLatAttrs...))
+		mt.instrumentConnErrCount.Add(mt.ctx, 0, metric.WithAttributes(connErrCountAttrs...))
+	} else {
+		mt.instrumentConnErrCount.Add(mt.ctx, 1, metric.WithAttributes(connErrCountAttrs...))
 	}
 }
