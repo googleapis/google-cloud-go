@@ -1,5 +1,12 @@
 # Changes
 
+## [0.14.12](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.11...gkehub/v0.14.12) (2024-08-08)
+
+
+### Bug Fixes
+
+* **gkehub:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [0.14.11](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.10...gkehub/v0.14.11) (2024-07-24)
 
 
