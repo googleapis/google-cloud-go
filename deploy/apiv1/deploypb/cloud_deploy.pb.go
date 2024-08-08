@@ -21,11 +21,8 @@
 package deploypb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -5620,9 +5619,8 @@ type TargetAttribute struct {
 	// ID of the `Target`. The value of this field could be one of the
 	// following:
 	//
-	// * The last segment of a target name. It only needs the ID to determine
-	// which target is being referred to
-	// * "*", all targets in a location.
+	// * The last segment of a target name
+	// * "*", all targets in a location
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Target labels.
 	Labels map[string]string `protobuf:"bytes,2,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
@@ -10463,10 +10461,8 @@ type PromoteReleaseRule struct {
 	// deploying. If unspecified, default it to the next stage in the promotion
 	// flow. The value of this field could be one of the following:
 	//
-	// * The last segment of a target name. It only needs the ID to determine
-	// if the target is one of the stages in the promotion sequence defined
-	// in the pipeline.
-	// * "@next", the next target in the promotion sequence.
+	// * The last segment of a target name
+	// * "@next", the next target in the promotion sequence
 	DestinationTargetId string `protobuf:"bytes,7,opt,name=destination_target_id,json=destinationTargetId,proto3" json:"destination_target_id,omitempty"`
 	// Output only. Information around the state of the Automation rule.
 	Condition *AutomationRuleCondition `protobuf:"bytes,5,opt,name=condition,proto3" json:"condition,omitempty"`
