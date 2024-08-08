@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"log"
 	"net/url"
 	"os"
 
@@ -73,10 +74,10 @@ const (
 // defaultGRPCOptions returns a set of the default client options
 // for gRPC client initialization.
 func defaultGRPCOptions() []option.ClientOption {
+
 	defaults := []option.ClientOption{
 		option.WithGRPCConnectionPool(defaultConnPoolSize),
 	}
-
 	// Set emulator options for gRPC if an emulator was specified. Note that in a
 	// hybrid client, STORAGE_EMULATOR_HOST will set the host to use for HTTP and
 	// STORAGE_EMULATOR_HOST_GRPC will set the host to use for gRPC (when using a
@@ -116,6 +117,21 @@ type grpcStorageClient struct {
 func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageClient, error) {
 	s := initSettings(opts...)
 	s.clientOption = append(defaultGRPCOptions(), s.clientOption...)
+	// TODO: detect project id
+	project := "spec-test-ruby-samples"
+	// TODO: detect endpoint
+	// TODO: add option to disable metrics
+	// Enable client-side metrics for gRPC
+	provider, err := gRPCMetricProvider(ctx, project)
+	if err != nil {
+		// Do not fail client creation; this isn't a strict requirement if creation fails
+		log.Println(err)
+	} else {
+		s.meterProvider = provider
+		s.meterCleanup = metricCleanup(ctx, provider)
+		s.clientOption = append(s.clientOption, togRPCDialOption(provider))
+	}
+
 	// Disable all gax-level retries in favor of retry logic in the veneer client.
 	s.gax = append(s.gax, gax.WithRetry(nil))
 
@@ -136,6 +152,9 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 }
 
 func (c *grpcStorageClient) Close() error {
+	if c.settings.meterProvider != nil {
+		c.settings.meterCleanup()
+	}
 	return c.raw.Close()
 }
 

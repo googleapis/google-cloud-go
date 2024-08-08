@@ -21,6 +21,7 @@ import (
 
 	"cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
 )
 
@@ -132,6 +133,12 @@ type settings struct {
 
 	// userProject is the user project that should be billed for the request.
 	userProject string
+
+	// instance of metric reader used by gRPC client-side metrics
+	meterProvider *metric.MeterProvider
+
+	//
+	meterCleanup func()
 }
 
 func initSettings(opts ...storageOption) *settings {
