@@ -280,6 +280,34 @@ func (cso ChangeStreamOptions) SQL() string {
 		hasOpt = true
 		str += fmt.Sprintf("value_capture_type='%s'", *cso.ValueCaptureType)
 	}
+	if cso.ExcludeTTLDeletes != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("exclude_ttl_deletes=%s", cso.ExcludeTTLDeletes.SQL())
+	}
+	if cso.ExcludeInsert != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("exclude_insert=%s", cso.ExcludeInsert.SQL())
+	}
+	if cso.ExcludeUpdate != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("exclude_update=%s", cso.ExcludeUpdate.SQL())
+	}
+	if cso.ExcludeDelete != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("exclude_delete=%s", cso.ExcludeDelete.SQL())
+	}
 	str += ")"
 	return str
 }
