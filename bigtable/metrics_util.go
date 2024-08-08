@@ -57,6 +57,7 @@ func extractServerLatency(headerMD metadata.MD, trailerMD metadata.MD) (float64,
 	serverLatencyMillisStr := strings.TrimPrefix(serverTimingStr, serverTimingValPrefix)
 	serverLatencyMillis, err := strconv.ParseFloat(strings.TrimSpace(serverLatencyMillisStr), 64)
 	if !strings.HasPrefix(serverTimingStr, serverTimingValPrefix) || err != nil {
+		metricsLogger.Println(err.Error())
 		return serverLatencyMillis, err
 	}
 
@@ -81,13 +82,16 @@ func extractLocation(headerMD metadata.MD, trailerMD metadata.MD) (string, strin
 	}
 
 	if len(locationMetadata) < 1 {
-		return defaultCluster, defaultZone, fmt.Errorf("failed to get location metadata")
+		err := fmt.Errorf("failed to get location metadata")
+		metricsLogger.Println(err.Error())
+		return defaultCluster, defaultZone, err
 	}
 
 	// Unmarshal binary location metadata
 	responseParams := &btpb.ResponseParams{}
 	err := proto.Unmarshal([]byte(locationMetadata[0]), responseParams)
 	if err != nil {
+		metricsLogger.Println(err.Error())
 		return defaultCluster, defaultZone, err
 	}
 
