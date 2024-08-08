@@ -1111,7 +1111,8 @@ func TestBucketRetryer(t *testing.T) {
 					}),
 					WithPolicy(RetryAlways),
 					WithMaxAttempts(5),
-					WithErrorFunc(func(err error) bool { return false }))
+					WithErrorFunc(func(err error) bool { return false }),
+					WithMinReadThroughput(1024))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1119,9 +1120,10 @@ func TestBucketRetryer(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				policy:      RetryAlways,
-				maxAttempts: expectedAttempts(5),
-				shouldRetry: func(err error) bool { return false },
+				policy:            RetryAlways,
+				maxAttempts:       expectedAttempts(5),
+				shouldRetry:       func(err error) bool { return false },
+				minReadThroughput: 1024,
 			},
 		},
 		{
@@ -1163,6 +1165,15 @@ func TestBucketRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				shouldRetry: func(err error) bool { return false },
+			},
+		},
+		{
+			name: "set MinReadThroughput only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(WithMinReadThroughput(1024))
+			},
+			want: &retryConfig{
+				minReadThroughput: 1024,
 			},
 		},
 	}

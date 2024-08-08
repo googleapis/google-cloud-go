@@ -867,7 +867,7 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 	if err != nil {
 		return nil, err
 	}
-	return parseReadResponse(res, params, reopen)
+	return parseReadResponse(ctx, res, params, reopen, s)
 }
 
 func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newRangeReaderParams, s *settings) (r *Reader, err error) {
@@ -891,7 +891,7 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 	if err != nil {
 		return nil, err
 	}
-	return parseReadResponse(res, params, reopen)
+	return parseReadResponse(ctx, res, params, reopen, s)
 }
 
 func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
@@ -1233,15 +1233,23 @@ func (c *httpStorageClient) DeleteNotification(ctx context.Context, bucket strin
 }
 
 type httpReader struct {
-	body     io.ReadCloser
-	seen     int64
-	reopen   func(seen int64) (*http.Response, error)
-	checkCRC bool   // should we check the CRC?
-	wantCRC  uint32 // the CRC32c value the server sent in the header
-	gotCRC   uint32 // running crc
+	body         io.ReadCloser
+	seen         int64
+	reopen       func(seen int64) (*http.Response, error)
+	checkCRC     bool   // should we check the CRC?
+	wantCRC      uint32 // the CRC32c value the server sent in the header
+	gotCRC       uint32 // running crc
+	readCalls    int    // number of calls to httpReader.Read
+	readCallOpen bool   // is a Read call currently in progress?
+	closed       chan bool
 }
 
 func (r *httpReader) Read(p []byte) (int, error) {
+	r.readCallOpen = true
+	defer func() {
+		r.readCallOpen = false
+	}()
+	r.readCalls += 1
 	n := 0
 	for len(p[n:]) > 0 {
 		m, err := r.body.Read(p[n:])
@@ -1280,6 +1288,7 @@ func (r *httpReader) Read(p []byte) (int, error) {
 }
 
 func (r *httpReader) Close() error {
+	r.closed <- true
 	return r.body.Close()
 }
 
@@ -1386,7 +1395,7 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 	}
 }
 
-func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen func(int64) (*http.Response, error)) (*Reader, error) {
+func parseReadResponse(ctx context.Context, res *http.Response, params *newRangeReaderParams, reopen func(int64) (*http.Response, error), s *settings) (*Reader, error) {
 	var err error
 	var (
 		size        int64 // total size of object, even if a range was requested.
@@ -1468,18 +1477,60 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		CRC32C:          crc,
 		Decompressed:    res.Uncompressed || uncompressedByServer(res),
 	}
-	return &Reader{
+
+	httpReader := &httpReader{
+		reopen:   reopen,
+		body:     body,
+		wantCRC:  crc,
+		checkCRC: checkCRC,
+		closed:   make(chan bool),
+	}
+	r := &Reader{
 		Attrs:    attrs,
 		size:     size,
 		remain:   remain,
 		checkCRC: checkCRC,
-		reader: &httpReader{
-			reopen:   reopen,
-			body:     body,
-			wantCRC:  crc,
-			checkCRC: checkCRC,
-		},
-	}, nil
+		reader:   httpReader,
+		ctx:      ctx,
+	}
+
+	// If retryOption minReadThroughput was provided, monitor the throughput of the read once
+	// per second and, if the throughput is below the minimum, close the read body to prompt
+	// reopening the stream.
+	var monitorThroughput func()
+
+	if s.retry != nil && s.retry.minReadThroughput > 0 {
+		monitorThroughput = func() {
+			var readCalls int
+			var seen int64
+			var done bool
+			for !done {
+				select {
+				case <-time.After(time.Second):
+					if (httpReader.readCalls-readCalls > 1 || httpReader.readCallOpen) && httpReader.seen-seen < s.retry.minReadThroughput {
+						httpReader.body.Close()
+					}
+					readCalls = httpReader.readCalls
+					seen = httpReader.seen
+				case <-httpReader.closed:
+					done = true
+				case <-r.ctx.Done():
+					done = true
+				}
+			}
+		}
+	} else {
+		monitorThroughput = func() {
+			select {
+			case <-httpReader.closed:
+			case <-r.ctx.Done():
+			}
+		}
+	}
+
+	go monitorThroughput()
+
+	return r, nil
 }
 
 // setHeadersFromCtx sets custom headers passed in via the context on the header,
