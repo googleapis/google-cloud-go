@@ -24,7 +24,6 @@ import (
 	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/utility"
-	trace "cloud.google.com/go/trace/apiv1"
 	"google.golang.org/api/option"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
@@ -34,11 +33,10 @@ import (
 
 // StartTxnHandler holds the necessary components and options required for start transaction action.
 type StartTxnHandler struct {
-	Action             *executorpb.StartTransactionAction
-	FlowContext        *ExecutionFlowContext
-	OutcomeSender      *outputstream.OutcomeSender
-	Options            []option.ClientOption
-	TraceClientOptions []option.ClientOption
+	Action        *executorpb.StartTransactionAction
+	FlowContext   *ExecutionFlowContext
+	OutcomeSender *outputstream.OutcomeSender
+	Options       []option.ClientOption
 }
 
 // ExecuteAction that starts a read-write or read-only transaction.
@@ -61,12 +59,6 @@ func (h *StartTxnHandler) ExecuteAction(ctx context.Context) error {
 		return h.OutcomeSender.FinishWithError(err)
 	}
 	h.FlowContext.DbClient = client
-	// Create a trace client to read the traces.
-	traceClient, err := trace.NewClient(ctx, h.TraceClientOptions...)
-	if err != nil {
-		return h.OutcomeSender.FinishWithError(err)
-	}
-	h.FlowContext.TraceClient = traceClient
 	if h.FlowContext.isTransactionActiveLocked() {
 		return h.OutcomeSender.FinishWithError(spanner.ToSpannerError(status.Error(codes.InvalidArgument, "already in a transaction")))
 	}
