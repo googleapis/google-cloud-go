@@ -1,5 +1,12 @@
 # Changes
 
+## [0.8.12](https://github.com/googleapis/google-cloud-go/compare/recommendationengine/v0.8.11...recommendationengine/v0.8.12) (2024-08-08)
+
+
+### Bug Fixes
+
+* **recommendationengine:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [0.8.11](https://github.com/googleapis/google-cloud-go/compare/recommendationengine/v0.8.10...recommendationengine/v0.8.11) (2024-07-24)
 
 

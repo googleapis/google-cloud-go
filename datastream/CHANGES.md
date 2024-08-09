@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.10.11](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.10.10...datastream/v1.10.11) (2024-08-08)
+
+
+### Bug Fixes
+
+* **datastream:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.10.10](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.10.9...datastream/v1.10.10) (2024-07-24)
 
 

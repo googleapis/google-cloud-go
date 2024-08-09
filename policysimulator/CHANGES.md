@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.10](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.9...policysimulator/v0.2.10) (2024-08-08)
+
+
+### Bug Fixes
+
+* **policysimulator:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [0.2.9](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.8...policysimulator/v0.2.9) (2024-07-24)
 
 
