@@ -1,5 +1,24 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.16.0...firestore/v1.17.0) (2024-08-09)
+
+
+### Features
+
+* **firestore:** Expose the `FindNearest.distance_result_field` parameter ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **firestore:** Expose the `FindNearest.distance_threshold` parameter ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+
+
+### Bug Fixes
+
+* **firestore:** Retry batchwrite only on retryable errors ([#10603](https://github.com/googleapis/google-cloud-go/issues/10603)) ([23e5df5](https://github.com/googleapis/google-cloud-go/commit/23e5df5b8ee40317ab0d1ac6bb2b92ccc054426c))
+* **firestore:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **firestore:** Minor documentation clarifications on FindNearest DistanceMeasure options ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.15.0...firestore/v1.16.0) (2024-07-24)
 
 
