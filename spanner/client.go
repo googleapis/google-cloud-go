@@ -63,6 +63,10 @@ const (
 
 	requestsCompressionHeader = "x-response-encoding"
 
+	// serverSideTracingHeader is the name of the metadata header if client
+	// has opted-in for the creation of trace spans on the Spanner layer.
+	serverSideTracingHeader = "x-goog-spanner-end-to-end-tracing"
+
 	// numChannels is the default value for NumChannels of client.
 	numChannels = 4
 )
@@ -331,6 +335,12 @@ type ClientConfig struct {
 	DirectedReadOptions *sppb.DirectedReadOptions
 
 	OpenTelemetryMeterProvider metric.MeterProvider
+
+	// EnableServerSideTracing indicates whether server side tracing is enabled or not.
+	// If it is enabled, trace spans will be created at Spanner layer.
+	//
+	// Default: false
+	EnableServerSideTracing bool
 }
 
 type openTelemetryConfig struct {
@@ -445,6 +455,9 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	md := metadata.Pairs(resourcePrefixHeader, database)
 	if config.Compression == gzip.Name {
 		md.Append(requestsCompressionHeader, gzip.Name)
+	}
+	if config.EnableServerSideTracing {
+		md.Append(serverSideTracingHeader, "true")
 	}
 
 	// Create a session client.
