@@ -59,7 +59,9 @@ const (
 	metricNameOperationLatencies = "operation_latencies"
 	metricNameAttemptLatencies   = "attempt_latencies"
 	metricNameServerLatencies    = "server_latencies"
+	metricNameFirstRespLatencies = "first_response_latencies"
 	metricNameRetryCount         = "retry_count"
+	metricNameConnErrCount       = "connectivity_error_count"
 
 	// Metric units
 	metricUnitMS    = "ms"
@@ -102,7 +104,19 @@ var (
 			},
 			recordedPerAttempt: true,
 		},
+		metricNameFirstRespLatencies: {
+			additionalAttrs: []string{
+				metricLabelKeyStatus,
+			},
+			recordedPerAttempt: false,
+		},
 		metricNameRetryCount: {
+			additionalAttrs: []string{
+				metricLabelKeyStatus,
+			},
+			recordedPerAttempt: true,
+		},
+		metricNameConnErrCount: {
 			additionalAttrs: []string{
 				metricLabelKeyStatus,
 			},
@@ -141,7 +155,10 @@ type builtinMetricsTracerFactory struct {
 	operationLatencies metric.Float64Histogram
 	serverLatencies    metric.Float64Histogram
 	attemptLatencies   metric.Float64Histogram
-	retryCount         metric.Int64Counter
+	firstRespLatencies metric.Float64Histogram
+
+	retryCount   metric.Int64Counter
+	connErrCount metric.Int64Counter
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider) (*builtinMetricsTracerFactory, error) {
@@ -240,10 +257,28 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		return err
 	}
 
+	// Create first_response_latencies
+	tf.firstRespLatencies, err = meter.Float64Histogram(
+		metricNameFirstRespLatencies,
+		metric.WithDescription("Latency from operation start until the response headers were received. The publishing of the measurement will be delayed until the attempt response has been received."),
+		metric.WithUnit(metricUnitMS),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+	if err != nil {
+		return err
+	}
+
 	// Create retry_count
 	tf.retryCount, err = meter.Int64Counter(
 		metricNameRetryCount,
 		metric.WithDescription("The number of additional RPCs sent after the initial attempt."),
+		metric.WithUnit(metricUnitCount),
+	)
+
+	// Create connectivity_error_count
+	tf.connErrCount, err = meter.Int64Counter(
+		metricNameConnErrCount,
+		metric.WithDescription("Number of requests that failed to reach the Google datacenter. (Requests without google response headers"),
 		metric.WithUnit(metricUnitCount),
 	)
 	return err
@@ -263,7 +298,9 @@ type builtinMetricsTracer struct {
 	instrumentOperationLatencies metric.Float64Histogram
 	instrumentServerLatencies    metric.Float64Histogram
 	instrumentAttemptLatencies   metric.Float64Histogram
+	instrumentFirstRespLatencies metric.Float64Histogram
 	instrumentRetryCount         metric.Int64Counter
+	instrumentConnErrCount       metric.Int64Counter
 
 	tableName   string
 	method      string
@@ -280,6 +317,9 @@ type opTracer struct {
 
 	startTime time.Time
 
+	// Only for ReadRows. Time when the response headers are received in a streaming RPC.
+	firstRespTime time.Time
+
 	// gRPC status code of last completed attempt
 	status string
 
@@ -288,6 +328,10 @@ type opTracer struct {
 
 func (o *opTracer) setStartTime(t time.Time) {
 	o.startTime = t
+}
+
+func (o *opTracer) setFirstRespTime(t time.Time) {
+	o.firstRespTime = t
 }
 
 func (o *opTracer) setStatus(status string) {
@@ -355,7 +399,9 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		instrumentOperationLatencies: tf.operationLatencies,
 		instrumentServerLatencies:    tf.serverLatencies,
 		instrumentAttemptLatencies:   tf.attemptLatencies,
+		instrumentFirstRespLatencies: tf.firstRespLatencies,
 		instrumentRetryCount:         tf.retryCount,
+		instrumentConnErrCount:       tf.connErrCount,
 
 		tableName:   tableName,
 		isStreaming: isStreaming,
