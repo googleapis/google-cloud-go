@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.2...batch/v1.9.3) (2024-08-08)
+
+
+### Bug Fixes
+
+* **batch:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **batch:** Refine usage scope for fields `task_execution` and `task_state` in StatusEvent ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
 ## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.1...batch/v1.9.2) (2024-07-24)
 
 

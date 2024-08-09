@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/visionai/v0.2.4...visionai/v0.2.5) (2024-08-08)
+
+
+### Bug Fixes
+
+* **visionai:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/visionai/v0.2.3...visionai/v0.2.4) (2024-07-24)
 
 

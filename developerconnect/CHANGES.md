@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/developerconnect/v0.1.3...developerconnect/v0.1.4) (2024-08-08)
+
+
+### Bug Fixes
+
+* **developerconnect:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/developerconnect/v0.1.2...developerconnect/v0.1.3) (2024-07-24)
 
 
