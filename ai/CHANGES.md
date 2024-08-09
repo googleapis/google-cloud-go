@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.3](https://github.com/googleapis/google-cloud-go/compare/ai/v0.8.2...ai/v0.8.3) (2024-08-09)
+
+
+### Bug Fixes
+
+* **ai:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [0.8.2](https://github.com/googleapis/google-cloud-go/compare/ai/v0.8.1...ai/v0.8.2) (2024-07-22)
 
 
