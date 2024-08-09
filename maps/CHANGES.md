@@ -2,6 +2,13 @@
 
 
 
+## [1.11.7](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.6...maps/v1.11.7) (2024-08-08)
+
+
+### Bug Fixes
+
+* **maps:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.5...maps/v1.11.6) (2024-08-01)
 
 

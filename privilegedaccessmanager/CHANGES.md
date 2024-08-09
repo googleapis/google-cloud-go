@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/privilegedaccessmanager/v0.1.0...privilegedaccessmanager/v0.1.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **privilegedaccessmanager:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## 0.1.0 (2024-07-24)
 
 

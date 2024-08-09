@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.4.12](https://github.com/googleapis/google-cloud-go/compare/ids/v1.4.11...ids/v1.4.12) (2024-08-08)
+
+
+### Bug Fixes
+
+* **ids:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.4.11](https://github.com/googleapis/google-cloud-go/compare/ids/v1.4.10...ids/v1.4.11) (2024-07-24)
 
 

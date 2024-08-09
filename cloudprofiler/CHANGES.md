@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.3.6](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.3.5...cloudprofiler/v0.3.6) (2024-08-08)
+
+
+### Bug Fixes
+
+* **cloudprofiler:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [0.3.5](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.3.4...cloudprofiler/v0.3.5) (2024-07-24)
 
 
