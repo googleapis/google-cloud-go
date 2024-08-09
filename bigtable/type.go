@@ -98,10 +98,8 @@ type Int64Encoding interface {
 }
 
 // BigEndianBytesEncoding represents an Int64 encoding where the value is encoded
-// as an 8-byte big-endian value.  The byte representation may also have further encoding
-// via Bytes.
+// as an 8-byte big-endian value.
 type BigEndianBytesEncoding struct {
-	Bytes BytesType
 }
 
 func (beb BigEndianBytesEncoding) proto() *btapb.Type_Int64_Encoding {
@@ -238,9 +236,9 @@ func int64EncodingProtoToEncoding(ie *btapb.Type_Int64_Encoding) Int64Encoding {
 		return unknown[btapb.Type_Int64_Encoding]{wrapped: ie}
 	}
 
-	switch e := ie.Encoding.(type) {
+	switch ie.Encoding.(type) {
 	case *btapb.Type_Int64_Encoding_BigEndianBytes_:
-		return BigEndianBytesEncoding{Bytes: bytesProtoToType(e.BigEndianBytes.BytesType)}
+		return BigEndianBytesEncoding{}
 	default:
 		return unknown[btapb.Type_Int64_Encoding]{wrapped: ie}
 	}
