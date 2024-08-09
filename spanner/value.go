@@ -114,8 +114,6 @@ var (
 	CommitTimestamp = commitTimestamp
 	commitTimestamp = time.Unix(0, 0).In(time.FixedZone("CommitTimestamp placeholder", 0xDB))
 
-	jsonNullBytes = []byte("null")
-
 	jsonUseNumber bool
 
 	protoMsgReflectType  = reflect.TypeOf((*proto.Message)(nil)).Elem()
@@ -984,7 +982,7 @@ func (n NullProtoMessage) MarshalJSON() ([]byte, error) {
 	if n.Valid {
 		return json.Marshal(n.ProtoMessageVal)
 	}
-	return jsonNullBytes, nil
+	return []byte("null"), nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullProtoMessage.
@@ -1030,7 +1028,7 @@ func (n NullProtoEnum) MarshalJSON() ([]byte, error) {
 	if n.Valid && n.ProtoEnumVal != nil {
 		return []byte(fmt.Sprintf("%v", n.ProtoEnumVal.Number())), nil
 	}
-	return jsonNullBytes, nil
+	return []byte("null"), nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullProtoEnum.
@@ -1115,7 +1113,7 @@ func (n *PGJsonB) UnmarshalJSON(payload []byte) error {
 
 func nulljson(valid bool, v interface{}) ([]byte, error) {
 	if !valid {
-		return jsonNullBytes, nil
+		return []byte("null"), nil
 	}
 	return json.Marshal(v)
 }
