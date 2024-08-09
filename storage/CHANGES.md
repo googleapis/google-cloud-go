@@ -1,6 +1,25 @@
 # Changes
 
 
+## [1.44.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.43.0...storage/v1.44.0) (2024-08-09)
+
+
+### Features
+
+* **storage/transfermanager:** Checksum full object downloads ([#10569](https://github.com/googleapis/google-cloud-go/issues/10569)) ([c366c90](https://github.com/googleapis/google-cloud-go/commit/c366c908534ef09442f1f3e8a4f74bd545a474fb))
+* **storage:** Add full object checksum to reader.Attrs ([#10538](https://github.com/googleapis/google-cloud-go/issues/10538)) ([245d2ea](https://github.com/googleapis/google-cloud-go/commit/245d2eaddb4862da7c8d1892d5d462bf390adb2b))
+
+
+### Bug Fixes
+
+* **storage/transfermanager:** Correct Attrs.StartOffset for sharded downloads ([#10512](https://github.com/googleapis/google-cloud-go/issues/10512)) ([01a5cbb](https://github.com/googleapis/google-cloud-go/commit/01a5cbba6d9d9f425f045b58fa16d8c85804c29c))
+* **storage:** Add retryalways policy to encryption test ([#10644](https://github.com/googleapis/google-cloud-go/issues/10644)) ([59cfd12](https://github.com/googleapis/google-cloud-go/commit/59cfd12ce5650279c99787da4a273db1e3253c76)), refs [#10567](https://github.com/googleapis/google-cloud-go/issues/10567)
+* **storage:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+* **storage:** Check for grpc NotFound error in HMAC test ([#10645](https://github.com/googleapis/google-cloud-go/issues/10645)) ([3c8e88a](https://github.com/googleapis/google-cloud-go/commit/3c8e88a085bab3142dfff6ef9a8e49c29a5c877d))
+* **storage:** Retry gRPC DEADLINE_EXCEEDED errors ([#10635](https://github.com/googleapis/google-cloud-go/issues/10635)) ([0018415](https://github.com/googleapis/google-cloud-go/commit/0018415295a5fd964b923db6a4785e9eed46a2e2))
+* **storage:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+* **storage:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.43.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.42.0...storage/v1.43.0) (2024-07-03)
 
 
