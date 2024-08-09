@@ -25,6 +25,7 @@ import (
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/btree"
+	"cloud.google.com/go/internal/protostruct"
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/protobuf/proto"
@@ -62,7 +63,103 @@ type Query struct {
 	// e.g. read time
 	readSettings *readSettings
 
+	// readOptions specifies constraints for running the query
+	// e.g. explainOptions
+	runQuerySettings *runQuerySettings
+
 	findNearest *pb.StructuredQuery_FindNearest
+}
+
+// ExplainMetrics represents explain metrics for the query.
+type ExplainMetrics struct {
+
+	// Planning phase information for the query.
+	PlanSummary *PlanSummary
+	// Aggregated stats from the execution of the query. Only present when
+	// ExplainOptions.analyze is set to true
+	ExecutionStats *ExecutionStats
+}
+
+// PlanSummary represents planning phase information for the query.
+type PlanSummary struct {
+	// The indexes selected for the query. For example:
+	//
+	//	[
+	//	  {"query_scope": "Collection", "properties": "(foo ASC, __name__ ASC)"},
+	//	  {"query_scope": "Collection", "properties": "(bar ASC, __name__ ASC)"}
+	//	]
+	IndexesUsed []*map[string]interface{}
+}
+
+// ExecutionStats represents execution statistics for the query.
+type ExecutionStats struct {
+	// Total number of results returned, including documents, projections,
+	// aggregation results, keys.
+	ResultsReturned int64
+	// Total time to execute the query in the backend.
+	ExecutionDuration *time.Duration
+	// Total billable read operations.
+	ReadOperations int64
+	// Debugging statistics from the execution of the query. Note that the
+	// debugging stats are subject to change as Firestore evolves. It could
+	// include:
+	//
+	//	{
+	//	  "indexes_entries_scanned": "1000",
+	//	  "documents_scanned": "20",
+	//	  "billing_details" : {
+	//	     "documents_billable": "20",
+	//	     "index_entries_billable": "1000",
+	//	     "min_query_cost": "0"
+	//	  }
+	//	}
+	DebugStats *map[string]interface{}
+}
+
+func fromPbExplainMetrics(pbExplainMetrics *pb.ExplainMetrics) *ExplainMetrics {
+	if pbExplainMetrics == nil {
+		return nil
+	}
+	explainMetrics := &ExplainMetrics{
+		PlanSummary:    fromPbPlanSummary(pbExplainMetrics.PlanSummary),
+		ExecutionStats: fromPbExecutionStats(pbExplainMetrics.ExecutionStats),
+	}
+	return explainMetrics
+}
+
+func fromPbPlanSummary(pbPlanSummary *pb.PlanSummary) *PlanSummary {
+	if pbPlanSummary == nil {
+		return nil
+	}
+
+	planSummary := &PlanSummary{}
+	indexesUsed := []*map[string]interface{}{}
+	for _, pbIndexUsed := range pbPlanSummary.GetIndexesUsed() {
+		indexUsed := protostruct.DecodeToMap(pbIndexUsed)
+		indexesUsed = append(indexesUsed, &indexUsed)
+	}
+
+	planSummary.IndexesUsed = indexesUsed
+	return planSummary
+}
+
+func fromPbExecutionStats(pbstats *pb.ExecutionStats) *ExecutionStats {
+	if pbstats == nil {
+		return nil
+	}
+
+	executionStats := &ExecutionStats{
+		ResultsReturned: pbstats.GetResultsReturned(),
+		ReadOperations:  pbstats.GetReadOperations(),
+	}
+
+	executionDuration := pbstats.GetExecutionDuration().AsDuration()
+	executionStats.ExecutionDuration = &executionDuration
+
+	debugStats := protostruct.DecodeToMap(pbstats.GetDebugStats())
+	executionStats.DebugStats = &debugStats
+
+	return executionStats
 }
 
 // DocumentID is the special field name representing the ID of a document
@@ -284,6 +381,19 @@ func (q Query) EndBefore(docSnapshotOrFieldValues ...interface{}) Query {
 	return q
 }
 
+// WithRunOptions allows passing options to the query
+// Calling WithRunOptions overrides a previous call to WithRunOptions.
+func (q Query) WithRunOptions(opts ...RunOption) Query {
+	settings, err := newRunQuerySettings(opts)
+	if err != nil {
+		q.err = err
+		return q
+	}
+
+	q.runQuerySettings = settings
+	return q
+}
+
 func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interface{}) ([]interface{}, *DocumentSnapshot, error) {
 	for _, e := range docSnapshotOrFieldValues {
 		if ds, ok := e.(*DocumentSnapshot); ok {
@@ -340,17 +450,11 @@ func (q Query) query() *Query { return &q }
 // This could be useful, for instance, if executing a query formed in one
 // process in another.
 func (q Query) Serialize() ([]byte, error) {
-	structuredQuery, err := q.toProto()
+	req, err := q.toPbRunQueryRequest()
 	if err != nil {
 		return nil, err
 	}
-
-	p := &pb.RunQueryRequest{
-		Parent:    q.parentPath,
-		QueryType: &pb.RunQueryRequest_StructuredQuery{StructuredQuery: structuredQuery},
-	}
-
-	return proto.Marshal(p)
+	return proto.Marshal(req)
 }
 
 // Deserialize takes a slice of bytes holding the wire-format message of RunQueryRequest,
@@ -364,6 +468,24 @@ func (q Query) Deserialize(bytes []byte) (Query, error) {
 		return q, err
 	}
 	return q.fromProto(&runQueryRequest)
+}
+
+func (q Query) toPbRunQueryRequest() (*pb.RunQueryRequest, error) {
+	structuredQuery, err := q.toProto()
+	if err != nil {
+		return nil, err
+	}
+
+	var explainOptions *pb.ExplainOptions
+	if q.runQuerySettings != nil && q.runQuerySettings.explainOptions != nil {
+		explainOptions = q.runQuerySettings.explainOptions
+	}
+	p := &pb.RunQueryRequest{
+		Parent:         q.parentPath,
+		ExplainOptions: explainOptions,
+		QueryType:      &pb.RunQueryRequest_StructuredQuery{StructuredQuery: structuredQuery},
+	}
+	return p, nil
 }
 
 // DistanceMeasure is the distance measure to use when comparing vectors with [Query.FindNearest] or [Query.FindNearestPath].
@@ -581,6 +703,13 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 		q.limit = limit
 	}
 
+	var err error
+	q.runQuerySettings, err = newRunQuerySettings(nil)
+	if err != nil {
+		q.err = err
+		return q, q.err
+	}
+	q.runQuerySettings.explainOptions = pbQuery.GetExplainOptions()
 	q.findNearest = pbq.GetFindNearest()
 
 	// NOTE: limit to last isn't part of the proto, this is a client-side concept
@@ -1097,6 +1226,10 @@ type DocumentIterator struct {
 	iter docIterator
 	err  error
 	q    *Query
+
+	// Query explain metrics. This is only present when ExplainOptions is used
+	// and it is sent only once with the last response in the stream.
+	ExplainMetrics *ExplainMetrics
 }
 
 // Unexported interface so we can have two different kinds of DocumentIterator: one
@@ -1105,7 +1238,8 @@ type DocumentIterator struct {
 // always concrete types, and the fact that this one has two different implementations
 // is an internal detail.
 type docIterator interface {
-	next() (*DocumentSnapshot, error)
+	next(opts ...RunOption) (*DocumentSnapshot, error)
+	getExplainMetrics() *ExplainMetrics
 	stop()
 }
 
@@ -1113,16 +1247,24 @@ type docIterator interface {
 // are no more results. Once Next returns Done, all subsequent calls will return
 // Done.
 func (it *DocumentIterator) Next() (*DocumentSnapshot, error) {
+	return it.nextWithOptions()
+}
+
+func (it *DocumentIterator) nextWithOptions(opts ...RunOption) (*DocumentSnapshot, error) {
 	if it.err != nil {
 		return nil, it.err
 	}
 	if it.q.limitToLast {
 		return nil, errors.New("firestore: queries that include limitToLast constraints cannot be streamed. Use DocumentIterator.GetAll() instead")
 	}
-	ds, err := it.iter.next()
+
+	ds, err := it.iter.next(opts...)
 	if err != nil {
 		it.err = err
 	}
+
+	it.ExplainMetrics = it.iter.getExplainMetrics()
+
 	return ds, err
 }
 
@@ -1141,6 +1283,30 @@ func (it *DocumentIterator) Stop() {
 // GetAll returns all the documents remaining from the iterator.
 // It is not necessary to call Stop on the iterator after calling GetAll.
 func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
+	result, err := it.GetAllWithOptions()
+	if result != nil {
+		return result.DocumentSnapshots, err
+	}
+	return nil, err
+}
+
+// GetAllWithOptionsResult is the result of call to GetAllWithOptions method
+type GetAllWithOptionsResult struct {
+	DocumentSnapshots []*DocumentSnapshot
+
+	// Query explain metrics. This is only present when ExplainOptions is provided.
+	ExplainMetrics *ExplainMetrics
+}
+
+// GetAllWithOptions returns all the documents remaining from the iterator.
+//
+// The query is run with provided options. The provided non-nil options override any options provided earlier
+// e.g. below code will run the query with ExplainOptions{Analyze: true}
+// query := client.Collection("cities").RunOptions(ExplainOptions{Analyze: false}).Where("a", "=", "b")
+// result, err := query.GetAllWithOptions(ExplainOptions{Analyze: true})
+//
+// It is not necessary to call Stop on the iterator after calling GetAllWithOptions.
+func (it *DocumentIterator) GetAllWithOptions(opts ...RunOption) (*GetAllWithOptionsResult, error) {
 	if it.err != nil {
 		return nil, it.err
 	}
@@ -1152,7 +1318,7 @@ func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
 	q.processLimitToLast()
 	var docs []*DocumentSnapshot
 	for {
-		doc, err := it.Next()
+		doc, err := it.nextWithOptions(opts...)
 		if err == iterator.Done {
 			break
 		}
@@ -1169,7 +1335,11 @@ func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
 			j--
 		}
 	}
-	return docs, nil
+	res := &GetAllWithOptionsResult{
+		DocumentSnapshots: docs,
+		ExplainMetrics:    it.iter.getExplainMetrics(),
+	}
+	return res, nil
 }
 
 type queryDocumentIterator struct {
@@ -1179,6 +1349,9 @@ type queryDocumentIterator struct {
 	tid          []byte // transaction ID, if any
 	streamClient pb.Firestore_RunQueryClient
 	readSettings *readSettings // readOptions, if any
+
+	// Query explain metrics. This is only present when ExplainOptions is used.
+	ExplainMetrics *ExplainMetrics
 }
 
 func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte, rs *readSettings) *queryDocumentIterator {
@@ -1192,8 +1365,16 @@ func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte, rs *rea
 	}
 }
 
-func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
+// opts override the options stored in it.q.runQuerySettings
+func (it *queryDocumentIterator) next(opts ...RunOption) (_ *DocumentSnapshot, err error) {
 	client := it.q.c
+
+	// Override run options
+	if opts != nil {
+		newQuery := it.q.WithRunOptions(opts...)
+		it.q = &newQuery
+	}
+
 	if it.streamClient == nil {
 		it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.Query.RunQuery")
 		defer func() {
@@ -1204,13 +1385,9 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 			}
 		}()
 
-		sq, err := it.q.toProto()
+		req, err := it.q.toPbRunQueryRequest()
 		if err != nil {
 			return nil, err
-		}
-		req := &pb.RunQueryRequest{
-			Parent:    it.q.parentPath,
-			QueryType: &pb.RunQueryRequest_StructuredQuery{StructuredQuery: sq},
 		}
 
 		// Respect transactions first and read options (read time) second
@@ -1238,7 +1415,11 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 			break
 		}
 		// No document => partial progress; keep receiving.
+		it.ExplainMetrics = fromPbExplainMetrics(res.GetExplainMetrics())
 	}
+
+	it.ExplainMetrics = fromPbExplainMetrics(res.GetExplainMetrics())
+
 	docRef, err := pathToDoc(res.Document.Name, client)
 	if err != nil {
 		return nil, err
@@ -1248,6 +1429,10 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 		return nil, err
 	}
 	return doc, nil
+}
+
+func (it *queryDocumentIterator) getExplainMetrics() *ExplainMetrics {
+	return it.ExplainMetrics
 }
 
 func (it *queryDocumentIterator) stop() {
@@ -1335,7 +1520,7 @@ type QuerySnapshot struct {
 
 type btreeDocumentIterator btree.Iterator
 
-func (it *btreeDocumentIterator) next() (*DocumentSnapshot, error) {
+func (it *btreeDocumentIterator) next(_ ...RunOption) (*DocumentSnapshot, error) {
 	if !(*btree.Iterator)(it).Next() {
 		return nil, iterator.Done
 	}
@@ -1343,6 +1528,9 @@ func (it *btreeDocumentIterator) next() (*DocumentSnapshot, error) {
 }
 
 func (*btreeDocumentIterator) stop() {}
+func (*btreeDocumentIterator) getExplainMetrics() *ExplainMetrics {
+	return nil
+}
 
 // WithReadOptions specifies constraints for accessing documents from the database,
 // e.g. at what time snapshot to read the documents.
@@ -1478,12 +1666,26 @@ func (a *AggregationQuery) WithAvg(path string, alias string) *AggregationQuery 
 
 // Get retrieves the aggregation query results from the service.
 func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
+	aro, err := a.GetWithOptions(ctx)
+	if aro != nil {
+		return aro.Result, err
+	}
+	return nil, err
+}
+
+// GetWithOptions runs the aggregation query results with the provided options
+func (a *AggregationQuery) GetWithOptions(ctx context.Context, opts ...RunOption) (aro *AggregationWithOptionsResult, err error) {
 
 	a.query.processLimitToLast()
 	client := a.query.c.c
 	q, err := a.query.toProto()
 	if err != nil {
-		return nil, err
+		return aro, err
+	}
+
+	runSettings, err := newRunQuerySettings(opts)
+	if err != nil {
+		return aro, err
 	}
 
 	req := &pb.RunAggregationQueryRequest{
@@ -1498,6 +1700,10 @@ func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
 		},
 	}
 
+	if runSettings != nil {
+		req.ExplainOptions = runSettings.explainOptions
+	}
+
 	if a.tx != nil {
 		req.ConsistencySelector = &pb.RunAggregationQueryRequest_Transaction{
 			Transaction: a.tx.id,
@@ -1510,7 +1716,8 @@ func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
 		return nil, err
 	}
 
-	resp := make(AggregationResult)
+	aro = &AggregationWithOptionsResult{}
+	var resp AggregationResult
 
 	for {
 		res, err := stream.Recv()
@@ -1520,15 +1727,29 @@ func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
 		if err != nil {
 			return nil, err
 		}
+		if res.Result != nil {
+			if resp == nil {
+				resp = make(AggregationResult)
+			}
+			f := res.Result.AggregateFields
 
-		f := res.Result.AggregateFields
-
-		for k, v := range f {
-			resp[k] = v
+			for k, v := range f {
+				resp[k] = v
+			}
 		}
+		aro.ExplainMetrics = fromPbExplainMetrics(res.GetExplainMetrics())
 	}
-	return resp, nil
+	aro.Result = resp
+	return aro, nil
 }
 
 // AggregationResult contains the results of an aggregation query.
 type AggregationResult map[string]interface{}
+
+// AggregationWithOptionsResult contains the results of an aggregation query run with options.
+type AggregationWithOptionsResult struct {
+	Result AggregationResult
+
+	// Query explain metrics. This is only present when ExplainOptions is provided.
+	ExplainMetrics *ExplainMetrics
+}
