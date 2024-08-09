@@ -1,5 +1,12 @@
 # Changes
 
+## [0.5.12](https://github.com/googleapis/google-cloud-go/compare/longrunning/v0.5.11...longrunning/v0.5.12) (2024-08-08)
+
+
+### Bug Fixes
+
+* **longrunning:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [0.5.11](https://github.com/googleapis/google-cloud-go/compare/longrunning/v0.5.10...longrunning/v0.5.11) (2024-07-24)
 
 

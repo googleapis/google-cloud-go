@@ -53,7 +53,7 @@ const (
 	GetProcessedDocumentRequest_PARSED_DOCUMENT GetProcessedDocumentRequest_ProcessedDocumentType = 1
 	// Only available if ChunkingConfig is enabled on the data store.
 	GetProcessedDocumentRequest_CHUNKED_DOCUMENT GetProcessedDocumentRequest_ProcessedDocumentType = 2
-	// Returns the converted PNG Image bytes if available.
+	// Returns the converted Image bytes (as JPEG or PNG) if available.
 	GetProcessedDocumentRequest_PNG_CONVERTED_DOCUMENT GetProcessedDocumentRequest_ProcessedDocumentType = 3
 )
 
