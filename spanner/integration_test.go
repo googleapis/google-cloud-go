@@ -55,6 +55,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -893,7 +894,7 @@ func deleteTestSession(ctx context.Context, t *testing.T, sessionName string) {
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
 		emulatorOpts := []option.ClientOption{
 			option.WithEndpoint(emulatorAddr),
-			option.WithGRPCDialOption(grpc.WithInsecure()),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 			option.WithoutAuthentication(),
 			internaloption.SkipDialSettingsValidation(),
 		}

@@ -21,6 +21,7 @@ import (
 
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func init() {
@@ -28,7 +29,7 @@ func init() {
 		if emulator := os.Getenv("SPANNER_EMULATOR_HOST"); emulator != "" {
 			return []option.ClientOption{
 				option.WithEndpoint(emulator),
-				option.WithGRPCDialOption(grpc.WithInsecure()),
+				option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 				option.WithoutAuthentication(),
 			}, nil
 		}
