@@ -22,12 +22,18 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 	"sync"
+	"time"
 
+	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/actions"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
+	traceapiv1 "cloud.google.com/go/trace/apiv1"
+	"cloud.google.com/go/trace/apiv1/tracepb"
+	ottrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -37,12 +43,21 @@ import (
 // actions. It maintains a state associated with the request, such as current transaction.
 type CloudStreamHandler struct {
 	// members below should be set by the caller
-	Stream        executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer
-	ServerContext context.Context
-	Options       []option.ClientOption
+	Stream                 executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer
+	ServerContext          context.Context
+	Options                []option.ClientOption
+	TraceClientOptions     []option.ClientOption
+	CloudTraceCheckAllowed bool // indicates whether cloud trace checks can be performed
 	// members below represent internal state
-	executionFlowContext *actions.ExecutionFlowContext
-	mu                   sync.Mutex // protects mutable internal state
+	executionFlowContext     *actions.ExecutionFlowContext
+	mu                       sync.Mutex // protects mutable internal state
+	serverSideTraceCheckDone bool       // indicates whether checks are performed to verify server side tracing
+}
+
+// IsServerSideTraceCheckDone returns whether a check was done to verify if Spanner server
+// side trace are generated or not.
+func (h *CloudStreamHandler) IsServerSideTraceCheckDone() bool {
+	return h.serverSideTraceCheckDone
 }
 
 // Execute executes the given ExecuteActions request, blocking until it's done. It takes care of
@@ -55,20 +70,39 @@ func (h *CloudStreamHandler) Execute() error {
 	spanner.UseNumberWithJSONDecoderEncoder(true)
 
 	var c *actions.ExecutionFlowContext
-	func() {
+	ctx := context.Background()
+	err := func() error {
 		h.mu.Lock()
 		defer h.mu.Unlock()
 		c = &actions.ExecutionFlowContext{}
+		// Create a trace client to read the traces.
+		traceClient, err := traceapiv1.NewClient(ctx, h.TraceClientOptions...)
+		if err != nil {
+			return fmt.Errorf("Error creating trace client: %v", err)
+		}
+		c.TraceClient = traceClient
 		h.executionFlowContext = c
+		return nil
 	}()
+	if err != nil {
+		return err
+	}
 
-	// In case this function returns abruptly, or client misbehaves, make sure to dispose of
-	// transactions.
+	// Create a top-level OpenTelemetry span for streaming request.
+	ctx = trace.StartSpan(ctx, "go_systest_execute_actions_stream")
+
 	defer func() {
+		trace.EndSpan(ctx, err)
+		// Close the trace client.
+		log.Println("Closing the trace client in execution flow context")
+		c.TraceClient.Close()
+
+		// In case this function returns abruptly, or client misbehaves, make sure to dispose of
+		// transactions.
 		c.CloseOpenTransactions()
 	}()
 
-	ctx := context.Background()
+	performServerSideTraceCheck := false
 	// Main loop that receives and executes actions.
 	for {
 		req, err := h.Stream.Recv()
@@ -84,14 +118,42 @@ func (h *CloudStreamHandler) Execute() error {
 			log.Printf("Failed to receive request from client: %v", err)
 			return err
 		}
+		// OpenTelemetry trace created for a streaming request will be verified using Cloud Trace APIs to make sure that
+		// Spanner server side tracing is working. Check will be performed only if there is atleast one action of type
+		// "Read" or "Query" in streaming request and number of checks performed are less than the max limit.
+		actionType := getActionType(req.Action)
+		spanContext := ottrace.SpanContextFromContext(ctx)
+		if h.CloudTraceCheckAllowed && spanContext.IsSampled() && (actionType == "Read" || actionType == "Query") {
+			performServerSideTraceCheck = true
+		}
+
 		if err = h.startHandlingRequest(ctx, req); err != nil {
 			log.Printf("Failed to handle request %v, Client ends the stream with error: %v", req, err)
 			// TODO(sriharshach): should we throw the error here instead of nil?
 			return nil
 		}
 	}
+	h.serverSideTraceCheckDone = performServerSideTraceCheck
+	if performServerSideTraceCheck {
+		// Verify the end to end trace exported to Cloud Trace.
+		traceId := ottrace.SpanContextFromContext(ctx).TraceID().String()
+		if err = h.verifyCloudTraceExportedTraces(ctx, traceId); err != nil {
+			log.Printf("Verification failed for exported traces: %v", err)
+			return err
+		}
+	}
 	log.Println("Done executing actions")
 	return nil
+}
+
+// getActionType returns the name of action type.
+func getActionType(inputAction *executorpb.SpannerAction) string {
+	if inputAction == nil {
+		return ""
+	}
+	// Here action will have output as `*executorpb.SpannerAction_Query`.
+	action := fmt.Sprintf("%T", inputAction.GetAction())
+	return strings.TrimPrefix(action, "*executorpb.SpannerAction_")
 }
 
 // startHandlingRequest takes care of the given request. It picks an actionHandler and starts
@@ -114,6 +176,11 @@ func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *exec
 	if err != nil {
 		return outcomeSender.FinishWithError(err)
 	}
+
+	// Create a span for the systest action.
+	actionType := getActionType(inputAction)
+	ctx = trace.StartSpan(ctx, fmt.Sprintf("performaction_%v", actionType))
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	// Create a channel to receive the error from the goroutine.
 	errCh := make(chan error, 1)
@@ -140,6 +207,48 @@ func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *exec
 		log.Println("Action executed successfully")
 		return nil
 	}
+}
+
+// verifyCloudTraceExportedTraces fetches the traces exported from client application using
+// Cloud Trace API to cross verify if end to end tracing is working or not.
+func (h *CloudStreamHandler) verifyCloudTraceExportedTraces(ctx context.Context, traceId string) error {
+	if h.executionFlowContext.TraceClient == nil {
+		return fmt.Errorf("trace client not found")
+	}
+	time.Sleep(10 * time.Second)
+	log.Printf("start verification of exported cloud trace: trace_id:%s\n", traceId)
+
+	getTraceRequest := &tracepb.GetTraceRequest{
+		ProjectId: "spanner-cloud-systest",
+		TraceId:   traceId,
+	}
+	resp, err := h.executionFlowContext.TraceClient.GetTrace(ctx, getTraceRequest)
+	if err != nil {
+		log.Printf("failed to get trace_id:%v using GetTrace api: %v", traceId, err)
+		return err
+	}
+	// Check if gRPC layer trace spans are present. Span names in gRPC layer contain the name of called
+	// Spanner method.
+	grpcLayerSpanPresent := false
+	for _, span := range resp.Spans {
+		if strings.Contains(span.Name, "google.spanner.v1.Spanner") {
+			grpcLayerSpanPresent = true
+		}
+	}
+	if !grpcLayerSpanPresent {
+		// No gRPC spans mean no call was made to Spanner.
+		return nil
+	}
+	spannerLayerSpanPresent := false
+	for _, span := range resp.Spans {
+		if strings.HasPrefix(span.Name, "Spanner.") {
+			spannerLayerSpanPresent = true
+		}
+	}
+	if !spannerLayerSpanPresent {
+		return fmt.Errorf("no internal span found for trace_id: %v", traceId)
+	}
+	return nil
 }
 
 // newActionHandler instantiates an actionHandler for executing the given action.
