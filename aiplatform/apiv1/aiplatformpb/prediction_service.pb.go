@@ -22,9 +22,6 @@ package aiplatformpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1577,9 +1576,14 @@ type GenerateContentRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the publisher model requested to serve the
-	// prediction. Format:
+	// Required. The fully qualified name of the publisher model or tuned model
+	// endpoint to use.
+	//
+	// Publisher model format:
 	// `projects/{project}/locations/{location}/publishers/*/models/*`
+	//
+	// Tuned model endpoint format:
+	// `projects/{project}/locations/{location}/endpoints/{endpoint}`
 	Model string `protobuf:"bytes,5,opt,name=model,proto3" json:"model,omitempty"`
 	// Required. The content of the current conversation with the model.
 	//
