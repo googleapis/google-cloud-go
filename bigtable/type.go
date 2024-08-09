@@ -105,9 +105,7 @@ type BigEndianBytesEncoding struct {
 func (beb BigEndianBytesEncoding) proto() *btapb.Type_Int64_Encoding {
 	return &btapb.Type_Int64_Encoding{
 		Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
-			BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{
-				BytesType: beb.Bytes.proto().GetBytesType(),
-			},
+			BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
 		},
 	}
 }
