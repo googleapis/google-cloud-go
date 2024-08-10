@@ -4021,6 +4021,17 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 	}
 	var pt *sppb.Type
 	var err error
+
+	// Check if the value is a custom type that implements spanner.Encoder
+	// interface.
+	if encodedVal, ok := v.(Encoder); ok {
+		nv, err := encodedVal.EncodeSpanner()
+		if err != nil {
+			return nil, nil, err
+		}
+		return encodeValue(nv)
+	}
+
 	switch v := v.(type) {
 	case nil:
 	case string:
@@ -4460,16 +4471,6 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		}
 		return nil, nil, errNotValidSrc(v)
 	default:
-		// Check if the value is a custom type that implements spanner.Encoder
-		// interface.
-		if encodedVal, ok := v.(Encoder); ok {
-			nv, err := encodedVal.EncodeSpanner()
-			if err != nil {
-				return nil, nil, err
-			}
-			return encodeValue(nv)
-		}
-
 		// Check if the value is a variant of a base type.
 		decodableType := getDecodableSpannerType(v, false)
 		if decodableType != spannerTypeUnknown && decodableType != spannerTypeInvalid {
