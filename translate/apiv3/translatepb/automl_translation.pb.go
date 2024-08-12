@@ -21,14 +21,13 @@
 package translatepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1016,7 +1015,7 @@ type Example struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Output only. The resource name of the example, in form of
-	// `projects/{project-number-or-id}/locations/{location_id}/datasets/{dataset_id}/examples/{example_id}'
+	// `projects/{project-number-or-id}/locations/{location_id}/datasets/{dataset_id}/examples/{example_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Sentence in source language.
 	SourceText string `protobuf:"bytes,2,opt,name=source_text,json=sourceText,proto3" json:"source_text,omitempty"`
