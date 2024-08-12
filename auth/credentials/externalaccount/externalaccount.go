@@ -242,6 +242,7 @@ func (o *Options) toInternalOpts() *iexacc.Options {
 		SubjectTokenProvider:           toInternalSubjectTokenProvider(o.SubjectTokenProvider),
 		AwsSecurityCredentialsProvider: toInternalAwsSecurityCredentialsProvider(o.AwsSecurityCredentialsProvider),
 		Client:                         o.client(),
+		IsDefaultClient:                o.Client == nil,
 	}
 	if o.CredentialSource != nil {
 		cs := o.CredentialSource
