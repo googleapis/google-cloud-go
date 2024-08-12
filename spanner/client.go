@@ -946,9 +946,14 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	if !ao.atLeastOnce {
+		var commitOptions CommitOptions
+		if ao.commitOptions != nil {
+			commitOptions = *ao.commitOptions
+		}
+
 		resp, err := c.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
 			return t.BufferWrite(ms)
-		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, CommitOptions: *ao.commitOptions})
+		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, CommitOptions: commitOptions})
 		return resp.CommitTs, err
 	}
 	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, commitOptions: ao.commitOptions}
