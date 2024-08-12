@@ -477,7 +477,7 @@ func TestClient(t *testing.T) {
 	}
 	t.Setenv("GOOGLE_API_CERTIFICATE_CONFIG", "testdata/certificate_config_workload.json")
 
-	client := internal.CloneDefaultClient()
+	client := internal.DefaultClient()
 
 	tests := []struct {
 		name              string
