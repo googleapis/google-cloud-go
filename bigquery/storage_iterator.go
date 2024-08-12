@@ -246,17 +246,10 @@ func (it *storageArrowIterator) processStream(readStream string) {
 			Offset:     offset,
 		})
 		if err != nil {
-			if it.session.ctx.Err() != nil { // context cancelled, don't try again
+			serr := it.handleProcessStreamError(readStream, bo, err)
+			if serr != nil {
 				return
 			}
-			backoff, shouldRetry := retryReadRows(bo, err)
-			if shouldRetry {
-				if err := gax.Sleep(it.ctx, backoff); err != nil {
-					return // context cancelled
-				}
-				continue
-			}
-			it.errs <- fmt.Errorf("failed to read rows on stream %s: %w", readStream, err)
 			continue
 		}
 		offset, err = it.consumeRowStream(readStream, rowStream, offset)
@@ -264,19 +257,34 @@ func (it *storageArrowIterator) processStream(readStream string) {
 			return
 		}
 		if err != nil {
-			if it.session.ctx.Err() != nil { // context cancelled, don't queue error
+			serr := it.handleProcessStreamError(readStream, bo, err)
+			if serr != nil {
 				return
 			}
-			backoff, shouldRetry := retryReadRows(bo, err)
-			if shouldRetry {
-				if err := gax.Sleep(it.ctx, backoff); err != nil {
-					return // context cancelled
-				}
-				continue
-			}
-			it.errs <- fmt.Errorf("failed to read rows on stream %s: %w", readStream, err)
-			// try to re-open row stream with updated offset
 		}
+	}
+}
+
+// handleProcessStreamError check if err is retryable,
+// waiting with exponential backoff in that scenario.
+// If error is not retryable, queue up err to be sent to user.
+// Return error if should exit the goroutine.
+func (it *storageArrowIterator) handleProcessStreamError(readStream string, bo gax.Backoff, err error) error {
+	if it.session.ctx.Err() != nil { // context cancelled, don't try again
+		return it.session.ctx.Err()
+	}
+	backoff, shouldRetry := retryReadRows(bo, err)
+	if shouldRetry {
+		if err := gax.Sleep(it.ctx, backoff); err != nil {
+			return err // context cancelled
+		}
+		return nil
+	}
+	select {
+	case it.errs <- fmt.Errorf("failed to read rows on stream %s: %w", readStream, err):
+		return nil
+	case <-it.ctx.Done():
+		return context.Canceled
 	}
 }
 
