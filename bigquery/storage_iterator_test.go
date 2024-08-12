@@ -135,8 +135,8 @@ func TestStorageIteratorRetry(t *testing.T) {
 
 			it.processStream("test-stream")
 
-			if errors.Is(it.ctx.Err(), context.Canceled) ||
-				errors.Is(it.ctx.Err(), context.DeadlineExceeded) {
+			if errors.Is(it.rs.ctx.Err(), context.Canceled) ||
+				errors.Is(it.rs.ctx.Err(), context.DeadlineExceeded) {
 				if tc.wantFail {
 					continue
 				}
