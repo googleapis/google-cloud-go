@@ -923,7 +923,7 @@ func ExcludeTxnFromChangeStreams() ApplyOption {
 	}
 }
 
-// ExcludeTxnFromChangeStreams returns an ApplyOptions that sets whether to exclude recording this commit operation from allowed tracking change streams.
+// ApplyCommitOptions returns an ApplyOption that sets the commit options to use for the commit operation.
 func ApplyCommitOptions(co *CommitOptions) ApplyOption {
 	return func(ao *applyOption) {
 		ao.commitOptions = co
