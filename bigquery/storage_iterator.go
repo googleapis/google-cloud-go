@@ -287,7 +287,6 @@ func retryReadRows(bo gax.Backoff, err error) (time.Duration, bool) {
 	case codes.Aborted,
 		codes.Canceled,
 		codes.DeadlineExceeded,
-		codes.FailedPrecondition,
 		codes.Internal,
 		codes.Unavailable:
 		return bo.Pause(), true

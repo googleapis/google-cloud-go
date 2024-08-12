@@ -49,8 +49,16 @@ func TestStorageIteratorRetry(t *testing.T) {
 				status.Errorf(codes.Unavailable, "try 2"),
 				status.Errorf(codes.Canceled, "try 3"),
 				status.Errorf(codes.Internal, "try 4"),
+				status.Errorf(codes.Aborted, "try 5"),
 			},
 			wantFail: false,
+		},
+		{
+			desc: "expired session",
+			errors: []error{
+				status.Errorf(codes.FailedPrecondition, "read session expired"),
+			},
+			wantFail: true,
 		},
 		{
 			desc: "not enough permission",
