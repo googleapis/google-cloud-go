@@ -117,27 +117,31 @@ type grpcStorageClient struct {
 func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageClient, error) {
 	s := initSettings(opts...)
 	s.clientOption = append(defaultGRPCOptions(), s.clientOption...)
-	// TODO: detect project id
-	project := "spec-test-ruby-samples"
-	// TODO: detect endpoint
-	// TODO: add option to disable metrics
-	// Enable client-side metrics for gRPC
-	provider, err := gRPCMetricProvider(ctx, project)
-	if err != nil {
-		// Do not fail client creation; this isn't a strict requirement if creation fails
-		log.Println(err)
-	} else {
-		s.meterProvider = provider
-		s.meterCleanup = metricCleanup(ctx, provider)
-		s.clientOption = append(s.clientOption, togRPCDialOption(provider))
-	}
-
 	// Disable all gax-level retries in favor of retry logic in the veneer client.
 	s.gax = append(s.gax, gax.WithRetry(nil))
 
 	config := newStorageConfig(s.clientOption...)
 	if config.readAPIWasSet {
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
+	}
+	if !config.disableClientMetrics {
+		// TODO: detect project id
+		log.Println("Testing using gRPC Metrics")
+		project := "spec-test-ruby-samples"
+
+		// Enable client-side metrics for gRPC
+		// TODO: detect endpoint
+		metricsContext, err := gRPCMetricProvider(ctx, internalMetricsConfig{
+			project: project,
+			host:    "monitoring.googleapis.com",
+		})
+		if err != nil {
+			// Do not fail client creation; this isn't a strict requirement if creation fails
+			log.Println(err)
+		} else {
+			s.metricsContext = metricsContext
+			s.clientOption = append(s.clientOption, metricsContext.clientOpts...)
+		}
 	}
 
 	g, err := gapic.NewClient(ctx, s.clientOption...)
@@ -152,8 +156,8 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 }
 
 func (c *grpcStorageClient) Close() error {
-	if c.settings.meterProvider != nil {
-		c.settings.meterCleanup()
+	if c.settings.metricsContext != nil {
+		c.settings.metricsContext.close()
 	}
 	return c.raw.Close()
 }

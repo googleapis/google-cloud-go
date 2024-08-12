@@ -33,8 +33,9 @@ func TestMetrics(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Error setting up gRPC client: %v", err)
 	}
-	it := grpcClient.Buckets(ctx, "spec-test-ruby-samples")
-
+	defer grpcClient.Close()
+	bucket := grpcClient.Bucket("-frank")
+	it := bucket.Objects(ctx, nil)
 	for {
 		_, err := it.Next()
 		if err == iterator.Done {
@@ -44,8 +45,6 @@ func TestMetrics(t *testing.T) {
 			log.Fatalf("Failed: %v", err)
 		}
 	}
-
-	grpcClient.Close()
 }
 
 func TestGetViewMasks(t *testing.T) {

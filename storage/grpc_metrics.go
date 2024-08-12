@@ -22,6 +22,7 @@ import (
 	"github.com/google/uuid"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/sdk/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -31,12 +32,9 @@ import (
 )
 
 const (
-	monitored_resource_name         = "storage.googleapis.com/Client"
-	mr_location_label_default       = "global"
-	mr_cloud_platform_label_default = "unknown"
-	mr_host_id_label_default        = "unknown"
-	metric_format_prefix            = "storage.googleapis.com/client/"
-	metric_lb_locality_label        = "grpc.lb.locality"
+	monitored_resource_name  = "storage.googleapis.com/Client"
+	metric_format_prefix     = "storage.googleapis.com/client/"
+	metric_lb_locality_label = "grpc.lb.locality"
 )
 
 func getMetricsToEnable() []estats.Metric {
@@ -49,11 +47,11 @@ func getMetricsToEnable() []estats.Metric {
 		"grpc.lb.rls.default_target_picks",
 		"grpc.lb.rls.target_picks",
 		"grpc.lb.rls.failed_picks",
-		"grpc.xds_client.connected",
-		"grpc.xds_client.server_failure",
-		"grpc.xds_client.resource_updates_valid",
-		"grpc.xds_client.resource_updates_invalid",
-		"grpc.xds_client.resources",
+		// "grpc.xds_client.connected",
+		// "grpc.xds_client.server_failure",
+		// "grpc.xds_client.resource_updates_valid",
+		// "grpc.xds_client.resource_updates_invalid",
+		// "grpc.xds_client.resources",
 	}
 }
 
@@ -83,9 +81,9 @@ func metricFormatter(m metricdata.Metrics) string {
 
 func gcpAttributeExpectedDefaults() []attribute.KeyValue {
 	return []attribute.KeyValue{
-		{Key: "location", Value: attribute.StringValue(mr_location_label_default)},
-		{Key: "cloud_platform", Value: attribute.StringValue(mr_cloud_platform_label_default)},
-		{Key: "host_id", Value: attribute.StringValue(mr_host_id_label_default)}}
+		{Key: "location", Value: attribute.StringValue("global")},
+		{Key: "cloud_platform", Value: attribute.StringValue("unknown")},
+		{Key: "host_id", Value: attribute.StringValue("unknown")}}
 }
 
 func getPreparedResourceUsingGCPDetector(ctx context.Context, project string) (*resource.Resource, error) {
@@ -120,17 +118,32 @@ func getPreparedResource(ctx context.Context, project string, resourceOptions []
 	)
 }
 
+type internalMetricsConfig struct {
+	project string
+	host    string
+}
+
+type internalMetricsContext struct {
+	// client options passed to gRPC channels
+	clientOpts []option.ClientOption
+	// instance of metric reader used by gRPC client-side metrics
+	provider *metric.MeterProvider
+	// clean func to call when closing gRPC client
+	close func()
+}
+
 // TODO: format errors emitted here.
-func gRPCMetricProvider(ctx context.Context, project string) (*sdkmetric.MeterProvider, error) {
+func gRPCMetricProvider(ctx context.Context, config internalMetricsConfig) (*internalMetricsContext, error) {
 	exporter, err := mexporter.New(
-		mexporter.WithProjectID(project),
+		// mexporter.WithMonitoringClientOptions(option.WithEndpoint(config.host)),
+		mexporter.WithProjectID(config.project),
 		mexporter.WithMetricDescriptorTypeFormatter(metricFormatter),
 		mexporter.WithCreateServiceTimeSeries(),
 		mexporter.WithMonitoredResourceDescription(monitored_resource_name, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}))
 	if err != nil {
 		return nil, err
 	}
-	preparedResource, err := getPreparedResourceUsingGCPDetector(ctx, project)
+	preparedResource, err := getPreparedResourceUsingGCPDetector(ctx, config.project)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +154,8 @@ func gRPCMetricProvider(ctx context.Context, project string) (*sdkmetric.MeterPr
 		sdkmetric.WithResource(preparedResource),
 		sdkmetric.WithView(metricViews...),
 	)
-	return provider, nil
+	context := &internalMetricsContext{[]option.ClientOption{togRPCDialOption(provider)}, provider, createShutdown(ctx, provider)}
+	return context, nil
 }
 
 func togRPCDialOption(provider *sdkmetric.MeterProvider) option.ClientOption {
@@ -154,7 +168,7 @@ func togRPCDialOption(provider *sdkmetric.MeterProvider) option.ClientOption {
 	return do
 }
 
-func metricCleanup(ctx context.Context, provider *sdkmetric.MeterProvider) func() {
+func createShutdown(ctx context.Context, provider *sdkmetric.MeterProvider) func() {
 	return func() {
 		provider.Shutdown(ctx)
 	}
