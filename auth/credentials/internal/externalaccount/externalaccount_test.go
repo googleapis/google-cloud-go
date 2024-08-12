@@ -52,7 +52,7 @@ var (
 		ClientID:         "rbrgnognrhongo3bi4gb9ghg9g",
 		CredentialSource: testBaseCredSource,
 		Scopes:           []string{"https://www.googleapis.com/auth/devstorage.full_control"},
-		Client:           internal.CloneDefaultClient(),
+		Client:           internal.DefaultClient(),
 	}
 	testBaseCredSource = &credsfile.CredentialSource{
 		File:   textBaseCredPath,
@@ -223,7 +223,7 @@ func TestNonworkforceWithWorkforcePoolUserProject(t *testing.T) {
 		CredentialSource:         testBaseCredSource,
 		Scopes:                   []string{"https://www.googleapis.com/auth/devstorage.full_control"},
 		WorkforcePoolUserProject: "myProject",
-		Client:                   internal.CloneDefaultClient(),
+		Client:                   internal.DefaultClient(),
 	}
 
 	_, err := NewTokenProvider(opts)
@@ -320,7 +320,7 @@ func run(t *testing.T, opts *Options, tets *testExchangeTokenServer) (*auth.Toke
 	}
 	tp := &tokenProvider{
 		opts:   opts,
-		client: internal.CloneDefaultClient(),
+		client: internal.DefaultClient(),
 		stp:    stp,
 	}
 
@@ -349,7 +349,7 @@ func cloneTestOpts() *Options {
 		ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 		ClientSecret:                   "notsosecret",
 		ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-		Client:                         internal.CloneDefaultClient(),
+		Client:                         internal.DefaultClient(),
 	}
 }
 
@@ -373,7 +373,7 @@ func TestOptionsValidate(t *testing.T) {
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 				ClientSecret:                   "notsosecret",
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-				Client:                         internal.CloneDefaultClient(),
+				Client:                         internal.DefaultClient(),
 				CredentialSource:               testBaseCredSource,
 			},
 		},
@@ -386,7 +386,7 @@ func TestOptionsValidate(t *testing.T) {
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 				ClientSecret:                   "notsosecret",
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-				Client:                         internal.CloneDefaultClient(),
+				Client:                         internal.DefaultClient(),
 				CredentialSource:               testBaseCredSource,
 			},
 			wantErr: true,
@@ -400,7 +400,7 @@ func TestOptionsValidate(t *testing.T) {
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 				ClientSecret:                   "notsosecret",
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-				Client:                         internal.CloneDefaultClient(),
+				Client:                         internal.DefaultClient(),
 				CredentialSource:               testBaseCredSource,
 			},
 			wantErr: true,
@@ -416,7 +416,7 @@ func TestOptionsValidate(t *testing.T) {
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 				ClientSecret:                   "notsosecret",
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-				Client:                         internal.CloneDefaultClient(),
+				Client:                         internal.DefaultClient(),
 				CredentialSource:               testBaseCredSource,
 			},
 			wantErr: true,
@@ -431,7 +431,7 @@ func TestOptionsValidate(t *testing.T) {
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 				ClientSecret:                   "notsosecret",
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-				Client:                         internal.CloneDefaultClient(),
+				Client:                         internal.DefaultClient(),
 			},
 			wantErr: true,
 		},
@@ -445,7 +445,7 @@ func TestOptionsValidate(t *testing.T) {
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
 				ClientSecret:                   "notsosecret",
 				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-				Client:                         internal.CloneDefaultClient(),
+				Client:                         internal.DefaultClient(),
 				CredentialSource:               testBaseCredSource,
 				SubjectTokenProvider:           fakeSubjectTokenProvider{},
 			},
