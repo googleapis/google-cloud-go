@@ -103,11 +103,13 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
 	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
 
+	statsHandler := StatsHandler{}
 	// Default to a small connection pool that can be overridden.
 	o = append(o,
 		option.WithGRPCConnectionPool(4),
 		// Set the max size to correspond to server-side limits.
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
+		option.WithGRPCDialOption(grpc.WithStatsHandler(&statsHandler)),
 	)
 
 	// Allow non-default service account in DirectPath.

@@ -30,6 +30,7 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/stats"
 )
 
 const (
@@ -472,4 +473,65 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 	}
 
 	return attrKeyValues, nil
+}
+
+// Implementation of https://pkg.go.dev/google.golang.org/grpc/stats#Handler
+type StatsHandler struct {
+}
+
+// TagRPC can attach some information to the given context.
+// The context used for the rest lifetime of the RPC will be derived from
+// the returned context.
+func (st *StatsHandler) TagRPC(ctx context.Context, tagInfo *stats.RPCTagInfo) context.Context {
+	return ctx
+}
+
+// HandleRPC processes the RPC stats.
+func (st *StatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
+	switch s.(type) {
+	case *stats.Begin:
+		// Record the start time when the RPC begins
+		beginTime := time.Now()
+		fmt.Printf("handlerRPC begin... beginTime: %v\n", beginTime)
+	case *stats.End:
+		fmt.Println("handlerRPC End...")
+	case *stats.InHeader:
+		fmt.Println("handlerRPC InHeader...")
+	case *stats.InPayload:
+		fmt.Println("handlerRPC InPayload...")
+	case *stats.InTrailer:
+		fmt.Println("handlerRPC InTrailer...")
+	case *stats.OutHeader:
+				// Measure the time spent in the queue when the headers are sent
+
+		fmt.Println("handlerRPC OutHeader...")
+	case *stats.OutPayload:
+		fmt.Println("handlerRPC OutPayload...")
+	default:
+		fmt.Println("handleRPC...")
+}
+
+// TagConn can attach some information to the given context.
+// The returned context will be used for stats handling.
+// For conn stats handling, the context used in HandleConn for this
+// connection will be derived from the context returned.
+// For RPC stats handling,
+//   - On server side, the context used in HandleRPC for all RPCs on this
+//
+// connection will be derived from the context returned.
+//   - On client side, the context is not derived from the context returned.
+func (st *StatsHandler) TagConn(ctx context.Context, tagInfo *stats.ConnTagInfo) context.Context {
+	return ctx
+}
+
+// HandleConn processes the Conn stats.
+func (st *StatsHandler) HandleConn(ctx context.Context, s stats.ConnStats) {
+	switch s.(type) {
+	case *stats.ConnBegin:
+		fmt.Println("begin conn")
+	case *stats.ConnEnd:
+		fmt.Println("end conn")
+	default:
+		fmt.Println("handleConn...")
+	}
 }
