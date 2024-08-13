@@ -49,8 +49,16 @@ func TestStorageIteratorRetry(t *testing.T) {
 				status.Errorf(codes.Unavailable, "try 2"),
 				status.Errorf(codes.Canceled, "try 3"),
 				status.Errorf(codes.Internal, "try 4"),
+				status.Errorf(codes.Aborted, "try 5"),
 			},
 			wantFail: false,
+		},
+		{
+			desc: "expired session",
+			errors: []error{
+				status.Errorf(codes.FailedPrecondition, "read session expired"),
+			},
+			wantFail: true,
 		},
 		{
 			desc: "not enough permission",
@@ -117,7 +125,7 @@ func TestStorageIteratorRetry(t *testing.T) {
 
 			it.processStream("test-stream")
 
-			if errors.Is(it.ctx.Err(), context.Canceled) || errors.Is(it.ctx.Err(), context.DeadlineExceeded) {
+			if errors.Is(it.rs.ctx.Err(), context.Canceled) || errors.Is(it.rs.ctx.Err(), context.DeadlineExceeded) {
 				if tc.wantFail {
 					continue
 				}

@@ -72,7 +72,7 @@ type Options struct {
 
 func (o *Options) client() *http.Client {
 	if o == nil || o.Client == nil {
-		return internal.CloneDefaultClient()
+		return internal.DefaultClient()
 	}
 	return o.Client
 }
