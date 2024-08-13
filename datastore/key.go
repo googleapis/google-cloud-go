@@ -93,9 +93,9 @@ func (k *Key) Equal(o *Key) bool {
 }
 
 // marshal marshals the key's string representation to the buffer.
-func (k *Key) marshal(b *bytes.Buffer) {
+func (k *Key) marshal(b *bytes.Buffer, includeNamespace bool) {
 	if k.Parent != nil {
-		k.Parent.marshal(b)
+		k.Parent.marshal(b, includeNamespace)
 	}
 	b.WriteByte('/')
 	b.WriteString(k.Kind)
@@ -105,19 +105,29 @@ func (k *Key) marshal(b *bytes.Buffer) {
 	} else {
 		b.WriteString(strconv.FormatInt(k.ID, 10))
 	}
-	if k.Namespace != "" {
+	if k.Namespace != "" && includeNamespace {
 		b.WriteByte(',')
 		b.WriteString(k.Namespace)
 	}
 }
 
-// String returns a string representation of the key.
+// String returns a string representation of the key. It does not include
+// the namespace in case that the Namespace's name is sensitive information.
 func (k *Key) String() string {
+	return k._string(false)
+}
+
+// StringWithNamespace is identical to String(), but appends the namespace.
+func (k *Key) StringWithNamespace() string {
+	return k._string(true)
+}
+
+func (k *Key) _string(includeNamespace bool) string {
 	if k == nil {
 		return ""
 	}
 	b := bytes.NewBuffer(make([]byte, 0, 512))
-	k.marshal(b)
+	k.marshal(b, includeNamespace)
 	return b.String()
 }
 

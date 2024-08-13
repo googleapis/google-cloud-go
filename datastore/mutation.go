@@ -122,7 +122,7 @@ func mutationProtos(muts []*Mutation) ([]*pb.Mutation, error) {
 	seen := map[string]bool{}
 	for _, m := range muts {
 		if m.isDelete() {
-			ks := m.key.String()
+			ks := m.key.StringWithNamespace()
 			if seen[ks] {
 				continue
 			}
