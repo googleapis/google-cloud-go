@@ -29,9 +29,9 @@ type Type interface {
 	ToJson() (string, error)
 }
 
-func toJson(t proto.Message) (string, error) {
+func toJson(m proto.Message) (string, error) {
 	mo := protojson.MarshalOptions{}
-	result, err := mo.Marshal(t)
+	result, err := mo.Marshal(m)
 	if err != nil {
 		return "", err
 	}
