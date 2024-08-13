@@ -219,7 +219,7 @@ func (o *Options) client() *http.Client {
 	if o.Client != nil {
 		return o.Client
 	}
-	return internal.CloneDefaultClient()
+	return internal.DefaultClient()
 }
 
 func (o *Options) toInternalOpts() *iexacc.Options {
