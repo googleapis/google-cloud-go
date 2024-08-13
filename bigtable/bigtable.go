@@ -274,7 +274,7 @@ func (c *Client) Open(table string) *Table {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-		), btopt.WithFeatureFlags()),
+		), btopt.NewFeatureFlags(c.metricsTracerFactory.enabled)),
 	}
 }
 
@@ -286,7 +286,7 @@ func (c *Client) OpenTable(table string) TableAPI {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-		), btopt.WithFeatureFlags()),
+		), btopt.NewFeatureFlags(c.metricsTracerFactory.enabled)),
 	}}
 }
 
@@ -298,7 +298,7 @@ func (c *Client) OpenAuthorizedView(table, authorizedView string) TableAPI {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullAuthorizedViewName(table, authorizedView),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-		), btopt.WithFeatureFlags()),
+		), btopt.NewFeatureFlags(c.metricsTracerFactory.enabled)),
 		authorizedView: authorizedView,
 	}}
 }

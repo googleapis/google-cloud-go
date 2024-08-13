@@ -35,6 +35,10 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+const featureFlagsHeaderKey = "bigtable-features"
+
+var supportedFeatureFlags = btpb.FeatureFlags{ReverseScans: true, LastScannedRowResponses: true}
+
 // mergeOutgoingMetadata returns a context populated by the existing outgoing
 // metadata merged with the provided mds.
 func mergeOutgoingMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
@@ -67,7 +71,10 @@ func withGoogleClientInfo() metadata.MD {
 }
 
 func makeFeatureFlags() string {
-	ff := btpb.FeatureFlags{ReverseScans: true, LastScannedRowResponses: true}
+	ff := btpb.FeatureFlags{
+		ReverseScans:            supportedFeatureFlags.ReverseScans,
+		LastScannedRowResponses: supportedFeatureFlags.LastScannedRowResponses,
+	}
 	b, err := proto.Marshal(&ff)
 	if err != nil {
 		return ""
@@ -76,13 +83,31 @@ func makeFeatureFlags() string {
 	return base64.URLEncoding.EncodeToString(b)
 }
 
-var featureFlags = makeFeatureFlags()
+// NewFeatureFlags returns metadata header `bigtable-features`
+// The value of header is proto serialized and websafe-base64 encoded
+// Intended for use by Google-written clients.
+func NewFeatureFlags(clientSideMetricsEnabled bool) metadata.MD {
+	// Copy properties to avoid copying the lock
+	allFlags := btpb.FeatureFlags{
+		ReverseScans:             supportedFeatureFlags.ReverseScans,
+		LastScannedRowResponses:  supportedFeatureFlags.LastScannedRowResponses,
+		ClientSideMetricsEnabled: clientSideMetricsEnabled,
+	}
+
+	val := ""
+	if b, err := proto.Marshal(&allFlags); err == nil {
+		val = base64.URLEncoding.EncodeToString(b)
+	}
+
+	return metadata.Pairs(featureFlagsHeaderKey, val)
+}
 
 // WithFeatureFlags set the feature flags the client supports in the
 // `bigtable-features` header sent on each request. Intended for
 // use by Google-written clients.
+// This does not include the features enabled on the client
 func WithFeatureFlags() metadata.MD {
-	return metadata.Pairs("bigtable-features", featureFlags)
+	return metadata.Pairs("bigtable-features", makeFeatureFlags())
 }
 
 // streamInterceptor intercepts the creation of ClientStream within the bigtable
