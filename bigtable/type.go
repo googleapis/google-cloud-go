@@ -28,6 +28,8 @@ type Type interface {
 	proto() *btapb.Type
 }
 
+var marshalOptions = protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+
 type unknown[T interface{}] struct {
 	wrapped *T
 }
@@ -39,7 +41,7 @@ func (u unknown[T]) proto() *T {
 // MarshalJSON returns the string representation of the protobuf.
 func (u unknown[T]) MarshalJSON() ([]byte, error) {
 	if t, ok := any(u.wrapped).(proto.Message); ok {
-		return protojson.MarshalOptions{}.Marshal(t)
+		return marshalOptions.Marshal(t)
 	}
 	return nil, nil
 }
@@ -76,7 +78,7 @@ func (bytes BytesType) proto() *btapb.Type {
 
 // MarshalJSON returns the string representation of the protobuf.
 func (bytes BytesType) MarshalJSON() ([]byte, error) {
-	return protojson.MarshalOptions{}.Marshal(bytes.proto())
+	return marshalOptions.Marshal(bytes.proto())
 }
 
 // StringEncoding represents the encoding of a String.
@@ -111,7 +113,7 @@ func (str StringType) proto() *btapb.Type {
 
 // MarshalJSON returns the string representation of the protobuf.
 func (str StringType) MarshalJSON() ([]byte, error) {
-	return protojson.MarshalOptions{}.Marshal(str.proto())
+	return marshalOptions.Marshal(str.proto())
 }
 
 // Int64Encoding represents the encoding of an Int64 type.
@@ -157,7 +159,7 @@ func (it Int64Type) proto() *btapb.Type {
 
 // MarshalJSON returns the string representation of the protobuf.
 func (it Int64Type) MarshalJSON() ([]byte, error) {
-	return protojson.MarshalOptions{}.Marshal(it.proto())
+	return marshalOptions.Marshal(it.proto())
 }
 
 // Aggregator represents an aggregation function for an aggregate type.
@@ -223,7 +225,7 @@ func (agg AggregateType) proto() *btapb.Type {
 
 // MarshalJSON returns the string representation of the protobuf.
 func (agg AggregateType) MarshalJSON() ([]byte, error) {
-	return protojson.MarshalOptions{}.Marshal(agg.proto())
+	return marshalOptions.Marshal(agg.proto())
 }
 
 // ProtoToType converts a protobuf *btapb.Type to an instance of the Type interface, for use of the admin API.
