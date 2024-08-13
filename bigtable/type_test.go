@@ -17,6 +17,7 @@ limitations under the License.
 package bigtable
 
 import (
+	"encoding/json"
 	"testing"
 
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
@@ -44,13 +45,13 @@ func TestInt64Proto(t *testing.T) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	str, err := Int64Type{}.ToJSON()
+	json, err := json.Marshal(Int64Type{})
 	if err != nil {
 		t.Fatalf("Error calling ToJSON: %v", err)
 	}
 	wantJSON := "{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}"
-	if str != wantJSON {
-		t.Errorf("got %q, want %q", str, wantJSON)
+	if string(json) != wantJSON {
+		t.Errorf("got %q, want %q", string(json), wantJSON)
 	}
 }
 
@@ -70,13 +71,13 @@ func TestStringProto(t *testing.T) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	str, err := StringType{}.ToJSON()
+	json, err := json.Marshal(StringType{})
 	if err != nil {
 		t.Fatalf("Error calling ToJSON: %v", err)
 	}
 	wantJSON := "{\"stringType\":{\"encoding\":{\"utf8Raw\":{}}}}"
-	if str != wantJSON {
-		t.Errorf("got %q, want %q", str, wantJSON)
+	if string(json) != wantJSON {
+		t.Errorf("got %q, want %q", string(json), wantJSON)
 	}
 }
 
@@ -107,13 +108,13 @@ func TestSumAggregateProto(t *testing.T) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	str, err := AggregateType{Input: Int64Type{}, Aggregator: SumAggregator{}}.ToJSON()
+	json, err := json.Marshal(AggregateType{Input: Int64Type{}, Aggregator: SumAggregator{}})
 	if err != nil {
 		t.Fatalf("Error calling ToJSON: %v", err)
 	}
-	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"sum\":{}}}"
-	if str != wantJSON {
-		t.Errorf("got %q, want %q", str, wantJSON)
+	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"sum\":{}}}"
+	if string(json) != wantJSON {
+		t.Errorf("got %q, want %q", string(json), wantJSON)
 	}
 }
 
@@ -152,13 +153,13 @@ func TestMinAggregateProto(t *testing.T) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	str, err := AggregateType{Input: Int64Type{}, Aggregator: MinAggregator{}}.ToJSON()
+	json, err := json.Marshal(AggregateType{Input: Int64Type{}, Aggregator: MinAggregator{}})
 	if err != nil {
 		t.Fatalf("Error calling ToJSON: %v", err)
 	}
-	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"min\":{}}}"
-	if str != wantJSON {
-		t.Errorf("got %q, want %q", str, wantJSON)
+	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"min\":{}}}"
+	if string(json) != wantJSON {
+		t.Errorf("got %q, want %q", string(json), wantJSON)
 	}
 }
 
@@ -189,13 +190,13 @@ func TestMaxAggregateProto(t *testing.T) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	str, err := AggregateType{Input: Int64Type{}, Aggregator: MaxAggregator{}}.ToJSON()
+	json, err := json.Marshal(AggregateType{Input: Int64Type{}, Aggregator: MaxAggregator{}})
 	if err != nil {
 		t.Fatalf("Error calling ToJSON: %v", err)
 	}
-	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"max\":{}}}"
-	if str != wantJSON {
-		t.Errorf("got %q, want %q", str, wantJSON)
+	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"max\":{}}}"
+	if string(json) != wantJSON {
+		t.Errorf("got %q, want %q", string(json), wantJSON)
 	}
 }
 
@@ -226,13 +227,13 @@ func TestHllAggregateProto(t *testing.T) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	str, err := AggregateType{Input: Int64Type{}, Aggregator: HllppUniqueCountAggregator{}}.ToJSON()
+	json, err := json.Marshal(AggregateType{Input: Int64Type{}, Aggregator: HllppUniqueCountAggregator{}})
 	if err != nil {
 		t.Fatalf("Error calling ToJSON: %v", err)
 	}
-	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"hllppUniqueCount\":{}}}"
-	if str != wantJSON {
-		t.Errorf("got %q, want %q", str, wantJSON)
+	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"hllppUniqueCount\":{}}}"
+	if string(json) != wantJSON {
+		t.Errorf("got %q, want %q", string(json), wantJSON)
 	}
 }
 
