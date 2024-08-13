@@ -16,12 +16,26 @@ limitations under the License.
 
 package bigtable
 
-import btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+import (
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
+)
 
 // Type wraps the protobuf representation of a type. See the protobuf definition
 // for more details on types.
 type Type interface {
 	proto() *btapb.Type
+	ToJson() (string, error)
+}
+
+func toJson(t proto.Message) (string, error) {
+	mo := protojson.MarshalOptions{}
+	result, err := mo.Marshal(t)
+	if err != nil {
+		return "", err
+	}
+	return string(result), nil
 }
 
 type unknown[T interface{}] struct {
@@ -30,6 +44,14 @@ type unknown[T interface{}] struct {
 
 func (u unknown[T]) proto() *T {
 	return u.wrapped
+}
+
+// ToJson returns the string representation of the protobuf.
+func (u unknown[T]) ToJson() (string, error) {
+	if t, ok := any(u.wrapped).(proto.Message); ok {
+		return toJson(t)
+	}
+	return "", nil
 }
 
 // BytesEncoding represents the encoding of a Bytes type.
@@ -62,6 +84,11 @@ func (bytes BytesType) proto() *btapb.Type {
 	return &btapb.Type{Kind: &btapb.Type_BytesType{BytesType: &btapb.Type_Bytes{Encoding: encoding}}}
 }
 
+// ToJson returns the string representation of the protobuf.
+func (bytes BytesType) ToJson() (string, error) {
+	return toJson(bytes.proto())
+}
+
 // StringEncoding represents the encoding of a String.
 type StringEncoding interface {
 	proto() *btapb.Type_String_Encoding
@@ -90,6 +117,11 @@ func (str StringType) proto() *btapb.Type {
 		encoding = StringUtf8Encoding{}.proto()
 	}
 	return &btapb.Type{Kind: &btapb.Type_StringType{StringType: &btapb.Type_String{Encoding: encoding}}}
+}
+
+// ToJson returns the string representation of the protobuf.
+func (str StringType) ToJson() (string, error) {
+	return toJson(str.proto())
 }
 
 // Int64Encoding represents the encoding of an Int64 type.
@@ -131,6 +163,11 @@ func (it Int64Type) proto() *btapb.Type {
 			},
 		},
 	}
+}
+
+// ToJson returns the string representation of the protobuf.
+func (it Int64Type) ToJson() (string, error) {
+	return toJson(it.proto())
 }
 
 // Aggregator represents an aggregation function for an aggregate type.
@@ -192,6 +229,11 @@ func (agg AggregateType) proto() *btapb.Type {
 
 	agg.Aggregator.fillProto(protoAgg)
 	return &btapb.Type{Kind: &btapb.Type_AggregateType{AggregateType: protoAgg}}
+}
+
+// ToJson returns the string representation of the protobuf.
+func (agg AggregateType) ToJson() (string, error) {
+	return toJson(agg.proto())
 }
 
 // ProtoToType converts a protobuf *btapb.Type to an instance of the Type interface, for use of the admin API.
