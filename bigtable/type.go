@@ -26,10 +26,10 @@ import (
 // for more details on types.
 type Type interface {
 	proto() *btapb.Type
-	ToJson() (string, error)
+	ToJSON() (string, error)
 }
 
-func toJson(m proto.Message) (string, error) {
+func toJSON(m proto.Message) (string, error) {
 	mo := protojson.MarshalOptions{}
 	result, err := mo.Marshal(m)
 	if err != nil {
@@ -46,10 +46,10 @@ func (u unknown[T]) proto() *T {
 	return u.wrapped
 }
 
-// ToJson returns the string representation of the protobuf.
-func (u unknown[T]) ToJson() (string, error) {
+// ToJSON returns the string representation of the protobuf.
+func (u unknown[T]) ToJSON() (string, error) {
 	if t, ok := any(u.wrapped).(proto.Message); ok {
-		return toJson(t)
+		return toJSON(t)
 	}
 	return "", nil
 }
@@ -84,9 +84,9 @@ func (bytes BytesType) proto() *btapb.Type {
 	return &btapb.Type{Kind: &btapb.Type_BytesType{BytesType: &btapb.Type_Bytes{Encoding: encoding}}}
 }
 
-// ToJson returns the string representation of the protobuf.
-func (bytes BytesType) ToJson() (string, error) {
-	return toJson(bytes.proto())
+// ToJSON returns the string representation of the protobuf.
+func (bytes BytesType) ToJSON() (string, error) {
+	return toJSON(bytes.proto())
 }
 
 // StringEncoding represents the encoding of a String.
@@ -119,9 +119,9 @@ func (str StringType) proto() *btapb.Type {
 	return &btapb.Type{Kind: &btapb.Type_StringType{StringType: &btapb.Type_String{Encoding: encoding}}}
 }
 
-// ToJson returns the string representation of the protobuf.
-func (str StringType) ToJson() (string, error) {
-	return toJson(str.proto())
+// ToJSON returns the string representation of the protobuf.
+func (str StringType) ToJSON() (string, error) {
+	return toJSON(str.proto())
 }
 
 // Int64Encoding represents the encoding of an Int64 type.
@@ -165,9 +165,9 @@ func (it Int64Type) proto() *btapb.Type {
 	}
 }
 
-// ToJson returns the string representation of the protobuf.
-func (it Int64Type) ToJson() (string, error) {
-	return toJson(it.proto())
+// ToJSON returns the string representation of the protobuf.
+func (it Int64Type) ToJSON() (string, error) {
+	return toJSON(it.proto())
 }
 
 // Aggregator represents an aggregation function for an aggregate type.
@@ -231,9 +231,9 @@ func (agg AggregateType) proto() *btapb.Type {
 	return &btapb.Type{Kind: &btapb.Type_AggregateType{AggregateType: protoAgg}}
 }
 
-// ToJson returns the string representation of the protobuf.
-func (agg AggregateType) ToJson() (string, error) {
-	return toJson(agg.proto())
+// ToJSON returns the string representation of the protobuf.
+func (agg AggregateType) ToJSON() (string, error) {
+	return toJSON(agg.proto())
 }
 
 // ProtoToType converts a protobuf *btapb.Type to an instance of the Type interface, for use of the admin API.

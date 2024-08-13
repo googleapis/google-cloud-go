@@ -44,13 +44,13 @@ func TestInt64Proto(t *testing.T) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	str, err := Int64Type{}.ToJson()
+	str, err := Int64Type{}.ToJSON()
 	if err != nil {
-		t.Fatalf("Error calling ToJson: %v", err)
+		t.Fatalf("Error calling ToJSON: %v", err)
 	}
-	wantJson := "{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}"
-	if str != wantJson {
-		t.Errorf("got %q, want %q", str, wantJson)
+	wantJSON := "{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}"
+	if str != wantJSON {
+		t.Errorf("got %q, want %q", str, wantJSON)
 	}
 }
 
@@ -70,13 +70,13 @@ func TestStringProto(t *testing.T) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	str, err := StringType{}.ToJson()
+	str, err := StringType{}.ToJSON()
 	if err != nil {
-		t.Fatalf("Error calling ToJson: %v", err)
+		t.Fatalf("Error calling ToJSON: %v", err)
 	}
-	wantJson := "{\"stringType\":{\"encoding\":{\"utf8Raw\":{}}}}"
-	if str != wantJson {
-		t.Errorf("got %q, want %q", str, wantJson)
+	wantJSON := "{\"stringType\":{\"encoding\":{\"utf8Raw\":{}}}}"
+	if str != wantJSON {
+		t.Errorf("got %q, want %q", str, wantJSON)
 	}
 }
 
@@ -107,13 +107,13 @@ func TestSumAggregateProto(t *testing.T) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	str, err := AggregateType{Input: Int64Type{}, Aggregator: SumAggregator{}}.ToJson()
+	str, err := AggregateType{Input: Int64Type{}, Aggregator: SumAggregator{}}.ToJSON()
 	if err != nil {
-		t.Fatalf("Error calling ToJson: %v", err)
+		t.Fatalf("Error calling ToJSON: %v", err)
 	}
-	wantJson := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"sum\":{}}}"
-	if str != wantJson {
-		t.Errorf("got %q, want %q", str, wantJson)
+	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"sum\":{}}}"
+	if str != wantJSON {
+		t.Errorf("got %q, want %q", str, wantJSON)
 	}
 }
 
@@ -152,13 +152,13 @@ func TestMinAggregateProto(t *testing.T) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	str, err := AggregateType{Input: Int64Type{}, Aggregator: MinAggregator{}}.ToJson()
+	str, err := AggregateType{Input: Int64Type{}, Aggregator: MinAggregator{}}.ToJSON()
 	if err != nil {
-		t.Fatalf("Error calling ToJson: %v", err)
+		t.Fatalf("Error calling ToJSON: %v", err)
 	}
-	wantJson := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"min\":{}}}"
-	if str != wantJson {
-		t.Errorf("got %q, want %q", str, wantJson)
+	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"min\":{}}}"
+	if str != wantJSON {
+		t.Errorf("got %q, want %q", str, wantJSON)
 	}
 }
 
@@ -189,13 +189,13 @@ func TestMaxAggregateProto(t *testing.T) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	str, err := AggregateType{Input: Int64Type{}, Aggregator: MaxAggregator{}}.ToJson()
+	str, err := AggregateType{Input: Int64Type{}, Aggregator: MaxAggregator{}}.ToJSON()
 	if err != nil {
-		t.Fatalf("Error calling ToJson: %v", err)
+		t.Fatalf("Error calling ToJSON: %v", err)
 	}
-	wantJson := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"max\":{}}}"
-	if str != wantJson {
-		t.Errorf("got %q, want %q", str, wantJson)
+	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"max\":{}}}"
+	if str != wantJSON {
+		t.Errorf("got %q, want %q", str, wantJSON)
 	}
 }
 
@@ -226,13 +226,13 @@ func TestHllAggregateProto(t *testing.T) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	str, err := AggregateType{Input: Int64Type{}, Aggregator: HllppUniqueCountAggregator{}}.ToJson()
+	str, err := AggregateType{Input: Int64Type{}, Aggregator: HllppUniqueCountAggregator{}}.ToJSON()
 	if err != nil {
-		t.Fatalf("Error calling ToJson: %v", err)
+		t.Fatalf("Error calling ToJSON: %v", err)
 	}
-	wantJson := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"hllppUniqueCount\":{}}}"
-	if str != wantJson {
-		t.Errorf("got %q, want %q", str, wantJson)
+	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"hllppUniqueCount\":{}}}"
+	if str != wantJSON {
+		t.Errorf("got %q, want %q", str, wantJSON)
 	}
 }
 
