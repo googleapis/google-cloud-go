@@ -111,7 +111,7 @@ func TestSumAggregateProto(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error calling ToJson: %v", err)
 	}
-	wantJson := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"sum\":{}}}"
+	wantJson := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"sum\":{}}}"
 	if str != wantJson {
 		t.Errorf("got %q, want %q", str, wantJson)
 	}
@@ -156,7 +156,7 @@ func TestMinAggregateProto(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error calling ToJson: %v", err)
 	}
-	wantJson := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"min\":{}}}"
+	wantJson := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"min\":{}}}"
 	if str != wantJson {
 		t.Errorf("got %q, want %q", str, wantJson)
 	}
@@ -193,7 +193,7 @@ func TestMaxAggregateProto(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error calling ToJson: %v", err)
 	}
-	wantJson := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"max\":{}}}"
+	wantJson := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"max\":{}}}"
 	if str != wantJson {
 		t.Errorf("got %q, want %q", str, wantJson)
 	}
@@ -230,7 +230,7 @@ func TestHllAggregateProto(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error calling ToJson: %v", err)
 	}
-	wantJson := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"hllppUniqueCount\":{}}}"
+	wantJson := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}, \"hllppUniqueCount\":{}}}"
 	if str != wantJson {
 		t.Errorf("got %q, want %q", str, wantJson)
 	}
