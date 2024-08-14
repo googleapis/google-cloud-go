@@ -266,6 +266,17 @@ type Table struct {
 	authorizedView string
 }
 
+func (c *Client) getfeatureFlags() metadata.MD {
+	// Copy fields from btopt.SupportedFeatures to avoid copying lock
+	ff := btpb.FeatureFlags{
+		ReverseScans:             btopt.SupportedFeatures.ReverseScans,
+		LastScannedRowResponses:  btopt.SupportedFeatures.LastScannedRowResponses,
+		ClientSideMetricsEnabled: c.metricsTracerFactory.enabled,
+	}
+
+	return btopt.NewFeatureFlags(&ff)
+}
+
 // Open opens a table.
 func (c *Client) Open(table string) *Table {
 	return &Table{
@@ -274,7 +285,7 @@ func (c *Client) Open(table string) *Table {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-		), btopt.NewFeatureFlags(c.metricsTracerFactory.enabled)),
+		), c.getfeatureFlags()),
 	}
 }
 
@@ -286,7 +297,7 @@ func (c *Client) OpenTable(table string) TableAPI {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-		), btopt.NewFeatureFlags(c.metricsTracerFactory.enabled)),
+		), c.getfeatureFlags()),
 	}}
 }
 
@@ -298,7 +309,7 @@ func (c *Client) OpenAuthorizedView(table, authorizedView string) TableAPI {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullAuthorizedViewName(table, authorizedView),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-		), btopt.NewFeatureFlags(c.metricsTracerFactory.enabled)),
+		), c.getfeatureFlags()),
 		authorizedView: authorizedView,
 	}}
 }

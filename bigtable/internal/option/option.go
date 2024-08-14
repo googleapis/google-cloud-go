@@ -37,7 +37,7 @@ import (
 
 const featureFlagsHeaderKey = "bigtable-features"
 
-var supportedFeatureFlags = btpb.FeatureFlags{ReverseScans: true, LastScannedRowResponses: true}
+var SupportedFeatures = btpb.FeatureFlags{ReverseScans: true, LastScannedRowResponses: true}
 
 // mergeOutgoingMetadata returns a context populated by the existing outgoing
 // metadata merged with the provided mds.
@@ -70,12 +70,8 @@ func withGoogleClientInfo() metadata.MD {
 	return metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-func makeFeatureFlags() string {
-	ff := btpb.FeatureFlags{
-		ReverseScans:            supportedFeatureFlags.ReverseScans,
-		LastScannedRowResponses: supportedFeatureFlags.LastScannedRowResponses,
-	}
-	b, err := proto.Marshal(&ff)
+func makeFeatureFlags(flags *btpb.FeatureFlags) string {
+	b, err := proto.Marshal(flags)
 	if err != nil {
 		return ""
 	}
@@ -86,28 +82,16 @@ func makeFeatureFlags() string {
 // NewFeatureFlags returns metadata header `bigtable-features`
 // The value of header is proto serialized and websafe-base64 encoded
 // Intended for use by Google-written clients.
-func NewFeatureFlags(clientSideMetricsEnabled bool) metadata.MD {
-	// Copy properties to avoid copying the lock
-	allFlags := btpb.FeatureFlags{
-		ReverseScans:             supportedFeatureFlags.ReverseScans,
-		LastScannedRowResponses:  supportedFeatureFlags.LastScannedRowResponses,
-		ClientSideMetricsEnabled: clientSideMetricsEnabled,
-	}
-
-	val := ""
-	if b, err := proto.Marshal(&allFlags); err == nil {
-		val = base64.URLEncoding.EncodeToString(b)
-	}
-
-	return metadata.Pairs(featureFlagsHeaderKey, val)
+func NewFeatureFlags(flags *btpb.FeatureFlags) metadata.MD {
+	return metadata.Pairs(featureFlagsHeaderKey, makeFeatureFlags(flags))
 }
 
 // WithFeatureFlags set the feature flags the client supports in the
 // `bigtable-features` header sent on each request. Intended for
 // use by Google-written clients.
-// This does not include the features enabled on the client
+// This includes only supported features and not the enabled features
 func WithFeatureFlags() metadata.MD {
-	return metadata.Pairs("bigtable-features", makeFeatureFlags())
+	return metadata.Pairs(featureFlagsHeaderKey, makeFeatureFlags(&SupportedFeatures))
 }
 
 // streamInterceptor intercepts the creation of ClientStream within the bigtable
