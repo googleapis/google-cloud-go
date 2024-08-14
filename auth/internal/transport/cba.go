@@ -176,6 +176,7 @@ func GetHTTPTransportConfig(opts *Options) (cert.Provider, func(context.Context,
 		s2aAddr = config.mtlsS2AAddress
 		transportCredsForS2A, err = loadMTLSMDSTransportCreds(mtlsMDSRoot, mtlsMDSKey)
 		if err != nil {
+			log.Printf("Loading MTLS MDS credentials failed: %v", err)
 			return config.clientCertSource, nil, nil
 		}
 	} else if config.s2aAddress != "" {
