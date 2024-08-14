@@ -1859,8 +1859,7 @@ type writeOnlyTransaction struct {
 	// current transaction from the allowed tracking change streams with DDL option
 	// allow_txn_exclusion=true.
 	excludeTxnFromChangeStreams bool
-	// maxCommitDelay is the maximum time that the commit will be delayed by the
-	// backend before it is acknowledged.
+	// commitOptions are applied to the Commit request for the writeOnlyTransaction..
 	commitOptions CommitOptions
 }
 
