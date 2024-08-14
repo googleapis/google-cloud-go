@@ -2,8 +2,6 @@ module cloud.google.com/go/internal/generated
 
 go 1.21
 
-toolchain go1.21.13
-
 require (
 	cloud.google.com/go v0.115.0
 	cloud.google.com/go/accessapproval v1.7.11
