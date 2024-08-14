@@ -37,7 +37,7 @@ type Client struct {
 // NewClient creates a [Client] using the provided
 // [cloud.google.com/go/auth.TokenProvider] for authentication.
 func NewClient(tp auth.TokenProvider) *Client {
-	client := internal.CloneDefaultClient()
+	client := internal.DefaultClient()
 	httptransport.AddAuthorizationMiddleware(client, auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: tp,
 	}))
@@ -57,7 +57,7 @@ func (c *Client) CreateBucket(ctx context.Context, projectID, bucket string) err
 		return err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("https://storage.googleapis.com/storage/v1/b?project=%s", projectID), bytes.NewReader(b))
+	req, err := http.NewRequestWithContext(ctx, "POST", fmt.Sprintf("https://storage.googleapis.com/storage/v1/b?project=%s", projectID), bytes.NewReader(b))
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (c *Client) CreateBucket(ctx context.Context, projectID, bucket string) err
 
 // DeleteBucket deletes the specified bucket.
 func (c *Client) DeleteBucket(ctx context.Context, bucket string) error {
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("https://storage.googleapis.com/storage/v1/b/%s", bucket), nil)
+	req, err := http.NewRequestWithContext(ctx, "DELETE", fmt.Sprintf("https://storage.googleapis.com/storage/v1/b/%s", bucket), nil)
 	if err != nil {
 		return err
 	}
@@ -101,7 +101,7 @@ func (c *Client) DeleteBucket(ctx context.Context, bucket string) error {
 // DownloadObject returns an [http.Response] who's body can be consumed to
 // read the contents of an object.
 func (c *Client) DownloadObject(ctx context.Context, bucket, object string) (*http.Response, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://storage.googleapis.com/storage/v1/b/%s/o/%s", bucket, object), nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("https://storage.googleapis.com/storage/v1/b/%s/o/%s", bucket, object), nil)
 	if err != nil {
 		return nil, err
 	}

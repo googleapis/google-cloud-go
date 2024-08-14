@@ -59,6 +59,7 @@ func defaultSearchGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -126,7 +127,7 @@ func defaultSearchRESTCallOptions() *SearchCallOptions {
 	}
 }
 
-// internalSearchClient is an interface that defines the methods available from Retail API.
+// internalSearchClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalSearchClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -136,7 +137,7 @@ type internalSearchClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// SearchClient is a client for interacting with Retail API.
+// SearchClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for search.
@@ -192,7 +193,7 @@ func (c *SearchClient) ListOperations(ctx context.Context, req *longrunningpb.Li
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// searchGRPCClient is a client for interacting with Retail API over gRPC transport.
+// searchGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type searchGRPCClient struct {
@@ -319,6 +320,7 @@ func defaultSearchRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 

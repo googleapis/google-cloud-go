@@ -96,14 +96,18 @@ func setupTestDataset(ctx context.Context, t *testing.T, bqc *bigquery.Client, l
 	}, nil
 }
 
-// setupDynamicDescriptors aids testing when not using a supplied proto
-func setupDynamicDescriptors(t *testing.T, schema bigquery.Schema) (protoreflect.MessageDescriptor, *descriptorpb.DescriptorProto) {
-	convertedSchema, err := adapt.BQSchemaToStorageTableSchema(schema)
+// setupDynamicDescriptors aids testing when not using a supplied proto.
+func setupDynamicDescriptors(ctx context.Context, t *testing.T, c *Client, streamName string) (protoreflect.MessageDescriptor, *descriptorpb.DescriptorProto) {
+
+	resp, err := c.GetWriteStream(ctx, &storagepb.GetWriteStreamRequest{
+		Name: streamName,
+		View: storagepb.WriteStreamView_FULL,
+	})
 	if err != nil {
-		t.Fatalf("adapt.BQSchemaToStorageTableSchema: %v", err)
+		t.Fatalf("couldn't get write stream (%q): %v", streamName, err)
 	}
 
-	descriptor, err := adapt.StorageSchemaToProto2Descriptor(convertedSchema, "root")
+	descriptor, err := adapt.StorageSchemaToProto2Descriptor(resp.GetTableSchema(), "root")
 	if err != nil {
 		t.Fatalf("adapt.StorageSchemaToDescriptor: %v", err)
 	}
@@ -228,6 +232,10 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 		t.Run("DefaultStreamDynamicJSON", func(t *testing.T) {
 			t.Parallel()
 			testDefaultStreamDynamicJSON(ctx, t, mwClient, bqClient, dataset)
+		})
+		t.Run("DefaultStreamJSONData", func(t *testing.T) {
+			t.Parallel()
+			testDefaultStreamJSONData(ctx, t, mwClient, bqClient, dataset)
 		})
 		t.Run("CommittedStream", func(t *testing.T) {
 			t.Parallel()
@@ -400,7 +408,8 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
 
-	md, descriptorProto := setupDynamicDescriptors(t, testdata.GithubArchiveSchema)
+	defStreamName := fmt.Sprintf("%s/streams/_default", TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID))
+	md, descriptorProto := setupDynamicDescriptors(ctx, t, mwClient, defStreamName)
 
 	ms, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
@@ -453,6 +462,64 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 		withExactRowCount(int64(len(sampleJSONData))),
 		withDistinctValues("type", int64(len(sampleJSONData))),
 		withDistinctValues("public", int64(2)))
+}
+
+func testDefaultStreamJSONData(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.ComplexTypeSchema}); err != nil {
+		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	defStreamName := fmt.Sprintf("%s/streams/_default", TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID))
+	md, descriptorProto := setupDynamicDescriptors(ctx, t, mwClient, defStreamName)
+
+	ms, err := mwClient.NewManagedStream(ctx,
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithType(DefaultStream),
+		WithSchemaDescriptor(descriptorProto),
+	)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
+
+	sampleJSONData := [][]byte{
+		[]byte(`{"json_type":"{\"foo\": \"bar\"}"}`),
+		[]byte(`{"json_type":"{\"key\": \"value\"}"}`),
+		[]byte(`{"json_type":"\"a string\""}`),
+	}
+
+	var result *AppendResult
+	for k, v := range sampleJSONData {
+		message := dynamicpb.NewMessage(md)
+
+		// First, json->proto message
+		err = protojson.Unmarshal(v, message)
+		if err != nil {
+			t.Fatalf("failed to Unmarshal json message for row %d: %v", k, err)
+		}
+		// Then, proto message -> bytes.
+		b, err := proto.Marshal(message)
+		if err != nil {
+			t.Fatalf("failed to marshal proto bytes for row %d: %v", k, err)
+		}
+		result, err = ms.AppendRows(ctx, [][]byte{b})
+		if err != nil {
+			t.Errorf("single-row append %d failed: %v", k, err)
+		}
+	}
+
+	// Wait for the result to indicate ready, then validate.
+	o, err := result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("result error for last send: %v", err)
+	}
+	if o != NoStreamOffset {
+		t.Errorf("offset mismatch, got %d want %d", o, NoStreamOffset)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
+		withExactRowCount(int64(len(sampleJSONData))))
 }
 
 func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
@@ -1389,6 +1456,7 @@ func TestIntegration_ProtoNormalization(t *testing.T) {
 		t.Run("ComplexType", func(t *testing.T) {
 			t.Parallel()
 			schema := testdata.ComplexTypeSchema
+			jsonData := "{\"foo\": \"bar\"}"
 			mesg := &testdata.ComplexType{
 				NestedRepeatedType: []*testdata.NestedType{
 					{
@@ -1404,6 +1472,7 @@ func TestIntegration_ProtoNormalization(t *testing.T) {
 				RangeType: &testdata.RangeTypeTimestamp{
 					End: proto.Int64(time.Now().UnixNano()),
 				},
+				JsonType: &jsonData,
 			}
 			b, err := proto.Marshal(mesg)
 			if err != nil {

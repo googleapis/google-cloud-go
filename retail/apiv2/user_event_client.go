@@ -60,6 +60,7 @@ func defaultUserEventGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -68,7 +69,7 @@ func defaultUserEventGRPCClientOptions() []option.ClientOption {
 func defaultUserEventCallOptions() *UserEventCallOptions {
 	return &UserEventCallOptions{
 		WriteUserEvent: []gax.CallOption{
-			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -81,7 +82,7 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 			}),
 		},
 		CollectUserEvent: []gax.CallOption{
-			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -120,7 +121,7 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 			}),
 		},
 		RejoinUserEvents: []gax.CallOption{
-			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -149,7 +150,7 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 	}
 }
 
-// internalUserEventClient is an interface that defines the methods available from Retail API.
+// internalUserEventClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalUserEventClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -166,7 +167,7 @@ type internalUserEventClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// UserEventClient is a client for interacting with Retail API.
+// UserEventClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for ingesting end user actions on the customer website.
@@ -279,7 +280,7 @@ func (c *UserEventClient) ListOperations(ctx context.Context, req *longrunningpb
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// userEventGRPCClient is a client for interacting with Retail API over gRPC transport.
+// userEventGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type userEventGRPCClient struct {

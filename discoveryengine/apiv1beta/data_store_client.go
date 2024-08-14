@@ -66,6 +66,7 @@ func defaultDataStoreGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -431,6 +432,7 @@ func defaultDataStoreRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -686,6 +688,9 @@ func (c *dataStoreRESTClient) CreateDataStore(ctx context.Context, req *discover
 		params.Add("createAdvancedSiteSearch", fmt.Sprintf("%v", req.GetCreateAdvancedSiteSearch()))
 	}
 	params.Add("dataStoreId", fmt.Sprintf("%v", req.GetDataStoreId()))
+	if req.GetSkipDefaultSchemaCreation() {
+		params.Add("skipDefaultSchemaCreation", fmt.Sprintf("%v", req.GetSkipDefaultSchemaCreation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

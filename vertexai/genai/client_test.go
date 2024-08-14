@@ -63,17 +63,13 @@ func TestLive(t *testing.T) {
 	t.Run("system-instructions", func(t *testing.T) {
 		model := client.GenerativeModel(defaultModel)
 		model.Temperature = Ptr[float32](0)
-		model.SystemInstruction = &Content{
-			Parts: []Part{Text("You are Yoda from Star Wars.")},
-		}
+		model.SystemInstruction = NewUserContent(Text("You are Yoda from Star Wars."))
 		resp, err := model.GenerateContent(ctx, Text("What is the average size of a swallow?"))
 		if err != nil {
 			t.Fatal(err)
 		}
 		got := responseString(resp)
-		checkMatch(t, got, `[1-9][0-9].* cm|[1-9].* inches`)
-		fmt.Println(got)
-
+		checkMatch(t, got, `[1-9][0-9].* (cm|centimeters)|[1-9].* inches`)
 	})
 
 	t.Run("streaming", func(t *testing.T) {
@@ -284,6 +280,30 @@ func TestLive(t *testing.T) {
 			}
 			checkMatch(t, responseString(res), "(it's|it is|weather) .*cold")
 		})
+		t.Run("funcall-stream", func(t *testing.T) {
+			session := model.StartChat()
+			iter := session.SendMessageStream(ctx, Text("What is the weather like in New York?"))
+
+			for {
+				_, err := iter.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			res, err := session.SendMessage(ctx, FunctionResponse{
+				Name: weatherTool.FunctionDeclarations[0].Name,
+				Response: map[string]any{
+					"weather_there": "cold",
+				},
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			checkMatch(t, responseString(res), "(it's|it is|weather) .*cold")
+		})
 		t.Run("funcall-none", func(t *testing.T) {
 			model.ToolConfig = &ToolConfig{
 				FunctionCallingConfig: &FunctionCallingConfig{
@@ -303,6 +323,7 @@ func TestLive(t *testing.T) {
 			}
 		})
 	})
+	t.Run("caching", func(t *testing.T) { testCaching(t, client) })
 }
 
 func TestLiveDefaultLocation(t *testing.T) {
@@ -462,7 +483,9 @@ func responseString(resp *GenerateContentResponse) string {
 		if len(resp.Candidates) > 1 {
 			fmt.Fprintf(&b, "%d:", i+1)
 		}
-		b.WriteString(contentString(cand.Content))
+		if cand.Content != nil {
+			b.WriteString(contentString(cand.Content))
+		}
 	}
 	return b.String()
 }
@@ -652,4 +675,13 @@ func TestInferLocation(t *testing.T) {
 			}
 		})
 	}
+}
+
+func printResponse(resp *GenerateContentResponse) {
+	for _, cand := range resp.Candidates {
+		for _, part := range cand.Content.Parts {
+			fmt.Println(part)
+		}
+	}
+	fmt.Println("---")
 }

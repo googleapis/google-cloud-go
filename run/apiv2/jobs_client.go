@@ -72,6 +72,7 @@ func defaultJobsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -193,7 +194,7 @@ func (c *JobsClient) GetJob(ctx context.Context, req *runpb.GetJobRequest, opts 
 	return c.internalClient.GetJob(ctx, req, opts...)
 }
 
-// ListJobs lists Jobs.
+// ListJobs lists Jobs. Results are sorted by creation time, descending.
 func (c *JobsClient) ListJobs(ctx context.Context, req *runpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	return c.internalClient.ListJobs(ctx, req, opts...)
 }
@@ -422,6 +423,7 @@ func defaultJobsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -951,7 +953,7 @@ func (c *jobsRESTClient) GetJob(ctx context.Context, req *runpb.GetJobRequest, o
 	return resp, nil
 }
 
-// ListJobs lists Jobs.
+// ListJobs lists Jobs. Results are sorted by creation time, descending.
 func (c *jobsRESTClient) ListJobs(ctx context.Context, req *runpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	it := &JobIterator{}
 	req = proto.Clone(req).(*runpb.ListJobsRequest)

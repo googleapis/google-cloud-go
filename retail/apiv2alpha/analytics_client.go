@@ -61,6 +61,7 @@ func defaultAnalyticsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -128,7 +129,7 @@ func defaultAnalyticsRESTCallOptions() *AnalyticsCallOptions {
 	}
 }
 
-// internalAnalyticsClient is an interface that defines the methods available from Retail API.
+// internalAnalyticsClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalAnalyticsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -139,7 +140,7 @@ type internalAnalyticsClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// AnalyticsClient is a client for interacting with Retail API.
+// AnalyticsClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for managing & accessing retail search business metric.
@@ -204,7 +205,7 @@ func (c *AnalyticsClient) ListOperations(ctx context.Context, req *longrunningpb
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// analyticsGRPCClient is a client for interacting with Retail API over gRPC transport.
+// analyticsGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type analyticsGRPCClient struct {
@@ -358,6 +359,7 @@ func defaultAnalyticsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 

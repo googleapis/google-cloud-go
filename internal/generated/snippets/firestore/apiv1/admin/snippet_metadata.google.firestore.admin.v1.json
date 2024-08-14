@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/firestore/apiv1/admin",
-    "version": "1.15.0",
+    "version": "1.16.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_BulkDeleteDocuments_sync",
+      "title": "firestore BulkDeleteDocuments Sample",
+      "description": "BulkDeleteDocuments bulk deletes a subset of documents from Google Cloud Firestore.\nDocuments created or updated after the underlying system starts to process\nthe request will not be deleted. The bulk delete occurs in the background\nand its progress can be monitored and managed via the Operation resource\nthat is created.\n\nFor more details on bulk delete behavior, refer to: \nhttps: //cloud.google.com/firestore/docs/manage-data/bulk-delete",
+      "file": "FirestoreAdminClient/BulkDeleteDocuments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BulkDeleteDocuments",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.BulkDeleteDocuments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.BulkDeleteDocumentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BulkDeleteDocumentsOperation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "BulkDeleteDocuments",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.BulkDeleteDocuments",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_CancelOperation_sync",
       "title": "firestore CancelOperation Sample",
@@ -1067,7 +1113,7 @@
     {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_RestoreDatabase_sync",
       "title": "firestore RestoreDatabase Sample",
-      "description": "RestoreDatabase creates a new database by restoring from an existing backup.\n\nThe new database must be in the same cloud region or multi-region location\nas the existing backup. This behaves similar to\n[FirestoreAdmin.CreateDatabase][google.firestore.admin.v1.CreateDatabase]\nexcept instead of creating a new empty database, a new database is created\nwith the database type, index configuration, and documents from an existing\nbackup.\n\nThe [long-running operation][google.longrunning.Operation] can be used to\ntrack the progress of the restore, with the Operation's\n[metadata][google.longrunning.Operation.metadata] field type being the\n[RestoreDatabaseMetadata][google.firestore.admin.v1.RestoreDatabaseMetadata].\nThe [response][google.longrunning.Operation.response] type is the\n[Database][google.firestore.admin.v1.Database] if the restore was\nsuccessful. The new database is not readable or writeable until the LRO has\ncompleted.",
+      "description": "RestoreDatabase creates a new database by restoring from an existing backup.\n\nThe new database must be in the same cloud region or multi-region location\nas the existing backup. This behaves similar to\n[FirestoreAdmin.CreateDatabase][google.firestore.admin.v1.FirestoreAdmin.CreateDatabase]\nexcept instead of creating a new empty database, a new database is created\nwith the database type, index configuration, and documents from an existing\nbackup.\n\nThe [long-running operation][google.longrunning.Operation] can be used to\ntrack the progress of the restore, with the Operation's\n[metadata][google.longrunning.Operation.metadata] field type being the\n[RestoreDatabaseMetadata][google.firestore.admin.v1.RestoreDatabaseMetadata].\nThe [response][google.longrunning.Operation.response] type is the\n[Database][google.firestore.admin.v1.Database] if the restore was\nsuccessful. The new database is not readable or writeable until the LRO has\ncompleted.",
       "file": "FirestoreAdminClient/RestoreDatabase/main.go",
       "language": "GO",
       "clientMethod": {

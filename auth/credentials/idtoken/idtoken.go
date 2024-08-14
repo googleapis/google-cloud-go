@@ -72,7 +72,7 @@ type Options struct {
 
 func (o *Options) client() *http.Client {
 	if o == nil || o.Client == nil {
-		return internal.CloneDefaultClient()
+		return internal.DefaultClient()
 	}
 	return o.Client
 }
@@ -104,7 +104,7 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 }
 
 func (o *Options) jsonBytes() []byte {
-	if o.CredentialsJSON != nil {
+	if len(o.CredentialsJSON) > 0 {
 		return o.CredentialsJSON
 	}
 	var fnOverride string
