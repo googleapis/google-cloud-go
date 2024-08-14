@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/auth/v0.8.0...auth/v0.8.1) (2024-08-13)
+
+
+### Bug Fixes
+
+* **auth:** Make default client creation more lenient ([#10669](https://github.com/googleapis/google-cloud-go/issues/10669)) ([1afb9ee](https://github.com/googleapis/google-cloud-go/commit/1afb9ee1ee9de9810722800018133304a0ca34d1)), refs [#10638](https://github.com/googleapis/google-cloud-go/issues/10638)
+
 ## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/auth/v0.7.3...auth/v0.8.0) (2024-08-07)
 
 

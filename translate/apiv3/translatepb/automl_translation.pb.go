@@ -1016,7 +1016,7 @@ type Example struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Output only. The resource name of the example, in form of
-	// `projects/{project-number-or-id}/locations/{location_id}/datasets/{dataset_id}/examples/{example_id}'
+	// `projects/{project-number-or-id}/locations/{location_id}/datasets/{dataset_id}/examples/{example_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Sentence in source language.
 	SourceText string `protobuf:"bytes,2,opt,name=source_text,json=sourceText,proto3" json:"source_text,omitempty"`
