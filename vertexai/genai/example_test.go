@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"cloud.google.com/go/vertexai/genai"
 
@@ -35,8 +36,8 @@ const location = "some-gcp-location"
 // For custom models from different publishers, prepent the full publisher
 // prefix for the model, e.g.:
 //
-//	model = publishers/some-publisher/models/some-model-name
-const model = "some-model"
+//	modelName = publishers/some-publisher/models/some-model-name
+const modelName = "some-model"
 
 func ExampleGenerativeModel_GenerateContent() {
 	ctx := context.Background()
@@ -46,7 +47,7 @@ func ExampleGenerativeModel_GenerateContent() {
 	}
 	defer client.Close()
 
-	model := client.GenerativeModel(model)
+	model := client.GenerativeModel(modelName)
 	model.SetTemperature(0.9)
 	resp, err := model.GenerateContent(ctx, genai.Text("What is the average size of a swallow?"))
 	if err != nil {
@@ -73,9 +74,7 @@ func ExampleGenerativeModel_GenerateContent_config() {
 	model.SetTopP(0.5)
 	model.SetTopK(20)
 	model.SetMaxOutputTokens(100)
-	model.SystemInstruction = &genai.Content{
-		Parts: []genai.Part{genai.Text("You are Yoda from Star Wars.")},
-	}
+	model.SystemInstruction = genai.NewUserContent(genai.Text("You are Yoda from Star Wars."))
 	resp, err := model.GenerateContent(ctx, genai.Text("What is the average size of a swallow?"))
 	if err != nil {
 		log.Fatal(err)
@@ -91,7 +90,7 @@ func ExampleGenerativeModel_GenerateContentStream() {
 	}
 	defer client.Close()
 
-	model := client.GenerativeModel(model)
+	model := client.GenerativeModel(modelName)
 
 	iter := model.GenerateContentStream(ctx, genai.Text("Tell me a story about a lumberjack and his giant ox. Keep it very short."))
 	for {
@@ -114,7 +113,7 @@ func ExampleGenerativeModel_CountTokens() {
 	}
 	defer client.Close()
 
-	model := client.GenerativeModel(model)
+	model := client.GenerativeModel(modelName)
 
 	resp, err := model.CountTokens(ctx, genai.Text("What kind of fish is this?"))
 	if err != nil {
@@ -131,7 +130,7 @@ func ExampleChatSession() {
 		log.Fatal(err)
 	}
 	defer client.Close()
-	model := client.GenerativeModel(model)
+	model := client.GenerativeModel(modelName)
 	cs := model.StartChat()
 
 	send := func(msg string) *genai.GenerateContentResponse {
@@ -302,6 +301,42 @@ func ExampleGenerativeModel_ToolConfig() {
 	// It is also possible to force a function call by using FunctionCallingAny
 	// instead of FunctionCallingNone. See the documentation for FunctionCallingMode
 	// for details.
+}
+
+func ExampleClient_cachedContent() {
+	ctx := context.Background()
+	client, err := genai.NewClient(ctx, projectID, location)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+	file := genai.FileData{MIMEType: "application/pdf", FileURI: "gs://my-bucket/my-doc.pdf"}
+	cc, err := client.CreateCachedContent(ctx, &genai.CachedContent{
+		Model:    modelName,
+		Contents: []*genai.Content{genai.NewUserContent(file)},
+	})
+	model := client.GenerativeModelFromCachedContent(cc)
+	// Work with the model as usual in this program.
+	_ = model
+
+	// Store the CachedContent name for later use.
+	if err := os.WriteFile("my-cached-content-name", []byte(cc.Name), 0o644); err != nil {
+		log.Fatal(err)
+	}
+
+	///////////////////////////////
+	// Later, in another process...
+
+	bytes, err := os.ReadFile("my-cached-content-name")
+	if err != nil {
+		log.Fatal(err)
+	}
+	ccName := string(bytes)
+
+	// No need to call [Client.GetCachedContent]; the name is sufficient.
+	model = client.GenerativeModel(modelName)
+	model.CachedContentName = ccName
+	// Proceed as usual.
 }
 
 func printResponse(resp *genai.GenerateContentResponse) {

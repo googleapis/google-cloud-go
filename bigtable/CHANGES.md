@@ -1,5 +1,76 @@
 # Changes
 
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.28.0...bigtable/v1.29.0) (2024-08-09)
+
+
+### Features
+
+* **bigtable/admin:** Add fields and the BackupType proto for Hot Backups ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **bigtable:** Remove deprecated Bytes from BigEndianBytesEncoding ([#10659](https://github.com/googleapis/google-cloud-go/issues/10659)) ([0bb1a6d](https://github.com/googleapis/google-cloud-go/commit/0bb1a6de1fba3307cc770e2bcaebe93c8fe9d628))
+
+
+### Bug Fixes
+
+* **bigtable:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **bigtable/admin:** Clarify comments and fix typos ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.27.1...bigtable/v1.28.0) (2024-08-03)
+
+
+### Features
+
+* **bigtable:** Add MergeToCell support to the bigtable emulator and client ([#10366](https://github.com/googleapis/google-cloud-go/issues/10366)) ([0211c95](https://github.com/googleapis/google-cloud-go/commit/0211c95e0404aad31be5bec6d5855f0bc5358161))
+* **bigtable:** Add support for new functions ([#10582](https://github.com/googleapis/google-cloud-go/issues/10582)) ([a49ab59](https://github.com/googleapis/google-cloud-go/commit/a49ab593a7495c2cfff106594762b9a6c79eb8b2))
+* **bigtable:** Expose protoToType ([#10602](https://github.com/googleapis/google-cloud-go/issues/10602)) ([643a8e3](https://github.com/googleapis/google-cloud-go/commit/643a8e356632160c143e94f905c72b4e6452f5a6))
+
+
+### Bug Fixes
+
+* **bigtable/emulator:** Sending empty row in SampleRowKeys response ([#10611](https://github.com/googleapis/google-cloud-go/issues/10611)) ([928f1a7](https://github.com/googleapis/google-cloud-go/commit/928f1a77191fbf4736051305e0ad67b69bae11fb))
+* **bigtable:** Move usage to local proto definitions ([#10598](https://github.com/googleapis/google-cloud-go/issues/10598)) ([ce31365](https://github.com/googleapis/google-cloud-go/commit/ce31365acc54fdf0970fc9552b1758c8fef4762f))
+
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.27.0...bigtable/v1.27.1) (2024-07-25)
+
+
+### Bug Fixes
+
+* **bigtable:** Start generating proto sources ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.26.0...bigtable/v1.27.0) (2024-07-25)
+
+
+### Features
+
+* **bigtable:** Built-in client side metrics ([#10046](https://github.com/googleapis/google-cloud-go/issues/10046)) ([a747f0a](https://github.com/googleapis/google-cloud-go/commit/a747f0a49b79c0fe3034f7374b47ca56fc5ce0f5))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.25.0...bigtable/v1.26.0) (2024-07-23)
+
+
+### Features
+
+* **bigtable/emulator:** Allow listening on Unix Domain Sockets ([#9665](https://github.com/googleapis/google-cloud-go/issues/9665)) ([424494c](https://github.com/googleapis/google-cloud-go/commit/424494ce23db13468a4ea3e3be6ed1dee028ecdb))
+* **bigtable:** Add column family type to FamilyInfo in TableInfo ([#10520](https://github.com/googleapis/google-cloud-go/issues/10520)) ([fd16a17](https://github.com/googleapis/google-cloud-go/commit/fd16a1785df6f1378aecb3cd6a7f2c9bcc40c6c7))
+* **bigtable:** Mark CBT Authorized View admin APIs as unimplemented in the emulator  ([#10562](https://github.com/googleapis/google-cloud-go/issues/10562)) ([6b32871](https://github.com/googleapis/google-cloud-go/commit/6b328715c83c8fa2bfd1c3b6b64acd8f1bd486f2))
+
+
+### Bug Fixes
+
+* **bigtable:** Add quotes to end of range ([#10488](https://github.com/googleapis/google-cloud-go/issues/10488)) ([142b153](https://github.com/googleapis/google-cloud-go/commit/142b15384d4d818faf30f3bae4567c7f579f4079))
+* **bigtable:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **bigtable:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+* **bigtable:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.24.0...bigtable/v1.25.0) (2024-06-20)
+
+
+### Features
+
+* **bigtable:** Add string type to supported Bigtable type ([#10306](https://github.com/googleapis/google-cloud-go/issues/10306)) ([18fa7e4](https://github.com/googleapis/google-cloud-go/commit/18fa7e4961d055939078833d0442a415fac96ae6))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.23.0...bigtable/v1.24.0) (2024-05-28)
 
 

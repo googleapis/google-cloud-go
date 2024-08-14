@@ -64,6 +64,7 @@ func defaultExecutionsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -157,7 +158,8 @@ func (c *ExecutionsClient) GetExecution(ctx context.Context, req *runpb.GetExecu
 	return c.internalClient.GetExecution(ctx, req, opts...)
 }
 
-// ListExecutions lists Executions from a Job.
+// ListExecutions lists Executions from a Job. Results are sorted by creation time,
+// descending.
 func (c *ExecutionsClient) ListExecutions(ctx context.Context, req *runpb.ListExecutionsRequest, opts ...gax.CallOption) *ExecutionIterator {
 	return c.internalClient.ListExecutions(ctx, req, opts...)
 }
@@ -356,6 +358,7 @@ func defaultExecutionsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -644,7 +647,8 @@ func (c *executionsRESTClient) GetExecution(ctx context.Context, req *runpb.GetE
 	return resp, nil
 }
 
-// ListExecutions lists Executions from a Job.
+// ListExecutions lists Executions from a Job. Results are sorted by creation time,
+// descending.
 func (c *executionsRESTClient) ListExecutions(ctx context.Context, req *runpb.ListExecutionsRequest, opts ...gax.CallOption) *ExecutionIterator {
 	it := &ExecutionIterator{}
 	req = proto.Clone(req).(*runpb.ListExecutionsRequest)

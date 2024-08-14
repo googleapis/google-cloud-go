@@ -19,6 +19,7 @@ import (
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -95,9 +96,10 @@ type GenerationConfig struct {
 	// Optional. Stop sequences.
 	StopSequences []string `protobuf:"bytes,6,rep,name=stop_sequences,json=stopSequences,proto3" json:"stop_sequences,omitempty"`
 	HarmCat       HarmCategory
-	FinishReason  Candidate_FinishReason
-	CitMet        *CitationMetadata
-	TopK          *float32
+	// Bad doc that doesn't make sense.
+	FinishReason Candidate_FinishReason
+	CitMet       *CitationMetadata
+	TopK         *float32
 }
 
 // A collection of source attributions for a piece of content.
@@ -135,8 +137,10 @@ type Pop struct {
 	Y unexported
 }
 
-// Status converts to itself.
+// status.Status converts to apierror.APIError.
+// durationpb.Duration converts to time.Duration.
 
 type File struct {
 	Error *status.Status
+	Dur   *durationpb.Duration
 }

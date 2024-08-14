@@ -483,6 +483,30 @@ func ExampleQuery_Snapshots() {
 	}
 }
 
+// This example demonstrates how to use Firestore vector search.
+// It assumes that the database has a collection "descriptions"
+// in which each document has a field of type Vector32 or Vector64
+// called "Embedding":
+//
+//	type Description struct {
+//	   // ...
+//	   Embedding firestore.Vector32
+//	}
+func ExampleQuery_FindNearest() {
+	ctx := context.Background()
+	client, err := firestore.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer client.Close()
+
+	//
+	q := client.Collection("descriptions").
+		FindNearest("Embedding", []float32{1, 2, 3}, 5, firestore.DistanceMeasureDotProduct, nil)
+	iter1 := q.Documents(ctx)
+	_ = iter1 // TODO: Use iter1.
+}
+
 func ExampleDocumentIterator_Next() {
 	ctx := context.Background()
 	client, err := firestore.NewClient(ctx, "project-id")

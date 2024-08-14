@@ -112,6 +112,7 @@ use (
 	./networkconnectivity
 	./networkmanagement
 	./networksecurity
+	./networkservices
 	./notebooks
 	./optimization
 	./orchestration
@@ -123,6 +124,7 @@ use (
 	./policysimulator
 	./policytroubleshooter
 	./privatecatalog
+	./privilegedaccessmanager
 	./profiler
 	./pubsub
 	./pubsublite

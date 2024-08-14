@@ -37,7 +37,12 @@ func TestComputeTokenProvider(t *testing.T) {
 		w.Write([]byte(`{"access_token": "90d64460d14870c08c81352a05dedd3465940a7c", "token_type": "bearer", "expires_in": 86400}`))
 	}))
 	t.Setenv(computeMetadataEnvVar, strings.TrimPrefix(ts.URL, "http://"))
-	tp := computeTokenProvider(0, scope)
+	tp := computeTokenProvider(&DetectOptions{
+		EarlyTokenRefresh: 0,
+		Scopes: []string{
+			scope,
+		},
+	})
 	tok, err := tp.Token(context.Background())
 	if err != nil {
 		t.Fatal(err)
@@ -46,6 +51,9 @@ func TestComputeTokenProvider(t *testing.T) {
 		t.Errorf("got %q, want %q", tok.Value, want)
 	}
 	if want := "bearer"; tok.Type != want {
-		t.Errorf("got %q, want %q", tok.Value, want)
+		t.Errorf("got %q, want %q", tok.Type, want)
+	}
+	if got, want := tok.MetadataString("auth.google.tokenSource"), "compute-metadata"; got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }

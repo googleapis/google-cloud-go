@@ -29,7 +29,7 @@ import (
 // future. To make the test pass simply bump the int, but please also clone the
 // relevant fields.
 func TestCloneDetectOptions_FieldTest(t *testing.T) {
-	const WantNumberOfFields = 12
+	const WantNumberOfFields = 13
 	o := credentials.DetectOptions{}
 	got := reflect.TypeOf(o).NumField()
 	if got != WantNumberOfFields {

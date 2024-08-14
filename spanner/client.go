@@ -334,18 +334,20 @@ type ClientConfig struct {
 }
 
 type openTelemetryConfig struct {
-	meterProvider           metric.MeterProvider
-	attributeMap            []attribute.KeyValue
-	otMetricRegistration    metric.Registration
-	openSessionCount        metric.Int64ObservableGauge
-	maxAllowedSessionsCount metric.Int64ObservableGauge
-	sessionsCount           metric.Int64ObservableGauge
-	maxInUseSessionsCount   metric.Int64ObservableGauge
-	getSessionTimeoutsCount metric.Int64Counter
-	acquiredSessionsCount   metric.Int64Counter
-	releasedSessionsCount   metric.Int64Counter
-	gfeLatency              metric.Int64Histogram
-	gfeHeaderMissingCount   metric.Int64Counter
+	meterProvider                  metric.MeterProvider
+	attributeMap                   []attribute.KeyValue
+	attributeMapWithMultiplexed    []attribute.KeyValue
+	attributeMapWithoutMultiplexed []attribute.KeyValue
+	otMetricRegistration           metric.Registration
+	openSessionCount               metric.Int64ObservableGauge
+	maxAllowedSessionsCount        metric.Int64ObservableGauge
+	sessionsCount                  metric.Int64ObservableGauge
+	maxInUseSessionsCount          metric.Int64ObservableGauge
+	getSessionTimeoutsCount        metric.Int64Counter
+	acquiredSessionsCount          metric.Int64Counter
+	releasedSessionsCount          metric.Int64Counter
+	gfeLatency                     metric.Int64Histogram
+	gfeHeaderMissingCount          metric.Int64Counter
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
@@ -385,7 +387,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
 		emulatorOpts := []option.ClientOption{
 			option.WithEndpoint(emulatorAddr),
-			option.WithGRPCDialOption(grpc.WithInsecure()),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 			option.WithoutAuthentication(),
 			internaloption.SkipDialSettingsValidation(),
 		}
@@ -609,6 +611,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 	}
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -635,6 +638,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.disableRouteToLeader = true
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -706,6 +710,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.disableRouteToLeader = true
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t, nil
@@ -740,6 +745,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.disableRouteToLeader = true
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t

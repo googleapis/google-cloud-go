@@ -55,7 +55,7 @@ func (o *Options) client() *http.Client {
 	if o.Client != nil {
 		return o.Client
 	}
-	return internal.CloneDefaultClient()
+	return internal.DefaultClient()
 }
 
 // identityBindingEndpoint returns the identity binding endpoint with the
@@ -182,21 +182,21 @@ func (dts *downscopedTokenProvider) Token(ctx context.Context) (*auth.Token, err
 	form.Add("subject_token", tok.Value)
 	form.Add("options", string(b))
 
-	resp, err := dts.Client.PostForm(dts.identityBindingEndpoint, form)
+	req, err := http.NewRequestWithContext(ctx, "POST", dts.identityBindingEndpoint, strings.NewReader(form.Encode()))
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	respBody, err := internal.ReadAll(resp.Body)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	resp, body, err := internal.DoRequest(dts.Client, req)
 	if err != nil {
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("downscope: unable to exchange token, %v: %s", resp.StatusCode, respBody)
+		return nil, fmt.Errorf("downscope: unable to exchange token, %v: %s", resp.StatusCode, body)
 	}
 
 	var tresp downscopedTokenResponse
-	err = json.Unmarshal(respBody, &tresp)
+	err = json.Unmarshal(body, &tresp)
 	if err != nil {
 		return nil, err
 	}

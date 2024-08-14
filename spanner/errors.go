@@ -27,6 +27,11 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+var (
+	// ErrRowNotFound row not found error
+	ErrRowNotFound = errors.New("row not found")
+)
+
 // Error is the structured error returned by Cloud Spanner client.
 //
 // Deprecated: Unwrap any error that is returned by the Spanner client as an APIError

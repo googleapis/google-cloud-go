@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
-    "version": "0.6.0",
+    "version": "0.8.2",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,235 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "generativelanguage_v1beta_generated_CacheService_CreateCachedContent_sync",
+      "title": "generativelanguage CreateCachedContent Sample",
+      "description": "CreateCachedContent creates CachedContent resource.",
+      "file": "CacheClient/CreateCachedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCachedContent",
+        "fullName": "google.ai.generativelanguage.v1beta.CacheClient.CreateCachedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.CreateCachedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.CachedContent",
+        "client": {
+          "shortName": "CacheClient",
+          "fullName": "google.ai.generativelanguage.v1beta.CacheClient"
+        },
+        "method": {
+          "shortName": "CreateCachedContent",
+          "fullName": "google.ai.generativelanguage.v1beta.CacheService.CreateCachedContent",
+          "service": {
+            "shortName": "CacheService",
+            "fullName": "google.ai.generativelanguage.v1beta.CacheService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_CacheService_DeleteCachedContent_sync",
+      "title": "generativelanguage DeleteCachedContent Sample",
+      "description": "DeleteCachedContent deletes CachedContent resource.",
+      "file": "CacheClient/DeleteCachedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCachedContent",
+        "fullName": "google.ai.generativelanguage.v1beta.CacheClient.DeleteCachedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.DeleteCachedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CacheClient",
+          "fullName": "google.ai.generativelanguage.v1beta.CacheClient"
+        },
+        "method": {
+          "shortName": "DeleteCachedContent",
+          "fullName": "google.ai.generativelanguage.v1beta.CacheService.DeleteCachedContent",
+          "service": {
+            "shortName": "CacheService",
+            "fullName": "google.ai.generativelanguage.v1beta.CacheService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_CacheService_GetCachedContent_sync",
+      "title": "generativelanguage GetCachedContent Sample",
+      "description": "GetCachedContent reads CachedContent resource.",
+      "file": "CacheClient/GetCachedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCachedContent",
+        "fullName": "google.ai.generativelanguage.v1beta.CacheClient.GetCachedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GetCachedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.CachedContent",
+        "client": {
+          "shortName": "CacheClient",
+          "fullName": "google.ai.generativelanguage.v1beta.CacheClient"
+        },
+        "method": {
+          "shortName": "GetCachedContent",
+          "fullName": "google.ai.generativelanguage.v1beta.CacheService.GetCachedContent",
+          "service": {
+            "shortName": "CacheService",
+            "fullName": "google.ai.generativelanguage.v1beta.CacheService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_CacheService_ListCachedContents_sync",
+      "title": "generativelanguage ListCachedContents Sample",
+      "description": "ListCachedContents lists CachedContents.",
+      "file": "CacheClient/ListCachedContents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCachedContents",
+        "fullName": "google.ai.generativelanguage.v1beta.CacheClient.ListCachedContents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.ListCachedContentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CachedContentIterator",
+        "client": {
+          "shortName": "CacheClient",
+          "fullName": "google.ai.generativelanguage.v1beta.CacheClient"
+        },
+        "method": {
+          "shortName": "ListCachedContents",
+          "fullName": "google.ai.generativelanguage.v1beta.CacheService.ListCachedContents",
+          "service": {
+            "shortName": "CacheService",
+            "fullName": "google.ai.generativelanguage.v1beta.CacheService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_CacheService_UpdateCachedContent_sync",
+      "title": "generativelanguage UpdateCachedContent Sample",
+      "description": "UpdateCachedContent updates CachedContent resource (only expiration is updatable).",
+      "file": "CacheClient/UpdateCachedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCachedContent",
+        "fullName": "google.ai.generativelanguage.v1beta.CacheClient.UpdateCachedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.UpdateCachedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.CachedContent",
+        "client": {
+          "shortName": "CacheClient",
+          "fullName": "google.ai.generativelanguage.v1beta.CacheClient"
+        },
+        "method": {
+          "shortName": "UpdateCachedContent",
+          "fullName": "google.ai.generativelanguage.v1beta.CacheService.UpdateCachedContent",
+          "service": {
+            "shortName": "CacheService",
+            "fullName": "google.ai.generativelanguage.v1beta.CacheService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "generativelanguage_v1beta_generated_DiscussService_CountMessageTokens_sync",
       "title": "generativelanguage CountMessageTokens Sample",

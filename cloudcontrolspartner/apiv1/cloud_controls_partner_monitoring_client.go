@@ -56,6 +56,7 @@ func defaultCloudControlsPartnerMonitoringGRPCClientOptions() []option.ClientOpt
 		internaloption.WithDefaultAudience("https://cloudcontrolspartner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -295,6 +296,7 @@ func defaultCloudControlsPartnerMonitoringRESTClientOptions() []option.ClientOpt
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudcontrolspartner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 

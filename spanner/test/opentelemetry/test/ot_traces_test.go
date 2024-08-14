@@ -57,6 +57,11 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 	defer teardown()
 
 	waitFor(t, func() error {
+		if isMultiplexEnabled {
+			if uint64(server.TestSpanner.TotalSessionsCreated()) == minOpened+1 {
+				return nil
+			}
+		}
 		if uint64(server.TestSpanner.TotalSessionsCreated()) == minOpened {
 			return nil
 		}

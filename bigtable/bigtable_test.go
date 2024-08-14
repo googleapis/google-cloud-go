@@ -24,11 +24,13 @@ import (
 	"testing"
 	"time"
 
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
 )
+
+var disableMetricsConfig = ClientConfig{MetricsProvider: NoopMetricsProvider{}}
 
 func TestPrefix(t *testing.T) {
 	for _, test := range []struct {
@@ -253,8 +255,9 @@ func TestApplyErrors(t *testing.T) {
 	ctx := context.Background()
 	table := &Table{
 		c: &Client{
-			project:  "P",
-			instance: "I",
+			project:              "P",
+			instance:             "I",
+			metricsTracerFactory: &builtinMetricsTracerFactory{},
 		},
 		table: "t",
 	}
@@ -513,22 +516,22 @@ func TestRowRangeString(t *testing.T) {
 		{
 			desc: "RowRange closed open",
 			rr:   NewClosedOpenRange("a", "b"),
-			str:  "[\"a\",b)",
+			str:  "[\"a\",\"b\")",
 		},
 		{
 			desc: "RowRange open open",
 			rr:   NewOpenRange("c", "d"),
-			str:  "(\"c\",d)",
+			str:  "(\"c\",\"d\")",
 		},
 		{
 			desc: "RowRange closed closed",
 			rr:   NewClosedRange("e", "f"),
-			str:  "[\"e\",f]",
+			str:  "[\"e\",\"f\"]",
 		},
 		{
 			desc: "RowRange open closed",
 			rr:   NewOpenClosedRange("g", "h"),
-			str:  "(\"g\",h]",
+			str:  "(\"g\",\"h\"]",
 		},
 		{
 			desc: "RowRange unbound unbound",
@@ -543,7 +546,7 @@ func TestRowRangeString(t *testing.T) {
 		{
 			desc: "RowRange unbound closed",
 			rr:   InfiniteReverseRange("c"),
-			str:  "(∞,c]",
+			str:  "(∞,\"c\"]",
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
@@ -581,9 +584,9 @@ func TestReadRowsInvalidRowSet(t *testing.T) {
 	if err := adminClient.CreateTable(ctx, testEnv.config.Table); err != nil {
 		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
 	}
-	client, err := NewClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	client, err := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
 	if err != nil {
-		t.Fatalf("NewClient failed: %v", err)
+		t.Fatalf("NewClientWithConfig failed: %v", err)
 	}
 	defer client.Close()
 	table := client.Open(testEnv.config.Table)
@@ -657,9 +660,9 @@ func TestReadRowsRequestStats(t *testing.T) {
 		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
 	}
 
-	client, err := NewClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	client, err := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
 	if err != nil {
-		t.Fatalf("NewClient failed: %v", err)
+		t.Fatalf("NewClientWithConfig failed: %v", err)
 	}
 	defer client.Close()
 	table := client.Open(testEnv.config.Table)
@@ -751,7 +754,68 @@ func TestHeaderPopulatedWithAppProfile(t *testing.T) {
 	}
 }
 
-func TestMutateRowsWithAggregates(t *testing.T) {
+func TestMutateRowsWithAggregates_AddToCell(t *testing.T) {
+	testEnv, err := NewEmulatedEnv(IntegrationTestConfig{})
+	if err != nil {
+		t.Fatalf("NewEmulatedEnv failed: %v", err)
+	}
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
+	)
+	if err != nil {
+		t.Fatalf("grpc.Dial failed: %v", err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	adminClient, err := NewAdminClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	defer adminClient.Close()
+
+	tableConf := &TableConf{
+		TableID: testEnv.config.Table,
+		ColumnFamilies: map[string]Family{
+			"f": {
+				ValueType: AggregateType{
+					Input:      Int64Type{},
+					Aggregator: SumAggregator{},
+				},
+			},
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, tableConf); err != nil {
+		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
+	}
+
+	client, err := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClientWithConfig failed: %v", err)
+	}
+	defer client.Close()
+	table := client.Open(testEnv.config.Table)
+
+	m := NewMutation()
+	m.AddIntToCell("f", "q", 0, 1000)
+	err = table.Apply(ctx, "row1", m)
+	if err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	m = NewMutation()
+	m.AddIntToCell("f", "q", 0, 2000)
+	err = table.Apply(ctx, "row1", m)
+	if err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	row, err := table.ReadRow(ctx, "row1")
+	if !bytes.Equal(row["f"][0].Value, binary.BigEndian.AppendUint64([]byte{}, 3000)) {
+		t.Error()
+	}
+}
+
+func TestMutateRowsWithAggregates_MergeToCell(t *testing.T) {
 	testEnv, err := NewEmulatedEnv(IntegrationTestConfig{})
 	if err != nil {
 		t.Fatalf("NewEmulatedEnv failed: %v", err)
@@ -793,14 +857,14 @@ func TestMutateRowsWithAggregates(t *testing.T) {
 	table := client.Open(testEnv.config.Table)
 
 	m := NewMutation()
-	m.AddIntToCell("f", "q", 0, 1000)
+	m.MergeBytesToCell("f", "q", 0, binary.BigEndian.AppendUint64([]byte{}, 1000))
 	err = table.Apply(ctx, "row1", m)
 	if err != nil {
 		t.Fatalf("Apply failed: %v", err)
 	}
 
 	m = NewMutation()
-	m.AddIntToCell("f", "q", 0, 2000)
+	m.MergeBytesToCell("f", "q", 0, binary.BigEndian.AppendUint64([]byte{}, 2000))
 	err = table.Apply(ctx, "row1", m)
 	if err != nil {
 		t.Fatalf("Apply failed: %v", err)
