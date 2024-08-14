@@ -21,13 +21,12 @@
 package managedkafkapb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -706,7 +705,7 @@ type ConsumerPartitionMetadata struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The offset for this partition, or 0 if no offset has been
+	// Required. The current offset for this partition, or 0 if no offset has been
 	// committed.
 	Offset int64 `protobuf:"varint,1,opt,name=offset,proto3" json:"offset,omitempty"`
 	// Optional. The associated metadata for this partition, or empty if it does
