@@ -1861,7 +1861,7 @@ type writeOnlyTransaction struct {
 	excludeTxnFromChangeStreams bool
 	// maxCommitDelay is the maximum time that the commit will be delayed by the
 	// backend before it is acknowledged.
-	commitOptions *CommitOptions
+	commitOptions CommitOptions
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1887,7 +1887,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 	}
 
 	var maxCommitDelay *durationpb.Duration
-	if t.commitOptions != nil && t.commitOptions.MaxCommitDelay != nil {
+	if t.commitOptions.MaxCommitDelay != nil {
 		maxCommitDelay = durationpb.New(*(t.commitOptions.MaxCommitDelay))
 	}
 

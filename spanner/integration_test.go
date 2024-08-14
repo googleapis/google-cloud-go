@@ -1502,7 +1502,7 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce(), ApplyCommitOptions(&CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration})); err != nil {
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce(), ApplyCommitOptions(CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration})); err != nil {
 		t.Fatal(err)
 	}
 
