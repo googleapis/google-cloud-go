@@ -95,6 +95,7 @@ modules:
   - networkconnectivity
   - networkmanagement
   - networksecurity
+  - networkservices
   - notebooks
   - optimization
   - orchestration
@@ -106,6 +107,7 @@ modules:
   - policysimulator
   - policytroubleshooter
   - privatecatalog
+  - privilegedaccessmanager
   - profiler
   - pubsub
   - pubsublite
@@ -443,6 +445,14 @@ service-configs:
   - input-directory: google/cloud/bigquery/storage/v1beta2
     service-config: bigquerystorage_v1beta2.yaml
     import-path: cloud.google.com/go/bigquery/storage/apiv1beta2
+  - input-directory: google/bigtable/admin/v2
+    service-config: bigtableadmin_v2.yaml
+    import-path: cloud.google.com/go/bigtable/admin/apiv2
+    release-level-override: stable
+  - input-directory: google/bigtable/v2
+    service-config: bigtable_v2.yaml
+    import-path: cloud.google.com/go/bigtable/apiv2
+    release-level-override: stable
   - input-directory: google/cloud/billing/budgets/v1
     service-config: billingbudgets.yaml
     import-path: cloud.google.com/go/billing/budgets/apiv1
@@ -681,6 +691,9 @@ service-configs:
   - input-directory: google/cloud/networksecurity/v1beta1
     service-config: networksecurity_v1beta1.yaml
     import-path: cloud.google.com/go/networksecurity/apiv1beta1
+  - input-directory: google/cloud/networkservices/v1
+    service-config: networkservices_v1.yaml
+    import-path: cloud.google.com/go/networkservices/apiv1
   - input-directory: google/cloud/notebooks/v1
     service-config: notebooks_v1.yaml
     import-path: cloud.google.com/go/notebooks/apiv1
@@ -744,6 +757,9 @@ service-configs:
   - input-directory: google/cloud/privatecatalog/v1beta1
     service-config: cloudprivatecatalog_v1beta1.yaml
     import-path: cloud.google.com/go/privatecatalog/apiv1beta1
+  - input-directory: google/cloud/privilegedaccessmanager/v1
+    service-config: privilegedaccessmanager_v1.yaml
+    import-path: cloud.google.com/go/privilegedaccessmanager/apiv1
   - input-directory: google/cloud/pubsublite/v1
     service-config: pubsublite_v1.yaml
     import-path: cloud.google.com/go/pubsublite/apiv1
@@ -866,12 +882,24 @@ service-configs:
   - input-directory: google/shopping/css/v1
     service-config: css_v1.yaml
     import-path: cloud.google.com/go/shopping/css/apiv1
+  - input-directory: google/shopping/merchant/accounts/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/accounts/apiv1beta
   - input-directory: google/shopping/merchant/conversions/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/conversions/apiv1beta
+  - input-directory: google/shopping/merchant/datasources/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/datasources/apiv1beta
   - input-directory: google/shopping/merchant/notifications/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/notifications/apiv1beta
+  - input-directory: google/shopping/merchant/products/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/products/apiv1beta
+  - input-directory: google/shopping/merchant/promotions/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/promotions/apiv1beta
   - input-directory: google/shopping/merchant/quota/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/quota/apiv1beta

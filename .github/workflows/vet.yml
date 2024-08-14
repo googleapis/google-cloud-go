@@ -21,6 +21,6 @@ jobs:
       run: |
         go install golang.org/x/lint/golint@latest && \
         go install golang.org/x/tools/cmd/goimports@latest && \
-        go install honnef.co/go/tools/cmd/staticcheck@latest
+        go install honnef.co/go/tools/cmd/staticcheck@v0.4.7
     - name: Execute vet.sh
       run: ./.github/workflows/vet.sh

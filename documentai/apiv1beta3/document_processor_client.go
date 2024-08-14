@@ -87,6 +87,7 @@ func defaultDocumentProcessorGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://documentai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -421,6 +422,10 @@ func (c *DocumentProcessorClient) UndeployProcessorVersionOperation(name string)
 // CreateProcessor creates a processor from the
 // ProcessorType provided.
 // The processor will be at ENABLED state by default after its creation.
+// Note that this method requires the documentai.processors.create
+// permission on the project, which is highly privileged. A user or service
+// account with this permission can create new processors that can interact
+// with any gcs bucket in your project.
 func (c *DocumentProcessorClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	return c.internalClient.CreateProcessor(ctx, req, opts...)
 }
@@ -705,6 +710,7 @@ func defaultDocumentProcessorRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://documentai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -2351,6 +2357,10 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 // CreateProcessor creates a processor from the
 // ProcessorType provided.
 // The processor will be at ENABLED state by default after its creation.
+// Note that this method requires the documentai.processors.create
+// permission on the project, which is highly privileged. A user or service
+// account with this permission can create new processors that can interact
+// with any gcs bucket in your project.
 func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProcessor()

@@ -49,12 +49,12 @@ func TestAddAuthorizationMiddleware(t *testing.T) {
 		},
 		{
 			name:    "missing creds field",
-			client:  internal.CloneDefaultClient(),
+			client:  internal.DefaultClient(),
 			wantErr: true,
 		},
 		{
 			name:   "works",
-			client: internal.CloneDefaultClient(),
+			client: internal.DefaultClient(),
 			creds:  creds,
 			want:   "fakeToken",
 		},

@@ -46,6 +46,7 @@ func defaultStreamingVideoIntelligenceGRPCClientOptions() []option.ClientOption 
 		internaloption.WithDefaultAudience("https://videointelligence.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

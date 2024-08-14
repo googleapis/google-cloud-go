@@ -92,6 +92,8 @@ var (
 	// GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG.
 	instanceConfig = getInstanceConfig()
 
+	isMultiplexEnabled = getMultiplexEnableFlag()
+
 	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
 	backupIDSpace     = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
@@ -385,6 +387,10 @@ func getSpannerHost() string {
 
 func getInstanceConfig() string {
 	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG")
+}
+
+func getMultiplexEnableFlag() bool {
+	return os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") == "true"
 }
 
 const (
@@ -1732,6 +1738,9 @@ func TestIntegration_Reads(t *testing.T) {
 	if ErrCode(err) != codes.NotFound {
 		t.Fatalf("got %v, want NotFound", err)
 	}
+	if !errors.Is(err, ErrRowNotFound) {
+		t.Fatalf("got %v, want spanner.ErrRowNotFound", err)
+	}
 	verifyDirectPathRemoteAddress(t)
 
 	// Index point read.
@@ -1751,6 +1760,9 @@ func TestIntegration_Reads(t *testing.T) {
 	_, err = client.Single().ReadRowUsingIndex(ctx, testTable, testTableIndex, Key{"v999"}, testTableColumns)
 	if ErrCode(err) != codes.NotFound {
 		t.Fatalf("got %v, want NotFound", err)
+	}
+	if !errors.Is(err, ErrRowNotFound) {
+		t.Fatalf("got %v, want spanner.ErrRowNotFound", err)
 	}
 	verifyDirectPathRemoteAddress(t)
 	rangeReads(ctx, t, client)
@@ -1894,6 +1906,23 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	// from repeatedly trying to create sessions for the invalid database.
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, SessionPoolConfig{}, statements[testDialect][singerDDLStatements])
 	defer cleanup()
+	if isMultiplexEnabled {
+		// TODO: confirm that this is the valid scenario for multiplexed sessions, and what's expected behavior.
+		// wait for the multiplexed session to be created.
+		waitFor(t, func() error {
+			client.idleSessions.mu.Lock()
+			defer client.idleSessions.mu.Unlock()
+			if client.idleSessions.multiplexedSession == nil {
+				return errInvalidSessionPool
+			}
+			return nil
+		})
+		// Close the multiplexed session to prevent the session pool maintainer
+		// from repeatedly trying to use sessions for the invalid database.
+		client.idleSessions.mu.Lock()
+		client.idleSessions.multiplexedSession = nil
+		client.idleSessions.mu.Unlock()
+	}
 
 	// Drop the testing database.
 	if err := databaseAdmin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {

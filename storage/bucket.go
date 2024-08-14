@@ -491,6 +491,13 @@ type BucketAttrs struct {
 	// 7 day retention duration. In order to fully disable soft delete, you need
 	// to set a policy with a RetentionDuration of 0.
 	SoftDeletePolicy *SoftDeletePolicy
+
+	// HierarchicalNamespace contains the bucket's hierarchical namespace
+	// configuration. Hierarchical namespace enabled buckets can contain
+	// [cloud.google.com/go/storage/control/apiv2/controlpb.Folder] resources.
+	// It cannot be modified after bucket creation time.
+	// UniformBucketLevelAccess must also also be enabled on the bucket.
+	HierarchicalNamespace *HierarchicalNamespace
 }
 
 // BucketPolicyOnly is an alias for UniformBucketLevelAccess.
@@ -792,6 +799,15 @@ type SoftDeletePolicy struct {
 	RetentionDuration time.Duration
 }
 
+// HierarchicalNamespace contains the bucket's hierarchical namespace
+// configuration. Hierarchical namespace enabled buckets can contain
+// [cloud.google.com/go/storage/control/apiv2/controlpb.Folder] resources.
+type HierarchicalNamespace struct {
+	// Enabled indicates whether hierarchical namespace features are enabled on
+	// the bucket. This can only be set at bucket creation time currently.
+	Enabled bool
+}
+
 func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 	if b == nil {
 		return nil, nil
@@ -830,6 +846,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		CustomPlacementConfig:    customPlacementFromRaw(b.CustomPlacementConfig),
 		Autoclass:                toAutoclassFromRaw(b.Autoclass),
 		SoftDeletePolicy:         toSoftDeletePolicyFromRaw(b.SoftDeletePolicy),
+		HierarchicalNamespace:    toHierarchicalNamespaceFromRaw(b.HierarchicalNamespace),
 	}, nil
 }
 
@@ -864,6 +881,7 @@ func newBucketFromProto(b *storagepb.Bucket) *BucketAttrs {
 		ProjectNumber:            parseProjectNumber(b.GetProject()), // this can return 0 the project resource name is ID based
 		Autoclass:                toAutoclassFromProto(b.GetAutoclass()),
 		SoftDeletePolicy:         toSoftDeletePolicyFromProto(b.SoftDeletePolicy),
+		HierarchicalNamespace:    toHierarchicalNamespaceFromProto(b.HierarchicalNamespace),
 	}
 }
 
@@ -920,6 +938,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		CustomPlacementConfig: b.CustomPlacementConfig.toRawCustomPlacement(),
 		Autoclass:             b.Autoclass.toRawAutoclass(),
 		SoftDeletePolicy:      b.SoftDeletePolicy.toRawSoftDeletePolicy(),
+		HierarchicalNamespace: b.HierarchicalNamespace.toRawHierarchicalNamespace(),
 	}
 }
 
@@ -981,6 +1000,7 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 		CustomPlacementConfig: b.CustomPlacementConfig.toProtoCustomPlacement(),
 		Autoclass:             b.Autoclass.toProtoAutoclass(),
 		SoftDeletePolicy:      b.SoftDeletePolicy.toProtoSoftDeletePolicy(),
+		HierarchicalNamespace: b.HierarchicalNamespace.toProtoHierarchicalNamespace(),
 	}
 }
 
@@ -2103,8 +2123,11 @@ func (p *SoftDeletePolicy) toRawSoftDeletePolicy() *raw.BucketSoftDeletePolicy {
 		return nil
 	}
 	// Excluding read only field EffectiveTime.
+	// ForceSendFields must be set to send a zero value for RetentionDuration and disable
+	// soft delete.
 	return &raw.BucketSoftDeletePolicy{
 		RetentionDurationSeconds: int64(p.RetentionDuration.Seconds()),
+		ForceSendFields:          []string{"RetentionDurationSeconds"},
 	}
 }
 
@@ -2142,6 +2165,42 @@ func toSoftDeletePolicyFromProto(p *storagepb.Bucket_SoftDeletePolicy) *SoftDele
 	return &SoftDeletePolicy{
 		EffectiveTime:     p.GetEffectiveTime().AsTime(),
 		RetentionDuration: p.GetRetentionDuration().AsDuration(),
+	}
+}
+
+func (hns *HierarchicalNamespace) toProtoHierarchicalNamespace() *storagepb.Bucket_HierarchicalNamespace {
+	if hns == nil {
+		return nil
+	}
+	return &storagepb.Bucket_HierarchicalNamespace{
+		Enabled: hns.Enabled,
+	}
+}
+
+func (hns *HierarchicalNamespace) toRawHierarchicalNamespace() *raw.BucketHierarchicalNamespace {
+	if hns == nil {
+		return nil
+	}
+	return &raw.BucketHierarchicalNamespace{
+		Enabled: hns.Enabled,
+	}
+}
+
+func toHierarchicalNamespaceFromProto(p *storagepb.Bucket_HierarchicalNamespace) *HierarchicalNamespace {
+	if p == nil {
+		return nil
+	}
+	return &HierarchicalNamespace{
+		Enabled: p.Enabled,
+	}
+}
+
+func toHierarchicalNamespaceFromRaw(r *raw.BucketHierarchicalNamespace) *HierarchicalNamespace {
+	if r == nil {
+		return nil
+	}
+	return &HierarchicalNamespace{
+		Enabled: r.Enabled,
 	}
 }
 

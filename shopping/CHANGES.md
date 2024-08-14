@@ -1,5 +1,66 @@
 # Changelog
 
+## [0.8.7](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.6...shopping/v0.8.7) (2024-08-08)
+
+
+### Bug Fixes
+
+* **shopping:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [0.8.6](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.5...shopping/v0.8.6) (2024-07-24)
+
+
+### Bug Fixes
+
+* **shopping:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [0.8.5](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.4...shopping/v0.8.5) (2024-07-10)
+
+
+### Bug Fixes
+
+* **shopping:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [0.8.4](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.3...shopping/v0.8.4) (2024-07-01)
+
+
+### Bug Fixes
+
+* **shopping:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [0.8.3](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.2...shopping/v0.8.3) (2024-06-26)
+
+
+### Bug Fixes
+
+* **shopping:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [0.8.2](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.1...shopping/v0.8.2) (2024-06-18)
+
+
+### Documentation
+
+* **shopping/css:** Remove "in Google Shopping" from documentation comments ([abac5c6](https://github.com/googleapis/google-cloud-go/commit/abac5c6eec859477c6d390b116ea8954213ba585))
+
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.0...shopping/v0.8.1) (2024-06-10)
+
+
+### Documentation
+
+* **shopping/merchant/accounts:** Format comments in ListUsersRequest ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.7.0...shopping/v0.8.0) (2024-06-05)
+
+
+### Features
+
+* **shopping:** New client(s) ([#10313](https://github.com/googleapis/google-cloud-go/issues/10313)) ([b439b80](https://github.com/googleapis/google-cloud-go/commit/b439b80a7488ff6b3bce775b63f7923951ee5e1a))
+
+
+### Documentation
+
+* **shopping/merchant/accounts:** Mark `BusinessInfo.phone` as output only ([#10319](https://github.com/googleapis/google-cloud-go/issues/10319)) ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.6.0...shopping/v0.7.0) (2024-05-22)
 
 

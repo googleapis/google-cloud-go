@@ -80,6 +80,11 @@
                 "GetSpace"
               ]
             },
+            "GetSpaceEvent": {
+              "methods": [
+                "GetSpaceEvent"
+              ]
+            },
             "GetSpaceReadState": {
               "methods": [
                 "GetSpaceReadState"
@@ -103,6 +108,11 @@
             "ListReactions": {
               "methods": [
                 "ListReactions"
+              ]
+            },
+            "ListSpaceEvents": {
+              "methods": [
+                "ListSpaceEvents"
               ]
             },
             "ListSpaces": {
@@ -215,6 +225,11 @@
                 "GetSpace"
               ]
             },
+            "GetSpaceEvent": {
+              "methods": [
+                "GetSpaceEvent"
+              ]
+            },
             "GetSpaceReadState": {
               "methods": [
                 "GetSpaceReadState"
@@ -238,6 +253,11 @@
             "ListReactions": {
               "methods": [
                 "ListReactions"
+              ]
+            },
+            "ListSpaceEvents": {
+              "methods": [
+                "ListSpaceEvents"
               ]
             },
             "ListSpaces": {

@@ -46,19 +46,20 @@ var newConversationsClientHook clientHook
 
 // ConversationsCallOptions contains the retry settings for each method of ConversationsClient.
 type ConversationsCallOptions struct {
-	CreateConversation         []gax.CallOption
-	ListConversations          []gax.CallOption
-	GetConversation            []gax.CallOption
-	CompleteConversation       []gax.CallOption
-	ListMessages               []gax.CallOption
-	SuggestConversationSummary []gax.CallOption
-	GenerateStatelessSummary   []gax.CallOption
-	SearchKnowledge            []gax.CallOption
-	GetLocation                []gax.CallOption
-	ListLocations              []gax.CallOption
-	CancelOperation            []gax.CallOption
-	GetOperation               []gax.CallOption
-	ListOperations             []gax.CallOption
+	CreateConversation          []gax.CallOption
+	ListConversations           []gax.CallOption
+	GetConversation             []gax.CallOption
+	CompleteConversation        []gax.CallOption
+	ListMessages                []gax.CallOption
+	SuggestConversationSummary  []gax.CallOption
+	GenerateStatelessSummary    []gax.CallOption
+	GenerateStatelessSuggestion []gax.CallOption
+	SearchKnowledge             []gax.CallOption
+	GetLocation                 []gax.CallOption
+	ListLocations               []gax.CallOption
+	CancelOperation             []gax.CallOption
+	GetOperation                []gax.CallOption
+	ListOperations              []gax.CallOption
 }
 
 func defaultConversationsGRPCClientOptions() []option.ClientOption {
@@ -70,6 +71,7 @@ func defaultConversationsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -150,6 +152,18 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		GenerateStatelessSummary: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GenerateStatelessSuggestion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -260,6 +274,17 @@ func defaultConversationsRESTCallOptions() *ConversationsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GenerateStatelessSuggestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		SearchKnowledge: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -291,6 +316,7 @@ type internalConversationsClient interface {
 	ListMessages(context.Context, *dialogflowpb.ListMessagesRequest, ...gax.CallOption) *MessageIterator
 	SuggestConversationSummary(context.Context, *dialogflowpb.SuggestConversationSummaryRequest, ...gax.CallOption) (*dialogflowpb.SuggestConversationSummaryResponse, error)
 	GenerateStatelessSummary(context.Context, *dialogflowpb.GenerateStatelessSummaryRequest, ...gax.CallOption) (*dialogflowpb.GenerateStatelessSummaryResponse, error)
+	GenerateStatelessSuggestion(context.Context, *dialogflowpb.GenerateStatelessSuggestionRequest, ...gax.CallOption) (*dialogflowpb.GenerateStatelessSuggestionResponse, error)
 	SearchKnowledge(context.Context, *dialogflowpb.SearchKnowledgeRequest, ...gax.CallOption) (*dialogflowpb.SearchKnowledgeResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
@@ -395,6 +421,12 @@ func (c *ConversationsClient) SuggestConversationSummary(ctx context.Context, re
 // resource created for it.
 func (c *ConversationsClient) GenerateStatelessSummary(ctx context.Context, req *dialogflowpb.GenerateStatelessSummaryRequest, opts ...gax.CallOption) (*dialogflowpb.GenerateStatelessSummaryResponse, error) {
 	return c.internalClient.GenerateStatelessSummary(ctx, req, opts...)
+}
+
+// GenerateStatelessSuggestion generates and returns a suggestion for a conversation that does not have a
+// resource created for it.
+func (c *ConversationsClient) GenerateStatelessSuggestion(ctx context.Context, req *dialogflowpb.GenerateStatelessSuggestionRequest, opts ...gax.CallOption) (*dialogflowpb.GenerateStatelessSuggestionResponse, error) {
+	return c.internalClient.GenerateStatelessSuggestion(ctx, req, opts...)
 }
 
 // SearchKnowledge get answers for the given query based on knowledge documents.
@@ -553,6 +585,7 @@ func defaultConversationsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -755,6 +788,24 @@ func (c *conversationsGRPCClient) GenerateStatelessSummary(ctx context.Context, 
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.conversationsClient.GenerateStatelessSummary(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *conversationsGRPCClient) GenerateStatelessSuggestion(ctx context.Context, req *dialogflowpb.GenerateStatelessSuggestionRequest, opts ...gax.CallOption) (*dialogflowpb.GenerateStatelessSuggestionResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateStatelessSuggestion[0:len((*c.CallOptions).GenerateStatelessSuggestion):len((*c.CallOptions).GenerateStatelessSuggestion)], opts...)
+	var resp *dialogflowpb.GenerateStatelessSuggestionResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.conversationsClient.GenerateStatelessSuggestion(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1424,6 +1475,73 @@ func (c *conversationsRESTClient) GenerateStatelessSummary(ctx context.Context, 
 	opts = append((*c.CallOptions).GenerateStatelessSummary[0:len((*c.CallOptions).GenerateStatelessSummary):len((*c.CallOptions).GenerateStatelessSummary)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dialogflowpb.GenerateStatelessSummaryResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GenerateStatelessSuggestion generates and returns a suggestion for a conversation that does not have a
+// resource created for it.
+func (c *conversationsRESTClient) GenerateStatelessSuggestion(ctx context.Context, req *dialogflowpb.GenerateStatelessSuggestionRequest, opts ...gax.CallOption) (*dialogflowpb.GenerateStatelessSuggestionResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v/statelessSuggestion:generate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateStatelessSuggestion[0:len((*c.CallOptions).GenerateStatelessSuggestion):len((*c.CallOptions).GenerateStatelessSuggestion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dialogflowpb.GenerateStatelessSuggestionResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

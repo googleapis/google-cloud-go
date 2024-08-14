@@ -103,7 +103,7 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 		}
 	} else if opts.Client == nil {
 		creds = opts.Credentials
-		client = internal.CloneDefaultClient()
+		client = internal.DefaultClient()
 		if err := httptransport.AddAuthorizationMiddleware(client, opts.Credentials); err != nil {
 			return nil, err
 		}
@@ -162,19 +162,14 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 	}
 
 	url := fmt.Sprintf("%s/v1/%s:generateIdToken", iamCredentialsEndpoint, formatIAMServiceAccountName(i.targetPrincipal))
-	req, err := http.NewRequest("POST", url, bytes.NewReader(bodyBytes))
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(bodyBytes))
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := i.client.Do(req)
+	resp, body, err := internal.DoRequest(i.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to generate ID token: %w", err)
-	}
-	defer resp.Body.Close()
-	body, err := internal.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to read body: %w", err)
 	}
 	if c := resp.StatusCode; c < 200 || c > 299 {
 		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)
