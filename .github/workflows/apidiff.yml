@@ -6,6 +6,9 @@ on:
 permissions:
   contents: read
 
+env:
+  GOTOOLCHAIN: local
+
 jobs:
   scan_changes:
     runs-on: ubuntu-latest

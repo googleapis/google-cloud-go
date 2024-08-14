@@ -11,6 +11,9 @@ on:
 permissions:
   contents: read
 
+env:
+  GOTOOLCHAIN: local
+
 jobs:
   new_versions:
     runs-on: ubuntu-latest

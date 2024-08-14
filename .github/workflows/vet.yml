@@ -9,6 +9,9 @@ on:
 permissions:
   contents: read  #  to fetch code (actions/checkout)
 
+env:
+  GOTOOLCHAIN: local
+
 jobs:
   vet:
     runs-on: ubuntu-latest

@@ -27,6 +27,9 @@ name: bigtable_conformance
 permissions:
   contents: read
 
+env:
+  GOTOOLCHAIN: local
+
 jobs:
   bigtable_conformance:
     runs-on: ubuntu-latest
