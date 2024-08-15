@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
-	"log"
 	"net/url"
 	"os"
 
@@ -35,7 +34,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
-	"google.golang.org/api/transport"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding"
@@ -127,25 +126,8 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
 	}
 	if !config.disableClientMetrics {
-		project := ""
-		c, err := transport.Creds(ctx, s.clientOption...)
-		if err == nil {
-			project = c.ProjectID
-		}
-		// TODO: detect project id
-		log.Println("Testing using gRPC Metrics")
-		log.Printf("Using project: %v", project)
-
-		// Enable client-side metrics for gRPC
-		// TODO: detect endpoint
-		metricsContext, err := gRPCMetricProvider(ctx, internalMetricsConfig{
-			project: project,
-			host:    "monitoring.googleapis.com",
-		})
-		if err != nil {
-			// Do not fail client creation; this isn't a strict requirement if creation fails
-			log.Println(err)
-		} else {
+		// Do not fail client creation if enabling metrics fails.
+		if metricsContext, err := enableClientMetrics(ctx, s); err == nil {
 			s.metricsContext = metricsContext
 			s.clientOption = append(s.clientOption, metricsContext.clientOpts...)
 		}

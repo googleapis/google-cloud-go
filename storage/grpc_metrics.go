@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -29,6 +30,8 @@ import (
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
+	htransport "google.golang.org/api/transport/http"
 	estats "google.golang.org/grpc/experimental/stats"
 	"google.golang.org/grpc/stats/opentelemetry"
 )
@@ -62,11 +65,10 @@ func sizeHistogramBoundaries() []float64 {
 	kb := 1024.0
 	mb := 1024.0 * kb
 	gb := 1024.0 * mb
-
 	boundaries := []float64{}
 	boundary := 0.0
 	increment := 128 * kb
-
+	// 128 KiB increments up to 4MiB, then exponential growth
 	for len(boundaries) < 200 && boundary <= 16*gb {
 		boundaries = append(boundaries, boundary)
 		boundary += increment
@@ -107,17 +109,17 @@ func gcpAttributeExpectedDefaults() []attribute.KeyValue {
 }
 
 // Added to help with tests
-type preparedResource struct {
+type internalPreparedResource struct {
 	projectToUse string
 	resource     *resource.Resource
 }
 
-func createPreparedResource(ctx context.Context, project string, resourceOptions []resource.Option) (*preparedResource, error) {
+func createPreparedResource(ctx context.Context, project string, resourceOptions []resource.Option) (*internalPreparedResource, error) {
 	detectedAttrs, err := resource.New(ctx, resourceOptions...)
 	if err != nil {
 		return nil, err
 	}
-	preparedResource := &preparedResource{}
+	preparedResource := &internalPreparedResource{}
 
 	s := detectedAttrs.Set()
 	p, present := s.Value("cloud.account.id")
@@ -152,11 +154,15 @@ func createPreparedResource(ctx context.Context, project string, resourceOptions
 }
 
 type internalMetricsConfig struct {
-	project string
-	host    string
+	project  string
+	endpoint string
 }
 
 type internalMetricsContext struct {
+	// monitoring API endpoint used
+	endpoint string
+	// project used by exporter
+	project string
 	// client options passed to gRPC channels
 	clientOpts []option.ClientOption
 	// instance of metric reader used by gRPC client-side metrics
@@ -165,14 +171,53 @@ type internalMetricsContext struct {
 	close func()
 }
 
-// TODO: format errors emitted here.
-func gRPCMetricProvider(ctx context.Context, config internalMetricsConfig) (*internalMetricsContext, error) {
+func (mc *internalMetricsContext) String() string {
+	return fmt.Sprintf("endpoint: %v\nproject: %v\n", mc.endpoint, mc.project)
+}
+
+func determineMonitoringEndpoint(endpoint string) string {
+	// Check storage endpoint in case its using VPC then we use that endpoint instead.
+	if strings.Contains(endpoint, "private.googleapis.com") || strings.Contains(endpoint, "restricted.googleapis.com") {
+		return endpoint
+	}
+	// Default monitoring endpoint is used.
+	return ""
+}
+
+func createHistogramView(name, desc, unit string, boundaries []float64) sdkmetric.View {
+	return sdkmetric.NewView(sdkmetric.Instrument{
+		Name:        name,
+		Description: name,
+		Kind:        sdkmetric.InstrumentKindHistogram,
+		Unit:        unit,
+	}, sdkmetric.Stream{
+		Name:        name,
+		Description: desc,
+		Unit:        unit,
+		Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: boundaries},
+	})
+}
+
+func newGRPCMetricContext(ctx context.Context, config internalMetricsConfig) (*internalMetricsContext, error) {
 	preparedResource, err := createPreparedResource(ctx, config.project, []resource.Option{resource.WithDetectors(gcp.NewDetector())})
 	if err != nil {
 		return nil, err
 	}
 	if config.project != preparedResource.projectToUse {
 		log.Printf("The Project ID configured for metrics is %s, but the Project ID of the storage client is %s. Make sure that the service account in use has the required metric writing role (roles/monitoring.metricWriter) in the project projectIdToUse or metrics will not be written.", preparedResource.projectToUse, config.project)
+	}
+	meOpts := []mexporter.Option{
+		mexporter.WithProjectID(preparedResource.projectToUse),
+		mexporter.WithMetricDescriptorTypeFormatter(metricFormatter),
+		mexporter.WithCreateServiceTimeSeries(),
+		mexporter.WithMonitoredResourceDescription(monitored_resource_name, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"})}
+	endpointToUse := determineMonitoringEndpoint(config.endpoint)
+	if endpointToUse != "" {
+		meOpts = append(meOpts, mexporter.WithMonitoringClientOptions(option.WithEndpoint(endpointToUse)))
+	}
+	exporter, err := mexporter.New(meOpts...)
+	if err != nil {
+		return nil, err
 	}
 	metricsToEnable := []estats.Metric{
 		"grpc.lb.wrr.rr_fallback",
@@ -187,46 +232,12 @@ func gRPCMetricProvider(ctx context.Context, config internalMetricsConfig) (*int
 	}
 	defaultMetrics := opentelemetry.DefaultMetrics()
 	metricViews := getViewMasks(defaultMetrics.Metrics(), metricsToEnable)
-	metricViews = append(metricViews, []sdkmetric.View{
-		sdkmetric.NewView(sdkmetric.Instrument{
-			Name: "grpc/client/attempt/duration",
-			Kind: sdkmetric.InstrumentKindHistogram,
-		}, sdkmetric.Stream{
-			Name:        "grpc/client/attempt/duration",
-			Description: "A view of grpc/client/attempt/duration with histogram boundaries more appropriate for Google Cloud Storage RPCs",
-			Unit:        "s",
-			Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()},
-		}),
-		sdkmetric.NewView(sdkmetric.Instrument{
-			Name: "grpc/client/attempt/rcvd_total_compressed_message_size",
-			Kind: sdkmetric.InstrumentKindHistogram,
-		}, sdkmetric.Stream{
-			Name:        "grpc/client/attempt/rcvd_total_compressed_message_size",
-			Description: "A view of grpc/client/attempt/rcvd_total_compressed_message_size with histogram boundaries more appropriate for Google Cloud Storage RPCs",
-			Unit:        "By",
-			Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: sizeHistogramBoundaries()},
-		}),
-		sdkmetric.NewView(sdkmetric.Instrument{
-			Name: "grpc/client/attempt/rcvd_total_compressed_message_size",
-			Kind: sdkmetric.InstrumentKindHistogram,
-		}, sdkmetric.Stream{
-			Name:        "grpc/client/attempt/sent_total_compressed_message_size",
-			Description: "A view of grpc/client/attempt/sent_total_compressed_message_size with histogram boundaries more appropriate for Google Cloud Storage RPCs",
-			Unit:        "By",
-			Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: sizeHistogramBoundaries()},
-		}),
-	}...)
-	exporter, err := mexporter.New(
-		// mexporter.WithMonitoringClientOptions(option.WithEndpoint(config.host)),
-		mexporter.WithProjectID(preparedResource.projectToUse),
-		mexporter.WithMetricDescriptorTypeFormatter(metricFormatter),
-		mexporter.WithCreateServiceTimeSeries(),
-		mexporter.WithMonitoredResourceDescription(monitored_resource_name, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}))
-	if err != nil {
-		return nil, err
-	}
+	metricViews = append(metricViews,
+		createHistogramView("grpc/client/attempt/duration", "A view of grpc/client/attempt/duration with histogram boundaries more appropriate for Google Cloud Storage RPCs", "s", latencyHistogramBoundaries()),
+		createHistogramView("grpc/client/attempt/rcvd_total_compressed_message_size", "A view of grpc/client/attempt/rcvd_total_compressed_message_size with histogram boundaries more appropriate for Google Cloud Storage RPCs", "By", sizeHistogramBoundaries()),
+		createHistogramView("grpc/client/attempt/sent_total_compressed_message_size", "A view of grpc/client/attempt/sent_total_compressed_message_size with histogram boundaries more appropriate for Google Cloud Storage RPCs", "By", sizeHistogramBoundaries()))
 	provider := sdkmetric.NewMeterProvider(
-		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(exporter, sdkmetric.WithInterval(time.Second*60))),
+		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(exporter, sdkmetric.WithInterval(time.Minute))),
 		sdkmetric.WithResource(preparedResource.resource),
 		sdkmetric.WithView(metricViews...),
 	)
@@ -236,8 +247,38 @@ func gRPCMetricProvider(ctx context.Context, config internalMetricsConfig) (*int
 		OptionalLabels: []string{"grpc.lb.locality"},
 	}
 	do := option.WithGRPCDialOption(opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo}))
-	context := &internalMetricsContext{[]option.ClientOption{do}, provider, createShutdown(ctx, provider)}
+	context := &internalMetricsContext{
+		project:    preparedResource.projectToUse,
+		endpoint:   endpointToUse,
+		clientOpts: []option.ClientOption{do},
+		provider:   provider,
+		close:      createShutdown(ctx, provider),
+	}
 	return context, nil
+}
+
+func enableClientMetrics(ctx context.Context, s *settings) (*internalMetricsContext, error) {
+	// TODO: this is a workaround for endpoint.
+	_, ep, err := htransport.NewClient(ctx, s.clientOption...)
+	if err != nil {
+		return nil, fmt.Errorf("gRPC Metrics: %w", err)
+	}
+	project := ""
+	// TODO: this is a workaround need better way to get projectId
+	c, err := transport.Creds(ctx, s.clientOption...)
+	if err == nil {
+		project = c.ProjectID
+	}
+	// Enable client-side metrics for gRPC
+	metricsContext, err := newGRPCMetricContext(ctx, internalMetricsConfig{
+		project:  project,
+		endpoint: ep,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gRPC Metrics: %w", err)
+	}
+	log.Printf("%v", metricsContext)
+	return metricsContext, nil
 }
 
 func createShutdown(ctx context.Context, provider *sdkmetric.MeterProvider) func() {

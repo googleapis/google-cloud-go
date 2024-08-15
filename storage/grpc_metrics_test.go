@@ -47,6 +47,37 @@ func TestMetrics(t *testing.T) {
 	}
 }
 
+func TestNonDefaultEndpoint(t *testing.T) {
+	for _, test := range []struct {
+		desc          string
+		inputEndpoint string
+		wantEndpoint  string
+	}{
+		{
+			desc:          "use exporter default endpoint for monitoring API",
+			inputEndpoint: "storage.googelapis.com",
+			wantEndpoint:  "",
+		},
+		{
+			desc:          "use private endpoint if provided to storage",
+			inputEndpoint: "private.googleapis.com",
+			wantEndpoint:  "private.googleapis.com",
+		},
+		{
+			desc:          "use restricted endpoint if provided to storage",
+			inputEndpoint: "restricted.googleapis.com",
+			wantEndpoint:  "restricted.googleapis.com",
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			got := determineMonitoringEndpoint(test.inputEndpoint)
+			if got != test.wantEndpoint {
+				t.Errorf("determineMonitoringEndpoint: got=%v, want=%v", got, test.wantEndpoint)
+			}
+		})
+	}
+}
+
 func TestGetViewMasks(t *testing.T) {
 	testDefaultMetrics := map[estats.Metric]bool{
 		estats.Metric("default.metric.name"): true,
