@@ -26,6 +26,7 @@ import (
 // for more details on types.
 type Type interface {
 	proto() *btapb.Type
+	MarshalJSON() ([]byte, error)
 }
 
 var marshalOptions = protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
