@@ -28,6 +28,9 @@ import (
 )
 
 func TestMetrics(t *testing.T) {
+	if testing.Short() && !replaying {
+		t.Skip("Integration tests skipped in short mode")
+	}
 	ctx := context.Background()
 	grpcClient, err := NewGRPCClient(ctx)
 	if err != nil {
