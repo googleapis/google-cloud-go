@@ -32,6 +32,9 @@ const debugEncode = false
 
 // Encoder represents a SentencePiece encoder (tokenizer).
 // An Encoder converts input text into a sequence of tokens LLMs use.
+// The mapping between token IDs and the text they represent is read from the
+// model proto (provided to the constructor); it's the same between all calls
+// to the Encode method.
 type Encoder struct {
 	model *model.ModelProto
 
