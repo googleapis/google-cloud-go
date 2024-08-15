@@ -22,6 +22,7 @@ import (
 	"hash/crc32"
 	"io"
 	"io/ioutil"
+	"log"
 	"math"
 	"net/http"
 	"net/url"
@@ -859,7 +860,34 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 	reopen := readerReopen(ctx, req.Header, params, s,
 		func(ctx context.Context) (*http.Response, error) {
 			setHeadersFromCtx(ctx, req.Header)
-			return c.hc.Do(req.WithContext(ctx))
+			cancelCtx, cancel := context.WithCancel(ctx)
+
+			var (
+				res *http.Response
+				err error
+			)
+
+			done := make(chan bool)
+			go func() {
+				res, err = c.hc.Do(req.WithContext(cancelCtx))
+				done <- true
+			}()
+
+			// Wait until timeout for read to complete.
+			select {
+			case <-time.After(s.retry.readStallTimeout):
+				log.Println("Request timed-out, hence cancelling.")
+				cancel()
+				err = context.DeadlineExceeded
+				if res != nil && res.Body != nil {
+					res.Body.Close()
+				}
+			case <-done:
+				log.Println("Request completed successfully.")
+				cancel = nil
+			}
+
+			return res, err
 		},
 		func() error { return setConditionsHeaders(req.Header, params.conds) },
 		func() { req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen) })
@@ -1266,6 +1294,7 @@ func (r *httpReader) Read(p []byte) (int, error) {
 		case <-time.After(stallTimeout):
 			// Close request body to terminate current read.
 			r.body.Close()
+			log.Println("Read(): closing the existing conn due to stall.")
 			timedOut = true
 		case <-done:
 		}
@@ -1300,6 +1329,7 @@ func (r *httpReader) Read(p []byte) (int, error) {
 		// try to reopen the pipe and continue. Send a ranged read request that
 		// takes into account the number of bytes we've already seen.
 		res, err := r.reopen(r.seen)
+		log.Println("Read(): starting a new connection.")
 		if err != nil {
 			// reopen already retries
 			return n, err
