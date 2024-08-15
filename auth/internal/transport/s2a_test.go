@@ -16,82 +16,75 @@ package transport
 
 import (
 	"testing"
-	"time"
 )
 
 const (
-	testS2AAddr = "testS2AAddress:port"
+	testS2AAddr     = "testS2AAddress:port"
+	testMTLSS2AAddr = "testMTLSS2AAddress:port"
 )
 
 func TestGetS2AAddress(t *testing.T) {
 	testCases := []struct {
-		name   string
-		respFn func() (string, error)
-		want   string
+		name               string
+		respFn             func() (string, error)
+		wantErr            bool
+		wantS2AAddress     string
+		wantMTLSS2AAddress string
 	}{
 		{
-			name:   "test valid config",
-			respFn: validConfigResp,
-			want:   testS2AAddr,
+			name:               "test valid config with plaintext S2A address",
+			respFn:             validConfigResp,
+			wantErr:            false,
+			wantS2AAddress:     testS2AAddr,
+			wantMTLSS2AAddress: "",
 		},
 		{
-			name:   "test error when getting config",
-			respFn: errorConfigResp,
-			want:   "",
+			name:               "test valid config with MTLS S2A address",
+			respFn:             validConfigRespMTLSS2A,
+			wantErr:            false,
+			wantS2AAddress:     "",
+			wantMTLSS2AAddress: testMTLSS2AAddr,
 		},
 		{
-			name:   "test invalid config",
-			respFn: invalidConfigResp,
-			want:   "",
+			name:               "test error when getting config",
+			respFn:             errorConfigResp,
+			wantErr:            true,
+			wantS2AAddress:     "",
+			wantMTLSS2AAddress: "",
 		},
 		{
-			name:   "test invalid JSON response",
-			respFn: invalidJSONResp,
-			want:   "",
+			name:               "test invalid config",
+			respFn:             invalidConfigResp,
+			wantErr:            true,
+			wantS2AAddress:     "",
+			wantMTLSS2AAddress: "",
+		},
+		{
+			name:               "test invalid JSON response",
+			respFn:             invalidJSONResp,
+			wantErr:            true,
+			wantS2AAddress:     "",
+			wantMTLSS2AAddress: "",
 		},
 	}
 
-	oldHTTPGet := httpGetMetadataMTLSConfig
-	oldExpiry := configExpiry
-	configExpiry = time.Millisecond
-	defer func() {
-		httpGetMetadataMTLSConfig = oldHTTPGet
-		configExpiry = oldExpiry
-	}()
+	defer setupTest(t)()
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			var err error
 			httpGetMetadataMTLSConfig = tc.respFn
-			if want, got := tc.want, GetS2AAddress(); got != want {
-				t.Errorf("want address [%s], got address [%s]", want, got)
+			mtlsConfiguration, err = queryConfig()
+			if gotErr := err != nil; gotErr != tc.wantErr {
+				t.Errorf("queryConfig() got error: %v, want error: %v", gotErr, tc.wantErr)
 			}
-			// Let the MTLS config expire at the end of each test case.
-			time.Sleep(2 * time.Millisecond)
+			if want, got := tc.wantS2AAddress, GetS2AAddress(); got != want {
+				t.Errorf("want S2A address [%s], got address [%s]", want, got)
+			}
+			if want, got := tc.wantMTLSS2AAddress, GetMTLSS2AAddress(); got != want {
+				t.Errorf("want MTLS S2A address [%s], got address [%s]", want, got)
+			}
 		})
 	}
-}
-
-func TestMTLSConfigExpiry(t *testing.T) {
-	oldHTTPGet := httpGetMetadataMTLSConfig
-	oldExpiry := configExpiry
-	configExpiry = 1 * time.Second
-	defer func() {
-		httpGetMetadataMTLSConfig = oldHTTPGet
-		configExpiry = oldExpiry
-	}()
-	httpGetMetadataMTLSConfig = validConfigResp
-	if got, want := GetS2AAddress(), testS2AAddr; got != want {
-		t.Errorf("expected address: [%s], got [%s]", want, got)
-	}
-	httpGetMetadataMTLSConfig = invalidConfigResp
-	if got, want := GetS2AAddress(), testS2AAddr; got != want {
-		t.Errorf("cached config should still be valid, expected address: [%s], got [%s]", want, got)
-	}
-	time.Sleep(1 * time.Second)
-	if got, want := GetS2AAddress(), ""; got != want {
-		t.Errorf("config should be refreshed, expected address: [%s], got [%s]", want, got)
-	}
-	// Let the MTLS config expire before running other tests.
-	time.Sleep(1 * time.Second)
 }
 
 func TestIsGoogleS2AEnabled(t *testing.T) {
