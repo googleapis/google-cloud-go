@@ -25,6 +25,11 @@
                 "ListVoices"
               ]
             },
+            "StreamingSynthesize": {
+              "methods": [
+                "StreamingSynthesize"
+              ]
+            },
             "SynthesizeSpeech": {
               "methods": [
                 "SynthesizeSpeech"
@@ -48,6 +53,11 @@
             "ListVoices": {
               "methods": [
                 "ListVoices"
+              ]
+            },
+            "StreamingSynthesize": {
+              "methods": [
+                "StreamingSynthesize"
               ]
             },
             "SynthesizeSpeech": {
