@@ -32,7 +32,12 @@ git clone --depth 1 https://github.com/eliben/go-sentencepiece.git "$TEMP_DIR/go
 # Copy the repository contents to here, excluding the .git directory
 rm -rf sentencepiece
 mkdir -p sentencepiece
-rsync -av --exclude='.git' --exclude='go.mod' --exclude='go.sum' \
+rsync -av \
+    --exclude='.git' \
+    --exclude='go.mod' \
+    --exclude='go.sum' \
+    --exclude='test' \
+    --exclude='*_test.go' \
     "$TEMP_DIR/go-sentencepiece/" sentencepiece
 
 # Replace import paths.
