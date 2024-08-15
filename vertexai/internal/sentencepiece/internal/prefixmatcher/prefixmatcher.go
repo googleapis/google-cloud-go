@@ -30,7 +30,7 @@ type trieNode struct {
 
 // NewFromSet creates a new [PrefixMatcher] from a set of strings tha represent
 // the vocabulary.
-func NewFromSet(vocab map[string]struct{}) *PrefixMatcher {
+func NewFromSet(vocab map[string]bool) *PrefixMatcher {
 	pm := &PrefixMatcher{root: newNode()}
 	for word := range vocab {
 		pm.add(word)

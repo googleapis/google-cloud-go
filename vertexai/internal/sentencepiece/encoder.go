@@ -81,7 +81,7 @@ func NewEncoder(protoReader io.Reader) (*Encoder, error) {
 		return nil, fmt.Errorf("model type %s not supported", tspec.GetModelType())
 	}
 
-	userDefined := make(map[string]struct{})
+	userDefined := make(map[string]bool)
 	pieces := make(map[string]int)
 	reserved := make(map[string]int)
 	byteTokens := make(map[byte]Token)
@@ -99,7 +99,7 @@ func NewEncoder(protoReader io.Reader) (*Encoder, error) {
 		}
 
 		if piece.GetType() == model.ModelProto_SentencePiece_USER_DEFINED {
-			userDefined[piece.GetPiece()] = struct{}{}
+			userDefined[piece.GetPiece()] = true
 		} else if piece.GetType() == model.ModelProto_SentencePiece_UNKNOWN {
 			if unkID > 0 {
 				return nil, fmt.Errorf("unk redefined")
