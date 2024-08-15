@@ -18,9 +18,11 @@ package bigtable
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -40,18 +42,29 @@ func aggregateProto() *btapb.Type {
 
 func TestInt64Proto(t *testing.T) {
 	want := aggregateProto()
-	got := Int64Type{}.proto()
+	it := Int64Type{}
+	got := it.proto()
 	if !proto.Equal(got, want) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	json, err := json.Marshal(Int64Type{})
+	gotJSON, err := json.Marshal(it)
 	if err != nil {
-		t.Fatalf("Error calling ToJSON: %v", err)
+		t.Fatalf("Error calling json.Marshal: %v", err)
 	}
 	wantJSON := "{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}"
-	if string(json) != wantJSON {
-		t.Errorf("got %q, want %q", string(json), wantJSON)
+	if string(gotJSON) != wantJSON {
+		t.Errorf("got %q, want %q", string(gotJSON), wantJSON)
+	}
+	var result Int64Type
+	if err := json.Unmarshal(gotJSON, &result); err != nil {
+		t.Fatalf("Error calling json.Unmarshal: %v", err)
+	}
+	if diff := cmp.Diff(result, it); diff != "" {
+		t.Errorf("Unexpected diff: \n%s", diff)
+	}
+	if !result.Equal(it) {
+		t.Errorf("Unexpected result. Got %#v, want %#v", result, it)
 	}
 }
 
@@ -65,56 +78,29 @@ func TestStringProto(t *testing.T) {
 			},
 		},
 	}
-
-	got := StringType{}.proto()
+	st := StringType{}
+	got := st.proto()
 	if !proto.Equal(got, want) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	json, err := json.Marshal(StringType{})
+	gotJSON, err := json.Marshal(st)
 	if err != nil {
 		t.Fatalf("Error calling ToJSON: %v", err)
 	}
 	wantJSON := "{\"stringType\":{\"encoding\":{\"utf8Raw\":{}}}}"
-	if string(json) != wantJSON {
-		t.Errorf("got %q, want %q", string(json), wantJSON)
+	if string(gotJSON) != wantJSON {
+		t.Errorf("got %q, want %q", string(gotJSON), wantJSON)
 	}
-}
-
-func TestSumAggregateProto(t *testing.T) {
-	want := &btapb.Type{
-		Kind: &btapb.Type_AggregateType{
-			AggregateType: &btapb.Type_Aggregate{
-				InputType: &btapb.Type{
-					Kind: &btapb.Type_Int64Type{
-						Int64Type: &btapb.Type_Int64{
-							Encoding: &btapb.Type_Int64_Encoding{
-								Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
-									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
-								},
-							},
-						},
-					},
-				},
-				Aggregator: &btapb.Type_Aggregate_Sum_{
-					Sum: &btapb.Type_Aggregate_Sum{},
-				},
-			},
-		},
+	var result StringType
+	if err := json.Unmarshal(gotJSON, &result); err != nil {
+		t.Fatalf("Failed to unmarshal JSON: %v", err)
 	}
-
-	got := AggregateType{Input: Int64Type{}, Aggregator: SumAggregator{}}.proto()
-	if !proto.Equal(got, want) {
-		t.Errorf("got type %v, want: %v", got, want)
+	if diff := cmp.Diff(result, st); diff != "" {
+		t.Errorf("Unexpected diff: \n%s", diff)
 	}
-
-	json, err := json.Marshal(AggregateType{Input: Int64Type{}, Aggregator: SumAggregator{}})
-	if err != nil {
-		t.Fatalf("Error calling ToJSON: %v", err)
-	}
-	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"sum\":{}}}"
-	if string(json) != wantJSON {
-		t.Errorf("got %q, want %q", string(json), wantJSON)
+	if !result.Equal(st) {
+		t.Errorf("Unexpected result. Got %#v, want %#v", result, st)
 	}
 }
 
@@ -126,114 +112,101 @@ func TestProtoBijection(t *testing.T) {
 	}
 }
 
-func TestMinAggregateProto(t *testing.T) {
-	want := &btapb.Type{
-		Kind: &btapb.Type_AggregateType{
-			AggregateType: &btapb.Type_Aggregate{
-				InputType: &btapb.Type{
-					Kind: &btapb.Type_Int64Type{
-						Int64Type: &btapb.Type_Int64{
-							Encoding: &btapb.Type_Int64_Encoding{
-								Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
-									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
-								},
-							},
-						},
+func TestAggregateProto(t *testing.T) {
+	intType := &btapb.Type{
+		Kind: &btapb.Type_Int64Type{
+			Int64Type: &btapb.Type_Int64{
+				Encoding: &btapb.Type_Int64_Encoding{
+					Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
+						BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
 					},
 				},
+			},
+		},
+	}
+
+	testCases := []struct {
+		name     string
+		fn       string
+		agg      Aggregator
+		protoAgg btapb.Type_Aggregate
+	}{{
+		name: "hll",
+		fn:   "hllppUniqueCount",
+		agg:  HllppUniqueCountAggregator{},
+		protoAgg: btapb.Type_Aggregate{
+			InputType: intType,
+			Aggregator: &btapb.Type_Aggregate_HllppUniqueCount{
+				HllppUniqueCount: &btapb.Type_Aggregate_HyperLogLogPlusPlusUniqueCount{},
+			},
+		},
+	},
+		{
+			name: "min",
+			fn:   "min",
+			agg:  MinAggregator{},
+			protoAgg: btapb.Type_Aggregate{
+				InputType: intType,
 				Aggregator: &btapb.Type_Aggregate_Min_{
 					Min: &btapb.Type_Aggregate_Min{},
 				},
 			},
 		},
-	}
-
-	got := AggregateType{Input: Int64Type{}, Aggregator: MinAggregator{}}.proto()
-	if !proto.Equal(got, want) {
-		t.Errorf("got type %v, want: %v", got, want)
-	}
-
-	json, err := json.Marshal(AggregateType{Input: Int64Type{}, Aggregator: MinAggregator{}})
-	if err != nil {
-		t.Fatalf("Error calling ToJSON: %v", err)
-	}
-	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"min\":{}}}"
-	if string(json) != wantJSON {
-		t.Errorf("got %q, want %q", string(json), wantJSON)
-	}
-}
-
-func TestMaxAggregateProto(t *testing.T) {
-	want := &btapb.Type{
-		Kind: &btapb.Type_AggregateType{
-			AggregateType: &btapb.Type_Aggregate{
-				InputType: &btapb.Type{
-					Kind: &btapb.Type_Int64Type{
-						Int64Type: &btapb.Type_Int64{
-							Encoding: &btapb.Type_Int64_Encoding{
-								Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
-									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
-								},
-							},
-						},
-					},
-				},
+		{
+			name: "max",
+			fn:   "max",
+			agg:  MaxAggregator{},
+			protoAgg: btapb.Type_Aggregate{
+				InputType: intType,
 				Aggregator: &btapb.Type_Aggregate_Max_{
 					Max: &btapb.Type_Aggregate_Max{},
 				},
 			},
 		},
-	}
-
-	got := AggregateType{Input: Int64Type{}, Aggregator: MaxAggregator{}}.proto()
-	if !proto.Equal(got, want) {
-		t.Errorf("got type %v, want: %v", got, want)
-	}
-
-	json, err := json.Marshal(AggregateType{Input: Int64Type{}, Aggregator: MaxAggregator{}})
-	if err != nil {
-		t.Fatalf("Error calling ToJSON: %v", err)
-	}
-	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"max\":{}}}"
-	if string(json) != wantJSON {
-		t.Errorf("got %q, want %q", string(json), wantJSON)
-	}
-}
-
-func TestHllAggregateProto(t *testing.T) {
-	want := &btapb.Type{
-		Kind: &btapb.Type_AggregateType{
-			AggregateType: &btapb.Type_Aggregate{
-				InputType: &btapb.Type{
-					Kind: &btapb.Type_Int64Type{
-						Int64Type: &btapb.Type_Int64{
-							Encoding: &btapb.Type_Int64_Encoding{
-								Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
-									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
-								},
-							},
-						},
-					},
-				},
-				Aggregator: &btapb.Type_Aggregate_HllppUniqueCount{
-					HllppUniqueCount: &btapb.Type_Aggregate_HyperLogLogPlusPlusUniqueCount{},
+		{
+			name: "sum",
+			fn:   "sum",
+			agg:  SumAggregator{},
+			protoAgg: btapb.Type_Aggregate{
+				InputType: intType,
+				Aggregator: &btapb.Type_Aggregate_Sum_{
+					Sum: &btapb.Type_Aggregate_Sum{},
 				},
 			},
-		},
-	}
+		}}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			want := &btapb.Type{
+				Kind: &btapb.Type_AggregateType{
+					AggregateType: &tc.protoAgg,
+				},
+			}
+			at := AggregateType{Input: Int64Type{Encoding: BigEndianBytesEncoding{}}, Aggregator: tc.agg}
 
-	got := AggregateType{Input: Int64Type{}, Aggregator: HllppUniqueCountAggregator{}}.proto()
-	if !proto.Equal(got, want) {
-		t.Errorf("got type %v, want: %v", got, want)
-	}
+			got := at.proto()
+			if !proto.Equal(got, want) {
+				t.Errorf("got type %v, want: %v", got, want)
+			}
 
-	json, err := json.Marshal(AggregateType{Input: Int64Type{}, Aggregator: HllppUniqueCountAggregator{}})
-	if err != nil {
-		t.Fatalf("Error calling ToJSON: %v", err)
-	}
-	wantJSON := "{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"hllppUniqueCount\":{}}}"
-	if string(json) != wantJSON {
-		t.Errorf("got %q, want %q", string(json), wantJSON)
+			gotJSON, err := json.Marshal(at)
+			if err != nil {
+				t.Fatalf("Error calling ToJSON: %v", err)
+			}
+			wantJSON := fmt.Sprintf("{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"%s\":{}}}", tc.fn)
+			if string(gotJSON) != wantJSON {
+				t.Errorf("unexpected different JSON got %q, want %q", string(gotJSON), wantJSON)
+			}
+			var result AggregateType
+			if err := json.Unmarshal(gotJSON, &result); err != nil {
+				t.Fatalf("Failed to unmarshal JSON: %v", err)
+			}
+			if diff := cmp.Diff(result, at); diff != "" {
+				t.Errorf("Unexpected diff: \n%s", diff)
+			}
+			if !result.Equal(at) {
+				t.Errorf("Unexpected result. Got %#v, want %#v", result, at)
+			}
+		})
 	}
 }
 
@@ -263,10 +236,7 @@ func TestNilChecks(t *testing.T) {
 	}
 
 	// aggregateProtoToType
-	aggType1, ok := aggregateProtoToType(nil).(AggregateType)
-	if !ok {
-		t.Fatalf("got: %T, wanted AggregateType", aggType1)
-	}
+	aggType1 := aggregateProtoToType(nil)
 	if val, ok := aggType1.Aggregator.(unknownAggregator); !ok {
 		t.Errorf("got: %T, wanted unknownAggregator", val)
 	}
@@ -274,10 +244,7 @@ func TestNilChecks(t *testing.T) {
 		t.Errorf("got: %v, wanted nil", aggType1.Input)
 	}
 
-	aggType2, ok := aggregateProtoToType(&btapb.Type_Aggregate{}).(AggregateType)
-	if !ok {
-		t.Fatalf("got: %T, wanted AggregateType", aggType2)
-	}
+	aggType2 := aggregateProtoToType(&btapb.Type_Aggregate{})
 	if val, ok := aggType2.Aggregator.(unknownAggregator); !ok {
 		t.Errorf("got: %T, wanted unknownAggregator", val)
 	}

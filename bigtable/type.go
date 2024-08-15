@@ -30,6 +30,7 @@ type Type interface {
 }
 
 var marshalOptions = protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+var unmarshalOptions = protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 
 type unknown[T interface{}] struct {
 	wrapped *T
@@ -45,6 +46,20 @@ func (u unknown[T]) MarshalJSON() ([]byte, error) {
 		return marshalOptions.Marshal(t)
 	}
 	return nil, nil
+}
+
+// UnmarshalJSON initializes a BytesType from json bytes.
+func (u unknown[T]) UnmarshalJSON(data []byte) error {
+	// TODO: Fix this
+	if _, ok := any(u.wrapped).(proto.Message); ok {
+		// var result T
+		// if err := unmarshalOptions.Unmarshal(data, result); err != nil {
+		// 	return err
+		// }
+		// u.wrapped = ProtoToType(result)
+		return nil
+	}
+	return nil
 }
 
 // BytesEncoding represents the encoding of a Bytes type.
@@ -82,6 +97,19 @@ func (bytes BytesType) MarshalJSON() ([]byte, error) {
 	return marshalOptions.Marshal(bytes.proto())
 }
 
+// UnmarshalJSON initializes a BytesType from json bytes.
+func (bytes *BytesType) UnmarshalJSON(data []byte) error {
+	result := &btapb.Type{}
+	if err := unmarshalOptions.Unmarshal(data, result); err != nil {
+		return err
+	}
+	t := ProtoToType(result)
+	if bt, ok := t.(*BytesType); ok {
+		*bytes = *bt
+	}
+	return nil
+}
+
 // StringEncoding represents the encoding of a String.
 type StringEncoding interface {
 	proto() *btapb.Type_String_Encoding
@@ -115,6 +143,23 @@ func (str StringType) proto() *btapb.Type {
 // MarshalJSON returns the string representation of the protobuf.
 func (str StringType) MarshalJSON() ([]byte, error) {
 	return marshalOptions.Marshal(str.proto())
+}
+
+// UnmarshalJSON initializes a StringType from json bytes.
+func (str *StringType) UnmarshalJSON(data []byte) error {
+	result := &btapb.Type{}
+	if err := unmarshalOptions.Unmarshal(data, result); err != nil {
+		return err
+	}
+	t := ProtoToType(result)
+	if st, ok := t.(*StringType); ok {
+		*str = *st
+	}
+	return nil
+}
+
+func (str StringType) Equal(other StringType) bool {
+	return str.Encoding == other.Encoding
 }
 
 // Int64Encoding represents the encoding of an Int64 type.
@@ -161,6 +206,23 @@ func (it Int64Type) proto() *btapb.Type {
 // MarshalJSON returns the string representation of the protobuf.
 func (it Int64Type) MarshalJSON() ([]byte, error) {
 	return marshalOptions.Marshal(it.proto())
+}
+
+// UnmarshalJSON initializes a 4 from json bytes.
+func (it *Int64Type) UnmarshalJSON(data []byte) error {
+	result := &btapb.Type{}
+	if err := unmarshalOptions.Unmarshal(data, result); err != nil {
+		return err
+	}
+	t := ProtoToType(result)
+	if iType, ok := t.(*Int64Type); ok {
+		*it = *iType
+	}
+	return nil
+}
+
+func (it Int64Type) Equal(other Int64Type) bool {
+	return it.Encoding == other.Encoding
 }
 
 // Aggregator represents an aggregation function for an aggregate type.
@@ -229,6 +291,23 @@ func (agg AggregateType) MarshalJSON() ([]byte, error) {
 	return marshalOptions.Marshal(agg.proto())
 }
 
+// UnmarshalJSON initializes a AggregateType from json bytes.
+func (agg *AggregateType) UnmarshalJSON(data []byte) error {
+	result := &btapb.Type{}
+	if err := unmarshalOptions.Unmarshal(data, result); err != nil {
+		return err
+	}
+	t := ProtoToType(result)
+	if at, ok := t.(AggregateType); ok {
+		*agg = at
+	}
+	return nil
+}
+
+func (agg AggregateType) Equal(other AggregateType) bool {
+	return agg.Aggregator == other.Aggregator && agg.Input == other.Input
+}
+
 // ProtoToType converts a protobuf *btapb.Type to an instance of the Type interface, for use of the admin API.
 func ProtoToType(pb *btapb.Type) Type {
 	if pb == nil {
@@ -277,11 +356,11 @@ func int64EncodingProtoToEncoding(ie *btapb.Type_Int64_Encoding) Int64Encoding {
 	}
 }
 
-func int64ProtoToType(i *btapb.Type_Int64) Type {
+func int64ProtoToType(i *btapb.Type_Int64) Int64Type {
 	return Int64Type{Encoding: int64EncodingProtoToEncoding(i.Encoding)}
 }
 
-func aggregateProtoToType(agg *btapb.Type_Aggregate) Type {
+func aggregateProtoToType(agg *btapb.Type_Aggregate) AggregateType {
 	if agg == nil {
 		return AggregateType{Input: nil, Aggregator: unknownAggregator{wrapped: agg}}
 	}
