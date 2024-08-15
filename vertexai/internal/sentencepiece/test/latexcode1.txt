@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage{amsmath, amssymb}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+
+\newtheorem{theorem}{Theorem}
+
+\begin{document}
+
+\title{Proof of Green's Theorem}
+\author{}
+\date{}
+\maketitle
+
+\begin{theorem}[Green's Theorem]
+Let \( C \) be a positively oriented, simple closed curve in the plane, and let \( D \) be the region bounded by \( C \). If \( L(x, y) \) and \( M(x, y) \) have continuous partial derivatives on an open region that contains \( D \) and \( C \), then
+\[
+\oint_C \left( L \, dx + M \, dy \right) = \iint_D \left( \frac{\partial M}{\partial x} - \frac{\partial L}{\partial y} \right) dA.
+\]
+\end{theorem}
+
+\begin{proof}
+We will prove Green's Theorem by breaking the region \( D \) into small rectangles and then using the Fundamental Theorem of Calculus.
+
+Assume that the region \( D \) is divided into \( m \times n \) small rectangles. For each small rectangle \( R_{ij} \) with vertices \((x_i, y_j)\), \((x_{i+1}, y_j)\), \((x_{i+1}, y_{j+1})\), and \((x_i, y_{j+1})\), we approximate the line integral around the boundary of \( R_{ij} \):
+
+\[
+\oint_{\partial R_{ij}} \left( L \, dx + M \, dy \right) \approx \left( M(x_{i+1}, y_{j+1}) - M(x_{i}, y_{j+1}) \right)(x_{i+1} - x_i) - \left( L(x_{i+1}, y_{j+1}) - L(x_{i+1}, y_j) \right)(y_{j+1} - y_j).
+\]
+
+This expression can be rewritten as:
+
+\[
+\oint_{\partial R_{ij}} \left( L \, dx + M \, dy \right) \approx \left( \frac{\partial M}{\partial x} - \frac{\partial L}{\partial y} \right) \Delta x \Delta y,
+\]
+where \( \Delta x = x_{i+1} - x_i \) and \( \Delta y = y_{j+1} - y_j \).
+
+Summing over all rectangles in the region \( D \), we obtain:
+
+\[
+\sum_{i,j} \oint_{\partial R_{ij}} \left( L \, dx + M \, dy \right) \approx \sum_{i,j} \left( \frac{\partial M}{\partial x} - \frac{\partial L}{\partial y} \right) \Delta x \Delta y.
+\]
+
+The left-hand side of this equation is approximately the line integral over \( C \), and the right-hand side is a Riemann sum that approximates the double integral over \( D \):
+
+\[
+\oint_C \left( L \, dx + M \, dy \right) = \iint_D \left( \frac{\partial M}{\partial x} - \frac{\partial L}{\partial y} \right) dA.
+\]
+
+Thus, Green's Theorem is proved.
+\end{proof}
+
+\end{document}
+

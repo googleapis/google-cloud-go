@@ -1,0 +1,150 @@
+var (
+	file_sentencepiece_model_proto_rawDescOnce sync.Once
+	file_sentencepiece_model_proto_rawDescData = file_sentencepiece_model_proto_rawDesc
+)
+
+func file_sentencepiece_model_proto_rawDescGZIP() []byte {
+	file_sentencepiece_model_proto_rawDescOnce.Do(func() {
+		file_sentencepiece_model_proto_rawDescData = protoimpl.X.CompressGZIP(file_sentencepiece_model_proto_rawDescData)
+	})
+	return file_sentencepiece_model_proto_rawDescData
+}
+
+var file_sentencepiece_model_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_sentencepiece_model_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_sentencepiece_model_proto_goTypes = []interface{}{
+	(TrainerSpec_ModelType)(0),         // 0: sentencepiece.TrainerSpec.ModelType
+	(ModelProto_SentencePiece_Type)(0), // 1: sentencepiece.ModelProto.SentencePiece.Type
+	(*TrainerSpec)(nil),                // 2: sentencepiece.TrainerSpec
+	(*NormalizerSpec)(nil),             // 3: sentencepiece.NormalizerSpec
+	(*SelfTestData)(nil),               // 4: sentencepiece.SelfTestData
+	(*ModelProto)(nil),                 // 5: sentencepiece.ModelProto
+	(*SelfTestData_Sample)(nil),        // 6: sentencepiece.SelfTestData.Sample
+	(*ModelProto_SentencePiece)(nil),   // 7: sentencepiece.ModelProto.SentencePiece
+}
+var file_sentencepiece_model_proto_depIdxs = []int32{
+	0, // 0: sentencepiece.TrainerSpec.model_type:type_name -> sentencepiece.TrainerSpec.ModelType
+	6, // 1: sentencepiece.SelfTestData.samples:type_name -> sentencepiece.SelfTestData.Sample
+	7, // 2: sentencepiece.ModelProto.pieces:type_name -> sentencepiece.ModelProto.SentencePiece
+	2, // 3: sentencepiece.ModelProto.trainer_spec:type_name -> sentencepiece.TrainerSpec
+	3, // 4: sentencepiece.ModelProto.normalizer_spec:type_name -> sentencepiece.NormalizerSpec
+	4, // 5: sentencepiece.ModelProto.self_test_data:type_name -> sentencepiece.SelfTestData
+	3, // 6: sentencepiece.ModelProto.denormalizer_spec:type_name -> sentencepiece.NormalizerSpec
+	1, // 7: sentencepiece.ModelProto.SentencePiece.type:type_name -> sentencepiece.ModelProto.SentencePiece.Type
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
+}
+
+func init() { file_sentencepiece_model_proto_init() }
+func file_sentencepiece_model_proto_init() {
+	if File_sentencepiece_model_proto != nil {
+		return
+	}
+	if !protoimpl.UnsafeEnabled {
+		file_sentencepiece_model_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TrainerSpec); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			case 3:
+				return &v.extensionFields
+			default:
+				return nil
+			}
+		}
+		file_sentencepiece_model_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NormalizerSpec); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			case 3:
+				return &v.extensionFields
+			default:
+				return nil
+			}
+		}
+		file_sentencepiece_model_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SelfTestData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			case 3:
+				return &v.extensionFields
+			default:
+				return nil
+			}
+		}
+		file_sentencepiece_model_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ModelProto); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			case 3:
+				return &v.extensionFields
+			default:
+				return nil
+			}
+		}
+		file_sentencepiece_model_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SelfTestData_Sample); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sentencepiece_model_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ModelProto_SentencePiece); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			case 3:
+				return &v.extensionFields
+			default:
+				return nil
+			}
+		}
+	}
+	type x struct{}
+	out := protoimpl.TypeBuilder{
+		File: protoimpl.DescBuilder{
+			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
+			RawDescriptor: file_sentencepiece_model_proto_rawDesc,
+			NumEnums:      2,
+			NumMessages:   6,
+			NumExtensions: 0,
+			NumServices:   0,
+		},
+		GoTypes:           file_sentencepiece_model_proto_goTypes,
+		DependencyIndexes: file_sentencepiece_model_proto_depIdxs,
+		EnumInfos:         file_sentencepiece_model_proto_enumTypes,
+		MessageInfos:      file_sentencepiece_model_proto_msgTypes,
+	}.Build()
+	File_sentencepiece_model_proto = out.File
+	file_sentencepiece_model_proto_rawDesc = nil
+	file_sentencepiece_model_proto_goTypes = nil
+	file_sentencepiece_model_proto_depIdxs = nil
+}
+

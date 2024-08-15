@@ -1,0 +1,381 @@
+sub init_sim
+{
+	my $args = 
+	{
+		-init_addr	=> 0,
+		-mem_file	=> undef,
+		-mem_ref	=> undef,
+		-device_dir	=> './',
+		@_,
+	};
+	
+	$args->{-device_dir} .= '/' unless $args->{-device_dir} =~ /\/^/;
+	
+	# init memory
+	for (my $i = 0; $i < get_mix_mem_size(); ++$i)
+	{
+		$mem[$i] = empty_word();
+	}
+	
+	$rA = empty_word();
+	$rX = empty_word();
+	$rJ = empty_word();
+	$rI[$_] = empty_word()
+		foreach (1 .. 6);
+
+	$f_overflow = 0;
+	$f_comparison = 0;
+	$time = 0;
+	$lc = $args->{-init_addr};
+	$simulation_ended = 0;
+	@io_device = ();
+
+	# init IO devices
+	#
+	foreach my $n (0 .. 15)
+	{
+		if ($n >= 0 and $n <= 7)
+		{
+			push(@io_device, {filename => "tape${n}.dev", io_type => "bio", block_size => 100, data => undef});
+		}
+		elsif ($n >= 8 and $n <= 15)
+		{
+			my $m = $n - 8;
+			push(@io_device, {filename => "disk${m}.dev", io_type => "bio", block_size => 100, data => undef});
+		}
+	}
+	
+	push(@io_device, {filename => "cardrd.dev", io_type => "ci", block_size => 16});
+	push(@io_device, {filename => "cardwr.dev", io_type => "co", block_size => 16});
+	push(@io_device, {filename => "printer.dev", io_type => "co", block_size => 24});
+	push(@io_device, {filename => "stdio", io_type => "cio", block_size => 14});
+	push(@io_device, {filename => "paper.dev", io_type => "ci", block_size => 14});
+	
+	foreach my $dev (@io_device)
+	{
+		$dev->{filename} = $args->{-device_dir} . $dev->{filename};
+	}
+	
+	$saved_mem_file = $args->{-mem_file};
+	$saved_mem_ref = $args->{-mem_ref};
+	$saved_init_addr = $args->{-init_addr};
+	
+	if (defined $args->{-mem_file})
+	{
+		load_memory_from_text_file($args->{-mem_file});
+	}
+	elsif (defined $args->{-mem_ref})
+	{
+		@mem = @{$args->{-mem_ref}};
+	}
+	else
+	{
+		warn("No memory file or reference given to the simulator\n");
+	}
+}
+
+
+sub simulation_ended
+{
+	return $simulation_ended;
+}
+
+
+sub fetch_next_instruction
+{
+	return @{$mem[$lc]};
+}
+
+
+# Executes one instruction
+#
+sub step_sim
+{
+	address_is_legal($lc)
+		or runtime_error("location counter out of memory bounds");
+	
+	my @word = fetch_next_instruction();
+	
+	my $opcode = $word[5];
+	my $F = $word[4];
+	
+	if ($opcode == 5 and $F == 2)		# HLT
+	{
+		$simulation_ended = 1;
+		return;
+	}
+	elsif ($opcode == 0)	# NOP
+	{
+		$lc++;
+		return;
+	}
+	else
+	{
+		# Dispatch the instruction to the appropriate handler,
+		# based on the opcode.
+		#
+		if (defined $opcode_map{$opcode})
+		{
+			my $op_func = $opcode_map{$opcode};
+			$op_func->(@word);			
+			$lc++;
+		}
+		else
+		{
+			runtime_error("illegal opcode: $opcode");
+		}
+	}
+}
+
+
+sub get_mem_ref
+{
+	return \@mem;
+}
+
+
+# Simulates the MIX code until a HLT instruction is
+# incountered.
+#
+sub run_sim
+{
+	# step through the whole program
+	#
+	until (simulation_ended())
+	{
+		step_sim();
+	}
+	
+	# update the binary devices
+	#
+	foreach my $devref (@io_device)
+	{
+		next unless is_binary_device($devref) and defined $devref->{data};
+		
+		my $fh = $devref->{handle};
+		close $fh if defined $fh;
+		
+		unless (open($fh, ">$devref->{filename}"))
+		{	
+			warn "Unable to write device $devref->{filename}\n";
+			next;
+		}
+		
+		foreach my $block_n (keys %{$devref->{data}})
+		{
+			print $fh "$block_n\n";
+			
+			for (my $i = 0; $i < $devref->{block_size}; ++$i)
+			{
+				print $fh sprintf("%2s %2s %2s %2s %2s %2s\n", @{$devref->{data}->{$block_n}->[$i]});
+			}
+		}
+		
+		close $fh;
+	}
+}
+
+sub interactive_sim
+{
+	local $| = 1;
+	my %breakpoints;
+	
+	print "\nWelcome to MIXSim interaction !\n\n";
+	
+	interaction: while (1)
+	{
+		printf "[%4s]> ", $lc;
+		my $command = <>;
+		chomp($command);
+		
+		# strip leading and trailing whitespace
+		$command =~ s/^\s+//;
+		$command =~ s/\s+$//;
+		
+		my @toks = split('\s+', $command);
+		next if @toks == 0;
+		
+		if ($command eq "s")
+		{
+			step_sim();
+			
+			print "Simulation ended (HLT)\n" if (simulation_ended());
+			
+		}
+		elsif ($command eq "c" or $command eq "cl")
+		{
+			step_loop: while (1)
+			{
+				if (exists $breakpoints{$lc})
+				{
+					print "Breakpoint stop at address $lc\n";
+					last step_loop;
+				}
+				
+				if (simulation_ended())
+				{
+					print "Simulation ended (HLT)\n" if (simulation_ended());
+					last step_loop;
+				}
+				
+				print "$lc\n" if $command eq "cl";
+				step_sim();
+			}
+		}
+		elsif ($command eq "rst")
+		{
+			if (defined $saved_mem_file)
+			{
+				init_sim(-mem_file => $saved_mem_file, -init_addr => $saved_init_addr);
+			}
+			elsif (defined $saved_mem_ref)
+			{
+				init_sim(-mem_ref => $saved_mem_ref, -init_addr => $saved_init_addr);
+			}
+		}
+		elsif ($command eq "r")
+		{
+			print state_dump(), "\n";
+		}
+		elsif ($command eq "sr")
+		{
+			step_sim();
+			print state_dump(), "\n";
+		}
+		elsif ($toks[0] eq "m")
+		{
+			if (@toks == 1)
+			{
+				print memory_dump(\@mem);
+			}
+			elsif (@toks == 2)
+			{
+				my $addr = $toks[1];
+				address_is_legal($addr) or interactive_error("Illegal address $addr");
+				printf("%4s : %2s %2s %2s %2s %2s %2s\n", $addr, @{$mem[$addr]});
+			}
+			else
+			{
+				interactive_error("Illegal m command");
+			}
+		}
+		elsif ($toks[0] eq "b")
+		{
+			if (@toks != 2) 
+			{
+				interactive_error("Illegal b command");
+				next;
+			}
+			
+			my $addr = $toks[1];
+			
+			if (not address_is_legal($addr))  
+			{
+				interactive_error("Illegal address $addr");
+				next;
+			}
+			
+			if (exists $breakpoints{$addr})
+			{
+				delete($breakpoints{$addr});
+				print "Removed breakpoint at $addr\n";
+			}
+			else
+			{
+				$breakpoints{$addr} = 1;
+				print "Set breakpoint at $addr\n";
+			}
+		}
+		elsif ($command eq "bl")
+		{
+			my @bkpt_keys = keys %breakpoints;
+			
+			if (@bkpt_keys == 0)
+			{
+				print "No breakpoints set\n";
+			}
+			else
+			{
+				print "Breakpoints set at:\n";
+				
+				if (@bkpt_keys == 1)
+				{
+					print "$bkpt_keys[0]  ";
+				}
+				else
+				{
+					foreach my $addr (sort {$a <=> $b} @bkpt_keys)
+					{
+						print "$addr  ";
+					}
+				}
+				
+				print "\n";
+			}
+		}
+		elsif ($command eq "br")
+		{
+			%breakpoints = ();
+		}
+		elsif ($command eq "h")
+		{
+			print "\n*** MIXSim interaction help ***\n\n";
+			print "s       \t\t step\n";
+			print "c       \t\t continue until next breakpoint or HLT\n";
+			print "cl      \t\t same as 'c', with an execution trace\n"; 
+			print "rst     \t\t restart simulation (breakpoints remain)\n";
+			print "r       \t\t print contents of registers\n";
+			print "sr      \t\t step and print contents of registers\n";
+			print "m       \t\t print all non-zero memory words\n";
+			print "m <addr>\t\t print a memory word at <addr>\n";
+			print "b <addr>\t\t set/unset a breakpoint at <addr>\n";
+			print "bl      \t\t list all breakpoints\n";
+			print "br      \t\t remove all breakpoints\n";
+			print "h       \t\t show this help\n";
+			print "x or q  \t\t exit interaction\n\n";
+		}
+		elsif ($command eq "x" or $command eq "q")
+		{
+			last interaction;
+		}
+		else
+		{
+			print "Illegal command. Type 'h' for help\n";
+		}
+	}
+	
+	print "\nBye !\n\n";
+}
+
+
+# Returns a state dump - contents of all the registers
+#
+sub state_dump
+{
+	my $dump_str = "";
+
+	$dump_str .= sprintf("rA   : %2s %2s %2s %2s %2s %2s\n", @{$rA});
+	$dump_str .= sprintf("rX   : %2s %2s %2s %2s %2s %2s\n", @{$rX});
+
+	$dump_str .= sprintf("rI$_  : %2s %2s %2s %2s %2s %2s\n", @{$rI[$_]})
+		foreach (1 .. 6);
+	
+	$dump_str .= "\n";
+	$dump_str .= sprintf("rJ   : %2s %2s %2s %2s %2s %2s\n", @{$rJ});
+	$dump_str .= sprintf("lc   : %5s\n", $lc);
+	$dump_str .= sprintf("ovf  : %2s\n", $f_overflow);
+	$dump_str .= sprintf("comp : %2s\n", $f_comparison);
+}
+
+
+# Reports runtime errors - errors that occured during simulation
+# as a result of incorrect machine code. $lc is reported
+#
+sub runtime_error
+{
+	my ($msg) = @_;
+	
+	die("Simulation error at address $lc: $msg\n");
+}
+
+
