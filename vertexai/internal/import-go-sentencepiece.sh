@@ -38,3 +38,11 @@ rsync -av --exclude='.git' --exclude='go.mod' --exclude='go.sum' \
 # Replace import paths.
 find "sentencepiece" -type f -name '*.go' \
     -exec sed -i 's|github.com/eliben/go-sentencepiece|cloud.google.com/go/vertexai/internal/sentencepiece|g' {} +
+
+# Prepend the LICENSE_HEADER to each .go file
+GO_FILES=$(find . -type f -name '*.go')
+LICENSE_HEADER=$(realpath "LICENSE_HEADER")
+
+for gofile in $GO_FILES; do
+    cat "$LICENSE_HEADER" "$gofile" > "$gofile.tmp" && mv "$gofile.tmp" "$gofile"
+done
