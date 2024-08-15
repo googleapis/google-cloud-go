@@ -1,10 +1,11 @@
+// go:build grpc
 // Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,6 +35,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	"google.golang.org/api/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding"
@@ -74,10 +76,10 @@ const (
 // defaultGRPCOptions returns a set of the default client options
 // for gRPC client initialization.
 func defaultGRPCOptions() []option.ClientOption {
-
 	defaults := []option.ClientOption{
 		option.WithGRPCConnectionPool(defaultConnPoolSize),
 	}
+
 	// Set emulator options for gRPC if an emulator was specified. Note that in a
 	// hybrid client, STORAGE_EMULATOR_HOST will set the host to use for HTTP and
 	// STORAGE_EMULATOR_HOST_GRPC will set the host to use for gRPC (when using a
@@ -119,15 +121,20 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	s.clientOption = append(defaultGRPCOptions(), s.clientOption...)
 	// Disable all gax-level retries in favor of retry logic in the veneer client.
 	s.gax = append(s.gax, gax.WithRetry(nil))
-
 	config := newStorageConfig(s.clientOption...)
+
 	if config.readAPIWasSet {
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
 	}
 	if !config.disableClientMetrics {
+		project := ""
+		c, err := transport.Creds(ctx, s.clientOption...)
+		if err == nil {
+			project = c.ProjectID
+		}
 		// TODO: detect project id
 		log.Println("Testing using gRPC Metrics")
-		project := "spec-test-ruby-samples"
+		log.Printf("Using project: %v", project)
 
 		// Enable client-side metrics for gRPC
 		// TODO: detect endpoint

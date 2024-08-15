@@ -34,7 +34,7 @@ func TestMetrics(t *testing.T) {
 		log.Fatalf("Error setting up gRPC client: %v", err)
 	}
 	defer grpcClient.Close()
-	bucket := grpcClient.Bucket("-frank")
+	bucket := grpcClient.Bucket("anima-frank-gcs-grpc-team-test-central1")
 	it := bucket.Objects(ctx, nil)
 	for {
 		_, err := it.Next()
@@ -48,30 +48,45 @@ func TestMetrics(t *testing.T) {
 }
 
 func TestGetViewMasks(t *testing.T) {
-	testMetricName := estats.Metric("test.metric.name")
-	views := getViewMasks([]estats.Metric{testMetricName})
-	for _, mask := range views {
-		got, ok := mask(sdkmetric.Instrument{Name: string(testMetricName)})
-		if !ok {
-			t.Errorf("getViewMasks: did not find %v", testMetricName)
-		}
-		want := "test/metric/name"
-		if got.Name != want {
-			t.Errorf("got: %v, want: %v\n", got, want)
+	testDefaultMetrics := map[estats.Metric]bool{
+		estats.Metric("default.metric.name"): true,
+	}
+	testAdditionalMetrics := []estats.Metric{"test.metric.name"}
+	views := getViewMasks(testDefaultMetrics, testAdditionalMetrics)
+	wantSlice := []struct {
+		inputFormat  string
+		outputFormat string
+	}{
+		{
+			inputFormat:  "default.metric.name",
+			outputFormat: "default/metric/name",
+		},
+		{
+			inputFormat:  "test.metric.name",
+			outputFormat: "test/metric/name",
+		},
+	}
+	// Order matters for the wantSlice and views slice
+	for idx, want := range wantSlice {
+		stream, b := views[idx](sdkmetric.Instrument{
+			Name: want.inputFormat,
+		})
+		if !b || stream.Name != want.outputFormat {
+			t.Errorf("getViewMasks: For metric: %v got=%v, want=%v", want.inputFormat, stream.Name, want.outputFormat)
 		}
 	}
 }
 
 func TestMetricFormatter(t *testing.T) {
-	want := "storage.googleapis.com/client/t"
-	s := metricdata.Metrics{Name: "t", Description: "", Unit: "", Data: nil}
+	want := "storage.googleapis.com/client/metric"
+	s := metricdata.Metrics{Name: "metric", Description: "", Unit: "", Data: nil}
 	got := metricFormatter(s)
 	if want != got {
 		t.Errorf("got: %v, want %v", got, want)
 	}
 }
 
-func TestGetPreparedResource(t *testing.T) {
+func TestCreatePreparedResource(t *testing.T) {
 	ctx := context.Background()
 	for _, test := range []struct {
 		desc               string
@@ -135,11 +150,11 @@ func TestGetPreparedResource(t *testing.T) {
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			resourceOptions := []resource.Option{resource.WithAttributes(test.detectedAttributes...)}
-			result, err := getPreparedResource(ctx, "project", resourceOptions)
+			result, err := createPreparedResource(ctx, "project", resourceOptions)
 			if err != nil {
 				t.Errorf("getPreparedResource: %v", err)
 			}
-			resultSet := result.Set()
+			resultSet := result.resource.Set()
 			for _, want := range test.wantAttributes.ToSlice() {
 				got, exists := resultSet.Value(want.Key)
 				if !exists {
