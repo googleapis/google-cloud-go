@@ -30,14 +30,16 @@ import (
 
 const debugEncode = false
 
+// Encoder represents a SentencePiece encoder (tokenizer).
+// An Encoder converts input text into a sequence of tokens LLMs use.
 type Encoder struct {
 	model *model.ModelProto
 
 	pieces   map[string]int
 	reserved map[string]int
 
-	// unknownId is the token identifier of the UNKNOWN piece
-	unknownId int
+	// unknownID is the token identifier of the UNKNOWN piece
+	unknownID int
 
 	// userDefinedMatcher is a prefix matcher for symbols that are of
 	// "user-defined" type in the model proto.
@@ -59,7 +61,6 @@ func NewEncoderFromPath(protoFile string) (*Encoder, error) {
 }
 
 // NewEncoder creates a new Encoder from a reader with the protobuf data.
-// An Encoder converts input text into a sequence of tokens LLMs use.
 func NewEncoder(protoReader io.Reader) (*Encoder, error) {
 	b, err := io.ReadAll(protoReader)
 	if err != nil {
@@ -81,7 +82,7 @@ func NewEncoder(protoReader io.Reader) (*Encoder, error) {
 	pieces := make(map[string]int)
 	reserved := make(map[string]int)
 	byteTokens := make(map[byte]Token)
-	unkId := -1
+	unkID := -1
 
 	for i, piece := range mp.GetPieces() {
 		isNormalPiece := (piece.GetType() == model.ModelProto_SentencePiece_NORMAL ||
@@ -97,10 +98,10 @@ func NewEncoder(protoReader io.Reader) (*Encoder, error) {
 		if piece.GetType() == model.ModelProto_SentencePiece_USER_DEFINED {
 			userDefined[piece.GetPiece()] = struct{}{}
 		} else if piece.GetType() == model.ModelProto_SentencePiece_UNKNOWN {
-			if unkId > 0 {
+			if unkID > 0 {
 				return nil, fmt.Errorf("unk redefined")
 			}
-			unkId = i
+			unkID = i
 		} else if piece.GetType() == model.ModelProto_SentencePiece_BYTE {
 			if !tspec.GetByteFallback() {
 				return nil, fmt.Errorf("byte piece %q is found although `byte_fallback=false`", piece.GetPiece())
@@ -112,7 +113,7 @@ func NewEncoder(protoReader io.Reader) (*Encoder, error) {
 		}
 	}
 
-	if unkId < 0 {
+	if unkID < 0 {
 		return nil, fmt.Errorf("unk symbol is not defined")
 	}
 
@@ -130,7 +131,7 @@ func NewEncoder(protoReader io.Reader) (*Encoder, error) {
 		model:              &mp,
 		userDefinedMatcher: prefixmatcher.NewFromSet(userDefined),
 		byteTokens:         byteTokens,
-		unknownId:          unkId,
+		unknownID:          unkID,
 		pieces:             pieces,
 		reserved:           reserved,
 	}, nil
@@ -209,9 +210,8 @@ func (enc *Encoder) Encode(text string) []Token {
 	mergeQueue := priorityqueue.New(func(a, b mergeCandidate) int {
 		if a.score > b.score || (a.score == b.score && a.left < b.left) {
 			return 1
-		} else {
-			return -1
 		}
+		return -1
 	})
 
 	// suggestNewMergePair is called to potentially add a new mergeCandidate to
@@ -277,7 +277,7 @@ func (enc *Encoder) Encode(text string) []Token {
 		symbol := symList[i].symbol
 		id := enc.symbolToID(symbol)
 
-		if id == enc.unknownId && enc.model.GetTrainerSpec().GetByteFallback() {
+		if id == enc.unknownID && enc.model.GetTrainerSpec().GetByteFallback() {
 			// Decompose this symbol into bytes, and report each byte as a separate
 			// token.
 			for i := 0; i < len(symbol); i++ {
@@ -298,15 +298,14 @@ func (enc *Encoder) symbolMatch(text string) (int, bool) {
 	prefixLen := enc.userDefinedMatcher.FindPrefixLen(text)
 	if prefixLen > 0 {
 		return prefixLen, true
-	} else {
-		// Not found a user-defined prefix; get the length of next rune.
-		_, rlen := utf8.DecodeRuneInString(text)
-		return rlen, false
 	}
+	// Not found a user-defined prefix; get the length of next rune.
+	_, rlen := utf8.DecodeRuneInString(text)
+	return rlen, false
 }
 
 // symbolToID finds the right ID for the given textual symbol, or returns
-// enc.unknownId if the symbol is unknown.
+// enc.unknownID if the symbol is unknown.
 func (enc *Encoder) symbolToID(symbol string) int {
 	if id, found := enc.reserved[symbol]; found {
 		return id
@@ -314,7 +313,7 @@ func (enc *Encoder) symbolToID(symbol string) int {
 	if id, found := enc.pieces[symbol]; found {
 		return id
 	}
-	return enc.unknownId
+	return enc.unknownID
 }
 
 // convertHexValue converts strings of the form "<0xXY>" to the (unsigned)

@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// package priorityqueue provides a generic priority queue with Insert
+// Package priorityqueue provides a generic priority queue with Insert
 // and PopMax operations.
 package priorityqueue
 
+// PriorityQueue is a generic priority queue with a configurable comparison
+// function.
 type PriorityQueue[T any] struct {
 	cmp func(a, b T) int
 
