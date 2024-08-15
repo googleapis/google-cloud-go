@@ -32,17 +32,17 @@ func dumpNode(n *trieNode, prefix string) string {
 
 func TestSmallVocab(t *testing.T) {
 	vocab := map[string]struct{}{
-		"ham":    struct{}{},
-		"yefet":  struct{}{},
-		"hamat":  struct{}{},
-		"hamela": struct{}{},
-		"世界":     struct{}{},
+		"ham":    {},
+		"yefet":  {},
+		"hamat":  {},
+		"hamela": {},
+		"世界":     {},
 
-		"▁▁":     struct{}{},
-		"▁▁▁":    struct{}{},
-		"▁▁▁▁":   struct{}{},
-		"▁▁▁▁▁":  struct{}{},
-		"▁▁▁▁▁▁": struct{}{},
+		"▁▁":     {},
+		"▁▁▁":    {},
+		"▁▁▁▁":   {},
+		"▁▁▁▁▁":  {},
+		"▁▁▁▁▁▁": {},
 	}
 	pm := NewFromSet(vocab)
 

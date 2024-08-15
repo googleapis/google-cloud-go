@@ -40,7 +40,7 @@ find "sentencepiece" -type f -name '*.go' \
     -exec sed -i 's|github.com/eliben/go-sentencepiece|cloud.google.com/go/vertexai/internal/sentencepiece|g' {} +
 
 # Prepend the LICENSE_HEADER to each .go file
-GO_FILES=$(find . -type f -name '*.go')
+GO_FILES=$(find sentencepiece -type f -name '*.go')
 LICENSE_HEADER=$(realpath "LICENSE_HEADER")
 
 for gofile in $GO_FILES; do
