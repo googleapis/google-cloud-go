@@ -158,6 +158,7 @@ func (str *StringType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// Equal compares StringType objects.
 func (str StringType) Equal(other StringType) bool {
 	return str.Encoding == other.Encoding
 }
@@ -221,6 +222,7 @@ func (it *Int64Type) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// Equal compares Int64Type objects.
 func (it Int64Type) Equal(other Int64Type) bool {
 	return it.Encoding == other.Encoding
 }
@@ -304,6 +306,7 @@ func (agg *AggregateType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// Equal compares AggregateType objects.
 func (agg AggregateType) Equal(other AggregateType) bool {
 	return agg.Aggregator == other.Aggregator && agg.Input == other.Input
 }
