@@ -15,7 +15,6 @@
 // Package tokenizer provides local token counting for Gemini models. This
 // tokenizer downloads its model from the web, but otherwise doesn't require
 // an API call for every CountTokens invocation.
-
 package tokenizer
 
 import (
