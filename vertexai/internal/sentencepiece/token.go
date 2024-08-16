@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package internal
+package sentencepiece
 
-// Version is the current tagged release of the library.
-const Version = "1.67.0"
+import "fmt"
+
+// Token represents a single token from the input text. ID is a unique token
+// identifier that the model uses in its internal representation. Text is
+// the piece of text this token represents.
+type Token struct {
+	ID   int
+	Text string
+}
+
+func (t Token) String() string {
+	return fmt.Sprintf("Token{ID: %v, Text: %q}", t.ID, t.Text)
+}
