@@ -20,6 +20,7 @@ deep-remove-regex:
   - /apigateway/apiv1/
   - /apigeeconnect/apiv1/
   - /apigeeregistry/apiv1/
+  - /apihub/apiv1/
   - /apikeys/apiv2/
   - /appengine/apiv1/
   - /apphub/apiv1/
@@ -154,6 +155,7 @@ deep-remove-regex:
   - /internal/generated/snippets/apigateway/apiv1/
   - /internal/generated/snippets/apigeeconnect/apiv1/
   - /internal/generated/snippets/apigeeregistry/apiv1/
+  - /internal/generated/snippets/apihub/apiv1/
   - /internal/generated/snippets/apikeys/apiv2/
   - /internal/generated/snippets/appengine/apiv1/
   - /internal/generated/snippets/apphub/apiv1/
@@ -646,6 +648,8 @@ deep-copy-regex:
   - source: /google/cloud/asset/v1p2beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/asset/v1p5beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/apihub/v1/cloud.google.com/go
     dest: /
   - source: /google/api/apikeys/v2/cloud.google.com/go
     dest: /
