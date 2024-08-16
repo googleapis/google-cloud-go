@@ -48,11 +48,13 @@ var (
 	// tokenSourceCredTypes converts token metadata auth.google.tokenSource
 	// values to auth metrics values.
 	tokenSourceCredTypes = map[string]string{
-		// "":	"u", // gcloud user credential
-		// "":	"sa", // service account credential with assertion token flow
-		// "":	"jwt", // service account credential with self signed jwt token flow
-		"compute-metadata": "mds", // service account credential attached to metadata server, i.e. VM credential
-		// "":	"imp", // impersonated credential
+		"3lo":               "u",   // gcloud user credential
+		"2lo":               "sa",  // service account credential with assertion token flow
+		"self-signed-jwt":   "jwt", // service account credential with self signed jwt token flow
+		"compute-metadata":  "mds", // service account credential attached to metadata server, i.e. VM credential
+		"impersonated":      "imp", // impersonated credential
+		"impersonated-id":   "imp", // impersonated ID token credential
+		"impersonated-user": "imp", // impersonated user credential
 	}
 )
 

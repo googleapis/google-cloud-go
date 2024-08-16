@@ -28,6 +28,9 @@ import (
 )
 
 var (
+	selfSignedTokenMetadata = map[string]interface{}{
+		"auth.google.tokenSource": "self-signed-jwt",
+	}
 	// for testing
 	now func() time.Time = time.Now
 )
@@ -77,5 +80,10 @@ func (tp *selfSignedTokenProvider) Token(context.Context) (*auth.Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("credentials: could not encode JWT: %w", err)
 	}
-	return &auth.Token{Value: msg, Type: internal.TokenTypeBearer, Expiry: exp}, nil
+	return &auth.Token{
+		Value:    msg,
+		Type:     internal.TokenTypeBearer,
+		Expiry:   exp,
+		Metadata: selfSignedTokenMetadata,
+	}, nil
 }

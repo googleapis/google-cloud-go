@@ -30,6 +30,9 @@ import (
 )
 
 var (
+	impersonatedMetadata = map[string]interface{}{
+		"auth.google.tokenSource": "impersonated",
+	}
 	iamCredentialsEndpoint                      = "https://iamcredentials.googleapis.com"
 	oauth2Endpoint                              = "https://oauth2.googleapis.com"
 	errMissingTargetPrincipal                   = errors.New("impersonate: target service account must be provided")
@@ -262,5 +265,6 @@ func (i impersonatedTokenProvider) Token(ctx context.Context) (*auth.Token, erro
 	return &auth.Token{
 		Value:  accessTokenResp.AccessToken,
 		Expiry: expiry,
+		Metadata: impersonatedMetadata,
 	}, nil
 }
