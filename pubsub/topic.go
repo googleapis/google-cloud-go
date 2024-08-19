@@ -792,6 +792,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	if err := t.flowController.acquire(ctx, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
+		spanRecordError(fcSpan, err)
 		return r
 	}
 	if t.enableTracing {
@@ -819,6 +820,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		ipubsub.SetPublishResult(r, "", err)
 		spanRecordError(createSpan, err)
 	}
+
 	return r
 }
 
@@ -948,9 +950,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in publishMessageBundle: %v", err)
 	}
-	pbMsgs := make([]*pb.PubsubMessage, len(bms))
-	var orderingKey string
 	numMsgs := len(bms)
+	pbMsgs := make([]*pb.PubsubMessage, numMsgs)
+	var orderingKey string
 	if numMsgs != 0 {
 		// extract the ordering key for this batch. since
 		// messages in the same batch share the same ordering
@@ -989,7 +991,6 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	}
 	var batchSize int
 	for i, bm := range bms {
-		orderingKey = bm.msg.OrderingKey
 		pbMsgs[i] = &pb.PubsubMessage{
 			Data:        bm.msg.Data,
 			Attributes:  bm.msg.Attributes,
@@ -998,6 +999,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		batchSize = batchSize + proto.Size(pbMsgs[i])
 		bm.msg = nil // release bm.msg for GC
 	}
+
 	var res *pb.PublishResponse
 	start := time.Now()
 	if orderingKey != "" && t.scheduler.IsPaused(orderingKey) {
