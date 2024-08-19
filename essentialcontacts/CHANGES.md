@@ -1,5 +1,12 @@
 # Changes
 
+## [1.6.13](https://github.com/googleapis/google-cloud-go/compare/essentialcontacts/v1.6.12...essentialcontacts/v1.6.13) (2024-08-08)
+
+
+### Bug Fixes
+
+* **essentialcontacts:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.6.12](https://github.com/googleapis/google-cloud-go/compare/essentialcontacts/v1.6.11...essentialcontacts/v1.6.12) (2024-07-24)
 
 

@@ -493,7 +493,7 @@ func (o *Options2LO) client() *http.Client {
 	if o.Client != nil {
 		return o.Client
 	}
-	return internal.CloneDefaultClient()
+	return internal.DefaultClient()
 }
 
 func (o *Options2LO) validate() error {
