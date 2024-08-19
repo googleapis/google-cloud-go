@@ -1,6 +1,25 @@
 # Changes
 
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.17.0...functions/v1.18.0) (2024-08-13)
+
+
+### Features
+
+* **functions:** Additional field on the output that specified whether the deployment supports Physical Zone Separation. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** Generate upload URL now supports for specifying the GCF generation that the generated upload url will be used for. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** ListRuntimes response now includes deprecation and decommissioning dates. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** Optional field for binary authorization policy. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** Optional field for deploying a source from a GitHub repository. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** Optional field for specifying a revision on GetFunction. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** Optional field for specifying a service account to use for the build. This helps navigate the change of historical default on new projects. For more details, see https ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** Optional fields for setting up automatic base image updates. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+
+
+### Documentation
+
+* **functions:** Refined description in several fields. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.16.6...functions/v1.17.0) (2024-08-08)
 
 

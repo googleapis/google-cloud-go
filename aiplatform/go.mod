@@ -1,6 +1,6 @@
 module cloud.google.com/go/aiplatform
 
-go 1.20
+go 1.21
 
 require (
 	cloud.google.com/go/iam v1.1.12
