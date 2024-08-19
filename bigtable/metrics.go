@@ -79,7 +79,7 @@ var (
 	// Errors seen while collecting and exporting metrics should not fail user operation.
 	// So, not all errors are bubbled up to the user.
 	// These error logs will help in debugging any metrics related issues.
-	metricsLogger = log.New(os.Stderr, "bigtable: ", log.LstdFlags|log.Lmsgprefix)
+	metricsErrorLogger = log.New(os.Stderr, "bigtable metrics: ", log.LstdFlags|log.Lmsgprefix)
 
 	clientName = fmt.Sprintf("go-bigtable/%v", internal.Version)
 
@@ -159,7 +159,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 
 	clientUID, err := generateClientUID()
 	if err != nil {
-		metricsLogger.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric attribute", err, metricLabelKeyClientUID)
+		metricsErrorLogger.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric attribute", err, metricLabelKeyClientUID)
 	}
 
 	tracerFactory := &builtinMetricsTracerFactory{
@@ -193,7 +193,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 		default:
 			tracerFactory.enabled = false
 			unknownErr := errors.New("unknown MetricsProvider type")
-			metricsLogger.Println(unknownErr.Error())
+			metricsErrorLogger.Println(unknownErr.Error())
 			return tracerFactory, unknownErr
 		}
 	}
@@ -208,7 +208,7 @@ func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([
 	allOpts := append(defaultExporterOpts, opts...)
 	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
 	if err != nil {
-		metricsLogger.Printf("newMonitoringExporter: %+v", err)
+		metricsErrorLogger.Printf("newMonitoringExporter: %+v", err)
 		return nil, err
 	}
 
@@ -231,7 +231,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
-		metricsLogger.Printf("Float64Histogram operationLatencies: %+v", err)
+		metricsErrorLogger.Printf("Float64Histogram operationLatencies: %+v", err)
 		return err
 	}
 
@@ -243,7 +243,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
-		metricsLogger.Printf("Float64Histogram attemptLatencies: %+v", err)
+		metricsErrorLogger.Printf("Float64Histogram attemptLatencies: %+v", err)
 		return err
 	}
 
@@ -255,7 +255,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
-		metricsLogger.Printf("Float64Histogram serverLatencies: %+v", err)
+		metricsErrorLogger.Printf("Float64Histogram serverLatencies: %+v", err)
 		return err
 	}
 
@@ -266,7 +266,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithUnit(metricUnitCount),
 	)
 	if err != nil {
-		metricsLogger.Printf("Int64Counter retryCount: %+v", err)
+		metricsErrorLogger.Printf("Int64Counter retryCount: %+v", err)
 	}
 	return err
 }
@@ -409,7 +409,7 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 	mDetails, found := metricsDetails[metricName]
 	if !found {
 		err := fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
-		metricsLogger.Println(err.Error())
+		metricsErrorLogger.Println(err.Error())
 		return attrKeyValues, err
 	}
 
@@ -427,7 +427,7 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 			attrKeyValues = append(attrKeyValues, attribute.Bool(metricLabelKeyStreamingOperation, mt.isStreaming))
 		default:
 			err := fmt.Errorf("unknown additional attribute: %v", attrKey)
-			metricsLogger.Println(err.Error())
+			metricsErrorLogger.Println(err.Error())
 			return attrKeyValues, err
 		}
 	}
@@ -440,8 +440,9 @@ type metricsErrorHandler struct {
 }
 
 func newMetricsErrorHandler() *metricsErrorHandler {
-	return &metricsErrorHandler{l: metricsLogger}
+	return &metricsErrorHandler{l: metricsErrorLogger}
 }
+
 func (h *metricsErrorHandler) Handle(err error) {
 	h.l.Print(err)
 }

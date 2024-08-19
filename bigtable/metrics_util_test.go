@@ -28,10 +28,10 @@ import (
 func TestExtractServerLatency(t *testing.T) {
 	// Redirect errors to buffer
 	var errBuf bytes.Buffer
-	origMetricsLogDest := metricsLogger.Writer()
-	metricsLogger.SetOutput(&errBuf)
+	origMetricsLogDest := metricsErrorLogger.Writer()
+	metricsErrorLogger.SetOutput(&errBuf)
 	t.Cleanup(func() {
-		metricsLogger.SetOutput(origMetricsLogDest)
+		metricsErrorLogger.SetOutput(origMetricsLogDest)
 	})
 
 	invalidFormat := "invalid format"
@@ -118,10 +118,10 @@ func TestExtractServerLatency(t *testing.T) {
 func TestExtractLocation(t *testing.T) {
 	// Redirect errors to buffer
 	var errBuf bytes.Buffer
-	origMetricsLogDest := metricsLogger.Writer()
-	metricsLogger.SetOutput(&errBuf)
+	origMetricsLogDest := metricsErrorLogger.Writer()
+	metricsErrorLogger.SetOutput(&errBuf)
 	t.Cleanup(func() {
-		metricsLogger.SetOutput(origMetricsLogDest)
+		metricsErrorLogger.SetOutput(origMetricsLogDest)
 	})
 
 	invalidFormatErr := "cannot parse invalid wire-format data"
