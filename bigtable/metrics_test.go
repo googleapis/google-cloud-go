@@ -223,7 +223,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			}
 
 			// Check feature flags
-			ffStrs := receivedHeader.Get("bigtable-features")
+			ffStrs := receivedHeader.Get(featureFlagsHeaderKey)
 			if len(ffStrs) < 1 {
 				t.Errorf("Feature flags not sent by client")
 			}

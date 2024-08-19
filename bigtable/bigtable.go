@@ -282,7 +282,7 @@ func (c *Client) newFeatureFlags() metadata.MD {
 
 	val := ""
 	b, err := proto.Marshal(&ff)
-	if err != nil {
+	if err == nil {
 		val = base64.URLEncoding.EncodeToString(b)
 	}
 
