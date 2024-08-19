@@ -399,6 +399,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 		*headerMD, _ = stream.Header()
 		res := new(btpb.ReadRowsResponse)
 		for {
+			proto.Reset(res)
 			err := stream.RecvMsg(res)
 			if err == io.EOF {
 				*trailerMD = stream.Trailer()
@@ -440,6 +441,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 					// Cancel and drain stream.
 					cancel()
 					for {
+						proto.Reset(res)
 						if err := stream.RecvMsg(res); err != nil {
 							*trailerMD = stream.Trailer()
 							// The stream has ended. We don't return an error
@@ -1311,9 +1313,8 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 	// Ignore error since header is only being used to record builtin metrics
 	// Failure to record metrics should not fail the operation
 	*headerMD, _ = stream.Header()
-	res := new(btpb.MutateRowsResponse)
 	for {
-		err := stream.RecvMsg(res)
+		res, err := stream.Recv()
 		if err == io.EOF {
 			*trailerMD = stream.Trailer()
 			break
@@ -1505,9 +1506,8 @@ func (t *Table) sampleRowKeys(ctx context.Context, mt *builtinMetricsTracer) ([]
 		// Ignore error since header is only being used to record builtin metrics
 		// Failure to record metrics should not fail the operation
 		*headerMD, _ = stream.Header()
-		res := new(btpb.SampleRowKeysResponse)
 		for {
-			err := stream.RecvMsg(res)
+			res, err := stream.Recv()
 			if err == io.EOF {
 				*trailerMD = stream.Trailer()
 				break
