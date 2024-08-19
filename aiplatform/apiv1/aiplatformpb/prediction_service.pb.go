@@ -1577,9 +1577,14 @@ type GenerateContentRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the publisher model requested to serve the
-	// prediction. Format:
+	// Required. The fully qualified name of the publisher model or tuned model
+	// endpoint to use.
+	//
+	// Publisher model format:
 	// `projects/{project}/locations/{location}/publishers/*/models/*`
+	//
+	// Tuned model endpoint format:
+	// `projects/{project}/locations/{location}/endpoints/{endpoint}`
 	Model string `protobuf:"bytes,5,opt,name=model,proto3" json:"model,omitempty"`
 	// Required. The content of the current conversation with the model.
 	//

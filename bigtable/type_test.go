@@ -29,15 +29,7 @@ func aggregateProto() *btapb.Type {
 			Int64Type: &btapb.Type_Int64{
 				Encoding: &btapb.Type_Int64_Encoding{
 					Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
-						BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{
-							BytesType: &btapb.Type_Bytes{
-								Encoding: &btapb.Type_Bytes_Encoding{
-									Encoding: &btapb.Type_Bytes_Encoding_Raw_{
-										Raw: &btapb.Type_Bytes_Encoding_Raw{},
-									},
-								},
-							},
-						},
+						BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
 					},
 				},
 			},
@@ -79,15 +71,7 @@ func TestSumAggregateProto(t *testing.T) {
 						Int64Type: &btapb.Type_Int64{
 							Encoding: &btapb.Type_Int64_Encoding{
 								Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
-									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{
-										BytesType: &btapb.Type_Bytes{
-											Encoding: &btapb.Type_Bytes_Encoding{
-												Encoding: &btapb.Type_Bytes_Encoding_Raw_{
-													Raw: &btapb.Type_Bytes_Encoding_Raw{},
-												},
-											},
-										},
-									},
+									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
 								},
 							},
 						},
@@ -123,15 +107,7 @@ func TestMinAggregateProto(t *testing.T) {
 						Int64Type: &btapb.Type_Int64{
 							Encoding: &btapb.Type_Int64_Encoding{
 								Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
-									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{
-										BytesType: &btapb.Type_Bytes{
-											Encoding: &btapb.Type_Bytes_Encoding{
-												Encoding: &btapb.Type_Bytes_Encoding_Raw_{
-													Raw: &btapb.Type_Bytes_Encoding_Raw{},
-												},
-											},
-										},
-									},
+									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
 								},
 							},
 						},
@@ -159,15 +135,7 @@ func TestMaxAggregateProto(t *testing.T) {
 						Int64Type: &btapb.Type_Int64{
 							Encoding: &btapb.Type_Int64_Encoding{
 								Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
-									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{
-										BytesType: &btapb.Type_Bytes{
-											Encoding: &btapb.Type_Bytes_Encoding{
-												Encoding: &btapb.Type_Bytes_Encoding_Raw_{
-													Raw: &btapb.Type_Bytes_Encoding_Raw{},
-												},
-											},
-										},
-									},
+									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
 								},
 							},
 						},
@@ -195,15 +163,7 @@ func TestHllAggregateProto(t *testing.T) {
 						Int64Type: &btapb.Type_Int64{
 							Encoding: &btapb.Type_Int64_Encoding{
 								Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
-									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{
-										BytesType: &btapb.Type_Bytes{
-											Encoding: &btapb.Type_Bytes_Encoding{
-												Encoding: &btapb.Type_Bytes_Encoding_Raw_{
-													Raw: &btapb.Type_Bytes_Encoding_Raw{},
-												},
-											},
-										},
-									},
+									BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
 								},
 							},
 						},

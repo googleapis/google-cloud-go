@@ -44,7 +44,7 @@ const (
 	// Unspecified function calling mode. This value should not be used.
 	FunctionCallingConfig_MODE_UNSPECIFIED FunctionCallingConfig_Mode = 0
 	// Default model behavior, model decides to predict either a function call
-	// or a natural language repspose.
+	// or a natural language response.
 	FunctionCallingConfig_AUTO FunctionCallingConfig_Mode = 1
 	// Model is constrained to always predicting a function call only.
 	// If "allowed_function_names" are set, the predicted function call will be
