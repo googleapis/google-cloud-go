@@ -950,6 +950,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	}
 	pbMsgs := make([]*pb.PubsubMessage, len(bms))
 	var orderingKey string
+	numMsgs := len(bms)
 	if numMsgs != 0 {
 		// extract the ordering key for this batch. since
 		// messages in the same batch share the same ordering
