@@ -1,6 +1,6 @@
 module cloud.google.com/go/apigeeconnect
 
-go 1.20
+go 1.21
 
 require (
 	github.com/googleapis/gax-go/v2 v2.13.0

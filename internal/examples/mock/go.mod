@@ -1,6 +1,6 @@
 module cloud.google.com/go/internal/examples/mock
 
-go 1.20
+go 1.21
 
 require (
 	cloud.google.com/go/translate v1.10.7

@@ -1,6 +1,16 @@
 # Changelog
 
 
+## [1.9.4](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.3...batch/v1.9.4) (2024-08-13)
+
+
+### Documentation
+
+* **batch:** Batch CentOS images and HPC CentOS images are EOS ([#10680](https://github.com/googleapis/google-cloud-go/issues/10680)) ([578ce14](https://github.com/googleapis/google-cloud-go/commit/578ce14068881a40d0c1d26d33b570973ec1a5bc))
+* **batch:** Clarify required fields for Runnable.Container ([578ce14](https://github.com/googleapis/google-cloud-go/commit/578ce14068881a40d0c1d26d33b570973ec1a5bc))
+* **batch:** Clarify required oneof fields for Runnable.Script ([578ce14](https://github.com/googleapis/google-cloud-go/commit/578ce14068881a40d0c1d26d33b570973ec1a5bc))
+* **batch:** Clarify TaskSpec requires one or more runnables ([578ce14](https://github.com/googleapis/google-cloud-go/commit/578ce14068881a40d0c1d26d33b570973ec1a5bc))
+
 ## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.2...batch/v1.9.3) (2024-08-08)
 
 
