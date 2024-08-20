@@ -416,6 +416,10 @@ type BucketAttrs struct {
 	// This field is read-only.
 	Created time.Time
 
+	// Time at which the bucket was last modified.
+	// This field is read-only.
+	Updated time.Time
+
 	// VersioningEnabled reports whether this bucket has versioning enabled.
 	VersioningEnabled bool
 
@@ -824,6 +828,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		DefaultEventBasedHold:    b.DefaultEventBasedHold,
 		StorageClass:             b.StorageClass,
 		Created:                  convertTime(b.TimeCreated),
+		Updated:                  convertTime(b.Updated),
 		VersioningEnabled:        b.Versioning != nil && b.Versioning.Enabled,
 		ACL:                      toBucketACLRules(b.Acl),
 		DefaultObjectACL:         toObjectACLRules(b.DefaultObjectAcl),
@@ -861,6 +866,7 @@ func newBucketFromProto(b *storagepb.Bucket) *BucketAttrs {
 		DefaultEventBasedHold:    b.GetDefaultEventBasedHold(),
 		StorageClass:             b.GetStorageClass(),
 		Created:                  b.GetCreateTime().AsTime(),
+		Updated:                  b.GetUpdateTime().AsTime(),
 		VersioningEnabled:        b.GetVersioning().GetEnabled(),
 		ACL:                      toBucketACLRulesFromProto(b.GetAcl()),
 		DefaultObjectACL:         toObjectACLRulesFromProto(b.GetDefaultObjectAcl()),
@@ -922,6 +928,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		Name:                  b.Name,
 		Location:              b.Location,
 		StorageClass:          b.StorageClass,
+		Updated:               b.Updated.Format(time.RFC3339),
 		Acl:                   toRawBucketACL(b.ACL),
 		DefaultObjectAcl:      toRawObjectACL(b.DefaultObjectACL),
 		Versioning:            v,
@@ -984,6 +991,7 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 		Name:                  b.Name,
 		Location:              b.Location,
 		StorageClass:          b.StorageClass,
+		UpdateTime:            toProtoTimestamp(b.Updated),
 		Acl:                   toProtoBucketACL(b.ACL),
 		DefaultObjectAcl:      toProtoObjectACL(b.DefaultObjectACL),
 		Versioning:            v,
