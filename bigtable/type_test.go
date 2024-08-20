@@ -23,6 +23,7 @@ import (
 
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -38,6 +39,36 @@ func aggregateProto() *btapb.Type {
 			},
 		},
 	}
+}
+
+func TestUnknown(t *testing.T) {
+	unsupportedType := &btapb.Type{
+		Kind: &btapb.Type_Float64Type{
+			Float64Type: &btapb.Type_Float64{},
+		},
+	}
+	got, ok := ProtoToType(unsupportedType).(unknown[btapb.Type])
+	if !ok {
+		t.Errorf("got: %T, wanted unknown[btapb.Type]", got)
+	}
+	gotJSON, err := json.Marshal(got)
+	if err != nil {
+		t.Fatalf("Error calling json.Marshal: %v", err)
+	}
+	wantJSON := "{\"float64Type\":{}}"
+	if string(gotJSON) != wantJSON {
+		t.Errorf("got %q, want %q", string(gotJSON), wantJSON)
+	}
+	var result unknown[btapb.Type]
+	if err := json.Unmarshal(gotJSON, &result); err != nil {
+		t.Fatalf("Error calling json.Unmarshal: %v", err)
+	}
+	if diff := cmp.Diff(result.wrapped, got.wrapped, cmpopts.IgnoreUnexported(btapb.Type{}), cmpopts.IgnoreUnexported(btapb.Type_Float64Type{}), cmpopts.IgnoreUnexported(btapb.Type_Float64{})); diff != "" {
+		t.Errorf("Unexpected diff: \n%s", diff)
+	}
+	// if !result.Equal(got) {
+	// 	t.Errorf("Unexpected result. Got %#v, want %#v", result, got)
+	// }
 }
 
 func TestInt64Proto(t *testing.T) {

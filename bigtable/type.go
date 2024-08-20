@@ -49,16 +49,29 @@ func (u unknown[T]) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON initializes a BytesType from json bytes.
-func (u unknown[T]) UnmarshalJSON(data []byte) error {
-	// TODO: Fix this
-	if _, ok := any(u.wrapped).(proto.Message); ok {
-		// var result T
-		// if err := unmarshalOptions.Unmarshal(data, result); err != nil {
-		// 	return err
-		// }
-		// u.wrapped = ProtoToType(result)
-		return nil
+func (u *unknown[T]) UnmarshalJSON(data []byte) error {
+	var t T
+	switch any(t).(type) {
+	case btapb.Type:
+		result := &btapb.Type{}
+		if err := unmarshalOptions.Unmarshal(data, result); err != nil {
+			return err
+		}
+		u.wrapped = any(result).(*T)
+	case btapb.Type_Bytes_Encoding:
+		result := &btapb.Type_Bytes_Encoding{}
+		if err := unmarshalOptions.Unmarshal(data, result); err != nil {
+			return err
+		}
+		u.wrapped = any(result).(*T)
+	case btapb.Type_Int64_Encoding:
+		result := &btapb.Type_Int64_Encoding{}
+		if err := unmarshalOptions.Unmarshal(data, result); err != nil {
+			return err
+		}
+		u.wrapped = any(result).(*T)
 	}
+
 	return nil
 }
 
