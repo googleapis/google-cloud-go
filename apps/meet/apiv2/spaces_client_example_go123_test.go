@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package meet_test
-
-import (
-	meet "cloud.google.com/go/apps/meet/apiv2"
-)

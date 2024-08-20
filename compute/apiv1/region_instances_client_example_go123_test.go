@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package compute_test
-
-import (
-	compute "cloud.google.com/go/compute/apiv1"
-)
