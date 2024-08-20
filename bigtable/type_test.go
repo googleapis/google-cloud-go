@@ -17,8 +17,8 @@ limitations under the License.
 package bigtable
 
 import (
-	"encoding/json"
 	"fmt"
+	"strings"
 	"testing"
 
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
@@ -51,50 +51,50 @@ func TestUnknown(t *testing.T) {
 	if !ok {
 		t.Errorf("got: %T, wanted unknown[btapb.Type]", got)
 	}
-	gotJSON, err := json.Marshal(got)
+	gotJSON, err := MarshalJSON(got)
 	if err != nil {
-		t.Fatalf("Error calling json.Marshal: %v", err)
+		t.Fatalf("Error calling MarshalJSON: %v", err)
 	}
 	wantJSON := "{\"float64Type\":{}}"
-	if string(gotJSON) != wantJSON {
+	if strings.ReplaceAll(string(gotJSON), " ", "") != wantJSON {
 		t.Errorf("got %q, want %q", string(gotJSON), wantJSON)
 	}
-	var result unknown[btapb.Type]
-	if err := json.Unmarshal(gotJSON, &result); err != nil {
-		t.Fatalf("Error calling json.Unmarshal: %v", err)
+	result, err := UnmarshalJSON(gotJSON)
+	if err != nil {
+		t.Fatalf("Error calling UnmarshalJSON: %v", err)
 	}
-	if diff := cmp.Diff(result.wrapped, got.wrapped, cmpopts.IgnoreUnexported(btapb.Type{}), cmpopts.IgnoreUnexported(btapb.Type_Float64Type{}), cmpopts.IgnoreUnexported(btapb.Type_Float64{})); diff != "" {
+	if diff := cmp.Diff(result, got, cmpopts.IgnoreUnexported(unknown[btapb.Type]{}), cmpopts.IgnoreUnexported(btapb.Type{}), cmpopts.IgnoreUnexported(btapb.Type_Float64Type{}), cmpopts.IgnoreUnexported(btapb.Type_Float64{})); diff != "" {
 		t.Errorf("Unexpected diff: \n%s", diff)
 	}
-	// if !result.Equal(got) {
-	// 	t.Errorf("Unexpected result. Got %#v, want %#v", result, got)
-	// }
+	if !Equal(result, got) {
+		t.Errorf("Unexpected result. Got %#v, want %#v", result, got)
+	}
 }
 
 func TestInt64Proto(t *testing.T) {
 	want := aggregateProto()
-	it := Int64Type{}
+	it := Int64Type{Encoding: BigEndianBytesEncoding{}}
 	got := it.proto()
 	if !proto.Equal(got, want) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	gotJSON, err := json.Marshal(it)
+	gotJSON, err := MarshalJSON(it)
 	if err != nil {
-		t.Fatalf("Error calling json.Marshal: %v", err)
+		t.Fatalf("Error calling MarshalJSON: %v", err)
 	}
 	wantJSON := "{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}"
-	if string(gotJSON) != wantJSON {
+	if strings.ReplaceAll(string(gotJSON), " ", "") != wantJSON {
 		t.Errorf("got %q, want %q", string(gotJSON), wantJSON)
 	}
-	var result Int64Type
-	if err := json.Unmarshal(gotJSON, &result); err != nil {
-		t.Fatalf("Error calling json.Unmarshal: %v", err)
+	result, err := UnmarshalJSON(gotJSON)
+	if err != nil {
+		t.Fatalf("Error calling UnmarshalJSON: %v", err)
 	}
 	if diff := cmp.Diff(result, it); diff != "" {
 		t.Errorf("Unexpected diff: \n%s", diff)
 	}
-	if !result.Equal(it) {
+	if !Equal(result, it) {
 		t.Errorf("Unexpected result. Got %#v, want %#v", result, it)
 	}
 }
@@ -109,28 +109,28 @@ func TestStringProto(t *testing.T) {
 			},
 		},
 	}
-	st := StringType{}
+	st := StringType{Encoding: StringUtf8Encoding{}}
 	got := st.proto()
 	if !proto.Equal(got, want) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 
-	gotJSON, err := json.Marshal(st)
+	gotJSON, err := MarshalJSON(st)
 	if err != nil {
 		t.Fatalf("Error calling ToJSON: %v", err)
 	}
 	wantJSON := "{\"stringType\":{\"encoding\":{\"utf8Raw\":{}}}}"
-	if string(gotJSON) != wantJSON {
+	if strings.ReplaceAll(string(gotJSON), " ", "") != wantJSON {
 		t.Errorf("got %q, want %q", string(gotJSON), wantJSON)
 	}
-	var result StringType
-	if err := json.Unmarshal(gotJSON, &result); err != nil {
+	result, err := UnmarshalJSON(gotJSON)
+	if err != nil {
 		t.Fatalf("Failed to unmarshal JSON: %v", err)
 	}
 	if diff := cmp.Diff(result, st); diff != "" {
 		t.Errorf("Unexpected diff: \n%s", diff)
 	}
-	if !result.Equal(st) {
+	if !Equal(result, st) {
 		t.Errorf("Unexpected result. Got %#v, want %#v", result, st)
 	}
 }
@@ -219,22 +219,22 @@ func TestAggregateProto(t *testing.T) {
 				t.Errorf("got type %v, want: %v", got, want)
 			}
 
-			gotJSON, err := json.Marshal(at)
+			gotJSON, err := MarshalJSON(at)
 			if err != nil {
 				t.Fatalf("Error calling ToJSON: %v", err)
 			}
 			wantJSON := fmt.Sprintf("{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"%s\":{}}}", tc.fn)
-			if string(gotJSON) != wantJSON {
+			if strings.ReplaceAll(string(gotJSON), " ", "") != wantJSON {
 				t.Errorf("unexpected different JSON got %q, want %q", string(gotJSON), wantJSON)
 			}
-			var result AggregateType
-			if err := json.Unmarshal(gotJSON, &result); err != nil {
+			result, err := UnmarshalJSON(gotJSON)
+			if err != nil {
 				t.Fatalf("Failed to unmarshal JSON: %v", err)
 			}
 			if diff := cmp.Diff(result, at); diff != "" {
 				t.Errorf("Unexpected diff: \n%s", diff)
 			}
-			if !result.Equal(at) {
+			if !Equal(result, at) {
 				t.Errorf("Unexpected result. Got %#v, want %#v", result, at)
 			}
 		})

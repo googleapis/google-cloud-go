@@ -26,11 +26,29 @@ import (
 // for more details on types.
 type Type interface {
 	proto() *btapb.Type
-	MarshalJSON() ([]byte, error)
 }
 
 var marshalOptions = protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 var unmarshalOptions = protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+
+// MarshalJSON returns the string representation of the Type protobuf.
+func MarshalJSON(t Type) ([]byte, error) {
+	return marshalOptions.Marshal(t.proto())
+}
+
+// UnmarshalJSON returns a Type object from json bytes.
+func UnmarshalJSON(data []byte) (Type, error) {
+	result := &btapb.Type{}
+	if err := unmarshalOptions.Unmarshal(data, result); err != nil {
+		return nil, err
+	}
+	return ProtoToType(result), nil
+}
+
+// Equal compares Type objects.
+func Equal(a, b Type) bool {
+	return proto.Equal(a.proto(), b.proto())
+}
 
 type unknown[T interface{}] struct {
 	wrapped *T
@@ -38,41 +56,6 @@ type unknown[T interface{}] struct {
 
 func (u unknown[T]) proto() *T {
 	return u.wrapped
-}
-
-// MarshalJSON returns the string representation of the protobuf.
-func (u unknown[T]) MarshalJSON() ([]byte, error) {
-	if t, ok := any(u.wrapped).(proto.Message); ok {
-		return marshalOptions.Marshal(t)
-	}
-	return nil, nil
-}
-
-// UnmarshalJSON initializes a BytesType from json bytes.
-func (u *unknown[T]) UnmarshalJSON(data []byte) error {
-	var t T
-	switch any(t).(type) {
-	case btapb.Type:
-		result := &btapb.Type{}
-		if err := unmarshalOptions.Unmarshal(data, result); err != nil {
-			return err
-		}
-		u.wrapped = any(result).(*T)
-	case btapb.Type_Bytes_Encoding:
-		result := &btapb.Type_Bytes_Encoding{}
-		if err := unmarshalOptions.Unmarshal(data, result); err != nil {
-			return err
-		}
-		u.wrapped = any(result).(*T)
-	case btapb.Type_Int64_Encoding:
-		result := &btapb.Type_Int64_Encoding{}
-		if err := unmarshalOptions.Unmarshal(data, result); err != nil {
-			return err
-		}
-		u.wrapped = any(result).(*T)
-	}
-
-	return nil
 }
 
 // BytesEncoding represents the encoding of a Bytes type.
@@ -105,24 +88,6 @@ func (bytes BytesType) proto() *btapb.Type {
 	return &btapb.Type{Kind: &btapb.Type_BytesType{BytesType: &btapb.Type_Bytes{Encoding: encoding}}}
 }
 
-// MarshalJSON returns the string representation of the protobuf.
-func (bytes BytesType) MarshalJSON() ([]byte, error) {
-	return marshalOptions.Marshal(bytes.proto())
-}
-
-// UnmarshalJSON initializes a BytesType from json bytes.
-func (bytes *BytesType) UnmarshalJSON(data []byte) error {
-	result := &btapb.Type{}
-	if err := unmarshalOptions.Unmarshal(data, result); err != nil {
-		return err
-	}
-	t := ProtoToType(result)
-	if bt, ok := t.(*BytesType); ok {
-		*bytes = *bt
-	}
-	return nil
-}
-
 // StringEncoding represents the encoding of a String.
 type StringEncoding interface {
 	proto() *btapb.Type_String_Encoding
@@ -151,29 +116,6 @@ func (str StringType) proto() *btapb.Type {
 		encoding = StringUtf8Encoding{}.proto()
 	}
 	return &btapb.Type{Kind: &btapb.Type_StringType{StringType: &btapb.Type_String{Encoding: encoding}}}
-}
-
-// MarshalJSON returns the string representation of the protobuf.
-func (str StringType) MarshalJSON() ([]byte, error) {
-	return marshalOptions.Marshal(str.proto())
-}
-
-// UnmarshalJSON initializes a StringType from json bytes.
-func (str *StringType) UnmarshalJSON(data []byte) error {
-	result := &btapb.Type{}
-	if err := unmarshalOptions.Unmarshal(data, result); err != nil {
-		return err
-	}
-	t := ProtoToType(result)
-	if st, ok := t.(*StringType); ok {
-		*str = *st
-	}
-	return nil
-}
-
-// Equal compares StringType objects.
-func (str StringType) Equal(other StringType) bool {
-	return proto.Equal(str.proto(), other.proto())
 }
 
 // Int64Encoding represents the encoding of an Int64 type.
@@ -215,29 +157,6 @@ func (it Int64Type) proto() *btapb.Type {
 			},
 		},
 	}
-}
-
-// MarshalJSON returns the string representation of the protobuf.
-func (it Int64Type) MarshalJSON() ([]byte, error) {
-	return marshalOptions.Marshal(it.proto())
-}
-
-// UnmarshalJSON initializes a 4 from json bytes.
-func (it *Int64Type) UnmarshalJSON(data []byte) error {
-	result := &btapb.Type{}
-	if err := unmarshalOptions.Unmarshal(data, result); err != nil {
-		return err
-	}
-	t := ProtoToType(result)
-	if iType, ok := t.(*Int64Type); ok {
-		*it = *iType
-	}
-	return nil
-}
-
-// Equal compares Int64Type objects.
-func (it Int64Type) Equal(other Int64Type) bool {
-	return proto.Equal(it.proto(), other.proto())
 }
 
 // Aggregator represents an aggregation function for an aggregate type.
@@ -301,29 +220,6 @@ func (agg AggregateType) proto() *btapb.Type {
 	return &btapb.Type{Kind: &btapb.Type_AggregateType{AggregateType: protoAgg}}
 }
 
-// MarshalJSON returns the string representation of the protobuf.
-func (agg AggregateType) MarshalJSON() ([]byte, error) {
-	return marshalOptions.Marshal(agg.proto())
-}
-
-// UnmarshalJSON initializes a AggregateType from json bytes.
-func (agg *AggregateType) UnmarshalJSON(data []byte) error {
-	result := &btapb.Type{}
-	if err := unmarshalOptions.Unmarshal(data, result); err != nil {
-		return err
-	}
-	t := ProtoToType(result)
-	if at, ok := t.(AggregateType); ok {
-		*agg = at
-	}
-	return nil
-}
-
-// Equal compares AggregateType objects.
-func (agg AggregateType) Equal(other AggregateType) bool {
-	return proto.Equal(agg.proto(), other.proto())
-}
-
 // ProtoToType converts a protobuf *btapb.Type to an instance of the Type interface, for use of the admin API.
 func ProtoToType(pb *btapb.Type) Type {
 	if pb == nil {
@@ -335,6 +231,8 @@ func ProtoToType(pb *btapb.Type) Type {
 		return int64ProtoToType(t.Int64Type)
 	case *btapb.Type_BytesType:
 		return bytesProtoToType(t.BytesType)
+	case *btapb.Type_StringType:
+		return stringProtoToType(t.StringType)
 	case *btapb.Type_AggregateType:
 		return aggregateProtoToType(t.AggregateType)
 	default:
@@ -357,6 +255,23 @@ func bytesEncodingProtoToType(be *btapb.Type_Bytes_Encoding) BytesEncoding {
 
 func bytesProtoToType(b *btapb.Type_Bytes) BytesType {
 	return BytesType{Encoding: bytesEncodingProtoToType(b.Encoding)}
+}
+
+func stringEncodingProtoToType(se *btapb.Type_String_Encoding) StringEncoding {
+	if se == nil {
+		return unknown[btapb.Type_String_Encoding]{wrapped: se}
+	}
+
+	switch se.Encoding.(type) {
+	case *btapb.Type_String_Encoding_Utf8Raw_:
+		return StringUtf8Encoding{}
+	default:
+		return unknown[btapb.Type_String_Encoding]{wrapped: se}
+	}
+}
+
+func stringProtoToType(s *btapb.Type_String) StringType {
+	return StringType{Encoding: stringEncodingProtoToType(s.Encoding)}
 }
 
 func int64EncodingProtoToEncoding(ie *btapb.Type_Int64_Encoding) Int64Encoding {
