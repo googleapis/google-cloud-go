@@ -21,13 +21,12 @@
 package generativelanguagepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -111,10 +110,12 @@ type TunedModel struct {
 	// create. Example: `tunedModels/az2mb0bpw6i` If display_name is set on
 	// create, the id portion of the name will be set by concatenating the words
 	// of the display_name with hyphens and adding a random portion for
-	// uniqueness. Example:
+	// uniqueness.
 	//
-	//	display_name = "Sentence Translator"
-	//	name = "tunedModels/sentence-translator-u3b7m"
+	// Example:
+	//
+	//   - display_name = `Sentence Translator`
+	//   - name = `tunedModels/sentence-translator-u3b7m`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The name to display for this model in user interfaces.
 	// The display name must be up to 40 characters including spaces.
@@ -292,7 +293,7 @@ type TunedModel_TunedModelSource struct {
 
 type TunedModel_BaseModel struct {
 	// Immutable. The name of the `Model` to tune.
-	// Example: `models/text-bison-001`
+	// Example: `models/gemini-1.5-flash-001`
 	BaseModel string `protobuf:"bytes,4,opt,name=base_model,json=baseModel,proto3,oneof"`
 }
 
@@ -311,7 +312,7 @@ type TunedModelSource struct {
 	// Example: `tunedModels/my-tuned-model`
 	TunedModel string `protobuf:"bytes,1,opt,name=tuned_model,json=tunedModel,proto3" json:"tuned_model,omitempty"`
 	// Output only. The name of the base `Model` this `TunedModel` was tuned from.
-	// Example: `models/text-bison-001`
+	// Example: `models/gemini-1.5-flash-001`
 	BaseModel string `protobuf:"bytes,2,opt,name=base_model,json=baseModel,proto3" json:"base_model,omitempty"`
 }
 

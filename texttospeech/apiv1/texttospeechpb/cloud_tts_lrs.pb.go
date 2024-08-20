@@ -21,11 +21,8 @@
 package texttospeechpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -53,7 +52,6 @@ type SynthesizeLongAudioRequest struct {
 	// `projects/*/locations/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The Synthesizer requires either plain text or SSML as input.
-	// While Long Audio is in preview, SSML is temporarily unsupported.
 	Input *SynthesisInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	// Required. The configuration of the synthesized audio.
 	AudioConfig *AudioConfig `protobuf:"bytes,3,opt,name=audio_config,json=audioConfig,proto3" json:"audio_config,omitempty"`
