@@ -1859,6 +1859,8 @@ type writeOnlyTransaction struct {
 	// current transaction from the allowed tracking change streams with DDL option
 	// allow_txn_exclusion=true.
 	excludeTxnFromChangeStreams bool
+	// commitOptions are applied to the Commit request for the writeOnlyTransaction..
+	commitOptions CommitOptions
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1881,6 +1883,11 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 	if err != nil {
 		// Malformed mutation found, just return the error.
 		return ts, err
+	}
+
+	var maxCommitDelay *durationpb.Duration
+	if t.commitOptions.MaxCommitDelay != nil {
+		maxCommitDelay = durationpb.New(*(t.commitOptions.MaxCommitDelay))
 	}
 
 	// Make a retryer for Aborted and certain Internal errors.
@@ -1910,6 +1917,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 				},
 				Mutations:      mPb,
 				RequestOptions: createRequestOptions(t.commitPriority, "", t.transactionTag),
+				MaxCommitDelay: maxCommitDelay,
 			})
 			if err != nil && !isAbortedErr(err) {
 				// should not be the case with multiplexed sessions

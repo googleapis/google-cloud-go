@@ -44,6 +44,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
@@ -3533,6 +3534,29 @@ func TestClient_ApplyAtLeastOnce(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	for _, req := range requests {
+		if r, ok := req.(*sppb.CommitRequest); ok {
+			if r.MaxCommitDelay != nil {
+				t.Fatalf("unexpected MaxCommitDelay: %v", r.MaxCommitDelay)
+			}
+		}
+	}
+
+	// Using Max commit delay
+	duration := 1 * time.Millisecond
+	_, err = client.Apply(context.Background(), ms, ApplyAtLeastOnce(), ApplyCommitOptions(CommitOptions{MaxCommitDelay: &duration}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	requests = drainRequestsFromServer(server.TestSpanner)
+	for _, req := range requests {
+		if r, ok := req.(*sppb.CommitRequest); ok {
+			if r.MaxCommitDelay.GetNanos() != durationpb.New(duration).GetNanos() {
+				t.Fatalf("unexpected MaxCommitDelay: %v", r.MaxCommitDelay)
+			}
+		}
+	}
 }
 
 func TestClient_ApplyAtLeastOnceReuseSession(t *testing.T) {
@@ -5365,14 +5389,25 @@ func TestClient_Apply_Tagging(t *testing.T) {
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 
-	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})})
+	duration := time.Millisecond
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyCommitOptions(CommitOptions{MaxCommitDelay: &duration}))
 	checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{})
+	for _, req := range drainRequestsFromServer(server.TestSpanner) {
+		if commitReq, ok := req.(*sppb.CommitRequest); ok {
+			if commitReq.MaxCommitDelay.GetNanos() != durationpb.New(duration).GetNanos() {
+				t.Fatalf("Missing MaxCommitDelay in commit request")
+			}
+		}
+	}
 
 	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, TransactionTag("tx-tag"))
 	checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{TransactionTag: "tx-tag"})
 
 	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyAtLeastOnce())
 	checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{})
+
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyAtLeastOnce(), TransactionTag("tx-tag"))
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{TransactionTag: "tx-tag"})
 
 	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyAtLeastOnce(), TransactionTag("tx-tag"))
 	checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{TransactionTag: "tx-tag"})
