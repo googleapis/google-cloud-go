@@ -108,8 +108,8 @@ func TestExtractServerLatency(t *testing.T) {
 			if gotLatency != test.wantLatency {
 				t.Errorf("latency got: %v, want: %v", gotLatency, test.wantLatency)
 			}
-			if gotErr != nil && !strings.Contains(errBuf.String(), "bigtable: "+gotErr.Error()) {
-				t.Errorf("Expected error to contain \"bigtable: \". Got: %+v", gotErr)
+			if gotErr != nil && !strings.Contains(errBuf.String(), metricsErrorPrefix+gotErr.Error()) {
+				t.Errorf("Expected error to contain \"%v\". Got: %+v", metricsErrorPrefix, gotErr)
 			}
 		})
 	}
@@ -199,8 +199,8 @@ func TestExtractLocation(t *testing.T) {
 			if !equalErrs(gotErr, test.wantError) {
 				t.Errorf("error got: %v, want: %v", gotErr, test.wantError)
 			}
-			if gotErr != nil && !strings.Contains(errBuf.String(), "bigtable: "+gotErr.Error()) {
-				t.Errorf("Expected error to contain \"bigtable: \". Got: %+v", gotErr)
+			if gotErr != nil && !strings.Contains(errBuf.String(), metricsErrorPrefix+gotErr.Error()) {
+				t.Errorf("Expected error to contain \"%v\". Got: %+v", metricsErrorPrefix, errBuf.String())
 			}
 		})
 	}

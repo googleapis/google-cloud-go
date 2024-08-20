@@ -72,6 +72,8 @@ var (
 	// duration between two metric exports
 	defaultSamplePeriod = 5 * time.Minute
 
+	metricsErrorPrefix = "bigtable metrics: "
+
 	// Logger used to log errors seen while collecting and exporting metrics
 	// Log format is yyyy/MM/dd HH:mm:ss bigtable: .........
 	// Date and time are in local timezone
@@ -79,7 +81,7 @@ var (
 	// Errors seen while collecting and exporting metrics should not fail user operation.
 	// So, not all errors are bubbled up to the user.
 	// These error logs will help in debugging any metrics related issues.
-	metricsErrorLogger = log.New(os.Stderr, "bigtable metrics: ", log.LstdFlags|log.Lmsgprefix)
+	metricsErrorLogger = log.New(os.Stderr, metricsErrorPrefix, log.LstdFlags|log.Lmsgprefix)
 
 	clientName = fmt.Sprintf("go-bigtable/%v", internal.Version)
 
@@ -130,7 +132,12 @@ var (
 		return "go-" + uuid.NewString() + "@" + hostname, nil
 	}
 
-	defaultExporterOpts = []option.ClientOption{}
+	// GCM exporter should use the same options as Bigtable client
+	// createExporterOptions takes Bigtable client options and returns exporter options
+	// Overwritten in tests
+	createExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
+		return btOpts
+	}
 )
 
 type metricInfo struct {
@@ -205,7 +212,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 }
 
 func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
-	allOpts := append(defaultExporterOpts, opts...)
+	allOpts := createExporterOptions(opts...)
 	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
 	if err != nil {
 		metricsErrorLogger.Printf("newMonitoringExporter: %+v", err)
