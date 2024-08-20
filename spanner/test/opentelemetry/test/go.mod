@@ -12,7 +12,7 @@ require (
 	cloud.google.com/go/spanner v1.67.0
 	go.opentelemetry.io/otel v1.28.0
 	go.opentelemetry.io/otel/sdk v1.28.0
-	go.opentelemetry.io/otel/sdk/metric v1.24.0
+	go.opentelemetry.io/otel/sdk/metric v1.28.0
 	google.golang.org/api v0.193.0
 	google.golang.org/protobuf v1.34.2
 )
