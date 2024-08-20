@@ -1,6 +1,6 @@
 module cloud.google.com/go/bigtable
 
-go 1.20
+go 1.21
 
 require (
 	cloud.google.com/go v0.115.0
@@ -10,10 +10,10 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/googleapis/cloud-bigtable-clients-test v0.0.2
 	github.com/googleapis/gax-go/v2 v2.13.0
-	go.opentelemetry.io/otel v1.24.0 // Use older version compatible with Go 1.20
-	go.opentelemetry.io/otel/metric v1.24.0 // Use older version compatible with Go 1.20
-	go.opentelemetry.io/otel/sdk v1.24.0 // Use older version compatible with Go 1.20
-	go.opentelemetry.io/otel/sdk/metric v1.24.0 // Use older version compatible with Go 1.20
+	go.opentelemetry.io/otel v1.24.0 // Use older version compatible with go 1.21
+	go.opentelemetry.io/otel/metric v1.24.0 // Use older version compatible with go 1.21
+	go.opentelemetry.io/otel/sdk v1.24.0 // Use older version compatible with go 1.21
+	go.opentelemetry.io/otel/sdk/metric v1.24.0 // Use older version compatible with go 1.21
 	google.golang.org/api v0.191.0
 	google.golang.org/genproto v0.0.0-20240730163845-b1a4ccb954bf
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240730163845-b1a4ccb954bf

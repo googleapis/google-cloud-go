@@ -1,5 +1,25 @@
 # Changes
 
+## [1.67.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.66.0...spanner/v1.67.0) (2024-08-15)
+
+
+### Features
+
+* **spanner/admin/database:** Add resource reference annotation to backup schedules ([#10677](https://github.com/googleapis/google-cloud-go/issues/10677)) ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **spanner/admin/instance:** Add edition field to the instance proto ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **spanner:** Support commit options in mutation operations. ([#10668](https://github.com/googleapis/google-cloud-go/issues/10668)) ([62a56f9](https://github.com/googleapis/google-cloud-go/commit/62a56f953d3b8fe82083c42926831c2728312b9c))
+
+
+### Bug Fixes
+
+* **spanner/test/opentelemetry/test:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+* **spanner:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **spanner/admin/database:** Add an example to filter backups based on schedule name ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+
 ## [1.66.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.65.0...spanner/v1.66.0) (2024-08-07)
 
 

@@ -29,6 +29,11 @@ import (
 )
 
 func TestStorageIteratorRetry(t *testing.T) {
+	settings := defaultReadClientSettings()
+	randomErrors := []error{} // generate more errors than the # of workers
+	for i := 0; i < settings.maxWorkerCount+2; i++ {
+		randomErrors = append(randomErrors, fmt.Errorf("random error %d", i))
+	}
 	cancelledCtx, cancel := context.WithCancel(context.Background())
 	cancel()
 	testCases := []struct {
@@ -84,6 +89,11 @@ func TestStorageIteratorRetry(t *testing.T) {
 			},
 			wantFail: true,
 		},
+		{
+			desc:     "filled with non-retryable errors and context cancelled",
+			errors:   randomErrors,
+			wantFail: true,
+		},
 	}
 	for _, tc := range testCases {
 		rrc := &testReadRowsClient{
@@ -115,9 +125,9 @@ func TestStorageIteratorRetry(t *testing.T) {
 
 			it, err := newRawStorageRowIterator(&readSession{
 				ctx:          ctx,
-				settings:     defaultReadClientSettings(),
-				readRowsFunc: readRowsFunc,
+				settings:     settings,
 				bqSession:    &storagepb.ReadSession{},
+				readRowsFunc: readRowsFunc,
 			}, Schema{})
 			if err != nil {
 				t.Fatalf("case %s: newRawStorageRowIterator: %v", tc.desc, err)
@@ -125,7 +135,8 @@ func TestStorageIteratorRetry(t *testing.T) {
 
 			it.processStream("test-stream")
 
-			if errors.Is(it.rs.ctx.Err(), context.Canceled) || errors.Is(it.rs.ctx.Err(), context.DeadlineExceeded) {
+			if errors.Is(it.rs.ctx.Err(), context.Canceled) ||
+				errors.Is(it.rs.ctx.Err(), context.DeadlineExceeded) {
 				if tc.wantFail {
 					continue
 				}

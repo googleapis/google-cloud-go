@@ -293,7 +293,7 @@ func defaultRESTCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods available from Apache Kafka for BigQuery API.
+// internalClient is an interface that defines the methods available from Managed Service for Apache Kafka API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -323,7 +323,7 @@ type internalClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// Client is a client for interacting with Apache Kafka for BigQuery API.
+// Client is a client for interacting with Managed Service for Apache Kafka API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The service that a client application uses to manage Apache Kafka clusters,
@@ -482,7 +482,7 @@ func (c *Client) ListOperations(ctx context.Context, req *longrunningpb.ListOper
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// gRPCClient is a client for interacting with Apache Kafka for BigQuery API over gRPC transport.
+// gRPCClient is a client for interacting with Managed Service for Apache Kafka API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {
