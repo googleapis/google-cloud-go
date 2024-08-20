@@ -2,16 +2,16 @@ module cloud.google.com/go/pubsub
 
 go 1.21
 
-toolchain go1.21.0
+toolchain go1.23.0
 
 require (
-	cloud.google.com/go v0.115.0
-	cloud.google.com/go/iam v1.1.12
-	cloud.google.com/go/kms v1.18.4
+	cloud.google.com/go v0.115.1
+	cloud.google.com/go/iam v1.1.13
+	cloud.google.com/go/kms v1.18.5
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.13.0
-	go.einride.tech/aip v0.67.1
+	go.einride.tech/aip v0.68.0
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/otel v1.28.0
 	go.opentelemetry.io/otel/sdk v1.28.0
@@ -19,15 +19,15 @@ require (
 	golang.org/x/oauth2 v0.22.0
 	golang.org/x/sync v0.8.0
 	golang.org/x/time v0.6.0
-	google.golang.org/api v0.191.0
+	google.golang.org/api v0.192.0
 	google.golang.org/genproto v0.0.0-20240730163845-b1a4ccb954bf
-	google.golang.org/genproto/googleapis/api v0.0.0-20240725223205-93522f1f2a9f
-	google.golang.org/grpc v1.64.1
+	google.golang.org/genproto/googleapis/api v0.0.0-20240814211410-ddb44dafa142
+	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2
 )
 
 require (
-	cloud.google.com/go/auth v0.8.0 // indirect
+	cloud.google.com/go/auth v0.8.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.3 // indirect
 	cloud.google.com/go/compute/metadata v0.5.0 // indirect
 	cloud.google.com/go/longrunning v0.5.11 // indirect

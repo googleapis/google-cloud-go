@@ -3,16 +3,16 @@ module cloud.google.com/go/vertexai
 go 1.21
 
 require (
-	cloud.google.com/go v0.115.0
+	cloud.google.com/go v0.115.1
 	cloud.google.com/go/aiplatform v1.68.0
 	github.com/google/go-cmp v0.6.0
-	google.golang.org/api v0.191.0
+	google.golang.org/api v0.192.0
 	google.golang.org/genproto v0.0.0-20240730163845-b1a4ccb954bf
 	google.golang.org/protobuf v1.34.2
 )
 
 require (
-	cloud.google.com/go/auth v0.8.0 // indirect
+	cloud.google.com/go/auth v0.8.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.3 // indirect
 	cloud.google.com/go/compute/metadata v0.5.0 // indirect
 	cloud.google.com/go/iam v1.1.12 // indirect

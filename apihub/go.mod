@@ -2,7 +2,7 @@ module cloud.google.com/go/apihub
 
 go 1.21
 
-toolchain go1.21.11
+toolchain go1.23.0
 
 require (
 	cloud.google.com/go/longrunning v0.5.12
