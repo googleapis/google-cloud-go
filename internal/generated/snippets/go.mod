@@ -519,3 +519,5 @@ replace cloud.google.com/go/developerconnect => ../../../developerconnect
 replace cloud.google.com/go/networkservices => ../../../networkservices
 
 replace cloud.google.com/go/privilegedaccessmanager => ../../../privilegedaccessmanager
+
+replace cloud.google.com/go/apihub => ../../../apihub
