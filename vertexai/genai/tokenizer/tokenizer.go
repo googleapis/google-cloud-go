@@ -89,7 +89,11 @@ func (tok *Tokenizer) CountTokens(parts ...genai.Part) (*CountTokensResponse, er
 	return &CountTokensResponse{TotalTokens: int32(sum)}, nil
 }
 
+// gemmaModelURL is the URL from which we download the model file.
 const gemmaModelURL = "https://raw.githubusercontent.com/google/gemma_pytorch/33b652c465537c6158f9a472ea5700e5e770ad3f/tokenizer/tokenizer.model"
+
+// gemmaModelHash is the expected hash of the model file (as calculated
+// by [hashString]).
 const gemmaModelHash = "61a7b147390c64585d6c3543dd6fc636906c9af3865a5548f27f31aee1d4c8e2"
 
 // downloadModelFile downloads a file from the given URL.
@@ -100,12 +104,7 @@ func downloadModelFile(url string) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	b, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return b, nil
+	return io.ReadAll(resp.Body)
 }
 
 // hashString computes a hex string of the SHA256 hash of data.
@@ -153,5 +152,5 @@ func loadModelData(url string, wantHash string) ([]byte, error) {
 		}
 	}
 
-	return cacheData, err
+	return cacheData, nil
 }
