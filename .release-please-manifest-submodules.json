@@ -7,6 +7,7 @@
     "apigateway": "1.6.12",
     "apigeeconnect": "1.6.12",
     "apigeeregistry": "0.8.10",
+    "apihub": "0.0.0",
     "apikeys": "1.1.12",
     "appengine": "1.8.12",
     "apphub": "0.1.6",
