@@ -160,7 +160,7 @@ func (str *StringType) UnmarshalJSON(data []byte) error {
 
 // Equal compares StringType objects.
 func (str StringType) Equal(other StringType) bool {
-	return str.Encoding == other.Encoding
+	return proto.Equal(str.proto(), other.proto())
 }
 
 // Int64Encoding represents the encoding of an Int64 type.
@@ -224,7 +224,7 @@ func (it *Int64Type) UnmarshalJSON(data []byte) error {
 
 // Equal compares Int64Type objects.
 func (it Int64Type) Equal(other Int64Type) bool {
-	return it.Encoding == other.Encoding
+	return proto.Equal(it.proto(), other.proto())
 }
 
 // Aggregator represents an aggregation function for an aggregate type.
@@ -308,7 +308,7 @@ func (agg *AggregateType) UnmarshalJSON(data []byte) error {
 
 // Equal compares AggregateType objects.
 func (agg AggregateType) Equal(other AggregateType) bool {
-	return agg.Aggregator == other.Aggregator && agg.Input == other.Input
+	return proto.Equal(agg.proto(), other.proto())
 }
 
 // ProtoToType converts a protobuf *btapb.Type to an instance of the Type interface, for use of the admin API.
