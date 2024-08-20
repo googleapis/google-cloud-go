@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.4...batch/v1.10.0) (2024-08-20)
+
+
+### Features
+
+* **batch:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+
+### Documentation
+
+* **batch:** Clarify tasks success criteria for background runnable ([#10702](https://github.com/googleapis/google-cloud-go/issues/10702)) ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [1.9.4](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.3...batch/v1.9.4) (2024-08-13)
 
 

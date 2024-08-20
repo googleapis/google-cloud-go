@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/ids/v1.4.12...ids/v1.5.0) (2024-08-20)
+
+
+### Features
+
+* **ids:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [1.4.12](https://github.com/googleapis/google-cloud-go/compare/ids/v1.4.11...ids/v1.4.12) (2024-08-08)
 
 
