@@ -337,7 +337,9 @@ type ClientConfig struct {
 	OpenTelemetryMeterProvider metric.MeterProvider
 
 	// EnableServerSideTracing indicates whether server side tracing is enabled or not.
-	// If it is enabled, trace spans will be created at Spanner layer.
+	// If it is enabled, trace spans will be created at Spanner layer. Enabling server
+	// side tracing requires OpenTelemetry to be set up properly. Simply enabling this
+	// option won't generate server side traces.
 	//
 	// Default: false
 	EnableServerSideTracing bool
