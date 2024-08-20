@@ -19,6 +19,7 @@ package executor
 
 import (
 	"context"
+	"sync"
 
 	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/inputstream"
@@ -34,12 +35,13 @@ type CloudProxyServer struct {
 	options            []option.ClientOption
 	traceClientOptions []option.ClientOption
 	// members below represent internal state
+	mu                   sync.Mutex
 	cloudTraceCheckCount int
 }
 
 // NewCloudProxyServer initializes and returns a new CloudProxyServer instance.
 func NewCloudProxyServer(ctx context.Context, opts []option.ClientOption, traceClientOpts []option.ClientOption) (*CloudProxyServer, error) {
-	return &CloudProxyServer{serverContext: ctx, options: opts, traceClientOptions: traceClientOpts, cloudTraceCheckCount: 0}, nil
+	return &CloudProxyServer{serverContext: ctx, options: opts, traceClientOptions: traceClientOpts}, nil
 }
 
 // ExecuteActionAsync is implementation of ExecuteActionAsync in SpannerExecutorProxyServer. It's a
@@ -56,6 +58,8 @@ func (s *CloudProxyServer) ExecuteActionAsync(inputStream executorpb.SpannerExec
 		return err
 	}
 	if handler.IsServerSideTraceCheckDone() {
+		s.mu.Lock()
+		defer s.mu.Unlock()
 		s.cloudTraceCheckCount++
 	}
 	return nil
