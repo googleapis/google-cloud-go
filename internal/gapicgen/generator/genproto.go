@@ -116,11 +116,9 @@ var generateList = []string{
 	"google.golang.org/genproto/googleapis/apps/drive/labels/v2",
 	"google.golang.org/genproto/googleapis/example/library/v1",
 	"google.golang.org/genproto/googleapis/api/label",
-	"google.golang.org/genproto/googleapis/bigtable/admin/v2",
 	"google.golang.org/genproto/googleapis/api/httpbody",
 	"google.golang.org/genproto/googleapis/partner/aistreams/v1alpha1",
 	"google.golang.org/genproto/googleapis/apps/script/type/drive",
-	"google.golang.org/genproto/googleapis/bigtable/v2",
 	"google.golang.org/genproto/googleapis/search/partnerdataingestion/logging/v1",
 	"google.golang.org/genproto/googleapis/apps/script/type/calendar",
 	"google.golang.org/genproto/googleapis/rpc/context/attribute_context",
@@ -133,9 +131,6 @@ var generateList = []string{
 	"google.golang.org/genproto/googleapis/type/postaladdress",
 	"google.golang.org/genproto/googleapis/firebase/fcm/connection/v1alpha1",
 	"google.golang.org/genproto/googleapis/assistant/embedded/v1alpha2",
-	"google.golang.org/genproto/googleapis/datastore/v1",
-	"google.golang.org/genproto/googleapis/datastore/admin/v1",
-	"google.golang.org/genproto/googleapis/datastore/admin/v1beta1",
 	"google.golang.org/genproto/googleapis/apps/card/v1",
 }
 
