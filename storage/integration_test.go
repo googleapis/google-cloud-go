@@ -590,7 +590,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 			t.Fatalf("add labels: got %v, want %v", attrs.Labels, wantLabels)
 		}
 		if !attrs.Created.Before(attrs.Updated) {
-			t.Errorf("attrs.Updated should be newer than attrs.Created")
+			t.Fatal("attrs.Updated should be newer than attrs.Created")
 		}
 
 		// Turn off versioning again; add and remove some more labels.
@@ -611,7 +611,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 			t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
 		}
 		if !attrs.Created.Before(attrs.Updated) {
-			t.Errorf("attrs.Updated should be newer than attrs.Created")
+			t.Fatal("attrs.Updated should be newer than attrs.Created")
 		}
 
 		// Configure a lifecycle
@@ -633,7 +633,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 			t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
 		}
 		if !attrs.Created.Before(attrs.Updated) {
-			t.Errorf("attrs.Updated should be newer than attrs.Created")
+			t.Fatal("attrs.Updated should be newer than attrs.Created")
 		}
 		// Check that StorageClass has "STANDARD" value for unset field by default
 		// before passing new value.
@@ -648,7 +648,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
 		}
 		if !attrs.Created.Before(attrs.Updated) {
-			t.Errorf("attrs.Updated should be newer than attrs.Created")
+			t.Fatal("attrs.Updated should be newer than attrs.Created")
 		}
 
 		// Empty update should succeed without changing the bucket.
@@ -660,7 +660,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 			t.Fatalf("empty update: got %v, want %v", gotAttrs, attrs)
 		}
 		if !attrs.Created.Before(attrs.Updated) {
-			t.Errorf("attrs.Updated should be newer than attrs.Created")
+			t.Fatal("attrs.Updated should be newer than attrs.Created")
 		}
 	})
 }
