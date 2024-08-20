@@ -30,12 +30,15 @@ import (
 
 const debugEncode = false
 
-// Encoder represents a SentencePiece encoder (tokenizer).
-// An Encoder converts input text into a sequence of tokens LLMs use.
+// Processor represents a SentencePiece processor (tokenizer).
+// A Processor converts input text into a sequence of tokens LLMs use, and back.
 // The mapping between token IDs and the text they represent is read from the
 // model proto (provided to the constructor); it's the same between all calls
 // to the Encode method.
-type Encoder struct {
+//
+// The term "processor" comes from the original C++ SentencePiece library and
+// its Python bindings.
+type Processor struct {
 	model *model.ModelProto
 
 	pieces   map[string]int
@@ -48,23 +51,26 @@ type Encoder struct {
 	// "user-defined" type in the model proto.
 	userDefinedMatcher *prefixmatcher.PrefixMatcher
 
-	// byteTokens is a cache of byte values and the tokens they represent
-	byteTokens map[byte]Token
+	// byte2Token is a cache of byte values and the tokens they represent
+	byte2Token map[byte]Token
+
+	// idToByte maps IDs to byte values they represent
+	idToByte map[int]byte
 }
 
-// NewEncoderFromPath creates a new Encoder from a file path to the protobuf
+// NewProcessorFromPath creates a new Processor from a file path to the protobuf
 // data.
-func NewEncoderFromPath(protoFile string) (*Encoder, error) {
+func NewProcessorFromPath(protoFile string) (*Processor, error) {
 	f, err := os.Open(protoFile)
 	if err != nil {
 		return nil, fmt.Errorf("unable to read %q: %v", protoFile, err)
 	}
 	defer f.Close()
-	return NewEncoder(f)
+	return NewProcessor(f)
 }
 
-// NewEncoder creates a new Encoder from a reader with the protobuf data.
-func NewEncoder(protoReader io.Reader) (*Encoder, error) {
+// NewProcessor creates a new Processor from a reader with the protobuf data.
+func NewProcessor(protoReader io.Reader) (*Processor, error) {
 	b, err := io.ReadAll(protoReader)
 	if err != nil {
 		return nil, fmt.Errorf("unable to read protobuf data: %v", err)
@@ -81,10 +87,16 @@ func NewEncoder(protoReader io.Reader) (*Encoder, error) {
 		return nil, fmt.Errorf("model type %s not supported", tspec.GetModelType())
 	}
 
+	nspec := mp.GetNormalizerSpec()
+	if *nspec.AddDummyPrefix || *nspec.RemoveExtraWhitespaces {
+		return nil, fmt.Errorf("normalizer spec options not supported: %s", nspec)
+	}
+
 	userDefined := make(map[string]bool)
 	pieces := make(map[string]int)
 	reserved := make(map[string]int)
-	byteTokens := make(map[byte]Token)
+	byte2Token := make(map[byte]Token)
+	idToByte := make(map[int]byte)
 	unkID := -1
 
 	for i, piece := range mp.GetPieces() {
@@ -111,7 +123,8 @@ func NewEncoder(protoReader io.Reader) (*Encoder, error) {
 			}
 			bv := convertHexValue(piece.GetPiece())
 			if bv >= 0 && bv < 256 {
-				byteTokens[byte(bv)] = Token{ID: i, Text: piece.GetPiece()}
+				byte2Token[byte(bv)] = Token{ID: i, Text: piece.GetPiece()}
+				idToByte[i] = byte(bv)
 			}
 		}
 	}
@@ -124,16 +137,17 @@ func NewEncoder(protoReader io.Reader) (*Encoder, error) {
 	// values were found.
 	if tspec.GetByteFallback() {
 		for i := 0; i < 256; i++ {
-			if _, found := byteTokens[byte(i)]; !found {
+			if _, found := byte2Token[byte(i)]; !found {
 				return nil, fmt.Errorf("byte value 0x%02X not found", i)
 			}
 		}
 	}
 
-	return &Encoder{
+	return &Processor{
 		model:              &mp,
 		userDefinedMatcher: prefixmatcher.NewFromSet(userDefined),
-		byteTokens:         byteTokens,
+		byte2Token:         byte2Token,
+		idToByte:           idToByte,
 		unknownID:          unkID,
 		pieces:             pieces,
 		reserved:           reserved,
@@ -141,7 +155,7 @@ func NewEncoder(protoReader io.Reader) (*Encoder, error) {
 }
 
 // Encode tokenizes the input text and returns a list of Tokens.
-func (enc *Encoder) Encode(text string) []Token {
+func (proc *Processor) Encode(text string) []Token {
 	text = normalize(text)
 
 	// We begin by having each symbol a single Unicode character (or a
@@ -165,7 +179,7 @@ func (enc *Encoder) Encode(text string) []Token {
 
 	for {
 		// Match the next symbol in text
-		slen, found := enc.symbolMatch(text)
+		slen, found := proc.symbolMatch(text)
 
 		// Append a list element for this symbol; note that this element will be
 		// at index len(symList), so prev/next are set up accordingly.
@@ -226,12 +240,12 @@ func (enc *Encoder) Encode(text string) []Token {
 		}
 
 		mergedSymbol := symList[left].symbol + symList[right].symbol
-		if id, found := enc.pieces[mergedSymbol]; found {
+		if id, found := proc.pieces[mergedSymbol]; found {
 			mergeQueue.Insert(mergeCandidate{
 				left:   left,
 				right:  right,
 				length: len(mergedSymbol),
-				score:  enc.model.GetPieces()[id].GetScore(),
+				score:  proc.model.GetPieces()[id].GetScore(),
 			})
 		}
 	}
@@ -278,13 +292,13 @@ func (enc *Encoder) Encode(text string) []Token {
 	tokens := make([]Token, 0, len(symList))
 	for i := 0; i >= 0; i = symList[i].next {
 		symbol := symList[i].symbol
-		id := enc.symbolToID(symbol)
+		id := proc.symbolToID(symbol)
 
-		if id == enc.unknownID && enc.model.GetTrainerSpec().GetByteFallback() {
+		if id == proc.unknownID && proc.model.GetTrainerSpec().GetByteFallback() {
 			// Decompose this symbol into bytes, and report each byte as a separate
 			// token.
 			for i := 0; i < len(symbol); i++ {
-				tokens = append(tokens, enc.byteTokens[symbol[i]])
+				tokens = append(tokens, proc.byte2Token[symbol[i]])
 			}
 		} else {
 			tokens = append(tokens, Token{ID: id, Text: symbol})
@@ -297,8 +311,8 @@ func (enc *Encoder) Encode(text string) []Token {
 // symbolMatch finds the length of the first symbol in text. A symbol is either
 // a user-defined symbol from the proto or a single rune. The second return
 // value is true iff a user-defined symbol was matched.
-func (enc *Encoder) symbolMatch(text string) (int, bool) {
-	prefixLen := enc.userDefinedMatcher.FindPrefixLen(text)
+func (proc *Processor) symbolMatch(text string) (int, bool) {
+	prefixLen := proc.userDefinedMatcher.FindPrefixLen(text)
 	if prefixLen > 0 {
 		return prefixLen, true
 	}
@@ -308,15 +322,15 @@ func (enc *Encoder) symbolMatch(text string) (int, bool) {
 }
 
 // symbolToID finds the right ID for the given textual symbol, or returns
-// enc.unknownID if the symbol is unknown.
-func (enc *Encoder) symbolToID(symbol string) int {
-	if id, found := enc.reserved[symbol]; found {
+// proc.unknownID if the symbol is unknown.
+func (proc *Processor) symbolToID(symbol string) int {
+	if id, found := proc.reserved[symbol]; found {
 		return id
 	}
-	if id, found := enc.pieces[symbol]; found {
+	if id, found := proc.pieces[symbol]; found {
 		return id
 	}
-	return enc.unknownID
+	return proc.unknownID
 }
 
 // convertHexValue converts strings of the form "<0xXY>" to the (unsigned)
@@ -329,4 +343,78 @@ func convertHexValue(bv string) int {
 		return -1
 	}
 	return int(n)
+}
+
+// Decode translates a list of IDs produced by [Encode] back into the string
+// it represents.
+func (proc *Processor) Decode(ids []int) string {
+	var sb strings.Builder
+
+	for i := 0; i < len(ids); {
+		// Find a run of IDs that represent single bytes starting at i.
+		nextNonByte := i
+		for nextNonByte < len(ids) && proc.isByteID(ids[nextNonByte]) {
+			nextNonByte++
+		}
+		numBytes := nextNonByte - i
+
+		// Handle a run of numBytes IDs, by decoding them into utf8 runes.
+		if numBytes > 0 {
+			buf := make([]byte, 0, numBytes)
+			for bi := i; bi < nextNonByte; bi++ {
+				buf = append(buf, proc.idToByte[ids[bi]])
+			}
+
+			for len(buf) > 0 {
+				// DecodeRune returns utf8.RuneError ('\uFFFD') for bad UTF8 encodings,
+				// and this is exactly what SentencePiece is supposed to emit for them.
+				// So we don't do any special handling for UTF8 decode errors here.
+				r, size := utf8.DecodeRune(buf)
+				sb.WriteRune(r)
+				buf = buf[size:]
+			}
+		}
+
+		if nextNonByte >= len(ids) {
+			break
+		}
+		// Here nextNonByte is the index of an ID that's not a single byte.
+		id := ids[nextNonByte]
+		if proc.isControlID(id) {
+			// Don't emit anything for control IDs
+		} else if id == proc.unknownID {
+			// Special "unk_surface" string for unknown IDs
+			sb.WriteString(proc.model.GetTrainerSpec().GetUnkSurface())
+		} else {
+			piece := proc.model.GetPieces()[id].GetPiece()
+			sb.WriteString(replaceSeparatorsBySpace(piece))
+		}
+		i = nextNonByte + 1
+	}
+
+	return sb.String()
+}
+
+// DecodeTokens is a convenience wrapper around [Decode], accepting a list of
+// tokens as returned by [Encode]. It only uses the ID fields of tokens to
+// decode the text.
+func (proc *Processor) DecodeTokens(tokens []Token) string {
+	ids := make([]int, len(tokens))
+	for i, t := range tokens {
+		ids[i] = t.ID
+	}
+	return proc.Decode(ids)
+}
+
+// VocabularySize obtains the vocabulary size from the proto model.
+func (proc *Processor) VocabularySize() int {
+	return len(proc.model.GetPieces())
+}
+
+func (proc *Processor) isByteID(id int) bool {
+	return proc.model.GetPieces()[id].GetType() == model.ModelProto_SentencePiece_BYTE
+}
+
+func (proc *Processor) isControlID(id int) bool {
+	return proc.model.GetPieces()[id].GetType() == model.ModelProto_SentencePiece_CONTROL
 }
