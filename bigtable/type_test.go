@@ -63,7 +63,7 @@ func TestUnknown(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error calling UnmarshalJSON: %v", err)
 	}
-	if diff := cmp.Diff(result, got, cmpopts.IgnoreUnexported(unknown[btapb.Type]{}), cmpopts.IgnoreUnexported(btapb.Type{}), cmpopts.IgnoreUnexported(btapb.Type_Float64Type{}), cmpopts.IgnoreUnexported(btapb.Type_Float64{})); diff != "" {
+	if diff := cmp.Diff(result, got, cmpopts.IgnoreUnexported(unknown[btapb.Type]{})); diff != "" {
 		t.Errorf("Unexpected diff: \n%s", diff)
 	}
 	if !Equal(result, got) {
