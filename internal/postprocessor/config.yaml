@@ -1044,6 +1044,9 @@ service-configs:
   - input-directory: google/datastore/admin/v1
     service-config: datastore_v1.yaml
     import-path: cloud.google.com/go/datastore/admin/apiv1
+  - input-directory: google/datastore/v1
+    service-config: datastore_v1.yaml
+    import-path: cloud.google.com/go/datastore/apiv1
   - input-directory: google/devtools/artifactregistry/v1
     service-config: artifactregistry_v1.yaml
     import-path: cloud.google.com/go/artifactregistry/apiv1
