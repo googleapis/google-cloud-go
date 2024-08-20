@@ -20,6 +20,7 @@ deep-remove-regex:
   - /apigateway/apiv1/
   - /apigeeconnect/apiv1/
   - /apigeeregistry/apiv1/
+  - /apihub/apiv1/
   - /apikeys/apiv2/
   - /appengine/apiv1/
   - /apphub/apiv1/
@@ -99,6 +100,7 @@ deep-remove-regex:
   - /dataproc/apiv1/
   - /dataqna/apiv1alpha/
   - /datastore/admin/apiv1/
+  - /datastore/apiv1/
   - /datastream/apiv1/
   - /datastream/apiv1alpha1/
   # - /debugger/apiv2/
@@ -154,6 +156,7 @@ deep-remove-regex:
   - /internal/generated/snippets/apigateway/apiv1/
   - /internal/generated/snippets/apigeeconnect/apiv1/
   - /internal/generated/snippets/apigeeregistry/apiv1/
+  - /internal/generated/snippets/apihub/apiv1/
   - /internal/generated/snippets/apikeys/apiv2/
   - /internal/generated/snippets/appengine/apiv1/
   - /internal/generated/snippets/apphub/apiv1/
@@ -647,6 +650,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/asset/v1p5beta1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/apihub/v1/cloud.google.com/go
+    dest: /
   - source: /google/api/apikeys/v2/cloud.google.com/go
     dest: /
   - source: /google/api/cloudquotas/v1/cloud.google.com/go
@@ -802,6 +807,9 @@ deep-copy-regex:
     dest: /
   - source: /google/datastore/admin/v1/cloud.google.com/go
     dest: /
+  # Just copy the datastore protos for now
+  - source: /google/datastore/v1/cloud.google.com/go/datastore/apiv1/datastorepb
+    dest: /datastore/apiv1/datastorepb
   - source: /google/cloud/datastream/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/datastream/v1alpha1/cloud.google.com/go
