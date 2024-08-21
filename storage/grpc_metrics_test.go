@@ -20,11 +20,9 @@ import (
 	"testing"
 
 	"go.opentelemetry.io/otel/attribute"
-	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/api/iterator"
-	estats "google.golang.org/grpc/experimental/stats"
 )
 
 func TestMetrics(t *testing.T) {
@@ -81,39 +79,9 @@ func TestNonDefaultEndpoint(t *testing.T) {
 	}
 }
 
-func TestGetViewMasks(t *testing.T) {
-	testDefaultMetrics := map[estats.Metric]bool{
-		estats.Metric("default.metric.name"): true,
-	}
-	testAdditionalMetrics := []estats.Metric{"test.metric.name"}
-	views := getViewMasks(testDefaultMetrics, testAdditionalMetrics)
-	wantSlice := []struct {
-		inputFormat  string
-		outputFormat string
-	}{
-		{
-			inputFormat:  "default.metric.name",
-			outputFormat: "default/metric/name",
-		},
-		{
-			inputFormat:  "test.metric.name",
-			outputFormat: "test/metric/name",
-		},
-	}
-	// Order matters for the wantSlice and views slice
-	for idx, want := range wantSlice {
-		stream, b := views[idx](sdkmetric.Instrument{
-			Name: want.inputFormat,
-		})
-		if !b || stream.Name != want.outputFormat {
-			t.Errorf("getViewMasks: For metric: %v got=%v, want=%v", want.inputFormat, stream.Name, want.outputFormat)
-		}
-	}
-}
-
 func TestMetricFormatter(t *testing.T) {
-	want := "storage.googleapis.com/client/metric"
-	s := metricdata.Metrics{Name: "metric", Description: "", Unit: "", Data: nil}
+	want := "storage.googleapis.com/client/metric/name"
+	s := metricdata.Metrics{Name: "metric.name", Description: "", Unit: "", Data: nil}
 	got := metricFormatter(s)
 	if want != got {
 		t.Errorf("got: %v, want %v", got, want)

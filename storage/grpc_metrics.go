@@ -32,7 +32,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
-	estats "google.golang.org/grpc/experimental/stats"
 	"google.golang.org/grpc/stats/opentelemetry"
 )
 
@@ -79,26 +78,8 @@ func sizeHistogramBoundaries() []float64 {
 	return boundaries
 }
 
-func getViewMasks(defaultMetrics map[estats.Metric]bool, additionalMetrics []estats.Metric) []sdkmetric.View {
-	views := []sdkmetric.View{}
-	for k, include := range defaultMetrics {
-		if !include {
-			continue
-		}
-		views = append(views, sdkmetric.NewView(sdkmetric.Instrument{
-			Name: string(k),
-		}, sdkmetric.Stream{Name: strings.ReplaceAll(string(k), ".", "/")}))
-	}
-	for _, m := range additionalMetrics {
-		views = append(views, sdkmetric.NewView(sdkmetric.Instrument{
-			Name: string(m),
-		}, sdkmetric.Stream{Name: strings.ReplaceAll(string(m), ".", "/")}))
-	}
-	return views
-}
-
 func metricFormatter(m metricdata.Metrics) string {
-	return "storage.googleapis.com/client/" + m.Name
+	return "storage.googleapis.com/client/" + strings.ReplaceAll(string(m.Name), ".", "/")
 }
 
 func gcpAttributeExpectedDefaults() []attribute.KeyValue {
@@ -219,31 +200,28 @@ func newGRPCMetricContext(ctx context.Context, config internalMetricsConfig) (*i
 	if err != nil {
 		return nil, err
 	}
-	metricsToEnable := []estats.Metric{
-		"grpc.lb.wrr.rr_fallback",
-		"grpc.lb.wrr.endpoint_weight_not_yet_usable",
-		"grpc.lb.wrr.endpoint_weight_stale",
-		"grpc.lb.wrr.endpoint_weights",
-		"grpc.lb.rls.cache_entries",
-		"grpc.lb.rls.cache_size",
-		"grpc.lb.rls.default_target_picks",
-		"grpc.lb.rls.target_picks",
-		"grpc.lb.rls.failed_picks",
+	metricViews := []sdkmetric.View{
+		createHistogramView("grpc.client.attempt.duration", "A view of grpc.client.attempt.duration with histogram boundaries more appropriate for Google Cloud Storage RPCs", "s", latencyHistogramBoundaries()),
+		createHistogramView("grpc.client.attempt.rcvd_total_compressed_message_size", "A view of grpc.client.attempt.rcvd_total_compressed_message_size with histogram boundaries more appropriate for Google Cloud Storage RPCs", "By", sizeHistogramBoundaries()),
+		createHistogramView("grpc.client.attempt.sent_total_compressed_message_size", "A view of grpc.client.attempt.sent_total_compressed_message_size with histogram boundaries more appropriate for Google Cloud Storage RPCs", "By", sizeHistogramBoundaries()),
 	}
-	defaultMetrics := opentelemetry.DefaultMetrics()
-	metricViews := getViewMasks(defaultMetrics.Metrics(), metricsToEnable)
-	metricViews = append(metricViews,
-		createHistogramView("grpc/client/attempt/duration", "A view of grpc/client/attempt/duration with histogram boundaries more appropriate for Google Cloud Storage RPCs", "s", latencyHistogramBoundaries()),
-		createHistogramView("grpc/client/attempt/rcvd_total_compressed_message_size", "A view of grpc/client/attempt/rcvd_total_compressed_message_size with histogram boundaries more appropriate for Google Cloud Storage RPCs", "By", sizeHistogramBoundaries()),
-		createHistogramView("grpc/client/attempt/sent_total_compressed_message_size", "A view of grpc/client/attempt/sent_total_compressed_message_size with histogram boundaries more appropriate for Google Cloud Storage RPCs", "By", sizeHistogramBoundaries()))
 	provider := sdkmetric.NewMeterProvider(
 		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(exporter, sdkmetric.WithInterval(time.Minute))),
 		sdkmetric.WithResource(preparedResource.resource),
 		sdkmetric.WithView(metricViews...),
 	)
 	mo := opentelemetry.MetricsOptions{
-		MeterProvider:  provider,
-		Metrics:        defaultMetrics.Add(metricsToEnable...),
+		MeterProvider: provider,
+		Metrics: opentelemetry.DefaultMetrics().Add(
+			"grpc.lb.wrr.rr_fallback",
+			"grpc.lb.wrr.endpoint_weight_not_yet_usable",
+			"grpc.lb.wrr.endpoint_weight_stale",
+			"grpc.lb.wrr.endpoint_weights",
+			"grpc.lb.rls.cache_entries",
+			"grpc.lb.rls.cache_size",
+			"grpc.lb.rls.default_target_picks",
+			"grpc.lb.rls.target_picks",
+			"grpc.lb.rls.failed_picks"),
 		OptionalLabels: []string{"grpc.lb.locality"},
 	}
 	do := option.WithGRPCDialOption(opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo}))

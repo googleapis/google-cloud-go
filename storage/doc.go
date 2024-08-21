@@ -364,10 +364,11 @@ gRPC telemetry discussed in [gRFC/66] and [gRFC/78] to
 [Google Cloud Monitoring]. The metrics are accessible to through Cloud Monitoring API and you incur no additional cost for publishing the metrics.Google Cloud Support can use this information to more quickly diagnose
 problems related to GCS and gRPC.
 Sending this data does not incur any billing charges, and requires minimal
-CPU (a single RPC every few minutes) or memory (a few KiB to batch the
+CPU (a single RPC every minute) or memory (a few KiB to batch the
 telemetry).
 
-To access the metrics you can view them through [Cloud Monitoring Metric explorer] with the prefix `storage.googleapis.com/client`.
+To access the metrics you can view them through [Cloud Monitoring Metric explorer] with the prefix `storage.googleapis.com/client`. Metrics are emitted
+every minute.
 
 You can disable metrics using the following example
 when creating a new gRPC client.
