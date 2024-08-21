@@ -258,13 +258,11 @@ func newGRPCMetricContext(ctx context.Context, config internalMetricsConfig) (*i
 }
 
 func enableClientMetrics(ctx context.Context, s *settings) (*internalMetricsContext, error) {
-	// TODO: this is a workaround for endpoint.
 	_, ep, err := htransport.NewClient(ctx, s.clientOption...)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC Metrics: %w", err)
 	}
 	project := ""
-	// TODO: this is a workaround need better way to get projectId
 	c, err := transport.Creds(ctx, s.clientOption...)
 	if err == nil {
 		project = c.ProjectID
@@ -277,7 +275,6 @@ func enableClientMetrics(ctx context.Context, s *settings) (*internalMetricsCont
 	if err != nil {
 		return nil, fmt.Errorf("gRPC Metrics: %w", err)
 	}
-	log.Printf("%v", metricsContext)
 	return metricsContext, nil
 }
 

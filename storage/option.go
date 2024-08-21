@@ -86,10 +86,11 @@ type withDisabledClientMetrics struct {
 }
 
 // WithDisabledClientMetrics is an option that may be passed to [NewClient].
-// When this option is enabled the GCS client will export the gRPC telemetry
-// discussed in [gRFC/66] and [gRFC/78] to [Google Cloud Monitoring]. Google
-// Cloud Support can use this information to more quickly diagnose problems
-// related to GCS and gRPC.
+// gRPC metrics are enabled by default in the GCS client and will export the
+// gRPC telemetry discussed in [gRFC/66] and [gRFC/78] to
+// [Google Cloud Monitoring]. The option is used to disable metrics.
+// Google Cloud Support can use this information to more quickly diagnose
+// problems related to GCS and gRPC.
 // Sending this data does not incur any billing charges, and requires minimal
 // CPU (a single RPC every few minutes) or memory (a few KiB to batch the
 // telemetry).
