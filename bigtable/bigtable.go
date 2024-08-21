@@ -109,8 +109,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 	// Allow non-default service account in DirectPath.
 	o = append(o,
-		internaloption.AllowNonDefaultServiceAccount(true),
-		internaloption.EnableNewAuthLibrary())
+		internaloption.AllowNonDefaultServiceAccount(true))
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
