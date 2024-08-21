@@ -98,6 +98,7 @@ type Token struct {
 // expired. A token is considered expired if [Token.Expiry] has passed or will
 // pass in the next 225 seconds.
 func (t *Token) IsValid() bool {
+	prefixTime(fmt.Sprintf("In IsValid\n"))
 	return t.isValidWithEarlyExpiry(defaultExpiryDelta)
 }
 
@@ -116,13 +117,18 @@ func (t *Token) MetadataString(k string) string {
 }
 
 func (t *Token) isValidWithEarlyExpiry(earlyExpiry time.Duration) bool {
+	prefixTime(fmt.Sprintf("In isValidWithEarlyExpiry\n"))
 	if t.isEmpty() {
+		prefixTime(fmt.Sprintf("\tt.isEmpty() is true. Returning false\n"))
 		return false
 	}
 	if t.Expiry.IsZero() {
+		prefixTime(fmt.Sprintf("\tt.Expiry.IsZero() is true. Returning true\n"))
 		return true
 	}
-	return !t.Expiry.Round(0).Add(-earlyExpiry).Before(timeNow())
+	res := !t.Expiry.Round(0).Add(-earlyExpiry).Before(timeNow())
+	prefixTime(fmt.Sprintf("\tearlyExpiry: %v, res: %v\n", earlyExpiry, res))
+	return res
 }
 
 func (t *Token) isEmpty() bool {
@@ -346,7 +352,7 @@ func (c *cachedTokenProvider) tokenNonBlocking(ctx context.Context) (*Token, err
 // tokenState reports the token's validity.
 func (c *cachedTokenProvider) tokenState() tokenState {
 	prefixTime(fmt.Sprintf("In tokenState\n"))
-
+	prefixTime(fmt.Sprintf("\tc.expireEarly: %v\n", c.expireEarly))
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	t := c.cachedToken

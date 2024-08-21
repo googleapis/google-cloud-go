@@ -147,6 +147,7 @@ func (o *Options) resolveDetectOptions() *credentials.DetectOptions {
 		do.Client = transport.DefaultHTTPClientWithTLS(tlsConfig)
 		do.TokenURL = credentials.GoogleMTLSTokenURL
 	}
+	prefixTime(fmt.Sprintf("In resolveDetectOptions do.EarlyTokenRefresh: %v\n", do.EarlyTokenRefresh))
 	return do
 }
 
