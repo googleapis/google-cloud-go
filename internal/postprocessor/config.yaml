@@ -9,6 +9,7 @@ modules:
   - apigateway
   - apigeeconnect
   - apigeeregistry
+  - apihub
   - apikeys
   - appengine
   - apphub
@@ -352,6 +353,9 @@ service-configs:
   - input-directory: google/cloud/apigeeregistry/v1
     service-config: apigeeregistry_v1.yaml
     import-path: cloud.google.com/go/apigeeregistry/apiv1
+  - input-directory: google/cloud/apihub/v1
+    service-config: apihub_v1.yaml
+    import-path: cloud.google.com/go/apihub/apiv1
   - input-directory: google/cloud/apphub/v1
     service-config: apphub_v1.yaml
     import-path: cloud.google.com/go/apphub/apiv1
@@ -1040,6 +1044,9 @@ service-configs:
   - input-directory: google/datastore/admin/v1
     service-config: datastore_v1.yaml
     import-path: cloud.google.com/go/datastore/admin/apiv1
+  - input-directory: google/datastore/v1
+    service-config: datastore_v1.yaml
+    import-path: cloud.google.com/go/datastore/apiv1
   - input-directory: google/devtools/artifactregistry/v1
     service-config: artifactregistry_v1.yaml
     import-path: cloud.google.com/go/artifactregistry/apiv1

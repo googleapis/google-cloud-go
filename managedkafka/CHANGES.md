@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.1.6...managedkafka/v0.2.0) (2024-08-20)
+
+
+### Features
+
+* **managedkafka:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+
+### Documentation
+
+* **managedkafka:** Changed API title to official name ([b32cb37](https://github.com/googleapis/google-cloud-go/commit/b32cb378ab03f34c0670a8a204bd0ef3f71d48d4))
+
 ## [0.1.6](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.1.5...managedkafka/v0.1.6) (2024-08-08)
 
 
