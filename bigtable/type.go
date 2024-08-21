@@ -29,7 +29,7 @@ type Type interface {
 }
 
 var marshalOptions = protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-var unmarshalOptions = protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+var unmarshalOptions = protojson.UnmarshalOptions{AllowPartial: true}
 
 // MarshalJSON returns the string representation of the Type protobuf.
 func MarshalJSON(t Type) ([]byte, error) {

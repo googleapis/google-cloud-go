@@ -49,44 +49,15 @@ func TestUnknown(t *testing.T) {
 	if !ok {
 		t.Errorf("got: %T, wanted unknown[btapb.Type]", got)
 	}
-	gotJSON, err := MarshalJSON(got)
-	if err != nil {
-		t.Fatalf("Error calling MarshalJSON: %v", err)
-	}
-	result, err := UnmarshalJSON(gotJSON)
-	if err != nil {
-		t.Fatalf("Error calling UnmarshalJSON: %v", err)
-	}
-	if diff := cmp.Diff(result, got, cmpopts.IgnoreUnexported(unknown[btapb.Type]{})); diff != "" {
-		t.Errorf("Unexpected diff: \n%s", diff)
-	}
-	if !Equal(result, got) {
-		t.Errorf("Unexpected result. Got %#v, want %#v", result, got)
-	}
+
+	assertType(t, got, unsupportedType)
 }
 
 func TestInt64Proto(t *testing.T) {
 	want := aggregateProto()
 	it := Int64Type{Encoding: BigEndianBytesEncoding{}}
-	got := it.proto()
-	if !proto.Equal(got, want) {
-		t.Errorf("got type %v, want: %v", got, want)
-	}
 
-	gotJSON, err := MarshalJSON(it)
-	if err != nil {
-		t.Fatalf("Error calling MarshalJSON: %v", err)
-	}
-	result, err := UnmarshalJSON(gotJSON)
-	if err != nil {
-		t.Fatalf("Error calling UnmarshalJSON: %v", err)
-	}
-	if diff := cmp.Diff(result, it); diff != "" {
-		t.Errorf("Unexpected diff: \n%s", diff)
-	}
-	if !Equal(result, it) {
-		t.Errorf("Unexpected result. Got %#v, want %#v", result, it)
-	}
+	assertType(t, it, want)
 }
 
 func TestStringProto(t *testing.T) {
@@ -100,25 +71,8 @@ func TestStringProto(t *testing.T) {
 		},
 	}
 	st := StringType{Encoding: StringUtf8Encoding{}}
-	got := st.proto()
-	if !proto.Equal(got, want) {
-		t.Errorf("got type %v, want: %v", got, want)
-	}
 
-	gotJSON, err := MarshalJSON(st)
-	if err != nil {
-		t.Fatalf("Error calling ToJSON: %v", err)
-	}
-	result, err := UnmarshalJSON(gotJSON)
-	if err != nil {
-		t.Fatalf("Failed to unmarshal JSON: %v", err)
-	}
-	if diff := cmp.Diff(result, st); diff != "" {
-		t.Errorf("Unexpected diff: \n%s", diff)
-	}
-	if !Equal(result, st) {
-		t.Errorf("Unexpected result. Got %#v, want %#v", result, st)
-	}
+	assertType(t, st, want)
 }
 
 func TestProtoBijection(t *testing.T) {
@@ -196,26 +150,32 @@ func TestAggregateProto(t *testing.T) {
 			}
 			at := AggregateType{Input: Int64Type{Encoding: BigEndianBytesEncoding{}}, Aggregator: tc.agg}
 
-			got := at.proto()
-			if !proto.Equal(got, want) {
-				t.Errorf("got type %v, want: %v", got, want)
-			}
-
-			gotJSON, err := MarshalJSON(at)
-			if err != nil {
-				t.Fatalf("Error calling ToJSON: %v", err)
-			}
-			result, err := UnmarshalJSON(gotJSON)
-			if err != nil {
-				t.Fatalf("Failed to unmarshal JSON: %v", err)
-			}
-			if diff := cmp.Diff(result, at); diff != "" {
-				t.Errorf("Unexpected diff: \n%s", diff)
-			}
-			if !Equal(result, at) {
-				t.Errorf("Unexpected result. Got %#v, want %#v", result, at)
-			}
+			assertType(t, at, want)
 		})
+	}
+}
+
+func assertType(t *testing.T, ty Type, want *btapb.Type) {
+	t.Helper()
+
+	got := ty.proto()
+	if !proto.Equal(got, want) {
+		t.Errorf("got type %v, want: %v", got, want)
+	}
+
+	gotJSON, err := MarshalJSON(ty)
+	if err != nil {
+		t.Fatalf("Error calling MarshalJSON: %v", err)
+	}
+	result, err := UnmarshalJSON(gotJSON)
+	if err != nil {
+		t.Fatalf("Error calling UnmarshalJSON: %v", err)
+	}
+	if diff := cmp.Diff(result, ty, cmpopts.IgnoreUnexported(unknown[btapb.Type]{})); diff != "" {
+		t.Errorf("Unexpected diff: \n%s", diff)
+	}
+	if !Equal(result, ty) {
+		t.Errorf("Unexpected result. Got %#v, want %#v", result, ty)
 	}
 }
 
