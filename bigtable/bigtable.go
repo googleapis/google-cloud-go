@@ -398,9 +398,9 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 		// Ignore error since header is only being used to record builtin metrics
 		// Failure to record metrics should not fail the operation
 		*headerMD, _ = stream.Header()
-		mt.currOp.setFirstRespTime(time.Now())
 		for {
 			res, err := stream.Recv()
+			mt.currOp.setFirstRespTime(time.Now())
 			if err == io.EOF {
 				*trailerMD = stream.Trailer()
 				break
@@ -1595,7 +1595,8 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 
 		// Get location attributes from metadata and set it in tracer
 		// Ignore get location error since the metric can still be recorded with rest of the attributes
-		clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
+		clusterID, zoneID, locationErr := extractLocation(attemptHeaderMD, attempTrailerMD)
+		mt.currOp.currAttempt.setLocationErr(locationErr)
 		mt.currOp.currAttempt.setClusterID(clusterID)
 		mt.currOp.currAttempt.setZoneID(zoneID)
 
@@ -1631,6 +1632,8 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	serverLatAttrs, _ := mt.toOtelMetricAttrs(metricNameServerLatencies)
 	if mt.currOp.currAttempt.serverLatencyErr == nil {
 		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributes(serverLatAttrs...))
+	}
+	if mt.currOp.currAttempt.serverLatencyErr == nil && mt.currOp.currAttempt.locationErr == nil {
 		mt.instrumentConnErrCount.Add(mt.ctx, 0, metric.WithAttributes(connErrCountAttrs...))
 	} else {
 		mt.instrumentConnErrCount.Add(mt.ctx, 1, metric.WithAttributes(connErrCountAttrs...))
