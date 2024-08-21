@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
@@ -180,10 +181,15 @@ type InternalOptions struct {
 	SkipValidation bool
 }
 
+func prefixTime(msg string) {
+	fmt.Printf("%v: "+msg, time.Now().Format("2006/01/02 15:04:05"))
+}
+
 // Dial returns a GRPCClientConnPool that can be used to communicate with a
 // Google cloud service, configured with the provided [Options]. It
 // automatically appends Authorization metadata to all outgoing requests.
 func Dial(ctx context.Context, secure bool, opts *Options) (GRPCClientConnPool, error) {
+	prefixTime(fmt.Sprintf("In new auth Dial-02\n"))
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
@@ -209,6 +215,8 @@ func Dial(ctx context.Context, secure bool, opts *Options) (GRPCClientConnPool, 
 
 // return a GRPCClientConnPool if pool == 1 or else a pool of of them if >1
 func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, error) {
+	prefixTime(fmt.Sprintf("In new auth dial\n"))
+
 	tOpts := &transport.Options{
 		Endpoint:           opts.Endpoint,
 		ClientCertProvider: opts.ClientCertProvider,
@@ -254,8 +262,10 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 
 		var creds *auth.Credentials
 		if opts.Credentials != nil {
+			prefixTime(fmt.Sprintf("opts.Credentials != nil\n"))
 			creds = opts.Credentials
 		} else {
+			prefixTime(fmt.Sprintf("Calling DetectDefault\n"))
 			var err error
 			creds, err = credentials.DetectDefault(opts.resolveDetectOptions())
 			if err != nil {

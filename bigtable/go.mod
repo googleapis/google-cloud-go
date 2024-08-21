@@ -2,6 +2,8 @@ module cloud.google.com/go/bigtable
 
 go 1.21
 
+replace google.golang.org/api => /usr/local/google/home/bahaaiman/Documents/cfdb-workspace-02/google-api-go-client
+
 require (
 	cloud.google.com/go v0.115.1
 	cloud.google.com/go/iam v1.1.13

@@ -28,6 +28,7 @@ import (
 )
 
 func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
+	prefixTime(fmt.Sprintf("In fileCredentials\n"))
 	fileType, err := credsfile.ParseFileType(b)
 	if err != nil {
 		return nil, err
@@ -41,6 +42,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
+		prefixTime(fmt.Sprintf("Calling handleServiceAccount\n"))
 		tp, err = handleServiceAccount(f, opts)
 		if err != nil {
 			return nil, err
@@ -52,6 +54,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
+		prefixTime(fmt.Sprintf("Calling handleUserCredential\n"))
 		tp, err = handleUserCredential(f, opts)
 		if err != nil {
 			return nil, err
@@ -104,6 +107,8 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	default:
 		return nil, fmt.Errorf("credentials: unsupported filetype %q", fileType)
 	}
+	prefixTime(fmt.Sprintf("setting ExpireEarly. opts.EarlyTokenRefresh: %v\n", opts.EarlyTokenRefresh))
+
 	return auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
 			ExpireEarly: opts.EarlyTokenRefresh,
@@ -127,7 +132,9 @@ func resolveUniverseDomain(optsUniverseDomain, fileUniverseDomain string) string
 }
 
 func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
+	prefixTime(fmt.Sprintf("In handleServiceAccount\n"))
 	if opts.UseSelfSignedJWT {
+		prefixTime(fmt.Sprintf("opts.UseSelfSignedJWT is true"))
 		return configureSelfSignedJWT(f, opts)
 	}
 	opts2LO := &auth.Options2LO{
@@ -142,6 +149,7 @@ func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) 
 	if opts2LO.TokenURL == "" {
 		opts2LO.TokenURL = jwtTokenURL
 	}
+	prefixTime(fmt.Sprintf("Calling New2LOTokenProvider\n"))
 	return auth.New2LOTokenProvider(opts2LO)
 }
 
@@ -157,6 +165,7 @@ func handleUserCredential(f *credsfile.UserCredentialsFile, opts *DetectOptions)
 		RefreshToken:     f.RefreshToken,
 		Client:           opts.client(),
 	}
+	prefixTime(fmt.Sprintf("In handleUserCredential\n"))
 	return auth.New3LOTokenProvider(opts3LO)
 }
 

@@ -235,6 +235,7 @@ type tokenProvider3LO struct {
 }
 
 func (tp *tokenProvider3LO) Token(ctx context.Context) (*Token, error) {
+	prefixTime(fmt.Sprintf("In tokenProvider3LO Token\n"))
 	if tp.refreshToken == "" {
 		return nil, errors.New("auth: token expired and refresh token is not set")
 	}
@@ -276,6 +277,7 @@ func (tp tokenProviderWithHandler) Token(ctx context.Context) (*Token, error) {
 
 // fetchToken returns a Token, refresh token, and/or an error.
 func fetchToken(ctx context.Context, o *Options3LO, v url.Values) (*Token, string, error) {
+	prefixTime(fmt.Sprintf("In fetchToken\n"))
 	var refreshToken string
 	if o.AuthStyle == StyleInParams {
 		if o.ClientID != "" {
@@ -285,6 +287,7 @@ func fetchToken(ctx context.Context, o *Options3LO, v url.Values) (*Token, strin
 			v.Set("client_secret", o.ClientSecret)
 		}
 	}
+	prefixTime(fmt.Sprintf("o.TokenURL: %v\n", o.TokenURL))
 	req, err := http.NewRequestWithContext(ctx, "POST", o.TokenURL, strings.NewReader(v.Encode()))
 	if err != nil {
 		return nil, refreshToken, err

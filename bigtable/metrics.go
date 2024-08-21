@@ -144,7 +144,7 @@ type builtinMetricsTracerFactory struct {
 	retryCount         metric.Int64Counter
 }
 
-func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider) (*builtinMetricsTracerFactory, error) {
+func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
 		log.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric atteribute", err, metricLabelKeyClientUID)
@@ -165,7 +165,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	var meterProvider *sdkmetric.MeterProvider
 	if metricsProvider == nil {
 		// Create default meter provider
-		mpOptions, err := builtInMeterProviderOptions(project)
+		mpOptions, err := builtInMeterProviderOptions(project, opts...)
 		if err != nil {
 			return tracerFactory, err
 		}
@@ -190,8 +190,8 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	return tracerFactory, err
 }
 
-func builtInMeterProviderOptions(project string) ([]sdkmetric.Option, error) {
-	defaultExporter, err := newMonitoringExporter(context.Background(), project, exporterOpts...)
+func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
+	defaultExporter, err := newMonitoringExporter(context.Background(), project, opts...)
 	if err != nil {
 		return nil, err
 	}

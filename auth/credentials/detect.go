@@ -73,6 +73,7 @@ func OnGCE() bool {
 //     runtimes, and Google App Engine flexible environment, it fetches
 //     credentials from the metadata server.
 func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
+	prefixTime(fmt.Sprintf("In new auth DetectDefault\n"))
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
@@ -80,9 +81,11 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 		return readCredentialsFileJSON(opts.CredentialsJSON, opts)
 	}
 	if opts.CredentialsFile != "" {
+		prefixTime(fmt.Sprintf("In new auth opts.CredentialsFile != \n"))
 		return readCredentialsFile(opts.CredentialsFile, opts)
 	}
 	if filename := os.Getenv(credsfile.GoogleAppCredsEnvVar); filename != "" {
+		prefixTime(fmt.Sprintf("Calling readCredentialsFile\n"))
 		creds, err := readCredentialsFile(filename, opts)
 		if err != nil {
 			return nil, err
@@ -92,10 +95,12 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 
 	fileName := credsfile.GetWellKnownFileName()
 	if b, err := os.ReadFile(fileName); err == nil {
+		prefixTime(fmt.Sprintf("Calling readCredentialsFileJSON\n"))
 		return readCredentialsFileJSON(b, opts)
 	}
 
 	if OnGCE() {
+		prefixTime(fmt.Sprintf("In OnGCE\n"))
 		return auth.NewCredentials(&auth.CredentialsOptions{
 			TokenProvider: computeTokenProvider(opts),
 			ProjectIDProvider: auth.CredentialsPropertyFunc(func(context.Context) (string, error) {
@@ -208,6 +213,7 @@ func readCredentialsFileJSON(b []byte, opts *DetectOptions) (*auth.Credentials, 
 		if config.AuthHandlerOpts == nil {
 			return nil, errors.New("credentials: auth handler must be specified for this credential filetype")
 		}
+		prefixTime(fmt.Sprintf("In readCredentialsFileJSON\n"))
 		tp, err := auth.New3LOTokenProvider(config)
 		if err != nil {
 			return nil, err
@@ -217,6 +223,7 @@ func readCredentialsFileJSON(b []byte, opts *DetectOptions) (*auth.Credentials, 
 			JSON:          b,
 		}), nil
 	}
+	prefixTime(fmt.Sprintf("Calling fileCredentials\n"))
 	return fileCredentials(b, opts)
 }
 

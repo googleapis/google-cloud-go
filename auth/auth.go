@@ -307,44 +307,63 @@ type cachedTokenProvider struct {
 	isRefreshErr bool
 }
 
+func prefixTime(msg string) {
+	fmt.Printf("%v: "+msg, time.Now().Format("2006/01/02 15:04:05"))
+}
+
 func (c *cachedTokenProvider) Token(ctx context.Context) (*Token, error) {
+	prefixTime(fmt.Sprintf("Call to cachedTokenProvider Token\n"))
 	if c.blockingRefresh {
-		return c.tokenBlocking(ctx)
+		createdToken, err := c.tokenBlocking(ctx)
+		return createdToken, err
 	}
-	return c.tokenNonBlocking(ctx)
+	createdToken, err := c.tokenNonBlocking(ctx)
+	return createdToken, err
 }
 
 func (c *cachedTokenProvider) tokenNonBlocking(ctx context.Context) (*Token, error) {
+	prefixTime(fmt.Sprintf("In tokenNonBlocking\n"))
+
 	switch c.tokenState() {
 	case fresh:
+		prefixTime(fmt.Sprintf("\tToken is fresh. Returning the cached token\n"))
 		c.mu.Lock()
 		defer c.mu.Unlock()
 		return c.cachedToken, nil
 	case stale:
+		prefixTime(fmt.Sprintf("\tToken is stale. Calling tokenAsync and Returning the stale token immediately to not block customer requests to Cloud services.\n"))
 		c.tokenAsync(ctx)
 		// Return the stale token immediately to not block customer requests to Cloud services.
 		c.mu.Lock()
 		defer c.mu.Unlock()
 		return c.cachedToken, nil
 	default: // invalid
+		prefixTime(fmt.Sprintf("\tToken is invalid. Calling tokenBlocking\n"))
 		return c.tokenBlocking(ctx)
 	}
 }
 
 // tokenState reports the token's validity.
 func (c *cachedTokenProvider) tokenState() tokenState {
+	prefixTime(fmt.Sprintf("In tokenState\n"))
+
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	t := c.cachedToken
 	if t == nil || t.Value == "" {
+		prefixTime(fmt.Sprintf("\tToken is nil at %v. Token: %+v\n", time.Now().Format("2006/01/02-15:04:05"), t))
 		return invalid
 	} else if t.Expiry.IsZero() {
+		prefixTime(fmt.Sprintf("\tToken is fresh at %v. Token: %+v\n", time.Now().Format("2006/01/02-15:04:05"), t))
 		return fresh
 	} else if timeNow().After(t.Expiry.Round(0)) {
+		prefixTime(fmt.Sprintf("\tToken is invalid at %v. Token: %+v\n", time.Now().Format("2006/01/02-15:04:05"), t))
 		return invalid
 	} else if timeNow().After(t.Expiry.Round(0).Add(-c.expireEarly)) {
+		prefixTime(fmt.Sprintf("\tToken is stale at %v. Token: %+v\n", time.Now().Format("2006/01/02-15:04:05"), t))
 		return stale
 	}
+	prefixTime(fmt.Sprintf("\tToken is fresh at %v. Token: %+v\n", time.Now().Format("2006/01/02-15:04:05"), t))
 	return fresh
 }
 
@@ -356,10 +375,13 @@ func (c *cachedTokenProvider) tokenState() tokenState {
 // window expires and the token enters the invalid state, at which point the
 // blocking call to Token should likely return the same error on the main goroutine.
 func (c *cachedTokenProvider) tokenAsync(ctx context.Context) {
+	prefixTime(fmt.Sprintf("In tokenAsync\n"))
+
 	fn := func() {
 		c.mu.Lock()
 		c.isRefreshRunning = true
 		c.mu.Unlock()
+		prefixTime(fmt.Sprintf("\tCalling c.tp.Token at %v\n", time.Now().Format("2006/01/02-15:04:05")))
 		t, err := c.tp.Token(ctx)
 		c.mu.Lock()
 		defer c.mu.Unlock()
@@ -380,12 +402,15 @@ func (c *cachedTokenProvider) tokenAsync(ctx context.Context) {
 }
 
 func (c *cachedTokenProvider) tokenBlocking(ctx context.Context) (*Token, error) {
+	prefixTime(fmt.Sprintf("In tokenBlocking\n"))
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.isRefreshErr = false
 	if c.cachedToken.IsValid() || (!c.autoRefresh && !c.cachedToken.isEmpty()) {
+		prefixTime(fmt.Sprintf("\tcached token is valid.  Returning the cached token\n"))
 		return c.cachedToken, nil
 	}
+	prefixTime(fmt.Sprintf("\tCalling c.tp.Token token at %v\n", time.Now().Format("2006/01/02-15:04:05")))
 	t, err := c.tp.Token(ctx)
 	if err != nil {
 		return nil, err
@@ -526,10 +551,12 @@ type tokenProvider2LO struct {
 }
 
 func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
+	prefixTime(fmt.Sprintf("In tokenProvider2LO Token\n"))
 	pk, err := internal.ParseKey(tp.opts.PrivateKey)
 	if err != nil {
 		return nil, err
 	}
+	prefixTime(fmt.Sprintf("tp.opts.TokenURL: %v\n", tp.opts.TokenURL))
 	claimSet := &jwt.Claims{
 		Iss:              tp.opts.Email,
 		Scope:            strings.Join(tp.opts.Scopes, " "),

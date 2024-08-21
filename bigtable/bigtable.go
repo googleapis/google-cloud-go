@@ -124,7 +124,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	}
 
 	// Create a OpenTelemetry metrics configuration
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, project, instance, config.AppProfile, metricsProvider)
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
 	if err != nil {
 		return nil, err
 	}

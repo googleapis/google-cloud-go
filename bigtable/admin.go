@@ -36,6 +36,7 @@ import (
 	"google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/metadata"
@@ -80,6 +81,7 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...optio
 	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
 	// Need to add scopes for long running operations (for create table & snapshots)
 	o = append(o, option.WithScopes(cloudresourcemanager.CloudPlatformScope))
+	o = append(o, internaloption.EnableNewAuthLibrary())
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
@@ -1071,6 +1073,7 @@ func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.
 	}
 	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
 	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
+	o = append(o, internaloption.EnableNewAuthLibrary())
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {

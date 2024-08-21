@@ -35,9 +35,14 @@ var (
 	computeTokenURI = "instance/service-accounts/default/token"
 )
 
+func prefixTime(msg string) {
+	fmt.Printf("%v: "+msg, time.Now().Format("2006/01/02 15:04:05"))
+}
+
 // computeTokenProvider creates a [cloud.google.com/go/auth.TokenProvider] that
 // uses the metadata service to retrieve tokens.
 func computeTokenProvider(opts *DetectOptions) auth.TokenProvider {
+	prefixTime(fmt.Sprintf("In computeTokenProvider\n"))
 	return auth.NewCachedTokenProvider(computeProvider{scopes: opts.Scopes}, &auth.CachedTokenProviderOptions{
 		ExpireEarly:         opts.EarlyTokenRefresh,
 		DisableAsyncRefresh: opts.DisableAsyncRefresh,
@@ -56,7 +61,9 @@ type metadataTokenResp struct {
 }
 
 func (cs computeProvider) Token(ctx context.Context) (*auth.Token, error) {
+	prefixTime(fmt.Sprintf("In computeProvider Token\n"))
 	tokenURI, err := url.Parse(computeTokenURI)
+	prefixTime(fmt.Sprintf("computeTokenURI: %v\n", tokenURI))
 	if err != nil {
 		return nil, err
 	}

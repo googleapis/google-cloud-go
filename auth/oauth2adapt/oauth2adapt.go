@@ -20,6 +20,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"time"
 
 	"cloud.google.com/go/auth"
 	"golang.org/x/oauth2"
@@ -36,9 +38,14 @@ type tokenProviderAdapter struct {
 	ts oauth2.TokenSource
 }
 
+func prefixTime(msg string) {
+	fmt.Printf("%v: "+msg, time.Now().Format("2006/01/02 15:04:05"))
+}
+
 // Token fulfills the [cloud.google.com/go/auth.TokenProvider] interface. It
 // is a light wrapper around the underlying TokenSource.
 func (tp *tokenProviderAdapter) Token(context.Context) (*auth.Token, error) {
+	prefixTime(fmt.Sprintf("In tokenProviderAdapter Token\n"))
 	tok, err := tp.ts.Token()
 	if err != nil {
 		var err2 *oauth2.RetrieveError
