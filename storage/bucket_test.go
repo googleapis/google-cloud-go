@@ -53,7 +53,6 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		// should be ignored:
 		MetaGeneration: 39,
 		Created:        time.Now(),
-		Updated:        time.Now(),
 		Labels:         map[string]string{"label": "value"},
 		CORS: []CORS{
 			{
@@ -158,7 +157,6 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 			},
 			PublicAccessPrevention: "enforced",
 		},
-		Updated:    time.Now().Format("2006-01-02T15:04:05Z07:00"),
 		Versioning: nil, // ignore VersioningEnabled if false
 		Rpo:        rpoAsyncTurbo,
 		Labels:     map[string]string{"label": "value"},
@@ -607,6 +605,7 @@ func TestNewBucket(t *testing.T) {
 		Metageneration:        3,
 		StorageClass:          "sc",
 		TimeCreated:           "2017-10-23T04:05:06Z",
+		Updated:               "2024-08-21T17:24:53Z",
 		Versioning:            &raw.BucketVersioning{Enabled: true},
 		Labels:                labels,
 		Billing:               &raw.BucketBilling{RequesterPays: true},
@@ -678,6 +677,7 @@ func TestNewBucket(t *testing.T) {
 		MetaGeneration:        3,
 		StorageClass:          "sc",
 		Created:               time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+		Updated:               time.Date(2024, 8, 21, 17, 24, 53, 0, time.UTC),
 		VersioningEnabled:     true,
 		Labels:                labels,
 		Etag:                  "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
