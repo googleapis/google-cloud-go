@@ -36,7 +36,7 @@ import (
 )
 
 const (
-	monitored_resource_name = "storage.googleapis.com/Client"
+	monitoredResourceName = "storage.googleapis.com/Client"
 )
 
 func latencyHistogramBoundaries() []float64 {
@@ -44,13 +44,13 @@ func latencyHistogramBoundaries() []float64 {
 	boundary := 0.0
 	increment := 0.002
 	// 2ms buckets for first 100ms, so we can have higher resolution for uploads and downloads in the 100 KiB range
-	for i := 0; i < 50; i += 1 {
+	for i := 0; i < 50; i++ {
 		boundaries = append(boundaries, boundary)
 		// increment by 2ms
 		boundary += increment
 	}
 	// For the remaining buckets do 10 10ms, 10 20ms, and so on, up until 5 minutes
-	for i := 0; i < 150 && boundary < 300; i += 1 {
+	for i := 0; i < 150 && boundary < 300; i++ {
 		boundaries = append(boundaries, boundary)
 		if i != 0 && i%10 == 0 {
 			increment *= 2
@@ -118,7 +118,7 @@ func createPreparedResource(ctx context.Context, project string, resourceOptions
 	r, err := resource.New(
 		ctx,
 		resource.WithAttributes(
-			attribute.KeyValue{Key: "gcp.resource_type", Value: attribute.StringValue(monitored_resource_name)},
+			attribute.KeyValue{Key: "gcp.resource_type", Value: attribute.StringValue(monitoredResourceName)},
 			attribute.KeyValue{Key: "instance_id", Value: attribute.StringValue(uuid.New().String())},
 			attribute.KeyValue{Key: "project_id", Value: attribute.StringValue(project)},
 			attribute.KeyValue{Key: "api", Value: attribute.StringValue("grpc")},
@@ -191,7 +191,7 @@ func newGRPCMetricContext(ctx context.Context, config internalMetricsConfig) (*i
 		mexporter.WithProjectID(preparedResource.projectToUse),
 		mexporter.WithMetricDescriptorTypeFormatter(metricFormatter),
 		mexporter.WithCreateServiceTimeSeries(),
-		mexporter.WithMonitoredResourceDescription(monitored_resource_name, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"})}
+		mexporter.WithMonitoredResourceDescription(monitoredResourceName, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"})}
 	endpointToUse := determineMonitoringEndpoint(config.endpoint)
 	if endpointToUse != "" {
 		meOpts = append(meOpts, mexporter.WithMonitoringClientOptions(option.WithEndpoint(endpointToUse)))
