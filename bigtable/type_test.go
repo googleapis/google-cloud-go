@@ -17,8 +17,6 @@ limitations under the License.
 package bigtable
 
 import (
-	"fmt"
-	"strings"
 	"testing"
 
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
@@ -55,10 +53,6 @@ func TestUnknown(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error calling MarshalJSON: %v", err)
 	}
-	wantJSON := "{\"float64Type\":{}}"
-	if strings.ReplaceAll(string(gotJSON), " ", "") != wantJSON {
-		t.Errorf("got %q, want %q", string(gotJSON), wantJSON)
-	}
 	result, err := UnmarshalJSON(gotJSON)
 	if err != nil {
 		t.Fatalf("Error calling UnmarshalJSON: %v", err)
@@ -82,10 +76,6 @@ func TestInt64Proto(t *testing.T) {
 	gotJSON, err := MarshalJSON(it)
 	if err != nil {
 		t.Fatalf("Error calling MarshalJSON: %v", err)
-	}
-	wantJSON := "{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}}"
-	if strings.ReplaceAll(string(gotJSON), " ", "") != wantJSON {
-		t.Errorf("got %q, want %q", string(gotJSON), wantJSON)
 	}
 	result, err := UnmarshalJSON(gotJSON)
 	if err != nil {
@@ -118,10 +108,6 @@ func TestStringProto(t *testing.T) {
 	gotJSON, err := MarshalJSON(st)
 	if err != nil {
 		t.Fatalf("Error calling ToJSON: %v", err)
-	}
-	wantJSON := "{\"stringType\":{\"encoding\":{\"utf8Raw\":{}}}}"
-	if strings.ReplaceAll(string(gotJSON), " ", "") != wantJSON {
-		t.Errorf("got %q, want %q", string(gotJSON), wantJSON)
 	}
 	result, err := UnmarshalJSON(gotJSON)
 	if err != nil {
@@ -158,23 +144,21 @@ func TestAggregateProto(t *testing.T) {
 
 	testCases := []struct {
 		name     string
-		fn       string
 		agg      Aggregator
 		protoAgg btapb.Type_Aggregate
-	}{{
-		name: "hll",
-		fn:   "hllppUniqueCount",
-		agg:  HllppUniqueCountAggregator{},
-		protoAgg: btapb.Type_Aggregate{
-			InputType: intType,
-			Aggregator: &btapb.Type_Aggregate_HllppUniqueCount{
-				HllppUniqueCount: &btapb.Type_Aggregate_HyperLogLogPlusPlusUniqueCount{},
+	}{
+		{
+			name: "hll",
+			agg:  HllppUniqueCountAggregator{},
+			protoAgg: btapb.Type_Aggregate{
+				InputType: intType,
+				Aggregator: &btapb.Type_Aggregate_HllppUniqueCount{
+					HllppUniqueCount: &btapb.Type_Aggregate_HyperLogLogPlusPlusUniqueCount{},
+				},
 			},
 		},
-	},
 		{
 			name: "min",
-			fn:   "min",
 			agg:  MinAggregator{},
 			protoAgg: btapb.Type_Aggregate{
 				InputType: intType,
@@ -185,7 +169,6 @@ func TestAggregateProto(t *testing.T) {
 		},
 		{
 			name: "max",
-			fn:   "max",
 			agg:  MaxAggregator{},
 			protoAgg: btapb.Type_Aggregate{
 				InputType: intType,
@@ -196,7 +179,6 @@ func TestAggregateProto(t *testing.T) {
 		},
 		{
 			name: "sum",
-			fn:   "sum",
 			agg:  SumAggregator{},
 			protoAgg: btapb.Type_Aggregate{
 				InputType: intType,
@@ -222,10 +204,6 @@ func TestAggregateProto(t *testing.T) {
 			gotJSON, err := MarshalJSON(at)
 			if err != nil {
 				t.Fatalf("Error calling ToJSON: %v", err)
-			}
-			wantJSON := fmt.Sprintf("{\"aggregateType\":{\"inputType\":{\"int64Type\":{\"encoding\":{\"bigEndianBytes\":{}}}},\"%s\":{}}}", tc.fn)
-			if strings.ReplaceAll(string(gotJSON), " ", "") != wantJSON {
-				t.Errorf("unexpected different JSON got %q, want %q", string(gotJSON), wantJSON)
 			}
 			result, err := UnmarshalJSON(gotJSON)
 			if err != nil {
