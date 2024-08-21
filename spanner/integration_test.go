@@ -1499,7 +1499,11 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
 	}
-	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+	duration, err := time.ParseDuration("100ms")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce(), ApplyCommitOptions(CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration})); err != nil {
 		t.Fatal(err)
 	}
 

@@ -115,8 +115,6 @@ var (
 	CommitTimestamp = commitTimestamp
 	commitTimestamp = time.Unix(0, 0).In(time.FixedZone("CommitTimestamp placeholder", 0xDB))
 
-	jsonNullBytes = []byte("null")
-
 	jsonUseNumber bool
 
 	protoMsgReflectType  = reflect.TypeOf((*proto.Message)(nil)).Elem()
@@ -139,6 +137,11 @@ func jsonUnmarshal(data []byte, v any) error {
 		dec.UseNumber()
 	}
 	return dec.Decode(v)
+}
+
+// jsonIsNull returns whether v matches JSON null literal
+func jsonIsNull(v []byte) bool {
+	return string(v) == "null"
 }
 
 // Encoder is the interface implemented by a custom type that can be encoded to
@@ -221,7 +224,7 @@ func (n *NullInt64) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
-	if bytes.Equal(payload, jsonNullBytes) {
+	if jsonIsNull(payload) {
 		n.Int64 = int64(0)
 		n.Valid = false
 		return nil
@@ -301,7 +304,7 @@ func (n *NullString) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
-	if bytes.Equal(payload, jsonNullBytes) {
+	if jsonIsNull(payload) {
 		n.StringVal = ""
 		n.Valid = false
 		return nil
@@ -386,7 +389,7 @@ func (n *NullFloat64) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
-	if bytes.Equal(payload, jsonNullBytes) {
+	if jsonIsNull(payload) {
 		n.Float64 = float64(0)
 		n.Valid = false
 		return nil
@@ -466,7 +469,7 @@ func (n *NullFloat32) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
-	if bytes.Equal(payload, jsonNullBytes) {
+	if jsonIsNull(payload) {
 		n.Float32 = float32(0)
 		n.Valid = false
 		return nil
@@ -546,7 +549,7 @@ func (n *NullBool) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
-	if bytes.Equal(payload, jsonNullBytes) {
+	if jsonIsNull(payload) {
 		n.Bool = false
 		n.Valid = false
 		return nil
@@ -626,7 +629,7 @@ func (n *NullTime) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
-	if bytes.Equal(payload, jsonNullBytes) {
+	if jsonIsNull(payload) {
 		n.Time = time.Time{}
 		n.Valid = false
 		return nil
@@ -711,7 +714,7 @@ func (n *NullDate) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
-	if bytes.Equal(payload, jsonNullBytes) {
+	if jsonIsNull(payload) {
 		n.Date = civil.Date{}
 		n.Valid = false
 		return nil
@@ -796,7 +799,7 @@ func (n *NullNumeric) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
-	if bytes.Equal(payload, jsonNullBytes) {
+	if jsonIsNull(payload) {
 		n.Numeric = big.Rat{}
 		n.Valid = false
 		return nil
@@ -893,7 +896,7 @@ func (n *NullJSON) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
-	if bytes.Equal(payload, jsonNullBytes) {
+	if jsonIsNull(payload) {
 		n.Valid = false
 		return nil
 	}
@@ -941,7 +944,7 @@ func (n *PGNumeric) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
-	if bytes.Equal(payload, jsonNullBytes) {
+	if jsonIsNull(payload) {
 		n.Numeric = ""
 		n.Valid = false
 		return nil
@@ -980,7 +983,7 @@ func (n NullProtoMessage) MarshalJSON() ([]byte, error) {
 	if n.Valid {
 		return json.Marshal(n.ProtoMessageVal)
 	}
-	return jsonNullBytes, nil
+	return []byte("null"), nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullProtoMessage.
@@ -988,7 +991,7 @@ func (n *NullProtoMessage) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
-	if bytes.Equal(payload, jsonNullBytes) {
+	if jsonIsNull(payload) {
 		n.ProtoMessageVal = nil
 		n.Valid = false
 		return nil
@@ -1026,7 +1029,7 @@ func (n NullProtoEnum) MarshalJSON() ([]byte, error) {
 	if n.Valid && n.ProtoEnumVal != nil {
 		return []byte(fmt.Sprintf("%v", n.ProtoEnumVal.Number())), nil
 	}
-	return jsonNullBytes, nil
+	return []byte("null"), nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullProtoEnum.
@@ -1034,7 +1037,7 @@ func (n *NullProtoEnum) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
-	if bytes.Equal(payload, jsonNullBytes) {
+	if jsonIsNull(payload) {
 		n.ProtoEnumVal = nil
 		n.Valid = false
 		return nil
@@ -1095,7 +1098,7 @@ func (n *PGJsonB) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
-	if bytes.Equal(payload, jsonNullBytes) {
+	if jsonIsNull(payload) {
 		n.Valid = false
 		return nil
 	}
@@ -1111,7 +1114,7 @@ func (n *PGJsonB) UnmarshalJSON(payload []byte) error {
 
 func nulljson(valid bool, v interface{}) ([]byte, error) {
 	if !valid {
-		return jsonNullBytes, nil
+		return []byte("null"), nil
 	}
 	return json.Marshal(v)
 }
