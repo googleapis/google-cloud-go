@@ -1,5 +1,16 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.11...storagetransfer/v1.11.0) (2024-08-20)
+
+
+### Features
+
+* **storagetransfer:** Add GCS Managed Folders ([b32cb37](https://github.com/googleapis/google-cloud-go/commit/b32cb378ab03f34c0670a8a204bd0ef3f71d48d4))
+* **storagetransfer:** Add HDFS configuration ([b32cb37](https://github.com/googleapis/google-cloud-go/commit/b32cb378ab03f34c0670a8a204bd0ef3f71d48d4))
+* **storagetransfer:** Add S3 Cloudfront Domain ([b32cb37](https://github.com/googleapis/google-cloud-go/commit/b32cb378ab03f34c0670a8a204bd0ef3f71d48d4))
+* **storagetransfer:** Add S3 Managed Private Network ([b32cb37](https://github.com/googleapis/google-cloud-go/commit/b32cb378ab03f34c0670a8a204bd0ef3f71d48d4))
+* **storagetransfer:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [1.10.11](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.10...storagetransfer/v1.10.11) (2024-08-08)
 
 
