@@ -1444,6 +1444,11 @@ func (c *datasetRESTClient) CreateDataset(ctx context.Context, req *aiplatformpb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/datasets", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -1504,12 +1509,13 @@ func (c *datasetRESTClient) GetDataset(ctx context.Context, req *aiplatformpb.Ge
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetReadMask() != nil {
-		readMask, err := protojson.Marshal(req.GetReadMask())
+		field, err := protojson.Marshal(req.GetReadMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask[1:len(readMask)-1]))
+		params.Add("readMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1577,12 +1583,13 @@ func (c *datasetRESTClient) UpdateDataset(ctx context.Context, req *aiplatformpb
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetDataset().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1656,6 +1663,7 @@ func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *aiplatformpb.
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/datasets", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1669,11 +1677,11 @@ func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *aiplatformpb.
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1743,6 +1751,11 @@ func (c *datasetRESTClient) DeleteDataset(ctx context.Context, req *aiplatformpb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1807,6 +1820,11 @@ func (c *datasetRESTClient) ImportData(ctx context.Context, req *aiplatformpb.Im
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:import", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1873,6 +1891,11 @@ func (c *datasetRESTClient) ExportData(ctx context.Context, req *aiplatformpb.Ex
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:export", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1938,6 +1961,11 @@ func (c *datasetRESTClient) CreateDatasetVersion(ctx context.Context, req *aipla
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/datasetVersions", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
@@ -2006,12 +2034,13 @@ func (c *datasetRESTClient) UpdateDatasetVersion(ctx context.Context, req *aipla
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetDatasetVersion().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2070,6 +2099,11 @@ func (c *datasetRESTClient) DeleteDatasetVersion(ctx context.Context, req *aipla
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2131,12 +2165,13 @@ func (c *datasetRESTClient) GetDatasetVersion(ctx context.Context, req *aiplatfo
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetReadMask() != nil {
-		readMask, err := protojson.Marshal(req.GetReadMask())
+		field, err := protojson.Marshal(req.GetReadMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask[1:len(readMask)-1]))
+		params.Add("readMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2210,6 +2245,7 @@ func (c *datasetRESTClient) ListDatasetVersions(ctx context.Context, req *aiplat
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/datasetVersions", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2223,11 +2259,11 @@ func (c *datasetRESTClient) ListDatasetVersions(ctx context.Context, req *aiplat
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2296,6 +2332,11 @@ func (c *datasetRESTClient) RestoreDatasetVersion(ctx context.Context, req *aipl
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:restore", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2370,6 +2411,7 @@ func (c *datasetRESTClient) ListDataItems(ctx context.Context, req *aiplatformpb
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/dataItems", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2383,11 +2425,11 @@ func (c *datasetRESTClient) ListDataItems(ctx context.Context, req *aiplatformpb
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2471,6 +2513,7 @@ func (c *datasetRESTClient) SearchDataItems(ctx context.Context, req *aiplatform
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:searchDataItems", req.GetDataset())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if items := req.GetAnnotationFilters(); len(items) > 0 {
 			for _, item := range items {
 				params.Add("annotationFilters", fmt.Sprintf("%v", item))
@@ -2489,11 +2532,11 @@ func (c *datasetRESTClient) SearchDataItems(ctx context.Context, req *aiplatform
 			params.Add("dataLabelingJob", fmt.Sprintf("%v", req.GetDataLabelingJob()))
 		}
 		if req.GetFieldMask() != nil {
-			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			field, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+			params.Add("fieldMask", string(field[1:len(field)-1]))
 		}
 		if req.GetOrderBy() != "" {
 			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
@@ -2596,6 +2639,7 @@ func (c *datasetRESTClient) ListSavedQueries(ctx context.Context, req *aiplatfor
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/savedQueries", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2609,11 +2653,11 @@ func (c *datasetRESTClient) ListSavedQueries(ctx context.Context, req *aiplatfor
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2683,6 +2727,11 @@ func (c *datasetRESTClient) DeleteSavedQuery(ctx context.Context, req *aiplatfor
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2743,12 +2792,13 @@ func (c *datasetRESTClient) GetAnnotationSpec(ctx context.Context, req *aiplatfo
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetReadMask() != nil {
-		readMask, err := protojson.Marshal(req.GetReadMask())
+		field, err := protojson.Marshal(req.GetReadMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask[1:len(readMask)-1]))
+		params.Add("readMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2822,6 +2872,7 @@ func (c *datasetRESTClient) ListAnnotations(ctx context.Context, req *aiplatform
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/annotations", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2835,11 +2886,11 @@ func (c *datasetRESTClient) ListAnnotations(ctx context.Context, req *aiplatform
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2908,6 +2959,11 @@ func (c *datasetRESTClient) GetLocation(ctx context.Context, req *locationpb.Get
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2978,6 +3034,7 @@ func (c *datasetRESTClient) ListLocations(ctx context.Context, req *locationpb.L
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3062,6 +3119,11 @@ func (c *datasetRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -3126,6 +3188,11 @@ func (c *datasetRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
@@ -3194,6 +3261,11 @@ func (c *datasetRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -3249,6 +3321,11 @@ func (c *datasetRESTClient) CancelOperation(ctx context.Context, req *longrunnin
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3286,6 +3363,11 @@ func (c *datasetRESTClient) DeleteOperation(ctx context.Context, req *longrunnin
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3322,6 +3404,11 @@ func (c *datasetRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -3392,6 +3479,7 @@ func (c *datasetRESTClient) ListOperations(ctx context.Context, req *longrunning
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3470,12 +3558,13 @@ func (c *datasetRESTClient) WaitOperation(ctx context.Context, req *longrunningp
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

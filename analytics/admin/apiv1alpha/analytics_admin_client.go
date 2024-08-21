@@ -83,6 +83,11 @@ type AnalyticsAdminCallOptions struct {
 	GetConversionEvent                           []gax.CallOption
 	DeleteConversionEvent                        []gax.CallOption
 	ListConversionEvents                         []gax.CallOption
+	CreateKeyEvent                               []gax.CallOption
+	UpdateKeyEvent                               []gax.CallOption
+	GetKeyEvent                                  []gax.CallOption
+	DeleteKeyEvent                               []gax.CallOption
+	ListKeyEvents                                []gax.CallOption
 	GetDisplayVideo360AdvertiserLink             []gax.CallOption
 	ListDisplayVideo360AdvertiserLinks           []gax.CallOption
 	CreateDisplayVideo360AdvertiserLink          []gax.CallOption
@@ -145,8 +150,11 @@ type AnalyticsAdminCallOptions struct {
 	DeleteChannelGroup                           []gax.CallOption
 	SetAutomatedGa4ConfigurationOptOut           []gax.CallOption
 	FetchAutomatedGa4ConfigurationOptOut         []gax.CallOption
+	CreateBigQueryLink                           []gax.CallOption
 	GetBigQueryLink                              []gax.CallOption
 	ListBigQueryLinks                            []gax.CallOption
+	DeleteBigQueryLink                           []gax.CallOption
+	UpdateBigQueryLink                           []gax.CallOption
 	GetEnhancedMeasurementSettings               []gax.CallOption
 	UpdateEnhancedMeasurementSettings            []gax.CallOption
 	CreateConnectedSiteTag                       []gax.CallOption
@@ -162,6 +170,12 @@ type AnalyticsAdminCallOptions struct {
 	CreateEventCreateRule                        []gax.CallOption
 	UpdateEventCreateRule                        []gax.CallOption
 	DeleteEventCreateRule                        []gax.CallOption
+	GetEventEditRule                             []gax.CallOption
+	ListEventEditRules                           []gax.CallOption
+	CreateEventEditRule                          []gax.CallOption
+	UpdateEventEditRule                          []gax.CallOption
+	DeleteEventEditRule                          []gax.CallOption
+	ReorderEventEditRules                        []gax.CallOption
 	UpdateDataRedactionSettings                  []gax.CallOption
 	GetDataRedactionSettings                     []gax.CallOption
 	GetCalculatedMetric                          []gax.CallOption
@@ -174,7 +188,7 @@ type AnalyticsAdminCallOptions struct {
 	ListRollupPropertySourceLinks                []gax.CallOption
 	CreateRollupPropertySourceLink               []gax.CallOption
 	DeleteRollupPropertySourceLink               []gax.CallOption
-	CreateSubproperty                            []gax.CallOption
+	ProvisionSubproperty                         []gax.CallOption
 	CreateSubpropertyEventFilter                 []gax.CallOption
 	GetSubpropertyEventFilter                    []gax.CallOption
 	ListSubpropertyEventFilters                  []gax.CallOption
@@ -191,6 +205,7 @@ func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://analyticsadmin.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -513,6 +528,71 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		ListConversionEvents: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateKeyEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateKeyEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetKeyEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteKeyEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListKeyEvents: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -1331,6 +1411,19 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
+		CreateBigQueryLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetBigQueryLink: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1345,6 +1438,32 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		ListBigQueryLinks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteBigQueryLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateBigQueryLink: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -1532,6 +1651,84 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
+		GetEventEditRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListEventEditRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateEventEditRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateEventEditRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteEventEditRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ReorderEventEditRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		UpdateDataRedactionSettings: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1688,7 +1885,7 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
-		CreateSubproperty: []gax.CallOption{
+		ProvisionSubproperty: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -2077,6 +2274,66 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		CreateKeyEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateKeyEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetKeyEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteKeyEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListKeyEvents: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
 		GetDisplayVideo360AdvertiserLink: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -2821,6 +3078,18 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		CreateBigQueryLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
 		GetBigQueryLink: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -2834,6 +3103,30 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		ListBigQueryLinks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteBigQueryLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateBigQueryLink: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -3007,6 +3300,78 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		GetEventEditRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListEventEditRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateEventEditRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateEventEditRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteEventEditRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ReorderEventEditRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
 		UpdateDataRedactionSettings: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -3151,7 +3516,7 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
-		CreateSubproperty: []gax.CallOption{
+		ProvisionSubproperty: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -3270,6 +3635,11 @@ type internalAnalyticsAdminClient interface {
 	GetConversionEvent(context.Context, *adminpb.GetConversionEventRequest, ...gax.CallOption) (*adminpb.ConversionEvent, error)
 	DeleteConversionEvent(context.Context, *adminpb.DeleteConversionEventRequest, ...gax.CallOption) error
 	ListConversionEvents(context.Context, *adminpb.ListConversionEventsRequest, ...gax.CallOption) *ConversionEventIterator
+	CreateKeyEvent(context.Context, *adminpb.CreateKeyEventRequest, ...gax.CallOption) (*adminpb.KeyEvent, error)
+	UpdateKeyEvent(context.Context, *adminpb.UpdateKeyEventRequest, ...gax.CallOption) (*adminpb.KeyEvent, error)
+	GetKeyEvent(context.Context, *adminpb.GetKeyEventRequest, ...gax.CallOption) (*adminpb.KeyEvent, error)
+	DeleteKeyEvent(context.Context, *adminpb.DeleteKeyEventRequest, ...gax.CallOption) error
+	ListKeyEvents(context.Context, *adminpb.ListKeyEventsRequest, ...gax.CallOption) *KeyEventIterator
 	GetDisplayVideo360AdvertiserLink(context.Context, *adminpb.GetDisplayVideo360AdvertiserLinkRequest, ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLink, error)
 	ListDisplayVideo360AdvertiserLinks(context.Context, *adminpb.ListDisplayVideo360AdvertiserLinksRequest, ...gax.CallOption) *DisplayVideo360AdvertiserLinkIterator
 	CreateDisplayVideo360AdvertiserLink(context.Context, *adminpb.CreateDisplayVideo360AdvertiserLinkRequest, ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLink, error)
@@ -3332,8 +3702,11 @@ type internalAnalyticsAdminClient interface {
 	DeleteChannelGroup(context.Context, *adminpb.DeleteChannelGroupRequest, ...gax.CallOption) error
 	SetAutomatedGa4ConfigurationOptOut(context.Context, *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error)
 	FetchAutomatedGa4ConfigurationOptOut(context.Context, *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error)
+	CreateBigQueryLink(context.Context, *adminpb.CreateBigQueryLinkRequest, ...gax.CallOption) (*adminpb.BigQueryLink, error)
 	GetBigQueryLink(context.Context, *adminpb.GetBigQueryLinkRequest, ...gax.CallOption) (*adminpb.BigQueryLink, error)
 	ListBigQueryLinks(context.Context, *adminpb.ListBigQueryLinksRequest, ...gax.CallOption) *BigQueryLinkIterator
+	DeleteBigQueryLink(context.Context, *adminpb.DeleteBigQueryLinkRequest, ...gax.CallOption) error
+	UpdateBigQueryLink(context.Context, *adminpb.UpdateBigQueryLinkRequest, ...gax.CallOption) (*adminpb.BigQueryLink, error)
 	GetEnhancedMeasurementSettings(context.Context, *adminpb.GetEnhancedMeasurementSettingsRequest, ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error)
 	UpdateEnhancedMeasurementSettings(context.Context, *adminpb.UpdateEnhancedMeasurementSettingsRequest, ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error)
 	CreateConnectedSiteTag(context.Context, *adminpb.CreateConnectedSiteTagRequest, ...gax.CallOption) (*adminpb.CreateConnectedSiteTagResponse, error)
@@ -3349,6 +3722,12 @@ type internalAnalyticsAdminClient interface {
 	CreateEventCreateRule(context.Context, *adminpb.CreateEventCreateRuleRequest, ...gax.CallOption) (*adminpb.EventCreateRule, error)
 	UpdateEventCreateRule(context.Context, *adminpb.UpdateEventCreateRuleRequest, ...gax.CallOption) (*adminpb.EventCreateRule, error)
 	DeleteEventCreateRule(context.Context, *adminpb.DeleteEventCreateRuleRequest, ...gax.CallOption) error
+	GetEventEditRule(context.Context, *adminpb.GetEventEditRuleRequest, ...gax.CallOption) (*adminpb.EventEditRule, error)
+	ListEventEditRules(context.Context, *adminpb.ListEventEditRulesRequest, ...gax.CallOption) *EventEditRuleIterator
+	CreateEventEditRule(context.Context, *adminpb.CreateEventEditRuleRequest, ...gax.CallOption) (*adminpb.EventEditRule, error)
+	UpdateEventEditRule(context.Context, *adminpb.UpdateEventEditRuleRequest, ...gax.CallOption) (*adminpb.EventEditRule, error)
+	DeleteEventEditRule(context.Context, *adminpb.DeleteEventEditRuleRequest, ...gax.CallOption) error
+	ReorderEventEditRules(context.Context, *adminpb.ReorderEventEditRulesRequest, ...gax.CallOption) error
 	UpdateDataRedactionSettings(context.Context, *adminpb.UpdateDataRedactionSettingsRequest, ...gax.CallOption) (*adminpb.DataRedactionSettings, error)
 	GetDataRedactionSettings(context.Context, *adminpb.GetDataRedactionSettingsRequest, ...gax.CallOption) (*adminpb.DataRedactionSettings, error)
 	GetCalculatedMetric(context.Context, *adminpb.GetCalculatedMetricRequest, ...gax.CallOption) (*adminpb.CalculatedMetric, error)
@@ -3361,7 +3740,7 @@ type internalAnalyticsAdminClient interface {
 	ListRollupPropertySourceLinks(context.Context, *adminpb.ListRollupPropertySourceLinksRequest, ...gax.CallOption) *RollupPropertySourceLinkIterator
 	CreateRollupPropertySourceLink(context.Context, *adminpb.CreateRollupPropertySourceLinkRequest, ...gax.CallOption) (*adminpb.RollupPropertySourceLink, error)
 	DeleteRollupPropertySourceLink(context.Context, *adminpb.DeleteRollupPropertySourceLinkRequest, ...gax.CallOption) error
-	CreateSubproperty(context.Context, *adminpb.CreateSubpropertyRequest, ...gax.CallOption) (*adminpb.CreateSubpropertyResponse, error)
+	ProvisionSubproperty(context.Context, *adminpb.ProvisionSubpropertyRequest, ...gax.CallOption) (*adminpb.ProvisionSubpropertyResponse, error)
 	CreateSubpropertyEventFilter(context.Context, *adminpb.CreateSubpropertyEventFilterRequest, ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error)
 	GetSubpropertyEventFilter(context.Context, *adminpb.GetSubpropertyEventFilterRequest, ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error)
 	ListSubpropertyEventFilters(context.Context, *adminpb.ListSubpropertyEventFiltersRequest, ...gax.CallOption) *SubpropertyEventFilterIterator
@@ -3615,31 +3994,72 @@ func (c *AnalyticsAdminClient) UpdateGoogleSignalsSettings(ctx context.Context, 
 	return c.internalClient.UpdateGoogleSignalsSettings(ctx, req, opts...)
 }
 
-// CreateConversionEvent creates a conversion event with the specified attributes.
+// CreateConversionEvent deprecated: Use CreateKeyEvent instead.
+// Creates a conversion event with the specified attributes.
+//
+// Deprecated: CreateConversionEvent may be removed in a future version.
 func (c *AnalyticsAdminClient) CreateConversionEvent(ctx context.Context, req *adminpb.CreateConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
 	return c.internalClient.CreateConversionEvent(ctx, req, opts...)
 }
 
-// UpdateConversionEvent updates a conversion event with the specified attributes.
+// UpdateConversionEvent deprecated: Use UpdateKeyEvent instead.
+// Updates a conversion event with the specified attributes.
+//
+// Deprecated: UpdateConversionEvent may be removed in a future version.
 func (c *AnalyticsAdminClient) UpdateConversionEvent(ctx context.Context, req *adminpb.UpdateConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
 	return c.internalClient.UpdateConversionEvent(ctx, req, opts...)
 }
 
-// GetConversionEvent retrieve a single conversion event.
+// GetConversionEvent deprecated: Use GetKeyEvent instead.
+// Retrieve a single conversion event.
+//
+// Deprecated: GetConversionEvent may be removed in a future version.
 func (c *AnalyticsAdminClient) GetConversionEvent(ctx context.Context, req *adminpb.GetConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
 	return c.internalClient.GetConversionEvent(ctx, req, opts...)
 }
 
-// DeleteConversionEvent deletes a conversion event in a property.
+// DeleteConversionEvent deprecated: Use DeleteKeyEvent instead.
+// Deletes a conversion event in a property.
+//
+// Deprecated: DeleteConversionEvent may be removed in a future version.
 func (c *AnalyticsAdminClient) DeleteConversionEvent(ctx context.Context, req *adminpb.DeleteConversionEventRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteConversionEvent(ctx, req, opts...)
 }
 
-// ListConversionEvents returns a list of conversion events in the specified parent property.
+// ListConversionEvents deprecated: Use ListKeyEvents instead.
+// Returns a list of conversion events in the specified parent property.
 //
 // Returns an empty list if no conversion events are found.
+//
+// Deprecated: ListConversionEvents may be removed in a future version.
 func (c *AnalyticsAdminClient) ListConversionEvents(ctx context.Context, req *adminpb.ListConversionEventsRequest, opts ...gax.CallOption) *ConversionEventIterator {
 	return c.internalClient.ListConversionEvents(ctx, req, opts...)
+}
+
+// CreateKeyEvent creates a Key Event.
+func (c *AnalyticsAdminClient) CreateKeyEvent(ctx context.Context, req *adminpb.CreateKeyEventRequest, opts ...gax.CallOption) (*adminpb.KeyEvent, error) {
+	return c.internalClient.CreateKeyEvent(ctx, req, opts...)
+}
+
+// UpdateKeyEvent updates a Key Event.
+func (c *AnalyticsAdminClient) UpdateKeyEvent(ctx context.Context, req *adminpb.UpdateKeyEventRequest, opts ...gax.CallOption) (*adminpb.KeyEvent, error) {
+	return c.internalClient.UpdateKeyEvent(ctx, req, opts...)
+}
+
+// GetKeyEvent retrieve a single Key Event.
+func (c *AnalyticsAdminClient) GetKeyEvent(ctx context.Context, req *adminpb.GetKeyEventRequest, opts ...gax.CallOption) (*adminpb.KeyEvent, error) {
+	return c.internalClient.GetKeyEvent(ctx, req, opts...)
+}
+
+// DeleteKeyEvent deletes a Key Event.
+func (c *AnalyticsAdminClient) DeleteKeyEvent(ctx context.Context, req *adminpb.DeleteKeyEventRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteKeyEvent(ctx, req, opts...)
+}
+
+// ListKeyEvents returns a list of Key Events in the specified parent property.
+// Returns an empty list if no Key Events are found.
+func (c *AnalyticsAdminClient) ListKeyEvents(ctx context.Context, req *adminpb.ListKeyEventsRequest, opts ...gax.CallOption) *KeyEventIterator {
+	return c.internalClient.ListKeyEvents(ctx, req, opts...)
 }
 
 // GetDisplayVideo360AdvertiserLink look up a single DisplayVideo360AdvertiserLink
@@ -3992,6 +4412,11 @@ func (c *AnalyticsAdminClient) FetchAutomatedGa4ConfigurationOptOut(ctx context.
 	return c.internalClient.FetchAutomatedGa4ConfigurationOptOut(ctx, req, opts...)
 }
 
+// CreateBigQueryLink creates a BigQueryLink.
+func (c *AnalyticsAdminClient) CreateBigQueryLink(ctx context.Context, req *adminpb.CreateBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
+	return c.internalClient.CreateBigQueryLink(ctx, req, opts...)
+}
+
 // GetBigQueryLink lookup for a single BigQuery Link.
 func (c *AnalyticsAdminClient) GetBigQueryLink(ctx context.Context, req *adminpb.GetBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
 	return c.internalClient.GetBigQueryLink(ctx, req, opts...)
@@ -4000,6 +4425,16 @@ func (c *AnalyticsAdminClient) GetBigQueryLink(ctx context.Context, req *adminpb
 // ListBigQueryLinks lists BigQuery Links on a property.
 func (c *AnalyticsAdminClient) ListBigQueryLinks(ctx context.Context, req *adminpb.ListBigQueryLinksRequest, opts ...gax.CallOption) *BigQueryLinkIterator {
 	return c.internalClient.ListBigQueryLinks(ctx, req, opts...)
+}
+
+// DeleteBigQueryLink deletes a BigQueryLink on a property.
+func (c *AnalyticsAdminClient) DeleteBigQueryLink(ctx context.Context, req *adminpb.DeleteBigQueryLinkRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteBigQueryLink(ctx, req, opts...)
+}
+
+// UpdateBigQueryLink updates a BigQueryLink.
+func (c *AnalyticsAdminClient) UpdateBigQueryLink(ctx context.Context, req *adminpb.UpdateBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
+	return c.internalClient.UpdateBigQueryLink(ctx, req, opts...)
 }
 
 // GetEnhancedMeasurementSettings returns the enhanced measurement settings for this data stream.
@@ -4087,6 +4522,36 @@ func (c *AnalyticsAdminClient) DeleteEventCreateRule(ctx context.Context, req *a
 	return c.internalClient.DeleteEventCreateRule(ctx, req, opts...)
 }
 
+// GetEventEditRule lookup for a single EventEditRule.
+func (c *AnalyticsAdminClient) GetEventEditRule(ctx context.Context, req *adminpb.GetEventEditRuleRequest, opts ...gax.CallOption) (*adminpb.EventEditRule, error) {
+	return c.internalClient.GetEventEditRule(ctx, req, opts...)
+}
+
+// ListEventEditRules lists EventEditRules on a web data stream.
+func (c *AnalyticsAdminClient) ListEventEditRules(ctx context.Context, req *adminpb.ListEventEditRulesRequest, opts ...gax.CallOption) *EventEditRuleIterator {
+	return c.internalClient.ListEventEditRules(ctx, req, opts...)
+}
+
+// CreateEventEditRule creates an EventEditRule.
+func (c *AnalyticsAdminClient) CreateEventEditRule(ctx context.Context, req *adminpb.CreateEventEditRuleRequest, opts ...gax.CallOption) (*adminpb.EventEditRule, error) {
+	return c.internalClient.CreateEventEditRule(ctx, req, opts...)
+}
+
+// UpdateEventEditRule updates an EventEditRule.
+func (c *AnalyticsAdminClient) UpdateEventEditRule(ctx context.Context, req *adminpb.UpdateEventEditRuleRequest, opts ...gax.CallOption) (*adminpb.EventEditRule, error) {
+	return c.internalClient.UpdateEventEditRule(ctx, req, opts...)
+}
+
+// DeleteEventEditRule deletes an EventEditRule.
+func (c *AnalyticsAdminClient) DeleteEventEditRule(ctx context.Context, req *adminpb.DeleteEventEditRuleRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteEventEditRule(ctx, req, opts...)
+}
+
+// ReorderEventEditRules changes the processing order of event edit rules on the specified stream.
+func (c *AnalyticsAdminClient) ReorderEventEditRules(ctx context.Context, req *adminpb.ReorderEventEditRulesRequest, opts ...gax.CallOption) error {
+	return c.internalClient.ReorderEventEditRules(ctx, req, opts...)
+}
+
 // UpdateDataRedactionSettings updates a DataRedactionSettings on a property.
 func (c *AnalyticsAdminClient) UpdateDataRedactionSettings(ctx context.Context, req *adminpb.UpdateDataRedactionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRedactionSettings, error) {
 	return c.internalClient.UpdateDataRedactionSettings(ctx, req, opts...)
@@ -4155,10 +4620,10 @@ func (c *AnalyticsAdminClient) DeleteRollupPropertySourceLink(ctx context.Contex
 	return c.internalClient.DeleteRollupPropertySourceLink(ctx, req, opts...)
 }
 
-// CreateSubproperty create a subproperty and a subproperty event filter that applies to the
+// ProvisionSubproperty create a subproperty and a subproperty event filter that applies to the
 // created subproperty.
-func (c *AnalyticsAdminClient) CreateSubproperty(ctx context.Context, req *adminpb.CreateSubpropertyRequest, opts ...gax.CallOption) (*adminpb.CreateSubpropertyResponse, error) {
-	return c.internalClient.CreateSubproperty(ctx, req, opts...)
+func (c *AnalyticsAdminClient) ProvisionSubproperty(ctx context.Context, req *adminpb.ProvisionSubpropertyRequest, opts ...gax.CallOption) (*adminpb.ProvisionSubpropertyResponse, error) {
+	return c.internalClient.ProvisionSubproperty(ctx, req, opts...)
 }
 
 // CreateSubpropertyEventFilter creates a subproperty Event Filter.
@@ -4304,6 +4769,7 @@ func defaultAnalyticsAdminRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://analyticsadmin.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -5230,6 +5696,120 @@ func (c *analyticsAdminGRPCClient) ListConversionEvents(ctx context.Context, req
 
 		it.Response = resp
 		return resp.GetConversionEvents(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) CreateKeyEvent(ctx context.Context, req *adminpb.CreateKeyEventRequest, opts ...gax.CallOption) (*adminpb.KeyEvent, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateKeyEvent[0:len((*c.CallOptions).CreateKeyEvent):len((*c.CallOptions).CreateKeyEvent)], opts...)
+	var resp *adminpb.KeyEvent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateKeyEvent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) UpdateKeyEvent(ctx context.Context, req *adminpb.UpdateKeyEventRequest, opts ...gax.CallOption) (*adminpb.KeyEvent, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "key_event.name", url.QueryEscape(req.GetKeyEvent().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateKeyEvent[0:len((*c.CallOptions).UpdateKeyEvent):len((*c.CallOptions).UpdateKeyEvent)], opts...)
+	var resp *adminpb.KeyEvent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateKeyEvent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetKeyEvent(ctx context.Context, req *adminpb.GetKeyEventRequest, opts ...gax.CallOption) (*adminpb.KeyEvent, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetKeyEvent[0:len((*c.CallOptions).GetKeyEvent):len((*c.CallOptions).GetKeyEvent)], opts...)
+	var resp *adminpb.KeyEvent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetKeyEvent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteKeyEvent(ctx context.Context, req *adminpb.DeleteKeyEventRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteKeyEvent[0:len((*c.CallOptions).DeleteKeyEvent):len((*c.CallOptions).DeleteKeyEvent)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteKeyEvent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) ListKeyEvents(ctx context.Context, req *adminpb.ListKeyEventsRequest, opts ...gax.CallOption) *KeyEventIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListKeyEvents[0:len((*c.CallOptions).ListKeyEvents):len((*c.CallOptions).ListKeyEvents)], opts...)
+	it := &KeyEventIterator{}
+	req = proto.Clone(req).(*adminpb.ListKeyEventsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.KeyEvent, string, error) {
+		resp := &adminpb.ListKeyEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListKeyEvents(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetKeyEvents(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -6593,6 +7173,24 @@ func (c *analyticsAdminGRPCClient) FetchAutomatedGa4ConfigurationOptOut(ctx cont
 	return resp, nil
 }
 
+func (c *analyticsAdminGRPCClient) CreateBigQueryLink(ctx context.Context, req *adminpb.CreateBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateBigQueryLink[0:len((*c.CallOptions).CreateBigQueryLink):len((*c.CallOptions).CreateBigQueryLink)], opts...)
+	var resp *adminpb.BigQueryLink
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateBigQueryLink(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *analyticsAdminGRPCClient) GetBigQueryLink(ctx context.Context, req *adminpb.GetBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -6655,6 +7253,38 @@ func (c *analyticsAdminGRPCClient) ListBigQueryLinks(ctx context.Context, req *a
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *analyticsAdminGRPCClient) DeleteBigQueryLink(ctx context.Context, req *adminpb.DeleteBigQueryLinkRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteBigQueryLink[0:len((*c.CallOptions).DeleteBigQueryLink):len((*c.CallOptions).DeleteBigQueryLink)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteBigQueryLink(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) UpdateBigQueryLink(ctx context.Context, req *adminpb.UpdateBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "bigquery_link.name", url.QueryEscape(req.GetBigqueryLink().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBigQueryLink[0:len((*c.CallOptions).UpdateBigQueryLink):len((*c.CallOptions).UpdateBigQueryLink)], opts...)
+	var resp *adminpb.BigQueryLink
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateBigQueryLink(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *analyticsAdminGRPCClient) GetEnhancedMeasurementSettings(ctx context.Context, req *adminpb.GetEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
@@ -6959,6 +7589,134 @@ func (c *analyticsAdminGRPCClient) DeleteEventCreateRule(ctx context.Context, re
 	return err
 }
 
+func (c *analyticsAdminGRPCClient) GetEventEditRule(ctx context.Context, req *adminpb.GetEventEditRuleRequest, opts ...gax.CallOption) (*adminpb.EventEditRule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetEventEditRule[0:len((*c.CallOptions).GetEventEditRule):len((*c.CallOptions).GetEventEditRule)], opts...)
+	var resp *adminpb.EventEditRule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetEventEditRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListEventEditRules(ctx context.Context, req *adminpb.ListEventEditRulesRequest, opts ...gax.CallOption) *EventEditRuleIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListEventEditRules[0:len((*c.CallOptions).ListEventEditRules):len((*c.CallOptions).ListEventEditRules)], opts...)
+	it := &EventEditRuleIterator{}
+	req = proto.Clone(req).(*adminpb.ListEventEditRulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.EventEditRule, string, error) {
+		resp := &adminpb.ListEventEditRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListEventEditRules(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEventEditRules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) CreateEventEditRule(ctx context.Context, req *adminpb.CreateEventEditRuleRequest, opts ...gax.CallOption) (*adminpb.EventEditRule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateEventEditRule[0:len((*c.CallOptions).CreateEventEditRule):len((*c.CallOptions).CreateEventEditRule)], opts...)
+	var resp *adminpb.EventEditRule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateEventEditRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) UpdateEventEditRule(ctx context.Context, req *adminpb.UpdateEventEditRuleRequest, opts ...gax.CallOption) (*adminpb.EventEditRule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "event_edit_rule.name", url.QueryEscape(req.GetEventEditRule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateEventEditRule[0:len((*c.CallOptions).UpdateEventEditRule):len((*c.CallOptions).UpdateEventEditRule)], opts...)
+	var resp *adminpb.EventEditRule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateEventEditRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteEventEditRule(ctx context.Context, req *adminpb.DeleteEventEditRuleRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteEventEditRule[0:len((*c.CallOptions).DeleteEventEditRule):len((*c.CallOptions).DeleteEventEditRule)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteEventEditRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) ReorderEventEditRules(ctx context.Context, req *adminpb.ReorderEventEditRulesRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ReorderEventEditRules[0:len((*c.CallOptions).ReorderEventEditRules):len((*c.CallOptions).ReorderEventEditRules)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.ReorderEventEditRules(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *analyticsAdminGRPCClient) UpdateDataRedactionSettings(ctx context.Context, req *adminpb.UpdateDataRedactionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRedactionSettings, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_redaction_settings.name", url.QueryEscape(req.GetDataRedactionSettings().GetName()))}
 
@@ -7220,13 +7978,13 @@ func (c *analyticsAdminGRPCClient) DeleteRollupPropertySourceLink(ctx context.Co
 	return err
 }
 
-func (c *analyticsAdminGRPCClient) CreateSubproperty(ctx context.Context, req *adminpb.CreateSubpropertyRequest, opts ...gax.CallOption) (*adminpb.CreateSubpropertyResponse, error) {
+func (c *analyticsAdminGRPCClient) ProvisionSubproperty(ctx context.Context, req *adminpb.ProvisionSubpropertyRequest, opts ...gax.CallOption) (*adminpb.ProvisionSubpropertyResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
-	opts = append((*c.CallOptions).CreateSubproperty[0:len((*c.CallOptions).CreateSubproperty):len((*c.CallOptions).CreateSubproperty)], opts...)
-	var resp *adminpb.CreateSubpropertyResponse
+	opts = append((*c.CallOptions).ProvisionSubproperty[0:len((*c.CallOptions).ProvisionSubproperty):len((*c.CallOptions).ProvisionSubproperty)], opts...)
+	var resp *adminpb.ProvisionSubpropertyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.analyticsAdminClient.CreateSubproperty(ctx, req, settings.GRPC...)
+		resp, err = c.analyticsAdminClient.ProvisionSubproperty(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -7575,11 +8333,11 @@ func (c *analyticsAdminRESTClient) UpdateAccount(ctx context.Context, req *admin
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -8093,11 +8851,11 @@ func (c *analyticsAdminRESTClient) UpdateProperty(ctx context.Context, req *admi
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -8496,11 +9254,11 @@ func (c *analyticsAdminRESTClient) UpdateGoogleAdsLink(ctx context.Context, req 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -9021,11 +9779,11 @@ func (c *analyticsAdminRESTClient) UpdateMeasurementProtocolSecret(ctx context.C
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -9334,11 +10092,11 @@ func (c *analyticsAdminRESTClient) UpdateSKAdNetworkConversionValueSchema(ctx co
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -9648,11 +10406,11 @@ func (c *analyticsAdminRESTClient) UpdateGoogleSignalsSettings(ctx context.Conte
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -9704,7 +10462,10 @@ func (c *analyticsAdminRESTClient) UpdateGoogleSignalsSettings(ctx context.Conte
 	return resp, nil
 }
 
-// CreateConversionEvent creates a conversion event with the specified attributes.
+// CreateConversionEvent deprecated: Use CreateKeyEvent instead.
+// Creates a conversion event with the specified attributes.
+//
+// Deprecated: CreateConversionEvent may be removed in a future version.
 func (c *analyticsAdminRESTClient) CreateConversionEvent(ctx context.Context, req *adminpb.CreateConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetConversionEvent()
@@ -9771,7 +10532,10 @@ func (c *analyticsAdminRESTClient) CreateConversionEvent(ctx context.Context, re
 	return resp, nil
 }
 
-// UpdateConversionEvent updates a conversion event with the specified attributes.
+// UpdateConversionEvent deprecated: Use UpdateKeyEvent instead.
+// Updates a conversion event with the specified attributes.
+//
+// Deprecated: UpdateConversionEvent may be removed in a future version.
 func (c *analyticsAdminRESTClient) UpdateConversionEvent(ctx context.Context, req *adminpb.UpdateConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetConversionEvent()
@@ -9789,11 +10553,11 @@ func (c *analyticsAdminRESTClient) UpdateConversionEvent(ctx context.Context, re
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -9845,7 +10609,10 @@ func (c *analyticsAdminRESTClient) UpdateConversionEvent(ctx context.Context, re
 	return resp, nil
 }
 
-// GetConversionEvent retrieve a single conversion event.
+// GetConversionEvent deprecated: Use GetKeyEvent instead.
+// Retrieve a single conversion event.
+//
+// Deprecated: GetConversionEvent may be removed in a future version.
 func (c *analyticsAdminRESTClient) GetConversionEvent(ctx context.Context, req *adminpb.GetConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -9905,7 +10672,10 @@ func (c *analyticsAdminRESTClient) GetConversionEvent(ctx context.Context, req *
 	return resp, nil
 }
 
-// DeleteConversionEvent deletes a conversion event in a property.
+// DeleteConversionEvent deprecated: Use DeleteKeyEvent instead.
+// Deletes a conversion event in a property.
+//
+// Deprecated: DeleteConversionEvent may be removed in a future version.
 func (c *analyticsAdminRESTClient) DeleteConversionEvent(ctx context.Context, req *adminpb.DeleteConversionEventRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -9947,9 +10717,12 @@ func (c *analyticsAdminRESTClient) DeleteConversionEvent(ctx context.Context, re
 	}, opts...)
 }
 
-// ListConversionEvents returns a list of conversion events in the specified parent property.
+// ListConversionEvents deprecated: Use ListKeyEvents instead.
+// Returns a list of conversion events in the specified parent property.
 //
 // Returns an empty list if no conversion events are found.
+//
+// Deprecated: ListConversionEvents may be removed in a future version.
 func (c *analyticsAdminRESTClient) ListConversionEvents(ctx context.Context, req *adminpb.ListConversionEventsRequest, opts ...gax.CallOption) *ConversionEventIterator {
 	it := &ConversionEventIterator{}
 	req = proto.Clone(req).(*adminpb.ListConversionEventsRequest)
@@ -10020,6 +10793,339 @@ func (c *analyticsAdminRESTClient) ListConversionEvents(ctx context.Context, req
 		}
 		it.Response = resp
 		return resp.GetConversionEvents(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateKeyEvent creates a Key Event.
+func (c *analyticsAdminRESTClient) CreateKeyEvent(ctx context.Context, req *adminpb.CreateKeyEventRequest, opts ...gax.CallOption) (*adminpb.KeyEvent, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetKeyEvent()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/keyEvents", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateKeyEvent[0:len((*c.CallOptions).CreateKeyEvent):len((*c.CallOptions).CreateKeyEvent)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.KeyEvent{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateKeyEvent updates a Key Event.
+func (c *analyticsAdminRESTClient) UpdateKeyEvent(ctx context.Context, req *adminpb.UpdateKeyEventRequest, opts ...gax.CallOption) (*adminpb.KeyEvent, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetKeyEvent()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetKeyEvent().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "key_event.name", url.QueryEscape(req.GetKeyEvent().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateKeyEvent[0:len((*c.CallOptions).UpdateKeyEvent):len((*c.CallOptions).UpdateKeyEvent)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.KeyEvent{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetKeyEvent retrieve a single Key Event.
+func (c *analyticsAdminRESTClient) GetKeyEvent(ctx context.Context, req *adminpb.GetKeyEventRequest, opts ...gax.CallOption) (*adminpb.KeyEvent, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetKeyEvent[0:len((*c.CallOptions).GetKeyEvent):len((*c.CallOptions).GetKeyEvent)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.KeyEvent{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteKeyEvent deletes a Key Event.
+func (c *analyticsAdminRESTClient) DeleteKeyEvent(ctx context.Context, req *adminpb.DeleteKeyEventRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// ListKeyEvents returns a list of Key Events in the specified parent property.
+// Returns an empty list if no Key Events are found.
+func (c *analyticsAdminRESTClient) ListKeyEvents(ctx context.Context, req *adminpb.ListKeyEventsRequest, opts ...gax.CallOption) *KeyEventIterator {
+	it := &KeyEventIterator{}
+	req = proto.Clone(req).(*adminpb.ListKeyEventsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.KeyEvent, string, error) {
+		resp := &adminpb.ListKeyEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/keyEvents", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetKeyEvents(), resp.GetNextPageToken(), nil
 	}
 
 	fetch := func(pageSize int, pageToken string) (string, error) {
@@ -10318,11 +11424,11 @@ func (c *analyticsAdminRESTClient) UpdateDisplayVideo360AdvertiserLink(ctx conte
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -10858,11 +11964,11 @@ func (c *analyticsAdminRESTClient) UpdateCustomDimension(ctx context.Context, re
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -11196,11 +12302,11 @@ func (c *analyticsAdminRESTClient) UpdateCustomMetric(ctx context.Context, req *
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -11527,11 +12633,11 @@ func (c *analyticsAdminRESTClient) UpdateDataRetentionSettings(ctx context.Conte
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -11710,11 +12816,11 @@ func (c *analyticsAdminRESTClient) UpdateDataStream(ctx context.Context, req *ad
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -12153,11 +13259,11 @@ func (c *analyticsAdminRESTClient) UpdateAudience(ctx context.Context, req *admi
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -12533,11 +13639,11 @@ func (c *analyticsAdminRESTClient) UpdateSearchAds360Link(ctx context.Context, r
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -12667,11 +13773,11 @@ func (c *analyticsAdminRESTClient) UpdateAttributionSettings(ctx context.Context
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -13612,11 +14718,11 @@ func (c *analyticsAdminRESTClient) UpdateExpandedDataSet(ctx context.Context, re
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -13944,11 +15050,11 @@ func (c *analyticsAdminRESTClient) UpdateChannelGroup(ctx context.Context, req *
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -14172,6 +15278,73 @@ func (c *analyticsAdminRESTClient) FetchAutomatedGa4ConfigurationOptOut(ctx cont
 	return resp, nil
 }
 
+// CreateBigQueryLink creates a BigQueryLink.
+func (c *analyticsAdminRESTClient) CreateBigQueryLink(ctx context.Context, req *adminpb.CreateBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBigqueryLink()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/bigQueryLinks", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateBigQueryLink[0:len((*c.CallOptions).CreateBigQueryLink):len((*c.CallOptions).CreateBigQueryLink)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.BigQueryLink{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetBigQueryLink lookup for a single BigQuery Link.
 func (c *analyticsAdminRESTClient) GetBigQueryLink(ctx context.Context, req *adminpb.GetBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -14321,6 +15494,122 @@ func (c *analyticsAdminRESTClient) ListBigQueryLinks(ctx context.Context, req *a
 	return it
 }
 
+// DeleteBigQueryLink deletes a BigQueryLink on a property.
+func (c *analyticsAdminRESTClient) DeleteBigQueryLink(ctx context.Context, req *adminpb.DeleteBigQueryLinkRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// UpdateBigQueryLink updates a BigQueryLink.
+func (c *analyticsAdminRESTClient) UpdateBigQueryLink(ctx context.Context, req *adminpb.UpdateBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBigqueryLink()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetBigqueryLink().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "bigquery_link.name", url.QueryEscape(req.GetBigqueryLink().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBigQueryLink[0:len((*c.CallOptions).UpdateBigQueryLink):len((*c.CallOptions).UpdateBigQueryLink)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.BigQueryLink{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetEnhancedMeasurementSettings returns the enhanced measurement settings for this data stream.
 // Note that the stream must enable enhanced measurement for these settings to
 // take effect.
@@ -14403,11 +15692,11 @@ func (c *analyticsAdminRESTClient) UpdateEnhancedMeasurementSettings(ctx context
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -15186,11 +16475,11 @@ func (c *analyticsAdminRESTClient) UpdateEventCreateRule(ctx context.Context, re
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -15284,6 +16573,386 @@ func (c *analyticsAdminRESTClient) DeleteEventCreateRule(ctx context.Context, re
 	}, opts...)
 }
 
+// GetEventEditRule lookup for a single EventEditRule.
+func (c *analyticsAdminRESTClient) GetEventEditRule(ctx context.Context, req *adminpb.GetEventEditRuleRequest, opts ...gax.CallOption) (*adminpb.EventEditRule, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetEventEditRule[0:len((*c.CallOptions).GetEventEditRule):len((*c.CallOptions).GetEventEditRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.EventEditRule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListEventEditRules lists EventEditRules on a web data stream.
+func (c *analyticsAdminRESTClient) ListEventEditRules(ctx context.Context, req *adminpb.ListEventEditRulesRequest, opts ...gax.CallOption) *EventEditRuleIterator {
+	it := &EventEditRuleIterator{}
+	req = proto.Clone(req).(*adminpb.ListEventEditRulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.EventEditRule, string, error) {
+		resp := &adminpb.ListEventEditRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/eventEditRules", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEventEditRules(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateEventEditRule creates an EventEditRule.
+func (c *analyticsAdminRESTClient) CreateEventEditRule(ctx context.Context, req *adminpb.CreateEventEditRuleRequest, opts ...gax.CallOption) (*adminpb.EventEditRule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetEventEditRule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/eventEditRules", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateEventEditRule[0:len((*c.CallOptions).CreateEventEditRule):len((*c.CallOptions).CreateEventEditRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.EventEditRule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateEventEditRule updates an EventEditRule.
+func (c *analyticsAdminRESTClient) UpdateEventEditRule(ctx context.Context, req *adminpb.UpdateEventEditRuleRequest, opts ...gax.CallOption) (*adminpb.EventEditRule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetEventEditRule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetEventEditRule().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "event_edit_rule.name", url.QueryEscape(req.GetEventEditRule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateEventEditRule[0:len((*c.CallOptions).UpdateEventEditRule):len((*c.CallOptions).UpdateEventEditRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.EventEditRule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteEventEditRule deletes an EventEditRule.
+func (c *analyticsAdminRESTClient) DeleteEventEditRule(ctx context.Context, req *adminpb.DeleteEventEditRuleRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// ReorderEventEditRules changes the processing order of event edit rules on the specified stream.
+func (c *analyticsAdminRESTClient) ReorderEventEditRules(ctx context.Context, req *adminpb.ReorderEventEditRulesRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/eventEditRules:reorder", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
 // UpdateDataRedactionSettings updates a DataRedactionSettings on a property.
 func (c *analyticsAdminRESTClient) UpdateDataRedactionSettings(ctx context.Context, req *adminpb.UpdateDataRedactionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRedactionSettings, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -15302,11 +16971,11 @@ func (c *analyticsAdminRESTClient) UpdateDataRedactionSettings(ctx context.Conte
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -15653,11 +17322,11 @@ func (c *analyticsAdminRESTClient) UpdateCalculatedMetric(ctx context.Context, r
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -16080,9 +17749,9 @@ func (c *analyticsAdminRESTClient) DeleteRollupPropertySourceLink(ctx context.Co
 	}, opts...)
 }
 
-// CreateSubproperty create a subproperty and a subproperty event filter that applies to the
+// ProvisionSubproperty create a subproperty and a subproperty event filter that applies to the
 // created subproperty.
-func (c *analyticsAdminRESTClient) CreateSubproperty(ctx context.Context, req *adminpb.CreateSubpropertyRequest, opts ...gax.CallOption) (*adminpb.CreateSubpropertyResponse, error) {
+func (c *analyticsAdminRESTClient) ProvisionSubproperty(ctx context.Context, req *adminpb.ProvisionSubpropertyRequest, opts ...gax.CallOption) (*adminpb.ProvisionSubpropertyResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -16093,7 +17762,7 @@ func (c *analyticsAdminRESTClient) CreateSubproperty(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:createSubproperty")
+	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:provisionSubproperty")
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
@@ -16103,9 +17772,9 @@ func (c *analyticsAdminRESTClient) CreateSubproperty(ctx context.Context, req *a
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).CreateSubproperty[0:len((*c.CallOptions).CreateSubproperty):len((*c.CallOptions).CreateSubproperty)], opts...)
+	opts = append((*c.CallOptions).ProvisionSubproperty[0:len((*c.CallOptions).ProvisionSubproperty):len((*c.CallOptions).ProvisionSubproperty)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &adminpb.CreateSubpropertyResponse{}
+	resp := &adminpb.ProvisionSubpropertyResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -16378,11 +18047,11 @@ func (c *analyticsAdminRESTClient) UpdateSubpropertyEventFilter(ctx context.Cont
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

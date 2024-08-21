@@ -1,6 +1,53 @@
 # Changes
 
 
+## [2.15.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.14.3...recaptchaenterprise/v2.15.0) (2024-08-20)
+
+
+### Features
+
+* **recaptchaenterprise:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [2.14.3](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.14.2...recaptchaenterprise/v2.14.3) (2024-08-08)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [2.14.2](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.14.1...recaptchaenterprise/v2.14.2) (2024-07-24)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise/v2:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [2.14.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.14.0...recaptchaenterprise/v2.14.1) (2024-07-10)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise/v2:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [2.14.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.13.1...recaptchaenterprise/v2.14.0) (2024-07-01)
+
+
+### Features
+
+* **recaptchaenterprise:** Added SMS Toll Fraud assessment ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+
+### Bug Fixes
+
+* **recaptchaenterprise/v2:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [2.13.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.13.0...recaptchaenterprise/v2.13.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [2.13.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.12.0...recaptchaenterprise/v2.13.0) (2024-05-01)
 
 

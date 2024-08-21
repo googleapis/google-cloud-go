@@ -67,6 +67,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://assuredworkloads.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -508,6 +509,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://assuredworkloads.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -828,28 +830,28 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetWorkload().GetBillingAccount() != "" {
 		params.Add("workload.billingAccount", fmt.Sprintf("%v", req.GetWorkload().GetBillingAccount()))
 	}
 	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime() != nil {
-		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime())
+		field, err := protojson.Marshal(req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.cjisSettings.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
+		params.Add("workload.cjisSettings.kmsSettings.nextRotationTime", string(field[1:len(field)-1]))
 	}
 	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod() != nil {
-		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod())
+		field, err := protojson.Marshal(req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.cjisSettings.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
+		params.Add("workload.cjisSettings.kmsSettings.rotationPeriod", string(field[1:len(field)-1]))
 	}
 	params.Add("workload.complianceRegime", fmt.Sprintf("%v", req.GetWorkload().GetComplianceRegime()))
 	if items := req.GetWorkload().GetCompliantButDisallowedServices(); len(items) > 0 {
@@ -858,11 +860,11 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 		}
 	}
 	if req.GetWorkload().GetCreateTime() != nil {
-		createTime, err := protojson.Marshal(req.GetWorkload().GetCreateTime())
+		field, err := protojson.Marshal(req.GetWorkload().GetCreateTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.createTime", string(createTime[1:len(createTime)-1]))
+		params.Add("workload.createTime", string(field[1:len(field)-1]))
 	}
 	params.Add("workload.displayName", fmt.Sprintf("%v", req.GetWorkload().GetDisplayName()))
 	if req.GetWorkload().GetEnableSovereignControls() {
@@ -872,63 +874,63 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 		params.Add("workload.etag", fmt.Sprintf("%v", req.GetWorkload().GetEtag()))
 	}
 	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime() != nil {
-		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime())
+		field, err := protojson.Marshal(req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.fedrampHighSettings.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
+		params.Add("workload.fedrampHighSettings.kmsSettings.nextRotationTime", string(field[1:len(field)-1]))
 	}
 	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod() != nil {
-		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod())
+		field, err := protojson.Marshal(req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.fedrampHighSettings.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
+		params.Add("workload.fedrampHighSettings.kmsSettings.rotationPeriod", string(field[1:len(field)-1]))
 	}
 	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime() != nil {
-		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime())
+		field, err := protojson.Marshal(req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.fedrampModerateSettings.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
+		params.Add("workload.fedrampModerateSettings.kmsSettings.nextRotationTime", string(field[1:len(field)-1]))
 	}
 	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod() != nil {
-		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod())
+		field, err := protojson.Marshal(req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.fedrampModerateSettings.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
+		params.Add("workload.fedrampModerateSettings.kmsSettings.rotationPeriod", string(field[1:len(field)-1]))
 	}
 	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime() != nil {
-		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime())
+		field, err := protojson.Marshal(req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.il4Settings.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
+		params.Add("workload.il4Settings.kmsSettings.nextRotationTime", string(field[1:len(field)-1]))
 	}
 	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod() != nil {
-		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod())
+		field, err := protojson.Marshal(req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.il4Settings.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
+		params.Add("workload.il4Settings.kmsSettings.rotationPeriod", string(field[1:len(field)-1]))
 	}
 	if req.GetWorkload().GetKajEnrollmentState() != 0 {
 		params.Add("workload.kajEnrollmentState", fmt.Sprintf("%v", req.GetWorkload().GetKajEnrollmentState()))
 	}
 	if req.GetWorkload().GetKmsSettings().GetNextRotationTime() != nil {
-		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetKmsSettings().GetNextRotationTime())
+		field, err := protojson.Marshal(req.GetWorkload().GetKmsSettings().GetNextRotationTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
+		params.Add("workload.kmsSettings.nextRotationTime", string(field[1:len(field)-1]))
 	}
 	if req.GetWorkload().GetKmsSettings().GetRotationPeriod() != nil {
-		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetKmsSettings().GetRotationPeriod())
+		field, err := protojson.Marshal(req.GetWorkload().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
+		params.Add("workload.kmsSettings.rotationPeriod", string(field[1:len(field)-1]))
 	}
 	if req.GetWorkload().GetName() != "" {
 		params.Add("workload.name", fmt.Sprintf("%v", req.GetWorkload().GetName()))

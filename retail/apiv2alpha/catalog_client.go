@@ -70,6 +70,7 @@ func defaultCatalogGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -412,7 +413,7 @@ func defaultCatalogRESTCallOptions() *CatalogCallOptions {
 	}
 }
 
-// internalCatalogClient is an interface that defines the methods available from Retail API.
+// internalCatalogClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalCatalogClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -433,7 +434,7 @@ type internalCatalogClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// CatalogClient is a client for interacting with Retail API.
+// CatalogClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for managing catalog configuration.
@@ -603,7 +604,7 @@ func (c *CatalogClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// catalogGRPCClient is a client for interacting with Retail API over gRPC transport.
+// catalogGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type catalogGRPCClient struct {
@@ -724,6 +725,7 @@ func defaultCatalogRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1164,11 +1166,11 @@ func (c *catalogRESTClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1443,11 +1445,11 @@ func (c *catalogRESTClient) UpdateCompletionConfig(ctx context.Context, req *ret
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1585,11 +1587,11 @@ func (c *catalogRESTClient) UpdateAttributesConfig(ctx context.Context, req *ret
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

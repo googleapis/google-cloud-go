@@ -1,5 +1,60 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/translate/v1.11.0...translate/v1.12.0) (2024-08-20)
+
+
+### Features
+
+* **translate:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.7...translate/v1.11.0) (2024-08-08)
+
+
+### Features
+
+* **translate:** Adds AdaptiveMt HTML/Glossary support ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **translate:** Adds protos for Custom Translation API (AutoML) ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **translate:** Adds protos for Romanization APIs ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **translate:** Adds protos for Transliteration in V3 Advanced translate text ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
+
+### Bug Fixes
+
+* **translate:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **translate:** Fixes typos in docs ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
+## [1.10.7](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.6...translate/v1.10.7) (2024-07-24)
+
+
+### Bug Fixes
+
+* **translate:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.10.6](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.5...translate/v1.10.6) (2024-07-10)
+
+
+### Bug Fixes
+
+* **translate:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.10.5](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.4...translate/v1.10.5) (2024-07-01)
+
+
+### Bug Fixes
+
+* **translate:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.10.4](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.3...translate/v1.10.4) (2024-06-26)
+
+
+### Bug Fixes
+
+* **translate:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.10.3](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.2...translate/v1.10.3) (2024-05-01)
 
 

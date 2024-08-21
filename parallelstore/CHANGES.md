@@ -1,5 +1,60 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.5.1...parallelstore/v0.6.0) (2024-08-20)
+
+
+### Features
+
+* **parallelstore:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.5.0...parallelstore/v0.5.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **parallelstore:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.4.1...parallelstore/v0.5.0) (2024-08-01)
+
+
+### Features
+
+* **parallelstore:** Add file_stripe_level and directory_stripe_level fields to Instance ([#10622](https://github.com/googleapis/google-cloud-go/issues/10622)) ([2fef238](https://github.com/googleapis/google-cloud-go/commit/2fef23856e4c0738fd49d5d2aa98342a32202489))
+
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.4.0...parallelstore/v0.4.1) (2024-07-24)
+
+
+### Bug Fixes
+
+* **parallelstore:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.3.2...parallelstore/v0.4.0) (2024-07-10)
+
+
+### Features
+
+* **parallelstore:** Add iam.googleapis.com/ServiceAccount resource definition ([b660d68](https://github.com/googleapis/google-cloud-go/commit/b660d6870658fe6881883785bcebaea0929fec0a))
+* **parallelstore:** Adding Import/Export BYOSA to the import Data request ([b660d68](https://github.com/googleapis/google-cloud-go/commit/b660d6870658fe6881883785bcebaea0929fec0a))
+
+
+### Bug Fixes
+
+* **parallelstore:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [0.3.2](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.3.1...parallelstore/v0.3.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **parallelstore:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.3.0...parallelstore/v0.3.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **parallelstore:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.2.0...parallelstore/v0.3.0) (2024-05-16)
 
 

@@ -334,18 +334,20 @@ type ClientConfig struct {
 }
 
 type openTelemetryConfig struct {
-	meterProvider           metric.MeterProvider
-	attributeMap            []attribute.KeyValue
-	otMetricRegistration    metric.Registration
-	openSessionCount        metric.Int64ObservableGauge
-	maxAllowedSessionsCount metric.Int64ObservableGauge
-	sessionsCount           metric.Int64ObservableGauge
-	maxInUseSessionsCount   metric.Int64ObservableGauge
-	getSessionTimeoutsCount metric.Int64Counter
-	acquiredSessionsCount   metric.Int64Counter
-	releasedSessionsCount   metric.Int64Counter
-	gfeLatency              metric.Int64Histogram
-	gfeHeaderMissingCount   metric.Int64Counter
+	meterProvider                  metric.MeterProvider
+	attributeMap                   []attribute.KeyValue
+	attributeMapWithMultiplexed    []attribute.KeyValue
+	attributeMapWithoutMultiplexed []attribute.KeyValue
+	otMetricRegistration           metric.Registration
+	openSessionCount               metric.Int64ObservableGauge
+	maxAllowedSessionsCount        metric.Int64ObservableGauge
+	sessionsCount                  metric.Int64ObservableGauge
+	maxInUseSessionsCount          metric.Int64ObservableGauge
+	getSessionTimeoutsCount        metric.Int64Counter
+	acquiredSessionsCount          metric.Int64Counter
+	releasedSessionsCount          metric.Int64Counter
+	gfeLatency                     metric.Int64Histogram
+	gfeHeaderMissingCount          metric.Int64Counter
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
@@ -385,7 +387,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
 		emulatorOpts := []option.ClientOption{
 			option.WithEndpoint(emulatorAddr),
-			option.WithGRPCDialOption(grpc.WithInsecure()),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 			option.WithoutAuthentication(),
 			internaloption.SkipDialSettingsValidation(),
 		}
@@ -609,6 +611,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 	}
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -635,6 +638,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.disableRouteToLeader = true
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -706,6 +710,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.disableRouteToLeader = true
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t, nil
@@ -740,6 +745,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.disableRouteToLeader = true
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -870,6 +876,8 @@ type applyOption struct {
 	// will not be recorded in allowed tracking change streams with DDL option
 	// allow_txn_exclusion=true.
 	excludeTxnFromChangeStreams bool
+	// commitOptions is the commit options to use for the commit operation.
+	commitOptions CommitOptions
 }
 
 // An ApplyOption is an optional argument to Apply.
@@ -915,6 +923,13 @@ func ExcludeTxnFromChangeStreams() ApplyOption {
 	}
 }
 
+// ApplyCommitOptions returns an ApplyOption that sets the commit options to use for the commit operation.
+func ApplyCommitOptions(co CommitOptions) ApplyOption {
+	return func(ao *applyOption) {
+		ao.commitOptions = co
+	}
+}
+
 // Apply applies a list of mutations atomically to the database.
 func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption) (commitTimestamp time.Time, err error) {
 	ao := &applyOption{}
@@ -933,10 +948,10 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	if !ao.atLeastOnce {
 		resp, err := c.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
 			return t.BufferWrite(ms)
-		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams})
+		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, CommitOptions: ao.commitOptions})
 		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams}
+	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, commitOptions: ao.commitOptions}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 

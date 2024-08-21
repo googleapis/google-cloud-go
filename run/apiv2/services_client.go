@@ -73,6 +73,7 @@ func defaultServicesGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -244,7 +245,7 @@ func (c *ServicesClient) GetService(ctx context.Context, req *runpb.GetServiceRe
 	return c.internalClient.GetService(ctx, req, opts...)
 }
 
-// ListServices lists Services.
+// ListServices lists Services. Results are sorted by creation time, descending.
 func (c *ServicesClient) ListServices(ctx context.Context, req *runpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	return c.internalClient.ListServices(ctx, req, opts...)
 }
@@ -464,6 +465,7 @@ func defaultServicesRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -964,7 +966,7 @@ func (c *servicesRESTClient) GetService(ctx context.Context, req *runpb.GetServi
 	return resp, nil
 }
 
-// ListServices lists Services.
+// ListServices lists Services. Results are sorted by creation time, descending.
 func (c *servicesRESTClient) ListServices(ctx context.Context, req *runpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	it := &ServiceIterator{}
 	req = proto.Clone(req).(*runpb.ListServicesRequest)
@@ -1075,6 +1077,13 @@ func (c *servicesRESTClient) UpdateService(ctx context.Context, req *runpb.Updat
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))

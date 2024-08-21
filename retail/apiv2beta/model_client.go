@@ -68,6 +68,7 @@ func defaultModelGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -310,7 +311,7 @@ func defaultModelRESTCallOptions() *ModelCallOptions {
 	}
 }
 
-// internalModelClient is an interface that defines the methods available from Retail API.
+// internalModelClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalModelClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -329,7 +330,7 @@ type internalModelClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ModelClient is a client for interacting with Retail API.
+// ModelClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for performing CRUD operations on models.
@@ -448,7 +449,7 @@ func (c *ModelClient) ListOperations(ctx context.Context, req *longrunningpb.Lis
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// modelGRPCClient is a client for interacting with Retail API over gRPC transport.
+// modelGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type modelGRPCClient struct {
@@ -628,6 +629,7 @@ func defaultModelRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1310,11 +1312,11 @@ func (c *modelRESTClient) UpdateModel(ctx context.Context, req *retailpb.UpdateM
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

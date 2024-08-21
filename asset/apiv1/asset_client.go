@@ -82,6 +82,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudasset.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -1022,6 +1023,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudasset.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1532,7 +1534,7 @@ func (c *gRPCClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.Analyz
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
@@ -1578,7 +1580,7 @@ func (c *gRPCClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
@@ -1624,7 +1626,7 @@ func (c *gRPCClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
@@ -1793,11 +1795,11 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadTime() != nil {
-			readTime, err := protojson.Marshal(req.GetReadTime())
+			field, err := protojson.Marshal(req.GetReadTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readTime", string(readTime[1:len(readTime)-1]))
+			params.Add("readTime", string(field[1:len(field)-1]))
 		}
 		if items := req.GetRelationshipTypes(); len(items) > 0 {
 			for _, item := range items {
@@ -1889,18 +1891,18 @@ func (c *restClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 		params.Add("contentType", fmt.Sprintf("%v", req.GetContentType()))
 	}
 	if req.GetReadTimeWindow().GetEndTime() != nil {
-		endTime, err := protojson.Marshal(req.GetReadTimeWindow().GetEndTime())
+		field, err := protojson.Marshal(req.GetReadTimeWindow().GetEndTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readTimeWindow.endTime", string(endTime[1:len(endTime)-1]))
+		params.Add("readTimeWindow.endTime", string(field[1:len(field)-1]))
 	}
 	if req.GetReadTimeWindow().GetStartTime() != nil {
-		startTime, err := protojson.Marshal(req.GetReadTimeWindow().GetStartTime())
+		field, err := protojson.Marshal(req.GetReadTimeWindow().GetStartTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readTimeWindow.startTime", string(startTime[1:len(startTime)-1]))
+		params.Add("readTimeWindow.startTime", string(field[1:len(field)-1]))
 	}
 	if items := req.GetRelationshipTypes(); len(items) > 0 {
 		for _, item := range items {
@@ -2296,11 +2298,11 @@ func (c *restClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 			params.Add("query", fmt.Sprintf("%v", req.GetQuery()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2487,11 +2489,11 @@ func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 		}
 	}
 	if req.GetAnalysisQuery().GetConditionContext().GetAccessTime() != nil {
-		accessTime, err := protojson.Marshal(req.GetAnalysisQuery().GetConditionContext().GetAccessTime())
+		field, err := protojson.Marshal(req.GetAnalysisQuery().GetConditionContext().GetAccessTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("analysisQuery.conditionContext.accessTime", string(accessTime[1:len(accessTime)-1]))
+		params.Add("analysisQuery.conditionContext.accessTime", string(field[1:len(field)-1]))
 	}
 	params.Add("analysisQuery.identitySelector.identity", fmt.Sprintf("%v", req.GetAnalysisQuery().GetIdentitySelector().GetIdentity()))
 	if req.GetAnalysisQuery().GetOptions().GetAnalyzeServiceAccountImpersonation() {
@@ -2514,11 +2516,11 @@ func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 	}
 	params.Add("analysisQuery.resourceSelector.fullResourceName", fmt.Sprintf("%v", req.GetAnalysisQuery().GetResourceSelector().GetFullResourceName()))
 	if req.GetExecutionTimeout() != nil {
-		executionTimeout, err := protojson.Marshal(req.GetExecutionTimeout())
+		field, err := protojson.Marshal(req.GetExecutionTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("executionTimeout", string(executionTimeout[1:len(executionTimeout)-1]))
+		params.Add("executionTimeout", string(field[1:len(field)-1]))
 	}
 	if req.GetSavedAnalysisQuery() != "" {
 		params.Add("savedAnalysisQuery", fmt.Sprintf("%v", req.GetSavedAnalysisQuery()))
@@ -3035,11 +3037,11 @@ func (c *restClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSa
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3209,7 +3211,7 @@ func (c *restClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.Analyz
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
@@ -3303,7 +3305,7 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}
@@ -3484,7 +3486,7 @@ func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 			req.PageToken = pageToken
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = proto.Int32(math.MaxInt32)
+			req.PageSize = proto.Int32(int32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.PageSize = proto.Int32(int32(pageSize))
 		}

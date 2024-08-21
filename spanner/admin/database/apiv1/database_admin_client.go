@@ -68,6 +68,11 @@ type DatabaseAdminCallOptions struct {
 	ListDatabaseOperations []gax.CallOption
 	ListBackupOperations   []gax.CallOption
 	ListDatabaseRoles      []gax.CallOption
+	CreateBackupSchedule   []gax.CallOption
+	GetBackupSchedule      []gax.CallOption
+	UpdateBackupSchedule   []gax.CallOption
+	DeleteBackupSchedule   []gax.CallOption
+	ListBackupSchedules    []gax.CallOption
 	CancelOperation        []gax.CallOption
 	DeleteOperation        []gax.CallOption
 	GetOperation           []gax.CallOption
@@ -290,6 +295,71 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
+		CreateBackupSchedule: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetBackupSchedule: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateBackupSchedule: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteBackupSchedule: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListBackupSchedules: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation:    []gax.CallOption{},
@@ -485,6 +555,66 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		CreateBackupSchedule: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetBackupSchedule: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		UpdateBackupSchedule: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		DeleteBackupSchedule: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ListBackupSchedules: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation:    []gax.CallOption{},
@@ -523,6 +653,11 @@ type internalDatabaseAdminClient interface {
 	ListDatabaseOperations(context.Context, *databasepb.ListDatabaseOperationsRequest, ...gax.CallOption) *OperationIterator
 	ListBackupOperations(context.Context, *databasepb.ListBackupOperationsRequest, ...gax.CallOption) *OperationIterator
 	ListDatabaseRoles(context.Context, *databasepb.ListDatabaseRolesRequest, ...gax.CallOption) *DatabaseRoleIterator
+	CreateBackupSchedule(context.Context, *databasepb.CreateBackupScheduleRequest, ...gax.CallOption) (*databasepb.BackupSchedule, error)
+	GetBackupSchedule(context.Context, *databasepb.GetBackupScheduleRequest, ...gax.CallOption) (*databasepb.BackupSchedule, error)
+	UpdateBackupSchedule(context.Context, *databasepb.UpdateBackupScheduleRequest, ...gax.CallOption) (*databasepb.BackupSchedule, error)
+	DeleteBackupSchedule(context.Context, *databasepb.DeleteBackupScheduleRequest, ...gax.CallOption) error
+	ListBackupSchedules(context.Context, *databasepb.ListBackupSchedulesRequest, ...gax.CallOption) *BackupScheduleIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -854,6 +989,31 @@ func (c *DatabaseAdminClient) ListBackupOperations(ctx context.Context, req *dat
 // ListDatabaseRoles lists Cloud Spanner database roles.
 func (c *DatabaseAdminClient) ListDatabaseRoles(ctx context.Context, req *databasepb.ListDatabaseRolesRequest, opts ...gax.CallOption) *DatabaseRoleIterator {
 	return c.internalClient.ListDatabaseRoles(ctx, req, opts...)
+}
+
+// CreateBackupSchedule creates a new backup schedule.
+func (c *DatabaseAdminClient) CreateBackupSchedule(ctx context.Context, req *databasepb.CreateBackupScheduleRequest, opts ...gax.CallOption) (*databasepb.BackupSchedule, error) {
+	return c.internalClient.CreateBackupSchedule(ctx, req, opts...)
+}
+
+// GetBackupSchedule gets backup schedule for the input schedule name.
+func (c *DatabaseAdminClient) GetBackupSchedule(ctx context.Context, req *databasepb.GetBackupScheduleRequest, opts ...gax.CallOption) (*databasepb.BackupSchedule, error) {
+	return c.internalClient.GetBackupSchedule(ctx, req, opts...)
+}
+
+// UpdateBackupSchedule updates a backup schedule.
+func (c *DatabaseAdminClient) UpdateBackupSchedule(ctx context.Context, req *databasepb.UpdateBackupScheduleRequest, opts ...gax.CallOption) (*databasepb.BackupSchedule, error) {
+	return c.internalClient.UpdateBackupSchedule(ctx, req, opts...)
+}
+
+// DeleteBackupSchedule deletes a backup schedule.
+func (c *DatabaseAdminClient) DeleteBackupSchedule(ctx context.Context, req *databasepb.DeleteBackupScheduleRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteBackupSchedule(ctx, req, opts...)
+}
+
+// ListBackupSchedules lists all the backup schedules for the database.
+func (c *DatabaseAdminClient) ListBackupSchedules(ctx context.Context, req *databasepb.ListBackupSchedulesRequest, opts ...gax.CallOption) *BackupScheduleIterator {
+	return c.internalClient.ListBackupSchedules(ctx, req, opts...)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -1580,6 +1740,120 @@ func (c *databaseAdminGRPCClient) ListDatabaseRoles(ctx context.Context, req *da
 	return it
 }
 
+func (c *databaseAdminGRPCClient) CreateBackupSchedule(ctx context.Context, req *databasepb.CreateBackupScheduleRequest, opts ...gax.CallOption) (*databasepb.BackupSchedule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateBackupSchedule[0:len((*c.CallOptions).CreateBackupSchedule):len((*c.CallOptions).CreateBackupSchedule)], opts...)
+	var resp *databasepb.BackupSchedule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.databaseAdminClient.CreateBackupSchedule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *databaseAdminGRPCClient) GetBackupSchedule(ctx context.Context, req *databasepb.GetBackupScheduleRequest, opts ...gax.CallOption) (*databasepb.BackupSchedule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupSchedule[0:len((*c.CallOptions).GetBackupSchedule):len((*c.CallOptions).GetBackupSchedule)], opts...)
+	var resp *databasepb.BackupSchedule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.databaseAdminClient.GetBackupSchedule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *databaseAdminGRPCClient) UpdateBackupSchedule(ctx context.Context, req *databasepb.UpdateBackupScheduleRequest, opts ...gax.CallOption) (*databasepb.BackupSchedule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_schedule.name", url.QueryEscape(req.GetBackupSchedule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBackupSchedule[0:len((*c.CallOptions).UpdateBackupSchedule):len((*c.CallOptions).UpdateBackupSchedule)], opts...)
+	var resp *databasepb.BackupSchedule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.databaseAdminClient.UpdateBackupSchedule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *databaseAdminGRPCClient) DeleteBackupSchedule(ctx context.Context, req *databasepb.DeleteBackupScheduleRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteBackupSchedule[0:len((*c.CallOptions).DeleteBackupSchedule):len((*c.CallOptions).DeleteBackupSchedule)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.databaseAdminClient.DeleteBackupSchedule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *databaseAdminGRPCClient) ListBackupSchedules(ctx context.Context, req *databasepb.ListBackupSchedulesRequest, opts ...gax.CallOption) *BackupScheduleIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListBackupSchedules[0:len((*c.CallOptions).ListBackupSchedules):len((*c.CallOptions).ListBackupSchedules)], opts...)
+	it := &BackupScheduleIterator{}
+	req = proto.Clone(req).(*databasepb.ListBackupSchedulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.BackupSchedule, string, error) {
+		resp := &databasepb.ListBackupSchedulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.databaseAdminClient.ListBackupSchedules(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBackupSchedules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *databaseAdminGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1955,11 +2229,11 @@ func (c *databaseAdminRESTClient) UpdateDatabase(ctx context.Context, req *datab
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2674,11 +2948,11 @@ func (c *databaseAdminRESTClient) UpdateBackup(ctx context.Context, req *databas
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3224,6 +3498,339 @@ func (c *databaseAdminRESTClient) ListDatabaseRoles(ctx context.Context, req *da
 		}
 		it.Response = resp
 		return resp.GetDatabaseRoles(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateBackupSchedule creates a new backup schedule.
+func (c *databaseAdminRESTClient) CreateBackupSchedule(ctx context.Context, req *databasepb.CreateBackupScheduleRequest, opts ...gax.CallOption) (*databasepb.BackupSchedule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackupSchedule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/backupSchedules", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("backupScheduleId", fmt.Sprintf("%v", req.GetBackupScheduleId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateBackupSchedule[0:len((*c.CallOptions).CreateBackupSchedule):len((*c.CallOptions).CreateBackupSchedule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &databasepb.BackupSchedule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetBackupSchedule gets backup schedule for the input schedule name.
+func (c *databaseAdminRESTClient) GetBackupSchedule(ctx context.Context, req *databasepb.GetBackupScheduleRequest, opts ...gax.CallOption) (*databasepb.BackupSchedule, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupSchedule[0:len((*c.CallOptions).GetBackupSchedule):len((*c.CallOptions).GetBackupSchedule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &databasepb.BackupSchedule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateBackupSchedule updates a backup schedule.
+func (c *databaseAdminRESTClient) UpdateBackupSchedule(ctx context.Context, req *databasepb.UpdateBackupScheduleRequest, opts ...gax.CallOption) (*databasepb.BackupSchedule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackupSchedule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackupSchedule().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_schedule.name", url.QueryEscape(req.GetBackupSchedule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBackupSchedule[0:len((*c.CallOptions).UpdateBackupSchedule):len((*c.CallOptions).UpdateBackupSchedule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &databasepb.BackupSchedule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteBackupSchedule deletes a backup schedule.
+func (c *databaseAdminRESTClient) DeleteBackupSchedule(ctx context.Context, req *databasepb.DeleteBackupScheduleRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// ListBackupSchedules lists all the backup schedules for the database.
+func (c *databaseAdminRESTClient) ListBackupSchedules(ctx context.Context, req *databasepb.ListBackupSchedulesRequest, opts ...gax.CallOption) *BackupScheduleIterator {
+	it := &BackupScheduleIterator{}
+	req = proto.Clone(req).(*databasepb.ListBackupSchedulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.BackupSchedule, string, error) {
+		resp := &databasepb.ListBackupSchedulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backupSchedules", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackupSchedules(), resp.GetNextPageToken(), nil
 	}
 
 	fetch := func(pageSize int, pageToken string) (string, error) {

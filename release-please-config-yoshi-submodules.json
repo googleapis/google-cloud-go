@@ -27,6 +27,9 @@
         "apigeeregistry": {
             "component": "apigeeregistry"
         },
+        "apihub": {
+            "component": "apihub"
+        },
         "apikeys": {
             "component": "apikeys"
         },
@@ -270,6 +273,9 @@
         "networksecurity": {
             "component": "networksecurity"
         },
+        "networkservices": {
+            "component": "networkservices"
+        },
         "notebooks": {
             "component": "notebooks"
         },
@@ -302,6 +308,9 @@
         },
         "privatecatalog": {
             "component": "privatecatalog"
+        },
+        "privilegedaccessmanager": {
+            "component": "privilegedaccessmanager"
         },
         "rapidmigrationassessment": {
             "component": "rapidmigrationassessment"

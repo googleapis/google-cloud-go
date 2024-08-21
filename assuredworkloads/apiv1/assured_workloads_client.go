@@ -68,6 +68,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://assuredworkloads.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -430,6 +431,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://assuredworkloads.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -824,11 +826,11 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1181,18 +1183,18 @@ func (c *restClient) ListViolations(ctx context.Context, req *assuredworkloadspb
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
 		if req.GetInterval().GetEndTime() != nil {
-			endTime, err := protojson.Marshal(req.GetInterval().GetEndTime())
+			field, err := protojson.Marshal(req.GetInterval().GetEndTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("interval.endTime", string(endTime[1:len(endTime)-1]))
+			params.Add("interval.endTime", string(field[1:len(field)-1]))
 		}
 		if req.GetInterval().GetStartTime() != nil {
-			startTime, err := protojson.Marshal(req.GetInterval().GetStartTime())
+			field, err := protojson.Marshal(req.GetInterval().GetStartTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("interval.startTime", string(startTime[1:len(startTime)-1]))
+			params.Add("interval.startTime", string(field[1:len(field)-1]))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))

@@ -59,6 +59,7 @@ func defaultServingConfigGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -90,7 +91,7 @@ func defaultServingConfigCallOptions() *ServingConfigCallOptions {
 	}
 }
 
-// internalServingConfigClient is an interface that defines the methods available from Retail API.
+// internalServingConfigClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalServingConfigClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -106,7 +107,7 @@ type internalServingConfigClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ServingConfigClient is a client for interacting with Retail API.
+// ServingConfigClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for modifying ServingConfig.
@@ -203,7 +204,7 @@ func (c *ServingConfigClient) ListOperations(ctx context.Context, req *longrunni
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// servingConfigGRPCClient is a client for interacting with Retail API over gRPC transport.
+// servingConfigGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type servingConfigGRPCClient struct {

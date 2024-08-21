@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/run/apiv2",
-    "version": "1.3.7",
+    "version": "1.3.10",
     "language": "GO",
     "apis": [
       {
@@ -243,7 +243,7 @@
     {
       "regionTag": "run_v2_generated_Executions_ListExecutions_sync",
       "title": "run ListExecutions Sample",
-      "description": "ListExecutions lists Executions from a Job.",
+      "description": "ListExecutions lists Executions from a Job. Results are sorted by creation time,\ndescending.",
       "file": "ExecutionsClient/ListExecutions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -656,7 +656,7 @@
     {
       "regionTag": "run_v2_generated_Jobs_ListJobs_sync",
       "title": "run ListJobs Sample",
-      "description": "ListJobs lists Jobs.",
+      "description": "ListJobs lists Jobs. Results are sorted by creation time, descending.",
       "file": "JobsClient/ListJobs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1207,7 +1207,7 @@
     {
       "regionTag": "run_v2_generated_Revisions_ListRevisions_sync",
       "title": "run ListRevisions Sample",
-      "description": "ListRevisions lists Revisions from a given Service, or from a given location.",
+      "description": "ListRevisions lists Revisions from a given Service, or from a given location.  Results\nare sorted by creation time, descending.",
       "file": "RevisionsClient/ListRevisions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1620,7 +1620,7 @@
     {
       "regionTag": "run_v2_generated_Services_ListServices_sync",
       "title": "run ListServices Sample",
-      "description": "ListServices lists Services.",
+      "description": "ListServices lists Services. Results are sorted by creation time, descending.",
       "file": "ServicesClient/ListServices/main.go",
       "language": "GO",
       "clientMethod": {

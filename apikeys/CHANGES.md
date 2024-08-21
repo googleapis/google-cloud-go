@@ -1,6 +1,48 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.1.12...apikeys/v1.2.0) (2024-08-20)
+
+
+### Features
+
+* **apikeys:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.1.12](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.1.11...apikeys/v1.1.12) (2024-08-08)
+
+
+### Bug Fixes
+
+* **apikeys:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.1.11](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.1.10...apikeys/v1.1.11) (2024-07-24)
+
+
+### Bug Fixes
+
+* **apikeys:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.1.10](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.1.9...apikeys/v1.1.10) (2024-07-10)
+
+
+### Bug Fixes
+
+* **apikeys:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.1.9](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.1.8...apikeys/v1.1.9) (2024-07-01)
+
+
+### Bug Fixes
+
+* **apikeys:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.1.8](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.1.7...apikeys/v1.1.8) (2024-06-26)
+
+
+### Bug Fixes
+
+* **apikeys:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.1.7](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.1.6...apikeys/v1.1.7) (2024-05-01)
 
 

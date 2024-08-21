@@ -72,6 +72,7 @@ func defaultProductGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -414,7 +415,7 @@ func defaultProductRESTCallOptions() *ProductCallOptions {
 	}
 }
 
-// internalProductClient is an interface that defines the methods available from Retail API.
+// internalProductClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalProductClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -442,7 +443,7 @@ type internalProductClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ProductClient is a client for interacting with Retail API.
+// ProductClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for ingesting Product
@@ -611,10 +612,11 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 	return c.internalClient.SetInventoryOperation(name)
 }
 
-// AddFulfillmentPlaces it is recommended to use the
+// AddFulfillmentPlaces we recommend that you use the
 // ProductService.AddLocalInventories
-// method instead of
-// ProductService.AddFulfillmentPlaces.
+// method instead of the
+// ProductService.AddFulfillmentPlaces
+// method.
 // ProductService.AddLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -650,10 +652,11 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 	return c.internalClient.AddFulfillmentPlacesOperation(name)
 }
 
-// RemoveFulfillmentPlaces it is recommended to use the
+// RemoveFulfillmentPlaces we recommend that you use the
 // ProductService.RemoveLocalInventories
-// method instead of
-// ProductService.RemoveFulfillmentPlaces.
+// method instead of the
+// ProductService.RemoveFulfillmentPlaces
+// method.
 // ProductService.RemoveLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -773,7 +776,7 @@ func (c *ProductClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// productGRPCClient is a client for interacting with Retail API over gRPC transport.
+// productGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type productGRPCClient struct {
@@ -927,6 +930,7 @@ func defaultProductRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1434,11 +1438,11 @@ func (c *productRESTClient) ListProducts(ctx context.Context, req *retailpb.List
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 		if req.GetRequireTotalSize() {
 			params.Add("requireTotalSize", fmt.Sprintf("%v", req.GetRequireTotalSize()))
@@ -1524,11 +1528,11 @@ func (c *productRESTClient) UpdateProduct(ctx context.Context, req *retailpb.Upd
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1905,10 +1909,11 @@ func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetI
 	}, nil
 }
 
-// AddFulfillmentPlaces it is recommended to use the
+// AddFulfillmentPlaces we recommend that you use the
 // ProductService.AddLocalInventories
-// method instead of
-// ProductService.AddFulfillmentPlaces.
+// method instead of the
+// ProductService.AddFulfillmentPlaces
+// method.
 // ProductService.AddLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -2003,10 +2008,11 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 	}, nil
 }
 
-// RemoveFulfillmentPlaces it is recommended to use the
+// RemoveFulfillmentPlaces we recommend that you use the
 // ProductService.RemoveLocalInventories
-// method instead of
-// ProductService.RemoveFulfillmentPlaces.
+// method instead of the
+// ProductService.RemoveFulfillmentPlaces
+// method.
 // ProductService.RemoveLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.

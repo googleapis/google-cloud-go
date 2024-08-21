@@ -82,6 +82,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://automl.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -971,6 +972,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://automl.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1826,11 +1828,11 @@ func (c *restClient) UpdateDataset(ctx context.Context, req *automlpb.UpdateData
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2172,11 +2174,11 @@ func (c *restClient) GetTableSpec(ctx context.Context, req *automlpb.GetTableSpe
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFieldMask() != nil {
-		fieldMask, err := protojson.Marshal(req.GetFieldMask())
+		field, err := protojson.Marshal(req.GetFieldMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+		params.Add("fieldMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2252,11 +2254,11 @@ func (c *restClient) ListTableSpecs(ctx context.Context, req *automlpb.ListTable
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFieldMask() != nil {
-			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			field, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+			params.Add("fieldMask", string(field[1:len(field)-1]))
 		}
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
@@ -2345,11 +2347,11 @@ func (c *restClient) UpdateTableSpec(ctx context.Context, req *automlpb.UpdateTa
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2412,11 +2414,11 @@ func (c *restClient) GetColumnSpec(ctx context.Context, req *automlpb.GetColumnS
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFieldMask() != nil {
-		fieldMask, err := protojson.Marshal(req.GetFieldMask())
+		field, err := protojson.Marshal(req.GetFieldMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+		params.Add("fieldMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2492,11 +2494,11 @@ func (c *restClient) ListColumnSpecs(ctx context.Context, req *automlpb.ListColu
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFieldMask() != nil {
-			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			field, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+			params.Add("fieldMask", string(field[1:len(field)-1]))
 		}
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
@@ -2585,11 +2587,11 @@ func (c *restClient) UpdateColumnSpec(ctx context.Context, req *automlpb.UpdateC
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

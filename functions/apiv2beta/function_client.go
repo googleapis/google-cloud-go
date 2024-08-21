@@ -72,6 +72,7 @@ func defaultFunctionGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudfunctions.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -248,11 +249,11 @@ func (c *FunctionClient) DeleteFunctionOperation(name string) *DeleteFunctionOpe
 //	attached, the identity from the credentials would be used, but that
 //	identity does not have permissions to upload files to the URL.
 //
-// When making a HTTP PUT request, these two headers need to be specified:
+// When making a HTTP PUT request, specify this header:
 //
 //	content-type: application/zip
 //
-// And this header SHOULD NOT be specified:
+// Do not specify this header:
 //
 //	Authorization: Bearer YOUR_TOKEN
 func (c *FunctionClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
@@ -482,6 +483,7 @@ func defaultFunctionRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudfunctions.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -862,6 +864,9 @@ func (c *functionRESTClient) GetFunction(ctx context.Context, req *functionspb.G
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRevision() != "" {
+		params.Add("revision", fmt.Sprintf("%v", req.GetRevision()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1101,11 +1106,11 @@ func (c *functionRESTClient) UpdateFunction(ctx context.Context, req *functionsp
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1244,11 +1249,11 @@ func (c *functionRESTClient) DeleteFunction(ctx context.Context, req *functionsp
 //	attached, the identity from the credentials would be used, but that
 //	identity does not have permissions to upload files to the URL.
 //
-// When making a HTTP PUT request, these two headers need to be specified:
+// When making a HTTP PUT request, specify this header:
 //
 //	content-type: application/zip
 //
-// And this header SHOULD NOT be specified:
+// Do not specify this header:
 //
 //	Authorization: Bearer YOUR_TOKEN
 func (c *functionRESTClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {

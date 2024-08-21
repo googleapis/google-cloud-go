@@ -1,6 +1,60 @@
 # Changelog
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.4.1...run/v1.5.0) (2024-08-20)
+
+
+### Features
+
+* **run:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.4.0...run/v1.4.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **run:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.10...run/v1.4.0) (2024-07-24)
+
+
+### Features
+
+* **run:** Add Job ExecutionReference.completion_status to show status of the most recent execution ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+* **run:** Add Job start_execution_token and run_execution_token to execute jobs immediately on creation ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+* **run:** Support update_mask in Cloud Run UpdateService ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+
+### Bug Fixes
+
+* **run:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **run:** Clarify optional fields in Cloud Run requests ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+## [1.3.10](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.9...run/v1.3.10) (2024-07-10)
+
+
+### Bug Fixes
+
+* **run:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.3.9](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.8...run/v1.3.9) (2024-07-01)
+
+
+### Bug Fixes
+
+* **run:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.3.8](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.7...run/v1.3.8) (2024-06-26)
+
+
+### Bug Fixes
+
+* **run:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.3.7](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.6...run/v1.3.7) (2024-05-01)
 
 

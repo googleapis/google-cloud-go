@@ -56,6 +56,7 @@ func defaultCloudControlsPartnerMonitoringGRPCClientOptions() []option.ClientOpt
 		internaloption.WithDefaultAudience("https://cloudcontrolspartner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -295,6 +296,7 @@ func defaultCloudControlsPartnerMonitoringRESTClientOptions() []option.ClientOpt
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudcontrolspartner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -420,18 +422,18 @@ func (c *cloudControlsPartnerMonitoringRESTClient) ListViolations(ctx context.Co
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
 		if req.GetInterval().GetEndTime() != nil {
-			endTime, err := protojson.Marshal(req.GetInterval().GetEndTime())
+			field, err := protojson.Marshal(req.GetInterval().GetEndTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("interval.endTime", string(endTime[1:len(endTime)-1]))
+			params.Add("interval.endTime", string(field[1:len(field)-1]))
 		}
 		if req.GetInterval().GetStartTime() != nil {
-			startTime, err := protojson.Marshal(req.GetInterval().GetStartTime())
+			field, err := protojson.Marshal(req.GetInterval().GetStartTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("interval.startTime", string(startTime[1:len(startTime)-1]))
+			params.Add("interval.startTime", string(field[1:len(field)-1]))
 		}
 		if req.GetOrderBy() != "" {
 			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))

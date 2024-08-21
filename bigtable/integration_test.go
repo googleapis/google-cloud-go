@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"context"
+	"encoding/binary"
 	"flag"
 	"fmt"
 	"log"
@@ -33,19 +34,22 @@ import (
 	"testing"
 	"time"
 
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -54,6 +58,8 @@ const (
 	timeUntilResourceCleanup  = time.Hour * 12 // 12 hours
 	prefixOfInstanceResources = "bt-it-"
 	prefixOfClusterResources  = "bt-c-"
+	maxCreateAttempts         = 3
+	retryCreateBackoff        = 10 * time.Second
 )
 
 var (
@@ -64,10 +70,10 @@ var (
 		"j§adams":     {"gwashington", "tjefferson"},
 	}
 
-	clusterUIDSpace  = uid.NewSpace(prefixOfClusterResources, &uid.Options{Short: true})
-	tableNameSpace   = uid.NewSpace("cbt-test", &uid.Options{Short: true})
-	myTableName      = fmt.Sprintf("mytable-%d", time.Now().Unix())
-	myOtherTableName = fmt.Sprintf("myothertable-%d", time.Now().Unix())
+	clusterUIDSpace       = uid.NewSpace(prefixOfClusterResources, &uid.Options{Short: true})
+	tableNameSpace        = uid.NewSpace("cbt-test", &uid.Options{Short: true})
+	myTableNameSpace      = uid.NewSpace("mytable", &uid.Options{Short: true})
+	myOtherTableNameSpace = uid.NewSpace("myothertable", &uid.Options{Short: true})
 )
 
 func populatePresidentsGraph(table *Table) error {
@@ -274,6 +280,74 @@ func TestIntegration_ReadRowList(t *testing.T) {
 		t.Fatalf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
 	}
 }
+
+func TestIntegration_Aggregates(t *testing.T) {
+	ctx := context.Background()
+	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+	key := "some-key"
+	family := "sum"
+	column := "col"
+	mut := NewMutation()
+	mut.AddIntToCell(family, column, 1000, 5)
+
+	// Add 5 to empty cell.
+	if err := table.Apply(ctx, key, mut); err != nil {
+		t.Fatalf("Mutating row %q: %v", key, err)
+	}
+	row, err := table.ReadRow(ctx, key)
+	if err != nil {
+		t.Fatalf("Reading a row: %v", err)
+	}
+	wantRow := Row{
+		family: []ReadItem{
+			{Row: key, Column: fmt.Sprintf("%s:%s", family, column), Timestamp: 1000, Value: binary.BigEndian.AppendUint64([]byte{}, 5)},
+		},
+	}
+	if !testutil.Equal(row, wantRow) {
+		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
+	}
+
+	// Add 5 again.
+	if err := table.Apply(ctx, key, mut); err != nil {
+		t.Fatalf("Mutating row %q: %v", key, err)
+	}
+	row, err = table.ReadRow(ctx, key)
+	if err != nil {
+		t.Fatalf("Reading a row: %v", err)
+	}
+	wantRow = Row{
+		family: []ReadItem{
+			{Row: key, Column: fmt.Sprintf("%s:%s", family, column), Timestamp: 1000, Value: binary.BigEndian.AppendUint64([]byte{}, 10)},
+		},
+	}
+	if !testutil.Equal(row, wantRow) {
+		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
+	}
+
+	// Merge 5, which translates in the backend to adding 5 for sum column families.
+	mut2 := NewMutation()
+	mut2.MergeBytesToCell(family, column, 1000, binary.BigEndian.AppendUint64([]byte{}, 5))
+	if err := table.Apply(ctx, key, mut); err != nil {
+		t.Fatalf("Mutating row %q: %v", key, err)
+	}
+	row, err = table.ReadRow(ctx, key)
+	if err != nil {
+		t.Fatalf("Reading a row: %v", err)
+	}
+	wantRow = Row{
+		family: []ReadItem{
+			{Row: key, Column: fmt.Sprintf("%s:%s", family, column), Timestamp: 1000, Value: binary.BigEndian.AppendUint64([]byte{}, 15)},
+		},
+	}
+	if !testutil.Equal(row, wantRow) {
+		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
+	}
+}
+
 func TestIntegration_ReadRowListReverse(t *testing.T) {
 	ctx := context.Background()
 	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
@@ -531,7 +605,8 @@ func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 	}
 	// Delete non-existing cells, no such column family in this row
 	// Should not delete anything
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "non-existing"); err != nil {
+
+	if err := createColumnFamilyWithRetry(ctx, t, adminClient, tableName, "non-existing"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 	mut = NewMutation()
@@ -582,7 +657,7 @@ func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 	}
 
 	// Check DeleteCellsInFamily
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "status"); err != nil {
+	if err := createColumnFamilyWithRetry(ctx, t, adminClient, tableName, "status"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 
@@ -746,6 +821,101 @@ func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 	wg.Wait()
 }
 
+func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
+	ctx := context.Background()
+
+	// Reduce sampling period for faster test runs
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = time.Minute
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+
+	// record start time
+	testStartTime := time.Now()
+	tsListStart := &timestamppb.Timestamp{
+		Seconds: testStartTime.Unix(),
+		Nanos:   int32(testStartTime.Nanosecond()),
+	}
+
+	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if testing.Short() || !testEnv.Config().UseProd {
+		t.Skip("Skip long running tests in short mode or non-prod environments")
+	}
+
+	columnFamilyName := "export"
+	if err := adminClient.CreateColumnFamily(ctx, tableName, columnFamilyName); err != nil {
+		t.Fatalf("Creating column family: %v", err)
+	}
+
+	for i := 0; i < 10; i++ {
+		mut := NewMutation()
+		mut.Set(columnFamilyName, "col", 1000, []byte("test"))
+		if err := table.Apply(ctx, fmt.Sprintf("row-%v", i), mut); err != nil {
+			t.Fatalf("Apply: %v", err)
+		}
+	}
+	err = table.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
+		return true
+	}, RowFilter(ColumnFilter("col")))
+	if err != nil {
+		t.Fatalf("ReadRows: %v", err)
+	}
+
+	// Validate that metrics are exported
+	elapsedTime := time.Since(testStartTime)
+	if elapsedTime < 2*defaultSamplePeriod {
+		// Ensure at least 2 datapoints are recorded
+		time.Sleep(2*defaultSamplePeriod - elapsedTime)
+	}
+
+	// Sleep some more
+	time.Sleep(30 * time.Second)
+
+	monitoringClient, err := monitoring.NewMetricClient(ctx)
+	if err != nil {
+		t.Errorf("Failed to create metric client: %v", err)
+	}
+	metricNamesValidate := []string{
+		metricNameOperationLatencies,
+		metricNameAttemptLatencies,
+		metricNameServerLatencies,
+	}
+
+	// Try for 5m with 10s sleep between retries
+	testutil.Retry(t, 10, 30*time.Second, func(r *testutil.R) {
+		for _, metricName := range metricNamesValidate {
+			timeListEnd := time.Now()
+			tsListEnd := &timestamppb.Timestamp{
+				Seconds: timeListEnd.Unix(),
+				Nanos:   int32(timeListEnd.Nanosecond()),
+			}
+
+			// ListTimeSeries can list only one metric type at a time.
+			// So, call ListTimeSeries with different metric names
+			iter := monitoringClient.ListTimeSeries(ctx, &monitoringpb.ListTimeSeriesRequest{
+				Name: fmt.Sprintf("projects/%s", testEnv.Config().Project),
+				Interval: &monitoringpb.TimeInterval{
+					StartTime: tsListStart,
+					EndTime:   tsListEnd,
+				},
+				Filter: fmt.Sprintf("metric.type = starts_with(\"bigtable.googleapis.com/client/%v\")", metricName),
+			})
+
+			// Assert at least 1 datapoint was exported
+			_, err := iter.Next()
+			if err != nil {
+				r.Errorf("%v not exported\n", metricName)
+			}
+		}
+	})
+}
+
 func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	ctx := context.Background()
 	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
@@ -754,7 +924,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	}
 	defer cleanup()
 
-	if !testEnv.Config().UseProd {
+	if testing.Short() {
 		t.Skip("Skip long running tests in short mode")
 	}
 
@@ -1554,6 +1724,7 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 	}
 	defer adminClient.Close()
 
+	myTableName := myTableNameSpace.New()
 	tableConf := TableConf{
 		TableID: myTableName,
 		Families: map[string]GCPolicy{
@@ -1567,13 +1738,13 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 		t.Fatalf("Create table from config: %v", err)
 	}
 
-	table, err := adminClient.TableInfo(ctx, myTableName)
+	table, err := adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.DeletionProtection != Protected {
-		t.Errorf("Expect table deletion protection to be enabled for table: %v", myTableName)
+		t.Errorf("Expect table deletion protection to be enabled for table: %v", tableConf.TableID)
 	}
 
 	// Check if the deletion protection works properly
@@ -1584,17 +1755,17 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 		t.Errorf("We shouldn't be able to delete the table when the deletion protection is enabled for table %v", myTableName)
 	}
 
-	if err := adminClient.UpdateTableWithDeletionProtection(ctx, myTableName, Unprotected); err != nil {
+	if err := adminClient.UpdateTableWithDeletionProtection(ctx, tableConf.TableID, Unprotected); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
 
-	table, err = adminClient.TableInfo(ctx, myTableName)
+	table, err = adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.DeletionProtection != Unprotected {
-		t.Errorf("Expect table deletion protection to be disabled for table: %v", myTableName)
+		t.Errorf("Expect table deletion protection to be disabled for table: %v", tableConf.TableID)
 	}
 
 	if err := adminClient.DeleteColumnFamily(ctx, tableConf.TableID, "fam1"); err != nil {
@@ -1634,6 +1805,7 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 		t.Fatalf("ChangeStreamRetention not valid: %v", err)
 	}
 
+	myTableName := myTableNameSpace.New()
 	tableConf := TableConf{
 		TableID: myTableName,
 		Families: map[string]GCPolicy{
@@ -1647,13 +1819,13 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 		t.Fatalf("Create table from config: %v", err)
 	}
 
-	table, err := adminClient.TableInfo(ctx, myTableName)
+	table, err := adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.ChangeStreamRetention != changeStreamRetention {
-		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 
 	// Update retention
@@ -1662,31 +1834,31 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 		t.Fatalf("ChangeStreamRetention not valid: %v", err)
 	}
 
-	if err := adminClient.UpdateTableWithChangeStream(ctx, myTableName, changeStreamRetention); err != nil {
+	if err := adminClient.UpdateTableWithChangeStream(ctx, tableConf.TableID, changeStreamRetention); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
 
-	table, err = adminClient.TableInfo(ctx, myTableName)
+	table, err = adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.ChangeStreamRetention != changeStreamRetention {
-		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 
 	// Disable change stream
-	if err := adminClient.UpdateTableDisableChangeStream(ctx, myTableName); err != nil {
+	if err := adminClient.UpdateTableDisableChangeStream(ctx, tableConf.TableID); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
 
-	table, err = adminClient.TableInfo(ctx, myTableName)
+	table, err = adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.ChangeStreamRetention != nil {
-		t.Errorf("Expect table change stream to be disabled for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect table change stream to be disabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 
 	if err = adminClient.DeleteTable(ctx, tableConf.TableID); err != nil {
@@ -1739,6 +1911,7 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 	}
 	automatedBackupPolicy := TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
 
+	myTableName := myTableNameSpace.New()
 	tableConf := TableConf{
 		TableID: myTableName,
 		Families: map[string]GCPolicy{
@@ -1751,22 +1924,22 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
 		t.Fatalf("Create table from config: %v", err)
 	}
-	defer deleteTable(ctx, t, adminClient, myTableName)
+	defer deleteTable(ctx, t, adminClient, tableConf.TableID)
 
-	table, err := adminClient.TableInfo(ctx, myTableName)
+	table, err := adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.AutomatedBackupConfig == nil {
-		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 	tableAbp := table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
 	if !equalOptionalDuration(tableAbp.Frequency, automatedBackupPolicy.Frequency) {
-		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", tableConf.TableID, table)
 	}
 	if !equalOptionalDuration(tableAbp.RetentionPeriod, automatedBackupPolicy.RetentionPeriod) {
-		t.Errorf("Expect automated backup policy retention period to be set for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect automated backup policy retention period to be set for table: %v has info: %v", tableConf.TableID, table)
 	}
 
 	// Test update automated backup policy
@@ -1795,39 +1968,39 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 			bkpPolicy: TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency},
 		},
 	} {
-		if gotErr := adminClient.UpdateTableWithAutomatedBackupPolicy(ctx, myTableName, testcase.bkpPolicy); err != nil {
+		if gotErr := adminClient.UpdateTableWithAutomatedBackupPolicy(ctx, tableConf.TableID, testcase.bkpPolicy); err != nil {
 			t.Fatalf("%v: Update table from config: %v", testcase.desc, gotErr)
 		}
 
-		gotTable, gotErr := adminClient.TableInfo(ctx, myTableName)
+		gotTable, gotErr := adminClient.TableInfo(ctx, tableConf.TableID)
 		if gotErr != nil {
 			t.Fatalf("%v: Getting table info: %v", testcase.desc, gotErr)
 		}
 		if gotTable.AutomatedBackupConfig == nil {
-			t.Errorf("%v: Expect Automated Backup Policy to be enabled for table: %v has info: %v", testcase.desc, myTableName, gotTable)
+			t.Errorf("%v: Expect Automated Backup Policy to be enabled for table: %v has info: %v", testcase.desc, tableConf.TableID, gotTable)
 		}
 
 		gotTableAbp := gotTable.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
 		if testcase.bkpPolicy.Frequency != nil && !equalOptionalDuration(gotTableAbp.Frequency, testcase.bkpPolicy.Frequency) {
-			t.Errorf("%v: Expect automated backup policy frequency to be set for table: %v has info: %v", testcase.desc, myTableName, table)
+			t.Errorf("%v: Expect automated backup policy frequency to be set for table: %v has info: %v", testcase.desc, tableConf.TableID, table)
 		}
 		if testcase.bkpPolicy.RetentionPeriod != nil && !equalOptionalDuration(gotTableAbp.RetentionPeriod, testcase.bkpPolicy.RetentionPeriod) {
-			t.Errorf("%v: Expect automated backup policy retention period to be set for table: %v has info: %v", testcase.desc, myTableName, table)
+			t.Errorf("%v: Expect automated backup policy retention period to be set for table: %v has info: %v", testcase.desc, tableConf.TableID, table)
 		}
 	}
 
 	// Test disable automated backups
-	if err := adminClient.UpdateTableDisableAutomatedBackupPolicy(ctx, myTableName); err != nil {
+	if err := adminClient.UpdateTableDisableAutomatedBackupPolicy(ctx, tableConf.TableID); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
 
-	table, err = adminClient.TableInfo(ctx, myTableName)
+	table, err = adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.AutomatedBackupConfig != nil {
-		t.Errorf("Expect table automated backups to be disabled for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect table automated backups to be disabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 }
 
@@ -1888,15 +2061,15 @@ func TestIntegration_Admin(t *testing.T) {
 		return true
 	}
 
+	myTableName := myTableNameSpace.New()
 	defer deleteTable(ctx, t, adminClient, myTableName)
-
-	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
+	myOtherTableName := myOtherTableNameSpace.New()
 	defer deleteTable(ctx, t, adminClient, myOtherTableName)
-
-	if err := adminClient.CreateTable(ctx, myOtherTableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, myOtherTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -2049,8 +2222,9 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 	defer adminClient.Close()
 
+	myTableName := myTableNameSpace.New()
 	defer deleteTable(ctx, t, adminClient, myTableName)
-	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -2092,7 +2266,7 @@ func TestIntegration_BackupIAM(t *testing.T) {
 	cluster := testEnv.Config().Cluster
 
 	defer deleteTable(ctx, t, adminClient, table)
-	if err := adminClient.CreateTable(ctx, table); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -2160,7 +2334,7 @@ func TestIntegration_AuthorizedViewIAM(t *testing.T) {
 	table := testEnv.Config().Table
 
 	defer deleteTable(ctx, t, adminClient, table)
-	if err := adminClient.CreateTable(ctx, table); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -2388,7 +2562,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	// Delete the table at the end of the test. Schedule ahead of time
 	// in case the client fails
 	defer deleteTable(ctx, t, adminClient, table)
-	if err := adminClient.CreateTable(ctx, table); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -2983,9 +3157,9 @@ func TestIntegration_Granularity(t *testing.T) {
 		return true
 	}
 
+	myTableName := myTableNameSpace.New()
 	defer deleteTable(ctx, t, adminClient, myTableName)
-
-	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -3247,21 +3421,29 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 	}
 }
 
-func createInstance(ctx context.Context, testEnv IntegrationEnv, iAdminClient *InstanceAdminClient) (string, string, error) {
-	diffInstance := generateNewInstanceName()
-	diffCluster := clusterUIDSpace.New()
-	conf := &InstanceConf{
-		InstanceId:   diffInstance,
-		ClusterId:    diffCluster,
-		DisplayName:  "different test sourceInstance",
-		Zone:         instanceToCreateZone2,
-		InstanceType: DEVELOPMENT,
-		Labels:       map[string]string{"test-label-key-diff": "test-label-value-diff"},
-	}
-	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		return "", "", fmt.Errorf("CreateInstance: %v", err)
-	}
-	return diffInstance, diffCluster, nil
+func createInstance(ctx context.Context, t *testing.T, iAdminClient *InstanceAdminClient) (string, string, error) {
+	// Last seen error
+	var err error
+
+	var diffInstance, diffCluster string
+	testutil.Retry(t, 3, 30*time.Second, func(r *testutil.R) {
+		diffInstance = generateNewInstanceName()
+		diffCluster = clusterUIDSpace.New()
+		conf := &InstanceConf{
+			InstanceId:   diffInstance,
+			ClusterId:    diffCluster,
+			DisplayName:  "different test sourceInstance",
+			Zone:         instanceToCreateZone2,
+			InstanceType: DEVELOPMENT,
+			Labels:       map[string]string{"test-label-key-diff": "test-label-value-diff"},
+		}
+		if createErr := iAdminClient.CreateInstance(ctx, conf); err != nil {
+			err = fmt.Errorf("CreateInstance: %v", createErr)
+			defer iAdminClient.DeleteInstance(ctx, diffInstance)
+			r.Errorf(createErr.Error())
+		}
+	})
+	return diffInstance, diffCluster, err
 }
 
 func TestIntegration_AdminCopyBackup(t *testing.T) {
@@ -3352,7 +3534,7 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 	// Add more testcases if instanceToCreate is non-empty string
 	if instanceToCreate != "" {
 		// Create a 2nd instance in 1st destination project
-		destProj1Inst2, destProj1Inst2Cl1, err := createInstance(ctx, testEnv, destIAdminClient1)
+		destProj1Inst2, destProj1Inst2Cl1, err := createInstance(ctx, t, destIAdminClient1)
 		if err != nil {
 			t.Fatalf("CreateInstance: %v", err)
 		}
@@ -3384,7 +3566,7 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 		defer destIAdminClient2.Close()
 
 		// Create instance in 2nd project
-		destProj2Inst1, destProj2Inst1Cl1, err := createInstance(ctx, testEnv, destIAdminClient2)
+		destProj2Inst1, destProj2Inst1Cl1, err := createInstance(ctx, t, destIAdminClient2)
 		if err != nil {
 			t.Fatalf("CreateInstance: %v", err)
 		}
@@ -3482,7 +3664,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	defer iAdminClient.Close()
 
 	// Create different instance to restore table.
-	diffInstance, diffCluster, err := createInstance(ctx, testEnv, iAdminClient)
+	diffInstance, diffCluster, err := createInstance(ctx, t, iAdminClient)
 	if err != nil {
 		t.Fatalf("CreateInstance: %v", err)
 	}
@@ -4092,7 +4274,7 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 		tableName = testEnv.Config().Table
 	}
 
-	if err := adminClient.CreateTable(ctx, tableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, tableName); err != nil {
 		cancel()
 		t.Logf("Error creating table: %v", err)
 		return nil, nil, nil, nil, "", nil, err
@@ -4107,6 +4289,18 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 		return nil, nil, nil, nil, "", nil, err
 	}
 
+	err = retryOnUnavailable(ctx, func() error {
+		return adminClient.CreateColumnFamilyWithConfig(ctx, tableName, "sum", Family{ValueType: AggregateType{
+			Input:      Int64Type{},
+			Aggregator: SumAggregator{},
+		}})
+	})
+	if err != nil {
+		cancel()
+		t.Logf("Error creating aggregate column family: %v", err)
+		return nil, nil, nil, nil, "", nil, err
+	}
+
 	return testEnv, client, adminClient, client.Open(tableName), tableName, func() {
 		if err := adminClient.DeleteTable(ctx, tableName); err != nil {
 			t.Errorf("DeleteTable got error %v", err)
@@ -4115,6 +4309,36 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 		client.Close()
 		adminClient.Close()
 	}, nil
+}
+
+func createTableWithRetry(ctx context.Context, t *testing.T, adminClient *AdminClient, tableName string) error {
+	// Error seen on last create attempt
+	var err error
+
+	testutil.Retry(t, maxCreateAttempts, retryCreateBackoff, func(r *testutil.R) {
+		createErr := adminClient.CreateTable(ctx, tableName)
+		err = createErr
+
+		if createErr != nil {
+			r.Errorf(createErr.Error())
+		}
+	})
+	return err
+}
+
+func createColumnFamilyWithRetry(ctx context.Context, t *testing.T, adminClient *AdminClient, table, family string) error {
+	// Error seen on last create attempt
+	var err error
+
+	testutil.Retry(t, maxCreateAttempts, retryCreateBackoff, func(r *testutil.R) {
+		createErr := adminClient.CreateColumnFamily(ctx, table, family)
+		err = createErr
+
+		if createErr != nil {
+			r.Errorf(createErr.Error())
+		}
+	})
+	return err
 }
 
 func formatReadItem(ri ReadItem) string {

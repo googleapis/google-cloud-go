@@ -69,6 +69,7 @@ func defaultDocumentGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://documentai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -171,6 +172,11 @@ func (c *DocumentClient) Connection() *grpc.ClientConn {
 }
 
 // UpdateDataset updates metadata associated with a dataset.
+// Note that this method requires the
+// documentai.googleapis.com/datasets.update permission on the project,
+// which is highly privileged. A user or service account with this permission
+// can create new processors that can interact with any gcs bucket in your
+// project.
 func (c *DocumentClient) UpdateDataset(ctx context.Context, req *documentaipb.UpdateDatasetRequest, opts ...gax.CallOption) (*UpdateDatasetOperation, error) {
 	return c.internalClient.UpdateDataset(ctx, req, opts...)
 }
@@ -403,6 +409,7 @@ func defaultDocumentRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://documentai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -734,6 +741,11 @@ func (c *documentGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 }
 
 // UpdateDataset updates metadata associated with a dataset.
+// Note that this method requires the
+// documentai.googleapis.com/datasets.update permission on the project,
+// which is highly privileged. A user or service account with this permission
+// can create new processors that can interact with any gcs bucket in your
+// project.
 func (c *documentRESTClient) UpdateDataset(ctx context.Context, req *documentaipb.UpdateDatasetRequest, opts ...gax.CallOption) (*UpdateDatasetOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDataset()
@@ -751,11 +763,11 @@ func (c *documentRESTClient) UpdateDataset(ctx context.Context, req *documentaip
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -912,11 +924,11 @@ func (c *documentRESTClient) GetDocument(ctx context.Context, req *documentaipb.
 		params.Add("pageRange.start", fmt.Sprintf("%v", req.GetPageRange().GetStart()))
 	}
 	if req.GetReadMask() != nil {
-		readMask, err := protojson.Marshal(req.GetReadMask())
+		field, err := protojson.Marshal(req.GetReadMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask[1:len(readMask)-1]))
+		params.Add("readMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1208,11 +1220,11 @@ func (c *documentRESTClient) UpdateDatasetSchema(ctx context.Context, req *docum
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

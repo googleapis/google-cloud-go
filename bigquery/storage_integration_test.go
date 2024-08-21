@@ -257,7 +257,7 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		}
 		total++ // as we read the first value separately
 
-		session := it.arrowIterator.(*storageArrowIterator).session
+		session := it.arrowIterator.(*storageArrowIterator).rs
 		bqSession := session.bqSession
 		if len(bqSession.Streams) == 0 {
 			t.Fatalf("%s: expected to use at least one stream but found %d", tc.name, len(bqSession.Streams))
@@ -325,7 +325,7 @@ func TestIntegration_StorageReadQueryStruct(t *testing.T) {
 		total++
 	}
 
-	bqSession := it.arrowIterator.(*storageArrowIterator).session.bqSession
+	bqSession := it.arrowIterator.(*storageArrowIterator).rs.bqSession
 	if len(bqSession.Streams) == 0 {
 		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))
 	}
@@ -374,7 +374,7 @@ func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 	}
 	total++ // as we read the first value separately
 
-	bqSession := it.arrowIterator.(*storageArrowIterator).session.bqSession
+	bqSession := it.arrowIterator.(*storageArrowIterator).rs.bqSession
 	if len(bqSession.Streams) == 0 {
 		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))
 	}

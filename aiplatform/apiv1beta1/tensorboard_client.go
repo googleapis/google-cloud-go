@@ -1670,6 +1670,11 @@ func (c *tensorboardRESTClient) CreateTensorboard(ctx context.Context, req *aipl
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/tensorboards", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -1728,6 +1733,11 @@ func (c *tensorboardRESTClient) GetTensorboard(ctx context.Context, req *aiplatf
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1792,12 +1802,13 @@ func (c *tensorboardRESTClient) UpdateTensorboard(ctx context.Context, req *aipl
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTensorboard().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1875,6 +1886,7 @@ func (c *tensorboardRESTClient) ListTensorboards(ctx context.Context, req *aipla
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/tensorboards", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1888,11 +1900,11 @@ func (c *tensorboardRESTClient) ListTensorboards(ctx context.Context, req *aipla
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1962,6 +1974,11 @@ func (c *tensorboardRESTClient) DeleteTensorboard(ctx context.Context, req *aipl
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2021,6 +2038,11 @@ func (c *tensorboardRESTClient) ReadTensorboardUsage(ctx context.Context, req *a
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:readUsage", req.GetTensorboard())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard()))}
 
@@ -2075,6 +2097,11 @@ func (c *tensorboardRESTClient) ReadTensorboardSize(ctx context.Context, req *ai
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:readSize", req.GetTensorboard())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard()))}
@@ -2139,6 +2166,7 @@ func (c *tensorboardRESTClient) CreateTensorboardExperiment(ctx context.Context,
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/experiments", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("tensorboardExperimentId", fmt.Sprintf("%v", req.GetTensorboardExperimentId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -2197,6 +2225,11 @@ func (c *tensorboardRESTClient) GetTensorboardExperiment(ctx context.Context, re
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2261,12 +2294,13 @@ func (c *tensorboardRESTClient) UpdateTensorboardExperiment(ctx context.Context,
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTensorboardExperiment().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2340,6 +2374,7 @@ func (c *tensorboardRESTClient) ListTensorboardExperiments(ctx context.Context, 
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/experiments", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2353,11 +2388,11 @@ func (c *tensorboardRESTClient) ListTensorboardExperiments(ctx context.Context, 
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2427,6 +2462,11 @@ func (c *tensorboardRESTClient) DeleteTensorboardExperiment(ctx context.Context,
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2494,6 +2534,7 @@ func (c *tensorboardRESTClient) CreateTensorboardRun(ctx context.Context, req *a
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/runs", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("tensorboardRunId", fmt.Sprintf("%v", req.GetTensorboardRunId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -2559,6 +2600,11 @@ func (c *tensorboardRESTClient) BatchCreateTensorboardRuns(ctx context.Context, 
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/runs:batchCreate", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -2613,6 +2659,11 @@ func (c *tensorboardRESTClient) GetTensorboardRun(ctx context.Context, req *aipl
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2677,12 +2728,13 @@ func (c *tensorboardRESTClient) UpdateTensorboardRun(ctx context.Context, req *a
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTensorboardRun().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2756,6 +2808,7 @@ func (c *tensorboardRESTClient) ListTensorboardRuns(ctx context.Context, req *ai
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/runs", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2769,11 +2822,11 @@ func (c *tensorboardRESTClient) ListTensorboardRuns(ctx context.Context, req *ai
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2843,6 +2896,11 @@ func (c *tensorboardRESTClient) DeleteTensorboardRun(ctx context.Context, req *a
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2908,6 +2966,11 @@ func (c *tensorboardRESTClient) BatchCreateTensorboardTimeSeries(ctx context.Con
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:batchCreate", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -2971,6 +3034,7 @@ func (c *tensorboardRESTClient) CreateTensorboardTimeSeries(ctx context.Context,
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/timeSeries", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTensorboardTimeSeriesId() != "" {
 		params.Add("tensorboardTimeSeriesId", fmt.Sprintf("%v", req.GetTensorboardTimeSeriesId()))
 	}
@@ -3031,6 +3095,11 @@ func (c *tensorboardRESTClient) GetTensorboardTimeSeries(ctx context.Context, re
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -3095,12 +3164,13 @@ func (c *tensorboardRESTClient) UpdateTensorboardTimeSeries(ctx context.Context,
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTensorboardTimeSeries().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3174,6 +3244,7 @@ func (c *tensorboardRESTClient) ListTensorboardTimeSeries(ctx context.Context, r
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/timeSeries", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3187,11 +3258,11 @@ func (c *tensorboardRESTClient) ListTensorboardTimeSeries(ctx context.Context, r
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -3261,6 +3332,11 @@ func (c *tensorboardRESTClient) DeleteTensorboardTimeSeries(ctx context.Context,
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3325,6 +3401,7 @@ func (c *tensorboardRESTClient) BatchReadTensorboardTimeSeriesData(ctx context.C
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:batchRead", req.GetTensorboard())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if items := req.GetTimeSeries(); len(items) > 0 {
 		for _, item := range items {
 			params.Add("timeSeries", fmt.Sprintf("%v", item))
@@ -3393,6 +3470,7 @@ func (c *tensorboardRESTClient) ReadTensorboardTimeSeriesData(ctx context.Contex
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:read", req.GetTensorboardTimeSeries())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFilter() != "" {
 		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 	}
@@ -3461,6 +3539,7 @@ func (c *tensorboardRESTClient) ReadTensorboardBlobData(ctx context.Context, req
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:readBlobData", req.GetTimeSeries())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if items := req.GetBlobIds(); len(items) > 0 {
 		for _, item := range items {
 			params.Add("blobIds", fmt.Sprintf("%v", item))
@@ -3571,6 +3650,11 @@ func (c *tensorboardRESTClient) WriteTensorboardExperimentData(ctx context.Conte
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:write", req.GetTensorboardExperiment())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard_experiment", url.QueryEscape(req.GetTensorboardExperiment()))}
 
@@ -3632,6 +3716,11 @@ func (c *tensorboardRESTClient) WriteTensorboardRunData(ctx context.Context, req
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:write", req.GetTensorboardRun())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard_run", url.QueryEscape(req.GetTensorboardRun()))}
@@ -3708,6 +3797,11 @@ func (c *tensorboardRESTClient) ExportTensorboardTimeSeriesData(ctx context.Cont
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:exportTensorboardTimeSeries", req.GetTensorboardTimeSeries())
 
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
 		// Build HTTP headers from client and context metadata.
 		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 		headers := gax.BuildHeaders(ctx, hds...)
@@ -3772,6 +3866,11 @@ func (c *tensorboardRESTClient) GetLocation(ctx context.Context, req *locationpb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -3842,6 +3941,7 @@ func (c *tensorboardRESTClient) ListLocations(ctx context.Context, req *location
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3926,6 +4026,11 @@ func (c *tensorboardRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -3990,6 +4095,11 @@ func (c *tensorboardRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
@@ -4058,6 +4168,11 @@ func (c *tensorboardRESTClient) TestIamPermissions(ctx context.Context, req *iam
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -4113,6 +4228,11 @@ func (c *tensorboardRESTClient) CancelOperation(ctx context.Context, req *longru
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -4150,6 +4270,11 @@ func (c *tensorboardRESTClient) DeleteOperation(ctx context.Context, req *longru
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -4186,6 +4311,11 @@ func (c *tensorboardRESTClient) GetOperation(ctx context.Context, req *longrunni
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -4256,6 +4386,7 @@ func (c *tensorboardRESTClient) ListOperations(ctx context.Context, req *longrun
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -4334,12 +4465,13 @@ func (c *tensorboardRESTClient) WaitOperation(ctx context.Context, req *longrunn
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
