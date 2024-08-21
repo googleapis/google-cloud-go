@@ -357,19 +357,19 @@ func (c *cachedTokenProvider) tokenState() tokenState {
 	defer c.mu.Unlock()
 	t := c.cachedToken
 	if t == nil || t.Value == "" {
-		prefixTime(fmt.Sprintf("\tToken is nil at %v. Token: %+v\n", time.Now().Format("2006/01/02-15:04:05"), t))
+		prefixTime(fmt.Sprintf("\tToken is nil. Token: %+v\n", t))
 		return invalid
 	} else if t.Expiry.IsZero() {
-		prefixTime(fmt.Sprintf("\tToken is fresh at %v. Token: %+v\n", time.Now().Format("2006/01/02-15:04:05"), t))
+		prefixTime(fmt.Sprintf("\tToken is fresh. Token: %+v\n", t))
 		return fresh
 	} else if timeNow().After(t.Expiry.Round(0)) {
-		prefixTime(fmt.Sprintf("\tToken is invalid at %v. Token: %+v\n", time.Now().Format("2006/01/02-15:04:05"), t))
+		prefixTime(fmt.Sprintf("\tToken is invalid. Token: %+v\n", t))
 		return invalid
 	} else if timeNow().After(t.Expiry.Round(0).Add(-c.expireEarly)) {
-		prefixTime(fmt.Sprintf("\tToken is stale at %v. Token: %+v\n", time.Now().Format("2006/01/02-15:04:05"), t))
+		prefixTime(fmt.Sprintf("\tToken is stale. Token: %+v\n", t))
 		return stale
 	}
-	prefixTime(fmt.Sprintf("\tToken is fresh at %v. Token: %+v\n", time.Now().Format("2006/01/02-15:04:05"), t))
+	prefixTime(fmt.Sprintf("\tToken is fresh. Token: %+v\n", t))
 	return fresh
 }
 
