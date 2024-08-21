@@ -318,7 +318,7 @@ func prefixTime(msg string) {
 }
 
 func (c *cachedTokenProvider) Token(ctx context.Context) (*Token, error) {
-	prefixTime(fmt.Sprintf("Call to cachedTokenProvider Token\n"))
+	prefixTime(fmt.Sprintf("In cachedTokenProvider Token. c.cachedToken: %+v\n", c.cachedToken))
 	if c.blockingRefresh {
 		createdToken, err := c.tokenBlocking(ctx)
 		return createdToken, err
@@ -387,7 +387,7 @@ func (c *cachedTokenProvider) tokenAsync(ctx context.Context) {
 		c.mu.Lock()
 		c.isRefreshRunning = true
 		c.mu.Unlock()
-		prefixTime(fmt.Sprintf("\tCalling c.tp.Token at %v\n", time.Now().Format("2006/01/02-15:04:05")))
+		prefixTime(fmt.Sprintf("\tCalling c.tp.Token\n"))
 		t, err := c.tp.Token(ctx)
 		c.mu.Lock()
 		defer c.mu.Unlock()
@@ -416,7 +416,7 @@ func (c *cachedTokenProvider) tokenBlocking(ctx context.Context) (*Token, error)
 		prefixTime(fmt.Sprintf("\tcached token is valid.  Returning the cached token\n"))
 		return c.cachedToken, nil
 	}
-	prefixTime(fmt.Sprintf("\tCalling c.tp.Token token at %v\n", time.Now().Format("2006/01/02-15:04:05")))
+	prefixTime(fmt.Sprintf("\tCalling c.tp.Token(ctx)\n"))
 	t, err := c.tp.Token(ctx)
 	if err != nil {
 		return nil, err
