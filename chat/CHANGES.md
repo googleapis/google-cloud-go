@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.3.1...chat/v0.4.0) (2024-08-20)
+
+
+### Features
+
+* **chat:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.3.0...chat/v0.3.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **chat:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.2.0...chat/v0.3.0) (2024-07-24)
 
 

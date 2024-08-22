@@ -16,12 +16,38 @@ limitations under the License.
 
 package bigtable
 
-import btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+import (
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
+)
 
 // Type wraps the protobuf representation of a type. See the protobuf definition
 // for more details on types.
 type Type interface {
 	proto() *btapb.Type
+}
+
+var marshalOptions = protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+var unmarshalOptions = protojson.UnmarshalOptions{AllowPartial: true}
+
+// MarshalJSON returns the string representation of the Type protobuf.
+func MarshalJSON(t Type) ([]byte, error) {
+	return marshalOptions.Marshal(t.proto())
+}
+
+// UnmarshalJSON returns a Type object from json bytes.
+func UnmarshalJSON(data []byte) (Type, error) {
+	result := &btapb.Type{}
+	if err := unmarshalOptions.Unmarshal(data, result); err != nil {
+		return nil, err
+	}
+	return ProtoToType(result), nil
+}
+
+// Equal compares Type objects.
+func Equal(a, b Type) bool {
+	return proto.Equal(a.proto(), b.proto())
 }
 
 type unknown[T interface{}] struct {
@@ -98,18 +124,14 @@ type Int64Encoding interface {
 }
 
 // BigEndianBytesEncoding represents an Int64 encoding where the value is encoded
-// as an 8-byte big-endian value.  The byte representation may also have further encoding
-// via Bytes.
+// as an 8-byte big-endian value.
 type BigEndianBytesEncoding struct {
-	Bytes BytesType
 }
 
 func (beb BigEndianBytesEncoding) proto() *btapb.Type_Int64_Encoding {
 	return &btapb.Type_Int64_Encoding{
 		Encoding: &btapb.Type_Int64_Encoding_BigEndianBytes_{
-			BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{
-				BytesType: beb.Bytes.proto().GetBytesType(),
-			},
+			BigEndianBytes: &btapb.Type_Int64_Encoding_BigEndianBytes{},
 		},
 	}
 }
@@ -209,6 +231,8 @@ func ProtoToType(pb *btapb.Type) Type {
 		return int64ProtoToType(t.Int64Type)
 	case *btapb.Type_BytesType:
 		return bytesProtoToType(t.BytesType)
+	case *btapb.Type_StringType:
+		return stringProtoToType(t.StringType)
 	case *btapb.Type_AggregateType:
 		return aggregateProtoToType(t.AggregateType)
 	default:
@@ -233,14 +257,31 @@ func bytesProtoToType(b *btapb.Type_Bytes) BytesType {
 	return BytesType{Encoding: bytesEncodingProtoToType(b.Encoding)}
 }
 
+func stringEncodingProtoToType(se *btapb.Type_String_Encoding) StringEncoding {
+	if se == nil {
+		return unknown[btapb.Type_String_Encoding]{wrapped: se}
+	}
+
+	switch se.Encoding.(type) {
+	case *btapb.Type_String_Encoding_Utf8Raw_:
+		return StringUtf8Encoding{}
+	default:
+		return unknown[btapb.Type_String_Encoding]{wrapped: se}
+	}
+}
+
+func stringProtoToType(s *btapb.Type_String) Type {
+	return StringType{Encoding: stringEncodingProtoToType(s.Encoding)}
+}
+
 func int64EncodingProtoToEncoding(ie *btapb.Type_Int64_Encoding) Int64Encoding {
 	if ie == nil {
 		return unknown[btapb.Type_Int64_Encoding]{wrapped: ie}
 	}
 
-	switch e := ie.Encoding.(type) {
+	switch ie.Encoding.(type) {
 	case *btapb.Type_Int64_Encoding_BigEndianBytes_:
-		return BigEndianBytesEncoding{Bytes: bytesProtoToType(e.BigEndianBytes.BytesType)}
+		return BigEndianBytesEncoding{}
 	default:
 		return unknown[btapb.Type_Int64_Encoding]{wrapped: ie}
 	}
@@ -250,7 +291,7 @@ func int64ProtoToType(i *btapb.Type_Int64) Type {
 	return Int64Type{Encoding: int64EncodingProtoToEncoding(i.Encoding)}
 }
 
-func aggregateProtoToType(agg *btapb.Type_Aggregate) Type {
+func aggregateProtoToType(agg *btapb.Type_Aggregate) AggregateType {
 	if agg == nil {
 		return AggregateType{Input: nil, Aggregator: unknownAggregator{wrapped: agg}}
 	}

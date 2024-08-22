@@ -525,8 +525,11 @@ func (s *inMemSpannerServer) initDefaults() {
 	s.transactionCounters = make(map[string]*uint64)
 }
 
-func (s *inMemSpannerServer) generateSessionNameLocked(database string) string {
+func (s *inMemSpannerServer) generateSessionNameLocked(database string, isMultiplexed bool) string {
 	s.sessionCounter++
+	if isMultiplexed {
+		return fmt.Sprintf("%s/sessions/multiplexed-%d", database, s.sessionCounter)
+	}
 	return fmt.Sprintf("%s/sessions/%d", database, s.sessionCounter)
 }
 
@@ -705,13 +708,21 @@ func (s *inMemSpannerServer) CreateSession(ctx context.Context, req *spannerpb.C
 	if s.maxSessionsReturnedByServerInTotal > int32(0) && int32(len(s.sessions)) == s.maxSessionsReturnedByServerInTotal {
 		return nil, gstatus.Error(codes.ResourceExhausted, "No more sessions available")
 	}
-	sessionName := s.generateSessionNameLocked(req.Database)
 	ts := getCurrentTimestamp()
-	var creatorRole string
+	var (
+		creatorRole   string
+		isMultiplexed bool
+	)
 	if req.Session != nil {
 		creatorRole = req.Session.CreatorRole
+		isMultiplexed = req.Session.Multiplexed
 	}
-	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole}
+	sessionName := s.generateSessionNameLocked(req.Database, isMultiplexed)
+	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
+	}
+	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole, Multiplexed: isMultiplexed}
 	s.totalSessionsCreated++
 	s.sessions[sessionName] = session
 	return session, nil
@@ -742,7 +753,7 @@ func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spann
 	}
 	sessions := make([]*spannerpb.Session, sessionsToCreate)
 	for i := int32(0); i < sessionsToCreate; i++ {
-		sessionName := s.generateSessionNameLocked(req.Database)
+		sessionName := s.generateSessionNameLocked(req.Database, false)
 		ts := getCurrentTimestamp()
 		var creatorRole string
 		if req.SessionTemplate != nil {

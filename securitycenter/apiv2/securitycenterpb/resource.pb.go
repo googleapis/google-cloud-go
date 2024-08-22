@@ -203,13 +203,13 @@ type Resource struct {
 	ResourcePath *ResourcePath `protobuf:"bytes,10,opt,name=resource_path,json=resourcePath,proto3" json:"resource_path,omitempty"`
 	// A string representation of the resource path.
 	// For Google Cloud, it has the format of
-	// organizations/{organization_id}/folders/{folder_id}/folders/{folder_id}/projects/{project_id}
+	// `organizations/{organization_id}/folders/{folder_id}/folders/{folder_id}/projects/{project_id}`
 	// where there can be any number of folders.
 	// For AWS, it has the format of
-	// org/{organization_id}/ou/{organizational_unit_id}/ou/{organizational_unit_id}/account/{account_id}
+	// `org/{organization_id}/ou/{organizational_unit_id}/ou/{organizational_unit_id}/account/{account_id}`
 	// where there can be any number of organizational units.
 	// For Azure, it has the format of
-	// mg/{management_group_id}/mg/{management_group_id}/subscription/{subscription_id}/rg/{resource_group_name}
+	// `mg/{management_group_id}/mg/{management_group_id}/subscription/{subscription_id}/rg/{resource_group_name}`
 	// where there can be any number of management groups.
 	ResourcePathString string `protobuf:"bytes,11,opt,name=resource_path_string,json=resourcePathString,proto3" json:"resource_path_string,omitempty"`
 }
@@ -823,7 +823,7 @@ type AzureMetadata_AzureManagementGroup struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The UUID of the Azure management group, for example,
-	// "20000000-0001-0000-0000-000000000000".
+	// `20000000-0001-0000-0000-000000000000`.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// The display name of the Azure management group.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -882,7 +882,7 @@ type AzureMetadata_AzureSubscription struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The UUID of the Azure subscription, for example,
-	// "291bba3f-e0a5-47bc-a099-3bdcb2a50a05".
+	// `291bba3f-e0a5-47bc-a099-3bdcb2a50a05`.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// The display name of the Azure subscription.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`

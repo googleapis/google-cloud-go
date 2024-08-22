@@ -23,7 +23,7 @@ import (
 	"strconv"
 	"strings"
 
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"google.golang.org/protobuf/proto"
 )
 

@@ -2726,7 +2726,7 @@ func TestIntegration_Encryption(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 
-		obj := client.Bucket(bucket).Object("customer-encryption")
+		obj := client.Bucket(bucket).Object("customer-encryption").Retryer(WithPolicy(RetryAlways))
 		key := []byte("my-secret-AES-256-encryption-key")
 		keyHash := sha256.Sum256(key)
 		keyHashB64 := base64.StdEncoding.EncodeToString(keyHash[:])
@@ -2806,8 +2806,8 @@ func TestIntegration_Encryption(t *testing.T) {
 
 		// We create 2 objects here and we can interleave operations to get around
 		// the rate limit for object mutation operations (create, update, and delete).
-		obj2 := client.Bucket(bucket).Object("customer-encryption-2")
-		obj4 := client.Bucket(bucket).Object("customer-encryption-4")
+		obj2 := client.Bucket(bucket).Object("customer-encryption-2").Retryer(WithPolicy(RetryAlways))
+		obj4 := client.Bucket(bucket).Object("customer-encryption-4").Retryer(WithPolicy(RetryAlways))
 
 		// Copying an object without the key should fail.
 		if _, err := obj4.CopierFrom(obj).Run(ctx); err == nil {
@@ -2840,7 +2840,7 @@ func TestIntegration_Encryption(t *testing.T) {
 		if _, err := obj2.Key(key).CopierFrom(obj2.Key(key2)).Run(ctx); err != nil {
 			t.Fatal(err)
 		}
-		obj3 := client.Bucket(bucket).Object("customer-encryption-3")
+		obj3 := client.Bucket(bucket).Object("customer-encryption-3").Retryer(WithPolicy(RetryAlways))
 		// Composing without keys should fail.
 		if _, err := obj3.ComposerFrom(obj, obj2).Run(ctx); err == nil {
 			t.Fatal("want error, got nil")
@@ -2861,7 +2861,7 @@ func TestIntegration_Encryption(t *testing.T) {
 		// encrypted destination object.
 		_, err := obj4.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("Copier.Run: %v", err)
 		}
 		if _, err := obj3.Key(key).ComposerFrom(obj4).Run(ctx); err == nil {
 			t.Fatal("got nil, want error")
@@ -5369,7 +5369,7 @@ func TestIntegration_HMACKey(t *testing.T) {
 		}
 
 		_, err = hkh.Get(ctx)
-		if err != nil && !strings.Contains(err.Error(), "404") {
+		if err != nil && !errorIsStatusCode(err, http.StatusNotFound, codes.NotFound) {
 			// If the deleted key has already been garbage collected, a 404 is expected.
 			// Other errors should cause a failure and are not expected.
 			t.Fatalf("Unexpected error: %v", err)
