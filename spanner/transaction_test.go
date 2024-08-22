@@ -178,9 +178,8 @@ func TestApply_Single(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, s := range requests {
-		switch s.(type) {
+		switch req := s.(type) {
 		case *sppb.CommitRequest:
-			req, _ := s.(*sppb.CommitRequest)
 			// Validate the session is multiplexed
 			if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 				t.Errorf("TestApply_Single expected multiplexed session to be used, got: %v", req.Session)

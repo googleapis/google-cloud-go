@@ -501,9 +501,8 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
-					switch s.(type) {
+					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						req, _ := s.(*sppb.ReadRequest)
 						// Validate the session is multiplexed
 						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
@@ -542,15 +541,13 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
-					switch s.(type) {
+					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						req, _ := s.(*sppb.ReadRequest)
 						// Validate the session is multiplexed
 						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
 						}
 					case *sppb.ExecuteSqlRequest:
-						req, _ := s.(*sppb.ExecuteSqlRequest)
 						// Validate the session is multiplexed
 						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
@@ -584,9 +581,8 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
-					switch s.(type) {
+					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						req, _ := s.(*sppb.ReadRequest)
 						// Validate the session is not multiplexed
 						if !testEqual(false, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
@@ -621,9 +617,8 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
-					switch s.(type) {
+					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						req, _ := s.(*sppb.ReadRequest)
 						// Verify that a multiplexed session is used when that is enabled.
 						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
