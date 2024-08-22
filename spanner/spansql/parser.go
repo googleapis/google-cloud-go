@@ -942,10 +942,7 @@ func (p *parser) sniffTokenType(want tokenType) bool {
 	orig := *p
 	defer func() { *p = orig }()
 
-	if p.next().typ == want {
-		return true
-	}
-	return false
+	return p.next().typ == want
 }
 
 // eat reports whether the next N tokens are as specified,
