@@ -52,10 +52,10 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/google/btree"
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -1147,6 +1147,35 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 			f := r.getOrCreateFamily(fam, fs[fam].order)
 			f.cells[col] = appendOrReplaceCell(f.cellsByColumn(col), newCell, cf)
 
+		case *btpb.Mutation_MergeToCell_:
+			add := mut.MergeToCell
+			var cf, ok = fs[add.FamilyName]
+			if !ok {
+				return fmt.Errorf("unknown family %q", add.FamilyName)
+			}
+			if cf.valueType == nil || cf.valueType.GetAggregateType() == nil {
+				return fmt.Errorf("illegal attempt to use MergeToCell on non-aggregate cell")
+			}
+			ts := add.Timestamp.GetRawTimestampMicros()
+			if ts < 0 {
+				return fmt.Errorf("MergeToCell must set timestamp >= 0")
+			}
+
+			fam := add.FamilyName
+			col := string(add.GetColumnQualifier().GetRawValue())
+
+			var value []byte
+			switch v := add.Input.Kind.(type) {
+			case *btpb.Value_RawValue:
+				value = v.RawValue
+			default:
+				return fmt.Errorf("only []bytes values are supported")
+			}
+
+			newCell := cell{ts: ts, value: value}
+			f := r.getOrCreateFamily(fam, fs[fam].order)
+			f.cells[col] = appendOrReplaceCell(f.cellsByColumn(col), newCell, cf)
+
 		case *btpb.Mutation_DeleteFromColumn_:
 			del := mut.DeleteFromColumn
 			if _, ok := fs[del.FamilyName]; !ok {
@@ -1371,6 +1400,13 @@ func (s *server) SampleRowKeys(req *btpb.SampleRowKeysRequest, stream btpb.Bigta
 		i++
 		return true
 	})
+	if err == nil {
+		// The last response should be an empty string, indicating the end of the table
+		stream.Send(&btpb.SampleRowKeysResponse{
+			RowKey:      []byte{},
+			OffsetBytes: offset,
+		})
+	}
 	return err
 }
 

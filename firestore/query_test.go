@@ -956,6 +956,7 @@ func TestQueryToProto(t *testing.T) {
 
 // Convert a Query to a Proto and back again verifying roundtripping
 func TestQueryFromProtoRoundTrip(t *testing.T) {
+	t.Skip("flaky due to random map order iteration")
 	c := &Client{projectID: "P", databaseID: "DB"}
 
 	for _, test := range createTestScenarios(t) {

@@ -517,8 +517,6 @@ type GcpConfig struct {
 	// must be located in the same region as the cluster and cannot be changed.
 	// Structured like:
 	// projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}.
-	// Note that the project component only accepts a project ID, and not a
-	// project number.
 	KmsKey string `protobuf:"bytes,2,opt,name=kms_key,json=kmsKey,proto3" json:"kms_key,omitempty"`
 }
 
@@ -708,7 +706,7 @@ type ConsumerPartitionMetadata struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The offset for this partition, or 0 if no offset has been
+	// Required. The current offset for this partition, or 0 if no offset has been
 	// committed.
 	Offset int64 `protobuf:"varint,1,opt,name=offset,proto3" json:"offset,omitempty"`
 	// Optional. The associated metadata for this partition, or empty if it does

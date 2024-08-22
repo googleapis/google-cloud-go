@@ -412,7 +412,7 @@ func createFromProtoValue(vproto *pb.Value, c *Client) (interface{}, error) {
 		}
 
 		// Special handling for vector
-		return vectorFromProtoValue(vproto)
+		return vector64FromProtoValue(vproto)
 	default:
 		return nil, fmt.Errorf("firestore: unknown value type %T", v)
 	}

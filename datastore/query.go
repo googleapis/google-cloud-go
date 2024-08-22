@@ -25,10 +25,10 @@ import (
 	"strings"
 	"time"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/protostruct"
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/iterator"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -825,7 +825,7 @@ func (c *Client) GetAllWithOptions(ctx context.Context, q *Query, dst interface{
 		}
 		res.Keys = append(res.Keys, k)
 	}
-	return res, errFieldMismatch
+	return res, c.processFieldMismatchError(errFieldMismatch)
 }
 
 // Run runs the given query in the given context
@@ -1061,7 +1061,7 @@ func (t *Iterator) Next(dst interface{}) (k *Key, err error) {
 	if dst != nil && !t.keysOnly {
 		err = loadEntityProto(dst, e)
 	}
-	return k, err
+	return k, t.client.processFieldMismatchError(err)
 }
 
 func (t *Iterator) next() (*Key, *pb.Entity, error) {

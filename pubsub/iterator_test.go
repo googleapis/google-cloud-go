@@ -549,7 +549,7 @@ func TestIterator_StreamingPullExactlyOnce(t *testing.T) {
 func TestAddToDistribution(t *testing.T) {
 	c, _ := newFake(t)
 
-	iter := newMessageIterator(c.subc, "some-sub", &pullOptions{})
+	iter := newMessageIterator(c.subc, "projects/p/subscriptions/some-sub", &pullOptions{})
 
 	// Start with a datapoint that's too small that should be bounded to 10s.
 	receiveTime := time.Now().Add(time.Duration(-1) * time.Second)
