@@ -14,7 +14,7 @@
 
 // Package tokenizer provides local token counting for Gemini models. This
 // tokenizer downloads its model from the web, but otherwise doesn't require
-// an API call for every CountTokens invocation.
+// an API call for every [CountTokens] invocation.
 package tokenizer
 
 import (
@@ -43,7 +43,7 @@ var supportedModels = map[string]bool{
 
 // Tokenizer is a local tokenizer for text.
 type Tokenizer struct {
-	encoder *sentencepiece.Encoder
+	processor *sentencepiece.Processor
 }
 
 // CountTokensResponse is the response of [Tokenizer.CountTokens].
@@ -63,12 +63,12 @@ func New(modelName string) (*Tokenizer, error) {
 		return nil, fmt.Errorf("loading model: %w", err)
 	}
 
-	encoder, err := sentencepiece.NewEncoder(bytes.NewReader(data))
+	processor, err := sentencepiece.NewProcessor(bytes.NewReader(data))
 	if err != nil {
-		return nil, fmt.Errorf("creating encoder: %w", err)
+		return nil, fmt.Errorf("creating processor: %w", err)
 	}
 
-	return &Tokenizer{encoder: encoder}, nil
+	return &Tokenizer{processor: processor}, nil
 }
 
 // CountTokens counts the tokens in all the given parts and returns their
@@ -79,7 +79,7 @@ func (tok *Tokenizer) CountTokens(parts ...genai.Part) (*CountTokensResponse, er
 
 	for _, part := range parts {
 		if t, ok := part.(genai.Text); ok {
-			toks := tok.encoder.Encode(string(t))
+			toks := tok.processor.Encode(string(t))
 			sum += len(toks)
 		} else {
 			return nil, fmt.Errorf("Tokenizer.CountTokens only supports Text parts")
