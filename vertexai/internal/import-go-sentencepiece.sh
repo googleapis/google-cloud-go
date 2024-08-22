@@ -29,13 +29,15 @@ TEMP_DIR=$(mktemp -d)
 # Clone the repository with --depth 1 to get only the latest files
 git clone --depth 1 https://github.com/eliben/go-sentencepiece.git "$TEMP_DIR/go-sentencepiece"
 
-# Copy the repository contents to here, excluding the .git directory
 rm -rf sentencepiece
 mkdir -p sentencepiece
 rsync -av \
     --exclude='.git' \
+    --exclude='.github' \
     --exclude='go.mod' \
     --exclude='go.sum' \
+    --exclude='wasm' \
+    --exclude='doc' \
     --exclude='test' \
     --exclude='*_test.go' \
     "$TEMP_DIR/go-sentencepiece/" sentencepiece
