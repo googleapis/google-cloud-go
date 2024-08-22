@@ -41,6 +41,7 @@ const (
 
 // spannerClient is an interface that defines the methods available from Cloud Spanner API.
 type spannerClient interface {
+	CallOptions() *vkit.CallOptions
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
@@ -68,7 +69,6 @@ type grpcSpannerClient struct {
 	raw                  *vkit.Client
 	connPool             gtransport.ConnPool
 	client               spannerpb.SpannerClient
-	CallOptions          **vkit.CallOptions
 	xGoogHeaders         []string
 	metricsTracerFactory *builtinMetricsTracerFactory
 }
@@ -108,6 +108,10 @@ func newGRPCSpannerClient(ctx context.Context, sc *sessionClient, opts ...option
 func (g *grpcSpannerClient) newBuiltinMetricsTracer(ctx context.Context, isStreaming bool) *builtinMetricsTracer {
 	mt := g.metricsTracerFactory.createBuiltinMetricsTracer(ctx, isStreaming)
 	return &mt
+}
+
+func (g *grpcSpannerClient) CallOptions() *vkit.CallOptions {
+	return g.raw.CallOptions
 }
 
 func (g *grpcSpannerClient) setGoogleClientInfo(keyval ...string) {
