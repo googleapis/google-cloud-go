@@ -258,7 +258,7 @@ func (ctpo *CachedTokenProviderOptions) autoRefresh() bool {
 }
 
 func (ctpo *CachedTokenProviderOptions) expireEarly() time.Duration {
-	if ctpo == nil {
+	if ctpo == nil || ctpo.ExpireEarly == 0 {
 		return defaultExpiryDelta
 	}
 	return ctpo.ExpireEarly
