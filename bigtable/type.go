@@ -253,7 +253,7 @@ func bytesEncodingProtoToType(be *btapb.Type_Bytes_Encoding) BytesEncoding {
 	}
 }
 
-func bytesProtoToType(b *btapb.Type_Bytes) Type {
+func bytesProtoToType(b *btapb.Type_Bytes) BytesType {
 	return BytesType{Encoding: bytesEncodingProtoToType(b.Encoding)}
 }
 
@@ -291,7 +291,7 @@ func int64ProtoToType(i *btapb.Type_Int64) Type {
 	return Int64Type{Encoding: int64EncodingProtoToEncoding(i.Encoding)}
 }
 
-func aggregateProtoToType(agg *btapb.Type_Aggregate) Type {
+func aggregateProtoToType(agg *btapb.Type_Aggregate) AggregateType {
 	if agg == nil {
 		return AggregateType{Input: nil, Aggregator: unknownAggregator{wrapped: agg}}
 	}
