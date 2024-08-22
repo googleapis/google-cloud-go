@@ -174,7 +174,7 @@ func TestNewPreparedResource(t *testing.T) {
 	}
 }
 
-func TestNewExporterLogSuppresser(t *testing.T) {
+func TestNewExporterLogSuppressor(t *testing.T) {
 	ctx := context.Background()
 	s := &exporterLogSuppressor{exporter: &failingExporter{}}
 	if err := s.Export(ctx, nil); err == nil {

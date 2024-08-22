@@ -204,7 +204,7 @@ func newGRPCMetricContext(ctx context.Context, config internalMetricsConfig) (*i
 		createHistogramView("grpc.client.attempt.sent_total_compressed_message_size", "A view of grpc.client.attempt.sent_total_compressed_message_size with histogram boundaries more appropriate for Google Cloud Storage RPCs", "By", sizeHistogramBoundaries()),
 	}
 	provider := metric.NewMeterProvider(
-		metric.WithReader(metric.NewPeriodicReader(&exporterLogSuppresser{exporter: exporter}, metric.WithInterval(time.Minute))),
+		metric.WithReader(metric.NewPeriodicReader(&exporterLogSuppressor{exporter: exporter}, metric.WithInterval(time.Minute))),
 		metric.WithResource(preparedResource.resource),
 		metric.WithView(metricViews...),
 	)
