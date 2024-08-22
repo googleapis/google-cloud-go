@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &recaptchaenterprisepb.AnnotateAssessmentRequest{
+//	req := &recaptchaenterprisepb.AddIpOverrideRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#AnnotateAssessmentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#AddIpOverrideRequest.
 //	}
-//	resp, err := c.AnnotateAssessment(ctx, req)
+//	resp, err := c.AddIpOverride(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -1019,6 +1019,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/datastore/apiv1": {
+    "api_shortname": "datastore",
+    "distribution_name": "cloud.google.com/go/datastore/apiv1",
+    "description": "Cloud Datastore API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest/apiv1",
+    "release_level": "stable",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/datastream/apiv1": {
     "api_shortname": "datastream",
     "distribution_name": "cloud.google.com/go/datastream/apiv1",
