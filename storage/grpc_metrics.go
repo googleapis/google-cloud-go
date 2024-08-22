@@ -95,13 +95,12 @@ type internalPreparedResource struct {
 	resource     *resource.Resource
 }
 
-func createPreparedResource(ctx context.Context, project string, resourceOptions []resource.Option) (*internalPreparedResource, error) {
+func newPreparedResource(ctx context.Context, project string, resourceOptions []resource.Option) (*internalPreparedResource, error) {
 	detectedAttrs, err := resource.New(ctx, resourceOptions...)
 	if err != nil {
 		return nil, err
 	}
 	preparedResource := &internalPreparedResource{}
-
 	s := detectedAttrs.Set()
 	p, present := s.Value("cloud.account.id")
 	if present {
@@ -180,7 +179,7 @@ func createHistogramView(name, desc, unit string, boundaries []float64) sdkmetri
 }
 
 func newGRPCMetricContext(ctx context.Context, config internalMetricsConfig) (*internalMetricsContext, error) {
-	preparedResource, err := createPreparedResource(ctx, config.project, []resource.Option{resource.WithDetectors(gcp.NewDetector())})
+	preparedResource, err := newPreparedResource(ctx, config.project, []resource.Option{resource.WithDetectors(gcp.NewDetector())})
 	if err != nil {
 		return nil, err
 	}

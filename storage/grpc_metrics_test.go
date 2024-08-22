@@ -81,14 +81,14 @@ func TestNonDefaultEndpoint(t *testing.T) {
 
 func TestMetricFormatter(t *testing.T) {
 	want := "storage.googleapis.com/client/metric/name"
-	s := metricdata.Metrics{Name: "metric.name", Description: "", Unit: "", Data: nil}
+	s := metricdata.Metrics{Name: "metric.name"}
 	got := metricFormatter(s)
 	if want != got {
 		t.Errorf("got: %v, want %v", got, want)
 	}
 }
 
-func TestCreatePreparedResource(t *testing.T) {
+func TestNewPreparedResource(t *testing.T) {
 	ctx := context.Background()
 	for _, test := range []struct {
 		desc               string
@@ -152,19 +152,19 @@ func TestCreatePreparedResource(t *testing.T) {
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			resourceOptions := []resource.Option{resource.WithAttributes(test.detectedAttributes...)}
-			result, err := createPreparedResource(ctx, "project", resourceOptions)
+			result, err := newPreparedResource(ctx, "project", resourceOptions)
 			if err != nil {
-				t.Errorf("getPreparedResource: %v", err)
+				t.Errorf("newPreparedResource: %v", err)
 			}
 			resultSet := result.resource.Set()
 			for _, want := range test.wantAttributes.ToSlice() {
 				got, exists := resultSet.Value(want.Key)
 				if !exists {
-					t.Errorf("getPreparedResource: %v not set", want.Key)
+					t.Errorf("newPreparedResource: %v not set", want.Key)
 					continue
 				}
 				if got != want.Value {
-					t.Errorf("getPreparedResource: want[%v] = %v, got: %v", want.Key, want.Value, got)
+					t.Errorf("newPreparedResource: want[%v] = %v, got: %v", want.Key, want.Value, got)
 					continue
 				}
 			}
