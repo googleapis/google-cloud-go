@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"container/heap"
 	"context"
+	"errors"
 	"fmt"
 	"math/rand"
 	"reflect"
@@ -279,7 +280,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 		numOpened := uint64(sp.idleList.Len())
 		sp.mu.Unlock()
 		if numOpened < sp.SessionPoolConfig.incStep-1 {
-			return fmt.Errorf("creation not yet finished")
+			return errors.New("creation not yet finished")
 		}
 		return nil
 	})
@@ -1900,7 +1901,7 @@ func TestMaintainer_DeletesSessions(t *testing.T) {
 		sp.mu.Lock()
 		defer sp.mu.Unlock()
 		if sp.numOpened > 0 {
-			return fmt.Errorf("session pool still contains more than 0 sessions")
+			return errors.New("session pool still contains more than 0 sessions")
 		}
 		return nil
 	})
@@ -2023,7 +2024,7 @@ func TestSessionCreationIsDistributedOverChannels(t *testing.T) {
 		numOpened := uint64(sp.idleList.Len())
 		sp.mu.Unlock()
 		if numOpened < spc.MinOpened {
-			return fmt.Errorf("not yet initialized")
+			return errors.New("not yet initialized")
 		}
 		return nil
 	})

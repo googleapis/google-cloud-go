@@ -18,7 +18,7 @@ package spanner
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"math/rand"
 	"reflect"
 	"sync"
@@ -87,7 +87,7 @@ func createBenchmarkServer(incStep uint64) (server *MockedSpannerInMemTestServer
 		if uint64(client.idleSessions.idleList.Len()) == client.idleSessions.MinOpened {
 			return nil
 		}
-		return fmt.Errorf("not yet initialized")
+		return errors.New("not yet initialized")
 	})
 	return
 }

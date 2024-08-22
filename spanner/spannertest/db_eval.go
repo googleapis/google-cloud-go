@@ -20,6 +20,7 @@ package spannertest
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -284,7 +285,7 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		}
 		if rhs == 0 {
 			// TODO: Does real Spanner use a specific error code here?
-			return nil, fmt.Errorf("divide by zero")
+			return nil, errors.New("divide by zero")
 		}
 		return lhs / rhs, nil
 	case spansql.Add, spansql.Sub, spansql.Mul:
@@ -916,7 +917,7 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 			return colInfo{}, err
 		}
 		if ci.Type.Array {
-			return colInfo{}, fmt.Errorf("can't nest array literals")
+			return colInfo{}, errors.New("can't nest array literals")
 		}
 		ci.Type.Array = true
 		return ci, nil
