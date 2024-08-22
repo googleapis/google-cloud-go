@@ -53,7 +53,6 @@ type SynthesizeLongAudioRequest struct {
 	// `projects/*/locations/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The Synthesizer requires either plain text or SSML as input.
-	// While Long Audio is in preview, SSML is temporarily unsupported.
 	Input *SynthesisInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	// Required. The configuration of the synthesized audio.
 	AudioConfig *AudioConfig `protobuf:"bytes,3,opt,name=audio_config,json=audioConfig,proto3" json:"audio_config,omitempty"`

@@ -3274,3 +3274,12 @@ func expectUnmarshalNullableTypes(t *testing.T, err error, v interface{}, isNull
 		t.Fatalf("Incorrect unmarshalling a json string to nullable types: got %q, want %q", v, expect)
 	}
 }
+
+func TestNullJson(t *testing.T) {
+	v, _ := nulljson(false, nil)
+	v[0] = 'X'
+	v, _ = nulljson(false, nil)
+	if string(v) != "null" {
+		t.Fatalf("expected null, got %s", v)
+	}
+}
