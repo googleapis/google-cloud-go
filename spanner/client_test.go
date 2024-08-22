@@ -4725,10 +4725,10 @@ func TestClient_EmulatorWithCredentialsFile(t *testing.T) {
 		"localhost:1234",
 		opts...,
 	)
-	defer client.Close()
 	if err != nil {
 		t.Fatalf("Failed to create a client with credentials file when running against an emulator: %v", err)
 	}
+	defer client.Close()
 }
 
 func TestBatchReadOnlyTransaction_QueryOptions(t *testing.T) {
