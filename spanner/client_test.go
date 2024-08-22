@@ -3149,7 +3149,6 @@ func TestClient_ReadWriteTransactionConcurrentQueries(t *testing.T) {
 				}
 				rowCount++
 			}
-			return
 		}
 		wg.Add(2)
 		go query(&firstTransactionID)
