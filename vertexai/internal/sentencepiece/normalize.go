@@ -24,11 +24,19 @@ import "strings"
 // normalizer that does none of this. These options can be added in the future
 // if needed.
 func normalize(text string) string {
-	return replaceSeparator(text)
+	return replaceSpacesBySeparator(text)
 }
 
-// replaceSeparator replaces spaces by the whitespace separator used by
+const whitespaceSeparator = "▁"
+
+// replaceSpacesBySeparator replaces spaces by the whitespace separator used by
 // the model.
-func replaceSeparator(text string) string {
-	return strings.ReplaceAll(text, " ", "▁")
+func replaceSpacesBySeparator(text string) string {
+	return strings.ReplaceAll(text, " ", whitespaceSeparator)
+}
+
+// replaceSeparatorsBySpace replaces the whitespace separator used by
+// the model back with spaces.
+func replaceSeparatorsBySpace(text string) string {
+	return strings.ReplaceAll(text, whitespaceSeparator, " ")
 }

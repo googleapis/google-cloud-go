@@ -12,6 +12,52 @@
   },
   "snippets": [
     {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_AddIpOverride_sync",
+      "title": "recaptchaenterprise AddIpOverride Sample",
+      "description": "AddIpOverride adds an IP override to a key. The following restrictions hold: \n* The maximum number of IP overrides per key is 100.\n* For any conflict (such as IP already exists or IP part of an existing\nIP range), an error will be returned.",
+      "file": "Client/AddIpOverride/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AddIpOverride",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.AddIpOverride",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.AddIpOverrideRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.AddIpOverrideResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "AddIpOverride",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.AddIpOverride",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_AnnotateAssessment_sync",
       "title": "recaptchaenterprise AnnotateAssessment Sample",
       "description": "AnnotateAssessment annotates a previously created Assessment to provide additional information\non whether the event turned out to be authentic or fraudulent.",

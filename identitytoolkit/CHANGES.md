@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/identitytoolkit/v0.1.4...identitytoolkit/v0.2.0) (2024-08-20)
+
+
+### Features
+
+* **identitytoolkit:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/identitytoolkit/v0.1.3...identitytoolkit/v0.1.4) (2024-08-08)
 
 

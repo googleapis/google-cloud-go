@@ -2,6 +2,13 @@
 
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/workstations/v1.0.5...workstations/v1.1.0) (2024-08-20)
+
+
+### Features
+
+* **workstations:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [1.0.5](https://github.com/googleapis/google-cloud-go/compare/workstations/v1.0.4...workstations/v1.0.5) (2024-08-08)
 
 
