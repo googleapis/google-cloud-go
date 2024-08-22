@@ -26,7 +26,6 @@ import (
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric"
-	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/api/option"
@@ -164,17 +163,17 @@ func determineMonitoringEndpoint(endpoint string) string {
 	return ""
 }
 
-func createHistogramView(name, desc, unit string, boundaries []float64) sdkmetric.View {
-	return sdkmetric.NewView(sdkmetric.Instrument{
+func createHistogramView(name, desc, unit string, boundaries []float64) metric.View {
+	return metric.NewView(metric.Instrument{
 		Name:        name,
 		Description: name,
-		Kind:        sdkmetric.InstrumentKindHistogram,
+		Kind:        metric.InstrumentKindHistogram,
 		Unit:        unit,
-	}, sdkmetric.Stream{
+	}, metric.Stream{
 		Name:        name,
 		Description: desc,
 		Unit:        unit,
-		Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: boundaries},
+		Aggregation: metric.AggregationExplicitBucketHistogram{Boundaries: boundaries},
 	})
 }
 
@@ -199,15 +198,15 @@ func newGRPCMetricContext(ctx context.Context, config internalMetricsConfig) (*i
 	if err != nil {
 		return nil, err
 	}
-	metricViews := []sdkmetric.View{
+	metricViews := []metric.View{
 		createHistogramView("grpc.client.attempt.duration", "A view of grpc.client.attempt.duration with histogram boundaries more appropriate for Google Cloud Storage RPCs", "s", latencyHistogramBoundaries()),
 		createHistogramView("grpc.client.attempt.rcvd_total_compressed_message_size", "A view of grpc.client.attempt.rcvd_total_compressed_message_size with histogram boundaries more appropriate for Google Cloud Storage RPCs", "By", sizeHistogramBoundaries()),
 		createHistogramView("grpc.client.attempt.sent_total_compressed_message_size", "A view of grpc.client.attempt.sent_total_compressed_message_size with histogram boundaries more appropriate for Google Cloud Storage RPCs", "By", sizeHistogramBoundaries()),
 	}
-	provider := sdkmetric.NewMeterProvider(
-		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(exporter, sdkmetric.WithInterval(time.Minute))),
-		sdkmetric.WithResource(preparedResource.resource),
-		sdkmetric.WithView(metricViews...),
+	provider := metric.NewMeterProvider(
+		metric.WithReader(metric.NewPeriodicReader(&exporterLogSuppresser{exporter: exporter}, metric.WithInterval(time.Minute))),
+		metric.WithResource(preparedResource.resource),
+		metric.WithView(metricViews...),
 	)
 	mo := opentelemetry.MetricsOptions{
 		MeterProvider: provider,
@@ -255,8 +254,42 @@ func enableClientMetrics(ctx context.Context, s *settings) (*internalMetricsCont
 	return metricsContext, nil
 }
 
-func createShutdown(ctx context.Context, provider *sdkmetric.MeterProvider) func() {
+func createShutdown(ctx context.Context, provider *metric.MeterProvider) func() {
 	return func() {
 		provider.Shutdown(ctx)
 	}
+}
+
+// Silences permission errors after initial error is emitted to prevent
+// chatty logs.
+type exporterLogSuppressor struct {
+	exporter       metric.Exporter
+	emittedFailure bool
+}
+
+func (e *exporterLogSuppressor) Export(ctx context.Context, rm *metricdata.ResourceMetrics) error {
+	if err := e.exporter.Export(ctx, rm); err != nil && !e.emittedFailure {
+		if strings.Contains(err.Error(), "PermissionDenied") {
+			e.emittedFailure = true
+			return fmt.Errorf("gRPC metrics failed due permission issue: %w", err)
+		}
+		return err
+	}
+	return nil
+}
+
+func (e *exporterLogSuppressor) Temporality(k metric.InstrumentKind) metricdata.Temporality {
+	return e.exporter.Temporality(k)
+}
+
+func (e *exporterLogSuppressor) Aggregation(k metric.InstrumentKind) metric.Aggregation {
+	return e.exporter.Aggregation(k)
+}
+
+func (e *exporterLogSuppressor) ForceFlush(ctx context.Context) error {
+	return e.exporter.ForceFlush(ctx)
+}
+
+func (e *exporterLogSuppressor) Shutdown(ctx context.Context) error {
+	return e.exporter.Shutdown(ctx)
 }

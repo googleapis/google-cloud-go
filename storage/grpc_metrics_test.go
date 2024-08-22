@@ -16,10 +16,12 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"testing"
 
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/api/iterator"
@@ -170,4 +172,37 @@ func TestNewPreparedResource(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestNewExporterLogSuppresser(t *testing.T) {
+	ctx := context.Background()
+	s := &exporterLogSuppressor{exporter: &failingExporter{}}
+	if err := s.Export(ctx, nil); err == nil {
+		t.Errorf("exporterLogSuppressor: did not emit an error when one was expected")
+	}
+	if err := s.Export(ctx, nil); err != nil {
+		t.Errorf("exporterLogSuppressor: emitted an error when it should have suppressed")
+	}
+}
+
+type failingExporter struct{}
+
+func (f *failingExporter) Export(ctx context.Context, rm *metricdata.ResourceMetrics) error {
+	return fmt.Errorf("PermissionDenied")
+}
+
+func (f *failingExporter) Temporality(m metric.InstrumentKind) metricdata.Temporality {
+	return metricdata.CumulativeTemporality
+}
+
+func (f *failingExporter) Aggregation(ik metric.InstrumentKind) metric.Aggregation {
+	return metric.AggregationDefault{}
+}
+
+func (f *failingExporter) ForceFlush(ctx context.Context) error {
+	return nil
+}
+
+func (f *failingExporter) Shutdown(ctx context.Context) error {
+	return nil
 }

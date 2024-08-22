@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"log"
 	"net/url"
 	"os"
 
@@ -128,6 +129,8 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		if metricsContext, err := enableClientMetrics(ctx, s); err == nil {
 			s.metricsContext = metricsContext
 			s.clientOption = append(s.clientOption, metricsContext.clientOpts...)
+		} else {
+			log.Printf("Failed to enable client metrics: %v", err)
 		}
 	}
 
