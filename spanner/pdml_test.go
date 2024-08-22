@@ -18,7 +18,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"testing"
@@ -135,7 +135,7 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 	// The following update will cause a 'Failed to delete session' warning to
 	// be logged. This is expected. To avoid spamming the log, we temporarily
 	// set the output to be discarded.
-	logger.SetOutput(ioutil.Discard)
+	logger.SetOutput(io.Discard)
 	_, err := client.PartitionedUpdate(ctx, stmt)
 	logger.SetOutput(os.Stderr)
 	if err == nil {
