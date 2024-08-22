@@ -683,7 +683,7 @@ func (s *inMemSpannerServer) simulateExecutionTime(method string, req interface{
 		totalExecutionTime := time.Duration(int64(executionTime.MinimumExecutionTime) + randTime)
 		<-time.After(totalExecutionTime)
 		s.mu.Lock()
-		if executionTime.Errors != nil && len(executionTime.Errors) > 0 {
+		if len(executionTime.Errors) > 0 {
 			err := executionTime.Errors[0]
 			if !executionTime.KeepError {
 				executionTime.Errors = executionTime.Errors[1:]
