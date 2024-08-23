@@ -520,7 +520,7 @@ func initializeAgent(c pb.ProfilerServiceClient) (*agent, error) {
 	}
 
 	if len(profileTypes) == 0 {
-		return nil, fmt.Errorf("collection is not enabled for any profile types")
+		return nil, errors.New("collection is not enabled for any profile types")
 	}
 
 	return &agent{
@@ -591,7 +591,7 @@ func initializeConfig(cfg Config) error {
 		}
 	} else {
 		if config.ProjectID == "" {
-			return fmt.Errorf("project ID must be specified in the configuration if running outside of GCP")
+			return errors.New("project ID must be specified in the configuration if running outside of GCP")
 		}
 	}
 
