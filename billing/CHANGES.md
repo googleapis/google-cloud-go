@@ -1,5 +1,26 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.10...billing/v1.19.0) (2024-08-20)
+
+
+### Features
+
+* **billing:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.18.10](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.9...billing/v1.18.10) (2024-08-08)
+
+
+### Bug Fixes
+
+* **billing:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.18.9](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.8...billing/v1.18.9) (2024-07-24)
+
+
+### Bug Fixes
+
+* **billing:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.18.8](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.7...billing/v1.18.8) (2024-07-10)
 
 

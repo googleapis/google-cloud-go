@@ -23,12 +23,12 @@ import (
 	"reflect"
 	"time"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	"google.golang.org/api/transport"
 	gtransport "google.golang.org/api/transport/grpc"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -74,6 +74,7 @@ type Client struct {
 	dataset      string // Called dataset by the datastore API, synonym for project ID.
 	databaseID   string // Default value is empty string
 	readSettings *readSettings
+	config       *datastoreConfig
 }
 
 // NewClient creates a new Client for a given dataset.  If the project ID is
@@ -152,12 +153,15 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
+
+	config := newDatastoreConfig(o...)
 	return &Client{
 		connPool:     connPool,
 		client:       newDatastoreClient(connPool, projectID, databaseID),
 		dataset:      projectID,
 		readSettings: &readSettings{},
 		databaseID:   databaseID,
+		config:       &config,
 	}, nil
 }
 
@@ -362,6 +366,48 @@ func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
 	return multiArgTypeInvalid, nil
 }
 
+// processFieldMismatchError ignore FieldMismatchErr if WithIgnoreFieldMismatch client option is provided by user
+func (c *Client) processFieldMismatchError(err error) error {
+	if c.config == nil || !c.config.ignoreFieldMismatchErrors {
+		return err
+	}
+	return ignoreFieldMismatchErrs(err)
+}
+
+func ignoreFieldMismatchErrs(err error) error {
+	if err == nil {
+		return err
+	}
+
+	multiErr, isMultiErr := err.(MultiError)
+	if isMultiErr {
+		foundErr := false
+		for i, e := range multiErr {
+			multiErr[i] = ignoreFieldMismatchErr(e)
+			if multiErr[i] != nil {
+				foundErr = true
+			}
+		}
+		if !foundErr {
+			return nil
+		}
+		return multiErr
+	}
+
+	return ignoreFieldMismatchErr(err)
+}
+
+func ignoreFieldMismatchErr(err error) error {
+	if err == nil {
+		return err
+	}
+	_, isFieldMismatchErr := err.(*ErrFieldMismatch)
+	if isFieldMismatchErr {
+		return nil
+	}
+	return err
+}
+
 // Close closes the Client. Call Close to clean up resources when done with the
 // Client.
 func (c *Client) Close() error {
@@ -402,9 +448,9 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 	// as transaction id which can be ignored
 	_, err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
-		return me[0]
+		return c.processFieldMismatchError(me[0])
 	}
-	return err
+	return c.processFieldMismatchError(err)
 }
 
 // GetMulti is a batch version of Get.
@@ -436,7 +482,7 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 	// Since opts does not contain Transaction option, 'get' call below will return nil
 	// as transaction id which can be ignored
 	_, err = c.get(ctx, keys, dst, opts)
-	return err
+	return c.processFieldMismatchError(err)
 }
 
 func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) ([]byte, error) {

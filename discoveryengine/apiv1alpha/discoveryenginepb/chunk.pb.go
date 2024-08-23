@@ -55,7 +55,7 @@ type Chunk struct {
 	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 	// Content is a string from a document (parsed content).
 	Content string `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
-	// The relevance score based on similarity.
+	// Output only. Represents the relevance score based on similarity.
 	// Higher score indicates higher chunk relevance.
 	// The score is in range [-1.0, 1.0].
 	// Only populated on [SearchService.SearchResponse][].

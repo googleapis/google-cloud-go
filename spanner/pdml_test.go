@@ -17,6 +17,7 @@ package spanner
 import (
 	"bytes"
 	"context"
+	"errors"
 	"io/ioutil"
 	"log"
 	"os"
@@ -57,7 +58,7 @@ func TestMockPartitionedUpdateWithQuery(t *testing.T) {
 	_, err := client.PartitionedUpdate(ctx, stmt)
 	wantCode := codes.InvalidArgument
 	var serr *Error
-	if !errorAs(err, &serr) {
+	if !errors.As(err, &serr) {
 		t.Errorf("got error %v, want spanner.Error", err)
 	}
 	if ErrCode(serr) != wantCode {
@@ -101,8 +102,12 @@ func TestPartitionedUpdate_Aborted(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	id1 := gotReqs[2].(*sppb.ExecuteSqlRequest).Transaction.GetId()
-	id2 := gotReqs[4].(*sppb.ExecuteSqlRequest).Transaction.GetId()
+	muxCreateBuffer := 0
+	if isMultiplexEnabled {
+		muxCreateBuffer = 1
+	}
+	id1 := gotReqs[2+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetId()
+	id2 := gotReqs[4+muxCreateBuffer].(*sppb.ExecuteSqlRequest).Transaction.GetId()
 	if bytes.Equal(id1, id2) {
 		t.Errorf("same transaction used twice, expected two different transactions\ngot tx1: %q\ngot tx2: %q", id1, id2)
 	}
@@ -196,8 +201,12 @@ func TestPartitionedUpdate_ExcludeTxnFromChangeStreams(t *testing.T) {
 		&sppb.ExecuteSqlRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
+	muxCreateBuffer := 0
+	if isMultiplexEnabled {
+		muxCreateBuffer = 1
+	}
 
-	if !requests[1].(*sppb.BeginTransactionRequest).GetOptions().GetExcludeTxnFromChangeStreams() {
+	if !requests[1+muxCreateBuffer].(*sppb.BeginTransactionRequest).GetOptions().GetExcludeTxnFromChangeStreams() {
 		t.Fatal("Transaction is not set to be excluded from change streams")
 	}
 }

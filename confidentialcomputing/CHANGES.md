@@ -1,6 +1,32 @@
 # Changelog
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.6.1...confidentialcomputing/v1.7.0) (2024-08-20)
+
+
+### Features
+
+* **confidentialcomputing:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.6.0...confidentialcomputing/v1.6.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.5.4...confidentialcomputing/v1.6.0) (2024-07-24)
+
+
+### Features
+
+* **confidentialcomputing:** Add a new field `tee_attestation` to `VerifyAttestationRequest` message proto for SEV SNP and TDX attestations ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.5.4](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.5.3...confidentialcomputing/v1.5.4) (2024-07-10)
 
 

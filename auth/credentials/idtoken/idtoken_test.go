@@ -79,7 +79,7 @@ func (m mockTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 
 func TestNewCredentials_ImpersonatedServiceAccount(t *testing.T) {
 	wantTok, _ := createRS256JWT(t)
-	client := internal.CloneDefaultClient()
+	client := internal.DefaultClient()
 	client.Transport = mockTransport{
 		handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(fmt.Sprintf(`{"token": %q}`, wantTok)))
