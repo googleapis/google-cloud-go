@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -290,7 +291,7 @@ func TestToOtelMetricAttrs(t *testing.T) {
 				attribute.String(monitoredResLabelKeyCluster, clusterID1),
 				attribute.String(monitoredResLabelKeyZone, zoneID1),
 			},
-			wantError: fmt.Errorf("unable to create attributes list for unknown metric: unknown_metric"),
+			wantError: errors.New("unable to create attributes list for unknown metric: unknown_metric"),
 		},
 	}
 
@@ -329,7 +330,7 @@ func TestGetServerLatency(t *testing.T) {
 			headerMD:    metadata.MD{},
 			trailerMD:   metadata.MD{},
 			wantLatency: 0,
-			wantError:   fmt.Errorf("strconv.ParseFloat: parsing \"\": invalid syntax"),
+			wantError:   errors.New("strconv.ParseFloat: parsing \"\": invalid syntax"),
 		},
 		{
 			desc: "Server latency in header",
@@ -405,7 +406,7 @@ func TestGetLocation(t *testing.T) {
 			trailerMD:   metadata.MD{},
 			wantCluster: defaultCluster,
 			wantZone:    defaultZone,
-			wantError:   fmt.Errorf("failed to get location metadata"),
+			wantError:   errors.New("failed to get location metadata"),
 		},
 		{
 			desc:        "Location metadata in header",
@@ -439,7 +440,7 @@ func TestGetLocation(t *testing.T) {
 			trailerMD:   metadata.MD{},
 			wantCluster: defaultCluster,
 			wantZone:    defaultZone,
-			wantError:   fmt.Errorf(invalidFormatErr),
+			wantError:   errors.New(invalidFormatErr),
 		},
 		{
 			desc:     "Invalid location metadata format in trailer",
@@ -449,7 +450,7 @@ func TestGetLocation(t *testing.T) {
 			},
 			wantCluster: defaultCluster,
 			wantZone:    defaultZone,
-			wantError:   fmt.Errorf(invalidFormatErr),
+			wantError:   errors.New(invalidFormatErr),
 		},
 	}
 

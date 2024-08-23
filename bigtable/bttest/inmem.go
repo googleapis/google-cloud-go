@@ -37,6 +37,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"log"
 	"math"
@@ -367,7 +368,7 @@ func (s *server) DropRowRange(ctx context.Context, req *btapb.DropRowRangeReques
 		// Delete rows by prefix.
 		prefixBytes := req.GetRowKeyPrefix()
 		if prefixBytes == nil {
-			return nil, fmt.Errorf("missing row key prefix")
+			return nil, errors.New("missing row key prefix")
 		}
 		prefix := string(prefixBytes)
 
@@ -1125,11 +1126,11 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 				return fmt.Errorf("unknown family %q", add.FamilyName)
 			}
 			if cf.valueType == nil || cf.valueType.GetAggregateType() == nil {
-				return fmt.Errorf("illegal attempt to use AddToCell on non-aggregate cell")
+				return errors.New("illegal attempt to use AddToCell on non-aggregate cell")
 			}
 			ts := add.Timestamp.GetRawTimestampMicros()
 			if ts < 0 {
-				return fmt.Errorf("AddToCell must set timestamp >= 0")
+				return errors.New("AddToCell must set timestamp >= 0")
 			}
 
 			fam := add.FamilyName
@@ -1140,7 +1141,7 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 			case *btpb.Value_IntValue:
 				value = binary.BigEndian.AppendUint64(value, uint64(v.IntValue))
 			default:
-				return fmt.Errorf("only int64 values are supported")
+				return errors.New("only int64 values are supported")
 			}
 
 			newCell := cell{ts: ts, value: value}
@@ -1154,11 +1155,11 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 				return fmt.Errorf("unknown family %q", add.FamilyName)
 			}
 			if cf.valueType == nil || cf.valueType.GetAggregateType() == nil {
-				return fmt.Errorf("illegal attempt to use MergeToCell on non-aggregate cell")
+				return errors.New("illegal attempt to use MergeToCell on non-aggregate cell")
 			}
 			ts := add.Timestamp.GetRawTimestampMicros()
 			if ts < 0 {
-				return fmt.Errorf("MergeToCell must set timestamp >= 0")
+				return errors.New("MergeToCell must set timestamp >= 0")
 			}
 
 			fam := add.FamilyName
@@ -1169,7 +1170,7 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 			case *btpb.Value_RawValue:
 				value = v.RawValue
 			default:
-				return fmt.Errorf("only []bytes values are supported")
+				return errors.New("only []bytes values are supported")
 			}
 
 			newCell := cell{ts: ts, value: value}
@@ -1322,7 +1323,7 @@ func (s *server) ReadModifyWriteRow(ctx context.Context, req *btpb.ReadModifyWri
 			if !isEmpty {
 				prevVal := prevCell.value
 				if len(prevVal) != 8 {
-					return nil, fmt.Errorf("increment on non-64-bit value")
+					return nil, errors.New("increment on non-64-bit value")
 				}
 				v = int64(binary.BigEndian.Uint64(prevVal))
 			}
