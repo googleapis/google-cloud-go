@@ -686,7 +686,7 @@ func (w ignoreWarnings) apply(s *updateFamilyOption) {
 }
 
 // IgnoreWarnings returns a updateFamilyOption that ignores safety checks when modifying the column families
-func IgnoreWarnings() UpdateFamilyOption {
+func IgnoreWarnings() GCPolicyOption {
 	return ignoreWarnings(true)
 }
 
