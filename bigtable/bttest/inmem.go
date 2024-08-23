@@ -335,10 +335,10 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 		} else if modify := mod.GetUpdate(); modify != nil {
 			newcf := newColumnFamily(req.Name+"/columnFamilies/"+mod.Id, 0, modify)
 			cf, ok := tbl.families[mod.Id]
-			if  !ok {
+			if !ok {
 				return nil, fmt.Errorf("no such family %q", mod.Id)
-			} 
-			if !Equal(cf.valueType, newcf.valueType) {
+			}
+			if cf.valueType != newcf.valueType {
 				return nil, status.Errorf(codes.InvalidArgument, "Immutable fields 'value_type' cannot be updated")
 			}
 
