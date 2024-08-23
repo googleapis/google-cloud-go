@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.9.0...shopping/v0.9.1) (2024-08-23)
+
+
+### Documentation
+
+* **shopping/css:** Update `Certification` field descriptions ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.7...shopping/v0.9.0) (2024-08-20)
 
 
