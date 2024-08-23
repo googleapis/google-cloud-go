@@ -217,7 +217,7 @@ func runTest(test *pb.Test, c *Client, srv *mockServer) error {
 		if typedTestcase.Listen.IsError {
 			_, err := iter.Next()
 			if err == nil {
-				return fmt.Errorf("got nil, want error")
+				return errors.New("got nil, want error")
 			}
 		}
 

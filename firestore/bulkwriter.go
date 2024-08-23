@@ -182,7 +182,7 @@ func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*BulkWriterJo
 	}
 
 	if len(w) > 1 {
-		return nil, fmt.Errorf("firestore: too many document writes sent to bulkwriter")
+		return nil, errors.New("firestore: too many document writes sent to bulkwriter")
 	}
 
 	j := bw.write(w[0])
@@ -205,7 +205,7 @@ func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*BulkW
 	}
 
 	if len(w) > 1 {
-		return nil, fmt.Errorf("firestore: too many document writes sent to bulkwriter")
+		return nil, errors.New("firestore: too many document writes sent to bulkwriter")
 	}
 
 	j := bw.write(w[0])
@@ -228,7 +228,7 @@ func (bw *BulkWriter) Set(doc *DocumentRef, datum interface{}, opts ...SetOption
 	}
 
 	if len(w) > 1 {
-		return nil, fmt.Errorf("firestore: too many writes sent to bulkwriter")
+		return nil, errors.New("firestore: too many writes sent to bulkwriter")
 	}
 
 	j := bw.write(w[0])
@@ -251,7 +251,7 @@ func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Pre
 	}
 
 	if len(w) > 1 {
-		return nil, fmt.Errorf("firestore: too many writes sent to bulkwriter")
+		return nil, errors.New("firestore: too many writes sent to bulkwriter")
 	}
 
 	j := bw.write(w[0])
