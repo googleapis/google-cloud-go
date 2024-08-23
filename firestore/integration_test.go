@@ -624,7 +624,7 @@ func getRunWithOptionsTestcases(t *testing.T) ([]runWithOptionsTestcase, []*Docu
 	}, wantDocRefs
 }
 
-func TestIntegration_GetAllWithOptions(t *testing.T) {
+func TestIntegration_GetAll_WithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -641,30 +641,35 @@ func TestIntegration_GetAllWithOptions(t *testing.T) {
 	}()
 
 	for _, testcase := range testcases {
-		gotResult, gotErr := coll.Documents(ctx).GetAllWithOptions(testcase.opts...)
-		if gotErr != nil {
-			t.Fatalf("%v: err: got: %+v, want: nil", testcase.desc, gotErr)
-		}
+		t.Run(testcase.desc, func(t *testing.T) {
+			docIter := coll.Documents(ctx)
+			gotDocSnaps, gotErr := docIter.GetAll()
+			if gotErr != nil {
+				t.Fatalf("err: got: %+v, want: nil", gotErr)
+			}
 
-		if gotResult != nil {
+			gotExpM, gotExpMErr := docIter.GetExplainMetrics()
+			if gotExpMErr != nil {
+				t.Fatalf("GetExplainMetrics() err: got: %+v, want: nil", gotExpMErr)
+			}
+
 			gotIDs := []string{}
-			for _, gotSnapshot := range gotResult.DocumentSnapshots {
+			for _, gotSnapshot := range gotDocSnaps {
 				gotIDs = append(gotIDs, gotSnapshot.Ref.ID)
 			}
 
 			if (testcase.wantSnapshots && !testutil.Equal(gotIDs, snapshotRefIDs)) || (!testcase.wantSnapshots && len(gotIDs) != 0) {
-				t.Errorf("%v: snapshots ID: got: %+v, want: %+v", testcase.desc, gotIDs, snapshotRefIDs)
+				t.Errorf("snapshots ID: got: %+v, want: %+v", gotIDs, snapshotRefIDs)
 			}
 
-			if err := cmpExplainMetrics(gotResult.ExplainMetrics, testcase.wantExplainMetrics); err != nil {
-				t.Errorf("%v: %+v", testcase.desc, err)
+			if err := cmpExplainMetrics(gotExpM, testcase.wantExplainMetrics); err != nil {
+				t.Error(err)
 			}
-		}
-
+		})
 	}
 }
 
-func TestIntegration_QueryRunOptions(t *testing.T) {
+func TestIntegration_Query_WithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -698,7 +703,11 @@ func TestIntegration_QueryRunOptions(t *testing.T) {
 			t.Errorf("%v: snapshots ID: got: %+v, want: %+v", testcase.desc, gotIDs, snapshotRefIDs)
 		}
 
-		if err := cmpExplainMetrics(gotDocIter.ExplainMetrics, testcase.wantExplainMetrics); err != nil {
+		gotExp, gotExpErr := gotDocIter.GetExplainMetrics()
+		if gotExpErr != nil {
+			t.Fatalf("%v: Failed to get explain metrics: %+v\n", testcase.desc, gotExpErr)
+		}
+		if err := cmpExplainMetrics(gotExp, testcase.wantExplainMetrics); err != nil {
 			t.Errorf("%v: %+v", testcase.desc, err)
 		}
 
@@ -1541,7 +1550,7 @@ func TestIntegration_RunTransaction(t *testing.T) {
 	})
 }
 
-func TestIntegration_RunTransactionWithExplainOptions(t *testing.T) {
+func TestIntegration_RunTransaction_WithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -1564,14 +1573,23 @@ func TestIntegration_RunTransactionWithExplainOptions(t *testing.T) {
 					}
 
 					docsRead++
+
+					gotExp, gotExpErr := docIter.GetExplainMetrics()
+					if gotExpErr != nil {
+						return fmt.Errorf("GetExplainMetrics got %+v, want %+v", gotExpErr, nil)
+					}
 					// There are documents available in the iterator,
 					// explainMetrics should be nil
-					if docsRead < numDocs && docIter.ExplainMetrics != nil {
-						return fmt.Errorf("ExplainMetrics got %+v, want %+v", docIter.ExplainMetrics, nil)
+					if docsRead < numDocs && gotExp != nil {
+						return fmt.Errorf("ExplainMetrics got %+v, want %+v", gotExp, nil)
 					}
 				}
 
-				if err := cmpExplainMetrics(docIter.ExplainMetrics, testcase.wantExplainMetrics); err != nil {
+				gotExp, gotExpErr := docIter.GetExplainMetrics()
+				if gotExpErr != nil {
+					return fmt.Errorf("GetExplainMetrics got %+v, want %+v", gotExpErr, nil)
+				}
+				if err := cmpExplainMetrics(gotExp, testcase.wantExplainMetrics); err != nil {
 					return fmt.Errorf("ExplainMetrics %+v", err)
 				}
 				return nil
@@ -2930,7 +2948,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}
 }
 
-func TestIntegration_AggregationQueriesWithRunOptions(t *testing.T) {
+func TestIntegration_AggregationQueries_WithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -2947,11 +2965,6 @@ func TestIntegration_AggregationQueriesWithRunOptions(t *testing.T) {
 		newDoc := coll.NewDoc()
 		h.mustCreate(newDoc, doc)
 	}
-	query := coll.Where("weight", "<=", 1)
-
-	aggQuery := query.NewAggregationQuery().WithCount("count1").
-		WithAvg("weight", "weight_avg1").
-		WithSum("weight", "weight_sum1")
 
 	aggResult := map[string]interface{}{
 		"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(3)}},
@@ -2969,28 +2982,30 @@ func TestIntegration_AggregationQueriesWithRunOptions(t *testing.T) {
 
 	testcases := []struct {
 		desc       string
-		wantRes    *AggregationWithOptionsResult
+		wantRes    *AggregationResponse
 		wantErrMsg string
-		opts       []RunOption
+		query      Query
 	}{
 		{
-			desc: "no options",
-			wantRes: &AggregationWithOptionsResult{
+			desc:  "no options",
+			query: coll.Where("weight", "<=", 1),
+			wantRes: &AggregationResponse{
 				Result: aggResult,
 			},
 		},
 		{
-			desc: "ExplainOptions.Analyze is false",
-			wantRes: &AggregationWithOptionsResult{
+			desc:  "ExplainOptions.Analyze is false",
+			query: coll.Where("weight", "<=", 1).WithRunOptions(ExplainOptions{Analyze: false}),
+			wantRes: &AggregationResponse{
 				ExplainMetrics: &ExplainMetrics{
 					PlanSummary: wantPlanSummary,
 				},
 			},
-			opts: []RunOption{ExplainOptions{Analyze: false}},
 		},
 		{
-			desc: "ExplainOptions.Analyze is true",
-			wantRes: &AggregationWithOptionsResult{
+			desc:  "ExplainOptions.Analyze is true",
+			query: coll.Where("weight", "<=", 1).WithRunOptions(ExplainOptions{Analyze: true}),
+			wantRes: &AggregationResponse{
 				Result: aggResult,
 				ExplainMetrics: &ExplainMetrics{
 					ExecutionStats: &ExecutionStats{
@@ -3004,13 +3019,15 @@ func TestIntegration_AggregationQueriesWithRunOptions(t *testing.T) {
 					PlanSummary: wantPlanSummary,
 				},
 			},
-			opts: []RunOption{ExplainOptions{Analyze: true}},
 		},
 	}
 
 	for _, testcase := range testcases {
 		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
-			gotRes, gotErr := aggQuery.GetWithOptions(ctx, testcase.opts...)
+			aq := testcase.query.NewAggregationQuery().WithCount("count1").
+				WithAvg("weight", "weight_avg1").
+				WithSum("weight", "weight_sum1")
+			gotRes, gotErr := aq.GetResponse(ctx)
 
 			gotErrMsg := ""
 			if gotErr != nil {

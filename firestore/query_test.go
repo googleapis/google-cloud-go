@@ -1140,6 +1140,7 @@ func TestQueryGetAll(t *testing.T) {
 	const dbPath = "projects/projectID/databases/(default)"
 	ctx := context.Background()
 	c, srv, cleanup := newMock(t)
+	srv.reset()
 	defer cleanup()
 
 	docNames := []string{"C/a", "C/b"}
@@ -1166,6 +1167,7 @@ func TestQueryGetAll(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	fmt.Printf("gotDocs: %+v\n", gotDocs)
 	if got, want := len(gotDocs), len(wantPBDocs); got != want {
 		t.Errorf("got %d docs, wanted %d", got, want)
 	}
@@ -1647,9 +1649,7 @@ func TestWithAvgPath(t *testing.T) {
 }
 
 func TestExplainOptionsApply(t *testing.T) {
-	pbExplainOptions := pb.ExplainOptions{
-		Analyze: true,
-	}
+	pbExplainOptions := pb.ExplainOptions{Analyze: true}
 	for _, testcase := range []struct {
 		desc            string
 		existingOptions *pb.ExplainOptions
@@ -1745,8 +1745,9 @@ func TestQueryRunOptionsAndGetAllWithOptions(t *testing.T) {
 	_, err := client.Collection(collectionName).
 		WithRunOptions(ExplainOptions{Analyze: false}).
 		WithRunOptions(ExplainOptions{Analyze: true}).
+		WithRunOptions(ExplainOptions{Analyze: false}).
 		Documents(ctx).
-		GetAllWithOptions(ExplainOptions{Analyze: false})
+		GetAll()
 
 	if err != nil {
 		t.Fatal(err)

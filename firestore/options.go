@@ -213,9 +213,7 @@ func (e ExplainOptions) apply(s *runQuerySettings) error {
 	if s.explainOptions != nil {
 		return errors.New("firestore: ExplainOptions can be specified only once")
 	}
-	pbExplainOptions := pb.ExplainOptions{
-		Analyze: e.Analyze,
-	}
+	pbExplainOptions := pb.ExplainOptions{Analyze: e.Analyze}
 	s.explainOptions = &pbExplainOptions
 	return nil
 }
