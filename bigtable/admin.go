@@ -701,7 +701,9 @@ func (ac *AdminClient) SetGCPolicy(ctx context.Context, table, family string, po
 func (ac *AdminClient) SetGCPolicyWithOptions(ctx context.Context, table, family string, policy GCPolicy, opts ...GCPolicyOption) error {
 	familyOpts := []UpdateFamilyOption{}
 	for _, opt := range opts {
-		familyOpts = append(familyOpts, opt.(UpdateFamilyOption))
+		if opt != nil {
+			familyOpts = append(familyOpts, opt.(UpdateFamilyOption))
+		}
 	}
 	return ac.UpdateFamily(ctx, table, family, Family{GCPolicy: policy}, familyOpts...)
 }
