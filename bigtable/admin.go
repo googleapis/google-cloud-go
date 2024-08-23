@@ -721,18 +721,28 @@ func (ac *AdminClient) UpdateFamily(ctx context.Context, table, familyName strin
 	}
 
 	cf := &btapb.ColumnFamily{}
+	mask := &field_mask.FieldMask{}
 	if family.GCPolicy != nil {
 		cf.GcRule = family.GCPolicy.proto()
+		mask.Paths = append(mask.Paths, "gc_rule")
+
 	}
 	if family.ValueType != nil {
 		cf.ValueType = family.ValueType.proto()
+		mask.Paths = append(mask.Paths, "value_type")
+	}
+
+	// No update
+	if len(mask.Paths) == 0 {
+		return nil
 	}
 
 	req := &btapb.ModifyColumnFamiliesRequest{
 		Name: prefix + "/tables/" + table,
 		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
-			Id:  familyName,
-			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{Update: cf},
+			Id:         familyName,
+			Mod:        &btapb.ModifyColumnFamiliesRequest_Modification_Update{Update: cf},
+			UpdateMask: mask,
 		}},
 		IgnoreWarnings: s.ignoreWarnings,
 	}
