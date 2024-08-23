@@ -1,6 +1,27 @@
 # Changes
 
 
+## [2.16.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.15.0...recaptchaenterprise/v2.16.0) (2024-08-23)
+
+
+### Features
+
+* **recaptchaenterprise:** Add `express_settings` to `Key` ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+* **recaptchaenterprise:** Add AddIpOverride RPC ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+
+
+### Documentation
+
+* **recaptchaenterprise:** Clarify `Event.express` field ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+* **recaptchaenterprise:** Fix billing, quota, and usecase links ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+
+## [2.15.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.14.3...recaptchaenterprise/v2.15.0) (2024-08-20)
+
+
+### Features
+
+* **recaptchaenterprise:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [2.14.3](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.14.2...recaptchaenterprise/v2.14.3) (2024-08-08)
 
 

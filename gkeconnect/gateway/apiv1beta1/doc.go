@@ -44,7 +44,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := gateway.NewClient(ctx)
+//	c, err := gateway.NewGatewayControlClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -64,17 +64,17 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := gateway.NewClient(ctx)
+//	c, err := gateway.NewGatewayControlClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
 //	defer c.Close()
 //
-//	req := &httpbodypb.HttpBody{
+//	req := &gatewaypb.GenerateCredentialsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/httpbody#HttpBody.
+//		// See https://pkg.go.dev/cloud.google.com/go/gkeconnect/gateway/apiv1beta1/gatewaypb#GenerateCredentialsRequest.
 //	}
-//	resp, err := c.DeleteResource(ctx, req)
+//	resp, err := c.GenerateCredentials(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -83,7 +83,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewClient is used for authentication requests and
+// The ctx passed to NewGatewayControlClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
