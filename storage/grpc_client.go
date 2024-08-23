@@ -98,7 +98,7 @@ func defaultGRPCOptions() []option.ClientOption {
 		)
 	} else {
 		// Only enable DirectPath when the emulator is not being targeted.
-		defaults = append(defaults, internaloption.EnableDirectPath(true))
+		defaults = append(defaults, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 	}
 
 	return defaults
