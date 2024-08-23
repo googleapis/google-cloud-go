@@ -17,8 +17,8 @@ package datastore
 import (
 	"testing"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/testutil"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 )
 
 func TestMutationProtos(t *testing.T) {

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/auth/v0.9.0...auth/v0.9.1) (2024-08-22)
+
+
+### Bug Fixes
+
+* **auth:** Setting expireEarly to default when the value is 0 ([#10732](https://github.com/googleapis/google-cloud-go/issues/10732)) ([5e67869](https://github.com/googleapis/google-cloud-go/commit/5e67869a31e9e8ecb4eeebd2cfa11a761c3b1948))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/auth/v0.8.1...auth/v0.9.0) (2024-08-16)
 
 

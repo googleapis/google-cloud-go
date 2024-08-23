@@ -1,5 +1,12 @@
 # Changes
 
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.9.0...gkeconnect/v0.10.0) (2024-08-23)
+
+
+### Features
+
+* **gkeconnect/gateway:** Removed the nonfunctional GatewayService and replaced it with the GatewayControl service ([#10716](https://github.com/googleapis/google-cloud-go/issues/10716)) ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.8.12...gkeconnect/v0.9.0) (2024-08-20)
 
 

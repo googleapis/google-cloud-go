@@ -1,12 +1,19 @@
 # go-sentencepiece
 
+<p align="center">
+  <img alt="Logo" src="doc/toklogo2.png" />
+</p>
+
+----
+
 [![Go Reference](https://pkg.go.dev/badge/github.com/eliben/go-sentencepiece.svg)](https://pkg.go.dev/github.com/eliben/go-sentencepiece)
 
-This is a pure Go implementation of encoding text with
+This is a pure Go implementation of encoding and decoding text with
 the [SentencePiece tokenizer](https://github.com/google/sentencepiece).
 
 "Encoding" is the operation used to split text into tokens, using
-a trained tokenizer model.
+a trained tokenizer model. "Decoding" is the reverse process - converting
+a list of tokens into the original text.
 
 SentencePiece is a general family of tokenizers that is configured
 by a protobuf configuration file. This repository currently focuses
@@ -35,7 +42,7 @@ other configuration information.
 
 It is not part of this repository. Please fetch it from the
 [official Gemma implementation repository](https://github.com/google/gemma_pytorch/tree/main/tokenizer).
-`NewEncoder*` constructors will expect to read this file.
+`NewProcessor*` constructors will expect to read this file.
 
 ## Developing
 
@@ -54,3 +61,11 @@ The configuration protobuf itself is obtained as described in the
 [Tokenizer configuration](#tokenizer-configuration) section. All
 tests require the `MODELPATH` env var to point to a local
 copy of the tokenizer configuration file.
+
+## Online demo
+
+To see an in-browser demo of this tokenizer in action, visit
+https://eliben.github.io/go-sentencepiece/
+
+The Go code is compiled to WebAssembly and loaded from a small
+JS program to allow interactive encoding of text.
