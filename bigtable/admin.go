@@ -671,13 +671,13 @@ type updateFamilyOption struct {
 	ignoreWarnings bool
 }
 
-// UpdateFamilyOption is the interface to update family settings
-type UpdateFamilyOption interface {
+// GCPolicyOption is deprecated, kept for backwards compatibility, use UpdateFamilyOption in new code
+type GCPolicyOption interface {
 	apply(s *updateFamilyOption)
 }
 
-// GCPolicyOption is deprecated, kept for backwards compatibility, use UpdateFamilyOption in new code
-type GCPolicyOption UpdateFamilyOption
+// UpdateFamilyOption is the interface to update family settings
+type UpdateFamilyOption GCPolicyOption
 
 type ignoreWarnings bool
 
