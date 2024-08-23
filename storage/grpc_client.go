@@ -1564,7 +1564,7 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 	// using the same reader. One encounters an error and the stream is closed
 	// and then reopened while the other routine attempts to read from it.
 	if r.stream == nil {
-		return 0, fmt.Errorf("storage: reader has been closed")
+		return 0, errors.New("storage: reader has been closed")
 	}
 
 	var n int
@@ -1621,7 +1621,7 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 	// using the same reader. One encounters an error and the stream is closed
 	// and then reopened while the other routine attempts to read from it.
 	if r.stream == nil {
-		return 0, fmt.Errorf("storage: reader has been closed")
+		return 0, errors.New("storage: reader has been closed")
 	}
 
 	// Track bytes written during before call.

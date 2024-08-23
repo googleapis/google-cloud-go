@@ -18,6 +18,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -1972,7 +1973,7 @@ func TestApplyCondsProto(t *testing.T) {
 			name: "invalid_no_generation",
 			gen:  123,
 			in:   &storagepb.WriteObjectRequest{},
-			err:  fmt.Errorf("generation not supported"),
+			err:  errors.New("generation not supported"),
 		},
 		{
 			name:  "if_match",
@@ -2000,7 +2001,7 @@ func TestApplyCondsProto(t *testing.T) {
 			gen:   -1,
 			in:    &storagepb.ReadObjectRequest{},
 			conds: &Conditions{MetagenerationMatch: 123, MetagenerationNotMatch: 123},
-			err:   fmt.Errorf("multiple conditions"),
+			err:   errors.New("multiple conditions"),
 		},
 	} {
 		if err := applyCondsProto(tst.name, tst.gen, tst.conds, tst.in); tst.err == nil && err != nil {

@@ -17,6 +17,7 @@ package main
 import (
 	"context"
 	"encoding/csv"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -110,7 +111,7 @@ func (b *benchmarkOptions) validate() error {
 	}
 
 	if (b.maxReadOffset != 0 || b.minReadOffset != 0) && b.rangeSize == 0 {
-		return fmt.Errorf("read offset specified but no range size specified")
+		return errors.New("read offset specified but no range size specified")
 	}
 
 	minObjSize := b.objectSize
