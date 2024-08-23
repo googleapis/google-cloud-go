@@ -131,7 +131,7 @@ func testMain(m *testing.M) int {
 			Key: reqParamsHeader,
 			ValuesValidator: func(values ...string) error {
 				if len(values) == 0 {
-					return fmt.Errorf("missing values")
+					return errors.New("missing values")
 				}
 				wantValue := fmt.Sprintf("project_id=%s", url.QueryEscape(testutil.ProjID()))
 				if databaseID != DefaultDatabaseID && databaseID != "" {
