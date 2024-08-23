@@ -132,6 +132,7 @@ deep-remove-regex:
   - /functions/apiv2beta/
   - /gkebackup/apiv1/
   - /gkeconnect/gateway/apiv1beta1/
+  - /gkeconnect/gateway/apiv1/
   - /gkehub/apiv1beta1/
   - /gkemulticloud/apiv1/
   - /gsuiteaddons/apiv1/
@@ -265,6 +266,7 @@ deep-remove-regex:
   - /internal/generated/snippets/functions/apiv2beta/
   - /internal/generated/snippets/gkebackup/apiv1/
   - /internal/generated/snippets/gkeconnect/gateway/apiv1beta1/
+  - /internal/generated/snippets/gkeconnect/gateway/apiv1/
   - /internal/generated/snippets/gkehub/apiv1beta1/
   - /internal/generated/snippets/gkemulticloud/apiv1/
   - /internal/generated/snippets/gsuiteaddons/apiv1/
@@ -873,6 +875,8 @@ deep-copy-regex:
   - source: /google/cloud/gkebackup/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/gkeconnect/gateway/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/gkeconnect/gateway/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/gkehub/v1beta1/cloud.google.com/go
     dest: /

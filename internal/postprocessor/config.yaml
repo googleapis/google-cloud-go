@@ -617,6 +617,9 @@ service-configs:
   - input-directory: google/cloud/gkeconnect/gateway/v1beta1
     service-config: connectgateway_v1beta1.yaml
     import-path: cloud.google.com/go/gkeconnect/gateway/apiv1beta1
+  - input-directory: google/cloud/gkeconnect/gateway/v1
+    service-config: connectgateway_v1.yaml
+    import-path: cloud.google.com/go/gkeconnect/gateway/apiv1
   - input-directory: google/cloud/gkehub/v1beta1
     service-config: gkehub_v1beta1.yaml
     import-path: cloud.google.com/go/gkehub/apiv1beta1
