@@ -97,12 +97,13 @@ func newGRPCSpannerClient(ctx context.Context, sc *sessionClient, opts ...option
 			clientInfo = append(clientInfo, agentWithVersion[0], agentWithVersion[1])
 		}
 	}
-	raw.SetGoogleClientInfo(clientInfo...)
 	if sc.callOptions != nil {
 		raw.CallOptions = mergeCallOptions(raw.CallOptions, sc.callOptions)
 	}
 
-	return &grpcSpannerClient{raw: raw, metricsTracerFactory: sc.metricsTracerFactory, connPool: connPool, client: spannerpb.NewSpannerClient(connPool)}, nil
+	g := &grpcSpannerClient{raw: raw, metricsTracerFactory: sc.metricsTracerFactory, connPool: connPool, client: spannerpb.NewSpannerClient(connPool)}
+	g.setGoogleClientInfo(clientInfo...)
+	return g, nil
 }
 
 func (g *grpcSpannerClient) newBuiltinMetricsTracer(ctx context.Context, isStreaming bool) *builtinMetricsTracer {
