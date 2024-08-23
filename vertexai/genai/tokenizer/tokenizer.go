@@ -21,6 +21,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -82,7 +83,7 @@ func (tok *Tokenizer) CountTokens(parts ...genai.Part) (*CountTokensResponse, er
 			toks := tok.processor.Encode(string(t))
 			sum += len(toks)
 		} else {
-			return nil, fmt.Errorf("Tokenizer.CountTokens only supports Text parts")
+			return nil, errors.New("Tokenizer.CountTokens only supports Text parts")
 		}
 	}
 
@@ -139,7 +140,7 @@ func loadModelData(url string, wantHash string) ([]byte, error) {
 		}
 
 		if hashString(cacheData) != wantHash {
-			return nil, fmt.Errorf("downloaded model hash mismatch")
+			return nil, errors.New("downloaded model hash mismatch")
 		}
 
 		err = os.MkdirAll(cacheDir, 0770)
