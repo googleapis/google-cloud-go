@@ -76,7 +76,7 @@ var (
 	// duration between two metric exports
 	defaultSamplePeriod = 5 * time.Minute
 
-	clientName = fmt.Sprintf("go-spanner v%v", internal.Version)
+	clientName = fmt.Sprintf("spanner-go/%v", internal.Version)
 
 	bucketBounds = []float64{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0, 16.0, 20.0, 25.0, 30.0, 40.0,
 		50.0, 65.0, 80.0, 100.0, 130.0, 160.0, 200.0, 250.0, 300.0, 400.0, 500.0, 650.0,
@@ -86,6 +86,12 @@ var (
 	// All the built-in metrics have same attributes except 'status' and 'streaming'
 	// These attributes need to be added to only few of the metrics
 	metricsDetails = map[string]metricInfo{
+		metricNameOperationCount: {
+			additionalAttrs: []string{
+				metricLabelKeyStatus,
+			},
+			recordedPerAttempt: false,
+		},
 		metricNameOperationLatencies: {
 			additionalAttrs: []string{
 				metricLabelKeyStatus,
@@ -113,7 +119,7 @@ var (
 		if err != nil {
 			return "", err
 		}
-		return "go-" + uuid.NewString() + "@" + hostname, nil
+		return uuid.NewString() + "@" + strconv.FormatInt(int64(os.Getpid()), 10) + "@" + hostname, nil
 	}
 
 	exporterOpts = []option.ClientOption{}
@@ -382,8 +388,8 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 		return attrKeyValues, fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
 	}
 
-	attrKeyValues = append(attrKeyValues, attribute.Bool(metricLabelKeyDirectPathEnabled, mt.currOp.directPathEnabled))
-	attrKeyValues = append(attrKeyValues, attribute.Bool(metricLabelKeyDirectPathUsed, mt.currOp.currAttempt.directPathUsed))
+	attrKeyValues = append(attrKeyValues, attribute.String(metricLabelKeyDirectPathEnabled, strconv.FormatBool(mt.currOp.directPathEnabled)))
+	attrKeyValues = append(attrKeyValues, attribute.String(metricLabelKeyDirectPathUsed, strconv.FormatBool(mt.currOp.currAttempt.directPathUsed)))
 
 	rpcStatus := mt.currOp.status
 	if mDetails.recordedPerAttempt {

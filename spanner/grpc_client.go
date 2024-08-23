@@ -141,7 +141,7 @@ func (g *grpcSpannerClient) CreateSession(ctx context.Context, req *spannerpb.Cr
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).CreateSession[0:len((*g.raw.CallOptions).CreateSession):len((*g.raw.CallOptions).CreateSession)], opts...)
 	var resp *spannerpb.Session
-	err := gaxInvokeWithRecorder(ctx, mt, "CreateSession", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.CreateSession", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = g.client.CreateSession(ctx, req, settings.GRPC...)
 		return err
@@ -163,7 +163,7 @@ func (g *grpcSpannerClient) BatchCreateSessions(ctx context.Context, req *spanne
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).BatchCreateSessions[0:len((*g.raw.CallOptions).BatchCreateSessions):len((*g.raw.CallOptions).BatchCreateSessions)], opts...)
 	var resp *spannerpb.BatchCreateSessionsResponse
-	err := gaxInvokeWithRecorder(ctx, mt, "BatchCreateSessions", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.BatchCreateSessions", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = g.client.BatchCreateSessions(ctx, req, settings.GRPC...)
 		return err
@@ -185,7 +185,7 @@ func (g *grpcSpannerClient) GetSession(ctx context.Context, req *spannerpb.GetSe
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).GetSession[0:len((*g.raw.CallOptions).GetSession):len((*g.raw.CallOptions).GetSession)], opts...)
 	var resp *spannerpb.Session
-	err := gaxInvokeWithRecorder(ctx, mt, "GetSession", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.GetSession", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = g.client.GetSession(ctx, req, settings.GRPC...)
 		return err
@@ -210,7 +210,7 @@ func (g *grpcSpannerClient) DeleteSession(ctx context.Context, req *spannerpb.De
 	hds = append(g.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).DeleteSession[0:len((*g.raw.CallOptions).DeleteSession):len((*g.raw.CallOptions).DeleteSession)], opts...)
-	err := gaxInvokeWithRecorder(ctx, mt, "DeleteSession", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.DeleteSession", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = g.client.DeleteSession(ctx, req, settings.GRPC...)
 		return err
@@ -229,7 +229,7 @@ func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.Execu
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).ExecuteSql[0:len((*g.raw.CallOptions).ExecuteSql):len((*g.raw.CallOptions).ExecuteSql)], opts...)
 	var resp *spannerpb.ResultSet
-	err := gaxInvokeWithRecorder(ctx, mt, "ExecuteSql", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.ExecuteSql", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = g.client.ExecuteSql(ctx, req, settings.GRPC...)
 		return err
@@ -251,7 +251,7 @@ func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spanne
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).ExecuteStreamingSql[0:len((*g.raw.CallOptions).ExecuteStreamingSql):len((*g.raw.CallOptions).ExecuteStreamingSql)], opts...)
 	var resp spannerpb.Spanner_ExecuteStreamingSqlClient
-	err := gaxInvokeWithRecorder(ctx, mt, "ExecuteStreamingSql", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.ExecuteStreamingSql", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = g.client.ExecuteStreamingSql(ctx, req, settings.GRPC...)
 		return err
@@ -273,7 +273,7 @@ func (g *grpcSpannerClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).ExecuteBatchDml[0:len((*g.raw.CallOptions).ExecuteBatchDml):len((*g.raw.CallOptions).ExecuteBatchDml)], opts...)
 	var resp *spannerpb.ExecuteBatchDmlResponse
-	err := gaxInvokeWithRecorder(ctx, mt, "ExecuteBatchDml", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.ExecuteBatchDml", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = g.client.ExecuteBatchDml(ctx, req, settings.GRPC...)
 		return err
@@ -295,7 +295,7 @@ func (g *grpcSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).Read[0:len((*g.raw.CallOptions).Read):len((*g.raw.CallOptions).Read)], opts...)
 	var resp *spannerpb.ResultSet
-	err := gaxInvokeWithRecorder(ctx, mt, "Read", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.Read", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = g.client.Read(ctx, req, settings.GRPC...)
 		return err
@@ -317,7 +317,7 @@ func (g *grpcSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.Re
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).StreamingRead[0:len((*g.raw.CallOptions).StreamingRead):len((*g.raw.CallOptions).StreamingRead)], opts...)
 	var resp spannerpb.Spanner_StreamingReadClient
-	err := gaxInvokeWithRecorder(ctx, mt, "StreamingRead", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.StreamingRead", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = g.client.StreamingRead(ctx, req, settings.GRPC...)
 		return err
@@ -339,7 +339,7 @@ func (g *grpcSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).BeginTransaction[0:len((*g.raw.CallOptions).BeginTransaction):len((*g.raw.CallOptions).BeginTransaction)], opts...)
 	var resp *spannerpb.Transaction
-	err := gaxInvokeWithRecorder(ctx, mt, "BeginTransaction", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.BeginTransaction", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = g.client.BeginTransaction(ctx, req, settings.GRPC...)
 		return err
@@ -361,7 +361,7 @@ func (g *grpcSpannerClient) Commit(ctx context.Context, req *spannerpb.CommitReq
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).Commit[0:len((*g.raw.CallOptions).Commit):len((*g.raw.CallOptions).Commit)], opts...)
 	var resp *spannerpb.CommitResponse
-	err := gaxInvokeWithRecorder(ctx, mt, "Commit", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.Commit", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = g.client.Commit(ctx, req, settings.GRPC...)
 		return err
@@ -382,7 +382,7 @@ func (g *grpcSpannerClient) Rollback(ctx context.Context, req *spannerpb.Rollbac
 	hds = append(g.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).Rollback[0:len((*g.raw.CallOptions).Rollback):len((*g.raw.CallOptions).Rollback)], opts...)
-	err := gaxInvokeWithRecorder(ctx, mt, "Rollback", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.Rollback", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = g.client.Rollback(ctx, req, settings.GRPC...)
 		return err
@@ -401,7 +401,7 @@ func (g *grpcSpannerClient) PartitionQuery(ctx context.Context, req *spannerpb.P
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).PartitionQuery[0:len((*g.raw.CallOptions).PartitionQuery):len((*g.raw.CallOptions).PartitionQuery)], opts...)
 	var resp *spannerpb.PartitionResponse
-	err := gaxInvokeWithRecorder(ctx, mt, "PartitionQuery", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.PartitionQuery", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = g.client.PartitionQuery(ctx, req, settings.GRPC...)
 		return err
@@ -423,7 +423,7 @@ func (g *grpcSpannerClient) PartitionRead(ctx context.Context, req *spannerpb.Pa
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).PartitionRead[0:len((*g.raw.CallOptions).PartitionRead):len((*g.raw.CallOptions).PartitionRead)], opts...)
 	var resp *spannerpb.PartitionResponse
-	err := gaxInvokeWithRecorder(ctx, mt, "PartitionRead", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.PartitionRead", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = g.client.PartitionRead(ctx, req, settings.GRPC...)
 		return err
@@ -445,7 +445,7 @@ func (g *grpcSpannerClient) BatchWrite(ctx context.Context, req *spannerpb.Batch
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*g.raw.CallOptions).BatchWrite[0:len((*g.raw.CallOptions).BatchWrite):len((*g.raw.CallOptions).BatchWrite)], opts...)
 	var resp spannerpb.Spanner_BatchWriteClient
-	err := gaxInvokeWithRecorder(ctx, mt, "BatchWrite", func(ctx context.Context, settings gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "Spanner.BatchWrite", func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = g.client.BatchWrite(ctx, req, settings.GRPC...)
 		return err
