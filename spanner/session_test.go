@@ -2074,7 +2074,8 @@ func getSessionsPerChannel(sp *sessionPool) map[string]int {
 		// Get the pointer to the actual underlying gRPC ClientConn and use
 		// that as the key in the map.
 		val := reflect.ValueOf(s.client).Elem()
-		internalClient := val.FieldByName("internalClient").Elem().Elem()
+		rawClient := val.FieldByName("raw").Elem()
+		internalClient := rawClient.FieldByName("internalClient").Elem().Elem()
 		connPool := internalClient.FieldByName("connPool").Elem().Elem()
 		conn := connPool.Field(0).Pointer()
 		key := fmt.Sprintf("%v", conn)
