@@ -349,15 +349,7 @@ To create a client which will use gRPC, use the alternate constructor:
 	}
 	// Use client as usual.
 
-If the application is running within GCP, users may get better performance by
-enabling Direct Google Access (enabling requests to skip some proxy steps). To enable,
-set the environment variable `GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS=true` and add
-the following side-effect imports to your application:
-
-	import (
-		_ "google.golang.org/grpc/balancer/rls"
-		_ "google.golang.org/grpc/xds/googledirectpath"
-	)
+If the application is running within GCP, users may get better performance with Direct Google Access (enabling requests to skip some proxy steps).
 
 # Storage Control API
 
