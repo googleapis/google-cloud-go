@@ -156,14 +156,14 @@ type AwsSecurityCredentials struct {
 
 func (o *Options) validate() error {
 	if o.Audience == "" {
-		return fmt.Errorf("externalaccount: Audience must be set")
+		return errors.New("externalaccount: Audience must be set")
 	}
 	if o.SubjectTokenType == "" {
-		return fmt.Errorf("externalaccount: Subject token type must be set")
+		return errors.New("externalaccount: Subject token type must be set")
 	}
 	if o.WorkforcePoolUserProject != "" {
 		if valid := validWorkforceAudiencePattern.MatchString(o.Audience); !valid {
-			return fmt.Errorf("externalaccount: workforce_pool_user_project should not be set for non-workforce pool credentials")
+			return errors.New("externalaccount: workforce_pool_user_project should not be set for non-workforce pool credentials")
 		}
 	}
 	count := 0
@@ -177,10 +177,10 @@ func (o *Options) validate() error {
 		count++
 	}
 	if count == 0 {
-		return fmt.Errorf("externalaccount: one of CredentialSource, SubjectTokenProvider, or AwsSecurityCredentialsProvider must be set")
+		return errors.New("externalaccount: one of CredentialSource, SubjectTokenProvider, or AwsSecurityCredentialsProvider must be set")
 	}
 	if count > 1 {
-		return fmt.Errorf("externalaccount: only one of CredentialSource, SubjectTokenProvider, or AwsSecurityCredentialsProvider must be set")
+		return errors.New("externalaccount: only one of CredentialSource, SubjectTokenProvider, or AwsSecurityCredentialsProvider must be set")
 	}
 	return nil
 }
@@ -321,7 +321,7 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	}
 	// The RFC8693 doesn't define the explicit 0 of "expires_in" field behavior.
 	if stsResp.ExpiresIn <= 0 {
-		return nil, fmt.Errorf("credentials: got invalid expiry from security token service")
+		return nil, errors.New("credentials: got invalid expiry from security token service")
 	}
 	tok.Expiry = Now().Add(time.Duration(stsResp.ExpiresIn) * time.Second)
 	return tok, nil

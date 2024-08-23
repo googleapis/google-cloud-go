@@ -16,7 +16,6 @@ package idtoken
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"os"
 
@@ -100,7 +99,7 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 	if metadata.OnGCE() {
 		return computeCredentials(opts)
 	}
-	return nil, fmt.Errorf("idtoken: couldn't find any credentials")
+	return nil, errors.New("idtoken: couldn't find any credentials")
 }
 
 func (o *Options) jsonBytes() []byte {

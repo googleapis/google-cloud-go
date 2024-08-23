@@ -17,6 +17,7 @@ package downscope
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -104,23 +105,23 @@ type AvailabilityCondition struct {
 // will delegate to the base credentials for all non-token activity.
 func NewCredentials(opts *Options) (*auth.Credentials, error) {
 	if opts == nil {
-		return nil, fmt.Errorf("downscope: providing opts is required")
+		return nil, errors.New("downscope: providing opts is required")
 	}
 	if opts.Credentials == nil {
-		return nil, fmt.Errorf("downscope: Credentials cannot be nil")
+		return nil, errors.New("downscope: Credentials cannot be nil")
 	}
 	if len(opts.Rules) == 0 {
-		return nil, fmt.Errorf("downscope: length of AccessBoundaryRules must be at least 1")
+		return nil, errors.New("downscope: length of AccessBoundaryRules must be at least 1")
 	}
 	if len(opts.Rules) > 10 {
-		return nil, fmt.Errorf("downscope: length of AccessBoundaryRules may not be greater than 10")
+		return nil, errors.New("downscope: length of AccessBoundaryRules may not be greater than 10")
 	}
 	for _, val := range opts.Rules {
 		if val.AvailableResource == "" {
-			return nil, fmt.Errorf("downscope: all rules must have a nonempty AvailableResource")
+			return nil, errors.New("downscope: all rules must have a nonempty AvailableResource")
 		}
 		if len(val.AvailablePermissions) == 0 {
-			return nil, fmt.Errorf("downscope: all rules must provide at least one permission")
+			return nil, errors.New("downscope: all rules must provide at least one permission")
 		}
 	}
 	return auth.NewCredentials(&auth.CredentialsOptions{
