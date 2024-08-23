@@ -15,6 +15,7 @@
 package managedwriter
 
 import (
+	"errors"
 	"fmt"
 	"sort"
 	"sync"
@@ -75,7 +76,7 @@ func (rtr *simpleRouter) poolDetach() error {
 
 func (rtr *simpleRouter) writerAttach(writer *ManagedStream) error {
 	if writer.id == "" {
-		return fmt.Errorf("writer has no ID")
+		return errors.New("writer has no ID")
 	}
 	rtr.mu.Lock()
 	defer rtr.mu.Unlock()
@@ -88,7 +89,7 @@ func (rtr *simpleRouter) writerAttach(writer *ManagedStream) error {
 
 func (rtr *simpleRouter) writerDetach(writer *ManagedStream) error {
 	if writer.id == "" {
-		return fmt.Errorf("writer has no ID")
+		return errors.New("writer has no ID")
 	}
 	rtr.mu.Lock()
 	defer rtr.mu.Unlock()
@@ -108,7 +109,7 @@ func (rtr *simpleRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 	if rtr.conn != nil {
 		return rtr.conn, nil
 	}
-	return nil, fmt.Errorf("no connection available")
+	return nil, errors.New("no connection available")
 }
 
 func newSimpleRouter(mode connectionMode) *simpleRouter {
@@ -192,10 +193,10 @@ func (sr *sharedRouter) poolDetach() error {
 
 func (sr *sharedRouter) writerAttach(writer *ManagedStream) error {
 	if writer == nil {
-		return fmt.Errorf("invalid writer")
+		return errors.New("invalid writer")
 	}
 	if writer.id == "" {
-		return fmt.Errorf("writer has empty ID")
+		return errors.New("writer has empty ID")
 	}
 	if sr.multiplex && canMultiplex(writer.StreamName()) {
 		return sr.writerAttachMulti(writer)
@@ -306,7 +307,7 @@ func (sr *sharedRouter) rebalanceWriters() {
 
 func (sr *sharedRouter) writerDetach(writer *ManagedStream) error {
 	if writer == nil {
-		return fmt.Errorf("invalid writer")
+		return errors.New("invalid writer")
 	}
 	if sr.multiplex && canMultiplex(writer.StreamName()) {
 		return sr.writerDetachMulti(writer)
@@ -316,7 +317,7 @@ func (sr *sharedRouter) writerDetach(writer *ManagedStream) error {
 	defer sr.mu.Unlock()
 	conn := sr.exclusiveConns[writer.id]
 	if conn == nil {
-		return fmt.Errorf("writer not currently attached")
+		return errors.New("writer not currently attached")
 	}
 	conn.close()
 	delete(sr.exclusiveConns, writer.id)
@@ -343,7 +344,7 @@ func (sr *sharedRouter) writerDetachMulti(writer *ManagedStream) error {
 // or delegates too pickMultiplexConnection for the multiplex case.
 func (sr *sharedRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 	if pw.writer == nil {
-		return nil, fmt.Errorf("no writer present pending write")
+		return nil, errors.New("no writer present pending write")
 	}
 	if sr.multiplex && canMultiplex(pw.writer.StreamName()) {
 		return sr.pickMultiplexConnection(pw)
@@ -363,7 +364,7 @@ func (sr *sharedRouter) pickMultiplexConnection(pw *pendingWrite) (*connection, 
 	conn := sr.multiMap[pw.writer.id]
 	if conn == nil {
 		// TODO: update map
-		return nil, fmt.Errorf("no multiplex connection assigned")
+		return nil, errors.New("no multiplex connection assigned")
 	}
 	return conn, nil
 }

@@ -16,7 +16,7 @@ package managedwriter
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"testing"
 	"time"
 
@@ -89,7 +89,7 @@ func TestPendingWrite(t *testing.T) {
 	}
 
 	// Verify completion behavior with an error.
-	wantErr := fmt.Errorf("foo")
+	wantErr := errors.New("foo")
 
 	testResp := &storagepb.AppendRowsResponse{
 		Response: &storagepb.AppendRowsResponse_AppendResult_{

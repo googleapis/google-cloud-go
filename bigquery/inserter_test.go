@@ -16,7 +16,6 @@ package bigquery
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"testing"
 
@@ -149,7 +148,7 @@ func TestHandleInsertErrors(t *testing.T) {
 			in: []*bq.TableDataInsertAllResponseInsertErrors{
 				{Errors: []*bq.ErrorProto{{Message: "m0"}}, Index: 2},
 			},
-			want: fmt.Errorf("internal error: unexpected row index: 2"),
+			want: errors.New("internal error: unexpected row index: 2"),
 		},
 	} {
 		got := handleInsertErrors(test.in, rows)

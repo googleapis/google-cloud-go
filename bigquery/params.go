@@ -317,7 +317,7 @@ func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
 	}, nil
 }
 
-var errNilParam = fmt.Errorf("bigquery: nil parameter")
+var errNilParam = errors.New("bigquery: nil parameter")
 
 func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) {
 	if t == nil {
@@ -357,7 +357,7 @@ func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) 
 			element = iv.End
 		}
 		if element == nil {
-			return nil, fmt.Errorf("unable to determine range element type from RangeValue without a non-nil start or end value")
+			return nil, errors.New("unable to determine range element type from RangeValue without a non-nil start or end value")
 		}
 		elet, err := paramType(reflect.TypeOf(element), reflect.ValueOf(element))
 		if err != nil {
