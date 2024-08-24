@@ -291,6 +291,8 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	return streamWithReplaceSessionFunc(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
+		t.sp.sc.metricsTracerFactory,
+		"Spanner.StreamingRead",
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			if t.sh != nil {
 				t.sh.updateLastUseTime()
@@ -584,6 +586,8 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	return streamWithReplaceSessionFunc(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
+		t.sp.sc.metricsTracerFactory,
+		"Spanner.ExecuteStreamingSql",
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			req.ResumeToken = resumeToken
 			req.Session = t.sh.getID()

@@ -99,9 +99,6 @@ func parseDatabaseName(db string) (project, instance, database string, err error
 	return matches[1], matches[2], matches[3], nil
 }
 
-// PeerKey is a key used to store peer information in a context.
-type PeerKey struct{}
-
 // Client is a client for reading and writing data to a Cloud Spanner database.
 // A client is safe to use concurrently, except for its Close method.
 type Client struct {
@@ -577,11 +574,10 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 func unaryPeerSetter() grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn,
 		invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		p, ok := ctx.Value(PeerKey{}).(*peer.Peer)
+		p, ok := peer.FromContext(ctx)
 		if ok {
 			opts = append(opts, grpc.Peer(p))
 		}
-
 		return invoker(ctx, method, req, reply, cc, opts...)
 	}
 }
@@ -590,11 +586,10 @@ func unaryPeerSetter() grpc.UnaryClientInterceptor {
 func streamPeerSetter() grpc.StreamClientInterceptor {
 	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string,
 		streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-		p, ok := ctx.Value(PeerKey{}).(*peer.Peer)
+		p, ok := peer.FromContext(ctx)
 		if ok {
 			opts = append(opts, grpc.Peer(p))
 		}
-
 		return streamer(ctx, desc, cc, method, opts...)
 	}
 }
@@ -770,6 +765,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 			rts: rts,
 		},
 	}
+	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo

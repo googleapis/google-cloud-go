@@ -320,8 +320,10 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 		return &RowIterator{err: errSessionClosed(sh)}
 	}
 	sh.updateLastUseTime()
+	var method string
 	// Read or query partition.
 	if p.rreq != nil {
+		method = "Spanner.StreamingRead"
 		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			client, err := client.StreamingRead(ctx, &sppb.ReadRequest{
 				Session:             p.rreq.Session,
@@ -351,6 +353,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			return client, err
 		}
 	} else {
+		method = "Spanner.ExecuteStreamingSql"
 		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			client, err := client.ExecuteStreamingSql(ctx, &sppb.ExecuteSqlRequest{
 				Session:             p.qreq.Session,
@@ -384,6 +387,8 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 	return stream(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
+		t.sp.sc.metricsTracerFactory,
+		method,
 		rpc,
 		t.setTimestamp,
 		t.release)

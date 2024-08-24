@@ -788,7 +788,6 @@ func TestRsdNonblockingStates(t *testing.T) {
 			if err != nil {
 				t.Fatalf("failed to create a grpc client")
 			}
-
 			session, err := createSession(mc)
 			if err != nil {
 				t.Fatalf("failed to create a session")
@@ -808,6 +807,8 @@ func TestRsdNonblockingStates(t *testing.T) {
 			r := newResumableStreamDecoder(
 				ctx,
 				nil,
+				c.metricsTracerFactory,
+				"Spanner.ExecuteStreamingSql",
 				test.rpc,
 				nil,
 			)
@@ -1101,6 +1102,8 @@ func TestRsdBlockingStates(t *testing.T) {
 			r := newResumableStreamDecoder(
 				ctx,
 				nil,
+				c.metricsTracerFactory,
+				"Spanner.ExecuteStreamingSql",
 				test.rpc,
 				nil,
 			)
@@ -1212,6 +1215,11 @@ func (sr *sReceiver) Recv() (*sppb.PartialResultSet, error) {
 	return sr.rpcReceiver.Recv()
 }
 
+func (sr *sReceiver) Context() context.Context {
+	return context.TODO()
+
+}
+
 // waitn waits for nth receiving attempt from now on, until the signal for nth
 // Recv() attempts is received or timeout. Note that because the way stream()
 // works, the signal for the nth Recv() means that the previous n - 1
@@ -1262,6 +1270,8 @@ func TestQueueBytes(t *testing.T) {
 	decoder := newResumableStreamDecoder(
 		ctx,
 		nil,
+		c.metricsTracerFactory,
+		"Spanner.ExecuteStreamingSql",
 		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 			r, err := mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
@@ -1359,6 +1369,8 @@ func TestResumeToken(t *testing.T) {
 
 	streaming := func() *RowIterator {
 		return stream(context.Background(), nil,
+			c.metricsTracerFactory,
+			"Spanner.ExecuteStreamingSql",
 			func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 				r, err := mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 					Session:     session.Name,
@@ -1504,6 +1516,8 @@ func TestGrpcReconnect(t *testing.T) {
 	r := -1
 	// Establish a stream to mock cloud spanner server.
 	iter := stream(context.Background(), nil,
+		c.metricsTracerFactory,
+		"Spanner.ExecuteStreamingSql",
 		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 			r++
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
@@ -1557,6 +1571,8 @@ func TestCancelTimeout(t *testing.T) {
 	go func() {
 		// Establish a stream to mock cloud spanner server.
 		iter := stream(ctx, nil,
+			c.metricsTracerFactory,
+			"Spanner.ExecuteStreamingSql",
 			func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 				return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 					Session:     session.Name,
@@ -1594,6 +1610,8 @@ func TestCancelTimeout(t *testing.T) {
 	go func() {
 		// Establish a stream to mock cloud spanner server.
 		iter := stream(ctx, nil,
+			c.metricsTracerFactory,
+			"Spanner.ExecuteStreamingSql",
 			func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 				return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 					Session:     session.Name,
@@ -1674,6 +1692,8 @@ func TestRowIteratorDo(t *testing.T) {
 
 	nRows := 0
 	iter := stream(context.Background(), nil,
+		c.metricsTracerFactory,
+		"Spanner.ExecuteStreamingSql",
 		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
@@ -1709,6 +1729,8 @@ func TestRowIteratorDoWithError(t *testing.T) {
 	}
 
 	iter := stream(context.Background(), nil,
+		c.metricsTracerFactory,
+		"Spanner.ExecuteStreamingSql",
 		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
@@ -1743,6 +1765,8 @@ func TestIteratorStopEarly(t *testing.T) {
 	}
 
 	iter := stream(ctx, nil,
+		c.metricsTracerFactory,
+		"Spanner.ExecuteStreamingSql",
 		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
