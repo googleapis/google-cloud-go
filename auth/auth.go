@@ -130,7 +130,9 @@ func (t *Token) isEmpty() bool {
 }
 
 // Credentials holds Google credentials, including
-// [Application Default Credentials](https://developers.google.com/accounts/docs/application-default-credentials).
+// [Application Default Credentials].
+//
+// [Application Default Credentials]: https://developers.google.com/accounts/docs/application-default-credentials
 type Credentials struct {
 	json           []byte
 	projectID      CredentialsPropertyProvider
