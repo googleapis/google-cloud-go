@@ -1579,6 +1579,9 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 
 		// f makes calls to CBT service
 		err := f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
+		if !mt.builtInEnabled {
+			return err
+		}
 
 		// Set attempt status
 		statusCode, _ := convertToGrpcStatusErr(err)

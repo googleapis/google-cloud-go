@@ -69,7 +69,7 @@ func setupFakeServer(project, instance string, config ClientConfig, opt ...grpc.
 }
 
 func setupDefaultFakeServer(opt ...grpc.ServerOption) (tbl *Table, cleanup func(), err error) {
-	return setupFakeServer("client", "instance", ClientConfig{}, opt...)
+	return setupFakeServer("client", "instance", ClientConfig{MetricsProvider: NoopMetricsProvider{}}, opt...)
 }
 
 func TestRetryApply(t *testing.T) {

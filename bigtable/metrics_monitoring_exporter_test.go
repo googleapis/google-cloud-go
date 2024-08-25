@@ -16,9 +16,11 @@ limitations under the License.
 package bigtable
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"net"
 	"reflect"
 	"strings"
@@ -45,6 +47,11 @@ import (
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/emptypb"
+)
+
+var (
+	errBuf                 bytes.Buffer
+	testMetricsErrorLogger = log.New(&errBuf, metricsErrorPrefix, log.LstdFlags|log.Lmsgprefix)
 )
 
 type MetricsTestServer struct {
@@ -157,6 +164,9 @@ func assertErrorIs(t *testing.T, gotErr error, wantErr error) {
 	if !errors.Is(gotErr, wantErr) {
 		t.Errorf("error got: %v, want: %v", gotErr, wantErr)
 	}
+	if gotErr != nil && !strings.Contains(errBuf.String(), metricsErrorPrefix) {
+		t.Errorf("Expected error to contain \"%v\". Got: %+v", metricsErrorPrefix, gotErr)
+	}
 }
 
 func assertEqual(t *testing.T, got, want interface{}) {
@@ -183,7 +193,7 @@ func TestExportMetrics(t *testing.T) {
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 	}
-	exporter, err := newMonitoringExporter(ctx, "PROJECT_ID_NOT_REAL", clientOpts...)
+	exporter, err := newMonitoringExporter(ctx, "PROJECT_ID_NOT_REAL", testMetricsErrorLogger, clientOpts...)
 	if err != nil {
 		t.Errorf("Error occurred when creating exporter: %v", err)
 	}
@@ -251,7 +261,7 @@ func TestExportCounter(t *testing.T) {
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 	}
-	exporter, err := newMonitoringExporter(ctx, "PROJECT_ID_NOT_REAL", clientOpts...)
+	exporter, err := newMonitoringExporter(ctx, "PROJECT_ID_NOT_REAL", testMetricsErrorLogger, clientOpts...)
 	assertNoError(t, err)
 	provider := metric.NewMeterProvider(
 		metric.WithReader(metric.NewPeriodicReader(exporter)),
@@ -291,7 +301,7 @@ func TestExportHistogram(t *testing.T) {
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 	}
-	exporter, err := newMonitoringExporter(ctx, "PROJECT_ID_NOT_REAL", clientOpts...)
+	exporter, err := newMonitoringExporter(ctx, "PROJECT_ID_NOT_REAL", testMetricsErrorLogger, clientOpts...)
 	assertNoError(t, err)
 	provider := metric.NewMeterProvider(
 		metric.WithReader(metric.NewPeriodicReader(exporter)),
@@ -375,9 +385,10 @@ func TestRecordToMpb(t *testing.T) {
 }
 
 func TestTimeIntervalStaggering(t *testing.T) {
+	exporter := &monitoringExporter{}
 	var tm time.Time
 
-	interval, err := toNonemptyTimeIntervalpb(tm, tm)
+	interval, err := exporter.toNonemptyTimeIntervalpb(tm, tm)
 	if err != nil {
 		t.Fatalf("conversion to PB failed: %v", err)
 	}
@@ -398,9 +409,11 @@ func TestTimeIntervalStaggering(t *testing.T) {
 }
 
 func TestTimeIntervalPassthru(t *testing.T) {
+	exporter := &monitoringExporter{}
+
 	var tm time.Time
 
-	interval, err := toNonemptyTimeIntervalpb(tm, tm.Add(time.Second))
+	interval, err := exporter.toNonemptyTimeIntervalpb(tm, tm.Add(time.Second))
 	if err != nil {
 		t.Fatalf("conversion to PB failed: %v", err)
 	}
@@ -432,7 +445,7 @@ func TestConcurrentCallsAfterShutdown(t *testing.T) {
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 	}
-	exporter, err := newMonitoringExporter(ctx, "PROJECT_ID_NOT_REAL", clientOpts...)
+	exporter, err := newMonitoringExporter(ctx, "PROJECT_ID_NOT_REAL", testMetricsErrorLogger, clientOpts...)
 	assertNoError(t, err)
 
 	err = exporter.Shutdown(ctx)
@@ -442,6 +455,7 @@ func TestConcurrentCallsAfterShutdown(t *testing.T) {
 	wg.Add(3)
 
 	go func() {
+		errBuf.Reset()
 		err := exporter.Shutdown(ctx)
 		assertErrorIs(t, err, errShutdown)
 		wg.Done()
@@ -452,6 +466,7 @@ func TestConcurrentCallsAfterShutdown(t *testing.T) {
 		wg.Done()
 	}()
 	go func() {
+		errBuf.Reset()
 		err := exporter.Export(ctx, &metricdata.ResourceMetrics{})
 		assertErrorIs(t, err, errShutdown)
 		wg.Done()
@@ -473,7 +488,7 @@ func TestConcurrentExport(t *testing.T) {
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 	}
-	exporter, err := newMonitoringExporter(ctx, "PROJECT_ID_NOT_REAL", clientOpts...)
+	exporter, err := newMonitoringExporter(ctx, "PROJECT_ID_NOT_REAL", testMetricsErrorLogger, clientOpts...)
 	assertNoError(t, err)
 
 	defer func() {
@@ -531,7 +546,7 @@ func TestBatchingExport(t *testing.T) {
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		}
-		exporter, err := newMonitoringExporter(ctx, "PROJECT_ID_NOT_REAL", clientOpts...)
+		exporter, err := newMonitoringExporter(ctx, "PROJECT_ID_NOT_REAL", testMetricsErrorLogger, clientOpts...)
 		assertNoError(t, err)
 
 		t.Cleanup(func() {

@@ -26,7 +26,6 @@ import (
 
 	"cloud.google.com/go/bigtable/internal"
 	"github.com/google/uuid"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
@@ -162,8 +161,6 @@ type builtinMetricsTracerFactory struct {
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
-	otel.SetErrorHandler(newMetricsErrorHandler())
-
 	clientUID, err := generateClientUID()
 	if err != nil {
 		metricsErrorLogger.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric attribute", err, metricLabelKeyClientUID)
@@ -213,7 +210,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 
 func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
 	allOpts := createExporterOptions(opts...)
-	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
+	defaultExporter, err := newMonitoringExporter(context.Background(), project, metricsErrorLogger, allOpts...)
 	if err != nil {
 		metricsErrorLogger.Printf("newMonitoringExporter: %+v", err)
 		return nil, err
@@ -440,16 +437,4 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 	}
 
 	return attrKeyValues, nil
-}
-
-type metricsErrorHandler struct {
-	l *log.Logger
-}
-
-func newMetricsErrorHandler() *metricsErrorHandler {
-	return &metricsErrorHandler{l: metricsErrorLogger}
-}
-
-func (h *metricsErrorHandler) Handle(err error) {
-	h.l.Print(err)
 }
