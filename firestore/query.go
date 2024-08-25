@@ -32,6 +32,10 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
+var (
+	errMetricsBeforeEnd = errors.New("firestore: ExplainMetrics are available only after the iterator reaches the end")
+)
+
 // Query represents a Firestore query.
 //
 // Query values are immutable. Each Query method creates
@@ -85,10 +89,10 @@ type PlanSummary struct {
 	// The indexes selected for the query. For example:
 	//
 	//	[
-	//	  {"query_scope": "Collection", "properties": "[foo ASC, __name__ ASC)"},
+	//	  {"query_scope": "Collection", "properties": "(foo ASC, __name__ ASC)"},
 	//	  {"query_scope": "Collection", "properties": "(bar ASC, __name__ ASC)"}
 	//	]
-	IndexesUsed []*map[string]interface{}
+	IndexesUsed []*map[string]any
 }
 
 // ExecutionStats represents execution statistics for the query.
@@ -113,27 +117,26 @@ type ExecutionStats struct {
 	//	     "min_query_cost": "0"
 	//	  }
 	//	}
-	DebugStats *map[string]interface{}
+	DebugStats *map[string]any
 }
 
-func fromPbExplainMetrics(pbExplainMetrics *pb.ExplainMetrics) *ExplainMetrics {
+func fromExplainMetricsProto(pbExplainMetrics *pb.ExplainMetrics) *ExplainMetrics {
 	if pbExplainMetrics == nil {
 		return nil
 	}
-	explainMetrics := &ExplainMetrics{
-		PlanSummary:    fromPbPlanSummary(pbExplainMetrics.PlanSummary),
-		ExecutionStats: fromPbExecutionStats(pbExplainMetrics.ExecutionStats),
+	return &ExplainMetrics{
+		PlanSummary:    fromPlanSummaryProto(pbExplainMetrics.PlanSummary),
+		ExecutionStats: fromExecutionStatsProto(pbExplainMetrics.ExecutionStats),
 	}
-	return explainMetrics
 }
 
-func fromPbPlanSummary(pbPlanSummary *pb.PlanSummary) *PlanSummary {
+func fromPlanSummaryProto(pbPlanSummary *pb.PlanSummary) *PlanSummary {
 	if pbPlanSummary == nil {
 		return nil
 	}
 
 	planSummary := &PlanSummary{}
-	indexesUsed := []*map[string]interface{}{}
+	indexesUsed := []*map[string]any{}
 	for _, pbIndexUsed := range pbPlanSummary.GetIndexesUsed() {
 		indexUsed := protostruct.DecodeToMap(pbIndexUsed)
 		indexesUsed = append(indexesUsed, &indexUsed)
@@ -143,7 +146,7 @@ func fromPbPlanSummary(pbPlanSummary *pb.PlanSummary) *PlanSummary {
 	return planSummary
 }
 
-func fromPbExecutionStats(pbstats *pb.ExecutionStats) *ExecutionStats {
+func fromExecutionStatsProto(pbstats *pb.ExecutionStats) *ExecutionStats {
 	if pbstats == nil {
 		return nil
 	}
@@ -450,7 +453,7 @@ func (q Query) query() *Query { return &q }
 // This could be useful, for instance, if executing a query formed in one
 // process in another.
 func (q Query) Serialize() ([]byte, error) {
-	req, err := q.toPbRunQueryRequest()
+	req, err := q.toRunQueryRequestProto()
 	if err != nil {
 		return nil, err
 	}
@@ -470,7 +473,7 @@ func (q Query) Deserialize(bytes []byte) (Query, error) {
 	return q.fromProto(&runQueryRequest)
 }
 
-func (q Query) toPbRunQueryRequest() (*pb.RunQueryRequest, error) {
+func (q Query) toRunQueryRequestProto() (*pb.RunQueryRequest, error) {
 	structuredQuery, err := q.toProto()
 	if err != nil {
 		return nil, err
@@ -1239,14 +1242,17 @@ type docIterator interface {
 	stop()
 }
 
-// GetExplainMetrics returns query explain metrics.
+// ExplainMetrics returns query explain metrics.
 // This is only present when ExplainOptions run option is provided in the query.
-func (it *DocumentIterator) GetExplainMetrics() (*ExplainMetrics, error) {
+// when [ExplainOptions] is added to the query (see [Query.WithRunOptions]),
+// and after the iterator reaches the end. An error is returned if either of those
+// conditions does not hold.
+func (it *DocumentIterator) ExplainMetrics() (*ExplainMetrics, error) {
 	if it == nil {
 		return nil, errors.New("firestore: iterator is nil")
 	}
-	if it.err != nil {
-		return nil, it.err
+	if it.err == nil || it.err != iterator.Done {
+		return nil, errMetricsBeforeEnd
 	}
 	return it.iter.getExplainMetrics()
 }
@@ -1267,7 +1273,7 @@ func (it *DocumentIterator) Next() (*DocumentSnapshot, error) {
 		it.err = err
 	}
 
-	return ds, nil
+	return ds, err
 }
 
 // Stop stops the iterator, freeing its resources.
@@ -1325,7 +1331,7 @@ type queryDocumentIterator struct {
 	readSettings *readSettings // readOptions, if any
 
 	// Query explain metrics. This is only present when ExplainOptions is used.
-	ExplainMetrics *ExplainMetrics
+	explainMetrics *ExplainMetrics
 }
 
 func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte, rs *readSettings) *queryDocumentIterator {
@@ -1342,7 +1348,6 @@ func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte, rs *rea
 // opts override the options stored in it.q.runQuerySettings
 func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 	client := it.q.c
-
 	if it.streamClient == nil {
 		it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.Query.RunQuery")
 		defer func() {
@@ -1353,7 +1358,7 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 			}
 		}()
 
-		req, err := it.q.toPbRunQueryRequest()
+		req, err := it.q.toRunQueryRequestProto()
 		if err != nil {
 			return nil, err
 		}
@@ -1383,10 +1388,10 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 			break
 		}
 		// No document => partial progress; keep receiving.
-		it.ExplainMetrics = fromPbExplainMetrics(res.GetExplainMetrics())
+		it.explainMetrics = fromExplainMetricsProto(res.GetExplainMetrics())
 	}
 
-	it.ExplainMetrics = fromPbExplainMetrics(res.GetExplainMetrics())
+	it.explainMetrics = fromExplainMetricsProto(res.GetExplainMetrics())
 
 	docRef, err := pathToDoc(res.Document.Name, client)
 	if err != nil {
@@ -1403,7 +1408,7 @@ func (it *queryDocumentIterator) getExplainMetrics() (*ExplainMetrics, error) {
 	if it == nil {
 		return nil, fmt.Errorf("firestore: iterator is nil")
 	}
-	return it.ExplainMetrics, nil
+	return it.explainMetrics, nil
 }
 
 func (it *queryDocumentIterator) stop() {
@@ -1703,7 +1708,7 @@ func (a *AggregationQuery) GetResponse(ctx context.Context) (aro *AggregationRes
 				resp[k] = v
 			}
 		}
-		aro.ExplainMetrics = fromPbExplainMetrics(res.GetExplainMetrics())
+		aro.ExplainMetrics = fromExplainMetricsProto(res.GetExplainMetrics())
 	}
 	aro.Result = resp
 	return aro, nil

@@ -941,7 +941,7 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 
 func TestQueryToProto(t *testing.T) {
 	for _, test := range createTestScenarios(t) {
-		got, err := test.in.toPbRunQueryRequest()
+		got, err := test.in.toRunQueryRequestProto()
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
 		}
@@ -1659,17 +1659,13 @@ func TestExplainOptionsApply(t *testing.T) {
 		{
 			desc:            "ExplainOptions specified multiple times",
 			existingOptions: &pbExplainOptions,
-			newOptions: ExplainOptions{
-				Analyze: true,
-			},
-			wantErrMsg: "ExplainOptions can be specified only once",
+			newOptions:      ExplainOptions{Analyze: true},
+			wantErrMsg:      "ExplainOptions can be specified only once",
 		},
 		{
 			desc:            "ExplainOptions specified once",
 			existingOptions: nil,
-			newOptions: ExplainOptions{
-				Analyze: true,
-			},
+			newOptions:      ExplainOptions{Analyze: true},
 		},
 	} {
 		gotErr := testcase.newOptions.apply(&runQuerySettings{explainOptions: testcase.existingOptions})

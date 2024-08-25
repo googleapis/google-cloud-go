@@ -197,15 +197,17 @@ type RunOption interface {
 	apply(*runQuerySettings) error
 }
 
-// ExplainOptions is options used to configure explain query.
-//
-// Query Explain feature is still in preview and not yet publicly available.
-// Pre-GA features might have limited support and can change at any time.
+// ExplainOptions are Query Explain options
+// Query Explain allows you to submit Cloud Firestore queries to the backend and
+// receive detailed performance statistics on backend query execution in return.
 type ExplainOptions struct {
-	// When false (the default), the query will be planned but not executed, returning only
-	// metrics from the planning stages.
-	// When true, the query will be planned and executed, returning the full
-	// query results along with both planning and execution stage metrics.
+	// When false (the default), Query Explain plans the query, but skips over the
+	// execution stage. This will return planner stage information.
+	//
+	// When true, Query Explain both plans and executes the query. This returns all
+	// the planner information along with statistics from the query execution runtime.
+	// This will include the billing information of the query along with system-level
+	// insights into the query execution.
 	Analyze bool
 }
 

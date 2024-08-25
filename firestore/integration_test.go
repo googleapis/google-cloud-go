@@ -642,15 +642,15 @@ func TestIntegration_GetAll_WithRunOptions(t *testing.T) {
 
 	for _, testcase := range testcases {
 		t.Run(testcase.desc, func(t *testing.T) {
-			docIter := coll.Documents(ctx)
+			docIter := coll.WithRunOptions(testcase.opts...).Documents(ctx)
 			gotDocSnaps, gotErr := docIter.GetAll()
 			if gotErr != nil {
 				t.Fatalf("err: got: %+v, want: nil", gotErr)
 			}
 
-			gotExpM, gotExpMErr := docIter.GetExplainMetrics()
+			gotExpM, gotExpMErr := docIter.ExplainMetrics()
 			if gotExpMErr != nil {
-				t.Fatalf("GetExplainMetrics() err: got: %+v, want: nil", gotExpMErr)
+				t.Fatalf("ExplainMetrics() err: got: %+v, want: nil", gotExpMErr)
 			}
 
 			gotIDs := []string{}
@@ -658,8 +658,11 @@ func TestIntegration_GetAll_WithRunOptions(t *testing.T) {
 				gotIDs = append(gotIDs, gotSnapshot.Ref.ID)
 			}
 
-			if (testcase.wantSnapshots && !testutil.Equal(gotIDs, snapshotRefIDs)) || (!testcase.wantSnapshots && len(gotIDs) != 0) {
+			if testcase.wantSnapshots && !testutil.Equal(gotIDs, snapshotRefIDs) {
 				t.Errorf("snapshots ID: got: %+v, want: %+v", gotIDs, snapshotRefIDs)
+			}
+			if !testcase.wantSnapshots && len(gotIDs) != 0 {
+				t.Errorf("snapshots ID: got: %+v, want: %+v", gotIDs, nil)
 			}
 
 			if err := cmpExplainMetrics(gotExpM, testcase.wantExplainMetrics); err != nil {
@@ -703,7 +706,7 @@ func TestIntegration_Query_WithRunOptions(t *testing.T) {
 			t.Errorf("%v: snapshots ID: got: %+v, want: %+v", testcase.desc, gotIDs, snapshotRefIDs)
 		}
 
-		gotExp, gotExpErr := gotDocIter.GetExplainMetrics()
+		gotExp, gotExpErr := gotDocIter.ExplainMetrics()
 		if gotExpErr != nil {
 			t.Fatalf("%v: Failed to get explain metrics: %+v\n", testcase.desc, gotExpErr)
 		}
@@ -1078,7 +1081,8 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 
 	indexFields := [][]string{
 		{"updatedAt", "weight", "height"},
-		{"weight", "height"}}
+		{"weight", "height"},
+	}
 	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	defer cancel()
 	indexNames := createIndexes(adminCtx, wantDBPath, indexFields)
@@ -1574,20 +1578,18 @@ func TestIntegration_RunTransaction_WithRunOptions(t *testing.T) {
 
 					docsRead++
 
-					gotExp, gotExpErr := docIter.GetExplainMetrics()
-					if gotExpErr != nil {
-						return fmt.Errorf("GetExplainMetrics got %+v, want %+v", gotExpErr, nil)
-					}
 					// There are documents available in the iterator,
-					// explainMetrics should be nil
-					if docsRead < numDocs && gotExp != nil {
-						return fmt.Errorf("ExplainMetrics got %+v, want %+v", gotExp, nil)
+					// error should be received
+					_, gotExpErr := docIter.ExplainMetrics()
+					if docsRead < numDocs && (gotExpErr == nil || !strings.Contains(errMetricsBeforeEnd.Error(), gotExpErr.Error())) {
+						fmt.Printf("Error thrown from here %v %v\n", gotExpErr == nil, strings.Contains(errMetricsBeforeEnd.Error(), gotExpErr.Error()))
+						return fmt.Errorf("ExplainMetrics got %+v, want %+v", gotExpErr, errMetricsBeforeEnd)
 					}
 				}
 
-				gotExp, gotExpErr := docIter.GetExplainMetrics()
+				gotExp, gotExpErr := docIter.ExplainMetrics()
 				if gotExpErr != nil {
-					return fmt.Errorf("GetExplainMetrics got %+v, want %+v", gotExpErr, nil)
+					return fmt.Errorf("ExplainMetrics got %+v, want %+v", gotExpErr, nil)
 				}
 				if err := cmpExplainMetrics(gotExp, testcase.wantExplainMetrics); err != nil {
 					return fmt.Errorf("ExplainMetrics %+v", err)
