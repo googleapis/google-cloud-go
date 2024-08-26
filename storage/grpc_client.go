@@ -421,7 +421,6 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 	if q != nil {
 		it.query = *q
 	}
-	fmt.Printf("query %v", it.query.IncludeFoldersAsPrefixes)
 	req := &storagepb.ListObjectsRequest{
 		Parent:                   bucketResourceName(globalProjectAlias, bucket),
 		Prefix:                   it.query.Prefix,
