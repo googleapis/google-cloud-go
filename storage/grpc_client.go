@@ -421,6 +421,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 	if q != nil {
 		it.query = *q
 	}
+	fmt.Printf("query %v", it.query.IncludeFoldersAsPrefixes)
 	req := &storagepb.ListObjectsRequest{
 		Parent:                   bucketResourceName(globalProjectAlias, bucket),
 		Prefix:                   it.query.Prefix,
@@ -432,16 +433,12 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		MatchGlob:                it.query.MatchGlob,
 		ReadMask:                 q.toFieldMask(), // a nil Query still results in a "*" FieldMask
 		SoftDeleted:              it.query.SoftDeleted,
+		IncludeFoldersAsPrefixes: it.query.IncludeFoldersAsPrefixes,
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
-		// IncludeFoldersAsPrefixes is not supported for gRPC
-		// TODO: remove this when support is added in the proto.
-		if it.query.IncludeFoldersAsPrefixes {
-			return "", status.Errorf(codes.Unimplemented, "storage: IncludeFoldersAsPrefixes is not supported in gRPC")
-		}
 		var objects []*storagepb.Object
 		var gitr *gapic.ObjectIterator
 		err = run(it.ctx, func(ctx context.Context) error {
