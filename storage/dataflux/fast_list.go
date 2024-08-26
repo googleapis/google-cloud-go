@@ -16,8 +16,12 @@ package dataflux
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"cloud.google.com/go/storage"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/api/iterator"
 )
 
 // listingMethod represents the method of listing.
@@ -82,18 +86,68 @@ type Lister struct {
 type CloseFunc func()
 
 // NewLister creates a new dataflux Lister to list objects in the give bucket.
-func NewLister(c *storage.Client, opts *ListerInput) (*Lister, CloseFunc) {
-
-	lister := &Lister{}
+func NewLister(c *storage.Client, in *ListerInput) (*Lister, CloseFunc) {
+	bucket := c.Bucket(in.BucketName)
+	lister := &Lister{
+		method:               open,
+		pageToken:            "",
+		bucket:               bucket,
+		batchSize:            in.BatchSize,
+		query:                in.Query,
+		skipDirectoryObjects: in.SkipDirectoryObjects,
+	}
 	return lister, func() { lister.Close() }
 }
 
 // NextBatch runs worksteal algorithm and sequential listing in parallel to quickly
-// return a list of objects in the bucket. For buckets with smaller dataset,
-// sequential listing is expected to be faster. For buckets with larger dataset,
+// return a list of objects in the bucket. For smaller dataset,
+// sequential listing is expected to be faster. For larger dataset,
 // worksteal listing is expected to be faster.
-func (c *Lister) NextBatch(ctx context.Context) []*storage.ObjectAttrs {
-	return nil
+func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) {
+	// countError tracks the number of failed listing methods.
+	countError := 0
+	var results []*storage.ObjectAttrs
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	g, childCtx := errgroup.WithContext(ctx)
+
+	// Run worksteal listing when method is Open or WorkSteal.
+	// Run sequential listing when method is Open or Sequential.
+	if c.method != worksteal {
+
+		g.Go(func() error {
+			objects, nextToken, err := sequentialListing(childCtx, *c)
+			if err != nil {
+				countError++
+				return fmt.Errorf("error in running sequential listing: %w", err)
+			}
+			// If sequential listing completes first, set method to sequential listing and ranges to nil.
+			// The nextToken will be used to continue sequential listing.
+			results = objects
+			c.pageToken = nextToken
+			c.method = sequential
+			c.ranges = nil
+			// Close context when sequential listing is complete.
+			cancel()
+			return nil
+		})
+	}
+
+	// Close all functions if either sequential listing or worksteal listing is complete.
+	err := g.Wait()
+
+	// If error is not nil and context is not canceled, then return error.
+	// As one of the listing method completes, it is expected to cancel context for the other method.
+	// If both sequential and worksteal listing fail due to context canceled, then return error.
+	if err != nil && (!errors.Is(err, context.Canceled) || countError > 1) {
+		return nil, fmt.Errorf("failed waiting for sequntial and work steal lister : %w", err)
+	}
+
+	// If ranges for worksteal and pageToken for sequential listing is empty, then listing is complete.
+	if len(c.ranges) == 0 && c.pageToken == "" {
+		return results, iterator.Done
+	}
+	return results, nil
 }
 
 // Close closes the range channel of the Lister.

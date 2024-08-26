@@ -16,13 +16,71 @@ package dataflux
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/iterator"
+)
+
+const (
+	// defaultPageSize specifies the number of object results to include on a single page.
+	defaultPageSize = 5000
 )
 
 // sequentialListing performs a sequential listing on the given bucket.
 // It returns a list of objects and the next token to use to continue listing.
 // If the next token is empty, then listing is complete.
-func sequentialListing(ctx context.Context, opts Lister) ([]*storage.ObjectAttrs, string) {
-	return nil, ""
+func sequentialListing(ctx context.Context, opts Lister) ([]*storage.ObjectAttrs, string, error) {
+	var result []*storage.ObjectAttrs
+	objectIterator := opts.bucket.Objects(ctx, &opts.query)
+	// Number of pages to request from GCS pagination.
+	numPageRequest := opts.batchSize / defaultPageSize
+	var lastToken string
+	i := 0
+	for {
+		// If page size is set, then stop listing after numPageRequest.
+		if opts.batchSize > 0 && i >= numPageRequest {
+			break
+		}
+		i++
+		objects, nextToken, err := doListing(opts, objectIterator)
+		if err != nil {
+			return nil, "", fmt.Errorf("failed while listing objects: %w", err)
+		}
+		result = append(result, objects...)
+		lastToken = nextToken
+		if nextToken == "" {
+			break
+		}
+		opts.pageToken = nextToken
+	}
+	return result, lastToken, nil
+}
+
+func doListing(opts Lister, objectIterator *storage.ObjectIterator) ([]*storage.ObjectAttrs, string, error) {
+
+	var objects []*storage.ObjectAttrs
+
+	pageInfo := objectIterator.PageInfo()
+	pageInfo.MaxSize = defaultPageSize
+	pageInfo.Token = opts.pageToken
+	for {
+		attrs, err := objectIterator.Next()
+		// When last item for the assigned range is listed, then stop listing.
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, "", fmt.Errorf("iterating through objects %w", err)
+		}
+		if !(opts.skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
+			objects = append(objects, attrs)
+		}
+		if defaultPageSize != 0 && (pageInfo.Remaining() == 0) {
+			break
+		}
+	}
+	nextToken := objectIterator.PageInfo().Token
+	return objects, nextToken, nil
 }

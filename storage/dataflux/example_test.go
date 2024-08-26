@@ -50,7 +50,10 @@ func ExampleNextBatch_batch() {
 	var numOfObjects int
 
 	for {
-		objects := df.NextBatch(ctx)
+		objects, err := df.NextBatch(ctx)
+		if err != nil {
+			// handle error
+		}
 
 		if err == iterator.Done {
 			numOfObjects += len(objects)
@@ -88,7 +91,10 @@ func ExampleNextBatch_all() {
 	df, close := dataflux.NewLister(client, in)
 	defer close()
 
-	objects := df.NextBatch(ctx)
+	objects, err := df.NextBatch(ctx)
+	if err != nil {
+		// handle error
+	}
 	numOfObjects := len(objects)
 
 	log.Printf("listing %d objects in bucket %q is complete.", numOfObjects, in.BucketName)
