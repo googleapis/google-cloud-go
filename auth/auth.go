@@ -130,7 +130,9 @@ func (t *Token) isEmpty() bool {
 }
 
 // Credentials holds Google credentials, including
-// [Application Default Credentials](https://developers.google.com/accounts/docs/application-default-credentials).
+// [Application Default Credentials].
+//
+// [Application Default Credentials]: https://developers.google.com/accounts/docs/application-default-credentials
 type Credentials struct {
 	json           []byte
 	projectID      CredentialsPropertyProvider
@@ -258,7 +260,7 @@ func (ctpo *CachedTokenProviderOptions) autoRefresh() bool {
 }
 
 func (ctpo *CachedTokenProviderOptions) expireEarly() time.Duration {
-	if ctpo == nil {
+	if ctpo == nil || ctpo.ExpireEarly == 0 {
 		return defaultExpiryDelta
 	}
 	return ctpo.ExpireEarly
@@ -493,7 +495,7 @@ func (o *Options2LO) client() *http.Client {
 	if o.Client != nil {
 		return o.Client
 	}
-	return internal.CloneDefaultClient()
+	return internal.DefaultClient()
 }
 
 func (o *Options2LO) validate() error {
