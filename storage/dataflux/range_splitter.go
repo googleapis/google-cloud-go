@@ -32,9 +32,9 @@ type listRange struct {
 }
 
 // newRangeSplitter creates a new RangeSplitter with the given alphabets.
-func newRangeSplitter(alphabet string) (*rangeSplitter, error) {
+func newRangeSplitter(alphabet string) *rangeSplitter {
 
-	return &rangeSplitter{}, nil
+	return &rangeSplitter{}
 }
 
 // splitRange creates a given number of splits based on a provided start and end range.

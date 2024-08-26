@@ -32,19 +32,21 @@ const (
 	worksteal
 )
 
-// Input contains options for listing objects.
-type Input struct {
-	// Client is the storage client to list objects from.
-	Client *storage.Client
-	// BucketName is the name of the bucket to list objects from.
+// ListerInput contains options for listing objects.
+type ListerInput struct {
+	// BucketName is the name of the bucket to list objects from. Required.
 	BucketName string
-	// Parallelism is number of parallel workers to use for listing.
+
+	// Parallelism is number of parallel workers to use for listing. Optional.
 	Parallelism int
-	// pageSize is the number of objects to list.
+
+	// BatchSize is the number of objects to list. Optional.
 	BatchSize int
-	// query is the query to filter objects for listing.
+
+	// Query is the query to filter objects for listing. Optional.
 	Query storage.Query
-	// SkipDirectoryObjects is to indicate whether to list directory objects.
+
+	// SkipDirectoryObjects is to indicate whether to list directory objects. Optional.
 	SkipDirectoryObjects bool
 }
 
@@ -53,18 +55,25 @@ type Input struct {
 type Lister struct {
 	// method indicates the listing method(open, sequential, worksteal) to be used for listing.
 	method listingMethod
+
 	// pageToken is the token to use for sequential listing.
 	pageToken string
+
 	// ranges is the channel to store the start and end ranges to be listed by the workers in worksteal listing.
 	ranges chan *listRange
+
 	// bucket is the bucket handle to list objects from.
 	bucket *storage.BucketHandle
+
 	// parallelism is number of parallel workers to use for listing.
 	parallelism int
+
 	// batchSize is the number of objects to list.
 	batchSize int
+
 	// query is the query to filter objects for listing.
 	query storage.Query
+
 	// skipDirectoryObjects is to indicate whether to list directory objects.
 	skipDirectoryObjects bool
 }
@@ -73,7 +82,7 @@ type Lister struct {
 type CloseFunc func()
 
 // NewLister creates a new dataflux Lister to list objects in the give bucket.
-func NewLister(opts *Input) (*Lister, CloseFunc) {
+func NewLister(c *storage.Client, opts *ListerInput) (*Lister, CloseFunc) {
 
 	lister := &Lister{}
 	return lister, func() { lister.Close() }
@@ -83,8 +92,8 @@ func NewLister(opts *Input) (*Lister, CloseFunc) {
 // return a list of objects in the bucket. For buckets with smaller dataset,
 // sequential listing is expected to be faster. For buckets with larger dataset,
 // worksteal listing is expected to be faster.
-func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) {
-	return nil, nil
+func (c *Lister) NextBatch(ctx context.Context) []*storage.ObjectAttrs {
+	return nil
 }
 
 // Close closes the range channel of the Lister.
