@@ -47,6 +47,12 @@ func UnmarshalJSON(data []byte) (Type, error) {
 
 // Equal compares Type objects.
 func Equal(a, b Type) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
 	return proto.Equal(a.proto(), b.proto())
 }
 
