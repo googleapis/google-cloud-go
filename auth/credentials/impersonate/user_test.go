@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/header"
 	"cloud.google.com/go/auth/internal/jwt"
 )
 
@@ -81,6 +82,10 @@ func TestNewCredentials_user(t *testing.T) {
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
 					defer req.Body.Close()
+					headerApiClient := req.Header[http.CanonicalHeaderKey(header.GOOGLE_API_CLIENT_HEADER)][0]
+					if got, want := headerApiClient, header.GetGoogHeaderToken(header.CredTypeImp, header.TokenTypeAccess); got != want {
+						t.Errorf("header = %q; want %q", got, want)
+					}
 					if strings.Contains(req.URL.Path, "signJwt") {
 						b, err := io.ReadAll(req.Body)
 						if err != nil {

@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/httptransport"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/header"
 )
 
 var (
@@ -243,6 +244,7 @@ func (i impersonatedTokenProvider) Token(ctx context.Context) (*auth.Token, erro
 		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set(header.GOOGLE_API_CLIENT_HEADER, header.GetGoogHeaderToken(header.CredTypeImp, header.TokenTypeAccess))
 	resp, body, err := internal.DoRequest(i.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to generate access token: %w", err)
