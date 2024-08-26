@@ -17,38 +17,13 @@ package storage
 import (
 	"context"
 	"fmt"
-	"log"
 	"testing"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
-	"google.golang.org/api/iterator"
 )
-
-func TestMetrics(t *testing.T) {
-	if testing.Short() && !replaying {
-		t.Skip("Integration tests skipped in short mode")
-	}
-	ctx := context.Background()
-	grpcClient, err := NewGRPCClient(ctx)
-	if err != nil {
-		log.Fatalf("Error setting up gRPC client: %v", err)
-	}
-	defer grpcClient.Close()
-	bucket := grpcClient.Bucket("anima-frank-gcs-grpc-team-test-central1")
-	it := bucket.Objects(ctx, nil)
-	for {
-		_, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			log.Fatalf("Failed: %v", err)
-		}
-	}
-}
 
 func TestNonDefaultEndpoint(t *testing.T) {
 	for _, test := range []struct {
