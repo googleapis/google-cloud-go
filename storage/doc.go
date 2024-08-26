@@ -361,7 +361,8 @@ the following side-effect imports to your application:
 
 The gRPC client emits metrics by default and will export the
 gRPC telemetry discussed in [gRFC/66] and [gRFC/78] to
-[Google Cloud Monitoring]. The metrics are accessible to through Cloud Monitoring API and you incur no additional cost for publishing the metrics.Google Cloud Support can use this information to more quickly diagnose
+[Google Cloud Monitoring]. The metrics are accessible to through Cloud
+Monitoring API and you incur no additional cost for publishing the metrics.Google Cloud Support can use this information to more quickly diagnose
 problems related to GCS and gRPC.
 Sending this data does not incur any billing charges, and requires minimal
 CPU (a single RPC every minute) or memory (a few KiB to batch the
@@ -370,25 +371,18 @@ telemetry).
 To access the metrics you can view them through [Cloud Monitoring Metric explorer] with the prefix `storage.googleapis.com/client`. Metrics are emitted
 every minute.
 
-You can disable metrics using the following example
-when creating a new gRPC client.
+You can disable metrics using the following example when creating a new gRPC
+client using [WithDisabledClientMetrics].
 
-	ctx := context.Background()
-	client, err := storage.NewGRPCClient(ctx, storage.WithDisabledClientMetrics())
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// Use client as usual.
+The metrics exporter uses Cloud Monitoring API which requires accessible
+endpoint, project ID and credentials.
 
-The metrics exporter uses Cloud Monitoring API which requires accessible endpoint, project ID and credentials.
+* Project ID is determined using OTel Resource Detector for the environment
+otherwise it falls back to the project provided by [google.FindCredentials].
 
-* Endpoint is determined by the endpoint used to access storage API
-  - storage.googleapis.com -> monitoring.googleapis.com
-  - private.googleapis.com -> private.googleapis.com
-  - restricted.googleapis.com -> restricted.googleapis.com
-
-* Project ID is deteremined using OTel Resource Dectector for the environment otherwise it falls back to the project provided by [google.FindCredentials].
-* Credentials are determined using [Application Default Credentials]. The principal must have `roles/monitoring.metricWriter` role granted.
+* Credentials are determined using [Application Default Credentials]. The
+principal must have `roles/monitoring.metricWriter` role granted. If not a
+logged warning will be emitted. Subsequent are silenced to prevent noisy logs.
 
 # Storage Control API
 

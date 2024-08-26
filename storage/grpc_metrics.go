@@ -89,17 +89,17 @@ func gcpAttributeExpectedDefaults() []attribute.KeyValue {
 }
 
 // Added to help with tests
-type internalPreparedResource struct {
+type preparedResource struct {
 	projectToUse string
 	resource     *resource.Resource
 }
 
-func newPreparedResource(ctx context.Context, project string, resourceOptions []resource.Option) (*internalPreparedResource, error) {
+func newPreparedResource(ctx context.Context, project string, resourceOptions []resource.Option) (*preparedResource, error) {
 	detectedAttrs, err := resource.New(ctx, resourceOptions...)
 	if err != nil {
 		return nil, err
 	}
-	preparedResource := &internalPreparedResource{}
+	preparedResource := &preparedResource{}
 	s := detectedAttrs.Set()
 	p, present := s.Value("cloud.account.id")
 	if present {
@@ -132,12 +132,7 @@ func newPreparedResource(ctx context.Context, project string, resourceOptions []
 	return preparedResource, nil
 }
 
-type internalMetricsConfig struct {
-	project  string
-	endpoint string
-}
-
-type internalMetricsContext struct {
+type metricsContext struct {
 	// monitoring API endpoint used
 	endpoint string
 	// project used by exporter
@@ -150,7 +145,7 @@ type internalMetricsContext struct {
 	close func()
 }
 
-func (mc *internalMetricsContext) String() string {
+func (mc *metricsContext) String() string {
 	return fmt.Sprintf("endpoint: %v\nproject: %v\n", mc.endpoint, mc.project)
 }
 
@@ -177,20 +172,20 @@ func createHistogramView(name, desc, unit string, boundaries []float64) metric.V
 	})
 }
 
-func newGRPCMetricContext(ctx context.Context, config internalMetricsConfig) (*internalMetricsContext, error) {
-	preparedResource, err := newPreparedResource(ctx, config.project, []resource.Option{resource.WithDetectors(gcp.NewDetector())})
+func newGRPCMetricContext(ctx context.Context, endpoint, project string) (*metricsContext, error) {
+	preparedResource, err := newPreparedResource(ctx, project, []resource.Option{resource.WithDetectors(gcp.NewDetector())})
 	if err != nil {
 		return nil, err
 	}
-	if config.project != preparedResource.projectToUse {
-		log.Printf("The Project ID configured for metrics is %s, but the Project ID of the storage client is %s. Make sure that the service account in use has the required metric writing role (roles/monitoring.metricWriter) in the project projectIdToUse or metrics will not be written.", preparedResource.projectToUse, config.project)
+	if project != preparedResource.projectToUse {
+		log.Printf("The Project ID configured for metrics is %s, but the Project ID of the storage client is %s. Make sure that the service account in use has the required metric writing role (roles/monitoring.metricWriter) in the project projectIdToUse or metrics will not be written.", preparedResource.projectToUse, project)
 	}
 	meOpts := []mexporter.Option{
 		mexporter.WithProjectID(preparedResource.projectToUse),
 		mexporter.WithMetricDescriptorTypeFormatter(metricFormatter),
 		mexporter.WithCreateServiceTimeSeries(),
 		mexporter.WithMonitoredResourceDescription(monitoredResourceName, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"})}
-	endpointToUse := determineMonitoringEndpoint(config.endpoint)
+	endpointToUse := determineMonitoringEndpoint(endpoint)
 	if endpointToUse != "" {
 		meOpts = append(meOpts, mexporter.WithMonitoringClientOptions(option.WithEndpoint(endpointToUse)))
 	}
@@ -223,7 +218,7 @@ func newGRPCMetricContext(ctx context.Context, config internalMetricsConfig) (*i
 		OptionalLabels: []string{"grpc.lb.locality"},
 	}
 	do := option.WithGRPCDialOption(opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo}))
-	context := &internalMetricsContext{
+	context := &metricsContext{
 		project:    preparedResource.projectToUse,
 		endpoint:   endpointToUse,
 		clientOpts: []option.ClientOption{do},
@@ -233,7 +228,7 @@ func newGRPCMetricContext(ctx context.Context, config internalMetricsConfig) (*i
 	return context, nil
 }
 
-func enableClientMetrics(ctx context.Context, s *settings) (*internalMetricsContext, error) {
+func enableClientMetrics(ctx context.Context, s *settings) (*metricsContext, error) {
 	_, ep, err := htransport.NewClient(ctx, s.clientOption...)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC Metrics: %w", err)
@@ -244,10 +239,7 @@ func enableClientMetrics(ctx context.Context, s *settings) (*internalMetricsCont
 		project = c.ProjectID
 	}
 	// Enable client-side metrics for gRPC
-	metricsContext, err := newGRPCMetricContext(ctx, internalMetricsConfig{
-		project:  project,
-		endpoint: ep,
-	})
+	metricsContext, err := newGRPCMetricContext(ctx, ep, project)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC Metrics: %w", err)
 	}
@@ -267,6 +259,9 @@ type exporterLogSuppressor struct {
 	emittedFailure bool
 }
 
+// Implements OTel SDK metric.Exporter interface to prevent noisy logs from
+// lack of credentials after initial failure.
+// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric@v1.28.0#Exporter
 func (e *exporterLogSuppressor) Export(ctx context.Context, rm *metricdata.ResourceMetrics) error {
 	if err := e.exporter.Export(ctx, rm); err != nil && !e.emittedFailure {
 		if strings.Contains(err.Error(), "PermissionDenied") {

@@ -133,7 +133,7 @@ type settings struct {
 	// userProject is the user project that should be billed for the request.
 	userProject string
 
-	metricsContext *internalMetricsContext
+	metricsContext *metricsContext
 }
 
 func initSettings(opts ...storageOption) *settings {
