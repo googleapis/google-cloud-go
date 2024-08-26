@@ -281,6 +281,62 @@ func TestIntegration_ReadRowList(t *testing.T) {
 	}
 }
 
+func TestIntegration_UpdateFamilyValueType(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support update column family operation")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		ColumnFamilies: map[string]Family{
+			"cf": {
+				GCPolicy: MaxVersionsPolicy(1),
+			},
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
+		t.Fatalf("Create table from TableConf error: %v", err)
+	}
+	// Clean-up
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Update column family type to string type should be successful
+	update := Family{
+		ValueType: StringType{
+			Encoding: StringUtf8BytesEncoding{},
+		},
+	}
+	err = adminClient.UpdateFamily(ctx, tblConf.TableID, "cf", update)
+	if err != nil {
+		t.Fatalf("Failed to update value type of family: %v", err)
+	}
+	// Get FamilyInfo to check if the type is updated
+	table, err := adminClient.getTable(ctx, tblConf.TableID, btapb.Table_SCHEMA_VIEW)
+	if err != nil {
+		t.Fatalf("Failed to get table info: %v", err)
+	}
+	family := table.GetColumnFamilies()["cf"]
+	if !testutil.Equal(family.ValueType, update.ValueType.proto()) {
+		t.Fatalf("got %v, want %v", family.ValueType, update.ValueType.proto())
+	}
+}
+
 func TestIntegration_Aggregates(t *testing.T) {
 	ctx := context.Background()
 	_, _, ac, table, tableName, cleanup, err := setupIntegration(ctx, t)
