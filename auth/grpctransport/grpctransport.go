@@ -189,35 +189,72 @@ func Dial(ctx context.Context, secure bool, opts *Options) (GRPCClientConnPool, 
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
+
+	req := &dialRequest{
+		opts:   opts,
+		secure: secure,
+	}
 	if opts.PoolSize <= 1 {
-		conn, err := dial(ctx, secure, opts)
+		resp, err := dial(ctx, req)
 		if err != nil {
 			return nil, err
 		}
-		return &singleConnPool{conn}, nil
+		return &singleConnPool{resp.conn}, nil
 	}
 	pool := &roundRobinConnPool{}
 	for i := 0; i < opts.PoolSize; i++ {
-		conn, err := dial(ctx, secure, opts)
+		resp, err := dial(ctx, req)
 		if err != nil {
 			// ignore close error, if any
 			defer pool.Close()
 			return nil, err
 		}
-		pool.conns = append(pool.conns, conn)
+		pool.conns = append(pool.conns, resp.conn)
+
+		// Set the request fields to the value of the response to share gRPC
+		// auth instance for performance optimization and avoiding token
+		// refreshes where possible.
+		// See https://github.com/googleapis/google-cloud-go/issues/10631 for details.
+		req.endpoint = resp.endpoint
+		req.grpcOpts = resp.grpcOpts
 	}
 	return pool, nil
 }
 
+type dialRequest struct {
+	secure   bool
+	endpoint string
+	opts     *Options
+	grpcOpts []grpc.DialOption
+}
+
+type dialResponse struct {
+	conn     *grpc.ClientConn
+	grpcOpts []grpc.DialOption
+	endpoint string
+}
+
 // return a GRPCClientConnPool if pool == 1 or else a pool of of them if >1
-func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, error) {
-	tOpts := &transport.Options{
-		Endpoint:           opts.Endpoint,
-		ClientCertProvider: opts.ClientCertProvider,
-		Client:             opts.client(),
-		UniverseDomain:     opts.UniverseDomain,
+func dial(ctx context.Context, req *dialRequest) (*dialResponse, error) {
+	if req.endpoint != "" && len(req.grpcOpts) > 1 {
+		conn, err := grpc.DialContext(ctx, req.endpoint, req.grpcOpts...)
+		if err != nil {
+			return nil, err
+		}
+		return &dialResponse{
+			conn:     conn,
+			grpcOpts: req.grpcOpts,
+			endpoint: req.endpoint,
+		}, nil
 	}
-	if io := opts.InternalOptions; io != nil {
+
+	tOpts := &transport.Options{
+		Endpoint:           req.opts.Endpoint,
+		ClientCertProvider: req.opts.ClientCertProvider,
+		Client:             req.opts.client(),
+		UniverseDomain:     req.opts.UniverseDomain,
+	}
+	if io := req.opts.InternalOptions; io != nil {
 		tOpts.DefaultEndpointTemplate = io.DefaultEndpointTemplate
 		tOpts.DefaultMTLSEndpoint = io.DefaultMTLSEndpoint
 		tOpts.EnableDirectPath = io.EnableDirectPath
@@ -228,7 +265,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		return nil, err
 	}
 
-	if !secure {
+	if !req.secure {
 		transportCreds = grpcinsecure.NewCredentials()
 	}
 
@@ -238,28 +275,28 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	}
 
 	// Ensure the token exchange HTTP transport uses the same ClientCertProvider as the GRPC API transport.
-	opts.ClientCertProvider, err = transport.GetClientCertificateProvider(tOpts)
+	req.opts.ClientCertProvider, err = transport.GetClientCertificateProvider(tOpts)
 	if err != nil {
 		return nil, err
 	}
 
-	if opts.APIKey != "" {
+	if req.opts.APIKey != "" {
 		grpcOpts = append(grpcOpts,
 			grpc.WithPerRPCCredentials(&grpcKeyProvider{
-				apiKey:   opts.APIKey,
-				metadata: opts.Metadata,
-				secure:   secure,
+				apiKey:   req.opts.APIKey,
+				metadata: req.opts.Metadata,
+				secure:   req.secure,
 			}),
 		)
-	} else if !opts.DisableAuthentication {
-		metadata := opts.Metadata
+	} else if !req.opts.DisableAuthentication {
+		metadata := req.opts.Metadata
 
 		var creds *auth.Credentials
-		if opts.Credentials != nil {
-			creds = opts.Credentials
+		if req.opts.Credentials != nil {
+			creds = req.opts.Credentials
 		} else {
 			var err error
-			creds, err = credentials.DetectDefault(opts.resolveDetectOptions())
+			creds, err = credentials.DetectDefault(req.opts.resolveDetectOptions())
 			if err != nil {
 				return nil, err
 			}
@@ -282,21 +319,29 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			grpc.WithPerRPCCredentials(&grpcCredentialsProvider{
 				creds:                creds,
 				metadata:             metadata,
-				clientUniverseDomain: opts.UniverseDomain,
+				clientUniverseDomain: req.opts.UniverseDomain,
 			}),
 		)
 
 		// Attempt Direct Path
-		grpcOpts, endpoint = configureDirectPath(grpcOpts, opts, endpoint, creds)
+		grpcOpts, endpoint = configureDirectPath(grpcOpts, req.opts, endpoint, creds)
 	}
 
 	// Add tracing, but before the other options, so that clients can override the
 	// gRPC stats handler.
 	// This assumes that gRPC options are processed in order, left to right.
-	grpcOpts = addOCStatsHandler(grpcOpts, opts)
-	grpcOpts = append(grpcOpts, opts.GRPCDialOpts...)
+	grpcOpts = addOCStatsHandler(grpcOpts, req.opts)
+	grpcOpts = append(grpcOpts, req.opts.GRPCDialOpts...)
 
-	return grpc.NewClient(endpoint, grpcOpts...)
+	conn, err := grpc.NewClient(endpoint, grpcOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return &dialResponse{
+		conn:     conn,
+		grpcOpts: grpcOpts,
+		endpoint: endpoint,
+	}, nil
 }
 
 // grpcKeyProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
