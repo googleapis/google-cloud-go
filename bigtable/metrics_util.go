@@ -81,8 +81,7 @@ func extractLocation(headerMD metadata.MD, trailerMD metadata.MD) (string, strin
 	}
 
 	if len(locationMetadata) < 1 {
-		err := fmt.Errorf("failed to get location metadata")
-		return defaultCluster, defaultZone, wrapMetricsError(err)
+		return defaultCluster, defaultZone, wrapMetricsError(fmt.Errorf("failed to get location metadata"))
 	}
 
 	// Unmarshal binary location metadata

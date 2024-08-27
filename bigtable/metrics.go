@@ -151,13 +151,16 @@ type builtinMetricsTracerFactory struct {
 }
 
 func wrapMetricsError(err error) error {
+	if err == nil {
+		return err
+	}
 	return fmt.Errorf("%v%w", metricsErrorPrefix, err)
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
-		return nil, fmt.Errorf("%v built-in metrics: generateClientUID failed: %v", metricsErrorPrefix, err)
+		return nil, wrapMetricsError(err)
 	}
 
 	tracerFactory := &builtinMetricsTracerFactory{
@@ -190,8 +193,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 			return tracerFactory, nil
 		default:
 			tracerFactory.enabled = false
-			unknownErr := errors.New("unknown MetricsProvider type")
-			return tracerFactory, wrapMetricsError(unknownErr)
+			return tracerFactory, wrapMetricsError(errors.New("unknown MetricsProvider type"))
 		}
 	}
 
@@ -398,8 +400,7 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 	// Get metric details
 	mDetails, found := metricsDetails[metricName]
 	if !found {
-		err := fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
-		return attrKeyValues, wrapMetricsError(err)
+		return attrKeyValues, wrapMetricsError(fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName))
 	}
 
 	status := mt.currOp.status
@@ -415,8 +416,7 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 		case metricLabelKeyStreamingOperation:
 			attrKeyValues = append(attrKeyValues, attribute.Bool(metricLabelKeyStreamingOperation, mt.isStreaming))
 		default:
-			err := fmt.Errorf("unknown additional attribute: %v", attrKey)
-			return attrKeyValues, wrapMetricsError(err)
+			return attrKeyValues, wrapMetricsError(fmt.Errorf("unknown additional attribute: %v", attrKey))
 		}
 	}
 

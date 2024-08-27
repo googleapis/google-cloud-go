@@ -227,7 +227,7 @@ func (me *monitoringExporter) recordToTimeSeriesPb(m otelmetricdata.Metrics) ([]
 			metric, mr := me.recordToMetricAndMonitoredResourcePbs(m, point.Attributes)
 			var ts *monitoringpb.TimeSeries
 			var err error
-			ts, err = sumToTimeSeries(point, m, mr)
+			ts, err = sumToTimeSeries[int64](point, m, mr)
 			if err != nil {
 				errs = append(errs, err)
 				continue
@@ -246,7 +246,7 @@ func sumToTimeSeries[N int64 | float64](point otelmetricdata.DataPoint[N], metri
 	if err != nil {
 		return nil, wrapMetricsError(err)
 	}
-	value, valueType := numberDataPointToValue(point)
+	value, valueType := numberDataPointToValue[N](point)
 	return &monitoringpb.TimeSeries{
 		Resource:   mr,
 		Unit:       string(metrics.Unit),

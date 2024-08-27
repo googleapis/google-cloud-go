@@ -17,6 +17,7 @@ limitations under the License.
 package bigtable
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"sort"
@@ -27,6 +28,7 @@ import (
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -248,6 +250,67 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 }
 
+func TestExporterLogs(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+
+	// Reduce sampling period to reduce test run time
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 5 * time.Second
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+
+	tbl, cleanup, gotErr := setupFakeServer(project, instance, ClientConfig{})
+	t.Cleanup(func() { defer cleanup() })
+	if gotErr != nil {
+		t.Fatalf("err: got: %v, want: %v", gotErr, nil)
+		return
+	}
+
+	// Set up mock error handler
+	origErrHandler := otel.GetErrorHandler()
+	t.Cleanup(func() {
+		otel.SetErrorHandler(origErrHandler)
+	})
+	errBuf := new(bytes.Buffer)
+	otel.SetErrorHandler(&MockErrorHandler{
+		buf: errBuf,
+	})
+
+	// record start time
+	testStartTime := time.Now()
+
+	// Perform read rows operation
+	tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool {
+		return true
+	})
+
+	// Calculate elapsed time
+	elapsedTime := time.Since(testStartTime)
+	if elapsedTime < 3*defaultSamplePeriod {
+		// Ensure at least 2 datapoints are recorded
+		time.Sleep(3*defaultSamplePeriod - elapsedTime)
+	}
+
+	// In setupFakeServer above, Bigtable client is created with options :
+	// option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock())
+	// These same options will be used to create Monitoring client but since there
+	// is no fake Monitoring server at that grpc conn, all the exports result in failure.
+	// Thus, there should be errors in errBuf.
+	if !strings.Contains(errBuf.String(), metricsErrorPrefix) {
+		t.Errorf("Expected %v to contain %v", errBuf.String(), metricsErrorPrefix)
+	}
+}
+
+type MockErrorHandler struct {
+	buf *bytes.Buffer
+}
+
+func (m *MockErrorHandler) Handle(err error) {
+	fmt.Fprintln(m.buf, err)
+}
 func TestToOtelMetricAttrs(t *testing.T) {
 	mt := builtinMetricsTracer{
 		tableName:   "my-table",
