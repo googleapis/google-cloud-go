@@ -22,6 +22,9 @@ package accountspb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	phone_number "google.golang.org/genproto/googleapis/type/phone_number"
 	postaladdress "google.golang.org/genproto/googleapis/type/postaladdress"
@@ -31,8 +34,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
