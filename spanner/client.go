@@ -31,7 +31,6 @@ import (
 	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
 	grpcgcppb "github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/grpc_gcp"
 	"github.com/googleapis/gax-go/v2"
-	go_grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/noop"
@@ -560,8 +559,8 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 	}
 	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
-		clientDefaultOpts = append(clientDefaultOpts, option.WithGRPCDialOption(grpc.WithUnaryInterceptor(AddUnaryPeerInterceptor())),
-			option.WithGRPCDialOption(grpc.WithStreamInterceptor(AddStreamPeerInterceptor())))
+		clientDefaultOpts = append(clientDefaultOpts, option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(AddUnaryPeerInterceptor()...)),
+			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(AddStreamPeerInterceptor()...)))
 	}
 	if compression == "gzip" {
 		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -595,17 +594,17 @@ func streamPeerSetter() grpc.StreamClientInterceptor {
 }
 
 // AddUnaryPeerInterceptor intercepts unary requests and add PeerKey.
-func AddUnaryPeerInterceptor() grpc.UnaryClientInterceptor {
+func AddUnaryPeerInterceptor() []grpc.UnaryClientInterceptor {
 	unaryInterceptors := []grpc.UnaryClientInterceptor{}
 	unaryInterceptors = append(unaryInterceptors, unaryPeerSetter())
-	return go_grpc_middleware.ChainUnaryClient(unaryInterceptors...)
+	return unaryInterceptors
 }
 
 // AddStreamPeerInterceptor intercepts stream requests and add PeerKey.
-func AddStreamPeerInterceptor() grpc.StreamClientInterceptor {
+func AddStreamPeerInterceptor() []grpc.StreamClientInterceptor {
 	streamInterceptors := []grpc.StreamClientInterceptor{}
 	streamInterceptors = append(streamInterceptors, streamPeerSetter())
-	return go_grpc_middleware.ChainStreamClient(streamInterceptors...)
+	return streamInterceptors
 }
 
 // getQueryOptions returns the query options overwritten by the environment
@@ -801,6 +800,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 		},
 		ID: tid,
 	}
+	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
@@ -1051,54 +1051,68 @@ func (bwo BatchWriteOptions) merge(opts BatchWriteOptions) BatchWriteOptions {
 
 // BatchWriteResponseIterator is an iterator over BatchWriteResponse structures returned from BatchWrite RPC.
 type BatchWriteResponseIterator struct {
-	ctx            context.Context
-	stream         sppb.Spanner_BatchWriteClient
-	err            error
-	dataReceived   bool
-	replaceSession func(ctx context.Context) error
-	rpc            func(ctx context.Context) (sppb.Spanner_BatchWriteClient, error)
-	release        func(error)
-	cancel         func()
+	ctx                context.Context
+	stream             sppb.Spanner_BatchWriteClient
+	err                error
+	dataReceived       bool
+	method             string
+	meterTracerFactory *builtinMetricsTracerFactory
+	replaceSession     func(ctx context.Context) error
+	rpc                func(ctx context.Context) (sppb.Spanner_BatchWriteClient, error)
+	release            func(error)
+	cancel             func()
 }
 
 // Next returns the next result. Its second return value is iterator.Done if
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *BatchWriteResponseIterator) Next() (*sppb.BatchWriteResponse, error) {
-	for {
-		// Stream finished or in error state.
-		if r.err != nil {
-			return nil, r.err
+	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx, true)
+	defer func() {
+		if mt.method != "" {
+			statusCode, _ := convertToGrpcStatusErr(r.err)
+			mt.currOp.setStatus(statusCode.String())
+			recordOperationCompletion(&mt)
 		}
+	}()
+	var response *sppb.BatchWriteResponse
+	_ = gaxInvokeWithRecorder(r.ctx, &mt, r.method, func(ctx context.Context, settings gax.CallSettings) (context.Context, error) {
+		for {
+			// Stream finished or in error state.
+			if r.err != nil {
+				return r.ctx, r.err
+			}
 
-		// RPC not made yet.
-		if r.stream == nil {
-			r.stream, r.err = r.rpc(r.ctx)
-			continue
+			// RPC not made yet.
+			if r.stream == nil {
+				r.stream, r.err = r.rpc(r.ctx)
+				continue
+			}
+
+			// Read from the stream.
+			response, r.err = r.stream.Recv()
+
+			// Return an item.
+			if r.err == nil {
+				r.dataReceived = true
+				return r.stream.Context(), nil
+			}
+
+			// Stream finished.
+			if r.err == io.EOF {
+				mt.currOp.attemptCount--
+				r.err = iterator.Done
+				return r.stream.Context(), r.err
+			}
+
+			// Retry request on session not found error only if no data has been received before.
+			if !r.dataReceived && r.replaceSession != nil && isSessionNotFoundError(r.err) {
+				r.err = r.replaceSession(r.ctx)
+				r.stream = nil
+			}
 		}
-
-		// Read from the stream.
-		var response *sppb.BatchWriteResponse
-		response, r.err = r.stream.Recv()
-
-		// Return an item.
-		if r.err == nil {
-			r.dataReceived = true
-			return response, nil
-		}
-
-		// Stream finished.
-		if r.err == io.EOF {
-			r.err = iterator.Done
-			return nil, r.err
-		}
-
-		// Retry request on session not found error only if no data has been received before.
-		if !r.dataReceived && r.replaceSession != nil && isSessionNotFoundError(r.err) {
-			r.err = r.replaceSession(r.ctx)
-			r.stream = nil
-		}
-	}
+	})
+	return response, r.err
 }
 
 // Stop terminates the iteration. It should be called after you finish using the
@@ -1232,11 +1246,13 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 	ctx, cancel := context.WithCancel(ctx)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchWriteResponseIterator")
 	return &BatchWriteResponseIterator{
-		ctx:            ctx,
-		rpc:            rpc,
-		replaceSession: replaceSession,
-		release:        release,
-		cancel:         cancel,
+		ctx:                ctx,
+		rpc:                rpc,
+		replaceSession:     replaceSession,
+		release:            release,
+		cancel:             cancel,
+		method:             "Spanner.BatchWrite",
+		meterTracerFactory: c.metricsTracerFactory,
 	}
 }
 
