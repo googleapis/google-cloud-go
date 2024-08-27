@@ -4,9 +4,9 @@ go 1.21
 
 require (
 	cloud.google.com/go v0.115.1
-	cloud.google.com/go/iam v1.1.13
-	cloud.google.com/go/longrunning v0.5.12
-	github.com/google/btree v1.1.2
+	cloud.google.com/go/iam v1.2.0
+	cloud.google.com/go/longrunning v0.6.0
+	github.com/google/btree v1.1.3
 	github.com/google/go-cmp v0.6.0
 	github.com/googleapis/cloud-bigtable-clients-test v0.0.2
 	github.com/googleapis/gax-go/v2 v2.13.0
@@ -16,16 +16,16 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.28.0
 	google.golang.org/api v0.194.0
 	google.golang.org/genproto v0.0.0-20240814211410-ddb44dafa142
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240826202546-f6391c0de4c7
 	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2
 	rsc.io/binaryregexp v0.2.0
 )
 
 require (
-	cloud.google.com/go/monitoring v1.20.4
+	cloud.google.com/go/monitoring v1.21.0
 	github.com/google/uuid v1.6.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20240814211410-ddb44dafa142
+	google.golang.org/genproto/googleapis/api v0.0.0-20240826202546-f6391c0de4c7
 )
 
 require (
