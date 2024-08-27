@@ -542,17 +542,24 @@ func (x *Attributes) GetCustomLabel_4() string {
 	return ""
 }
 
-// The certification for the product.
+// The certification for the product. Use the this attribute to describe
+// certifications, such as energy efficiency ratings, associated with a product.
 type Certification struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Name of the certification.
+	// The name of the certification. At this time, the most common value is
+	// "EPREL", which represents energy efficiency certifications in the EU
+	// European Registry for Energy Labeling (EPREL) database.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Name of the certification body.
+	// The authority or certification body responsible for issuing the
+	// certification. At this time, the most common value is "EC" or
+	// “European_Commission” for energy labels in the EU.
 	Authority string `protobuf:"bytes,2,opt,name=authority,proto3" json:"authority,omitempty"`
-	// A unique code to identify the certification.
+	// The code of the certification. For example, for the EPREL certificate with
+	// the link https://eprel.ec.europa.eu/screen/product/dishwashers2019/123456
+	// the code is 123456. The code is required for European Energy Labels.
 	Code string `protobuf:"bytes,3,opt,name=code,proto3" json:"code,omitempty"`
 }
 

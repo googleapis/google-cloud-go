@@ -24,9 +24,9 @@ import (
 	"testing"
 	"time"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 )
 

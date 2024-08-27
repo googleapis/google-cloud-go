@@ -1695,7 +1695,6 @@ type Query struct {
 
 	// IncludeFoldersAsPrefixes includes Folders and Managed Folders in the set of
 	// prefixes returned by the query. Only applicable if Delimiter is set to /.
-	// IncludeFoldersAsPrefixes is not yet implemented in the gRPC API.
 	IncludeFoldersAsPrefixes bool
 
 	// SoftDeleted indicates whether to list soft-deleted objects.

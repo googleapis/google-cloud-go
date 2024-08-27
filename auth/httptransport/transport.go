@@ -94,7 +94,11 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 // http.DefaultTransport.
 // If TLSCertificate is available, set TLSClientConfig as well.
 func defaultBaseTransport(clientCertSource cert.Provider, dialTLSContext func(context.Context, string, string) (net.Conn, error)) http.RoundTripper {
-	trans := http.DefaultTransport.(*http.Transport).Clone()
+	defaultTransport, ok := http.DefaultTransport.(*http.Transport)
+	if !ok {
+		defaultTransport = transport.BaseTransport()
+	}
+	trans := defaultTransport.Clone()
 	trans.MaxIdleConnsPerHost = 100
 
 	if clientCertSource != nil {
