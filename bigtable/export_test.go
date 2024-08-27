@@ -241,7 +241,7 @@ func (e *EmulatedEnv) NewInstanceAdminClient() (*InstanceAdminClient, error) {
 
 // NewClient builds a new connected data client for this environment
 func (e *EmulatedEnv) NewClient() (*Client, error) {
-	return e.newEmulatedClient(ClientConfig{})
+	return e.newEmulatedClient(ClientConfig{MetricsProvider: NoopMetricsProvider{}})
 }
 
 // NewClient builds a new connected data client with provided config for this environment

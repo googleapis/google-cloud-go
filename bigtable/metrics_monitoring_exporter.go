@@ -22,7 +22,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"math"
 	"reflect"
 	"sync"
@@ -76,10 +75,9 @@ type monitoringExporter struct {
 	client       *monitoring.MetricClient
 	shutdownOnce sync.Once
 	projectID    string
-	errLogger    *log.Logger
 }
 
-func newMonitoringExporter(ctx context.Context, project string, errLogger *log.Logger, opts ...option.ClientOption) (*monitoringExporter, error) {
+func newMonitoringExporter(ctx context.Context, project string, opts ...option.ClientOption) (*monitoringExporter, error) {
 	client, err := monitoring.NewMetricClient(ctx, opts...)
 	if err != nil {
 		return nil, err
@@ -88,20 +86,12 @@ func newMonitoringExporter(ctx context.Context, project string, errLogger *log.L
 		client:    client,
 		shutdown:  make(chan struct{}),
 		projectID: project,
-		errLogger: errLogger,
 	}, nil
-}
-
-func (me *monitoringExporter) logErrorAndReturn(src string, err error) error {
-	if err != nil && me.errLogger != nil {
-		me.errLogger.Println(fmt.Errorf("%v: %w", src, err).Error())
-	}
-	return err
 }
 
 // ForceFlush does nothing, the exporter holds no state.
 func (me *monitoringExporter) ForceFlush(ctx context.Context) error {
-	return me.logErrorAndReturn("ForceFlush", ctx.Err())
+	return wrapMetricsError(ctx.Err())
 }
 
 // Shutdown shuts down the client connections.
@@ -111,18 +101,18 @@ func (me *monitoringExporter) Shutdown(ctx context.Context) error {
 		close(me.shutdown)
 		err = errors.Join(ctx.Err(), me.client.Close())
 	})
-	return me.logErrorAndReturn("Shutdown", err)
+	return wrapMetricsError(err)
 }
 
 // Export exports OpenTelemetry Metrics to Google Cloud Monitoring.
 func (me *monitoringExporter) Export(ctx context.Context, rm *otelmetricdata.ResourceMetrics) error {
 	select {
 	case <-me.shutdown:
-		return me.logErrorAndReturn("Export", errShutdown)
+		return wrapMetricsError(errShutdown)
 	default:
 	}
 
-	return me.logErrorAndReturn("Export", me.exportTimeSeries(ctx, rm))
+	return wrapMetricsError(me.exportTimeSeries(ctx, rm))
 }
 
 // Temporality returns the Temporality to use for an instrument kind.
@@ -140,7 +130,7 @@ func (me *monitoringExporter) Aggregation(ik otelmetric.InstrumentKind) otelmetr
 func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetricdata.ResourceMetrics) error {
 	tss, err := me.recordsToTimeSeriesPbs(rm)
 	if len(tss) == 0 {
-		return me.logErrorAndReturn("exportTimeSeries", err)
+		return wrapMetricsError(err)
 	}
 
 	name := fmt.Sprintf("projects/%s", me.projectID)
@@ -159,7 +149,7 @@ func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetr
 		errs = append(errs, me.client.CreateServiceTimeSeries(ctx, req))
 	}
 
-	return me.logErrorAndReturn("exportTimeSeries", errors.Join(errs...))
+	return wrapMetricsError(errors.Join(errs...))
 }
 
 // recordToMetricAndMonitoredResourcePbs converts data from records to Metric and Monitored resource proto type for Cloud Monitoring.
@@ -209,7 +199,7 @@ func (me *monitoringExporter) recordsToTimeSeriesPbs(rm *otelmetricdata.Resource
 		}
 	}
 
-	return tss, me.logErrorAndReturn("recordsToTimeSeriesPbs", errors.Join(errs...))
+	return tss, wrapMetricsError(errors.Join(errs...))
 }
 
 // recordToTimeSeriesPb converts record to TimeSeries proto type with common resource.
@@ -224,7 +214,7 @@ func (me *monitoringExporter) recordToTimeSeriesPb(m otelmetricdata.Metrics) ([]
 	case otelmetricdata.Histogram[float64]:
 		for _, point := range a.DataPoints {
 			metric, mr := me.recordToMetricAndMonitoredResourcePbs(m, point.Attributes)
-			ts, err := me.histogramToTimeSeries(point, m, mr)
+			ts, err := histogramToTimeSeries(point, m, mr)
 			if err != nil {
 				errs = append(errs, err)
 				continue
@@ -237,7 +227,7 @@ func (me *monitoringExporter) recordToTimeSeriesPb(m otelmetricdata.Metrics) ([]
 			metric, mr := me.recordToMetricAndMonitoredResourcePbs(m, point.Attributes)
 			var ts *monitoringpb.TimeSeries
 			var err error
-			ts, err = me.sumToTimeSeries(point, m, mr)
+			ts, err = sumToTimeSeries(point, m, mr)
 			if err != nil {
 				errs = append(errs, err)
 				continue
@@ -248,13 +238,13 @@ func (me *monitoringExporter) recordToTimeSeriesPb(m otelmetricdata.Metrics) ([]
 	default:
 		errs = append(errs, errUnexpectedAggregationKind{kind: reflect.TypeOf(m.Data).String()})
 	}
-	return tss, me.logErrorAndReturn("recordToTimeSeriesPb", errors.Join(errs...))
+	return tss, wrapMetricsError(errors.Join(errs...))
 }
 
-func (me *monitoringExporter) sumToTimeSeries(point otelmetricdata.DataPoint[int64], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource) (*monitoringpb.TimeSeries, error) {
-	interval, err := me.toNonemptyTimeIntervalpb(point.StartTime, point.Time)
+func sumToTimeSeries[N int64 | float64](point otelmetricdata.DataPoint[N], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource) (*monitoringpb.TimeSeries, error) {
+	interval, err := toNonemptyTimeIntervalpb(point.StartTime, point.Time)
 	if err != nil {
-		return nil, me.logErrorAndReturn("sumToTimeSeries", err)
+		return nil, wrapMetricsError(err)
 	}
 	value, valueType := numberDataPointToValue(point)
 	return &monitoringpb.TimeSeries{
@@ -269,10 +259,10 @@ func (me *monitoringExporter) sumToTimeSeries(point otelmetricdata.DataPoint[int
 	}, nil
 }
 
-func (me *monitoringExporter) histogramToTimeSeries(point otelmetricdata.HistogramDataPoint[float64], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource) (*monitoringpb.TimeSeries, error) {
-	interval, err := me.toNonemptyTimeIntervalpb(point.StartTime, point.Time)
+func histogramToTimeSeries[N int64 | float64](point otelmetricdata.HistogramDataPoint[N], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource) (*monitoringpb.TimeSeries, error) {
+	interval, err := toNonemptyTimeIntervalpb(point.StartTime, point.Time)
 	if err != nil {
-		return nil, me.logErrorAndReturn("histogramToTimeSeries", err)
+		return nil, wrapMetricsError(err)
 	}
 	distributionValue := histToDistribution(point)
 	return &monitoringpb.TimeSeries{
@@ -291,7 +281,7 @@ func (me *monitoringExporter) histogramToTimeSeries(point otelmetricdata.Histogr
 	}, nil
 }
 
-func (me *monitoringExporter) toNonemptyTimeIntervalpb(start, end time.Time) (*monitoringpb.TimeInterval, error) {
+func toNonemptyTimeIntervalpb(start, end time.Time) (*monitoringpb.TimeInterval, error) {
 	// The end time of a new interval must be at least a millisecond after the end time of the
 	// previous interval, for all non-gauge types.
 	// https://cloud.google.com/monitoring/api/ref_v3/rpc/google.monitoring.v3#timeinterval
@@ -305,7 +295,7 @@ func (me *monitoringExporter) toNonemptyTimeIntervalpb(start, end time.Time) (*m
 		endpb.CheckValid(),
 	)
 	if err != nil {
-		return nil, me.logErrorAndReturn("toNonemptyTimeIntervalpb", err)
+		return nil, wrapMetricsError(err)
 	}
 
 	return &monitoringpb.TimeInterval{

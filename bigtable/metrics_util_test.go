@@ -17,23 +17,13 @@ limitations under the License.
 package bigtable
 
 import (
-	"bytes"
 	"fmt"
-	"strings"
 	"testing"
 
 	"google.golang.org/grpc/metadata"
 )
 
 func TestExtractServerLatency(t *testing.T) {
-	// Redirect errors to buffer
-	var errBuf bytes.Buffer
-	origMetricsLogDest := metricsErrorLogger.Writer()
-	metricsErrorLogger.SetOutput(&errBuf)
-	t.Cleanup(func() {
-		metricsErrorLogger.SetOutput(origMetricsLogDest)
-	})
-
 	invalidFormat := "invalid format"
 	invalidFormatMD := metadata.MD{
 		serverTimingMDKey: []string{invalidFormat},
@@ -108,22 +98,11 @@ func TestExtractServerLatency(t *testing.T) {
 			if gotLatency != test.wantLatency {
 				t.Errorf("latency got: %v, want: %v", gotLatency, test.wantLatency)
 			}
-			if gotErr != nil && !strings.Contains(errBuf.String(), metricsErrorPrefix+gotErr.Error()) {
-				t.Errorf("Expected error to contain \"%v\". Got: %+v", metricsErrorPrefix, gotErr)
-			}
 		})
 	}
 }
 
 func TestExtractLocation(t *testing.T) {
-	// Redirect errors to buffer
-	var errBuf bytes.Buffer
-	origMetricsLogDest := metricsErrorLogger.Writer()
-	metricsErrorLogger.SetOutput(&errBuf)
-	t.Cleanup(func() {
-		metricsErrorLogger.SetOutput(origMetricsLogDest)
-	})
-
 	invalidFormatErr := "cannot parse invalid wire-format data"
 	tests := []struct {
 		desc        string
@@ -198,9 +177,6 @@ func TestExtractLocation(t *testing.T) {
 			}
 			if !equalErrs(gotErr, test.wantError) {
 				t.Errorf("error got: %v, want: %v", gotErr, test.wantError)
-			}
-			if gotErr != nil && !strings.Contains(errBuf.String(), metricsErrorPrefix+gotErr.Error()) {
-				t.Errorf("Expected error to contain \"%v\". Got: %+v", metricsErrorPrefix, errBuf.String())
 			}
 		})
 	}

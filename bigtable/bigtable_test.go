@@ -849,7 +849,7 @@ func TestMutateRowsWithAggregates_MergeToCell(t *testing.T) {
 		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
 	}
 
-	client, err := NewClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	client, err := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, ClientConfig{MetricsProvider: NoopMetricsProvider{}}, option.WithGRPCConn(conn))
 	if err != nil {
 		t.Fatalf("NewClient failed: %v", err)
 	}

@@ -20,7 +20,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -71,16 +70,7 @@ var (
 	// duration between two metric exports
 	defaultSamplePeriod = 5 * time.Minute
 
-	metricsErrorPrefix = "bigtable metrics: "
-
-	// Logger used to log errors seen while collecting and exporting metrics
-	// Log format is yyyy/MM/dd HH:mm:ss bigtable: .........
-	// Date and time are in local timezone
-	//
-	// Errors seen while collecting and exporting metrics should not fail user operation.
-	// So, not all errors are bubbled up to the user.
-	// These error logs will help in debugging any metrics related issues.
-	metricsErrorLogger = log.New(os.Stderr, metricsErrorPrefix, log.LstdFlags|log.Lmsgprefix)
+	metricsErrorPrefix = "bigtable-metrics: "
 
 	clientName = fmt.Sprintf("go-bigtable/%v", internal.Version)
 
@@ -160,10 +150,14 @@ type builtinMetricsTracerFactory struct {
 	retryCount         metric.Int64Counter
 }
 
+func wrapMetricsError(err error) error {
+	return fmt.Errorf("%v%w", metricsErrorPrefix, err)
+}
+
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
-		metricsErrorLogger.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric attribute", err, metricLabelKeyClientUID)
+		return nil, fmt.Errorf("%v built-in metrics: generateClientUID failed: %v", metricsErrorPrefix, err)
 	}
 
 	tracerFactory := &builtinMetricsTracerFactory{
@@ -197,8 +191,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 		default:
 			tracerFactory.enabled = false
 			unknownErr := errors.New("unknown MetricsProvider type")
-			metricsErrorLogger.Println(unknownErr.Error())
-			return tracerFactory, unknownErr
+			return tracerFactory, wrapMetricsError(unknownErr)
 		}
 	}
 
@@ -210,10 +203,9 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 
 func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
 	allOpts := createExporterOptions(opts...)
-	defaultExporter, err := newMonitoringExporter(context.Background(), project, metricsErrorLogger, allOpts...)
+	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
 	if err != nil {
-		metricsErrorLogger.Printf("newMonitoringExporter: %+v", err)
-		return nil, err
+		return nil, wrapMetricsError(err)
 	}
 
 	return []sdkmetric.Option{sdkmetric.WithReader(
@@ -235,8 +227,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
-		metricsErrorLogger.Printf("Float64Histogram operationLatencies: %+v", err)
-		return err
+		return wrapMetricsError(err)
 	}
 
 	// Create attempt_latencies
@@ -247,8 +238,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
-		metricsErrorLogger.Printf("Float64Histogram attemptLatencies: %+v", err)
-		return err
+		return wrapMetricsError(err)
 	}
 
 	// Create server_latencies
@@ -259,8 +249,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
-		metricsErrorLogger.Printf("Float64Histogram serverLatencies: %+v", err)
-		return err
+		return wrapMetricsError(err)
 	}
 
 	// Create retry_count
@@ -269,10 +258,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("The number of additional RPCs sent after the initial attempt."),
 		metric.WithUnit(metricUnitCount),
 	)
-	if err != nil {
-		metricsErrorLogger.Printf("Int64Counter retryCount: %+v", err)
-	}
-	return err
+	return wrapMetricsError(err)
 }
 
 // builtinMetricsTracer is created one per operation
@@ -413,8 +399,7 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 	mDetails, found := metricsDetails[metricName]
 	if !found {
 		err := fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
-		metricsErrorLogger.Println(err.Error())
-		return attrKeyValues, err
+		return attrKeyValues, wrapMetricsError(err)
 	}
 
 	status := mt.currOp.status
@@ -431,8 +416,7 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 			attrKeyValues = append(attrKeyValues, attribute.Bool(metricLabelKeyStreamingOperation, mt.isStreaming))
 		default:
 			err := fmt.Errorf("unknown additional attribute: %v", attrKey)
-			metricsErrorLogger.Println(err.Error())
-			return attrKeyValues, err
+			return attrKeyValues, wrapMetricsError(err)
 		}
 	}
 
