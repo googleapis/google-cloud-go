@@ -101,7 +101,9 @@ func newGRPCSpannerClient(ctx context.Context, sc *sessionClient, opts ...option
 	if sc.callOptions != nil {
 		raw.CallOptions = mergeCallOptions(raw.CallOptions, sc.callOptions)
 	}
-
+	if strings.HasPrefix(connPool.Conn().Target(), "google-c2p") {
+		sc.metricsTracerFactory.isDirectPathEnabled = true
+	}
 	g := &grpcSpannerClient{raw: raw, metricsTracerFactory: sc.metricsTracerFactory, connPool: connPool, client: spannerpb.NewSpannerClient(connPool)}
 	g.setGoogleClientInfo(clientInfo...)
 	return g, nil

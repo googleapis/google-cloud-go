@@ -187,7 +187,6 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 	}
 
 	tracerFactory.isDirectPathEnabled = false
-	tracerFactory.isDirectPathEnabled, _ = strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"))
 
 	var meterProvider *sdkmetric.MeterProvider
 	if metricsProvider == nil {
