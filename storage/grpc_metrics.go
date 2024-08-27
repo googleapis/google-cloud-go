@@ -36,6 +36,7 @@ import (
 
 const (
 	monitoredResourceName = "storage.googleapis.com/Client"
+	metricPrefix          = "storage.googleapis.com/client"
 )
 
 func latencyHistogramBoundaries() []float64 {
@@ -78,7 +79,7 @@ func sizeHistogramBoundaries() []float64 {
 }
 
 func metricFormatter(m metricdata.Metrics) string {
-	return "storage.googleapis.com/client/" + strings.ReplaceAll(string(m.Name), ".", "/")
+	return metricPrefix + strings.ReplaceAll(string(m.Name), ".", "/")
 }
 
 func gcpAttributeExpectedDefaults() []attribute.KeyValue {
