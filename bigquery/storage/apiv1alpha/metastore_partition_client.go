@@ -17,26 +17,19 @@
 package storage
 
 import (
-	"bytes"
 	"context"
-	"errors"
 	"fmt"
-	"io"
 	"math"
-	"net/http"
 	"net/url"
 	"time"
 
 	storagepb "cloud.google.com/go/bigquery/storage/apiv1alpha/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var newMetastorePartitionClientHook clientHook
@@ -119,58 +112,6 @@ func defaultMetastorePartitionCallOptions() *MetastorePartitionCallOptions {
 	}
 }
 
-func defaultMetastorePartitionRESTCallOptions() *MetastorePartitionCallOptions {
-	return &MetastorePartitionCallOptions{
-		BatchCreateMetastorePartitions: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable)
-			}),
-		},
-		BatchDeleteMetastorePartitions: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable)
-			}),
-		},
-		BatchUpdateMetastorePartitions: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable)
-			}),
-		},
-		ListMetastorePartitions: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable)
-			}),
-		},
-		StreamMetastorePartitions: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
-		},
-	}
-}
-
 // internalMetastorePartitionClient is an interface that defines the methods available from BigQuery Storage API.
 type internalMetastorePartitionClient interface {
 	Close() error
@@ -246,8 +187,6 @@ func (c *MetastorePartitionClient) ListMetastorePartitions(ctx context.Context, 
 // response and close the stream. If the commit fails (due to duplicate
 // partitions or other reason), the server will close the stream with an
 // error. This method is only available via the gRPC API (not REST).
-//
-// This method is not supported for the REST transport.
 func (c *MetastorePartitionClient) StreamMetastorePartitions(ctx context.Context, opts ...gax.CallOption) (storagepb.MetastorePartitionService_StreamMetastorePartitionsClient, error) {
 	return c.internalClient.StreamMetastorePartitions(ctx, opts...)
 }
@@ -328,81 +267,6 @@ func (c *metastorePartitionGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type metastorePartitionRESTClient struct {
-	// The http endpoint to connect to.
-	endpoint string
-
-	// The http client.
-	httpClient *http.Client
-
-	// The x-goog-* headers to be sent with each request.
-	xGoogHeaders []string
-
-	// Points back to the CallOptions field of the containing MetastorePartitionClient
-	CallOptions **MetastorePartitionCallOptions
-}
-
-// NewMetastorePartitionRESTClient creates a new metastore partition service rest client.
-//
-// BigQuery Metastore Partition Service API.
-// This service is used for managing metastore partitions in BigQuery metastore.
-// The service supports only batch operations for write.
-func NewMetastorePartitionRESTClient(ctx context.Context, opts ...option.ClientOption) (*MetastorePartitionClient, error) {
-	clientOpts := append(defaultMetastorePartitionRESTClientOptions(), opts...)
-	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
-	if err != nil {
-		return nil, err
-	}
-
-	callOpts := defaultMetastorePartitionRESTCallOptions()
-	c := &metastorePartitionRESTClient{
-		endpoint:    endpoint,
-		httpClient:  httpClient,
-		CallOptions: &callOpts,
-	}
-	c.setGoogleClientInfo()
-
-	return &MetastorePartitionClient{internalClient: c, CallOptions: callOpts}, nil
-}
-
-func defaultMetastorePartitionRESTClientOptions() []option.ClientOption {
-	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("https://bigquerystorage.googleapis.com"),
-		internaloption.WithDefaultEndpointTemplate("https://bigquerystorage.UNIVERSE_DOMAIN"),
-		internaloption.WithDefaultMTLSEndpoint("https://bigquerystorage.mtls.googleapis.com"),
-		internaloption.WithDefaultUniverseDomain("googleapis.com"),
-		internaloption.WithDefaultAudience("https://bigquerystorage.googleapis.com/"),
-		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		internaloption.EnableNewAuthLibrary(),
-	}
-}
-
-// setGoogleClientInfo sets the name and version of the application in
-// the `x-goog-api-client` header passed on each request. Intended for
-// use by Google-written clients.
-func (c *metastorePartitionRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{
-		"x-goog-api-client", gax.XGoogHeader(kv...),
-	}
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *metastorePartitionRESTClient) Close() error {
-	// Replace httpClient with nil to force cleanup.
-	c.httpClient = nil
-	return nil
-}
-
-// Connection returns a connection to the API service.
-//
-// Deprecated: This method always returns nil.
-func (c *metastorePartitionRESTClient) Connection() *grpc.ClientConn {
-	return nil
-}
 func (c *metastorePartitionGRPCClient) BatchCreateMetastorePartitions(ctx context.Context, req *storagepb.BatchCreateMetastorePartitionsRequest, opts ...gax.CallOption) (*storagepb.BatchCreateMetastorePartitionsResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -484,259 +348,4 @@ func (c *metastorePartitionGRPCClient) StreamMetastorePartitions(ctx context.Con
 		return nil, err
 	}
 	return resp, nil
-}
-
-// BatchCreateMetastorePartitions adds metastore partitions to a table.
-func (c *metastorePartitionRESTClient) BatchCreateMetastorePartitions(ctx context.Context, req *storagepb.BatchCreateMetastorePartitionsRequest, opts ...gax.CallOption) (*storagepb.BatchCreateMetastorePartitionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/partitions:batchCreate", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).BatchCreateMetastorePartitions[0:len((*c.CallOptions).BatchCreateMetastorePartitions):len((*c.CallOptions).BatchCreateMetastorePartitions)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &storagepb.BatchCreateMetastorePartitionsResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// BatchDeleteMetastorePartitions deletes metastore partitions from a table.
-func (c *metastorePartitionRESTClient) BatchDeleteMetastorePartitions(ctx context.Context, req *storagepb.BatchDeleteMetastorePartitionsRequest, opts ...gax.CallOption) error {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/partitions:batchDelete", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
-	}, opts...)
-}
-
-// BatchUpdateMetastorePartitions updates metastore partitions in a table.
-func (c *metastorePartitionRESTClient) BatchUpdateMetastorePartitions(ctx context.Context, req *storagepb.BatchUpdateMetastorePartitionsRequest, opts ...gax.CallOption) (*storagepb.BatchUpdateMetastorePartitionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/partitions:batchUpdate", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).BatchUpdateMetastorePartitions[0:len((*c.CallOptions).BatchUpdateMetastorePartitions):len((*c.CallOptions).BatchUpdateMetastorePartitions)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &storagepb.BatchUpdateMetastorePartitionsResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// ListMetastorePartitions gets metastore partitions from a table.
-func (c *metastorePartitionRESTClient) ListMetastorePartitions(ctx context.Context, req *storagepb.ListMetastorePartitionsRequest, opts ...gax.CallOption) (*storagepb.ListMetastorePartitionsResponse, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/partitions:list", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-	if req.GetFilter() != "" {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).ListMetastorePartitions[0:len((*c.CallOptions).ListMetastorePartitions):len((*c.CallOptions).ListMetastorePartitions)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &storagepb.ListMetastorePartitionsResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// StreamMetastorePartitions this is a bi-di streaming rpc method that allows the client to send
-// a stream of partitions and commit all of them atomically at the end.
-// If the commit is successful, the server will return a
-// response and close the stream. If the commit fails (due to duplicate
-// partitions or other reason), the server will close the stream with an
-// error. This method is only available via the gRPC API (not REST).
-//
-// This method is not supported for the REST transport.
-func (c *metastorePartitionRESTClient) StreamMetastorePartitions(ctx context.Context, opts ...gax.CallOption) (storagepb.MetastorePartitionService_StreamMetastorePartitionsClient, error) {
-	return nil, errors.New("StreamMetastorePartitions not yet supported for REST clients")
 }

@@ -36,36 +36,6 @@
               ]
             }
           }
-        },
-        "rest": {
-          "libraryClient": "MetastorePartitionClient",
-          "rpcs": {
-            "BatchCreateMetastorePartitions": {
-              "methods": [
-                "BatchCreateMetastorePartitions"
-              ]
-            },
-            "BatchDeleteMetastorePartitions": {
-              "methods": [
-                "BatchDeleteMetastorePartitions"
-              ]
-            },
-            "BatchUpdateMetastorePartitions": {
-              "methods": [
-                "BatchUpdateMetastorePartitions"
-              ]
-            },
-            "ListMetastorePartitions": {
-              "methods": [
-                "ListMetastorePartitions"
-              ]
-            },
-            "StreamMetastorePartitions": {
-              "methods": [
-                "StreamMetastorePartitions"
-              ]
-            }
-          }
         }
       }
     }

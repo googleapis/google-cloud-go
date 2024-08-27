@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/storage/apiv1alpha",
-    "version": "1.62.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -197,7 +197,7 @@
     {
       "regionTag": "bigquerystorage_v1alpha_generated_MetastorePartitionService_StreamMetastorePartitions_sync",
       "title": "bigquerystorage StreamMetastorePartitions Sample",
-      "description": "StreamMetastorePartitions this is a bi-di streaming rpc method that allows the client to send\na stream of partitions and commit all of them atomically at the end.\nIf the commit is successful, the server will return a\nresponse and close the stream. If the commit fails (due to duplicate\npartitions or other reason), the server will close the stream with an\nerror. This method is only available via the gRPC API (not REST).\n\n\nThis method is not supported for the REST transport.",
+      "description": "StreamMetastorePartitions this is a bi-di streaming rpc method that allows the client to send\na stream of partitions and commit all of them atomically at the end.\nIf the commit is successful, the server will return a\nresponse and close the stream. If the commit fails (due to duplicate\npartitions or other reason), the server will close the stream with an\nerror. This method is only available via the gRPC API (not REST).",
       "file": "MetastorePartitionClient/StreamMetastorePartitions/main.go",
       "language": "GO",
       "clientMethod": {
