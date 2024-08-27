@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package optimization_test
-
-import (
-	optimization "cloud.google.com/go/optimization/apiv1"
-)
