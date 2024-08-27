@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/visionai/v0.3.0...visionai/v0.4.0) (2024-08-27)
+
+
+### Features
+
+* **visionai:** Add BatchOperationStatus to import metadata ([2b2c673](https://github.com/googleapis/google-cloud-go/commit/2b2c673ade81b686fa579b49e557d51853aa370a))
+* **visionai:** Request client libraries for new languages ([2b2c673](https://github.com/googleapis/google-cloud-go/commit/2b2c673ade81b686fa579b49e557d51853aa370a))
+
+
+### Documentation
+
+* **visionai:** A comment for enum value `FAILED` in enum `State` is changed ([2b2c673](https://github.com/googleapis/google-cloud-go/commit/2b2c673ade81b686fa579b49e557d51853aa370a))
+* **visionai:** A comment for enum value `IN_PROGRESS` in enum `State` is changed ([2b2c673](https://github.com/googleapis/google-cloud-go/commit/2b2c673ade81b686fa579b49e557d51853aa370a))
+* **visionai:** A comment for enum value `SUCCEEDED` in enum `State` is changed ([2b2c673](https://github.com/googleapis/google-cloud-go/commit/2b2c673ade81b686fa579b49e557d51853aa370a))
+* **visionai:** A comment for field `relevance` in message `.google.cloud.visionai.v1.SearchResultItem` is changed ([2b2c673](https://github.com/googleapis/google-cloud-go/commit/2b2c673ade81b686fa579b49e557d51853aa370a))
+* **visionai:** A comment for method `ClipAsset` in service `Warehouse` is changed ([2b2c673](https://github.com/googleapis/google-cloud-go/commit/2b2c673ade81b686fa579b49e557d51853aa370a))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/visionai/v0.2.5...visionai/v0.3.0) (2024-08-20)
+
+
+### Features
+
+* **visionai:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/visionai/v0.2.4...visionai/v0.2.5) (2024-08-08)
 
 

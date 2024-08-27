@@ -1,5 +1,26 @@
 # Changes
 
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.10.0...gkeconnect/v0.11.0) (2024-08-27)
+
+
+### Features
+
+* **gkeconnect:** New client(s) ([#10773](https://github.com/googleapis/google-cloud-go/issues/10773)) ([eeee867](https://github.com/googleapis/google-cloud-go/commit/eeee867c16397d617ff8071959ca7fd86f7232ca))
+
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.9.0...gkeconnect/v0.10.0) (2024-08-23)
+
+
+### Features
+
+* **gkeconnect/gateway:** Removed the nonfunctional GatewayService and replaced it with the GatewayControl service ([#10716](https://github.com/googleapis/google-cloud-go/issues/10716)) ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.8.12...gkeconnect/v0.9.0) (2024-08-20)
+
+
+### Features
+
+* **gkeconnect:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [0.8.12](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.8.11...gkeconnect/v0.8.12) (2024-08-08)
 
 

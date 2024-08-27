@@ -283,7 +283,7 @@ func TestIntegration_ReadRowList(t *testing.T) {
 
 func TestIntegration_Aggregates(t *testing.T) {
 	ctx := context.Background()
-	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	_, _, ac, table, tableName, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -345,6 +345,18 @@ func TestIntegration_Aggregates(t *testing.T) {
 	}
 	if !testutil.Equal(row, wantRow) {
 		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
+	}
+
+	err = ac.UpdateFamily(ctx, tableName, family, Family{ValueType: AggregateType{
+		Input:      Int64Type{},
+		Aggregator: MinAggregator{},
+	}})
+	if err == nil {
+		t.Fatalf("Expected UpdateFamily to fail, but it didn't")
+	}
+	wantError := "Immutable fields 'value_type' cannot be updated"
+	if !strings.Contains(err.Error(), wantError) {
+		t.Errorf("Wrong error. Expected to containt %q but was %v", wantError, err)
 	}
 }
 
