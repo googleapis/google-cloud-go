@@ -120,7 +120,7 @@ func testMain(m *testing.M) int {
 	databaseIDs := []string{DefaultDatabaseID}
 	databasesStr, ok := os.LookupEnv(envDatabases)
 	if ok {
-		databaseIDs = strings.Split(databasesStr, ",")
+		databaseIDs = append(databaseIDs, strings.Split(databasesStr, ",")...)
 	}
 
 	testParams = make(map[string]interface{})
