@@ -47,6 +47,12 @@ type worker struct {
 	generation    int64
 }
 
+// workstealListing is the main entry point of the worksteal algorithm.
+// It performs worksteal to achieve highly dynamic object listing.
+func workstealListing(ctx context.Context, opts Lister) []*storage.ObjectAttrs {
+	return nil
+}
+
 // newObjectListerOpts specifies options for instantiating the NewObjectLister.
 type newObjectListerOpts struct {
 	// startRange is the start offset of the objects to be listed.
@@ -74,12 +80,6 @@ type nextPageResult struct {
 	nextStartRange string
 	// generation is the generation number of the last object in the page.
 	generation int64
-}
-
-// workstealListing is the main entry point of the worksteal algorithm.
-// It performs worksteal to achieve highly dynamic object listing.
-func workstealListing(ctx context.Context, opts Lister) []*storage.ObjectAttrs {
-	return nil
 }
 
 // newObjectLister creates a new ObjectLister using the given lister options.

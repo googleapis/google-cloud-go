@@ -136,7 +136,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 	// Close all functions if either sequential listing or worksteal listing is complete.
 	err := g.Wait()
 
-	// If error is not nil and context is not canceled, then return error.
+	// If there is not context.Canceled, then return error.
 	// As one of the listing method completes, it is expected to cancel context for the other method.
 	// If both sequential and worksteal listing fail due to context canceled, then return error.
 	if err != nil && (!errors.Is(err, context.Canceled) || countError > 1) {
