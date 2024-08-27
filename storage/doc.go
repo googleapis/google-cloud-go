@@ -361,9 +361,10 @@ the following side-effect imports to your application:
 
 The gRPC client emits metrics by default and will export the
 gRPC telemetry discussed in [gRFC/66] and [gRFC/78] to
-[Google Cloud Monitoring]. The metrics are accessible to through Cloud
-Monitoring API and you incur no additional cost for publishing the metrics.Google Cloud Support can use this information to more quickly diagnose
-problems related to GCS and gRPC.
+[Google Cloud Monitoring]. The metrics are accessible through Cloud Monitoring
+API and you incur no additional cost for publishing the metrics. Google Cloud
+Support can use this information to more quickly diagnose problems related to
+GCS and gRPC.
 Sending this data does not incur any billing charges, and requires minimal
 CPU (a single RPC every minute) or memory (a few KiB to batch the
 telemetry).
