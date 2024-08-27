@@ -589,6 +589,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		if !testutil.Equal(attrs.Labels, wantLabels) {
 			t.Fatalf("add labels: got %v, want %v", attrs.Labels, wantLabels)
 		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
+		}
 
 		// Turn off versioning again; add and remove some more labels.
 		ua = BucketAttrsToUpdate{VersioningEnabled: false}
@@ -606,6 +609,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		}
 		if !testutil.Equal(attrs.Labels, wantLabels) {
 			t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
+		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
 		}
 
 		// Configure a lifecycle
@@ -626,6 +632,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
 			t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
 		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
+		}
 		// Check that StorageClass has "STANDARD" value for unset field by default
 		// before passing new value.
 		wantStorageClass := "STANDARD"
@@ -638,6 +647,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
 			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
 		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
+		}
 
 		// Empty update should succeed without changing the bucket.
 		gotAttrs, err := b.Update(ctx, BucketAttrsToUpdate{})
@@ -646,6 +658,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		}
 		if !testutil.Equal(attrs, gotAttrs) {
 			t.Fatalf("empty update: got %v, want %v", gotAttrs, attrs)
+		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
 		}
 	})
 }
@@ -1477,8 +1492,7 @@ func TestIntegration_ObjectIterationMatchGlob(t *testing.T) {
 }
 
 func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
-	ctx := skipGRPC("not yet implemented in gRPC")
-	multiTransportTest(skipJSONReads(ctx, "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipJSONReads(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		newBucketName := prefix + uidSpace.New()
 		h := testHelper{t}
 		bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
@@ -2711,7 +2725,7 @@ func TestIntegration_Encryption(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 
-		obj := client.Bucket(bucket).Object("customer-encryption")
+		obj := client.Bucket(bucket).Object("customer-encryption").Retryer(WithPolicy(RetryAlways))
 		key := []byte("my-secret-AES-256-encryption-key")
 		keyHash := sha256.Sum256(key)
 		keyHashB64 := base64.StdEncoding.EncodeToString(keyHash[:])
@@ -2791,8 +2805,8 @@ func TestIntegration_Encryption(t *testing.T) {
 
 		// We create 2 objects here and we can interleave operations to get around
 		// the rate limit for object mutation operations (create, update, and delete).
-		obj2 := client.Bucket(bucket).Object("customer-encryption-2")
-		obj4 := client.Bucket(bucket).Object("customer-encryption-4")
+		obj2 := client.Bucket(bucket).Object("customer-encryption-2").Retryer(WithPolicy(RetryAlways))
+		obj4 := client.Bucket(bucket).Object("customer-encryption-4").Retryer(WithPolicy(RetryAlways))
 
 		// Copying an object without the key should fail.
 		if _, err := obj4.CopierFrom(obj).Run(ctx); err == nil {
@@ -2825,7 +2839,7 @@ func TestIntegration_Encryption(t *testing.T) {
 		if _, err := obj2.Key(key).CopierFrom(obj2.Key(key2)).Run(ctx); err != nil {
 			t.Fatal(err)
 		}
-		obj3 := client.Bucket(bucket).Object("customer-encryption-3")
+		obj3 := client.Bucket(bucket).Object("customer-encryption-3").Retryer(WithPolicy(RetryAlways))
 		// Composing without keys should fail.
 		if _, err := obj3.ComposerFrom(obj, obj2).Run(ctx); err == nil {
 			t.Fatal("want error, got nil")
@@ -2846,7 +2860,7 @@ func TestIntegration_Encryption(t *testing.T) {
 		// encrypted destination object.
 		_, err := obj4.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("Copier.Run: %v", err)
 		}
 		if _, err := obj3.Key(key).ComposerFrom(obj4).Run(ctx); err == nil {
 			t.Fatal("got nil, want error")
@@ -5354,7 +5368,7 @@ func TestIntegration_HMACKey(t *testing.T) {
 		}
 
 		_, err = hkh.Get(ctx)
-		if err != nil && !strings.Contains(err.Error(), "404") {
+		if err != nil && !errorIsStatusCode(err, http.StatusNotFound, codes.NotFound) {
 			// If the deleted key has already been garbage collected, a 404 is expected.
 			// Other errors should cause a failure and are not expected.
 			t.Fatalf("Unexpected error: %v", err)

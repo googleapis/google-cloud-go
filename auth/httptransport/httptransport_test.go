@@ -49,12 +49,12 @@ func TestAddAuthorizationMiddleware(t *testing.T) {
 		},
 		{
 			name:    "missing creds field",
-			client:  internal.CloneDefaultClient(),
+			client:  internal.DefaultClient(),
 			wantErr: true,
 		},
 		{
 			name:   "works",
-			client: internal.CloneDefaultClient(),
+			client: internal.DefaultClient(),
 			creds:  creds,
 			want:   "fakeToken",
 		},
@@ -394,6 +394,20 @@ func TestNewClient_BaseRoundTripper(t *testing.T) {
 	}
 	if _, err := client.Get(ts.URL); err != nil {
 		t.Fatalf("client.Get() = %v", err)
+	}
+}
+
+func TestNewClient_HandlesNonTransportAsDefaultTransport(t *testing.T) {
+	// Override the global http.DefaultTransport.
+	dt := http.DefaultTransport
+	http.DefaultTransport = &rt{}
+	defer func() { http.DefaultTransport = dt }()
+
+	_, err := NewClient(&Options{
+		APIKey: "key",
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v", err)
 	}
 }
 

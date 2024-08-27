@@ -24,10 +24,10 @@ import (
 	"testing"
 
 	"cloud.google.com/go/bigtable"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/bttest"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
 	"google.golang.org/api/option"
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -84,7 +84,7 @@ func populateTable(bts *bttest.Server) error {
 		}
 	}
 
-	dataClient, err := bigtable.NewClient(ctx, "client", "instance",
+	dataClient, err := bigtable.NewClientWithConfig(ctx, "client", "instance", bigtable.ClientConfig{MetricsProvider: bigtable.NoopMetricsProvider{}},
 		option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
 	if err != nil {
 		return fmt.Errorf("testproxy setup: can't create Bigtable client: %v", err)
