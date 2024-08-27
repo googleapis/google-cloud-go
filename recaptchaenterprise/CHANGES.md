@@ -1,6 +1,13 @@
 # Changes
 
 
+## [2.17.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.16.0...recaptchaenterprise/v2.17.0) (2024-08-27)
+
+
+### Features
+
+* **recaptchaenterprise:** Add AssessmentEnvironment for CreateAssessement to explicitly describe the environment of the assessment ([#10777](https://github.com/googleapis/google-cloud-go/issues/10777)) ([78c4aca](https://github.com/googleapis/google-cloud-go/commit/78c4aca925e40b4cf80fb4912e63b4623d392778))
+
 ## [2.16.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.15.0...recaptchaenterprise/v2.16.0) (2024-08-23)
 
 
