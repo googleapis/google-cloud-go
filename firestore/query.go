@@ -462,7 +462,7 @@ func (q Query) Serialize() ([]byte, error) {
 
 // Deserialize takes a slice of bytes holding the wire-format message of RunQueryRequest,
 // the underlying proto message used by Queries. It then populates and returns a
-// Query object that can be used to execut that Query.
+// Query object that can be used to execute that Query.
 func (q Query) Deserialize(bytes []byte) (Query, error) {
 	runQueryRequest := pb.RunQueryRequest{}
 	err := proto.Unmarshal(bytes, &runQueryRequest)
@@ -683,7 +683,7 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 
 	// 	filters                []*pb.StructuredQuery_Filter
 	if w := pbq.GetWhere(); w != nil {
-		if cf := w.GetCompositeFilter(); cf != nil {
+		if cf := w.GetCompositeFilter(); cf != nil && cf.Op == pb.StructuredQuery_CompositeFilter_AND {
 			q.filters = cf.GetFilters()
 		} else {
 			q.filters = []*pb.StructuredQuery_Filter{w}

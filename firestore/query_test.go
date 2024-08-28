@@ -16,7 +16,6 @@ package firestore
 
 import (
 	"context"
-	"fmt"
 	"math"
 	"sort"
 	"strings"
@@ -954,31 +953,29 @@ func TestQueryToProto(t *testing.T) {
 	}
 }
 
-// Convert a Query to a Proto and back again verifying roundtripping
+// Convert a Query to a Proto and back again verifying roundtripping.
+// We cannot in general verify the round trip from Query back to Query,
+// because information is lost. But we can check that the deserialized query's proto
+// matches the original proto.
 func TestQueryFromProtoRoundTrip(t *testing.T) {
-	t.Skip("flaky due to random map order iteration")
 	c := &Client{projectID: "P", databaseID: "DB"}
-
 	for _, test := range createTestScenarios(t) {
-		proto, err := test.in.Serialize()
-		if err != nil {
-			t.Fatalf("%s: %v", test.desc, err)
-		}
-		got, err := Query{c: c}.Deserialize(proto)
-		if err != nil {
-			t.Fatalf("%s: %v", test.desc, err)
-		}
-
-		want := test.in
-		gotProto, err := got.Serialize()
-		if err != nil {
-			t.Fatalf("%s: %v", test.desc, err)
-		}
-
-		// Compare protos before and after taking to a query. proto -> query -> proto.
-		if diff := cmp.Diff(gotProto, proto, protocmp.Transform()); diff != "" {
-			t.Errorf("%s:\ngot\n%v\nwant\n%v\ndiff\n%v", test.desc, pretty.Value(got), pretty.Value(want), diff)
-		}
+		t.Run(test.desc, func(t *testing.T) {
+			protoBytes, err := test.in.Serialize()
+			if err != nil {
+				t.Fatal(err)
+			}
+			gotq, err := Query{c: c}.Deserialize(protoBytes)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := gotq.toProto()
+			want := test.want
+			want.From = []*pb.StructuredQuery_CollectionSelector{{CollectionId: "C"}}
+			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
+				t.Errorf("mismatch (-want, +got)\n: %s", diff)
+			}
+		})
 	}
 }
 
