@@ -1,7 +1,7 @@
-cloud.google.com/go/longrunning v0.5.11 h1:Havn1kGjz3whCfoD8dxMLP73Ph5w+ODyZB9RUsDxtGk=
-cloud.google.com/go/longrunning v0.5.11/go.mod h1:rDn7//lmlfWV1Dx6IB4RatCPenTwwmqXuiP0/RgoEO4=
-cloud.google.com/go/translate v1.11.0 h1:ncOb+dtBr65+5Ay9VotOA8j5RlrUJXB+qdq+xqpV4Ls=
-cloud.google.com/go/translate v1.11.0/go.mod h1:UFNHzrfcEo/ZCmA5SveVqxh0l57BP27HCvroN5o59FI=
+cloud.google.com/go/longrunning v0.5.12 h1:5LqSIdERr71CqfUsFlJdBpOkBH8FBCFD7P1nTWy3TYE=
+cloud.google.com/go/longrunning v0.5.12/go.mod h1:S5hMV8CDJ6r50t2ubVJSKQVv5u0rmik5//KgLO3k4lU=
+cloud.google.com/go/translate v1.12.0 h1:NoO50ycJWq7GPZEjuPz8Ye926uLko/gbxWnQ9mtQrDs=
+cloud.google.com/go/translate v1.12.0/go.mod h1:4/C4shFIY5hSZ3b3g+xXWM5xhBLqcUqksSMrQ7tyFtc=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/googleapis/gax-go/v2 v2.13.0 h1:yitjD5f7jQHhyDsnhKEBU52NdvvdSeGzlAnDPT0hH1s=
