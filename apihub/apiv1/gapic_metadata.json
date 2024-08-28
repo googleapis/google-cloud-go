@@ -1,0 +1,1107 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.apihub.v1",
+  "libraryPackage": "cloud.google.com/go/apihub/apiv1",
+  "services": {
+    "ApiHub": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateApi": {
+              "methods": [
+                "CreateApi"
+              ]
+            },
+            "CreateAttribute": {
+              "methods": [
+                "CreateAttribute"
+              ]
+            },
+            "CreateDeployment": {
+              "methods": [
+                "CreateDeployment"
+              ]
+            },
+            "CreateExternalApi": {
+              "methods": [
+                "CreateExternalApi"
+              ]
+            },
+            "CreateSpec": {
+              "methods": [
+                "CreateSpec"
+              ]
+            },
+            "CreateVersion": {
+              "methods": [
+                "CreateVersion"
+              ]
+            },
+            "DeleteApi": {
+              "methods": [
+                "DeleteApi"
+              ]
+            },
+            "DeleteAttribute": {
+              "methods": [
+                "DeleteAttribute"
+              ]
+            },
+            "DeleteDeployment": {
+              "methods": [
+                "DeleteDeployment"
+              ]
+            },
+            "DeleteExternalApi": {
+              "methods": [
+                "DeleteExternalApi"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSpec": {
+              "methods": [
+                "DeleteSpec"
+              ]
+            },
+            "DeleteVersion": {
+              "methods": [
+                "DeleteVersion"
+              ]
+            },
+            "GetApi": {
+              "methods": [
+                "GetApi"
+              ]
+            },
+            "GetApiOperation": {
+              "methods": [
+                "GetApiOperation"
+              ]
+            },
+            "GetAttribute": {
+              "methods": [
+                "GetAttribute"
+              ]
+            },
+            "GetDefinition": {
+              "methods": [
+                "GetDefinition"
+              ]
+            },
+            "GetDeployment": {
+              "methods": [
+                "GetDeployment"
+              ]
+            },
+            "GetExternalApi": {
+              "methods": [
+                "GetExternalApi"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSpec": {
+              "methods": [
+                "GetSpec"
+              ]
+            },
+            "GetSpecContents": {
+              "methods": [
+                "GetSpecContents"
+              ]
+            },
+            "GetVersion": {
+              "methods": [
+                "GetVersion"
+              ]
+            },
+            "ListApiOperations": {
+              "methods": [
+                "ListApiOperations"
+              ]
+            },
+            "ListApis": {
+              "methods": [
+                "ListApis"
+              ]
+            },
+            "ListAttributes": {
+              "methods": [
+                "ListAttributes"
+              ]
+            },
+            "ListDeployments": {
+              "methods": [
+                "ListDeployments"
+              ]
+            },
+            "ListExternalApis": {
+              "methods": [
+                "ListExternalApis"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSpecs": {
+              "methods": [
+                "ListSpecs"
+              ]
+            },
+            "ListVersions": {
+              "methods": [
+                "ListVersions"
+              ]
+            },
+            "SearchResources": {
+              "methods": [
+                "SearchResources"
+              ]
+            },
+            "UpdateApi": {
+              "methods": [
+                "UpdateApi"
+              ]
+            },
+            "UpdateAttribute": {
+              "methods": [
+                "UpdateAttribute"
+              ]
+            },
+            "UpdateDeployment": {
+              "methods": [
+                "UpdateDeployment"
+              ]
+            },
+            "UpdateExternalApi": {
+              "methods": [
+                "UpdateExternalApi"
+              ]
+            },
+            "UpdateSpec": {
+              "methods": [
+                "UpdateSpec"
+              ]
+            },
+            "UpdateVersion": {
+              "methods": [
+                "UpdateVersion"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateApi": {
+              "methods": [
+                "CreateApi"
+              ]
+            },
+            "CreateAttribute": {
+              "methods": [
+                "CreateAttribute"
+              ]
+            },
+            "CreateDeployment": {
+              "methods": [
+                "CreateDeployment"
+              ]
+            },
+            "CreateExternalApi": {
+              "methods": [
+                "CreateExternalApi"
+              ]
+            },
+            "CreateSpec": {
+              "methods": [
+                "CreateSpec"
+              ]
+            },
+            "CreateVersion": {
+              "methods": [
+                "CreateVersion"
+              ]
+            },
+            "DeleteApi": {
+              "methods": [
+                "DeleteApi"
+              ]
+            },
+            "DeleteAttribute": {
+              "methods": [
+                "DeleteAttribute"
+              ]
+            },
+            "DeleteDeployment": {
+              "methods": [
+                "DeleteDeployment"
+              ]
+            },
+            "DeleteExternalApi": {
+              "methods": [
+                "DeleteExternalApi"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSpec": {
+              "methods": [
+                "DeleteSpec"
+              ]
+            },
+            "DeleteVersion": {
+              "methods": [
+                "DeleteVersion"
+              ]
+            },
+            "GetApi": {
+              "methods": [
+                "GetApi"
+              ]
+            },
+            "GetApiOperation": {
+              "methods": [
+                "GetApiOperation"
+              ]
+            },
+            "GetAttribute": {
+              "methods": [
+                "GetAttribute"
+              ]
+            },
+            "GetDefinition": {
+              "methods": [
+                "GetDefinition"
+              ]
+            },
+            "GetDeployment": {
+              "methods": [
+                "GetDeployment"
+              ]
+            },
+            "GetExternalApi": {
+              "methods": [
+                "GetExternalApi"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSpec": {
+              "methods": [
+                "GetSpec"
+              ]
+            },
+            "GetSpecContents": {
+              "methods": [
+                "GetSpecContents"
+              ]
+            },
+            "GetVersion": {
+              "methods": [
+                "GetVersion"
+              ]
+            },
+            "ListApiOperations": {
+              "methods": [
+                "ListApiOperations"
+              ]
+            },
+            "ListApis": {
+              "methods": [
+                "ListApis"
+              ]
+            },
+            "ListAttributes": {
+              "methods": [
+                "ListAttributes"
+              ]
+            },
+            "ListDeployments": {
+              "methods": [
+                "ListDeployments"
+              ]
+            },
+            "ListExternalApis": {
+              "methods": [
+                "ListExternalApis"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSpecs": {
+              "methods": [
+                "ListSpecs"
+              ]
+            },
+            "ListVersions": {
+              "methods": [
+                "ListVersions"
+              ]
+            },
+            "SearchResources": {
+              "methods": [
+                "SearchResources"
+              ]
+            },
+            "UpdateApi": {
+              "methods": [
+                "UpdateApi"
+              ]
+            },
+            "UpdateAttribute": {
+              "methods": [
+                "UpdateAttribute"
+              ]
+            },
+            "UpdateDeployment": {
+              "methods": [
+                "UpdateDeployment"
+              ]
+            },
+            "UpdateExternalApi": {
+              "methods": [
+                "UpdateExternalApi"
+              ]
+            },
+            "UpdateSpec": {
+              "methods": [
+                "UpdateSpec"
+              ]
+            },
+            "UpdateVersion": {
+              "methods": [
+                "UpdateVersion"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ApiHubDependencies": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ApiHubDependenciesClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDependency": {
+              "methods": [
+                "CreateDependency"
+              ]
+            },
+            "DeleteDependency": {
+              "methods": [
+                "DeleteDependency"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDependency": {
+              "methods": [
+                "GetDependency"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDependencies": {
+              "methods": [
+                "ListDependencies"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDependency": {
+              "methods": [
+                "UpdateDependency"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ApiHubDependenciesClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDependency": {
+              "methods": [
+                "CreateDependency"
+              ]
+            },
+            "DeleteDependency": {
+              "methods": [
+                "DeleteDependency"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDependency": {
+              "methods": [
+                "GetDependency"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDependencies": {
+              "methods": [
+                "ListDependencies"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDependency": {
+              "methods": [
+                "UpdateDependency"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ApiHubPlugin": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ApiHubPluginClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DisablePlugin": {
+              "methods": [
+                "DisablePlugin"
+              ]
+            },
+            "EnablePlugin": {
+              "methods": [
+                "EnablePlugin"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPlugin": {
+              "methods": [
+                "GetPlugin"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ApiHubPluginClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DisablePlugin": {
+              "methods": [
+                "DisablePlugin"
+              ]
+            },
+            "EnablePlugin": {
+              "methods": [
+                "EnablePlugin"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPlugin": {
+              "methods": [
+                "GetPlugin"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "HostProjectRegistrationService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "HostProjectRegistrationClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateHostProjectRegistration": {
+              "methods": [
+                "CreateHostProjectRegistration"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetHostProjectRegistration": {
+              "methods": [
+                "GetHostProjectRegistration"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListHostProjectRegistrations": {
+              "methods": [
+                "ListHostProjectRegistrations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "HostProjectRegistrationClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateHostProjectRegistration": {
+              "methods": [
+                "CreateHostProjectRegistration"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetHostProjectRegistration": {
+              "methods": [
+                "GetHostProjectRegistration"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListHostProjectRegistrations": {
+              "methods": [
+                "ListHostProjectRegistrations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "LintingService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "LintingClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetStyleGuide": {
+              "methods": [
+                "GetStyleGuide"
+              ]
+            },
+            "GetStyleGuideContents": {
+              "methods": [
+                "GetStyleGuideContents"
+              ]
+            },
+            "LintSpec": {
+              "methods": [
+                "LintSpec"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateStyleGuide": {
+              "methods": [
+                "UpdateStyleGuide"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LintingClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetStyleGuide": {
+              "methods": [
+                "GetStyleGuide"
+              ]
+            },
+            "GetStyleGuideContents": {
+              "methods": [
+                "GetStyleGuideContents"
+              ]
+            },
+            "LintSpec": {
+              "methods": [
+                "LintSpec"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateStyleGuide": {
+              "methods": [
+                "UpdateStyleGuide"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Provisioning": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ProvisioningClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateApiHubInstance": {
+              "methods": [
+                "CreateApiHubInstance"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetApiHubInstance": {
+              "methods": [
+                "GetApiHubInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "LookupApiHubInstance": {
+              "methods": [
+                "LookupApiHubInstance"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ProvisioningClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateApiHubInstance": {
+              "methods": [
+                "CreateApiHubInstance"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetApiHubInstance": {
+              "methods": [
+                "GetApiHubInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "LookupApiHubInstance": {
+              "methods": [
+                "LookupApiHubInstance"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "RuntimeProjectAttachmentService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "RuntimeProjectAttachmentClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateRuntimeProjectAttachment": {
+              "methods": [
+                "CreateRuntimeProjectAttachment"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteRuntimeProjectAttachment": {
+              "methods": [
+                "DeleteRuntimeProjectAttachment"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRuntimeProjectAttachment": {
+              "methods": [
+                "GetRuntimeProjectAttachment"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRuntimeProjectAttachments": {
+              "methods": [
+                "ListRuntimeProjectAttachments"
+              ]
+            },
+            "LookupRuntimeProjectAttachment": {
+              "methods": [
+                "LookupRuntimeProjectAttachment"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "RuntimeProjectAttachmentClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateRuntimeProjectAttachment": {
+              "methods": [
+                "CreateRuntimeProjectAttachment"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteRuntimeProjectAttachment": {
+              "methods": [
+                "DeleteRuntimeProjectAttachment"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRuntimeProjectAttachment": {
+              "methods": [
+                "GetRuntimeProjectAttachment"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRuntimeProjectAttachments": {
+              "methods": [
+                "ListRuntimeProjectAttachments"
+              ]
+            },
+            "LookupRuntimeProjectAttachment": {
+              "methods": [
+                "LookupRuntimeProjectAttachment"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

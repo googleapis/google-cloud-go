@@ -397,6 +397,20 @@ func TestNewClient_BaseRoundTripper(t *testing.T) {
 	}
 }
 
+func TestNewClient_HandlesNonTransportAsDefaultTransport(t *testing.T) {
+	// Override the global http.DefaultTransport.
+	dt := http.DefaultTransport
+	http.DefaultTransport = &rt{}
+	defer func() { http.DefaultTransport = dt }()
+
+	_, err := NewClient(&Options{
+		APIKey: "key",
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v", err)
+	}
+}
+
 type staticTP string
 
 func (tp staticTP) Token(context.Context) (*auth.Token, error) {
