@@ -271,9 +271,6 @@ func TestExporterLogs(t *testing.T) {
 
 	// Set up mock error handler
 	origErrHandler := otel.GetErrorHandler()
-	t.Cleanup(func() {
-		otel.SetErrorHandler(origErrHandler)
-	})
 	errBuf := new(bytes.Buffer)
 	otel.SetErrorHandler(&MockErrorHandler{
 		buf: errBuf,
@@ -299,6 +296,7 @@ func TestExporterLogs(t *testing.T) {
 	// These same options will be used to create Monitoring client but since there
 	// is no fake Monitoring server at that grpc conn, all the exports result in failure.
 	// Thus, there should be errors in errBuf.
+	otel.SetErrorHandler(origErrHandler)
 	if !strings.Contains(errBuf.String(), metricsErrorPrefix) {
 		t.Errorf("Expected %v to contain %v", errBuf.String(), metricsErrorPrefix)
 	}

@@ -80,7 +80,7 @@ type monitoringExporter struct {
 func newMonitoringExporter(ctx context.Context, project string, opts ...option.ClientOption) (*monitoringExporter, error) {
 	client, err := monitoring.NewMetricClient(ctx, opts...)
 	if err != nil {
-		return nil, err
+		return nil, wrapMetricsError(err)
 	}
 	return &monitoringExporter{
 		client:    client,
@@ -112,7 +112,7 @@ func (me *monitoringExporter) Export(ctx context.Context, rm *otelmetricdata.Res
 	default:
 	}
 
-	return wrapMetricsError(me.exportTimeSeries(ctx, rm))
+	return me.exportTimeSeries(ctx, rm)
 }
 
 // Temporality returns the Temporality to use for an instrument kind.
@@ -130,7 +130,7 @@ func (me *monitoringExporter) Aggregation(ik otelmetric.InstrumentKind) otelmetr
 func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetricdata.ResourceMetrics) error {
 	tss, err := me.recordsToTimeSeriesPbs(rm)
 	if len(tss) == 0 {
-		return wrapMetricsError(err)
+		return err
 	}
 
 	name := fmt.Sprintf("projects/%s", me.projectID)
@@ -244,7 +244,7 @@ func (me *monitoringExporter) recordToTimeSeriesPb(m otelmetricdata.Metrics) ([]
 func sumToTimeSeries[N int64 | float64](point otelmetricdata.DataPoint[N], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource) (*monitoringpb.TimeSeries, error) {
 	interval, err := toNonemptyTimeIntervalpb(point.StartTime, point.Time)
 	if err != nil {
-		return nil, wrapMetricsError(err)
+		return nil, err
 	}
 	value, valueType := numberDataPointToValue[N](point)
 	return &monitoringpb.TimeSeries{
@@ -262,7 +262,7 @@ func sumToTimeSeries[N int64 | float64](point otelmetricdata.DataPoint[N], metri
 func histogramToTimeSeries[N int64 | float64](point otelmetricdata.HistogramDataPoint[N], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource) (*monitoringpb.TimeSeries, error) {
 	interval, err := toNonemptyTimeIntervalpb(point.StartTime, point.Time)
 	if err != nil {
-		return nil, wrapMetricsError(err)
+		return nil, err
 	}
 	distributionValue := histToDistribution(point)
 	return &monitoringpb.TimeSeries{
