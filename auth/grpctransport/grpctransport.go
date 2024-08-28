@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package grpctransport provides functionality for managing gRPC client
+// connections to Google Cloud services.
 package grpctransport
 
 import (
