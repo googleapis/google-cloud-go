@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package idtoken provides functionality for generating and validating ID
+// tokens, with configurable options for audience, custom claims, and token
+// formats.
+//
+// For more information on ID tokens, see
+// https://cloud.google.com/docs/authentication/token-types#id.
 package idtoken
 
 import (
