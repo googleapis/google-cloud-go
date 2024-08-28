@@ -349,9 +349,16 @@ To create a client which will use gRPC, use the alternate constructor:
 	}
 	// Use client as usual.
 
-If the application is running within GCP, users may get better performance with Direct Google Access (enabling requests to skip some proxy steps).
+Using the gRPC API inside GCP with a bucket in the same region can allow for
+Direct Google Access (enabling requests to skip some proxy steps and reducing
+response latency). A warning is emmitted if gRPC is not used within GCP to
+warn that Direct Google Access could not be initialized. Direct Google Access
+is not required to access the gRPC API.
 
-Dependencies for Direct Google Access can increase the size of resulting binary by ~16MiB if not used by another dependency and you can opt-out of these dependencies using build tag `disable_grpc_modules`.
+Dependencies for the gRPC API may slightly increase the size of binaries for
+applications depending on this package. If you are not using gRPC, you can use
+the build tag `disable_grpc_modules` to opt out of these dependencies and
+reduce the binary size.
 
 # Storage Control API
 
