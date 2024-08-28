@@ -4,23 +4,23 @@ go 1.21
 
 require (
 	cloud.google.com/go v0.115.1
-	cloud.google.com/go/longrunning v0.5.12
+	cloud.google.com/go/longrunning v0.6.0
 	cloud.google.com/go/pubsub v1.42.0
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.13.0
 	golang.org/x/oauth2 v0.22.0
 	golang.org/x/sync v0.8.0
-	google.golang.org/api v0.193.0
+	google.golang.org/api v0.194.0
 	google.golang.org/genproto v0.0.0-20240814211410-ddb44dafa142
-	google.golang.org/genproto/googleapis/api v0.0.0-20240814211410-ddb44dafa142
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142
+	google.golang.org/genproto/googleapis/api v0.0.0-20240826202546-f6391c0de4c7
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240826202546-f6391c0de4c7
 	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2
 )
 
 require (
-	cloud.google.com/go/auth v0.9.0 // indirect
+	cloud.google.com/go/auth v0.9.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
 	cloud.google.com/go/compute/metadata v0.5.0 // indirect
 	cloud.google.com/go/iam v1.1.12 // indirect
