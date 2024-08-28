@@ -1,5 +1,17 @@
 # Changes
 
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.30.0...bigtable/v1.31.0) (2024-08-28)
+
+
+### Features
+
+* **bigtable:** Using new auth library ([#10766](https://github.com/googleapis/google-cloud-go/issues/10766)) ([8daf304](https://github.com/googleapis/google-cloud-go/commit/8daf304faf3808690996ad3a45d2890b107a0939))
+
+
+### Performance Improvements
+
+* **bigtable:** Use RecvMsg instead of Recv ([#10674](https://github.com/googleapis/google-cloud-go/issues/10674)) ([7e4fbc5](https://github.com/googleapis/google-cloud-go/commit/7e4fbc5612441c59bfaa1e5b9bbd06e3387b5c02))
+
 ## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.29.0...bigtable/v1.30.0) (2024-08-26)
 
 
