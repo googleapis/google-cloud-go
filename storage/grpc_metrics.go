@@ -36,7 +36,7 @@ import (
 
 const (
 	monitoredResourceName = "storage.googleapis.com/Client"
-	metricPrefix          = "storage.googleapis.com/client"
+	metricPrefix          = "storage.googleapis.com/client/"
 )
 
 func latencyHistogramBoundaries() []float64 {
@@ -159,16 +159,12 @@ func determineMonitoringEndpoint(endpoint string) string {
 	return ""
 }
 
-func createHistogramView(name, desc, unit string, boundaries []float64) metric.View {
+func createHistogramView(name string, boundaries []float64) metric.View {
 	return metric.NewView(metric.Instrument{
-		Name:        name,
-		Description: name,
-		Kind:        metric.InstrumentKindHistogram,
-		Unit:        unit,
+		Name: name,
+		Kind: metric.InstrumentKindHistogram,
 	}, metric.Stream{
 		Name:        name,
-		Description: desc,
-		Unit:        unit,
 		Aggregation: metric.AggregationExplicitBucketHistogram{Boundaries: boundaries},
 	})
 }
@@ -178,6 +174,13 @@ func newGRPCMetricContext(ctx context.Context, endpoint, project string) (*metri
 	if err != nil {
 		return nil, err
 	}
+	// Implementation requires a project, if one is not determined possibly user
+	// credentials. Then we will fail stating gRPC Metrics require a project-id.
+	if project == "" && preparedResource.projectToUse != "" {
+		return nil, fmt.Errorf("google cloud project is required to start client-side metrics")
+	}
+	// If projectTouse isn't the same as project provided to Storage client, then
+	// emit a log stating which project is being used to emit metrics to.
 	if project != preparedResource.projectToUse {
 		log.Printf("The Project ID configured for metrics is %s, but the Project ID of the storage client is %s. Make sure that the service account in use has the required metric writing role (roles/monitoring.metricWriter) in the project projectIdToUse or metrics will not be written.", preparedResource.projectToUse, project)
 	}
@@ -194,10 +197,12 @@ func newGRPCMetricContext(ctx context.Context, endpoint, project string) (*metri
 	if err != nil {
 		return nil, err
 	}
+	// Metric views update histogram boundaries to be relevant to GCS
+	// otherwise default OTel histogram boundaries are used.
 	metricViews := []metric.View{
-		createHistogramView("grpc.client.attempt.duration", "A view of grpc.client.attempt.duration with histogram boundaries more appropriate for Google Cloud Storage RPCs", "s", latencyHistogramBoundaries()),
-		createHistogramView("grpc.client.attempt.rcvd_total_compressed_message_size", "A view of grpc.client.attempt.rcvd_total_compressed_message_size with histogram boundaries more appropriate for Google Cloud Storage RPCs", "By", sizeHistogramBoundaries()),
-		createHistogramView("grpc.client.attempt.sent_total_compressed_message_size", "A view of grpc.client.attempt.sent_total_compressed_message_size with histogram boundaries more appropriate for Google Cloud Storage RPCs", "By", sizeHistogramBoundaries()),
+		createHistogramView("grpc.client.attempt.duration", latencyHistogramBoundaries()),
+		createHistogramView("grpc.client.attempt.rcvd_total_compressed_message_size", sizeHistogramBoundaries()),
+		createHistogramView("grpc.client.attempt.sent_total_compressed_message_size", sizeHistogramBoundaries()),
 	}
 	provider := metric.NewMeterProvider(
 		metric.WithReader(metric.NewPeriodicReader(&exporterLogSuppressor{exporter: exporter}, metric.WithInterval(time.Minute))),

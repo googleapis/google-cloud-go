@@ -138,7 +138,6 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	if err != nil {
 		return nil, err
 	}
-
 	return &grpcStorageClient{
 		raw:      g,
 		settings: s,
