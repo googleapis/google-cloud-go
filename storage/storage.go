@@ -232,6 +232,7 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 	if err != nil {
 		return nil, err
 	}
+
 	return &Client{tc: tc}, nil
 }
 

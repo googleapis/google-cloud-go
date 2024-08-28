@@ -136,6 +136,7 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	if config.readAPIWasSet {
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
 	}
+
 	// Metrics requires the endpoint before GAPIC is created which is only available in connPool after GAPIC is created.
 	// Seperated initialization of pool beforehand and passing the instance to
 	// the GAPIC client.
@@ -166,6 +167,7 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	if err != nil {
 		return nil, err
 	}
+
 	return &grpcStorageClient{
 		raw:      g,
 		settings: s,
