@@ -22,6 +22,7 @@ import (
 	"hash/crc32"
 	"io"
 	"log"
+	"math"
 	"net/url"
 	"os"
 
@@ -34,6 +35,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding"
@@ -76,6 +78,16 @@ const (
 func defaultGRPCOptions() []option.ClientOption {
 	defaults := []option.ClientOption{
 		option.WithGRPCConnectionPool(defaultConnPoolSize),
+		internaloption.WithDefaultEndpoint("storage.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("storage.UNIVERSE_DOMAIN:443"),
+		internaloption.WithDefaultMTLSEndpoint("storage.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		internaloption.WithDefaultAudience("https://storage.googleapis.com/"),
+		internaloption.WithDefaultScopes(gapic.DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 
 	// Set emulator options for gRPC if an emulator was specified. Note that in a
@@ -124,16 +136,24 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	if config.readAPIWasSet {
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
 	}
+	// Metrics requires the endpoint before GAPIC is created which is only available in connPool after GAPIC is created.
+	// Seperated initialization of pool beforehand and passing the instance to
+	// the GAPIC client.
+	pool, err := gtransport.DialPool(ctx, s.clientOption...)
+	if err != nil {
+		return nil, err
+	}
+	s.clientOption = append(s.clientOption, gtransport.WithConnPool(pool))
 	if !config.disableClientMetrics {
 		// Do not fail client creation if enabling metrics fails.
-		if metricsContext, err := enableClientMetrics(ctx, s); err == nil {
+		ep := pool.Conn().Target()
+		if metricsContext, err := enableClientMetrics(ctx, ep, s); err == nil {
 			s.metricsContext = metricsContext
 			s.clientOption = append(s.clientOption, metricsContext.clientOpts...)
 		} else {
 			log.Printf("Failed to enable client metrics: %v", err)
 		}
 	}
-
 	g, err := gapic.NewClient(ctx, s.clientOption...)
 	if err != nil {
 		return nil, err

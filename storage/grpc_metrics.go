@@ -30,7 +30,6 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	htransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc/stats/opentelemetry"
 )
 
@@ -234,11 +233,7 @@ func newGRPCMetricContext(ctx context.Context, endpoint, project string) (*metri
 	return context, nil
 }
 
-func enableClientMetrics(ctx context.Context, s *settings) (*metricsContext, error) {
-	_, ep, err := htransport.NewClient(ctx, s.clientOption...)
-	if err != nil {
-		return nil, fmt.Errorf("gRPC Metrics: %w", err)
-	}
+func enableClientMetrics(ctx context.Context, ep string, s *settings) (*metricsContext, error) {
 	project := ""
 	c, err := transport.Creds(ctx, s.clientOption...)
 	if err == nil {
