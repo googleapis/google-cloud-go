@@ -139,6 +139,7 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	// Metrics requires the endpoint before GAPIC is created which is only available in connPool after GAPIC is created.
 	// Seperated initialization of pool beforehand and passing the instance to
 	// the GAPIC client.
+	// TODO(#10788): Remove workaround in accessing endpoint
 	var pool gtransport.ConnPool
 	if !config.disableClientMetrics {
 		pool, err := gtransport.DialPool(ctx, s.clientOption...)
@@ -147,6 +148,8 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		}
 		// Do not fail client creation if enabling metrics fails.
 		ep := pool.Conn().Target()
+		// Close pool since we only need for endpoint
+		pool.Close()
 		if metricsContext, err := enableClientMetrics(ctx, ep, s); err == nil {
 			s.metricsContext = metricsContext
 			s.clientOption = append(s.clientOption, metricsContext.clientOpts...)
