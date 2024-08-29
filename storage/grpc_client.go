@@ -22,7 +22,6 @@ import (
 	"hash/crc32"
 	"io"
 	"log"
-	"math"
 	"net/url"
 	"os"
 
@@ -35,7 +34,6 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
-	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding"
@@ -78,16 +76,6 @@ const (
 func defaultGRPCOptions() []option.ClientOption {
 	defaults := []option.ClientOption{
 		option.WithGRPCConnectionPool(defaultConnPoolSize),
-		internaloption.WithDefaultEndpoint("storage.googleapis.com:443"),
-		internaloption.WithDefaultEndpointTemplate("storage.UNIVERSE_DOMAIN:443"),
-		internaloption.WithDefaultMTLSEndpoint("storage.mtls.googleapis.com:443"),
-		internaloption.WithDefaultUniverseDomain("googleapis.com"),
-		internaloption.WithDefaultAudience("https://storage.googleapis.com/"),
-		internaloption.WithDefaultScopes(gapic.DefaultAuthScopes()...),
-		internaloption.EnableJwtWithScope(),
-		internaloption.EnableNewAuthLibrary(),
-		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
-			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 
 	// Set emulator options for gRPC if an emulator was specified. Note that in a
@@ -137,20 +125,9 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
 	}
 
-	// Metrics requires the endpoint before GAPIC is created which is only
-	// available in connPool after GAPIC is created.
-	// Seperated initialization of pool beforehand to get endpoint.
-	// TODO(#10788): Remove workaround in accessing endpoint
 	if !config.disableClientMetrics {
-		pool, err := gtransport.DialPool(ctx, s.clientOption...)
-		if err != nil {
-			return nil, err
-		}
 		// Do not fail client creation if enabling metrics fails.
-		ep := pool.Conn().Target()
-		// Close pool since we only need for endpoint
-		pool.Close()
-		if metricsContext, err := enableClientMetrics(ctx, ep, s); err == nil {
+		if metricsContext, err := enableClientMetrics(ctx, s); err == nil {
 			s.metricsContext = metricsContext
 			s.clientOption = append(s.clientOption, metricsContext.clientOpts...)
 		} else {

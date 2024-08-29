@@ -134,8 +134,6 @@ func newPreparedResource(ctx context.Context, project string, resourceOptions []
 }
 
 type metricsContext struct {
-	// monitoring API endpoint used
-	endpoint string
 	// project used by exporter
 	project string
 	// client options passed to gRPC channels
@@ -144,19 +142,6 @@ type metricsContext struct {
 	provider *metric.MeterProvider
 	// clean func to call when closing gRPC client
 	close func()
-}
-
-func (mc *metricsContext) String() string {
-	return fmt.Sprintf("endpoint: %v\nproject: %v\n", mc.endpoint, mc.project)
-}
-
-func determineMonitoringEndpoint(endpoint string) string {
-	// Check storage endpoint in case its using VPC then we use that endpoint instead.
-	if strings.Contains(endpoint, "private.googleapis.com") || strings.Contains(endpoint, "restricted.googleapis.com") {
-		return endpoint
-	}
-	// Default monitoring endpoint is used.
-	return ""
 }
 
 func createHistogramView(name string, boundaries []float64) metric.View {
@@ -169,7 +154,7 @@ func createHistogramView(name string, boundaries []float64) metric.View {
 	})
 }
 
-func newGRPCMetricContext(ctx context.Context, endpoint, project string) (*metricsContext, error) {
+func newGRPCMetricContext(ctx context.Context, project string) (*metricsContext, error) {
 	preparedResource, err := newPreparedResource(ctx, project, []resource.Option{resource.WithDetectors(gcp.NewDetector())})
 	if err != nil {
 		return nil, err
@@ -189,10 +174,6 @@ func newGRPCMetricContext(ctx context.Context, endpoint, project string) (*metri
 		mexporter.WithMetricDescriptorTypeFormatter(metricFormatter),
 		mexporter.WithCreateServiceTimeSeries(),
 		mexporter.WithMonitoredResourceDescription(monitoredResourceName, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"})}
-	endpointToUse := determineMonitoringEndpoint(endpoint)
-	if endpointToUse != "" {
-		meOpts = append(meOpts, mexporter.WithMonitoringClientOptions(option.WithEndpoint(endpointToUse)))
-	}
 	exporter, err := mexporter.New(meOpts...)
 	if err != nil {
 		return nil, err
@@ -229,7 +210,6 @@ func newGRPCMetricContext(ctx context.Context, endpoint, project string) (*metri
 	}
 	context := &metricsContext{
 		project:    preparedResource.projectToUse,
-		endpoint:   endpointToUse,
 		clientOpts: opts,
 		provider:   provider,
 		close:      createShutdown(ctx, provider),
@@ -237,14 +217,14 @@ func newGRPCMetricContext(ctx context.Context, endpoint, project string) (*metri
 	return context, nil
 }
 
-func enableClientMetrics(ctx context.Context, ep string, s *settings) (*metricsContext, error) {
-	project := ""
+func enableClientMetrics(ctx context.Context, s *settings) (*metricsContext, error) {
+	var project string
 	c, err := transport.Creds(ctx, s.clientOption...)
 	if err == nil {
 		project = c.ProjectID
 	}
 	// Enable client-side metrics for gRPC
-	metricsContext, err := newGRPCMetricContext(ctx, ep, project)
+	metricsContext, err := newGRPCMetricContext(ctx, project)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC Metrics: %w", err)
 	}
