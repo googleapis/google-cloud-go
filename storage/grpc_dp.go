@@ -1,4 +1,6 @@
-// Copyright 2022 Google LLC
+//go:build !disable_grpc_modules
+
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package internal
+package storage
 
-// Version is the current tagged release of the library.
-const Version = "1.31.0"
+import (
+	_ "google.golang.org/grpc/balancer/rls"
+	_ "google.golang.org/grpc/xds/googledirectpath"
+)

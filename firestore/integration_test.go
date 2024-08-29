@@ -2521,7 +2521,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 
 	indexFields := [][]string{
 		{"weight", "model"},
-		{"weight", "height"},
+		{"weight", "volume"},
 	}
 	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	defer cancel()
@@ -2530,14 +2530,14 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 
 	h := testHelper{t}
 	docs := []map[string]interface{}{
-		{"weight": 1.5, "height": 99, "model": "A"},
-		{"weight": 2.6, "height": 98, "model": "A"},
-		{"weight": 3.7, "height": 97, "model": "B"},
-		{"weight": 4.8, "height": 96, "model": "B"},
-		{"weight": 5.9, "height": 95, "model": "C"},
-		{"weight": 6.0, "height": 94, "model": "B"},
-		{"weight": 7.1, "height": 93, "model": "C"},
-		{"weight": 8.2, "height": 93, "model": "A"},
+		{"weight": 1.5, "volume": 99, "model": "A"},
+		{"weight": 2.6, "volume": 98, "model": "A"},
+		{"weight": 3.7, "volume": 97, "model": "B"},
+		{"weight": 4.8, "volume": 96, "model": "B"},
+		{"weight": 5.9, "volume": 95, "model": "C"},
+		{"weight": 6.0, "volume": 94, "model": "B"},
+		{"weight": 7.1, "volume": 93, "model": "C"},
+		{"weight": 8.2, "volume": 93, "model": "A"},
 	}
 	docRefs := []*DocumentRef{}
 	for _, doc := range docs {
@@ -2572,7 +2572,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}{
 		{
 			desc:             "Multiple aggregations",
-			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithAvg("height", "height_avg1").WithSum("weight", "weight_sum1").WithSum("height", "height_sum1"),
+			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithAvg("volume", "height_avg1").WithSum("weight", "weight_sum1").WithSum("volume", "height_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
 				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
@@ -2584,7 +2584,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		},
 		{
 			desc:             "Aggregations in transaction",
-			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithAvg("height", "height_avg1").WithSum("weight", "weight_sum1").WithSum("height", "height_sum1"),
+			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithAvg("volume", "height_avg1").WithSum("weight", "weight_sum1").WithSum("volume", "height_sum1"),
 			wantErr:          false,
 			runInTransaction: true,
 			result: map[string]interface{}{
