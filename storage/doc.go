@@ -349,15 +349,16 @@ To create a client which will use gRPC, use the alternate constructor:
 	}
 	// Use client as usual.
 
-If the application is running within GCP, users may get better performance by
-enabling Direct Google Access (enabling requests to skip some proxy steps). To enable,
-set the environment variable `GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS=true` and add
-the following side-effect imports to your application:
+Using the gRPC API inside GCP with a bucket in the same region can allow for
+Direct Google Access (enabling requests to skip some proxy steps and reducing
+response latency). A warning is emmitted if gRPC is not used within GCP to
+warn that Direct Google Access could not be initialized. Direct Google Access
+is not required to access the gRPC API.
 
-	import (
-		_ "google.golang.org/grpc/balancer/rls"
-		_ "google.golang.org/grpc/xds/googledirectpath"
-	)
+Dependencies for the gRPC API may slightly increase the size of binaries for
+applications depending on this package. If you are not using gRPC, you can use
+the build tag `disable_grpc_modules` to opt out of these dependencies and
+reduce the binary size.
 
 # Storage Control API
 
