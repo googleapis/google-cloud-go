@@ -347,7 +347,7 @@ func TestIntegration_Aggregates(t *testing.T) {
 		t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
 	}
 
-	err = ac.UpdateFamily(ctx, tableName, family, Family{ValueType: Int64Type{}})
+	err = ac.UpdateFamily(ctx, tableName, family, Family{ValueType: StringType{}})
 	if err == nil {
 		t.Fatalf("Expected UpdateFamily to fail, but it didn't")
 	}
