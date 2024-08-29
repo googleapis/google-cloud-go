@@ -30,6 +30,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/stats/opentelemetry"
 )
 
@@ -222,11 +223,14 @@ func newGRPCMetricContext(ctx context.Context, endpoint, project string) (*metri
 			"grpc.lb.rls.failed_picks"),
 		OptionalLabels: []string{"grpc.lb.locality"},
 	}
-	do := option.WithGRPCDialOption(opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo}))
+	opts := []option.ClientOption{
+		option.WithGRPCDialOption(opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo})),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.StaticMethodCallOption{})),
+	}
 	context := &metricsContext{
 		project:    preparedResource.projectToUse,
 		endpoint:   endpointToUse,
-		clientOpts: []option.ClientOption{do},
+		clientOpts: opts,
 		provider:   provider,
 		close:      createShutdown(ctx, provider),
 	}
