@@ -197,7 +197,7 @@ type RunOption interface {
 	apply(*runQuerySettings) error
 }
 
-// ExplainOptions are Query Explain options
+// ExplainOptions are Query Explain options.
 // Query Explain allows you to submit Cloud Firestore queries to the backend and
 // receive detailed performance statistics on backend query execution in return.
 type ExplainOptions struct {

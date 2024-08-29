@@ -1243,10 +1243,9 @@ type docIterator interface {
 }
 
 // ExplainMetrics returns query explain metrics.
-// This is only present when ExplainOptions run option is provided in the query.
-// when [ExplainOptions] is added to the query (see [Query.WithRunOptions]),
-// and after the iterator reaches the end. An error is returned if either of those
-// conditions does not hold.
+// This is only present when [ExplainOptions] is added to the query
+// (see [Query.WithRunOptions]), and after the iterator reaches the end.
+// An error is returned if either of those conditions does not hold.
 func (it *DocumentIterator) ExplainMetrics() (*ExplainMetrics, error) {
 	if it == nil {
 		return nil, errors.New("firestore: iterator is nil")

@@ -668,6 +668,11 @@ func TestIntegration_GetAll_WithRunOptions(t *testing.T) {
 			if err := cmpExplainMetrics(gotExpM, testcase.wantExplainMetrics); err != nil {
 				t.Error(err)
 			}
+
+			if gotExpM != nil && gotExpM.PlanSummary != nil && len(gotExpM.PlanSummary.IndexesUsed) != 0 {
+				indexesUsed := *gotExpM.PlanSummary.IndexesUsed[0]
+				fmt.Printf("type=%T\n", indexesUsed["properties"])
+			}
 		})
 	}
 }
