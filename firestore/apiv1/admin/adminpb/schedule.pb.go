@@ -21,15 +21,14 @@
 package adminpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	dayofweek "google.golang.org/genproto/googleapis/type/dayofweek"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -67,6 +66,8 @@ type BackupSchedule struct {
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// At what relative time in the future, compared to its creation time,
 	// the backup should be deleted, e.g. keep backups for 7 days.
+	//
+	// The maximum supported retention period is 14 weeks.
 	Retention *durationpb.Duration `protobuf:"bytes,6,opt,name=retention,proto3" json:"retention,omitempty"`
 	// A oneof field to represent when backups will be taken.
 	//
@@ -176,7 +177,7 @@ func (*BackupSchedule_DailyRecurrence) isBackupSchedule_Recurrence() {}
 
 func (*BackupSchedule_WeeklyRecurrence) isBackupSchedule_Recurrence() {}
 
-// Represents a recurring schedule that runs at a specific time every day.
+// Represents a recurring schedule that runs every day.
 //
 // The time zone is UTC.
 type DailyRecurrence struct {

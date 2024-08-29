@@ -21,12 +21,11 @@
 package adminpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -103,7 +102,7 @@ func (Field_TtlConfig_State) EnumDescriptor() ([]byte, []int) {
 // Represents a single field in the database.
 //
 // Fields are grouped by their "Collection Group", which represent all
-// collections in the database with the same id.
+// collections in the database with the same ID.
 type Field struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
