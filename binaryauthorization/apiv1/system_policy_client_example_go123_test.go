@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package binaryauthorization_test
+
+import (
+	binaryauthorization "cloud.google.com/go/binaryauthorization/apiv1"
+)
