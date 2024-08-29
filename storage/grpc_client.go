@@ -17,6 +17,7 @@ package storage
 import (
 	"context"
 	"encoding/base64"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"hash/crc32"
@@ -36,6 +37,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding"
+	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protowire"
@@ -989,6 +991,47 @@ func (bytesCodec) Name() string {
 	return ""
 }
 
+type bytesCodecV2 struct {
+	encoding.CodecV2
+}
+
+// Marshal is used to encode messages to send for bytesCodecV2. Since we are only
+// using this to send ReadObjectRequest messages we don't need to recycle buffers
+// here.
+func (bytesCodecV2) Marshal(v any) (mem.BufferSlice, error) {
+	vv, ok := v.(proto.Message)
+	if !ok {
+		return nil, fmt.Errorf("failed to marshal, message is %T, want proto.Message", v)
+	}
+	var data mem.BufferSlice
+	buf, err := proto.Marshal(vv)
+	if err != nil {
+		return nil, err
+	}
+	data = append(data, mem.SliceBuffer(buf))
+	return data, nil
+}
+
+// Unmarshal is used for data received for ReadObjectResponse. We want to preserve
+// the mem.BufferSlice in most cases rather than copying and calling proto.Unmarshal.
+func (bytesCodecV2) Unmarshal(data mem.BufferSlice, v any) error {
+	switch v := v.(type) {
+	case *mem.BufferSlice:
+		*v = data
+		return nil
+	case proto.Message:
+		buf := data.MaterializeToBuffer(mem.DefaultBufferPool())
+		defer buf.Free()
+		return proto.Unmarshal(buf.ReadOnlyData(), v)
+	default:
+		return fmt.Errorf("cannot unmarshal type %T, want proto.Message or mem.BufferSlice", v)
+	}
+}
+
+func (bytesCodecV2) Name() string {
+	return ""
+}
+
 func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.NewRangeReader")
 	defer func() { trace.EndSpan(ctx, err) }()
@@ -996,7 +1039,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	s := callSettings(c.settings, opts...)
 
 	s.gax = append(s.gax, gax.WithGRPCOptions(
-		grpc.ForceCodec(bytesCodec{}),
+		// grpc.ForceCodec(bytesCodec{}),
+		grpc.ForceCodecV2(bytesCodecV2{}),
 	))
 
 	if s.userProject != "" {
@@ -1014,7 +1058,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		req.Generation = params.gen
 	}
 
-	var databuf []byte
+	// var databuf []byte
 
 	// Define a function that initiates a Read with offset and length, assuming
 	// we have already read seen bytes.
@@ -1042,6 +1086,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 		var stream storagepb.Storage_ReadObjectClient
 		var msg *storagepb.ReadObjectResponse
+		// var offsets *bufferSliceOffsets
+		var databuf *mem.BufferSlice
 		var err error
 
 		err = run(cc, func(ctx context.Context) error {
@@ -1052,7 +1098,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 			// Receive the message into databuf as a wire-encoded message so we can
 			// use a custom decoder to avoid an extra copy at the protobuf layer.
-			err := stream.RecvMsg(&databuf)
+			err := stream.RecvMsg(databuf)
 			// These types of errors show up on the Recv call, rather than the
 			// initialization of the stream via ReadObject above.
 			if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
@@ -1066,7 +1112,10 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			// Subsequent receives in Read calls will skip all protobuf
 			// unmarshalling and directly read the content from the gRPC []byte
 			// response, since only the first call will contain other fields.
-			msg, err = readFullObjectResponse(databuf)
+			decoder := &readResponseDecoder{
+				databufs: databuf,
+			}
+			msg, _, err = decoder.readFullObjectResponse()
 
 			return err
 		}, s.retry, s.idempotent)
@@ -1125,9 +1174,9 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			leftovers: msg.GetChecksummedData().GetContent(),
 			settings:  s,
 			zeroRange: params.length == 0,
-			databuf:   databuf,
-			wantCRC:   wantCRC,
-			checkCRC:  checkCRC,
+			// databuf:   databuf,
+			wantCRC:  wantCRC,
+			checkCRC: checkCRC,
 		},
 		checkCRC: checkCRC,
 	}
@@ -1516,17 +1565,18 @@ type readStreamResponse struct {
 }
 
 type gRPCReader struct {
-	seen, size int64
-	zeroRange  bool
-	stream     storagepb.Storage_ReadObjectClient
-	reopen     func(seen int64) (*readStreamResponse, context.CancelFunc, error)
-	leftovers  []byte
-	databuf    []byte
-	cancel     context.CancelFunc
-	settings   *settings
-	checkCRC   bool   // should we check the CRC?
-	wantCRC    uint32 // the CRC32c value the server sent in the header
-	gotCRC     uint32 // running crc
+	seen, size  int64
+	zeroRange   bool
+	stream      storagepb.Storage_ReadObjectClient
+	reopen      func(seen int64) (*readStreamResponse, context.CancelFunc, error)
+	leftovers   []byte
+	databuf     *mem.BufferSlice
+	dataOffsets *bufferSliceOffsets
+	cancel      context.CancelFunc
+	settings    *settings
+	checkCRC    bool   // should we check the CRC?
+	wantCRC     uint32 // the CRC32c value the server sent in the header
+	gotCRC      uint32 // running crc
 }
 
 // Update the running CRC with the data in the slice, if CRC checking was enabled.
@@ -1575,10 +1625,16 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 	}
 
 	// Attempt to Recv the next message on the stream.
-	content, err := r.recv()
+	// This will return a mem.BufferSlice containing encoded data.
+	// databufs, err := r.recv()
+	var err error
 	if err != nil {
 		return 0, err
 	}
+	// startBuf, startOff, endBuf, endOff, err := findFieldOffsets(databufs, checksummedDataField)
+	// if err != nil {
+	// 	return 0, err
+	// }
 
 	// TODO: Determine if we need to capture incremental CRC32C for this
 	// chunk. The Object CRC32C checksum is captured when directed to read
@@ -1587,6 +1643,8 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 	// present in the response here.
 	// TODO: Figure out if we need to support decompressive transcoding
 	// https://cloud.google.com/storage/docs/transcoding.
+
+	var content []byte
 	n = copy(p[n:], content)
 	leftover := len(content) - n
 	if leftover > 0 {
@@ -1599,6 +1657,31 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 
 	return n, nil
 }
+
+// func findFieldOffsets(databuf *mem.BufferSlice, num protowire.Number) (startBuf, startOff, endBuf, endOff int64, err error) {
+// 	off := 0
+// 	d.currBuf := 0
+// 	for off < databufs.Len() {
+// 		b := (*databufs)[d.currBuf].ReadOnlyData()
+// 		gotNum, gotTyp, n := protowire.ConsumeTag(b[off:])
+// 		if n < 0 {
+// 			return 0, protowire.ParseError(n)
+// 		}
+// 		off += n
+// 		if gotNum == num && gotTyp == protowire.BytesType {
+// 			b, n := protowire.ConsumeBytes(b[off:])
+// 			if n < 0 {
+// 				return nil, protowire.ParseError(n)
+// 			}
+// 			return b, nil
+// 		}
+// 		n = protowire.ConsumeFieldValue(gotNum, gotTyp, b[off:])
+// 		if n < 0 {
+// 			return nil, protowire.ParseError(n)
+// 		}
+// 		off += n
+// 	}
+// }
 
 // WriteTo writes all the data requested by the Reader into w, implementing
 // io.WriterTo.
@@ -1641,7 +1724,8 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 		// Attempt to receive the next message on the stream.
 		// Will terminate with io.EOF once data has all come through.
 		// recv() handles stream reopening and retry logic so no need for retries here.
-		msg, err := r.recv()
+		err := r.recv()
+		var msg []byte
 		if err != nil {
 			if err == io.EOF {
 				// We are done; check the checksum if necessary and return.
@@ -1688,8 +1772,9 @@ func (r *gRPCReader) Close() error {
 //
 // The last error received is the one that is returned, which could be from
 // an attempt to reopen the stream.
-func (r *gRPCReader) recv() ([]byte, error) {
-	err := r.stream.RecvMsg(&r.databuf)
+func (r *gRPCReader) recv() error {
+	var databuf *mem.BufferSlice
+	err := r.stream.RecvMsg(databuf)
 
 	var shouldRetry = ShouldRetry
 	if r.settings.retry != nil && r.settings.retry.shouldRetry != nil {
@@ -1700,15 +1785,16 @@ func (r *gRPCReader) recv() ([]byte, error) {
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is
 		// successful, the next logical chunk will be returned.
-		msg, err := r.reopenStream()
-		return msg.GetChecksummedData().GetContent(), err
+		_, err := r.reopenStream()
+		return err // fix this later
+		// return msg.GetChecksummedData().GetContent(), err
 	}
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return readObjectResponseContent(r.databuf)
+	return nil
 }
 
 // ReadObjectResponse field and subfield numbers.
@@ -1721,21 +1807,262 @@ const (
 	metadataField               = protowire.Number(4)
 )
 
-// readObjectResponseContent returns the checksummed_data.content field of a
-// ReadObjectResponse message, or an error if the message is invalid.
-// This can be used on recvs of objects after the first recv, since only the
-// first message will contain non-data fields.
-func readObjectResponseContent(b []byte) ([]byte, error) {
-	checksummedData, err := readProtoBytes(b, checksummedDataField)
-	if err != nil {
-		return b, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData: %v", err)
+type bufferSliceOffsets struct {
+	startBuf, endBuf int
+	startOff, endOff uint64
+}
+
+type readResponseDecoder struct {
+	databufs *mem.BufferSlice // raw bytes of the message being processed
+	off      uint64           // overall offset in the message data
+	currBuf  int              // index of the current buffer being processed
+	currOff  uint64           // offset in the current buffer
+}
+
+// peek ahead 10 bytes from the current offset in the databufs. This will return a
+// slice of the current buffer if the bytes are all in one buffer, but will copy
+// the bytes into a new buffer if the distance is split across buffers. Use this
+// to allow protowire methods to be used to parse tags & fixed values.
+// The max length of a varint tag is 10 bytes, see
+// https://protobuf.dev/programming-guides/encoding/#varints . Other int types
+// are shorter.
+func (d *readResponseDecoder) peek() []byte {
+	b := (*d.databufs)[d.currBuf].ReadOnlyData()
+	// Check if the tag will fit in the current buffer. If not, copy the next 10
+	// bytes into a new buffer to ensure that we can read the tag correctly
+	// without it being divided between buffers.
+	tagBuf := b[d.currOff:]
+	remainingInBuf := len(tagBuf)
+	fmt.Printf("tagbuf: %v, b: %v, d.off: %v\n", len(tagBuf), len(b), d.off)
+	if remainingInBuf < binary.MaxVarintLen64 {
+		tagBuf = append(b[d.currOff:], ((*d.databufs)[d.currBuf+1].ReadOnlyData()[:binary.MaxVarintLen64-remainingInBuf])...)
 	}
-	content, err := readProtoBytes(checksummedData, checksummedDataContentField)
-	if err != nil {
-		return content, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Content: %v", err)
+	return tagBuf
+}
+
+// Consume the next available tag in the input data and return the field number and type.
+// Advances the relevant offsets in the data.
+func (d *readResponseDecoder) consumeTag() (protowire.Number, protowire.Type, error) {
+	b := (*d.databufs)[d.currBuf].ReadOnlyData()
+	tagBuf := d.peek()
+
+	// Consume the next tag. This will tell us which field is next in the
+	// buffer, its type, and how much space it takes up.
+	fieldNum, fieldType, tagLength := protowire.ConsumeTag(tagBuf)
+	if tagLength < 0 {
+		return 0, 0, protowire.ParseError(tagLength)
 	}
 
-	return content, nil
+	remainingInBuf := len(b[d.currOff:])
+	// Update the offsets and current buffer depending on the tag length.
+	if tagLength >= remainingInBuf {
+		d.currBuf += 1
+		d.currOff = uint64(remainingInBuf) - uint64(tagLength)
+	} else {
+		d.currOff += uint64(tagLength)
+	}
+
+	d.off += uint64(tagLength)
+	return fieldNum, fieldType, nil
+}
+
+// Consume a varint that represents the length of a bytes field. Return the length of
+// the data, and advance the offsets by the length of the varint.
+func (d *readResponseDecoder) consumeVarint() (uint64, error) {
+	b := (*d.databufs)[d.currBuf].ReadOnlyData()
+	tagBuf := d.peek()
+
+	// Consume the next tag. This will tell us which field is next in the
+	// buffer, its type, and how much space it takes up.
+	dataLength, tagLength := protowire.ConsumeVarint(tagBuf)
+	if tagLength < 0 {
+		return 0, protowire.ParseError(tagLength)
+	}
+
+	// Update the offsets and current buffer depending on the tag length.
+	remainingInBuf := len(b[d.currOff:])
+	if tagLength >= remainingInBuf {
+		d.currBuf += 1
+		d.currOff = uint64(remainingInBuf) - uint64(tagLength)
+	} else {
+		d.currOff += uint64(tagLength)
+	}
+
+	d.off += uint64(tagLength)
+	return dataLength, nil
+}
+
+func (d *readResponseDecoder) consumeFixed32() (uint32, error) {
+	b := (*d.databufs)[d.currBuf].ReadOnlyData()
+	valueBuf := d.peek()
+
+	// Consume the next tag. This will tell us which field is next in the
+	// buffer, its type, and how much space it takes up.
+	value, tagLength := protowire.ConsumeFixed32(valueBuf)
+	if tagLength < 0 {
+		return 0, protowire.ParseError(tagLength)
+	}
+
+	// Update the offsets and current buffer depending on the tag length.
+	remainingInBuf := len(b[d.currOff:])
+	if tagLength >= remainingInBuf {
+		d.currBuf += 1
+		d.currOff = uint64(remainingInBuf) - uint64(tagLength)
+	} else {
+		d.currOff += uint64(tagLength)
+	}
+
+	d.off += uint64(tagLength)
+	return value, nil
+}
+
+func (d *readResponseDecoder) consumeFixed64() (uint64, error) {
+	b := (*d.databufs)[d.currBuf].ReadOnlyData()
+	valueBuf := d.peek()
+
+	// Consume the next tag. This will tell us which field is next in the
+	// buffer, its type, and how much space it takes up.
+	value, tagLength := protowire.ConsumeFixed64(valueBuf)
+	if tagLength < 0 {
+		return 0, protowire.ParseError(tagLength)
+	}
+
+	// Update the offsets and current buffer depending on the tag length.
+	remainingInBuf := len(b[d.currOff:])
+	if tagLength >= remainingInBuf {
+		d.currBuf += 1
+		d.currOff = uint64(remainingInBuf) - uint64(tagLength)
+	} else {
+		d.currOff += uint64(tagLength)
+	}
+
+	d.off += uint64(tagLength)
+	return value, nil
+}
+
+// Consume any field values up to the end offset provided and don't return anything.
+// This is used to skip any values which are not going to be used.
+// msgEndOff is indexed in terms of the overall data across all buffers.
+func (d *readResponseDecoder) consumeFieldValue(fieldNum protowire.Number, fieldType protowire.Type) error {
+	// reimplement protowire.ConsumeFieldValue without the extra case for groups (which
+	// are are complicted and not a thing in proto3).
+	var err error
+	switch fieldType {
+	case protowire.VarintType:
+		_, err = d.consumeVarint()
+	case protowire.Fixed32Type:
+		_, err = d.consumeFixed32()
+	case protowire.Fixed64Type:
+		_, err = d.consumeFixed64()
+	case protowire.BytesType:
+		_, err = d.consumeBytes()
+	default:
+		return fmt.Errorf("unknown field type %v in field %v", fieldType, fieldNum)
+	}
+	if err != nil {
+		return fmt.Errorf("consuming field %v of type %v: %w", fieldNum, fieldType, err)
+	}
+
+	return nil
+}
+
+// Consume a bytes field from the input. Returns offsets for the data in the buffer slices
+// and an error.
+func (d *readResponseDecoder) consumeBytes() (*bufferSliceOffsets, error) {
+	b := (*d.databufs)[d.currBuf].ReadOnlyData()
+	// n is the length of the tag, and m is the length of the data
+	// past the tag.
+	m, err := d.consumeVarint()
+	if err != nil {
+		return nil, fmt.Errorf("consuming bytes field: %w", err)
+	}
+	offsets := &bufferSliceOffsets{
+		startBuf: d.currBuf,
+		startOff: d.currOff,
+	}
+
+	// Data is longer than current buffer
+	// Iterate through buffers to find end offset.
+	remainingInCurr := uint64(len(b[d.currOff:]))
+	if m > remainingInCurr {
+		d.off += remainingInCurr
+		remainingBytes := m - remainingInCurr
+		for remainingBytes > 0 {
+			d.currOff = 0
+			d.currBuf += 1
+			if d.currBuf >= len(*d.databufs) {
+				// Should not happen if message is formed correctly.
+				return nil, errors.New("invalid proto message: truncated data")
+			}
+			b = (*d.databufs)[d.currBuf].ReadOnlyData()
+			currLen := uint64(len(b))
+			if remainingBytes < currLen {
+				d.currOff = remainingBytes
+				offsets.endOff = remainingBytes
+				offsets.endBuf = d.currBuf
+			}
+			remainingBytes -= currLen
+		}
+	} else {
+		// Data is entirely in current
+		offsets.endBuf = offsets.startBuf
+		d.currOff += m
+		d.off += m
+		offsets.endOff = d.currOff
+	}
+
+	return offsets, nil
+}
+
+// Consume a bytes field from the input and copy into a new buffer if
+// necessary (if the data is split across buffers in databuf).  This can be
+// used to leverage proto.Unmarshal for small bytes fields (i.e. anything
+// except object data).
+func (d *readResponseDecoder) consumeBytesCopy() ([]byte, error) {
+	b := (*d.databufs)[d.currBuf].ReadOnlyData()
+
+	// m is the length of the bytes data.
+	m, err := d.consumeVarint()
+	if err != nil {
+		return nil, fmt.Errorf("consuming bytes field: %w", err)
+	}
+
+	buf := b[d.currOff:]
+	remainingInCurr := uint64(len(b[d.currOff:]))
+
+	// Data is longer than current buffer
+	// Iterate through buffers to find end offset.
+	if m > remainingInCurr {
+		d.off += remainingInCurr
+		remainingBytes := m - remainingInCurr
+		for remainingBytes > 0 {
+			d.currOff = 0
+			d.currBuf += 1
+			if d.currBuf >= len(*d.databufs) {
+				// Should not happen if message is formed correctly.
+				return nil, errors.New("invalid proto message: truncated data")
+			}
+			b = (*d.databufs)[d.currBuf].ReadOnlyData()
+			currLen := uint64(len(b))
+			// If full buffer is in this field, copy it all in. Otherwise copy up to the
+			// correct end offset.
+			if remainingBytes >= currLen {
+				buf = append(buf, b...)
+			} else {
+				buf = append(buf, b[:remainingBytes]...)
+				d.currOff = remainingBytes
+			}
+			remainingBytes -= currLen
+		}
+	} else {
+		// Data is entirely in current buffer.
+		buf = buf[:m]
+		d.currOff += m
+		d.off += m
+	}
+	d.off += m
+
+	return buf, nil
 }
 
 // readFullObjectResponse returns the ReadObjectResponse that is encoded in the
@@ -1745,21 +2072,18 @@ func readObjectResponseContent(b []byte) ([]byte, error) {
 // This function is essentially identical to proto.Unmarshal, except it aliases
 // the data in the input []byte. If the proto library adds a feature to
 // Unmarshal that does that, this function can be dropped.
-func readFullObjectResponse(b []byte) (*storagepb.ReadObjectResponse, error) {
+func (d *readResponseDecoder) readFullObjectResponse() (*storagepb.ReadObjectResponse, *bufferSliceOffsets, error) {
 	msg := &storagepb.ReadObjectResponse{}
+	var dataOffsets *bufferSliceOffsets
 
 	// Loop over the entire message, extracting fields as we go. This does not
 	// handle field concatenation, in which the contents of a single field
 	// are split across multiple protobuf tags.
-	off := 0
-	for off < len(b) {
-		// Consume the next tag. This will tell us which field is next in the
-		// buffer, its type, and how much space it takes up.
-		fieldNum, fieldType, fieldLength := protowire.ConsumeTag(b[off:])
-		if fieldLength < 0 {
-			return nil, protowire.ParseError(fieldLength)
+	for d.off < uint64(d.databufs.Len()) {
+		fieldNum, fieldType, err := d.consumeTag()
+		if err != nil {
+			return nil, nil, fmt.Errorf("consuming next tag: %w", err)
 		}
-		off += fieldLength
 
 		// Unmarshal the field according to its type. Only fields that are not
 		// nil will be present.
@@ -1768,127 +2092,83 @@ func readFullObjectResponse(b []byte) (*storagepb.ReadObjectResponse, error) {
 			// The ChecksummedData field was found. Initialize the struct.
 			msg.ChecksummedData = &storagepb.ChecksummedData{}
 
-			// Get the bytes corresponding to the checksummed data.
-			fieldContent, n := protowire.ConsumeBytes(b[off:])
-			if n < 0 {
-				return nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData: %v", protowire.ParseError(n))
+			// offsets, err := d.consumeBytes()
+			bytesFieldLen, err := d.consumeVarint()
+			if err != nil {
+				return nil, nil, fmt.Errorf("consuming bytes: %v", err)
 			}
-			off += n
 
-			// Get the nested fields. We need to do this manually as it contains
-			// the object content bytes.
-			contentOff := 0
-			for contentOff < len(fieldContent) {
-				gotNum, gotTyp, n := protowire.ConsumeTag(fieldContent[contentOff:])
-				if n < 0 {
-					return nil, protowire.ParseError(n)
+			var contentEndOff = d.off + bytesFieldLen
+			for d.off < contentEndOff {
+				gotNum, gotTyp, err := d.consumeTag()
+				if err != nil {
+					return nil, nil, fmt.Errorf("consuming checksummedData tag: %w", err)
 				}
-				contentOff += n
 
 				switch {
 				case gotNum == checksummedDataContentField && gotTyp == protowire.BytesType:
-					// Get the content bytes.
-					bytes, n := protowire.ConsumeBytes(fieldContent[contentOff:])
-					if n < 0 {
-						return nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Content: %v", protowire.ParseError(n))
+					// Get the offsets of the content bytes.
+					dataOffsets, err = d.consumeBytes()
+					if err != nil {
+						return nil, nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Content: %w", err)
 					}
-					msg.ChecksummedData.Content = bytes
-					contentOff += n
 				case gotNum == checksummedDataCRC32CField && gotTyp == protowire.Fixed32Type:
-					v, n := protowire.ConsumeFixed32(fieldContent[contentOff:])
-					if n < 0 {
-						return nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Crc32C: %v", protowire.ParseError(n))
+					v, err := d.consumeFixed32()
+					if err != nil {
+						return nil, nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Crc32C: %w", err)
 					}
 					msg.ChecksummedData.Crc32C = &v
-					contentOff += n
 				default:
-					n = protowire.ConsumeFieldValue(gotNum, gotTyp, fieldContent[contentOff:])
-					if n < 0 {
-						return nil, protowire.ParseError(n)
+					// assumption: checksummedDataContent field comes first and anything remaining here is
+					// not that large, so we can copy remaining bytes in a buffer to discard these fields.
+					// TODO: check about this...
+					err := d.consumeFieldValue(gotNum, gotTyp)
+					if err != nil {
+						return nil, nil, fmt.Errorf("invalid field in ReadObjectResponse.ChecksummedData: %w", err)
 					}
-					contentOff += n
 				}
 			}
 		case fieldNum == objectChecksumsField && fieldType == protowire.BytesType:
 			// The field was found. Initialize the struct.
 			msg.ObjectChecksums = &storagepb.ObjectChecksums{}
-
-			// Get the bytes corresponding to the checksums.
-			bytes, n := protowire.ConsumeBytes(b[off:])
-			if n < 0 {
-				return nil, fmt.Errorf("invalid ReadObjectResponse.ObjectChecksums: %v", protowire.ParseError(n))
+			// Consume the bytes and copy them into a single buffer if they are split across buffers.
+			buf, err := d.consumeBytesCopy()
+			if err != nil {
+				return nil, nil, fmt.Errorf("invalid ReadObjectResponse.ObjectChecksums: %v", err)
 			}
-			off += n
-
 			// Unmarshal.
-			if err := proto.Unmarshal(bytes, msg.ObjectChecksums); err != nil {
-				return nil, err
+			if err := proto.Unmarshal(buf, msg.ObjectChecksums); err != nil {
+				return nil, nil, err
 			}
 		case fieldNum == contentRangeField && fieldType == protowire.BytesType:
 			msg.ContentRange = &storagepb.ContentRange{}
-
-			bytes, n := protowire.ConsumeBytes(b[off:])
-			if n < 0 {
-				return nil, fmt.Errorf("invalid ReadObjectResponse.ContentRange: %v", protowire.ParseError(n))
+			buf, err := d.consumeBytesCopy()
+			if err != nil {
+				return nil, nil, fmt.Errorf("invalid ReadObjectResponse.ContentRange: %v", err)
 			}
-			off += n
-
-			if err := proto.Unmarshal(bytes, msg.ContentRange); err != nil {
-				return nil, err
+			if err := proto.Unmarshal(buf, msg.ContentRange); err != nil {
+				return nil, nil, err
 			}
 		case fieldNum == metadataField && fieldType == protowire.BytesType:
 			msg.Metadata = &storagepb.Object{}
 
-			bytes, n := protowire.ConsumeBytes(b[off:])
-			if n < 0 {
-				return nil, fmt.Errorf("invalid ReadObjectResponse.Metadata: %v", protowire.ParseError(n))
+			buf, err := d.consumeBytesCopy()
+			if err != nil {
+				return nil, nil, fmt.Errorf("invalid ReadObjectResponse.Metadata: %v", err)
 			}
-			off += n
 
-			if err := proto.Unmarshal(bytes, msg.Metadata); err != nil {
-				return nil, err
+			if err := proto.Unmarshal(buf, msg.Metadata); err != nil {
+				return nil, nil, err
 			}
 		default:
-			fieldLength = protowire.ConsumeFieldValue(fieldNum, fieldType, b[off:])
-			if fieldLength < 0 {
-				return nil, fmt.Errorf("default: %v", protowire.ParseError(fieldLength))
+			err := d.consumeFieldValue(fieldNum, fieldType)
+			if err != nil {
+				return nil, nil, fmt.Errorf("invalid field in ReadObjectResponse: %w", err)
 			}
-			off += fieldLength
 		}
 	}
 
-	return msg, nil
-}
-
-// readProtoBytes returns the contents of the protobuf field with number num
-// and type bytes from a wire-encoded message. If the field cannot be found,
-// the returned slice will be nil and no error will be returned.
-//
-// It does not handle field concatenation, in which the contents of a single field
-// are split across multiple protobuf tags. Encoded data containing split fields
-// of this form is technically permissable, but uncommon.
-func readProtoBytes(b []byte, num protowire.Number) ([]byte, error) {
-	off := 0
-	for off < len(b) {
-		gotNum, gotTyp, n := protowire.ConsumeTag(b[off:])
-		if n < 0 {
-			return nil, protowire.ParseError(n)
-		}
-		off += n
-		if gotNum == num && gotTyp == protowire.BytesType {
-			b, n := protowire.ConsumeBytes(b[off:])
-			if n < 0 {
-				return nil, protowire.ParseError(n)
-			}
-			return b, nil
-		}
-		n = protowire.ConsumeFieldValue(gotNum, gotTyp, b[off:])
-		if n < 0 {
-			return nil, protowire.ParseError(n)
-		}
-		off += n
-	}
-	return nil, nil
+	return msg, dataOffsets, nil
 }
 
 // reopenStream "closes" the existing stream and attempts to reopen a stream and

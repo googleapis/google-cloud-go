@@ -23,11 +23,12 @@ import (
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/grpc/mem"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 )
 
-func TestBytesCodec(t *testing.T) {
+func TestBytesCodecV2(t *testing.T) {
 	// Generate some random content.
 	content := make([]byte, 1<<10+1) // 1 kib + 1 byte
 	rand.New(rand.NewSource(0)).Read(content)
@@ -85,8 +86,9 @@ func TestBytesCodec(t *testing.T) {
 	}
 
 	for _, test := range []struct {
-		desc string
-		resp *storagepb.ReadObjectResponse
+		desc    string
+		resp    *storagepb.ReadObjectResponse
+		offsets *bufferSliceOffsets
 	}{
 		{
 			desc: "filled object response",
@@ -106,6 +108,12 @@ func TestBytesCodec(t *testing.T) {
 				},
 				Metadata: metadata,
 			},
+			offsets: &bufferSliceOffsets{
+				startBuf: 0,
+				startOff: 6,
+				endBuf:   0,
+				endOff:   1031,
+			},
 		},
 		{
 			desc: "empty object response",
@@ -116,7 +124,6 @@ func TestBytesCodec(t *testing.T) {
 			resp: &storagepb.ReadObjectResponse{
 				ChecksummedData: &storagepb.ChecksummedData{},
 				ObjectChecksums: &storagepb.ObjectChecksums{Md5Hash: md5},
-				Metadata:        &storagepb.Object{},
 			},
 		},
 	} {
@@ -126,22 +133,34 @@ func TestBytesCodec(t *testing.T) {
 			if err != nil {
 				t.Fatalf("proto.Marshal: %v", err)
 			}
+			var respData mem.BufferSlice
+			respData = append(respData, mem.SliceBuffer(encodedResp))
 
 			// Unmarshal and decode response using custom decoding.
-			encodedBytes := &[]byte{}
-			if err := bytesCodec.Unmarshal(bytesCodec{}, encodedResp, encodedBytes); err != nil {
+			var encodedBytes *mem.BufferSlice = &mem.BufferSlice{}
+			if err := bytesCodecV2.Unmarshal(bytesCodecV2{}, respData, encodedBytes); err != nil {
 				t.Fatalf("unmarshal: %v", err)
 			}
 
-			got, err := readFullObjectResponse(*encodedBytes)
+			decoder := &readResponseDecoder{
+				databufs: encodedBytes,
+			}
+
+			msg, offsets, err := decoder.readFullObjectResponse()
 			if err != nil {
 				t.Fatalf("readFullObjectResponse: %v", err)
 			}
 
-			// Compare the result with the original ReadObjectResponse.
-			if diff := cmp.Diff(got, test.resp, protocmp.Transform()); diff != "" {
-				t.Errorf("cmp.Diff got(-),want(+):\n%s", diff)
+			// Compare the result with the original ReadObjectResponse, without the content
+			if diff := cmp.Diff(msg, test.resp, protocmp.Transform(), protocmp.IgnoreMessages(&storagepb.ChecksummedData{})); diff != "" {
+				t.Errorf("cmp.Diff message: got(-),want(+):\n%s", diff)
 			}
+
+			// Compare offsets
+			if diff := cmp.Diff(offsets, test.offsets, cmp.AllowUnexported(bufferSliceOffsets{})); diff != "" {
+				t.Errorf("cmp.Diff offsets: got(-),want(+):\n%s", diff)
+			}
+
 		})
 	}
 }
