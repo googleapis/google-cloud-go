@@ -370,14 +370,15 @@ Sending this data does not incur any billing charges, and requires minimal
 CPU (a single RPC every minute) or memory (a few KiB to batch the
 telemetry).
 
-To access the metrics you can view them through [Cloud Monitoring Metric explorer] with the prefix `storage.googleapis.com/client`. Metrics are emitted
+To access the metrics you can view them through Cloud Monitoring
+[metric explorer] with the prefix `storage.googleapis.com/client`. Metrics are emitted
 every minute.
 
 You can disable metrics using the following example when creating a new gRPC
 client using [WithDisabledClientMetrics].
 
-The metrics exporter uses Cloud Monitoring API which requires accessible
-endpoint, project ID and credentials.
+The metrics exporter uses Cloud Monitoring API which determines
+project ID and credentials doing the following:
 
 * Project ID is determined using OTel Resource Detector for the environment
 otherwise it falls back to the project provided by [google.FindCredentials].
@@ -395,7 +396,6 @@ client, which is available as a subpackage in this module. See package docs at
 
 [Application Default Credentials]: https://cloud.google.com/docs/authentication/application-default-credentials
 [google.FindCredentials]: https://pkg.go.dev/golang.org/x/oauth2/google#FindDefaultCredentials
-[Cloud Monitoring Metric explorer]: https://console.cloud.google.com/projectselector/monitoring/metrics-explorer
 [gRFC/66]: https://github.com/grpc/proposal/blob/master/A66-otel-stats.md
 [gRFC/78]: https://github.com/grpc/proposal/blob/master/A78-grpc-metrics-wrr-pf-xds.md
 [Google Cloud Monitoring]: https://cloud.google.com/monitoring/docs
@@ -408,5 +408,6 @@ client, which is available as a subpackage in this module. See package docs at
 [IAM Service Account Credentials API]: https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview
 [custom audit logging]: https://cloud.google.com/storage/docs/audit-logging#add-custom-metadata
 [Storage Control API]: https://cloud.google.com/storage/docs/reference/rpc/google.storage.control.v2
+[metric explorer]: https://console.cloud.google.com/projectselector/monitoring/metrics-explorer
 */
 package storage // import "cloud.google.com/go/storage"
