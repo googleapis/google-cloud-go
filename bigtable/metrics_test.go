@@ -20,8 +20,10 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -250,6 +252,14 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 }
 
+func setMockErrorHandler(t *testing.T, mockErrorHandler *MockErrorHandler) {
+	origErrHandler := otel.GetErrorHandler()
+	otel.SetErrorHandler(mockErrorHandler)
+	t.Cleanup(func() {
+		otel.SetErrorHandler(origErrHandler)
+	})
+}
+
 func TestExporterLogs(t *testing.T) {
 	ctx := context.Background()
 	project := "test-project"
@@ -270,11 +280,10 @@ func TestExporterLogs(t *testing.T) {
 	}
 
 	// Set up mock error handler
-	origErrHandler := otel.GetErrorHandler()
-	errBuf := new(bytes.Buffer)
-	otel.SetErrorHandler(&MockErrorHandler{
-		buf: errBuf,
-	})
+	mer := &MockErrorHandler{
+		buffer: new(bytes.Buffer),
+	}
+	setMockErrorHandler(t, mer)
 
 	// record start time
 	testStartTime := time.Now()
@@ -296,19 +305,36 @@ func TestExporterLogs(t *testing.T) {
 	// These same options will be used to create Monitoring client but since there
 	// is no fake Monitoring server at that grpc conn, all the exports result in failure.
 	// Thus, there should be errors in errBuf.
-	otel.SetErrorHandler(origErrHandler)
-	if !strings.Contains(errBuf.String(), metricsErrorPrefix) {
-		t.Errorf("Expected %v to contain %v", errBuf.String(), metricsErrorPrefix)
+	data, readErr := mer.read()
+	if readErr != nil {
+		t.Errorf("Failed to read errBuf: %v", readErr)
+	}
+	if !strings.Contains(data, metricsErrorPrefix) {
+		t.Errorf("Expected %v to contain %v", data, metricsErrorPrefix)
 	}
 }
 
 type MockErrorHandler struct {
-	buf *bytes.Buffer
+	buffer      *bytes.Buffer
+	bufferMutex sync.Mutex
 }
 
 func (m *MockErrorHandler) Handle(err error) {
-	fmt.Fprintln(m.buf, err)
+	m.bufferMutex.Lock()
+	defer m.bufferMutex.Unlock()
+	fmt.Fprintln(m.buffer, err)
 }
+
+func (m *MockErrorHandler) read() (string, error) {
+	m.bufferMutex.Lock()
+	defer m.bufferMutex.Unlock()
+	data, err := io.ReadAll(m.buffer)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
 func TestToOtelMetricAttrs(t *testing.T) {
 	mt := builtinMetricsTracer{
 		tableName:   "my-table",

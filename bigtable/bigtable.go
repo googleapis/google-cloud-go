@@ -1566,43 +1566,48 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 // - then, calls gax.Invoke with 'callWrapper' as an argument
 func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method string,
 	f func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error, opts ...gax.CallOption) error {
-
+	attemptHeaderMD := metadata.New(nil)
+	attempTrailerMD := metadata.New(nil)
 	mt.method = method
-	callWrapper := func(ctx context.Context, callSettings gax.CallSettings) error {
-		// Increment number of attempts
-		mt.currOp.incrementAttemptCount()
 
-		attemptHeaderMD := metadata.New(nil)
-		attempTrailerMD := metadata.New(nil)
-		mt.currOp.currAttempt = attemptTracer{}
+	var callWrapper func(context.Context, gax.CallSettings) error
+	if !mt.builtInEnabled {
+		callWrapper = func(ctx context.Context, callSettings gax.CallSettings) error {
+			// f makes calls to CBT service
+			return f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
+		}
+	} else {
+		callWrapper = func(ctx context.Context, callSettings gax.CallSettings) error {
+			// Increment number of attempts
+			mt.currOp.incrementAttemptCount()
 
-		// record start time
-		mt.currOp.currAttempt.setStartTime(time.Now())
+			mt.currOp.currAttempt = attemptTracer{}
 
-		// f makes calls to CBT service
-		err := f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
-		if !mt.builtInEnabled {
+			// record start time
+			mt.currOp.currAttempt.setStartTime(time.Now())
+
+			// f makes calls to CBT service
+			err := f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
+
+			// Set attempt status
+			statusCode, _ := convertToGrpcStatusErr(err)
+			mt.currOp.currAttempt.setStatus(statusCode.String())
+
+			// Get location attributes from metadata and set it in tracer
+			// Ignore get location error since the metric can still be recorded with rest of the attributes
+			clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
+			mt.currOp.currAttempt.setClusterID(clusterID)
+			mt.currOp.currAttempt.setZoneID(zoneID)
+
+			// Set server latency in tracer
+			serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
+			mt.currOp.currAttempt.setServerLatencyErr(serverLatencyErr)
+			mt.currOp.currAttempt.setServerLatency(serverLatency)
+
+			// Record attempt specific metrics
+			recordAttemptCompletion(mt)
 			return err
 		}
-
-		// Set attempt status
-		statusCode, _ := convertToGrpcStatusErr(err)
-		mt.currOp.currAttempt.setStatus(statusCode.String())
-
-		// Get location attributes from metadata and set it in tracer
-		// Ignore get location error since the metric can still be recorded with rest of the attributes
-		clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
-		mt.currOp.currAttempt.setClusterID(clusterID)
-		mt.currOp.currAttempt.setZoneID(zoneID)
-
-		// Set server latency in tracer
-		serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
-		mt.currOp.currAttempt.setServerLatencyErr(serverLatencyErr)
-		mt.currOp.currAttempt.setServerLatency(serverLatency)
-
-		// Record attempt specific metrics
-		recordAttemptCompletion(mt)
-		return err
 	}
 	return gax.Invoke(ctx, callWrapper, opts...)
 }
