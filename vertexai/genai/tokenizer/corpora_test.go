@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"net/http"
 	"regexp"
 	"strings"
@@ -33,17 +34,25 @@ import (
 	"golang.org/x/text/transform"
 )
 
-// FileInfo holds the name and content  of a file in the zip archive
-type CorporaInfo struct {
+// corporaInfo holds the name and content of a file in the zip archive
+type corporaInfo struct {
 	Name    string
 	Content []byte
 }
 
-// fileGenerator is a generator function that returns a channel to iterate over files in the zip archive
-func CorporaGenerator(url string) (<-chan CorporaInfo, <-chan error) {
-	out := make(chan CorporaInfo)
+// corporaGenerator is a generator function that returns a channel to iterate over files in the zip archive
+func corporaGenerator(url string) (<-chan corporaInfo, <-chan error) {
+	out := make(chan corporaInfo)
 	errCh := make(chan error, 1)
 
+	// This function is run as a goroutine because it performs a network request
+	// to download the zip file, which can take some time. Running it in a
+	// separate goroutine prevents the function from blocking the caller
+	// while the download is in progress.
+	//
+	// The goroutine writes the downloaded file information to the `out` channel
+	// and any errors to the `errCh` channel. This allows the caller to process
+	// files as they become available and handle errors gracefully.
 	go func() {
 		defer close(out)
 		defer close(errCh)
@@ -88,7 +97,7 @@ func CorporaGenerator(url string) (<-chan CorporaInfo, <-chan error) {
 				}
 				fileReader.Close()
 
-				out <- CorporaInfo{
+				out <- corporaInfo{
 					Name:    file.Name[len("udhr/"):],
 					Content: content,
 				}
@@ -101,21 +110,44 @@ func CorporaGenerator(url string) (<-chan CorporaInfo, <-chan error) {
 	return out, errCh
 }
 
-// UdhrCorpusReader struct to hold encoding patterns and skip set
-type UdhrCorpusReader struct {
-	Encodings []EncodingPattern
+// udhrCorpus represents the Universal Declaration of Human Rights (UDHR) corpus.
+// This corpus contains translations of the UDHR into many languages,
+// stored in a specific directory structure within a zip archive.
+//
+// The files in the corpus follow a naming convention:
+//   <Language>_<Script>-<Encoding>
+//
+// For example:
+//   - English_English-UTF8
+//   - French_Français-Latin1
+//   - Spanish_Español-UTF8
+//
+// The Language and Script parts are self-explanatory.
+// The Encoding part indicates the character encoding used in the file.
+//
+// This corpus is used to test the token counting functionality
+// against a diverse set of languages and encodings.
+type udhrCorpus struct {
+	// Encodings maps regular expressions to character encodings.
+	// These patterns are used to determine the encoding of a file
+	// based on its filename.
+	Encodings []encodingPattern
+
+	// Skip lists files that should be skipped during testing.
+	// This is useful for excluding files that are known to cause issues
+	// or are not relevant for the test.
 	Skip      map[string]bool
 }
 
-// EncodingPattern struct to hold regex pattern and corresponding encoding
-type EncodingPattern struct {
+// encodingPattern struct to hold regex pattern and corresponding encoding
+type encodingPattern struct {
 	Pattern  *regexp.Regexp
 	Encoding encoding.Encoding
 }
 
-// NewUdhrCorpusReader initializes a new UdhrCorpusReader with encoding patterns and skip set
-func NewUdhrCorpusReader() *UdhrCorpusReader {
-	encodings := []EncodingPattern{
+// newUdhrCorpus initializes a new udhrCorpus with encoding patterns and skip set
+func newUdhrCorpus() *udhrCorpus {
+	encodings := []encodingPattern{
 		{Pattern: regexp.MustCompile(".*-Latin1$"), Encoding: charmap.ISO8859_1},
 		{Pattern: regexp.MustCompile(".*-Hebrew$"), Encoding: charmap.ISO8859_8},
 		{Pattern: regexp.MustCompile(".*-Arabic$"), Encoding: charmap.Windows1256},
@@ -163,14 +195,14 @@ func NewUdhrCorpusReader() *UdhrCorpusReader {
 		"Russian_Russky-UTF8~": true,
 	}
 
-	return &UdhrCorpusReader{
+	return &udhrCorpus{
 		Encodings: encodings,
 		Skip:      skip,
 	}
 }
 
-// GetEncoding returns the encoding for a given filename based on patterns
-func (ucr *UdhrCorpusReader) GetEncoding(filename string) (encoding.Encoding, bool) {
+// getEncoding returns the encoding for a given filename based on patterns
+func (ucr *udhrCorpus) getEncoding(filename string) (encoding.Encoding, bool) {
 	for _, pattern := range ucr.Encodings {
 		if pattern.Pattern.MatchString(filename) {
 			return pattern.Encoding, true
@@ -179,13 +211,13 @@ func (ucr *UdhrCorpusReader) GetEncoding(filename string) (encoding.Encoding, bo
 	return nil, false
 }
 
-// ShouldSkip checks if the file should be skipped
-func (ucr *UdhrCorpusReader) ShouldSkip(filename string) bool {
+// shouldSkip checks if the file should be skipped
+func (ucr *udhrCorpus) shouldSkip(filename string) bool {
 	return ucr.Skip[filename]
 }
 
-// DecodeBytes converts a byte slice from a specified encoding to a UTF-8 string
-func DecodeBytes(enc encoding.Encoding, data []byte) (string, error) {
+// decodeBytes converts a byte slice from a specified encoding to a UTF-8 string
+func decodeBytes(enc encoding.Encoding, data []byte) (string, error) {
 	if enc == encoding.Nop {
 		return string(data), nil
 	}
@@ -208,15 +240,14 @@ const defaultModel = "gemini-1.0-pro"
 const defaultLocation = "us-central1"
 
 func TestCountTokensWithCorpora(t *testing.T) {
-	// projectID := os.Getenv("VERTEX_PROJECT_ID")
-	// if testing.Short() {
-	// 	t.Skip("skipping live test in -short mode")
-	// }
+	projectID := os.Getenv("VERTEX_PROJECT_ID")
+	if testing.Short() {
+		t.Skip("skipping live test in -short mode")
+	}
 
-	// if projectID == "" {
-	// 	t.Skip("set a VERTEX_PROJECT_ID env var to run live tests")
-	// }
-	projectID := "vertexsdk"
+	if projectID == "" {
+		t.Skip("set a VERTEX_PROJECT_ID env var to run live tests")
+	}
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, projectID, defaultLocation)
 	if err != nil {
@@ -227,23 +258,23 @@ func TestCountTokensWithCorpora(t *testing.T) {
 
 	t.Run("RemoteAndLocalCountTokensTest", func(t *testing.T) {
 		corporaUrl := "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/udhr.zip"
-		fileCh, errCh := CorporaGenerator(corporaUrl)
-		ucr := NewUdhrCorpusReader()
+		fileCh, errCh := corporaGenerator(corporaUrl)
+		ucr := newUdhrCorpus()
 
 		// Iterate over files generated by the generator function
 		for fileInfo := range fileCh {
-			if ucr.ShouldSkip(fileInfo.Name) {
+			if ucr.shouldSkip(fileInfo.Name) {
 				fmt.Printf("Skipping file: %s\n", fileInfo.Name)
 				continue
 			}
 
-			enc, found := ucr.GetEncoding(fileInfo.Name)
+			enc, found := ucr.getEncoding(fileInfo.Name)
 			if !found {
 				fmt.Printf("No encoding found for file: %s\n", fileInfo.Name)
 				continue
 			}
 
-			decodedContent, err := DecodeBytes(enc, fileInfo.Content)
+			decodedContent, err := decodeBytes(enc, fileInfo.Content)
 			if err != nil {
 				log.Fatalf("Failed to decode bytes: %v", err)
 			}
