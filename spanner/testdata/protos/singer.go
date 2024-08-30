@@ -14,25 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-syntax = "proto3";
+package protos
 
-package examples.spanner.music;
-option go_package = "protos/";
-
-message SingerInfo {
-  optional int64 singer_id = 1;
-  optional string birth_date = 2;
-  optional string nationality = 3;
-  optional Genre genre = 4;
-}
-
-enum Genre {
-  POP = 0;
-  JAZZ = 1;
-  FOLK = 2;
-  ROCK = 3;
-}
-
-message CustomNullableString {
-  optional string value = 1;
+func (cns *CustomNullableString) EncodeSpanner() (interface{}, error) {
+	if cns == nil {
+		return nil, nil
+	}
+	return cns.Value, nil
 }

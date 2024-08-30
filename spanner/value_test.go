@@ -563,6 +563,9 @@ func TestEncodeValue(t *testing.T) {
 		{[]*pb.Genre{nil, (*pb.Genre)(nil)}, listProto(nullProto(), nullProto()), listType(tProtoEnum), "Array of Proto Enum with nil values"},
 		{[]*pb.SingerInfo{singer1ProtoMsg, singer2ProtoMsg, nil, (*pb.SingerInfo)(nil)}, listProto(protoMessageProto(singer1ProtoMsg), protoMessageProto(singer2ProtoMsg), nullProto(), nullProto()), listType(tProtoMessage), "Array of Proto Message with non-nil and nil values"},
 		{[]*pb.Genre{&singer1ProtoEnum, &singer2ProtoEnum, nil, (*pb.Genre)(nil)}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum), nullProto(), nullProto()), listType(tProtoEnum), "Array of Proto Enum with non-nil and nil values"},
+		// PROTO MESSAGE WITH ENCODESPANNER OVERRIDE
+		{&pb.CustomNullableString{Value: &sValue}, stringProto("abc"), tString, "a proto struct to string"},
+		{&pb.CustomNullableString{}, nullProto(), tString, "a proto struct to null"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
