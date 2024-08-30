@@ -28,6 +28,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -1232,29 +1233,42 @@ func (c *httpStorageClient) DeleteNotification(ctx context.Context, bucket strin
 	}, s.retry, s.idempotent)
 }
 
-type httpReader struct {
-	body         io.ReadCloser
+type httpReaderStats struct {
 	seen         int64
-	reopen       func(seen int64) (*http.Response, error)
-	checkCRC     bool   // should we check the CRC?
-	wantCRC      uint32 // the CRC32c value the server sent in the header
-	gotCRC       uint32 // running crc
-	readCalls    int    // number of calls to httpReader.Read
-	readCallOpen bool   // is a Read call currently in progress?
-	closed       chan bool
+	readCalls    int  // number of calls to httpReader.Read
+	readCallOpen bool // is a Read call currently in progress?
+}
+
+type httpReader struct {
+	body          io.ReadCloser
+	seen          int64
+	reopen        func(seen int64) (*http.Response, error)
+	checkCRC      bool   // should we check the CRC?
+	wantCRC       uint32 // the CRC32c value the server sent in the header
+	gotCRC        uint32 // running crc
+	readerStats   httpReaderStats
+	readerStatsMu sync.RWMutex
+	closed        chan bool
 }
 
 func (r *httpReader) Read(p []byte) (int, error) {
-	r.readCallOpen = true
+	r.readerStatsMu.Lock()
+	r.readerStats.readCallOpen = true
 	defer func() {
-		r.readCallOpen = false
+		r.readerStatsMu.Lock()
+		r.readerStats.readCallOpen = false
+		r.readerStatsMu.Unlock()
 	}()
-	r.readCalls++
+	r.readerStats.readCalls++
+	r.readerStatsMu.Unlock()
 	n := 0
 	for len(p[n:]) > 0 {
 		m, err := r.body.Read(p[n:])
 		n += m
 		r.seen += int64(m)
+		r.readerStatsMu.Lock()
+		r.readerStats.seen = r.seen
+		r.readerStatsMu.Unlock()
 		if r.checkCRC {
 			r.gotCRC = crc32.Update(r.gotCRC, crc32cTable, p[:n])
 		}
@@ -1501,25 +1515,31 @@ func parseReadResponse(ctx context.Context, res *http.Response, params *newRange
 	// If retryOption minReadThroughput was provided, monitor the throughput of the read once
 	// per second and, if the throughput is below the minimum, close the read body to prompt
 	// reopening the stream.
-	var monitorThroughput func()
-
 	if s.retry != nil && s.retry.minReadThroughput > 0 {
-		monitorThroughput = func() {
+		monitorThroughput := func() {
 			var readCalls int
 			var seen int64
 			var done bool
 			for !done {
 				select {
 				case <-time.After(time.Second):
+					// Update the current values for number of read calls made, whether a read
+					// call is currently open, and how many total bytes have been read. This
+					// requires a mutex thanks to writes from Read().
+					httpReader.readerStatsMu.RLock()
+					newReadCalls := httpReader.readerStats.readCalls
+					newReadCallOpen := httpReader.readerStats.readCallOpen
+					newSeen := httpReader.seen
+					httpReader.readerStatsMu.RUnlock()
 					// Only close here if a Read call is in progress or if there have been calls
 					// to Read in the past second. This avoids needlessly closing the stream in
 					// the case where the application is not making calls to Read and so
 					// throughput is low for that reason.
-					if (httpReader.readCalls-readCalls > 1 || httpReader.readCallOpen) && httpReader.seen-seen < s.retry.minReadThroughput {
+					if (newReadCalls-readCalls > 1 || newReadCallOpen) && newSeen-seen < s.retry.minReadThroughput {
 						httpReader.body.Close()
 					}
-					readCalls = httpReader.readCalls
-					seen = httpReader.seen
+					readCalls = newReadCalls
+					seen = newSeen
 				case <-httpReader.closed:
 					done = true
 				case <-r.ctx.Done():
@@ -1527,16 +1547,8 @@ func parseReadResponse(ctx context.Context, res *http.Response, params *newRange
 				}
 			}
 		}
-	} else {
-		monitorThroughput = func() {
-			select {
-			case <-httpReader.closed:
-			case <-r.ctx.Done():
-			}
-		}
+		go monitorThroughput()
 	}
-
-	go monitorThroughput()
 
 	return r, nil
 }
