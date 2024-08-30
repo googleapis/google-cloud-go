@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"log"
 	"net/url"
 	"os"
 
@@ -98,7 +99,7 @@ func defaultGRPCOptions() []option.ClientOption {
 		)
 	} else {
 		// Only enable DirectPath when the emulator is not being targeted.
-		defaults = append(defaults, internaloption.EnableDirectPath(true))
+		defaults = append(defaults, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 	}
 
 	return defaults
@@ -124,6 +125,15 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
 	}
 
+	if !config.disableClientMetrics {
+		// Do not fail client creation if enabling metrics fails.
+		if metricsContext, err := enableClientMetrics(ctx, s); err == nil {
+			s.metricsContext = metricsContext
+			s.clientOption = append(s.clientOption, metricsContext.clientOpts...)
+		} else {
+			log.Printf("Failed to enable client metrics: %v", err)
+		}
+	}
 	g, err := gapic.NewClient(ctx, s.clientOption...)
 	if err != nil {
 		return nil, err
@@ -136,6 +146,9 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 }
 
 func (c *grpcStorageClient) Close() error {
+	if c.settings.metricsContext != nil {
+		c.settings.metricsContext.close()
+	}
 	return c.raw.Close()
 }
 
