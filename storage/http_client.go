@@ -1288,7 +1288,11 @@ func (r *httpReader) Read(p []byte) (int, error) {
 }
 
 func (r *httpReader) Close() error {
-	r.closed <- true
+	// Notify monitor goroutine that the reader has been closed, if it's still running.
+	select {
+	case r.closed <- true:
+	default:
+	}
 	return r.body.Close()
 }
 

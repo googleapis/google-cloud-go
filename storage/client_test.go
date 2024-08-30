@@ -1455,7 +1455,7 @@ func TestRetryDeadlineExceededEmulated(t *testing.T) {
 	})
 }
 
-// Test that a stall during a read request is retried when ReadStallTimeout is set.
+// Test that a stall during a read request is retried when MinReadThroughput is set.
 func TestRetryReadStallEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		ctx := context.Background()
