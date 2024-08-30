@@ -45,7 +45,7 @@ const (
 	// This is the default Go version that will be generated into new go.mod
 	// files. It should be updated every time we drop support for old Go
 	// versions.
-	defaultGoModuleVersion = "1.19"
+	defaultGoModuleVersion = "1.21"
 )
 
 var (

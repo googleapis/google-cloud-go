@@ -1,5 +1,19 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.17.5...retail/v1.18.0) (2024-08-20)
+
+
+### Features
+
+* **retail:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.17.5](https://github.com/googleapis/google-cloud-go/compare/retail/v1.17.4...retail/v1.17.5) (2024-08-08)
+
+
+### Bug Fixes
+
+* **retail:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/retail/v1.17.3...retail/v1.17.4) (2024-07-24)
 
 

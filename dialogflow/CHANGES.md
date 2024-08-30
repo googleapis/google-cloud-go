@@ -1,5 +1,68 @@
 # Changes
 
+## [1.57.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.56.0...dialogflow/v1.57.0) (2024-08-20)
+
+
+### Features
+
+* **dialogflow:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.56.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.55.0...dialogflow/v1.56.0) (2024-08-08)
+
+
+### Features
+
+* **dialogflow:** Add GenerateStatelessSuggestion related endpoints and types ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** Add GenerateStatelessSuggestion related endpoints and types ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** Add Generator related services and types ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** Add Generator related services and types ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** Add Proactive Generative Knowledge Assist endpoints and types ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** Add Proactive Generative Knowledge Assist endpoints and types ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
+
+### Bug Fixes
+
+* **dialogflow:** An existing method_signature `parent` is fixed for method `BatchCreateMessages` in service `Conversations` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** Changed field behavior for an existing field `parent` in message `.google.cloud.dialogflow.v2.SearchKnowledgeRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** Changed field behavior for an existing field `parent` in message `.google.cloud.dialogflow.v2beta1.SearchKnowledgeRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** Changed field behavior for an existing field `session_id` in message `.google.cloud.dialogflow.v2.SearchKnowledgeRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** Changed field behavior for an existing field `session_id` in message `.google.cloud.dialogflow.v2beta1.SearchKnowledgeRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **dialogflow:** A comment for field `assist_query_params` in message `.google.cloud.dialogflow.v2.SuggestConversationSummaryRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `assist_query_params` in message `.google.cloud.dialogflow.v2beta1.SuggestConversationSummaryRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `audio` in message `.google.cloud.dialogflow.v2.AudioInput` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `audio` in message `.google.cloud.dialogflow.v2beta1.AudioInput` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `context_size` in message `.google.cloud.dialogflow.v2.SuggestConversationSummaryRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `context_size` in message `.google.cloud.dialogflow.v2beta1.SuggestConversationSummaryRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `conversation_stage` in message `.google.cloud.dialogflow.v2.Conversation` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `conversation_stage` in message `.google.cloud.dialogflow.v2beta1.Conversation` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `conversation` in message `.google.cloud.dialogflow.v2.SearchKnowledgeRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `conversation` in message `.google.cloud.dialogflow.v2beta1.SearchKnowledgeRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `filter` in message `.google.cloud.dialogflow.v2.ListConversationsRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `filter` in message `.google.cloud.dialogflow.v2beta1.ListConversationsRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `latest_message` in message `.google.cloud.dialogflow.v2.GenerateStatelessSummaryRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `latest_message` in message `.google.cloud.dialogflow.v2.SearchKnowledgeRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `latest_message` in message `.google.cloud.dialogflow.v2.SuggestConversationSummaryRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `latest_message` in message `.google.cloud.dialogflow.v2beta1.GenerateStatelessSummaryRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `latest_message` in message `.google.cloud.dialogflow.v2beta1.SearchKnowledgeRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `latest_message` in message `.google.cloud.dialogflow.v2beta1.SuggestConversationSummaryRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `live_person_config` in message `.google.cloud.dialogflow.v2.HumanAgentHandoffConfig` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `live_person_config` in message `.google.cloud.dialogflow.v2beta1.HumanAgentHandoffConfig` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `max_context_size` in message `.google.cloud.dialogflow.v2.GenerateStatelessSummaryRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `max_context_size` in message `.google.cloud.dialogflow.v2beta1.GenerateStatelessSummaryRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `name` in message `.google.cloud.dialogflow.v2.Conversation` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `name` in message `.google.cloud.dialogflow.v2beta1.Conversation` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `parent` in message `.google.cloud.dialogflow.v2.SearchKnowledgeRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `parent` in message `.google.cloud.dialogflow.v2beta1.SearchKnowledgeRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `session_id` in message `.google.cloud.dialogflow.v2.SearchKnowledgeRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for field `session_id` in message `.google.cloud.dialogflow.v2beta1.SearchKnowledgeRequest` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for message `HumanAgentHandoffConfig` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **dialogflow:** A comment for message `HumanAgentHandoffConfig` is changed ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
 ## [1.55.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.54.3...dialogflow/v1.55.0) (2024-07-24)
 
 

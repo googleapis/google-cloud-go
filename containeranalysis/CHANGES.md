@@ -1,5 +1,19 @@
 # Changes
 
+## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.12.2...containeranalysis/v0.13.0) (2024-08-20)
+
+
+### Features
+
+* **containeranalysis:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [0.12.2](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.12.1...containeranalysis/v0.12.2) (2024-08-08)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.12.0...containeranalysis/v0.12.1) (2024-07-24)
 
 

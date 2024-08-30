@@ -1,5 +1,29 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.18.0...datastore/v1.19.0) (2024-08-22)
+
+
+### Features
+
+* **datastore:** Reference new protos ([#10724](https://github.com/googleapis/google-cloud-go/issues/10724)) ([d8887df](https://github.com/googleapis/google-cloud-go/commit/d8887df4a12fe56606515c116fe1db12a6549aa1))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.17.1...datastore/v1.18.0) (2024-08-21)
+
+
+### Features
+
+* **datastore:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **datastore:** Start generating datastorepb protos ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+
+
+### Bug Fixes
+
+* **datastore:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **datastore:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+* **datastore:** Ignore field mismatch errors ([#8694](https://github.com/googleapis/google-cloud-go/issues/8694)) ([6625d12](https://github.com/googleapis/google-cloud-go/commit/6625d12c3135587f188cc8f801beb9ae5a0c7515))
+* **datastore:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+* **datastore:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.17.0...datastore/v1.17.1) (2024-06-10)
 
 
