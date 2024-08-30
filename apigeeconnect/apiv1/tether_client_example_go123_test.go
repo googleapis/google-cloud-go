@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package apigeeconnect_test
+
+import (
+	apigeeconnect "cloud.google.com/go/apigeeconnect/apiv1"
+)

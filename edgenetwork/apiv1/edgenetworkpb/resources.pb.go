@@ -21,13 +21,12 @@
 package edgenetworkpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -116,9 +115,9 @@ const (
 	// treated as mixed bonding where the VLAN will have both bonded and
 	// non-bonded connectivity to machines.
 	Subnet_BONDING_TYPE_UNSPECIFIED Subnet_BondingType = 0
-	// Single homed.
-	Subnet_BONDED Subnet_BondingType = 1
 	// Multi homed.
+	Subnet_BONDED Subnet_BondingType = 1
+	// Single homed.
 	Subnet_NON_BONDED Subnet_BondingType = 2
 )
 
