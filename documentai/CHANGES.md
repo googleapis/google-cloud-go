@@ -1,6 +1,26 @@
 # Changes
 
 
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.32.0...documentai/v1.33.0) (2024-08-20)
+
+
+### Features
+
+* **documentai:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.31.0...documentai/v1.32.0) (2024-08-08)
+
+
+### Features
+
+* **documentai:** A new field `gen_ai_model_info` is added to message `.google.cloud.documentai.v1.ProcessorVersion` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **documentai:** A new field `imageless_mode` is added to message `.google.cloud.documentai.v1.ProcessRequest` ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
+
+### Bug Fixes
+
+* **documentai:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.5...documentai/v1.31.0) (2024-08-01)
 
 

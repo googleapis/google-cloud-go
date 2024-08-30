@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/visionai/apiv1",
-    "version": "0.2.4",
+    "version": "0.4.0",
     "language": "GO",
     "apis": [
       {
@@ -4499,7 +4499,7 @@
     {
       "regionTag": "visionai_v1_generated_Warehouse_ClipAsset_sync",
       "title": "visionai ClipAsset Sample",
-      "description": "ClipAsset generates clips for downloading. The api takes in a time range, and\ngenerates a clip of the first content available after start_time and\nbefore end_time, which may overflow beyond these bounds.\nReturned clips are truncated if the total size of the clips are larger\nthan 100MB.",
+      "description": "ClipAsset supported by STREAM_VIDEO corpus type.\nGenerates clips for downloading. The api takes in a time range, and\ngenerates a clip of the first content available after start_time and\nbefore end_time, which may overflow beyond these bounds.\nReturned clips are truncated if the total size of the clips are larger\nthan 100MB.",
       "file": "WarehouseClient/ClipAsset/main.go",
       "language": "GO",
       "clientMethod": {

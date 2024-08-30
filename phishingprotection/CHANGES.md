@@ -1,5 +1,19 @@
 # Changes
 
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/phishingprotection/v0.8.12...phishingprotection/v0.9.0) (2024-08-20)
+
+
+### Features
+
+* **phishingprotection:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [0.8.12](https://github.com/googleapis/google-cloud-go/compare/phishingprotection/v0.8.11...phishingprotection/v0.8.12) (2024-08-08)
+
+
+### Bug Fixes
+
+* **phishingprotection:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [0.8.11](https://github.com/googleapis/google-cloud-go/compare/phishingprotection/v0.8.10...phishingprotection/v0.8.11) (2024-07-24)
 
 
