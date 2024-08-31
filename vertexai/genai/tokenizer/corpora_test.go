@@ -220,14 +220,13 @@ const defaultLocation = "us-central1"
 
 func TestCountTokensWithCorpora(t *testing.T) {
 	projectID := os.Getenv("VERTEX_PROJECT_ID")
-	// if testing.Short() {
-	// 	t.Skip("skipping live test in -short mode")
-	// }
+	if testing.Short() {
+		t.Skip("skipping live test in -short mode")
+	}
 
-	// if projectID == "" {
-	// 	t.Skip("set a VERTEX_PROJECT_ID env var to run live tests")
-	// }
-	projectID = "vertexsdk"
+	if projectID == "" {
+		t.Skip("set a VERTEX_PROJECT_ID env var to run live tests")
+	}
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, projectID, defaultLocation)
 	if err != nil {
