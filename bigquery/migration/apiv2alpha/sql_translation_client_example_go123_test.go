@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package migration_test
-
-import (
-	migration "cloud.google.com/go/bigquery/migration/apiv2alpha"
-)
