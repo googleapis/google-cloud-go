@@ -1477,7 +1477,7 @@ func TestRetryReadStallEmulated(t *testing.T) {
 		config := &retryConfig{
 			maxAttempts:       expectedAttempts(4),
 			backoff:           &gax.Backoff{Initial: 10 * time.Millisecond},
-			minReadThroughput: 1024,
+			minReadThroughput: 1024 * 1024, // 1 MiB/s min throughput.
 		}
 		r, err := client.NewRangeReader(ctx, &newRangeReaderParams{
 			bucket: bucket,
