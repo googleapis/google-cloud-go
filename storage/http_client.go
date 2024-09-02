@@ -22,13 +22,13 @@ import (
 	"hash/crc32"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"reflect"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -1240,35 +1240,44 @@ type httpReaderStats struct {
 }
 
 type httpReader struct {
-	body          io.ReadCloser
-	seen          int64
-	reopen        func(seen int64) (*http.Response, error)
-	checkCRC      bool   // should we check the CRC?
-	wantCRC       uint32 // the CRC32c value the server sent in the header
-	gotCRC        uint32 // running crc
-	readerStats   httpReaderStats
-	readerStatsMu sync.RWMutex
-	closed        chan bool
+	body        io.ReadCloser
+	seen        int64
+	reopen      func(seen int64) (*http.Response, error)
+	checkCRC    bool   // should we check the CRC?
+	wantCRC     uint32 // the CRC32c value the server sent in the header
+	gotCRC      uint32 // running crc
+	readCalls   int
+	readerStats chan httpReaderStats
+	closed      chan bool
 }
 
 func (r *httpReader) Read(p []byte) (int, error) {
-	r.readerStatsMu.Lock()
-	r.readerStats.readCallOpen = true
+	r.readCalls += 1
+	// Send stats to the throughput monitor, if available. Send again once the
+	// call is complete.
+	stats := httpReaderStats{
+		seen:         r.seen,
+		readCalls:    r.readCalls,
+		readCallOpen: true,
+	}
+	select {
+	case r.readerStats <- stats:
+	default:
+	}
 	defer func() {
-		r.readerStatsMu.Lock()
-		r.readerStats.readCallOpen = false
-		r.readerStatsMu.Unlock()
+		// Send stats again to the throughput monitor, if available.
+		stats.seen = r.seen
+		stats.readCallOpen = false
+		select {
+		case r.readerStats <- stats:
+		default:
+		}
 	}()
-	r.readerStats.readCalls++
-	r.readerStatsMu.Unlock()
 	n := 0
 	for len(p[n:]) > 0 {
 		m, err := r.body.Read(p[n:])
 		n += m
 		r.seen += int64(m)
-		r.readerStatsMu.Lock()
-		r.readerStats.seen = r.seen
-		r.readerStatsMu.Unlock()
 		if r.checkCRC {
 			r.gotCRC = crc32.Update(r.gotCRC, crc32cTable, p[:n])
 		}
@@ -1297,6 +1306,7 @@ func (r *httpReader) Read(p []byte) (int, error) {
 		}
 		r.body.Close()
 		r.body = res.Body
+
 	}
 	return n, nil
 }
@@ -1497,11 +1507,12 @@ func parseReadResponse(ctx context.Context, res *http.Response, params *newRange
 	}
 
 	httpReader := &httpReader{
-		reopen:   reopen,
-		body:     body,
-		wantCRC:  crc,
-		checkCRC: checkCRC,
-		closed:   make(chan bool),
+		reopen:      reopen,
+		body:        body,
+		wantCRC:     crc,
+		checkCRC:    checkCRC,
+		closed:      make(chan bool),
+		readerStats: make(chan httpReaderStats),
 	}
 	r := &Reader{
 		Attrs:    attrs,
@@ -1520,30 +1531,25 @@ func parseReadResponse(ctx context.Context, res *http.Response, params *newRange
 			var readCalls int
 			var seen int64
 			var done bool
+			var stats httpReaderStats
 			for !done {
 				select {
 				case <-time.After(time.Second):
-					// Update the current values for number of read calls made, whether a read
-					// call is currently open, and how many total bytes have been read. This
-					// requires a mutex thanks to writes from Read().
-					httpReader.readerStatsMu.RLock()
-					newReadCalls := httpReader.readerStats.readCalls
-					newReadCallOpen := httpReader.readerStats.readCallOpen
-					newSeen := httpReader.seen
-					httpReader.readerStatsMu.RUnlock()
 					// Only close here if a Read call is in progress or if there have been calls
 					// to Read in the past second. This avoids needlessly closing the stream in
 					// the case where the application is not making calls to Read and so
 					// throughput is low for that reason.
-					if (newReadCalls-readCalls > 1 || newReadCallOpen) && newSeen-seen < s.retry.minReadThroughput {
+					if (stats.readCalls-readCalls > 1 || stats.readCallOpen) && stats.seen-seen < s.retry.minReadThroughput {
 						httpReader.body.Close()
 					}
-					readCalls = newReadCalls
-					seen = newSeen
+					readCalls = stats.readCalls
+					seen = stats.seen
 				case <-httpReader.closed:
 					done = true
 				case <-r.ctx.Done():
 					done = true
+				case stats = <-httpReader.readerStats:
+					log.Printf("received stats %v", stats)
 				}
 			}
 		}
