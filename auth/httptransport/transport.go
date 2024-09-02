@@ -31,7 +31,7 @@ import (
 )
 
 const (
-	quotaProjectHeaderKey = "X-Goog-User-Project"
+	quotaProjectHeaderKey = "X-goog-user-project"
 )
 
 func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, error) {
@@ -76,7 +76,10 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 			if headers == nil {
 				headers = make(map[string][]string, 1)
 			}
-			headers.Set(quotaProjectHeaderKey, qp)
+			// Don't overwrite user specified quota
+			if v := headers.Get(quotaProjectHeaderKey); v == "" {
+				headers.Set(quotaProjectHeaderKey, qp)
+			}
 		}
 		creds.TokenProvider = auth.NewCachedTokenProvider(creds.TokenProvider, nil)
 		trans = &authTransport{
