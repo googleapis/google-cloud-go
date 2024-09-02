@@ -1475,9 +1475,12 @@ func TestRetryReadStallEmulated(t *testing.T) {
 		defer cancel()
 
 		config := &retryConfig{
-			maxAttempts:       expectedAttempts(4),
-			backoff:           &gax.Backoff{Initial: 10 * time.Millisecond},
-			minReadThroughput: 1024 * 1024, // 1 MiB/s min throughput.
+			maxAttempts: expectedAttempts(4),
+			backoff:     &gax.Backoff{Initial: 10 * time.Millisecond},
+			minReadThroughput: &readThroughput{
+				bytes:  1024 * 1024,
+				period: 50 * time.Millisecond, // use short period for faster testing.
+			},
 		}
 		r, err := client.NewRangeReader(ctx, &newRangeReaderParams{
 			bucket: bucket,

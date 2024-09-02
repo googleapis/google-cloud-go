@@ -2251,19 +2251,27 @@ func (wef *withErrorFunc) apply(config *retryConfig) {
 
 // WithMinReadThroughput returns a retry option that proactively terminates the
 // connection and retries if a download using storage.Reader has less than the
-// minimum throughput of bytes in a second.
-func WithMinReadThroughput(bytesPerSecond int64) RetryOption {
+// minimum throughput of bytes in the given period of time.
+func WithMinReadThroughput(bytes int64, period time.Duration) RetryOption {
 	return &withMinReadThroughput{
-		minReadThroughput: bytesPerSecond,
+		minReadThroughput: &readThroughput{
+			bytes:  bytes,
+			period: period,
+		},
 	}
 }
 
 type withMinReadThroughput struct {
-	minReadThroughput int64
+	minReadThroughput *readThroughput
 }
 
 func (wrst *withMinReadThroughput) apply(config *retryConfig) {
 	config.minReadThroughput = wrst.minReadThroughput
+}
+
+type readThroughput struct {
+	bytes  int64
+	period time.Duration
 }
 
 type retryConfig struct {
@@ -2271,7 +2279,7 @@ type retryConfig struct {
 	policy            RetryPolicy
 	shouldRetry       func(err error) bool
 	maxAttempts       *int
-	minReadThroughput int64
+	minReadThroughput *readThroughput
 }
 
 func (r *retryConfig) clone() *retryConfig {

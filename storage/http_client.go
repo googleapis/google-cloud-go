@@ -1510,8 +1510,8 @@ func parseReadResponse(ctx context.Context, res *http.Response, params *newRange
 		body:        body,
 		wantCRC:     crc,
 		checkCRC:    checkCRC,
-		closed:      make(chan bool),
-		readerStats: make(chan httpReaderStats),
+		closed:      make(chan bool, 1), // use buffered channels in case monitor routine is temporarily busy.
+		readerStats: make(chan httpReaderStats, 8),
 	}
 	r := &Reader{
 		Attrs:    attrs,
@@ -1523,26 +1523,27 @@ func parseReadResponse(ctx context.Context, res *http.Response, params *newRange
 	}
 
 	// If retryOption minReadThroughput was provided, monitor the throughput of the read once
-	// per second and, if the throughput is below the minimum, close the read body to prompt
+	// per period and, if the throughput is below the minimum, close the read body to prompt
 	// reopening the stream.
-	if s.retry != nil && s.retry.minReadThroughput > 0 {
+	if s.retry != nil && s.retry.minReadThroughput != nil {
 		monitorThroughput := func() {
-			var readCalls int
-			var seen int64
+			var initialReadCalls int
+			var initialSeen int64
 			var done bool
 			var stats httpReaderStats
 			for !done {
 				select {
-				case <-time.After(time.Second):
+				case <-time.After(s.retry.minReadThroughput.period):
 					// Only close here if a Read call is in progress or if there have been calls
 					// to Read in the past second. This avoids needlessly closing the stream in
 					// the case where the application is not making calls to Read and so
 					// throughput is low for that reason.
-					if (stats.readCalls-readCalls > 1 || stats.readCallOpen) && stats.seen-seen < s.retry.minReadThroughput {
+					if (stats.readCalls-initialReadCalls > 1 || stats.readCallOpen) && stats.seen-initialSeen < s.retry.minReadThroughput.bytes {
 						httpReader.body.Close()
 					}
-					readCalls = stats.readCalls
-					seen = stats.seen
+					// Reset these to test throughput again in the next period.
+					initialReadCalls = stats.readCalls
+					initialSeen = stats.seen
 				case <-httpReader.closed:
 					done = true
 				case <-r.ctx.Done():
