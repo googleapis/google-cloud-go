@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strings"
 	"testing"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -240,7 +241,7 @@ func TestFilterToProto(t *testing.T) {
 type toProtoScenario struct {
 	desc string
 	in   Query
-	want *pb.StructuredQuery
+	want *pb.RunQueryRequest
 }
 
 // Creates protos used to test toProto, FromProto, ToProto funcs.
@@ -267,84 +268,185 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 		{
 			desc: "q.Select()",
 			in:   q.Select(),
-			want: &pb.StructuredQuery{
-				Select: &pb.StructuredQuery_Projection{
-					Fields: []*pb.StructuredQuery_FieldReference{fref1("__name__")},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Select: &pb.StructuredQuery_Projection{
+							Fields: []*pb.StructuredQuery_FieldReference{fref1("__name__")},
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.Select("a", "b")`,
 			in:   q.Select("a", "b"),
-			want: &pb.StructuredQuery{
-				Select: &pb.StructuredQuery_Projection{
-					Fields: []*pb.StructuredQuery_FieldReference{fref1("a"), fref1("b")},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Select: &pb.StructuredQuery_Projection{
+							Fields: []*pb.StructuredQuery_FieldReference{fref1("a"), fref1("b")},
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.Select("a", "b").Select("c")`,
 			in:   q.Select("a", "b").Select("c"), // last wins
-			want: &pb.StructuredQuery{
-				Select: &pb.StructuredQuery_Projection{
-					Fields: []*pb.StructuredQuery_FieldReference{fref1("c")},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Select: &pb.StructuredQuery_Projection{
+							Fields: []*pb.StructuredQuery_FieldReference{fref1("c")},
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.SelectPaths([]string{"*"}, []string{"/"})`,
 			in:   q.SelectPaths([]string{"*"}, []string{"/"}),
-			want: &pb.StructuredQuery{
-				Select: &pb.StructuredQuery_Projection{
-					Fields: []*pb.StructuredQuery_FieldReference{fref1("*"), fref1("/")},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Select: &pb.StructuredQuery_Projection{
+							Fields: []*pb.StructuredQuery_FieldReference{fref1("*"), fref1("/")},
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.Where("a", ">", 5)`,
 			in:   q.Where("a", ">", 5),
-			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, ">", 5)},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{Where: filtr([]string{"a"}, ">", 5)},
+				},
+			},
 		},
 		{
 			desc: `q.Where("a", "==", NaN)`,
 			in:   q.Where("a", "==", float32(math.NaN())),
-			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "==", math.NaN())},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{Where: filtr([]string{"a"}, "==", math.NaN())},
+				},
+			},
 		},
 		{
 			desc: `q.Where("a", "!=", 3)`,
 			in:   q.Where("a", "!=", 3),
-			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "!=", 3)},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{Where: filtr([]string{"a"}, "!=", 3)},
+				},
+			},
 		},
 		{
 			desc: `q.Where("a", "in", []int{7, 8})`,
 			in:   q.Where("a", "in", []int{7, 8}),
-			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "in", []int{7, 8})},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{Where: filtr([]string{"a"}, "in", []int{7, 8})},
+				},
+			},
 		},
 		{
 			desc: `q.Where("a", "not-in", []int{9})`,
 			in:   q.Where("a", "not-in", []int{9}),
-			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "not-in", []int{9})},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{Where: filtr([]string{"a"}, "not-in", []int{9})},
+				},
+			},
 		},
 		{
 			desc: `q.Where("c", "array-contains", 1)`,
 			in:   q.Where("c", "array-contains", 1),
-			want: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains", 1)},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains", 1)},
+				},
+			},
 		},
 		{
 			desc: `q.Where("c", "array-contains-any", []int{1, 2})`,
 			in:   q.Where("c", "array-contains-any", []int{1, 2}),
-			want: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains-any", []int{1, 2})},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains-any", []int{1, 2})},
+				},
+			},
+		},
+		{
+			desc: `q.Where("c", "array-contains-any", []int{1, 2}).RunOptions(ExplainOptions{Analyze: true})`,
+			in:   q.Where("c", "array-contains-any", []int{1, 2}).WithRunOptions(ExplainOptions{Analyze: true}),
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains-any", []int{1, 2})},
+				},
+				ExplainOptions: &pb.ExplainOptions{
+					Analyze: true,
+				},
+			},
+		},
+		{
+			desc: `q.Where("c", "array-contains-any", []int{1, 2}).RunOptions(ExplainOptions{Analyze: false})`,
+			in:   q.Where("c", "array-contains-any", []int{1, 2}).WithRunOptions(ExplainOptions{Analyze: false}),
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains-any", []int{1, 2})},
+				},
+				ExplainOptions: &pb.ExplainOptions{
+					Analyze: false,
+				},
+			},
+		},
+		{
+			desc: `q.Where("c", "array-contains-any", []int{1, 2}) RunOptions invoked multiple times`,
+			in: q.Where("c", "array-contains-any", []int{1, 2}).
+				WithRunOptions(ExplainOptions{Analyze: false}).
+				WithRunOptions(ExplainOptions{Analyze: true}),
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains-any", []int{1, 2})},
+				},
+				ExplainOptions: &pb.ExplainOptions{
+					Analyze: true,
+				},
+			},
 		},
 		{
 			desc: `q.Where("a", ">", 5).Where("b", "<", "foo")`,
 			in:   q.Where("a", ">", 5).Where("b", "<", "foo"),
-			want: &pb.StructuredQuery{
-				Where: &pb.StructuredQuery_Filter{
-					FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
-						CompositeFilter: &pb.StructuredQuery_CompositeFilter{
-							Op: pb.StructuredQuery_CompositeFilter_AND,
-							Filters: []*pb.StructuredQuery_Filter{
-								filtr([]string{"a"}, ">", 5), filtr([]string{"b"}, "<", "foo"),
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Where: &pb.StructuredQuery_Filter{
+							FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
+								CompositeFilter: &pb.StructuredQuery_CompositeFilter{
+									Op: pb.StructuredQuery_CompositeFilter_AND,
+									Filters: []*pb.StructuredQuery_Filter{
+										filtr([]string{"a"}, ">", 5), filtr([]string{"b"}, "<", "foo"),
+									},
+								},
 							},
 						},
 					},
@@ -369,27 +471,32 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 					},
 				},
 			),
-			want: &pb.StructuredQuery{
-				Where: &pb.StructuredQuery_Filter{
-					FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
-						CompositeFilter: &pb.StructuredQuery_CompositeFilter{
-							Op: pb.StructuredQuery_CompositeFilter_AND,
-							Filters: []*pb.StructuredQuery_Filter{
-								{
-									FilterType: &pb.StructuredQuery_Filter_FieldFilter{
-										FieldFilter: &pb.StructuredQuery_FieldFilter{
-											Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
-											Op:    pb.StructuredQuery_FieldFilter_GREATER_THAN,
-											Value: intval(5),
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Where: &pb.StructuredQuery_Filter{
+							FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
+								CompositeFilter: &pb.StructuredQuery_CompositeFilter{
+									Op: pb.StructuredQuery_CompositeFilter_AND,
+									Filters: []*pb.StructuredQuery_Filter{
+										{
+											FilterType: &pb.StructuredQuery_Filter_FieldFilter{
+												FieldFilter: &pb.StructuredQuery_FieldFilter{
+													Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
+													Op:    pb.StructuredQuery_FieldFilter_GREATER_THAN,
+													Value: intval(5),
+												},
+											},
 										},
-									},
-								},
-								{
-									FilterType: &pb.StructuredQuery_Filter_FieldFilter{
-										FieldFilter: &pb.StructuredQuery_FieldFilter{
-											Field: &pb.StructuredQuery_FieldReference{FieldPath: "b"},
-											Op:    pb.StructuredQuery_FieldFilter_LESS_THAN,
-											Value: strval("foo"),
+										{
+											FilterType: &pb.StructuredQuery_Filter_FieldFilter{
+												FieldFilter: &pb.StructuredQuery_FieldFilter{
+													Field: &pb.StructuredQuery_FieldReference{FieldPath: "b"},
+													Op:    pb.StructuredQuery_FieldFilter_LESS_THAN,
+													Value: strval("foo"),
+												},
+											},
 										},
 									},
 								},
@@ -402,118 +509,172 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 		{
 			desc: `  q.WherePath([]string{"/", "*"}, ">", 5)`,
 			in:   q.WherePath([]string{"/", "*"}, ">", 5),
-			want: &pb.StructuredQuery{Where: filtr([]string{"/", "*"}, ">", 5)},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{Where: filtr([]string{"/", "*"}, ">", 5)},
+				},
+			},
 		},
 		{
 			desc: `q.OrderBy("b", Asc).OrderBy("a", Desc).OrderByPath([]string{"~"}, Asc)`,
 			in:   q.OrderBy("b", Asc).OrderBy("a", Desc).OrderByPath([]string{"~"}, Asc),
-			want: &pb.StructuredQuery{
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("b"), Direction: pb.StructuredQuery_ASCENDING},
-					{Field: fref1("a"), Direction: pb.StructuredQuery_DESCENDING},
-					{Field: fref1("~"), Direction: pb.StructuredQuery_ASCENDING},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("b"), Direction: pb.StructuredQuery_ASCENDING},
+							{Field: fref1("a"), Direction: pb.StructuredQuery_DESCENDING},
+							{Field: fref1("~"), Direction: pb.StructuredQuery_ASCENDING},
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.Offset(2).Limit(3)`,
 			in:   q.Offset(2).Limit(3),
-			want: &pb.StructuredQuery{
-				Offset: 2,
-				Limit:  &wrapperspb.Int32Value{Value: 3},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Offset: 2,
+						Limit:  &wrapperspb.Int32Value{Value: 3},
+					},
+				},
 			},
 		},
 		{
 			desc: `q.Offset(2).Limit(3).Limit(4).Offset(5)`,
 			in:   q.Offset(2).Limit(3).Limit(4).Offset(5), // last wins
-			want: &pb.StructuredQuery{
-				Offset: 5,
-				Limit:  &wrapperspb.Int32Value{Value: 4},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Offset: 5,
+						Limit:  &wrapperspb.Int32Value{Value: 4},
+					},
+				},
 			},
 		},
 		{
 			desc: `q.OrderBy("a", Asc).StartAt(7).EndBefore(9)`,
 			in:   q.OrderBy("a", Asc).StartAt(7).EndBefore(9),
-			want: &pb.StructuredQuery{
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
-				},
-				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7)},
-					Before: true,
-				},
-				EndAt: &pb.Cursor{
-					Values: []*pb.Value{intval(9)},
-					Before: true,
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+						},
+						StartAt: &pb.Cursor{
+							Values: []*pb.Value{intval(7)},
+							Before: true,
+						},
+						EndAt: &pb.Cursor{
+							Values: []*pb.Value{intval(9)},
+							Before: true,
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.OrderBy("a", Asc).StartAt(7).EndAt(9)`,
 			in:   q.OrderBy("a", Asc).StartAt(7).EndAt(9),
-			want: &pb.StructuredQuery{
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
-				},
-				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7)},
-					Before: true,
-				},
-				EndAt: &pb.Cursor{
-					Values: []*pb.Value{intval(9)},
-					Before: false,
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+						},
+						StartAt: &pb.Cursor{
+							Values: []*pb.Value{intval(7)},
+							Before: true,
+						},
+						EndAt: &pb.Cursor{
+							Values: []*pb.Value{intval(9)},
+							Before: false,
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.OrderBy("a", Asc).StartAfter(7).EndAt(9)`,
 			in:   q.OrderBy("a", Asc).StartAfter(7).EndAt(9),
-			want: &pb.StructuredQuery{
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
-				},
-				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7)},
-					Before: false,
-				},
-				EndAt: &pb.Cursor{
-					Values: []*pb.Value{intval(9)},
-					Before: false,
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+						},
+						StartAt: &pb.Cursor{
+							Values: []*pb.Value{intval(7)},
+							Before: false,
+						},
+						EndAt: &pb.Cursor{
+							Values: []*pb.Value{intval(9)},
+							Before: false,
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.OrderBy(DocumentID, Asc).StartAfter("foo").EndBefore("bar")`,
 			in:   q.OrderBy(DocumentID, Asc).StartAfter("foo").EndBefore("bar"),
-			want: &pb.StructuredQuery{
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
-				},
-				StartAt: &pb.Cursor{
-					Values: []*pb.Value{refval(coll.parentPath + "/C/foo")},
-					Before: false,
-				},
-				EndAt: &pb.Cursor{
-					Values: []*pb.Value{refval(coll.parentPath + "/C/bar")},
-					Before: true,
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
+						},
+						StartAt: &pb.Cursor{
+							Values: []*pb.Value{refval(coll.parentPath + "/C/foo")},
+							Before: false,
+						},
+						EndAt: &pb.Cursor{
+							Values: []*pb.Value{refval(coll.parentPath + "/C/bar")},
+							Before: true,
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.OrderBy("a", Asc).OrderBy("b", Desc).StartAfter(7, 8).EndAt(9, 10)`,
 			in:   q.OrderBy("a", Asc).OrderBy("b", Desc).StartAfter(7, 8).EndAt(9, 10),
-			want: &pb.StructuredQuery{
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
-					{Field: fref1("b"), Direction: pb.StructuredQuery_DESCENDING},
-				},
-				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7), intval(8)},
-					Before: false,
-				},
-				EndAt: &pb.Cursor{
-					Values: []*pb.Value{intval(9), intval(10)},
-					Before: false,
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+							{Field: fref1("b"), Direction: pb.StructuredQuery_DESCENDING},
+						},
+						StartAt: &pb.Cursor{
+							Values: []*pb.Value{intval(7), intval(8)},
+							Before: false,
+						},
+						EndAt: &pb.Cursor{
+							Values: []*pb.Value{intval(9), intval(10)},
+							Before: false,
+						},
+					},
 				},
 			},
 		},
@@ -523,17 +684,23 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 			in: q.OrderBy("a", Asc).
 				StartAfter(1).StartAt(2).
 				EndAt(3).EndBefore(4),
-			want: &pb.StructuredQuery{
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
-				},
-				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(2)},
-					Before: true,
-				},
-				EndAt: &pb.Cursor{
-					Values: []*pb.Value{intval(4)},
-					Before: true,
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+						},
+						StartAt: &pb.Cursor{
+							Values: []*pb.Value{intval(2)},
+							Before: true,
+						},
+						EndAt: &pb.Cursor{
+							Values: []*pb.Value{intval(4)},
+							Before: true,
+						},
+					},
 				},
 			},
 		},
@@ -542,111 +709,152 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 		{
 			desc: `q.StartAt(docsnap)`,
 			in:   q.StartAt(docsnap),
-			want: &pb.StructuredQuery{
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
-				},
-				StartAt: &pb.Cursor{
-					Values: []*pb.Value{refval(coll.parentPath + "/C/D")},
-					Before: true,
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
+						},
+						StartAt: &pb.Cursor{
+							Values: []*pb.Value{refval(coll.parentPath + "/C/D")},
+							Before: true,
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.OrderBy("a", Asc).StartAt(docsnap)`,
 			in:   q.OrderBy("a", Asc).StartAt(docsnap),
-			want: &pb.StructuredQuery{
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
-					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
-				},
-				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7), refval(coll.parentPath + "/C/D")},
-					Before: true,
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+							{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
+						},
+						StartAt: &pb.Cursor{
+							Values: []*pb.Value{intval(7), refval(coll.parentPath + "/C/D")},
+							Before: true,
+						},
+					},
 				},
 			},
 		},
-
 		{
 			desc: `q.OrderBy("a", Desc).StartAt(docsnap)`,
 			in:   q.OrderBy("a", Desc).StartAt(docsnap),
-			want: &pb.StructuredQuery{
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("a"), Direction: pb.StructuredQuery_DESCENDING},
-					{Field: fref1("__name__"), Direction: pb.StructuredQuery_DESCENDING},
-				},
-				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7), refval(coll.parentPath + "/C/D")},
-					Before: true,
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("a"), Direction: pb.StructuredQuery_DESCENDING},
+							{Field: fref1("__name__"), Direction: pb.StructuredQuery_DESCENDING},
+						},
+						StartAt: &pb.Cursor{
+							Values: []*pb.Value{intval(7), refval(coll.parentPath + "/C/D")},
+							Before: true,
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.OrderBy("a", Desc).OrderBy("b", Asc).StartAt(docsnap)`,
 			in:   q.OrderBy("a", Desc).OrderBy("b", Asc).StartAt(docsnap),
-			want: &pb.StructuredQuery{
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("a"), Direction: pb.StructuredQuery_DESCENDING},
-					{Field: fref1("b"), Direction: pb.StructuredQuery_ASCENDING},
-					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
-				},
-				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7), intval(8), refval(coll.parentPath + "/C/D")},
-					Before: true,
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("a"), Direction: pb.StructuredQuery_DESCENDING},
+							{Field: fref1("b"), Direction: pb.StructuredQuery_ASCENDING},
+							{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
+						},
+						StartAt: &pb.Cursor{
+							Values: []*pb.Value{intval(7), intval(8), refval(coll.parentPath + "/C/D")},
+							Before: true,
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.Where("a", "==", 3).StartAt(docsnap)`,
 			in:   q.Where("a", "==", 3).StartAt(docsnap),
-			want: &pb.StructuredQuery{
-				Where: filtr([]string{"a"}, "==", 3),
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
-				},
-				StartAt: &pb.Cursor{
-					Values: []*pb.Value{refval(coll.parentPath + "/C/D")},
-					Before: true,
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Where: filtr([]string{"a"}, "==", 3),
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
+						},
+						StartAt: &pb.Cursor{
+							Values: []*pb.Value{refval(coll.parentPath + "/C/D")},
+							Before: true,
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.Where("a", "<", 3).StartAt(docsnap)`,
 			in:   q.Where("a", "<", 3).StartAt(docsnap),
-			want: &pb.StructuredQuery{
-				Where: filtr([]string{"a"}, "<", 3),
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
-					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
-				},
-				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7), refval(coll.parentPath + "/C/D")},
-					Before: true,
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Where: filtr([]string{"a"}, "<", 3),
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+							{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
+						},
+						StartAt: &pb.Cursor{
+							Values: []*pb.Value{intval(7), refval(coll.parentPath + "/C/D")},
+							Before: true,
+						},
+					},
 				},
 			},
 		},
 		{
 			desc: `q.Where("b", "==", 1).Where("a", "<", 3).StartAt(docsnap)`,
 			in:   q.Where("b", "==", 1).Where("a", "<", 3).StartAt(docsnap),
-			want: &pb.StructuredQuery{
-				Where: &pb.StructuredQuery_Filter{
-					FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
-						CompositeFilter: &pb.StructuredQuery_CompositeFilter{
-							Op: pb.StructuredQuery_CompositeFilter_AND,
-							Filters: []*pb.StructuredQuery_Filter{
-								filtr([]string{"b"}, "==", 1),
-								filtr([]string{"a"}, "<", 3),
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Where: &pb.StructuredQuery_Filter{
+							FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
+								CompositeFilter: &pb.StructuredQuery_CompositeFilter{
+									Op: pb.StructuredQuery_CompositeFilter_AND,
+									Filters: []*pb.StructuredQuery_Filter{
+										filtr([]string{"b"}, "==", 1),
+										filtr([]string{"a"}, "<", 3),
+									},
+								},
 							},
 						},
+						OrderBy: []*pb.StructuredQuery_Order{
+							{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+							{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
+						},
+						StartAt: &pb.Cursor{
+							Values: []*pb.Value{intval(7), refval(coll.parentPath + "/C/D")},
+							Before: true,
+						},
 					},
-				},
-				OrderBy: []*pb.StructuredQuery_Order{
-					{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
-					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
-				},
-				StartAt: &pb.Cursor{
-					Values: []*pb.Value{intval(7), refval(coll.parentPath + "/C/D")},
-					Before: true,
 				},
 			},
 		},
@@ -654,32 +862,38 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 			desc: `q.Where("a", ">", 5).FindNearest float64 vector`,
 			in: q.Where("a", ">", 5).
 				FindNearest("embeddedField", []float64{100, 200, 300}, 2, DistanceMeasureEuclidean, nil).q,
-			want: &pb.StructuredQuery{
-				Where: filtr([]string{"a"}, ">", 5),
-				FindNearest: &pb.StructuredQuery_FindNearest{
-					VectorField: fref1("embeddedField"),
-					QueryVector: &pb.Value{
-						ValueType: &pb.Value_MapValue{
-							MapValue: &pb.MapValue{
-								Fields: map[string]*pb.Value{
-									typeKey: stringToProtoValue(typeValVector),
-									valueKey: {
-										ValueType: &pb.Value_ArrayValue{
-											ArrayValue: &pb.ArrayValue{
-												Values: []*pb.Value{
-													{ValueType: &pb.Value_DoubleValue{DoubleValue: 100}},
-													{ValueType: &pb.Value_DoubleValue{DoubleValue: 200}},
-													{ValueType: &pb.Value_DoubleValue{DoubleValue: 300}},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Where: filtr([]string{"a"}, ">", 5),
+						FindNearest: &pb.StructuredQuery_FindNearest{
+							VectorField: fref1("embeddedField"),
+							QueryVector: &pb.Value{
+								ValueType: &pb.Value_MapValue{
+									MapValue: &pb.MapValue{
+										Fields: map[string]*pb.Value{
+											typeKey: stringToProtoValue(typeValVector),
+											valueKey: {
+												ValueType: &pb.Value_ArrayValue{
+													ArrayValue: &pb.ArrayValue{
+														Values: []*pb.Value{
+															{ValueType: &pb.Value_DoubleValue{DoubleValue: 100}},
+															{ValueType: &pb.Value_DoubleValue{DoubleValue: 200}},
+															{ValueType: &pb.Value_DoubleValue{DoubleValue: 300}},
+														},
+													},
 												},
 											},
 										},
 									},
 								},
 							},
+							Limit:           &wrapperspb.Int32Value{Value: trunc32(2)},
+							DistanceMeasure: pb.StructuredQuery_FindNearest_EUCLIDEAN,
 						},
 					},
-					Limit:           &wrapperspb.Int32Value{Value: trunc32(2)},
-					DistanceMeasure: pb.StructuredQuery_FindNearest_EUCLIDEAN,
 				},
 			},
 		},
@@ -687,32 +901,38 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 			desc: `q.Where("a", ">", 5).FindNearest float32 vector`,
 			in: q.Where("a", ">", 5).
 				FindNearest("embeddedField", []float32{100, 200, 300}, 2, DistanceMeasureEuclidean, nil).q,
-			want: &pb.StructuredQuery{
-				Where: filtr([]string{"a"}, ">", 5),
-				FindNearest: &pb.StructuredQuery_FindNearest{
-					VectorField: fref1("embeddedField"),
-					QueryVector: &pb.Value{
-						ValueType: &pb.Value_MapValue{
-							MapValue: &pb.MapValue{
-								Fields: map[string]*pb.Value{
-									typeKey: stringToProtoValue(typeValVector),
-									valueKey: {
-										ValueType: &pb.Value_ArrayValue{
-											ArrayValue: &pb.ArrayValue{
-												Values: []*pb.Value{
-													{ValueType: &pb.Value_DoubleValue{DoubleValue: 100}},
-													{ValueType: &pb.Value_DoubleValue{DoubleValue: 200}},
-													{ValueType: &pb.Value_DoubleValue{DoubleValue: 300}},
+			want: &pb.RunQueryRequest{
+				Parent: q.parentPath,
+
+				QueryType: &pb.RunQueryRequest_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						Where: filtr([]string{"a"}, ">", 5),
+						FindNearest: &pb.StructuredQuery_FindNearest{
+							VectorField: fref1("embeddedField"),
+							QueryVector: &pb.Value{
+								ValueType: &pb.Value_MapValue{
+									MapValue: &pb.MapValue{
+										Fields: map[string]*pb.Value{
+											typeKey: stringToProtoValue(typeValVector),
+											valueKey: {
+												ValueType: &pb.Value_ArrayValue{
+													ArrayValue: &pb.ArrayValue{
+														Values: []*pb.Value{
+															{ValueType: &pb.Value_DoubleValue{DoubleValue: 100}},
+															{ValueType: &pb.Value_DoubleValue{DoubleValue: 200}},
+															{ValueType: &pb.Value_DoubleValue{DoubleValue: 300}},
+														},
+													},
 												},
 											},
 										},
 									},
 								},
 							},
+							Limit:           &wrapperspb.Int32Value{Value: trunc32(2)},
+							DistanceMeasure: pb.StructuredQuery_FindNearest_EUCLIDEAN,
 						},
 					},
-					Limit:           &wrapperspb.Int32Value{Value: trunc32(2)},
-					DistanceMeasure: pb.StructuredQuery_FindNearest_EUCLIDEAN,
 				},
 			},
 		},
@@ -721,44 +941,42 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 
 func TestQueryToProto(t *testing.T) {
 	for _, test := range createTestScenarios(t) {
-		got, err := test.in.toProto()
+		got, err := test.in.toRunQueryRequestProto()
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
 		}
-		test.want.From = []*pb.StructuredQuery_CollectionSelector{{CollectionId: "C"}}
+		pbStructuredQuery := test.want.QueryType.(*pb.RunQueryRequest_StructuredQuery)
+		pbStructuredQuery.StructuredQuery.From = []*pb.StructuredQuery_CollectionSelector{{CollectionId: "C"}}
 		if !testEqual(got, test.want) {
-			t.Fatalf("%s:\ngot\n%v\nwant\n%v", test.desc, pretty.Value(got), pretty.Value(test.want))
+
+			t.Fatalf("%s:\ngot\n%v\nwant\n%v\ndiff\n%v", test.desc, pretty.Value(got), pretty.Value(test.want), testDiff(got, test.want))
 		}
 	}
 }
 
-// Convert a Query to a Proto and back again verifying roundtripping
+// Convert a Query to a Proto and back again verifying roundtripping.
+// We cannot in general verify the round trip from Query back to Query,
+// because information is lost. But we can check that the deserialized query's proto
+// matches the original proto.
 func TestQueryFromProtoRoundTrip(t *testing.T) {
-	t.Skip("flaky due to random map order iteration")
 	c := &Client{projectID: "P", databaseID: "DB"}
-
 	for _, test := range createTestScenarios(t) {
-		fmt.Println(test.desc)
-		proto, err := test.in.Serialize()
-		if err != nil {
-			t.Fatalf("%s: %v", test.desc, err)
-		}
-		got, err := Query{c: c}.Deserialize(proto)
-		if err != nil {
-			t.Fatalf("%s: %v", test.desc, err)
-		}
-
-		want := test.in
-		gotProto, err := got.Serialize()
-		fmt.Println(gotProto)
-		if err != nil {
-			t.Fatalf("%s: %v", test.desc, err)
-		}
-
-		// Compare protos before and after taking to a query. proto -> query -> proto.
-		if diff := cmp.Diff(gotProto, proto, protocmp.Transform()); diff != "" {
-			t.Errorf("%s:\ngot\n%v\nwant\n%v\ndiff\n%v", test.desc, pretty.Value(got), pretty.Value(want), diff)
-		}
+		t.Run(test.desc, func(t *testing.T) {
+			protoBytes, err := test.in.Serialize()
+			if err != nil {
+				t.Fatal(err)
+			}
+			gotq, err := Query{c: c}.Deserialize(protoBytes)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := gotq.toRunQueryRequestProto()
+			want := test.want
+			want.QueryType.(*pb.RunQueryRequest_StructuredQuery).StructuredQuery.From = []*pb.StructuredQuery_CollectionSelector{{CollectionId: "C"}}
+			if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
+				t.Errorf("mismatch (-want, +got)\n: %s", diff)
+			}
+		})
 	}
 }
 
@@ -920,6 +1138,7 @@ func TestQueryGetAll(t *testing.T) {
 	const dbPath = "projects/projectID/databases/(default)"
 	ctx := context.Background()
 	c, srv, cleanup := newMock(t)
+	srv.reset()
 	defer cleanup()
 
 	docNames := []string{"C/a", "C/b"}
@@ -946,6 +1165,7 @@ func TestQueryGetAll(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	fmt.Printf("gotDocs: %+v\n", gotDocs)
 	if got, want := len(gotDocs), len(wantPBDocs); got != want {
 		t.Errorf("got %d docs, wanted %d", got, want)
 	}
@@ -1423,6 +1643,108 @@ func TestWithAvgPath(t *testing.T) {
 		} else if err != nil && !tc.wantErr {
 			t.Fatalf("%s: got %v, want nil", tc.desc, err)
 		}
+	}
+}
+
+func TestExplainOptionsApply(t *testing.T) {
+	pbExplainOptions := pb.ExplainOptions{Analyze: true}
+	for _, testcase := range []struct {
+		desc            string
+		existingOptions *pb.ExplainOptions
+		newOptions      ExplainOptions
+		wantErrMsg      string
+	}{
+		{
+			desc:            "ExplainOptions specified multiple times",
+			existingOptions: &pbExplainOptions,
+			newOptions:      ExplainOptions{Analyze: true},
+			wantErrMsg:      "ExplainOptions can be specified only once",
+		},
+		{
+			desc:            "ExplainOptions specified once",
+			existingOptions: nil,
+			newOptions:      ExplainOptions{Analyze: true},
+		},
+	} {
+		gotErr := testcase.newOptions.apply(&runQuerySettings{explainOptions: testcase.existingOptions})
+		if (gotErr == nil && testcase.wantErrMsg != "") ||
+			(gotErr != nil && !strings.Contains(gotErr.Error(), testcase.wantErrMsg)) {
+			t.Errorf("%v: apply got: %v want: %v", testcase.desc, gotErr.Error(), testcase.wantErrMsg)
+		}
+	}
+}
+
+func TestNewRunQuerySettings(t *testing.T) {
+	for _, testcase := range []struct {
+		desc       string
+		opts       []RunOption
+		wantErrMsg string
+	}{
+		{
+			desc:       "nil RunOption",
+			opts:       []RunOption{ExplainOptions{Analyze: true}, nil},
+			wantErrMsg: "cannot be nil",
+		},
+		{
+			desc: "success RunOption",
+			opts: []RunOption{ExplainOptions{Analyze: true}},
+		},
+		{
+			desc:       "ExplainOptions specified multiple times",
+			opts:       []RunOption{ExplainOptions{Analyze: true}, ExplainOptions{Analyze: false}, ExplainOptions{Analyze: true}},
+			wantErrMsg: "ExplainOptions can be specified only once",
+		},
+	} {
+		_, gotErr := newRunQuerySettings(testcase.opts)
+		if (gotErr == nil && testcase.wantErrMsg != "") ||
+			(gotErr != nil && !strings.Contains(gotErr.Error(), testcase.wantErrMsg)) {
+			t.Errorf("%v: newRunQuerySettings got: %v want: %v", testcase.desc, gotErr, testcase.wantErrMsg)
+		}
+	}
+}
+
+func TestQueryRunOptionsAndGetAllWithOptions(t *testing.T) {
+	ctx := context.Background()
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	dbPath := "projects/projectID/databases/(default)"
+	collectionName := "collection01"
+	wantReq := &pb.RunQueryRequest{
+		Parent: fmt.Sprintf("%v/documents", dbPath),
+		QueryType: &pb.RunQueryRequest_StructuredQuery{
+			StructuredQuery: &pb.StructuredQuery{
+				From: []*pb.StructuredQuery_CollectionSelector{
+					{CollectionId: collectionName},
+				},
+			},
+		},
+		ExplainOptions: &pb.ExplainOptions{
+			Analyze: false,
+		},
+	}
+
+	srv.addRPC(wantReq, []interface{}{
+		&pb.RunQueryResponse{
+			Document: &pb.Document{
+				Name:       fmt.Sprintf("%v/documents/%v/doc1", dbPath, collectionName),
+				CreateTime: aTimestamp,
+				UpdateTime: aTimestamp,
+				Fields:     map[string]*pb.Value{"f": intval(2)},
+			},
+			ReadTime: aTimestamp,
+		},
+	})
+
+	_, err := client.Collection(collectionName).
+		WithRunOptions(ExplainOptions{Analyze: false}).
+		WithRunOptions(ExplainOptions{Analyze: true}).
+		WithRunOptions(ExplainOptions{Analyze: false}).
+		Documents(ctx).
+		GetAll()
+
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 

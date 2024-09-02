@@ -368,7 +368,7 @@ func TestTableAdmin_UpdateTableDisableChangeStream(t *testing.T) {
 func TestTableAdmin_SetGcPolicy(t *testing.T) {
 	for _, test := range []struct {
 		desc string
-		opts GCPolicyOption
+		opts UpdateFamilyOption
 		want bool
 	}{
 		{
