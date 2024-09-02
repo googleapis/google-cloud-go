@@ -45,6 +45,7 @@ func CloneDetectOptions(oldDo *credentials.DetectOptions) *credentials.DetectOpt
 		CredentialsFile:   oldDo.CredentialsFile,
 		UseSelfSignedJWT:  oldDo.UseSelfSignedJWT,
 		UniverseDomain:    oldDo.UniverseDomain,
+		QuotaProjectID:    oldDo.QuotaProjectID,
 
 		// These fields are are pointer types that we just want to use exactly
 		// as the user set, copy the ref

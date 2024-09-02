@@ -158,6 +158,9 @@ type DetectOptions struct {
 	// The default value is "googleapis.com". This option is ignored for
 	// authentication flows that do not support universe domain. Optional.
 	UniverseDomain string
+	// QuotaProjectID allow overriding the project ID used for quota management.
+	// Optional.
+	QuotaProjectID string
 }
 
 func (o *DetectOptions) validate() error {

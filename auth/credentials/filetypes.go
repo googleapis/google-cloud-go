@@ -17,6 +17,7 @@ package credentials
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials/internal/externalaccount"
@@ -56,7 +57,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		quotaProjectID = f.QuotaProjectID
+		quotaProjectID = resolveQuotaProjectID(opts.QuotaProjectID, f.QuotaProjectID)
 		universeDomain = f.UniverseDomain
 	case credsfile.ExternalAccountKey:
 		f, err := credsfile.ParseExternalAccount(b)
@@ -67,7 +68,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		quotaProjectID = f.QuotaProjectID
+		quotaProjectID = resolveQuotaProjectID(opts.QuotaProjectID, f.QuotaProjectID)
 		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
 	case credsfile.ExternalAccountAuthorizedUserKey:
 		f, err := credsfile.ParseExternalAccountAuthorizedUser(b)
@@ -78,7 +79,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		quotaProjectID = f.QuotaProjectID
+		quotaProjectID = resolveQuotaProjectID(opts.QuotaProjectID, f.QuotaProjectID)
 		universeDomain = f.UniverseDomain
 	case credsfile.ImpersonatedServiceAccountKey:
 		f, err := credsfile.ParseImpersonatedServiceAccount(b)
@@ -124,6 +125,20 @@ func resolveUniverseDomain(optsUniverseDomain, fileUniverseDomain string) string
 		return optsUniverseDomain
 	}
 	return fileUniverseDomain
+}
+
+// resolveQuotaProjectID retrieves quota project with precedence being:
+// client option, environment variable, creds file.
+func resolveQuotaProjectID(optsQuotaProjectID, fileQuotaProjectID string) string {
+	if optsQuotaProjectID != "" {
+		return optsQuotaProjectID
+	}
+
+	if qp := os.Getenv(internalauth.QuotaProjectEnvVar); qp != "" {
+		return qp
+	}
+
+	return fileQuotaProjectID
 }
 
 func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
