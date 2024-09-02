@@ -22,7 +22,6 @@ import (
 	"hash/crc32"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -1252,7 +1251,7 @@ type httpReader struct {
 }
 
 func (r *httpReader) Read(p []byte) (int, error) {
-	r.readCalls += 1
+	r.readCalls++
 	// Send stats to the throughput monitor, if available. Send again once the
 	// call is complete.
 	stats := httpReaderStats{
@@ -1549,7 +1548,6 @@ func parseReadResponse(ctx context.Context, res *http.Response, params *newRange
 				case <-r.ctx.Done():
 					done = true
 				case stats = <-httpReader.readerStats:
-					log.Printf("received stats %v", stats)
 				}
 			}
 		}
