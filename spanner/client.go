@@ -24,7 +24,10 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
+
+	"google.golang.org/grpc/status"
 
 	"cloud.google.com/go/internal/trace"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
@@ -464,16 +467,16 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc.otConfig = otConfig
 	sc.mu.Unlock()
 
-	metricsProvider := otConfig.meterProvider
+	var metricsProvider metric.MeterProvider
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
-		// Do not emit metrics when emulator is being used
+		// Do not emit native metrics when emulator is being used
 		metricsProvider = noop.NewMeterProvider()
 	}
 
 	// Create a OpenTelemetry metrics configuration
 	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider)
 	if err != nil {
-		metricsProvider = noop.NewMeterProvider()
+		return nil, err
 	}
 	sc.mu.Lock()
 	sc.metricsTracerFactory = metricsTracerFactory
@@ -556,11 +559,11 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 		option.WithGRPCConnectionPool(numChannels),
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
 		internaloption.AllowNonDefaultServiceAccount(true),
+		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(AddNativeMetricsInterceptor()...)),
+		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(AddStreamNativeMetricsInterceptor()...)),
 	}
 	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
-		clientDefaultOpts = append(clientDefaultOpts, option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(AddUnaryPeerInterceptor()...)),
-			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(AddStreamPeerInterceptor()...)))
 	}
 	if compression == "gzip" {
 		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -570,40 +573,109 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 	return append(allDefaultOpts, userOpts...)
 }
 
-func unaryPeerSetter() grpc.UnaryClientInterceptor {
-	return func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn,
-		invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		p, ok := peer.FromContext(ctx)
-		if ok {
-			opts = append(opts, grpc.Peer(p))
+// metricsInterceptor is a gRPC unary client interceptor that records metrics for unary RPCs.
+func metricsInterceptor() grpc.UnaryClientInterceptor {
+	return func(
+		ctx context.Context,
+		method string,
+		req interface{},
+		reply interface{},
+		cc *grpc.ClientConn,
+		invoker grpc.UnaryInvoker,
+		opts ...grpc.CallOption,
+	) error {
+		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+		if !ok {
+			return invoker(ctx, method, req, reply, cc, opts...)
 		}
-		return invoker(ctx, method, req, reply, cc, opts...)
+
+		mt.method = method
+		mt.currOp.incrementAttemptCount()
+		mt.currOp.currAttempt = attemptTracer{}
+		mt.currOp.currAttempt.setStartTime(time.Now())
+		if strings.HasPrefix(cc.Target(), "google-c2p") {
+			mt.currOp.setDirectPathEnabled(true)
+		}
+
+		peerInfo := &peer.Peer{}
+		ctx = peer.NewContext(ctx, peerInfo)
+
+		err := invoker(ctx, method, req, reply, cc, opts...)
+
+		statusCode, _ := status.FromError(err)
+		mt.currOp.currAttempt.setStatus(statusCode.Code().String())
+
+		isDirectPathUsed := false
+		if peerInfo.Addr != nil {
+			remoteIP := peerInfo.Addr.String()
+			if strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix) {
+				isDirectPathUsed = true
+			}
+		}
+		mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
+		recordAttemptCompletion(mt)
+		return err
 	}
 }
 
-// streamPeerSetter makes the grpc connection include peer information in a context variable keyed by PeerKey{} if it exists.
-func streamPeerSetter() grpc.StreamClientInterceptor {
-	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string,
-		streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-		p, ok := peer.FromContext(ctx)
-		if ok {
-			opts = append(opts, grpc.Peer(p))
+// metricsInterceptor is a gRPC stream client interceptor that records metrics for stream RPCs.
+func metricsStreamInterceptor() grpc.StreamClientInterceptor {
+	return func(
+		ctx context.Context,
+		desc *grpc.StreamDesc,
+		cc *grpc.ClientConn,
+		method string,
+		streamer grpc.Streamer,
+		opts ...grpc.CallOption,
+	) (grpc.ClientStream, error) {
+		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+		if !ok {
+			return streamer(ctx, desc, cc, method, opts...)
 		}
-		return streamer(ctx, desc, cc, method, opts...)
+
+		mt.method = method
+		mt.currOp.incrementAttemptCount()
+		mt.currOp.currAttempt = attemptTracer{}
+		mt.currOp.currAttempt.setStartTime(time.Now())
+		if strings.HasPrefix(cc.Target(), "google-c2p") {
+			mt.currOp.setDirectPathEnabled(true)
+		}
+
+		peerInfo := &peer.Peer{}
+		ctx = peer.NewContext(ctx, peerInfo)
+
+		clientStream, err := streamer(ctx, desc, cc, method, opts...)
+		if err != nil {
+			statusCode, _ := status.FromError(err)
+			mt.currOp.currAttempt.setStatus(statusCode.Code().String())
+			recordAttemptCompletion(mt)
+			return nil, err
+		}
+
+		isDirectPathUsed := false
+		if peerInfo.Addr != nil {
+			remoteIP := peerInfo.Addr.String()
+			if strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix) {
+				isDirectPathUsed = true
+			}
+		}
+		mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
+		recordAttemptCompletion(mt)
+		return clientStream, nil
 	}
 }
 
-// AddUnaryPeerInterceptor intercepts unary requests and add PeerKey.
-func AddUnaryPeerInterceptor() []grpc.UnaryClientInterceptor {
+// AddNativeMetricsInterceptor intercepts unary requests and records metrics for them.
+func AddNativeMetricsInterceptor() []grpc.UnaryClientInterceptor {
 	unaryInterceptors := []grpc.UnaryClientInterceptor{}
-	unaryInterceptors = append(unaryInterceptors, unaryPeerSetter())
+	unaryInterceptors = append(unaryInterceptors, metricsInterceptor())
 	return unaryInterceptors
 }
 
-// AddStreamPeerInterceptor intercepts stream requests and add PeerKey.
-func AddStreamPeerInterceptor() []grpc.StreamClientInterceptor {
+// AddStreamNativeMetricsInterceptor intercepts stream requests and records metrics for them.
+func AddStreamNativeMetricsInterceptor() []grpc.StreamClientInterceptor {
 	streamInterceptors := []grpc.StreamClientInterceptor{}
-	streamInterceptors = append(streamInterceptors, streamPeerSetter())
+	streamInterceptors = append(streamInterceptors, metricsStreamInterceptor())
 	return streamInterceptors
 }
 
@@ -1051,68 +1123,68 @@ func (bwo BatchWriteOptions) merge(opts BatchWriteOptions) BatchWriteOptions {
 
 // BatchWriteResponseIterator is an iterator over BatchWriteResponse structures returned from BatchWrite RPC.
 type BatchWriteResponseIterator struct {
-	ctx                context.Context
-	stream             sppb.Spanner_BatchWriteClient
-	err                error
-	dataReceived       bool
-	method             string
-	meterTracerFactory *builtinMetricsTracerFactory
-	replaceSession     func(ctx context.Context) error
-	rpc                func(ctx context.Context) (sppb.Spanner_BatchWriteClient, error)
-	release            func(error)
-	cancel             func()
+	ctx            context.Context
+	stream         sppb.Spanner_BatchWriteClient
+	err            error
+	dataReceived   bool
+	replaceSession func(ctx context.Context) error
+	rpc            func(ctx context.Context) (sppb.Spanner_BatchWriteClient, error)
+	release        func(error)
+	cancel         func()
 }
 
 // Next returns the next result. Its second return value is iterator.Done if
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *BatchWriteResponseIterator) Next() (*sppb.BatchWriteResponse, error) {
-	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx, true)
+	var mt *builtinMetricsTracer
 	defer func() {
-		if mt.method != "" {
+		if mt != nil && mt.builtInEnabled && mt.method != "" {
 			statusCode, _ := convertToGrpcStatusErr(r.err)
 			mt.currOp.setStatus(statusCode.String())
-			recordOperationCompletion(&mt)
+			recordOperationCompletion(mt)
 		}
 	}()
-	var response *sppb.BatchWriteResponse
-	_ = gaxInvokeWithRecorder(r.ctx, &mt, r.method, func(ctx context.Context, settings gax.CallSettings) (context.Context, error) {
-		for {
-			// Stream finished or in error state.
-			if r.err != nil {
-				return r.ctx, r.err
-			}
-
-			// RPC not made yet.
-			if r.stream == nil {
-				r.stream, r.err = r.rpc(r.ctx)
-				continue
-			}
-
-			// Read from the stream.
-			response, r.err = r.stream.Recv()
-
-			// Return an item.
-			if r.err == nil {
-				r.dataReceived = true
-				return r.stream.Context(), nil
-			}
-
-			// Stream finished.
-			if r.err == io.EOF {
-				mt.currOp.attemptCount--
-				r.err = iterator.Done
-				return r.stream.Context(), r.err
-			}
-
-			// Retry request on session not found error only if no data has been received before.
-			if !r.dataReceived && r.replaceSession != nil && isSessionNotFoundError(r.err) {
-				r.err = r.replaceSession(r.ctx)
-				r.stream = nil
-			}
+	for {
+		// Stream finished or in error state.
+		if r.err != nil {
+			return nil, r.err
 		}
-	})
-	return response, r.err
+
+		// RPC not made yet.
+		if r.stream == nil {
+			r.stream, r.err = r.rpc(r.ctx)
+			continue
+		}
+		ctx := r.stream.Context()
+		v := ctx.Value(metricsTracerKey)
+		if v != nil {
+			mt = v.(*builtinMetricsTracer)
+			mt.currOp.setStartTime(time.Now())
+		}
+
+		// Read from the stream.
+		var response *sppb.BatchWriteResponse
+		response, r.err = r.stream.Recv()
+
+		// Return an item.
+		if r.err == nil {
+			r.dataReceived = true
+			return response, nil
+		}
+
+		// Stream finished.
+		if r.err == io.EOF {
+			r.err = iterator.Done
+			return nil, r.err
+		}
+
+		// Retry request on session not found error only if no data has been received before.
+		if !r.dataReceived && r.replaceSession != nil && isSessionNotFoundError(r.err) {
+			r.err = r.replaceSession(r.ctx)
+			r.stream = nil
+		}
+	}
 }
 
 // Stop terminates the iteration. It should be called after you finish using the
@@ -1246,13 +1318,11 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 	ctx, cancel := context.WithCancel(ctx)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchWriteResponseIterator")
 	return &BatchWriteResponseIterator{
-		ctx:                ctx,
-		rpc:                rpc,
-		replaceSession:     replaceSession,
-		release:            release,
-		cancel:             cancel,
-		method:             "Spanner.BatchWrite",
-		meterTracerFactory: c.metricsTracerFactory,
+		ctx:            ctx,
+		rpc:            rpc,
+		replaceSession: replaceSession,
+		release:        release,
+		cancel:         cancel,
 	}
 }
 

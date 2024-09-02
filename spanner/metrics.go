@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"log"
 	"os"
@@ -130,21 +131,22 @@ type metricInfo struct {
 	recordedPerAttempt bool
 }
 
+// builtinMetricsTracerFactory is responsible for creating and managing metrics tracers.
 type builtinMetricsTracerFactory struct {
-	enabled             bool
-	isDirectPathEnabled bool
+	enabled             bool // Indicates if metrics tracing is enabled.
+	isDirectPathEnabled bool // Indicates if DirectPath is enabled.
 
-	// To be called on client close
+	// shutdown is a function to be called on client close to clean up resources.
 	shutdown func()
 
-	// attributes that are specific to a client instance and
-	// do not change across different function calls on client
+	// clientAttributes are attributes specific to a client instance that do not change across different function calls on the client.
 	clientAttributes []attribute.KeyValue
 
-	operationLatencies metric.Float64Histogram
-	attemptLatencies   metric.Float64Histogram
-	operationCount     metric.Int64Counter
-	attemptCount       metric.Int64Counter
+	// Metrics instruments
+	operationLatencies metric.Float64Histogram // Histogram for operation latencies.
+	attemptLatencies   metric.Float64Histogram // Histogram for attempt latencies.
+	operationCount     metric.Int64Counter     // Counter for the number of operations.
+	attemptCount       metric.Int64Counter     // Counter for the number of attempts.
 }
 
 func detectClientLocation(ctx context.Context) string {
@@ -187,7 +189,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 	}
 
 	tracerFactory.isDirectPathEnabled = false
-
+	tracerFactory.enabled = false
 	var meterProvider *sdkmetric.MeterProvider
 	if metricsProvider == nil {
 		// Create default meter provider
@@ -202,10 +204,8 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 	} else {
 		switch metricsProvider.(type) {
 		case noop.MeterProvider:
-			tracerFactory.enabled = false
 			return tracerFactory, nil
 		default:
-			tracerFactory.enabled = false
 			return tracerFactory, errors.New("unknown MetricsProvider type")
 		}
 	}
@@ -265,89 +265,92 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 	// Create attempt_count
 	tf.attemptCount, err = meter.Int64Counter(
 		nativeMetricsPrefix+metricNameAttemptCount,
-		metric.WithDescription("The number of additional RPCs sent after the initial attempt."),
+		metric.WithDescription("The number of attempts made for the operation, including the initial attempt."),
 		metric.WithUnit(metricUnitCount),
 	)
 	return err
 }
 
-// builtinMetricsTracer is created one per operation
-// It is used to store metric instruments, attribute values
-// and other data required to obtain and record them
+// builtinMetricsTracer is created one per operation.
+// It is used to store metric instruments, attribute values, and other data required to obtain and record them.
 type builtinMetricsTracer struct {
-	ctx            context.Context
-	builtInEnabled bool
+	ctx            context.Context // Context for the tracer.
+	builtInEnabled bool            // Indicates if built-in metrics are enabled.
 
-	// attributes that are specific to a client instance and
-	// do not change across different operations on client
+	// clientAttributes are attributes specific to a client instance that do not change across different operations on the client.
 	clientAttributes []attribute.KeyValue
 
-	instrumentOperationLatencies metric.Float64Histogram
-	instrumentAttemptLatencies   metric.Float64Histogram
-	instrumentOperationCount     metric.Int64Counter
-	instrumentAttemptCount       metric.Int64Counter
+	// Metrics instruments
+	instrumentOperationLatencies metric.Float64Histogram // Histogram for operation latencies.
+	instrumentAttemptLatencies   metric.Float64Histogram // Histogram for attempt latencies.
+	instrumentOperationCount     metric.Int64Counter     // Counter for the number of operations.
+	instrumentAttemptCount       metric.Int64Counter     // Counter for the number of attempts.
 
-	method      string
-	isStreaming bool
+	method      string // The method being traced.
+	isStreaming bool   // Indicates if the operation is a streaming operation.
 
-	currOp opTracer
+	currOp opTracer // The current operation tracer.
 }
 
 // opTracer is used to record metrics for the entire operation, including retries.
-// Operation is a logical unit that represents a single method invocation on client.
-// The method might require multiple attempts/rpcs and backoff logic to complete
+// An operation is a logical unit that represents a single method invocation on the client.
+// The method might require multiple attempts/RPCs and backoff logic to complete.
 type opTracer struct {
-	attemptCount int64
+	attemptCount int64     // The number of attempts made for the operation.
+	startTime    time.Time // The start time of the operation.
 
-	startTime time.Time
-
-	// gRPC status code of last completed attempt
+	// status is the gRPC status code of the last completed attempt.
 	status string
 
-	directPathEnabled bool
+	directPathEnabled bool // Indicates if DirectPath is enabled for the operation.
 
-	currAttempt attemptTracer
+	currAttempt attemptTracer // The current attempt tracer.
 }
 
+// attemptTracer is used to record metrics for a single attempt within an operation.
+type attemptTracer struct {
+	startTime time.Time // The start time of the attempt.
+	status    string    // The gRPC status code of the attempt.
+
+	directPathUsed bool // Indicates if DirectPath was used for the attempt.
+}
+
+// setStartTime sets the start time for the operation.
 func (o *opTracer) setStartTime(t time.Time) {
 	o.startTime = t
 }
 
-func (o *opTracer) setStatus(status string) {
-	o.status = status
-}
-
-func (o *opTracer) setDirectPathEnabled(directPathEnabled bool) {
-	o.directPathEnabled = directPathEnabled
-}
-
-func (o *opTracer) incrementAttemptCount() {
-	o.attemptCount++
-}
-
-// attemptTracer is used to record metrics for each individual attempt of the operation.
-// Attempt corresponds to an attempt of an RPC.
-type attemptTracer struct {
-	startTime time.Time
-	// gRPC status code
-	status string
-
-	directPathUsed bool
-}
-
+// setStartTime sets the start time for the attempt.
 func (a *attemptTracer) setStartTime(t time.Time) {
 	a.startTime = t
 }
 
-func (a *attemptTracer) setStatus(status string) {
-	a.status = status
+// setStatus sets the status for the operation.
+func (o *opTracer) setStatus(s string) {
+	o.status = s
 }
 
-func (o *attemptTracer) setDirectPathUsed(directPathUsage bool) {
-	o.directPathUsed = directPathUsage
+// setStatus sets the status for the attempt.
+func (a *attemptTracer) setStatus(s string) {
+	a.status = s
 }
 
-func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Context, isStreaming bool) builtinMetricsTracer {
+// incrementAttemptCount increments the attempt count for the operation.
+func (o *opTracer) incrementAttemptCount() {
+	o.attemptCount++
+}
+
+// setDirectPathUsed sets whether DirectPath was used for the attempt.
+func (a *attemptTracer) setDirectPathUsed(used bool) {
+	a.directPathUsed = used
+}
+
+// setDirectPathEnabled sets whether DirectPath is enabled for the operation.
+func (o *opTracer) setDirectPathEnabled(enabled bool) {
+	o.directPathEnabled = enabled
+}
+
+func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Context) builtinMetricsTracer {
 	// Operation has started but not the attempt.
 	// So, create only operation tracer and not attempt tracer
 	currOpTracer := opTracer{}
@@ -365,8 +368,6 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		instrumentAttemptLatencies:   tf.attemptLatencies,
 		instrumentOperationCount:     tf.operationCount,
 		instrumentAttemptCount:       tf.attemptCount,
-
-		isStreaming: isStreaming,
 	}
 }
 
@@ -377,7 +378,7 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribute.KeyValue, error) {
 	// Create attribute key value pairs for attributes common to all metricss
 	attrKeyValues := []attribute.KeyValue{
-		attribute.String(metricLabelKeyMethod, mt.method),
+		attribute.String(metricLabelKeyMethod, strings.ReplaceAll(strings.TrimPrefix(mt.method, "/google.spanner.v1."), "/", ".")),
 	}
 	attrKeyValues = append(attrKeyValues, mt.clientAttributes...)
 
@@ -386,7 +387,6 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 	if !found {
 		return attrKeyValues, fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
 	}
-
 	attrKeyValues = append(attrKeyValues, attribute.String(metricLabelKeyDirectPathEnabled, strconv.FormatBool(mt.currOp.directPathEnabled)))
 	attrKeyValues = append(attrKeyValues, attribute.String(metricLabelKeyDirectPathUsed, strconv.FormatBool(mt.currOp.currAttempt.directPathUsed)))
 
@@ -463,12 +463,9 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 
 	// Record attempt_count
 	attemptCntAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptCount)
-	if mt.currOp.attemptCount > 1 {
-		// Only record when retry count is greater than 0 so the retry
-		// graph will be less confusing
-		mt.instrumentAttemptCount.Add(mt.ctx, mt.currOp.attemptCount-1, metric.WithAttributes(attemptCntAttrs...))
-	}
+	mt.instrumentAttemptCount.Add(mt.ctx, mt.currOp.attemptCount, metric.WithAttributes(attemptCntAttrs...))
 }
+
 func convertToMs(d time.Duration) float64 {
-	return float64(d.Nanoseconds()) / 1000000
+	return float64(d.Nanoseconds()) / float64(time.Millisecond)
 }

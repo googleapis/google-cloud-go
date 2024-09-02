@@ -52,8 +52,6 @@ func errEarlyReadEnd() error {
 func stream(
 	ctx context.Context,
 	logger *log.Logger,
-	meterTracerFactory *builtinMetricsTracerFactory,
-	method string,
 	rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error),
 	setTimestamp func(time.Time),
 	release func(error),
@@ -61,8 +59,6 @@ func stream(
 	return streamWithReplaceSessionFunc(
 		ctx,
 		logger,
-		meterTracerFactory,
-		method,
 		rpc,
 		nil,
 		nil,
@@ -77,8 +73,6 @@ func stream(
 func streamWithReplaceSessionFunc(
 	ctx context.Context,
 	logger *log.Logger,
-	meterTracerFactory *builtinMetricsTracerFactory,
-	method string,
 	rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error),
 	replaceSession func(ctx context.Context) error,
 	setTransactionID func(transactionID),
@@ -88,7 +82,7 @@ func streamWithReplaceSessionFunc(
 	ctx, cancel := context.WithCancel(ctx)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.RowIterator")
 	return &RowIterator{
-		streamd:          newResumableStreamDecoder(ctx, logger, meterTracerFactory, method, rpc, replaceSession),
+		streamd:          newResumableStreamDecoder(ctx, logger, rpc, replaceSession),
 		rowd:             &partialResultSetDecoder{},
 		setTransactionID: setTransactionID,
 		setTimestamp:     setTimestamp,
@@ -353,9 +347,6 @@ const (
 // sppb.PartialResultSet(s) from a given query wrapped by
 // resumableStreamDecoder.rpc().
 type resumableStreamDecoder struct {
-	// method is the name of the method that is being called. It is used for
-	// monitoring and logging.
-	method string
 	// state is the current status of resumableStreamDecoder, see also
 	// the comments for resumableStreamDecoder.Next.
 	state resumableStreamDecoderState
@@ -413,19 +404,15 @@ type resumableStreamDecoder struct {
 
 	// backoff is used for the retry settings
 	backoff gax.Backoff
-
-	meterTracerFactory *builtinMetricsTracerFactory
 }
 
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
 // Parameter rpc should be a function that creates a new stream beginning at the
 // restartToken if non-nil.
-func newResumableStreamDecoder(ctx context.Context, logger *log.Logger, meterTracerFactory *builtinMetricsTracerFactory, method string, rpc func(ct context.Context, restartToken []byte) (streamingReceiver, error), replaceSession func(ctx context.Context) error) *resumableStreamDecoder {
+func newResumableStreamDecoder(ctx context.Context, logger *log.Logger, rpc func(ct context.Context, restartToken []byte) (streamingReceiver, error), replaceSession func(ctx context.Context) error) *resumableStreamDecoder {
 	return &resumableStreamDecoder{
 		ctx:                         ctx,
 		logger:                      logger,
-		meterTracerFactory:          meterTracerFactory,
-		method:                      method,
 		rpc:                         rpc,
 		replaceSessionFunc:          replaceSession,
 		maxBytesBetweenResumeTokens: atomic.LoadInt32(&maxBytesBetweenResumeTokens),
@@ -512,12 +499,12 @@ var (
 )
 
 func (d *resumableStreamDecoder) next() bool {
-	mt := d.meterTracerFactory.createBuiltinMetricsTracer(d.ctx, true)
+	var mt *builtinMetricsTracer
 	defer func() {
-		if mt.method != "" {
+		if mt != nil && mt.builtInEnabled && mt.method != "" {
 			statusCode, _ := convertToGrpcStatusErr(d.lastErr())
 			mt.currOp.setStatus(statusCode.String())
-			recordOperationCompletion(&mt)
+			recordOperationCompletion(mt)
 		}
 	}()
 	retryer := onCodes(d.backoff, codes.Unavailable, codes.ResourceExhausted, codes.Internal)
@@ -557,7 +544,7 @@ func (d *resumableStreamDecoder) next() bool {
 				// Only the case that receiving queue is empty could cause
 				// peekLast to return error and in such case, we should try to
 				// receive from stream.
-				d.tryRecv(&mt, retryer)
+				mt = d.tryRecv(mt, retryer)
 				continue
 			}
 			if d.isNewResumeToken(last.ResumeToken) {
@@ -586,7 +573,7 @@ func (d *resumableStreamDecoder) next() bool {
 			}
 			// Needs to receive more from gRPC stream till a new resume token
 			// is observed.
-			d.tryRecv(&mt, retryer)
+			mt = d.tryRecv(mt, retryer)
 			continue
 		case aborted:
 			// Discard all pending items because none of them should be yield
@@ -611,57 +598,60 @@ func (d *resumableStreamDecoder) next() bool {
 	}
 }
 
-func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.Retryer) {
+// tryRecv attempts to receive a PartialResultSet from gRPC stream.
+func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.Retryer) *builtinMetricsTracer {
+	// only record the operation if the stream is not nil
+	if d.stream != nil {
+		ctx := d.stream.Context()
+		v := ctx.Value(metricsTracerKey)
+		if v != nil {
+			mt = v.(*builtinMetricsTracer)
+			mt.currOp.setStartTime(time.Now())
+		}
+	}
 	var res *sppb.PartialResultSet
-	// ignore error from gaxInvokeWithRecorder, as it is already handled in
-	// the retryer and resumableStreamDecoder.
-	_ = gaxInvokeWithRecorder(d.ctx, mt, d.method, func(ctx context.Context, settings gax.CallSettings) (context.Context, error) {
-		res, d.err = d.stream.Recv()
-		if d.err == nil {
-			d.q.push(res)
-			if d.state == queueingRetryable && !d.isNewResumeToken(res.ResumeToken) {
-				d.bytesBetweenResumeTokens += int32(proto.Size(res))
-			}
-			d.changeState(d.state)
-			return d.stream.Context(), nil
+	res, d.err = d.stream.Recv()
+	if d.err == nil {
+		d.q.push(res)
+		if d.state == queueingRetryable && !d.isNewResumeToken(res.ResumeToken) {
+			d.bytesBetweenResumeTokens += int32(proto.Size(res))
 		}
-		if d.err == io.EOF {
-			d.err = nil
-			d.changeState(finished)
-			mt.currOp.attemptCount--
-			return d.stream.Context(), io.EOF
-		}
-		if d.replaceSessionFunc != nil && isSessionNotFoundError(d.err) && d.resumeToken == nil {
-			// A 'Session not found' error occurred before we received a resume
-			// token and a replaceSessionFunc function is defined. Try to restart
-			// the stream on a new session.
-			if err := d.replaceSessionFunc(d.ctx); err != nil {
-				d.err = err
-				d.changeState(aborted)
-				return d.stream.Context(), d.lastErr()
-			}
-		} else {
-			delay, shouldRetry := retryer.Retry(d.err)
-			if !shouldRetry || d.state != queueingRetryable {
-				d.changeState(aborted)
-				return d.stream.Context(), d.lastErr()
-			}
-			if err := gax.Sleep(d.ctx, delay); err != nil {
-				d.err = err
-				d.changeState(aborted)
-				return d.stream.Context(), d.lastErr()
-			}
-		}
-		streamCtx := d.stream.Context()
-		// Clear error and retry the stream.
+		d.changeState(d.state)
+		return mt
+	}
+	if d.err == io.EOF {
 		d.err = nil
-		// Discard all queue items (none have resume tokens).
-		d.q.clear()
-		d.stream = nil
-		d.changeState(unConnected)
-		return streamCtx, nil
-	})
-	return
+		d.changeState(finished)
+		return mt
+	}
+	if d.replaceSessionFunc != nil && isSessionNotFoundError(d.err) && d.resumeToken == nil {
+		// A 'Session not found' error occurred before we received a resume
+		// token and a replaceSessionFunc function is defined. Try to restart
+		// the stream on a new session.
+		if err := d.replaceSessionFunc(d.ctx); err != nil {
+			d.err = err
+			d.changeState(aborted)
+			return mt
+		}
+	} else {
+		delay, shouldRetry := retryer.Retry(d.err)
+		if !shouldRetry || d.state != queueingRetryable {
+			d.changeState(aborted)
+			return mt
+		}
+		if err := gax.Sleep(d.ctx, delay); err != nil {
+			d.err = err
+			d.changeState(aborted)
+			return mt
+		}
+	}
+	// Clear error and retry the stream.
+	d.err = nil
+	// Discard all queue items (none have resume tokens).
+	d.q.clear()
+	d.stream = nil
+	d.changeState(unConnected)
+	return mt
 }
 
 // get returns the most recent PartialResultSet generated by a call to next.

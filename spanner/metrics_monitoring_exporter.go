@@ -42,8 +42,9 @@ import (
 const (
 	spannerResourceType = "spanner_instance_client"
 
-	// The number of timeserieses to send to GCM in a single request. This
+	// The number of timeserieses to send to Google Cloud Monitoring in a single request. This
 	// is a hard limit in the GCM API, so we never want to exceed 200.
+	// https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/create
 	sendBatchSize = 200
 )
 
