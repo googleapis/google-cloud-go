@@ -641,6 +641,12 @@ func metricsStreamInterceptor() grpc.StreamClientInterceptor {
 			mt.currOp.setDirectPathEnabled(true)
 		}
 		clientStream, err := streamer(ctx, desc, cc, method, opts...)
+		if err != nil {
+			statusCode, _ := status.FromError(err)
+			mt.currOp.currAttempt.setStatus(statusCode.Code().String())
+			recordAttemptCompletion(mt)
+			return clientStream, err
+		}
 		isDirectPathUsed := false
 		peerInfo, ok := peer.FromContext(clientStream.Context())
 		if ok {
