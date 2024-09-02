@@ -286,10 +286,9 @@ type builtinMetricsTracer struct {
 	instrumentOperationCount     metric.Int64Counter     // Counter for the number of operations.
 	instrumentAttemptCount       metric.Int64Counter     // Counter for the number of attempts.
 
-	method      string // The method being traced.
-	isStreaming bool   // Indicates if the operation is a streaming operation.
+	method string // The method being traced.
 
-	currOp opTracer // The current operation tracer.
+	currOp *opTracer // The current operation tracer.
 }
 
 // opTracer is used to record metrics for the entire operation, including retries.
@@ -304,7 +303,7 @@ type opTracer struct {
 
 	directPathEnabled bool // Indicates if DirectPath is enabled for the operation.
 
-	currAttempt attemptTracer // The current attempt tracer.
+	currAttempt *attemptTracer // The current attempt tracer.
 }
 
 // attemptTracer is used to record metrics for a single attempt within an operation.
@@ -361,7 +360,7 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		ctx:            ctx,
 		builtInEnabled: tf.enabled,
 
-		currOp:           currOpTracer,
+		currOp:           &currOpTracer,
 		clientAttributes: tf.clientAttributes,
 
 		instrumentOperationLatencies: tf.operationLatencies,

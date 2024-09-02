@@ -27,6 +27,8 @@ import (
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/peer"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -134,21 +136,30 @@ func (g *grpcSpannerClient) CreateSession(ctx context.Context, req *spannerpb.Cr
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.CreateSession(ctx, req, opts...)
+	resp, err := g.raw.CreateSession(ctx, req, opts...)
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
+	return resp, err
 }
 
 func (g *grpcSpannerClient) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest, opts ...gax.CallOption) (*spannerpb.BatchCreateSessionsResponse, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.BatchCreateSessions(ctx, req, opts...)
+	resp, err := g.raw.BatchCreateSessions(ctx, req, opts...)
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
+	return resp, err
 }
 
 func (g *grpcSpannerClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.GetSession(ctx, req, opts...)
+	resp, err := g.raw.GetSession(ctx, req, opts...)
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
+	return resp, err
 }
 
 func (g *grpcSpannerClient) ListSessions(ctx context.Context, req *spannerpb.ListSessionsRequest, opts ...gax.CallOption) *vkit.SessionIterator {
@@ -159,79 +170,100 @@ func (g *grpcSpannerClient) DeleteSession(ctx context.Context, req *spannerpb.De
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.DeleteSession(ctx, req, opts...)
+	err := g.raw.DeleteSession(ctx, req, opts...)
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
+	return err
 }
 
 func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.ExecuteSql(ctx, req, opts...)
+	resp, err := g.raw.ExecuteSql(ctx, req, opts...)
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
+	return resp, err
 }
 
 func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
-	mt := g.newBuiltinMetricsTracer(ctx)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.ExecuteStreamingSql(ctx, req, opts...)
+	return g.raw.ExecuteStreamingSql(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
 }
 
 func (g *grpcSpannerClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatchDmlRequest, opts ...gax.CallOption) (*spannerpb.ExecuteBatchDmlResponse, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.ExecuteBatchDml(ctx, req, opts...)
+	resp, err := g.raw.ExecuteBatchDml(ctx, req, opts...)
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
+	return resp, err
 }
 
 func (g *grpcSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.Read(ctx, req, opts...)
+	resp, err := g.raw.Read(ctx, req, opts...)
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
+	return resp, err
 }
 
 func (g *grpcSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
-	mt := g.newBuiltinMetricsTracer(ctx)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.StreamingRead(ctx, req, opts...)
+	return g.raw.StreamingRead(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
 }
 
 func (g *grpcSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.BeginTransaction(ctx, req, opts...)
+	resp, err := g.raw.BeginTransaction(ctx, req, opts...)
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
+	return resp, err
 }
 
 func (g *grpcSpannerClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts ...gax.CallOption) (*spannerpb.CommitResponse, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.Commit(ctx, req, opts...)
+	resp, err := g.raw.Commit(ctx, req, opts...)
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
+	return resp, err
 }
 
 func (g *grpcSpannerClient) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, opts ...gax.CallOption) error {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.Rollback(ctx, req, opts...)
+	err := g.raw.Rollback(ctx, req, opts...)
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
+	return err
 }
 
 func (g *grpcSpannerClient) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQueryRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.PartitionQuery(ctx, req, opts...)
+	resp, err := g.raw.PartitionQuery(ctx, req, opts...)
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
+	return resp, err
 }
 
 func (g *grpcSpannerClient) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
 	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.PartitionRead(ctx, req, opts...)
+	resp, err := g.raw.PartitionRead(ctx, req, opts...)
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
+	return resp, err
 }
 
 func (g *grpcSpannerClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
-	mt := g.newBuiltinMetricsTracer(ctx)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
-	return g.raw.BatchWrite(ctx, req, opts...)
+	return g.raw.BatchWrite(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
 }
