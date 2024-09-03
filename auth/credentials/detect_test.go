@@ -252,6 +252,50 @@ func TestDefaultCredentials_UserCredentialsKey(t *testing.T) {
 	}
 }
 
+func TestDefaultCredentials_QuotaProjectPrecedence(t *testing.T) {
+	want := "take-this-value"
+	t.Setenv("GOOGLE_CLOUD_QUOTA_PROJECT", want)
+	ctx := context.Background()
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		resp := &tokResp{
+			AccessToken: "a_fake_token",
+			TokenType:   internal.TokenTypeBearer,
+			ExpiresIn:   60,
+		}
+		if err := json.NewEncoder(w).Encode(&resp); err != nil {
+			t.Fatal(err)
+		}
+	}))
+
+	creds, err := DetectDefault(&DetectOptions{
+		CredentialsFile: "../internal/testdata/user.json",
+		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+		TokenURL:        ts.URL,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := creds.QuotaProjectID(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+
+	// unset the env to fallback to the value in creds
+	t.Setenv("GOOGLE_CLOUD_QUOTA_PROJECT", "")
+	want = "fake_project2"
+	got, err = creds.QuotaProjectID(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+}
+
 func TestDefaultCredentials_UserCredentialsKey_UniverseDomain(t *testing.T) {
 	ctx := context.Background()
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
