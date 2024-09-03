@@ -27,8 +27,8 @@ const metadataHostEnv = "GCE_METADATA_HOST"
 func TestComputeCredentials(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// TODO(quartzmo): un-comment after compute/metadata packages sends x-goog-api-client
-		// headerApiClient := r.Header[http.CanonicalHeaderKey(header.GOOGLE_API_CLIENT_HEADER)][0]
-		// if got, want := headerApiClient, header.GetGoogHeaderToken(header.CredTypeMDS, header.TokenTypeID); got != want {
+		// headerAPIClient := r.Header[http.CanonicalHeaderKey(header.GOOGLE_API_CLIENT_HEADER)][0]
+		// if got, want := headerAPIClient, header.GetGoogHeaderToken(header.CredTypeMDS, header.TokenTypeID); got != want {
 		// 	t.Errorf("header = %q; want %q", got, want)
 		// }
 		if !strings.Contains(r.URL.Path, identitySuffix) {

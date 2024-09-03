@@ -30,6 +30,7 @@ type tokenType string
 type credType string
 
 const (
+	// GOOGLE_API_CLIENT_HEADER is the header key "x-goog-api-client"
 	GOOGLE_API_CLIENT_HEADER           = "x-goog-api-client"
 	CredTypeImp              credType  = "imp" // SA_IMPERSONATE
 	CredTypeMDS              credType  = "mds" // SA_MDS

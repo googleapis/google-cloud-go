@@ -58,8 +58,8 @@ func TestNewIDTokenCredentials(t *testing.T) {
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
 					defer req.Body.Close()
-					headerApiClient := req.Header[http.CanonicalHeaderKey(header.GOOGLE_API_CLIENT_HEADER)][0]
-					if got, want := headerApiClient, header.GetGoogHeaderToken(header.CredTypeImp, header.TokenTypeID); got != want {
+					headerAPIClient := req.Header[http.CanonicalHeaderKey(header.GOOGLE_API_CLIENT_HEADER)][0]
+					if got, want := headerAPIClient, header.GetGoogHeaderToken(header.CredTypeImp, header.TokenTypeID); got != want {
 						t.Errorf("header = %q; want %q", got, want)
 					}
 					b, err := io.ReadAll(req.Body)

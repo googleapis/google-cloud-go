@@ -214,8 +214,8 @@ func TestError_Error(t *testing.T) {
 
 func TestNew2LOTokenProvider_JSONResponse(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		headerApiClient := r.Header[http.CanonicalHeaderKey(header.GOOGLE_API_CLIENT_HEADER)][0]
-		if got, want := headerApiClient, header.GetGoogHeaderToken(header.CredTypeSA, header.TokenTypeAccess); got != want {
+		headerAPIClient := r.Header[http.CanonicalHeaderKey(header.GOOGLE_API_CLIENT_HEADER)][0]
+		if got, want := headerAPIClient, header.GetGoogHeaderToken(header.CredTypeSA, header.TokenTypeAccess); got != want {
 			t.Errorf("header = %q; want %q", got, want)
 		}
 		w.Header().Set("Content-Type", "application/json")
