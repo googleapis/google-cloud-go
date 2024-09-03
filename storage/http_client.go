@@ -23,7 +23,6 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -35,6 +34,7 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
+	"cloud.google.com/go/storage/internal/util"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
@@ -49,13 +49,14 @@ import (
 // httpStorageClient is the HTTP-JSON API implementation of the transport-agnostic
 // storageClient interface.
 type httpStorageClient struct {
-	creds    *google.Credentials
-	hc       *http.Client
-	xmlHost  string
-	raw      *raw.Service
-	scheme   string
-	settings *settings
-	config   *storageConfig
+	creds        *google.Credentials
+	hc           *http.Client
+	xmlHost      string
+	raw          *raw.Service
+	scheme       string
+	settings     *settings
+	config       *storageConfig
+	readReqDelay *util.Delay
 }
 
 // newHTTPStorageClient initializes a new storageClient that uses the HTTP-JSON
@@ -130,14 +131,26 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
 	}
 
+	// If stall timeout is set then create a dynamic delay calculater.
+	var reqDelay *util.Delay
+	if s.retry != nil && s.retry.readDynamicTimeout != nil {
+		rdt := s.retry.readDynamicTimeout
+		reqDelay, err = util.NewDelay(rdt.targetPercentile, rdt.increaseRate, rdt.min, rdt.max)
+		if err != nil {
+			return nil, fmt.Errorf("creating dynamice delay obj: %w", err)
+		}
+	}
+	fmt.Println(reqDelay)
+
 	return &httpStorageClient{
-		creds:    creds,
-		hc:       hc,
-		xmlHost:  u.Host,
-		raw:      rawService,
-		scheme:   u.Scheme,
-		settings: s,
-		config:   &config,
+		creds:        creds,
+		hc:           hc,
+		xmlHost:      u.Host,
+		raw:          rawService,
+		scheme:       u.Scheme,
+		settings:     s,
+		config:       &config,
+		readReqDelay: reqDelay,
 	}, nil
 }
 
@@ -860,34 +873,47 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 	reopen := readerReopen(ctx, req.Header, params, s,
 		func(ctx context.Context) (*http.Response, error) {
 			setHeadersFromCtx(ctx, req.Header)
-			cancelCtx, cancel := context.WithCancel(ctx)
+			fmt.Println(c.readReqDelay)
 
-			var (
-				res *http.Response
-				err error
-			)
+			if c.readReqDelay == nil {
+				return c.hc.Do(req.WithContext(ctx))
+			} else {
+				cancelCtx, cancel := context.WithCancel(ctx)
 
-			done := make(chan bool)
-			go func() {
-				res, err = c.hc.Do(req.WithContext(cancelCtx))
-				done <- true
-			}()
+				var (
+					res *http.Response
+					err error
+				)
 
-			// Wait until timeout for read to complete.
-			select {
-			case <-time.After(s.retry.readStallTimeout):
-				log.Println("Request timed-out, hence cancelling.")
-				cancel()
-				err = context.DeadlineExceeded
-				if res != nil && res.Body != nil {
-					res.Body.Close()
+				done := make(chan bool)
+				go func() {
+					reqStartTime := time.Now()
+					res, err = c.hc.Do(req.WithContext(cancelCtx))
+
+					// Update the dynamic delay in case of success.
+					if err == nil {
+						reqLatency := time.Since(reqStartTime)
+						c.readReqDelay.Update(reqLatency)
+					}
+					done <- true
+				}()
+				fmt.Println(c.readReqDelay.Value())
+
+				// Wait until timeout for read to complete.
+				select {
+				case <-time.After(c.readReqDelay.Value()):
+					cancel()
+					err = context.DeadlineExceeded
+					if res != nil && res.Body != nil {
+						res.Body.Close()
+					}
+				case <-done:
+					log.Println("Request completed successfully.")
+					cancel = nil
 				}
-			case <-done:
-				log.Println("Request completed successfully.")
-				cancel = nil
-			}
 
-			return res, err
+				return res, err
+			}
 		},
 		func() error { return setConditionsHeaders(req.Header, params.conds) },
 		func() { req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen) })
@@ -1274,37 +1300,7 @@ type httpReader struct {
 func (r *httpReader) Read(p []byte) (int, error) {
 	n := 0
 	for len(p[n:]) > 0 {
-
-		var m int
-		var err error
-		var timedOut bool
-		stallTimeout := r.stallTimeout
-		if stallTimeout == 0 {
-			stallTimeout = math.MaxInt64
-		}
-		done := make(chan bool)
-		doRead := func() {
-			m, err = r.body.Read(p[n:])
-			done <- true
-		}
-		go doRead()
-
-		// Wait until timeout for read to complete.
-		select {
-		case <-time.After(stallTimeout):
-			// Close request body to terminate current read.
-			r.body.Close()
-			log.Println("Read(): closing the existing conn due to stall.")
-			timedOut = true
-		case <-done:
-		}
-
-		// In timeout case, wait until the error percolates up via body.Read so that we
-		// can be sure we have the correct number of bytes read in m.
-		if timedOut {
-			<-done
-		}
-
+		m, err := r.body.Read(p[n:])
 		n += m
 		r.seen += int64(m)
 		if r.checkCRC {
@@ -1517,11 +1513,6 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		}
 	}
 
-	var readStallTimeout time.Duration
-	if s.retry != nil {
-		readStallTimeout = s.retry.readStallTimeout
-	}
-
 	attrs := ReaderObjectAttrs{
 		Size:            size,
 		ContentType:     res.Header.Get("Content-Type"),
@@ -1534,17 +1525,17 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		CRC32C:          crc,
 		Decompressed:    res.Uncompressed || uncompressedByServer(res),
 	}
+
 	return &Reader{
 		Attrs:    attrs,
 		size:     size,
 		remain:   remain,
 		checkCRC: checkCRC,
 		reader: &httpReader{
-			reopen:       reopen,
-			body:         body,
-			wantCRC:      crc,
-			checkCRC:     checkCRC,
-			stallTimeout: readStallTimeout,
+			reopen:   reopen,
+			body:     body,
+			wantCRC:  crc,
+			checkCRC: checkCRC,
 		},
 	}, nil
 }
