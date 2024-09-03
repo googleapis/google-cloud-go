@@ -21,8 +21,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/fields"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 )
 
 var (

@@ -372,6 +372,37 @@ func TestNewClient_APIKey(t *testing.T) {
 	}
 }
 
+func TestNewClient_QuotaPrecedence(t *testing.T) {
+	testQuota := "testquotaWins"
+	t.Setenv(internal.QuotaProjectEnvVar, "testquotaLoses")
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if got := r.Header.Get(quotaProjectHeaderKey); got != testQuota {
+			t.Errorf("got %q, want %q", got, testQuota)
+		}
+	}))
+	defer ts.Close()
+
+	h := make(http.Header)
+	h.Set(quotaProjectHeaderKey, testQuota)
+	client, err := NewClient(&Options{
+		InternalOptions: &InternalOptions{
+			DefaultEndpointTemplate: ts.URL,
+		},
+		DetectOpts: &credentials.DetectOptions{
+			Audience:         ts.URL,
+			CredentialsFile:  "../internal/testdata/sa.json",
+			UseSelfSignedJWT: true,
+		},
+		Headers: h,
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v", err)
+	}
+	if _, err := client.Get(ts.URL); err != nil {
+		t.Fatalf("client.Get() = %v", err)
+	}
+}
+
 func TestNewClient_BaseRoundTripper(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		got := r.Header.Get("Foo")
@@ -394,6 +425,20 @@ func TestNewClient_BaseRoundTripper(t *testing.T) {
 	}
 	if _, err := client.Get(ts.URL); err != nil {
 		t.Fatalf("client.Get() = %v", err)
+	}
+}
+
+func TestNewClient_HandlesNonTransportAsDefaultTransport(t *testing.T) {
+	// Override the global http.DefaultTransport.
+	dt := http.DefaultTransport
+	http.DefaultTransport = &rt{}
+	defer func() { http.DefaultTransport = dt }()
+
+	_, err := NewClient(&Options{
+		APIKey: "key",
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v", err)
 	}
 }
 
