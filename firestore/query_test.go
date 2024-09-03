@@ -1861,12 +1861,12 @@ func TestFindNearest(t *testing.T) {
 		},
 		{
 			desc:    "Distance threshold on malformed vector query",
-			vQuery:  VectorQuery{q: Query{c: &Client{}}}.WithDistanceThreshold(float64(threshold)),
+			vQuery:  VectorQuery{q: Query{c: &Client{}}}.DistanceThreshold(float64(threshold)),
 			wantErr: errMalformedVectorQuery,
 		},
 		{
 			desc:    "Distance result field on malformed vector query",
-			vQuery:  VectorQuery{q: Query{c: &Client{}}}.WithDistanceResultField(resultField),
+			vQuery:  VectorQuery{q: Query{c: &Client{}}}.DistanceResultField(resultField),
 			wantErr: errMalformedVectorQuery,
 		},
 		{
@@ -1885,7 +1885,7 @@ func TestFindNearest(t *testing.T) {
 			desc: "Valid path with valid vector type WithDistanceResultField and WithDistanceThreshold ",
 			vQuery: c.Collection(collName).
 				FindNearest("path", []float32{5, 6, 7}, limit, DistanceMeasureEuclidean, nil).
-				WithDistanceThreshold(float64(threshold)).WithDistanceResultField(resultField),
+				DistanceThreshold(float64(threshold)).DistanceResultField(resultField),
 			wantReq: &wantReqThresholdField,
 		},
 	}

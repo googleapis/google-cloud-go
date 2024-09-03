@@ -3303,7 +3303,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 		{
 			desc: "FindNearest threshold and resultField",
 			vq: collRef.FindNearest(queryField, []float64{1, 2, 3}, 3, DistanceMeasureEuclidean, nil).
-				WithDistanceResultField("res").WithDistanceThreshold(20),
+				DistanceResultField("res").DistanceThreshold(20),
 			wantBeans:    beans[:3],
 			wantResField: "res",
 		},

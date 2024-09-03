@@ -566,7 +566,7 @@ func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
 	return vq.q.Documents(ctx)
 }
 
-// WithDistanceThreshold returns a new vector query that specifies a threshold for
+// DistanceThreshold returns a new vector query that specifies a threshold for
 // which no less similar documents will be returned. The behavior of the specified
 // [DistanceMeasure] will affect the meaning of the distance threshold. Since
 // [DistanceMeasureDotProduct] distances increase when the vectors are more similar,
@@ -574,7 +574,7 @@ func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
 //
 // For [DistanceMeasureEuclidean], [DistanceMeasureCosine]: WHERE distance <= distanceThreshold
 // For [DistanceMeasureDotProduct]:                         WHERE distance >= distance_threshold
-func (vq VectorQuery) WithDistanceThreshold(threshold float64) VectorQuery {
+func (vq VectorQuery) DistanceThreshold(threshold float64) VectorQuery {
 	if vq.q.err != nil {
 		return vq
 	}
@@ -586,9 +586,9 @@ func (vq VectorQuery) WithDistanceThreshold(threshold float64) VectorQuery {
 	return vq
 }
 
-// WithDistanceResultField returns a new vector query that specifies name of the field
+// DistanceResultField returns a new vector query that specifies name of the field
 // to output the result of the vector distance calculation.
-func (vq VectorQuery) WithDistanceResultField(field string) VectorQuery {
+func (vq VectorQuery) DistanceResultField(field string) VectorQuery {
 	if vq.q.err != nil {
 		return vq
 	}
