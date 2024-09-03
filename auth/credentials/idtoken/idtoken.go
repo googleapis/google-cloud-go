@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package idtoken provides functionality for generating and validating ID
+// tokens, with configurable options for audience, custom claims, and token
+// formats.
+//
+// For more information on ID tokens, see
+// https://cloud.google.com/docs/authentication/token-types#id.
 package idtoken
 
 import (
@@ -72,7 +78,7 @@ type Options struct {
 
 func (o *Options) client() *http.Client {
 	if o == nil || o.Client == nil {
-		return internal.CloneDefaultClient()
+		return internal.DefaultClient()
 	}
 	return o.Client
 }
@@ -104,7 +110,7 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 }
 
 func (o *Options) jsonBytes() []byte {
-	if o.CredentialsJSON != nil {
+	if len(o.CredentialsJSON) > 0 {
 		return o.CredentialsJSON
 	}
 	var fnOverride string

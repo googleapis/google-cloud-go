@@ -1,5 +1,14 @@
 # Changes
 
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/errorreporting/v0.3.0...errorreporting/v0.3.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **errorreporting:** Add internaloption.WithDefaultEndpointTemplate ([3b41408](https://github.com/googleapis/google-cloud-go/commit/3b414084450a5764a0248756e95e13383a645f90))
+* **errorreporting:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+* **errorreporting:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/errorreporting/v0.2.0...errorreporting/v0.3.0) (2022-11-17)
 
 
@@ -19,4 +28,3 @@
 
 This is the first tag to carve out errorreporting as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

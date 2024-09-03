@@ -51,6 +51,7 @@ var newPredictionClientHook clientHook
 type PredictionCallOptions struct {
 	Predict                []gax.CallOption
 	RawPredict             []gax.CallOption
+	StreamRawPredict       []gax.CallOption
 	DirectPredict          []gax.CallOption
 	DirectRawPredict       []gax.CallOption
 	StreamDirectPredict    []gax.CallOption
@@ -95,6 +96,7 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
 		RawPredict:             []gax.CallOption{},
+		StreamRawPredict:       []gax.CallOption{},
 		DirectPredict:          []gax.CallOption{},
 		DirectRawPredict:       []gax.CallOption{},
 		StreamDirectPredict:    []gax.CallOption{},
@@ -128,6 +130,7 @@ func defaultPredictionRESTCallOptions() *PredictionCallOptions {
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
 		RawPredict:             []gax.CallOption{},
+		StreamRawPredict:       []gax.CallOption{},
 		DirectPredict:          []gax.CallOption{},
 		DirectRawPredict:       []gax.CallOption{},
 		StreamDirectPredict:    []gax.CallOption{},
@@ -162,6 +165,7 @@ type internalPredictionClient interface {
 	Connection() *grpc.ClientConn
 	Predict(context.Context, *aiplatformpb.PredictRequest, ...gax.CallOption) (*aiplatformpb.PredictResponse, error)
 	RawPredict(context.Context, *aiplatformpb.RawPredictRequest, ...gax.CallOption) (*httpbodypb.HttpBody, error)
+	StreamRawPredict(context.Context, *aiplatformpb.StreamRawPredictRequest, ...gax.CallOption) (aiplatformpb.PredictionService_StreamRawPredictClient, error)
 	DirectPredict(context.Context, *aiplatformpb.DirectPredictRequest, ...gax.CallOption) (*aiplatformpb.DirectPredictResponse, error)
 	DirectRawPredict(context.Context, *aiplatformpb.DirectRawPredictRequest, ...gax.CallOption) (*aiplatformpb.DirectRawPredictResponse, error)
 	StreamDirectPredict(context.Context, ...gax.CallOption) (aiplatformpb.PredictionService_StreamDirectPredictClient, error)
@@ -239,6 +243,11 @@ func (c *PredictionClient) Predict(ctx context.Context, req *aiplatformpb.Predic
 //	this prediction.
 func (c *PredictionClient) RawPredict(ctx context.Context, req *aiplatformpb.RawPredictRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	return c.internalClient.RawPredict(ctx, req, opts...)
+}
+
+// StreamRawPredict perform a streaming online prediction with an arbitrary HTTP payload.
+func (c *PredictionClient) StreamRawPredict(ctx context.Context, req *aiplatformpb.StreamRawPredictRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamRawPredictClient, error) {
+	return c.internalClient.StreamRawPredict(ctx, req, opts...)
 }
 
 // DirectPredict perform an unary online prediction request to a gRPC model server for
@@ -569,6 +578,24 @@ func (c *predictionGRPCClient) RawPredict(ctx context.Context, req *aiplatformpb
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.predictionClient.RawPredict(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *predictionGRPCClient) StreamRawPredict(ctx context.Context, req *aiplatformpb.StreamRawPredictRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamRawPredictClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).StreamRawPredict[0:len((*c.CallOptions).StreamRawPredict):len((*c.CallOptions).StreamRawPredict)], opts...)
+	var resp aiplatformpb.PredictionService_StreamRawPredictClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.predictionClient.StreamRawPredict(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1023,6 +1050,11 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *aiplatformpb.Pr
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:predict", req.GetEndpoint())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
 
@@ -1094,6 +1126,11 @@ func (c *predictionRESTClient) RawPredict(ctx context.Context, req *aiplatformpb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:rawPredict", req.GetEndpoint())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
 
@@ -1141,6 +1178,112 @@ func (c *predictionRESTClient) RawPredict(ctx context.Context, req *aiplatformpb
 	return resp, nil
 }
 
+// StreamRawPredict perform a streaming online prediction with an arbitrary HTTP payload.
+func (c *predictionRESTClient) StreamRawPredict(ctx context.Context, req *aiplatformpb.StreamRawPredictRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamRawPredictClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:streamRawPredict", req.GetEndpoint())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	var streamClient *streamRawPredictRESTClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		streamClient = &streamRawPredictRESTClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&httpbodypb.HttpBody{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// streamRawPredictRESTClient is the stream client used to consume the server stream created by
+// the REST implementation of StreamRawPredict.
+type streamRawPredictRESTClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *streamRawPredictRESTClient) Recv() (*httpbodypb.HttpBody, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*httpbodypb.HttpBody)
+	return res, nil
+}
+
+func (c *streamRawPredictRESTClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *streamRawPredictRESTClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *streamRawPredictRESTClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamRawPredictRESTClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *streamRawPredictRESTClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamRawPredictRESTClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
+}
+
 // DirectPredict perform an unary online prediction request to a gRPC model server for
 // Vertex first-party products and frameworks.
 func (c *predictionRESTClient) DirectPredict(ctx context.Context, req *aiplatformpb.DirectPredictRequest, opts ...gax.CallOption) (*aiplatformpb.DirectPredictResponse, error) {
@@ -1155,6 +1298,11 @@ func (c *predictionRESTClient) DirectPredict(ctx context.Context, req *aiplatfor
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:directPredict", req.GetEndpoint())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
@@ -1217,6 +1365,11 @@ func (c *predictionRESTClient) DirectRawPredict(ctx context.Context, req *aiplat
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:directRawPredict", req.GetEndpoint())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
@@ -1303,6 +1456,11 @@ func (c *predictionRESTClient) ServerStreamingPredict(ctx context.Context, req *
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:serverStreamingPredict", req.GetEndpoint())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
@@ -1422,6 +1580,11 @@ func (c *predictionRESTClient) Explain(ctx context.Context, req *aiplatformpb.Ex
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:explain", req.GetEndpoint())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
 
@@ -1482,6 +1645,11 @@ func (c *predictionRESTClient) CountTokens(ctx context.Context, req *aiplatformp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:countTokens", req.GetEndpoint())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
@@ -1544,6 +1712,11 @@ func (c *predictionRESTClient) GenerateContent(ctx context.Context, req *aiplatf
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:generateContent", req.GetModel())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "model", url.QueryEscape(req.GetModel()))}
 
@@ -1604,6 +1777,11 @@ func (c *predictionRESTClient) StreamGenerateContent(ctx context.Context, req *a
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:streamGenerateContent", req.GetModel())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "model", url.QueryEscape(req.GetModel()))}
@@ -1707,6 +1885,11 @@ func (c *predictionRESTClient) ChatCompletions(ctx context.Context, req *aiplatf
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/chat/completions", req.GetEndpoint())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
 
@@ -1802,6 +1985,11 @@ func (c *predictionRESTClient) GetLocation(ctx context.Context, req *locationpb.
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1871,6 +2059,7 @@ func (c *predictionRESTClient) ListLocations(ctx context.Context, req *locationp
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1955,6 +2144,11 @@ func (c *predictionRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -2019,6 +2213,11 @@ func (c *predictionRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
@@ -2087,6 +2286,11 @@ func (c *predictionRESTClient) TestIamPermissions(ctx context.Context, req *iamp
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -2142,6 +2346,11 @@ func (c *predictionRESTClient) CancelOperation(ctx context.Context, req *longrun
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2179,6 +2388,11 @@ func (c *predictionRESTClient) DeleteOperation(ctx context.Context, req *longrun
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2215,6 +2429,11 @@ func (c *predictionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2285,6 +2504,7 @@ func (c *predictionRESTClient) ListOperations(ctx context.Context, req *longrunn
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2363,12 +2583,13 @@ func (c *predictionRESTClient) WaitOperation(ctx context.Context, req *longrunni
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

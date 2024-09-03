@@ -688,6 +688,13 @@ func (c *modelGardenRESTClient) GetPublisherModel(ctx context.Context, req *aipl
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetHuggingFaceToken() != "" {
+		params.Add("huggingFaceToken", fmt.Sprintf("%v", req.GetHuggingFaceToken()))
+	}
+	if req.GetIsHuggingFaceModel() {
+		params.Add("isHuggingFaceModel", fmt.Sprintf("%v", req.GetIsHuggingFaceModel()))
+	}
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -766,6 +773,7 @@ func (c *modelGardenRESTClient) ListPublisherModels(ctx context.Context, req *ai
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/models", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -852,6 +860,11 @@ func (c *modelGardenRESTClient) GetLocation(ctx context.Context, req *locationpb
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -921,6 +934,7 @@ func (c *modelGardenRESTClient) ListLocations(ctx context.Context, req *location
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1005,6 +1019,11 @@ func (c *modelGardenRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1069,6 +1088,11 @@ func (c *modelGardenRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
@@ -1137,6 +1161,11 @@ func (c *modelGardenRESTClient) TestIamPermissions(ctx context.Context, req *iam
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1192,6 +1221,11 @@ func (c *modelGardenRESTClient) CancelOperation(ctx context.Context, req *longru
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1229,6 +1263,11 @@ func (c *modelGardenRESTClient) DeleteOperation(ctx context.Context, req *longru
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1265,6 +1304,11 @@ func (c *modelGardenRESTClient) GetOperation(ctx context.Context, req *longrunni
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1335,6 +1379,7 @@ func (c *modelGardenRESTClient) ListOperations(ctx context.Context, req *longrun
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1413,12 +1458,13 @@ func (c *modelGardenRESTClient) WaitOperation(ctx context.Context, req *longrunn
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

@@ -589,6 +589,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		if !testutil.Equal(attrs.Labels, wantLabels) {
 			t.Fatalf("add labels: got %v, want %v", attrs.Labels, wantLabels)
 		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
+		}
 
 		// Turn off versioning again; add and remove some more labels.
 		ua = BucketAttrsToUpdate{VersioningEnabled: false}
@@ -606,6 +609,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		}
 		if !testutil.Equal(attrs.Labels, wantLabels) {
 			t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
+		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
 		}
 
 		// Configure a lifecycle
@@ -626,6 +632,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
 			t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
 		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
+		}
 		// Check that StorageClass has "STANDARD" value for unset field by default
 		// before passing new value.
 		wantStorageClass := "STANDARD"
@@ -638,6 +647,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
 			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
 		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
+		}
 
 		// Empty update should succeed without changing the bucket.
 		gotAttrs, err := b.Update(ctx, BucketAttrsToUpdate{})
@@ -646,6 +658,9 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		}
 		if !testutil.Equal(attrs, gotAttrs) {
 			t.Fatalf("empty update: got %v, want %v", gotAttrs, attrs)
+		}
+		if !attrs.Created.Before(attrs.Updated) {
+			t.Errorf("got attrs.Updated %v before attrs.Created %v, want Attrs.Updated to be after", attrs.Updated, attrs.Created)
 		}
 	})
 }
@@ -1477,8 +1492,7 @@ func TestIntegration_ObjectIterationMatchGlob(t *testing.T) {
 }
 
 func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
-	ctx := skipGRPC("not yet implemented in gRPC")
-	multiTransportTest(skipJSONReads(ctx, "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipJSONReads(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		newBucketName := prefix + uidSpace.New()
 		h := testHelper{t}
 		bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
@@ -2711,7 +2725,7 @@ func TestIntegration_Encryption(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 
-		obj := client.Bucket(bucket).Object("customer-encryption")
+		obj := client.Bucket(bucket).Object("customer-encryption").Retryer(WithPolicy(RetryAlways))
 		key := []byte("my-secret-AES-256-encryption-key")
 		keyHash := sha256.Sum256(key)
 		keyHashB64 := base64.StdEncoding.EncodeToString(keyHash[:])
@@ -2791,8 +2805,8 @@ func TestIntegration_Encryption(t *testing.T) {
 
 		// We create 2 objects here and we can interleave operations to get around
 		// the rate limit for object mutation operations (create, update, and delete).
-		obj2 := client.Bucket(bucket).Object("customer-encryption-2")
-		obj4 := client.Bucket(bucket).Object("customer-encryption-4")
+		obj2 := client.Bucket(bucket).Object("customer-encryption-2").Retryer(WithPolicy(RetryAlways))
+		obj4 := client.Bucket(bucket).Object("customer-encryption-4").Retryer(WithPolicy(RetryAlways))
 
 		// Copying an object without the key should fail.
 		if _, err := obj4.CopierFrom(obj).Run(ctx); err == nil {
@@ -2825,7 +2839,7 @@ func TestIntegration_Encryption(t *testing.T) {
 		if _, err := obj2.Key(key).CopierFrom(obj2.Key(key2)).Run(ctx); err != nil {
 			t.Fatal(err)
 		}
-		obj3 := client.Bucket(bucket).Object("customer-encryption-3")
+		obj3 := client.Bucket(bucket).Object("customer-encryption-3").Retryer(WithPolicy(RetryAlways))
 		// Composing without keys should fail.
 		if _, err := obj3.ComposerFrom(obj, obj2).Run(ctx); err == nil {
 			t.Fatal("want error, got nil")
@@ -2846,7 +2860,7 @@ func TestIntegration_Encryption(t *testing.T) {
 		// encrypted destination object.
 		_, err := obj4.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("Copier.Run: %v", err)
 		}
 		if _, err := obj3.Key(key).ComposerFrom(obj4).Run(ctx); err == nil {
 			t.Fatal("got nil, want error")
@@ -3631,78 +3645,87 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			offset, length int64
 			readCompressed bool // don't decompress a gzipped file
 
-			wantErr   bool
-			wantCheck bool // Should Reader try to check the CRC?
+			wantErr          bool
+			wantCheck        bool // Should Reader try to check the CRC?
+			wantDecompressed bool
 		}{
 			{
-				desc:           "uncompressed, entire file",
-				obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
-				offset:         0,
-				length:         -1,
-				readCompressed: false,
-				wantCheck:      true,
+				desc:             "uncompressed, entire file",
+				obj:              client.Bucket(uncompressedBucket).Object(uncompressedObject),
+				offset:           0,
+				length:           -1,
+				readCompressed:   false,
+				wantCheck:        true,
+				wantDecompressed: false,
 			},
 			{
-				desc:           "uncompressed, entire file, don't decompress",
-				obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
-				offset:         0,
-				length:         -1,
-				readCompressed: true,
-				wantCheck:      true,
+				desc:             "uncompressed, entire file, don't decompress",
+				obj:              client.Bucket(uncompressedBucket).Object(uncompressedObject),
+				offset:           0,
+				length:           -1,
+				readCompressed:   true,
+				wantCheck:        true,
+				wantDecompressed: false,
 			},
 			{
-				desc:           "uncompressed, suffix",
-				obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
-				offset:         1,
-				length:         -1,
-				readCompressed: false,
-				wantCheck:      false,
+				desc:             "uncompressed, suffix",
+				obj:              client.Bucket(uncompressedBucket).Object(uncompressedObject),
+				offset:           1,
+				length:           -1,
+				readCompressed:   false,
+				wantCheck:        false,
+				wantDecompressed: false,
 			},
 			{
-				desc:           "uncompressed, prefix",
-				obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
-				offset:         0,
-				length:         18,
-				readCompressed: false,
-				wantCheck:      false,
+				desc:             "uncompressed, prefix",
+				obj:              client.Bucket(uncompressedBucket).Object(uncompressedObject),
+				offset:           0,
+				length:           18,
+				readCompressed:   false,
+				wantCheck:        false,
+				wantDecompressed: false,
 			},
 			{
 				// When a gzipped file is unzipped on read, we can't verify the checksum
 				// because it was computed against the zipped contents. We can detect
 				// this case using http.Response.Uncompressed.
-				desc:           "compressed, entire file, unzipped",
-				obj:            client.Bucket(bucket).Object(gzippedObject),
-				offset:         0,
-				length:         -1,
-				readCompressed: false,
-				wantCheck:      false,
+				desc:             "compressed, entire file, unzipped",
+				obj:              client.Bucket(bucket).Object(gzippedObject),
+				offset:           0,
+				length:           -1,
+				readCompressed:   false,
+				wantCheck:        false,
+				wantDecompressed: true,
 			},
 			{
 				// When we read a gzipped file uncompressed, it's like reading a regular file:
 				// the served content and the CRC match.
-				desc:           "compressed, entire file, read compressed",
-				obj:            client.Bucket(bucket).Object(gzippedObject),
-				offset:         0,
-				length:         -1,
-				readCompressed: true,
-				wantCheck:      true,
+				desc:             "compressed, entire file, read compressed",
+				obj:              client.Bucket(bucket).Object(gzippedObject),
+				offset:           0,
+				length:           -1,
+				readCompressed:   true,
+				wantCheck:        true,
+				wantDecompressed: false,
 			},
 			{
-				desc:           "compressed, partial, server unzips",
-				obj:            client.Bucket(bucket).Object(gzippedObject),
-				offset:         1,
-				length:         8,
-				readCompressed: false,
-				wantErr:        true, // GCS can't serve part of a gzipped object
-				wantCheck:      false,
+				desc:             "compressed, partial, server unzips",
+				obj:              client.Bucket(bucket).Object(gzippedObject),
+				offset:           1,
+				length:           8,
+				readCompressed:   false,
+				wantErr:          true, // GCS can't serve part of a gzipped object
+				wantCheck:        false,
+				wantDecompressed: true,
 			},
 			{
-				desc:           "compressed, partial, read compressed",
-				obj:            client.Bucket(bucket).Object(gzippedObject),
-				offset:         1,
-				length:         8,
-				readCompressed: true,
-				wantCheck:      false,
+				desc:             "compressed, partial, read compressed",
+				obj:              client.Bucket(bucket).Object(gzippedObject),
+				offset:           1,
+				length:           8,
+				readCompressed:   true,
+				wantCheck:        false,
+				wantDecompressed: false,
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
@@ -3720,13 +3743,17 @@ func TestIntegration_ReadCRC(t *testing.T) {
 						if got, want := r.checkCRC, test.wantCheck; got != want {
 							t.Errorf("%s, checkCRC: got %t, want %t", test.desc, got, want)
 						}
+
+						if got, want := r.Attrs.Decompressed, test.wantDecompressed; got != want {
+							t.Errorf("Attrs.Decompressed: got %t, want %t", got, want)
+						}
+
 						_, err = c.readFunc(r)
 						_ = r.Close()
 						if err != nil {
 							t.Fatalf("%s: %v", test.desc, err)
 						}
 					})
-
 				}
 			})
 		}
@@ -4377,7 +4404,23 @@ func TestIntegration_SoftDelete(t *testing.T) {
 			t.Fatalf("effective time of soft delete policy should not be in the past, got: %v, test start: %v", got.EffectiveTime, testStart.UTC())
 		}
 
-		// Update the soft delete policy.
+		// Create a second bucket with an empty soft delete policy to verify
+		// that this leads to no retention.
+		b2 := client.Bucket(prefix + uidSpace.New())
+		if err := b2.Create(ctx, testutil.ProjID(), &BucketAttrs{SoftDeletePolicy: &SoftDeletePolicy{}}); err != nil {
+			t.Fatalf("error creating bucket with soft delete disabled: %v", err)
+		}
+		t.Cleanup(func() { h.mustDeleteBucket(b2) })
+
+		attrs2, err := b2.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("Attrs(%q): %v", b2.name, err)
+		}
+		if got, expect := attrs2.SoftDeletePolicy.RetentionDuration, time.Duration(0); got != expect {
+			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
+		}
+
+		// Update the soft delete policy of the original bucket.
 		policy.RetentionDuration = time.Hour * 24 * 9
 
 		attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: policy})
@@ -4751,6 +4794,10 @@ func TestIntegration_Reader(t *testing.T) {
 						if got, want := rc.ContentType(), "text/plain"; got != want {
 							t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
 						}
+
+						if got, want := rc.Attrs.CRC32C, crc32c(contents[obj]); got != want {
+							t.Errorf("CRC32C (%q) = %d; want %d", obj, got, want)
+						}
 						rc.Close()
 
 						// Check early close.
@@ -4814,6 +4861,15 @@ func TestIntegration_Reader(t *testing.T) {
 						}
 						if len(slurp) != int(r.want) {
 							t.Fatalf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", r.desc, r.offset, r.length, len(slurp), r.want)
+						}
+						// JSON does not return the crc32c on partial reads, so
+						// allow got == 0.
+						if got, want := rc.Attrs.CRC32C, crc32c(contents[obj]); got != 0 && got != want {
+							t.Errorf("RangeReader CRC32C (%q) = %d; want %d", obj, got, want)
+						}
+
+						if rc.Attrs.Decompressed {
+							t.Errorf("RangeReader Decompressed (%q) = want false, got %v", obj, rc.Attrs.Decompressed)
 						}
 
 						switch {
@@ -4896,6 +4952,7 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 			LastModified:    got.LastModified, // ignored, tested separately
 			Generation:      attrs.Generation,
 			Metageneration:  attrs.Metageneration,
+			CRC32C:          crc32c(c),
 		}
 		if got != want {
 			t.Fatalf("got\t%v,\nwanted\t%v", got, want)
@@ -5195,6 +5252,10 @@ func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 				if g, w := blob2kBTo3kB, original; !bytes.Equal(g, w) {
 					t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
 				}
+
+				if !r2kBTo3kB.Attrs.Decompressed {
+					t.Errorf("Attrs.Decompressed: want true, got %v", r2kBTo3kB.Attrs.Decompressed)
+				}
 			})
 		}
 	})
@@ -5307,7 +5368,7 @@ func TestIntegration_HMACKey(t *testing.T) {
 		}
 
 		_, err = hkh.Get(ctx)
-		if err != nil && !strings.Contains(err.Error(), "404") {
+		if err != nil && !errorIsStatusCode(err, http.StatusNotFound, codes.NotFound) {
 			// If the deleted key has already been garbage collected, a 404 is expected.
 			// Other errors should cause a failure and are not expected.
 			t.Fatalf("Unexpected error: %v", err)
@@ -5847,7 +5908,9 @@ func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttr
 func (h testHelper) mustDeleteBucket(b *BucketHandle) {
 	h.t.Helper()
 	if err := b.Delete(context.Background()); err != nil {
-		h.t.Fatalf("BucketHandle(%q).Delete: %v", b.BucketName(), err)
+		if !errors.Is(err, ErrBucketNotExist) {
+			h.t.Fatalf("BucketHandle(%q).Delete: %v", b.BucketName(), err)
+		}
 	}
 }
 
@@ -5902,10 +5965,14 @@ func (h testHelper) mustDeleteObject(o *ObjectHandle) {
 }
 
 // updating an object is conditionally idempotent on metageneration, so we pass that in to enable retries
+// mustUpdateObject will assume success if it receives a failed precondition response.
 func (h testHelper) mustUpdateObject(o *ObjectHandle, ua ObjectAttrsToUpdate, metageneration int64) *ObjectAttrs {
 	h.t.Helper()
 	attrs, err := o.If(Conditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
+		if errorIsStatusCode(err, http.StatusPreconditionFailed, codes.FailedPrecondition) {
+			h.t.Logf("update object %q from bucket %q failed due to precondition, assuming success", o.ObjectName(), o.BucketName())
+		}
 		h.t.Fatalf("update object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 	return attrs
@@ -6296,6 +6363,13 @@ func extractErrCode(err error) int {
 	return -1
 }
 
+func errorIsStatusCode(err error, httpStatusCode int, grpcStatusCode codes.Code) bool {
+	var httpErr *googleapi.Error
+	var grpcErr *apierror.APIError
+	return (errors.As(err, &httpErr) && httpErr.Code == httpStatusCode) ||
+		(errors.As(err, &grpcErr) && grpcErr.GRPCStatus().Code() == grpcStatusCode)
+}
+
 func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object string, addOwnerEmail string) {
 	t.Helper()
 	client := testConfig(ctx, t)
@@ -6320,4 +6394,8 @@ func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object 
 			t.Logf("could not delete object: %v", err)
 		}
 	})
+}
+
+func crc32c(b []byte) uint32 {
+	return crc32.Checksum(b, crc32.MakeTable(crc32.Castagnoli))
 }

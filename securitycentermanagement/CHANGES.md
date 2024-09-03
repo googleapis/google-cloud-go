@@ -1,5 +1,62 @@
 # Changelog
 
+
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v1.0.4...securitycentermanagement/v1.1.0) (2024-08-20)
+
+
+### Features
+
+* **securitycentermanagement:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.0.4](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v1.0.3...securitycentermanagement/v1.0.4) (2024-08-08)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.0.3](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v1.0.2...securitycentermanagement/v1.0.3) (2024-07-24)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v1.0.1...securitycentermanagement/v1.0.2) (2024-07-10)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v1.0.0...securitycentermanagement/v1.0.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.3.0...securitycentermanagement/v1.0.0) (2024-06-26)
+
+
+### Features
+
+* **securitycentermanagement:** Add `show_eligible_modules_only` field to `GetSecurityCenterServiceRequest` message ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+* **securitycentermanagement:** Add `TOXIC_COMBINATION` to `FindingClass` enum ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
+
+### Miscellaneous Chores
+
+* **securitycentermanagement:** Release v1.0.0 ([#10447](https://github.com/googleapis/google-cloud-go/issues/10447)) ([c8b65e4](https://github.com/googleapis/google-cloud-go/commit/c8b65e41ec3a90ba854ee28a26260892dfb8e846))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.2.1...securitycentermanagement/v0.3.0) (2024-06-18)
+
+
+### Features
+
+* **securitycentermanagement:** Add an INGEST_ONLY EnablementState ([abac5c6](https://github.com/googleapis/google-cloud-go/commit/abac5c6eec859477c6d390b116ea8954213ba585))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.2.0...securitycentermanagement/v0.2.1) (2024-06-10)
 
 

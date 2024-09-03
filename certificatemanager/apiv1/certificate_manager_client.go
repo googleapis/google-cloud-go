@@ -94,6 +94,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://certificatemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -1429,6 +1430,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://certificatemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -2582,11 +2584,11 @@ func (c *restClient) UpdateCertificate(ctx context.Context, req *certificatemana
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2951,11 +2953,11 @@ func (c *restClient) UpdateCertificateMap(ctx context.Context, req *certificatem
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3322,11 +3324,11 @@ func (c *restClient) UpdateCertificateMapEntry(ctx context.Context, req *certifi
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3691,11 +3693,11 @@ func (c *restClient) UpdateDnsAuthorization(ctx context.Context, req *certificat
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4351,11 +4353,11 @@ func (c *restClient) UpdateTrustConfig(ctx context.Context, req *certificatemana
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

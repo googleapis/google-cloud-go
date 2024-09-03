@@ -75,6 +75,7 @@ func defaultDeviceManagerGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudiot.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -695,6 +696,7 @@ func defaultDeviceManagerRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudiot.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1258,11 +1260,11 @@ func (c *deviceManagerRESTClient) UpdateDeviceRegistry(ctx context.Context, req 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1523,11 +1525,11 @@ func (c *deviceManagerRESTClient) GetDevice(ctx context.Context, req *iotpb.GetD
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFieldMask() != nil {
-		fieldMask, err := protojson.Marshal(req.GetFieldMask())
+		field, err := protojson.Marshal(req.GetFieldMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+		params.Add("fieldMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1597,11 +1599,11 @@ func (c *deviceManagerRESTClient) UpdateDevice(ctx context.Context, req *iotpb.U
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1729,11 +1731,11 @@ func (c *deviceManagerRESTClient) ListDevices(ctx context.Context, req *iotpb.Li
 			}
 		}
 		if req.GetFieldMask() != nil {
-			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			field, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+			params.Add("fieldMask", string(field[1:len(field)-1]))
 		}
 		if req.GetGatewayListOptions().GetAssociationsDeviceId() != "" {
 			params.Add("gatewayListOptions.associationsDeviceId", fmt.Sprintf("%v", req.GetGatewayListOptions().GetAssociationsDeviceId()))

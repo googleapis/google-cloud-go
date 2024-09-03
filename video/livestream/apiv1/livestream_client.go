@@ -64,6 +64,10 @@ type CallOptions struct {
 	ListEvents      []gax.CallOption
 	GetEvent        []gax.CallOption
 	DeleteEvent     []gax.CallOption
+	ListClips       []gax.CallOption
+	GetClip         []gax.CallOption
+	CreateClip      []gax.CallOption
+	DeleteClip      []gax.CallOption
 	CreateAsset     []gax.CallOption
 	DeleteAsset     []gax.CallOption
 	GetAsset        []gax.CallOption
@@ -87,6 +91,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://livestream.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -196,6 +201,10 @@ func defaultCallOptions() *CallOptions {
 		DeleteEvent: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListClips:       []gax.CallOption{},
+		GetClip:         []gax.CallOption{},
+		CreateClip:      []gax.CallOption{},
+		DeleteClip:      []gax.CallOption{},
 		CreateAsset:     []gax.CallOption{},
 		DeleteAsset:     []gax.CallOption{},
 		GetAsset:        []gax.CallOption{},
@@ -309,6 +318,10 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteEvent: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListClips:       []gax.CallOption{},
+		GetClip:         []gax.CallOption{},
+		CreateClip:      []gax.CallOption{},
+		DeleteClip:      []gax.CallOption{},
 		CreateAsset:     []gax.CallOption{},
 		DeleteAsset:     []gax.CallOption{},
 		GetAsset:        []gax.CallOption{},
@@ -353,6 +366,12 @@ type internalClient interface {
 	ListEvents(context.Context, *livestreampb.ListEventsRequest, ...gax.CallOption) *EventIterator
 	GetEvent(context.Context, *livestreampb.GetEventRequest, ...gax.CallOption) (*livestreampb.Event, error)
 	DeleteEvent(context.Context, *livestreampb.DeleteEventRequest, ...gax.CallOption) error
+	ListClips(context.Context, *livestreampb.ListClipsRequest, ...gax.CallOption) *ClipIterator
+	GetClip(context.Context, *livestreampb.GetClipRequest, ...gax.CallOption) (*livestreampb.Clip, error)
+	CreateClip(context.Context, *livestreampb.CreateClipRequest, ...gax.CallOption) (*CreateClipOperation, error)
+	CreateClipOperation(name string) *CreateClipOperation
+	DeleteClip(context.Context, *livestreampb.DeleteClipRequest, ...gax.CallOption) (*DeleteClipOperation, error)
+	DeleteClipOperation(name string) *DeleteClipOperation
 	CreateAsset(context.Context, *livestreampb.CreateAssetRequest, ...gax.CallOption) (*CreateAssetOperation, error)
 	CreateAssetOperation(name string) *CreateAssetOperation
 	DeleteAsset(context.Context, *livestreampb.DeleteAssetRequest, ...gax.CallOption) (*DeleteAssetOperation, error)
@@ -543,6 +562,39 @@ func (c *Client) GetEvent(ctx context.Context, req *livestreampb.GetEventRequest
 // DeleteEvent deletes the specified event.
 func (c *Client) DeleteEvent(ctx context.Context, req *livestreampb.DeleteEventRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteEvent(ctx, req, opts...)
+}
+
+// ListClips returns a list of all clips in the specified channel.
+func (c *Client) ListClips(ctx context.Context, req *livestreampb.ListClipsRequest, opts ...gax.CallOption) *ClipIterator {
+	return c.internalClient.ListClips(ctx, req, opts...)
+}
+
+// GetClip returns the specified clip.
+func (c *Client) GetClip(ctx context.Context, req *livestreampb.GetClipRequest, opts ...gax.CallOption) (*livestreampb.Clip, error) {
+	return c.internalClient.GetClip(ctx, req, opts...)
+}
+
+// CreateClip creates a clip with the provided clip ID in the specified channel.
+func (c *Client) CreateClip(ctx context.Context, req *livestreampb.CreateClipRequest, opts ...gax.CallOption) (*CreateClipOperation, error) {
+	return c.internalClient.CreateClip(ctx, req, opts...)
+}
+
+// CreateClipOperation returns a new CreateClipOperation from a given name.
+// The name must be that of a previously created CreateClipOperation, possibly from a different process.
+func (c *Client) CreateClipOperation(name string) *CreateClipOperation {
+	return c.internalClient.CreateClipOperation(name)
+}
+
+// DeleteClip deletes the specified clip job resource. This method only deletes the clip
+// job and does not delete the VOD clip stored in the GCS.
+func (c *Client) DeleteClip(ctx context.Context, req *livestreampb.DeleteClipRequest, opts ...gax.CallOption) (*DeleteClipOperation, error) {
+	return c.internalClient.DeleteClip(ctx, req, opts...)
+}
+
+// DeleteClipOperation returns a new DeleteClipOperation from a given name.
+// The name must be that of a previously created DeleteClipOperation, possibly from a different process.
+func (c *Client) DeleteClipOperation(name string) *DeleteClipOperation {
+	return c.internalClient.DeleteClipOperation(name)
 }
 
 // CreateAsset creates a Asset with the provided unique ID in the specified
@@ -787,6 +839,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://livestream.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1197,6 +1250,110 @@ func (c *gRPCClient) DeleteEvent(ctx context.Context, req *livestreampb.DeleteEv
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *gRPCClient) ListClips(ctx context.Context, req *livestreampb.ListClipsRequest, opts ...gax.CallOption) *ClipIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListClips[0:len((*c.CallOptions).ListClips):len((*c.CallOptions).ListClips)], opts...)
+	it := &ClipIterator{}
+	req = proto.Clone(req).(*livestreampb.ListClipsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Clip, string, error) {
+		resp := &livestreampb.ListClipsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListClips(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetClips(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetClip(ctx context.Context, req *livestreampb.GetClipRequest, opts ...gax.CallOption) (*livestreampb.Clip, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetClip[0:len((*c.CallOptions).GetClip):len((*c.CallOptions).GetClip)], opts...)
+	var resp *livestreampb.Clip
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetClip(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateClip(ctx context.Context, req *livestreampb.CreateClipRequest, opts ...gax.CallOption) (*CreateClipOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateClip[0:len((*c.CallOptions).CreateClip):len((*c.CallOptions).CreateClip)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateClip(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateClipOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteClipRequest, opts ...gax.CallOption) (*DeleteClipOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteClip[0:len((*c.CallOptions).DeleteClip):len((*c.CallOptions).DeleteClip)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeleteClip(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteClipOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *gRPCClient) CreateAsset(ctx context.Context, req *livestreampb.CreateAssetRequest, opts ...gax.CallOption) (*CreateAssetOperation, error) {
@@ -1819,11 +1976,11 @@ func (c *restClient) UpdateChannel(ctx context.Context, req *livestreampb.Update
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2339,11 +2496,11 @@ func (c *restClient) UpdateInput(ctx context.Context, req *livestreampb.UpdateIn
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2668,6 +2825,304 @@ func (c *restClient) DeleteEvent(ctx context.Context, req *livestreampb.DeleteEv
 		// the response code and body into a non-nil error
 		return googleapi.CheckResponse(httpRsp)
 	}, opts...)
+}
+
+// ListClips returns a list of all clips in the specified channel.
+func (c *restClient) ListClips(ctx context.Context, req *livestreampb.ListClipsRequest, opts ...gax.CallOption) *ClipIterator {
+	it := &ClipIterator{}
+	req = proto.Clone(req).(*livestreampb.ListClipsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Clip, string, error) {
+		resp := &livestreampb.ListClipsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/clips", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetClips(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetClip returns the specified clip.
+func (c *restClient) GetClip(ctx context.Context, req *livestreampb.GetClipRequest, opts ...gax.CallOption) (*livestreampb.Clip, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetClip[0:len((*c.CallOptions).GetClip):len((*c.CallOptions).GetClip)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &livestreampb.Clip{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateClip creates a clip with the provided clip ID in the specified channel.
+func (c *restClient) CreateClip(ctx context.Context, req *livestreampb.CreateClipRequest, opts ...gax.CallOption) (*CreateClipOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetClip()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/clips", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("clipId", fmt.Sprintf("%v", req.GetClipId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateClipOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteClip deletes the specified clip job resource. This method only deletes the clip
+// job and does not delete the VOD clip stored in the GCS.
+func (c *restClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteClipRequest, opts ...gax.CallOption) (*DeleteClipOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteClipOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // CreateAsset creates a Asset with the provided unique ID in the specified
@@ -3049,11 +3504,11 @@ func (c *restClient) UpdatePool(ctx context.Context, req *livestreampb.UpdatePoo
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3539,6 +3994,24 @@ func (c *restClient) CreateChannelOperation(name string) *CreateChannelOperation
 	}
 }
 
+// CreateClipOperation returns a new CreateClipOperation from a given name.
+// The name must be that of a previously created CreateClipOperation, possibly from a different process.
+func (c *gRPCClient) CreateClipOperation(name string) *CreateClipOperation {
+	return &CreateClipOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateClipOperation returns a new CreateClipOperation from a given name.
+// The name must be that of a previously created CreateClipOperation, possibly from a different process.
+func (c *restClient) CreateClipOperation(name string) *CreateClipOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateClipOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateInputOperation returns a new CreateInputOperation from a given name.
 // The name must be that of a previously created CreateInputOperation, possibly from a different process.
 func (c *gRPCClient) CreateInputOperation(name string) *CreateInputOperation {
@@ -3588,6 +4061,24 @@ func (c *gRPCClient) DeleteChannelOperation(name string) *DeleteChannelOperation
 func (c *restClient) DeleteChannelOperation(name string) *DeleteChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteChannelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteClipOperation returns a new DeleteClipOperation from a given name.
+// The name must be that of a previously created DeleteClipOperation, possibly from a different process.
+func (c *gRPCClient) DeleteClipOperation(name string) *DeleteClipOperation {
+	return &DeleteClipOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteClipOperation returns a new DeleteClipOperation from a given name.
+// The name must be that of a previously created DeleteClipOperation, possibly from a different process.
+func (c *restClient) DeleteClipOperation(name string) *DeleteClipOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteClipOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

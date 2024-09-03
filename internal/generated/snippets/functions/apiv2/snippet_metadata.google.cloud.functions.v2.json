@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/functions/apiv2",
-    "version": "1.16.2",
+    "version": "1.19.0",
     "language": "GO",
     "apis": [
       {
@@ -152,7 +152,7 @@
     {
       "regionTag": "cloudfunctions_v2_generated_FunctionService_GenerateUploadUrl_sync",
       "title": "cloudfunctions GenerateUploadUrl Sample",
-      "description": "GenerateUploadUrl returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls.\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.\n\nWhen uploading source code to the generated signed URL, please follow\nthese restrictions: \n\n* Source file type should be a zip file.\n* No credentials should be attached - the signed URLs provide access to the\ntarget bucket using internal service identity; if credentials were\nattached, the identity from the credentials would be used, but that\nidentity does not have permissions to upload files to the URL.\n\nWhen making a HTTP PUT request, these two headers need to be specified: \n\n* `content-type: application/zip`\n\nAnd this header SHOULD NOT be specified: \n\n* `Authorization: Bearer YOUR_TOKEN`",
+      "description": "GenerateUploadUrl returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls.\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.\n\nWhen uploading source code to the generated signed URL, please follow\nthese restrictions: \n\n* Source file type should be a zip file.\n* No credentials should be attached - the signed URLs provide access to the\ntarget bucket using internal service identity; if credentials were\nattached, the identity from the credentials would be used, but that\nidentity does not have permissions to upload files to the URL.\n\nWhen making a HTTP PUT request, specify this header: \n\n* `content-type: application/zip`\n\nDo not specify this header: \n\n* `Authorization: Bearer YOUR_TOKEN`",
       "file": "FunctionClient/GenerateUploadUrl/main.go",
       "language": "GO",
       "clientMethod": {

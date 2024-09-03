@@ -389,6 +389,78 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	}
 }
 
+func TestGRPCKeyProvider_GetRequestMetadata(t *testing.T) {
+	apiKey := "MY_API_KEY"
+	reason := "MY_REQUEST_REASON"
+	ts := grpcKeyProvider{
+		apiKey: apiKey,
+		metadata: map[string]string{
+			"X-goog-request-reason": reason,
+		},
+	}
+	got, err := ts.GetRequestMetadata(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]string{
+		"X-goog-api-key":        ts.apiKey,
+		"X-goog-request-reason": reason,
+	}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func TestNewClient_QuotaPrecedence(t *testing.T) {
+	testQuota := "testquotaWins"
+	t.Setenv(internal.QuotaProjectEnvVar, "testquotaLoses")
+	l, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	gsrv := grpc.NewServer()
+	defer gsrv.Stop()
+	echo.RegisterEchoerServer(gsrv, &fakeEchoService{
+		Fn: func(ctx context.Context, _ *echo.EchoRequest) (*echo.EchoReply, error) {
+			md, ok := metadata.FromIncomingContext(ctx)
+			if !ok {
+				t.Error("unable to extract metadata")
+				return nil, errors.New("oops")
+			}
+			if got := md.Get(quotaProjectHeaderKey); len(got) != 1 || got[0] != testQuota {
+				t.Errorf("got %q, want %q", got, testQuota)
+			}
+			return &echo.EchoReply{}, nil
+		},
+	})
+	go func() {
+		if err := gsrv.Serve(l); err != nil {
+			panic(err)
+		}
+	}()
+
+	pool, err := Dial(context.Background(), false, &Options{
+		Metadata: map[string]string{quotaProjectHeaderKey: "testquotaWins"},
+		InternalOptions: &InternalOptions{
+			DefaultEndpointTemplate: l.Addr().String(),
+		},
+		DetectOpts: &credentials.DetectOptions{
+			Audience:         l.Addr().String(),
+			CredentialsFile:  "../internal/testdata/sa_universe_domain.json",
+			UseSelfSignedJWT: true,
+		},
+		GRPCDialOpts:   []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())},
+		UniverseDomain: "example.com", // Also configured in sa_universe_domain.json
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v", err)
+	}
+	client := echo.NewEchoerClient(pool)
+	if _, err := client.Echo(context.Background(), &echo.EchoRequest{}); err != nil {
+		t.Fatalf("client.Echo() = %v", err)
+	}
+}
+
 type staticTP struct {
 	tok *auth.Token
 }

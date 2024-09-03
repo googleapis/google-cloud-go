@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/documentai/apiv1beta3",
-    "version": "1.30.0",
+    "version": "1.33.0",
     "language": "GO",
     "apis": [
       {
@@ -105,7 +105,7 @@
     {
       "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_CreateProcessor_sync",
       "title": "documentai CreateProcessor Sample",
-      "description": "CreateProcessor creates a processor from the\n[ProcessorType][google.cloud.documentai.v1beta3.ProcessorType] provided.\nThe processor will be at `ENABLED` state by default after its creation.",
+      "description": "CreateProcessor creates a processor from the\n[ProcessorType][google.cloud.documentai.v1beta3.ProcessorType] provided.\nThe processor will be at `ENABLED` state by default after its creation.\nNote that this method requires the `documentai.processors.create`\npermission on the project, which is highly privileged. A user or service\naccount with this permission can create new processors that can interact\nwith any gcs bucket in your project.",
       "file": "DocumentProcessorClient/CreateProcessor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1760,7 +1760,7 @@
     {
       "regionTag": "documentai_v1beta3_generated_DocumentService_UpdateDataset_sync",
       "title": "documentai UpdateDataset Sample",
-      "description": "UpdateDataset updates metadata associated with a dataset.",
+      "description": "UpdateDataset updates metadata associated with a dataset.\nNote that this method requires the\n`documentai.googleapis.com/datasets.update` permission on the project,\nwhich is highly privileged. A user or service account with this permission\ncan create new processors that can interact with any gcs bucket in your\nproject.",
       "file": "DocumentClient/UpdateDataset/main.go",
       "language": "GO",
       "clientMethod": {

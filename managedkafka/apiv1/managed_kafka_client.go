@@ -79,6 +79,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://managedkafka.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -292,7 +293,7 @@ func defaultRESTCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods available from Apache Kafka for BigQuery API.
+// internalClient is an interface that defines the methods available from Managed Service for Apache Kafka API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -322,7 +323,7 @@ type internalClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// Client is a client for interacting with Apache Kafka for BigQuery API.
+// Client is a client for interacting with Managed Service for Apache Kafka API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The service that a client application uses to manage Apache Kafka clusters,
@@ -481,7 +482,7 @@ func (c *Client) ListOperations(ctx context.Context, req *longrunningpb.ListOper
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// gRPCClient is a client for interacting with Apache Kafka for BigQuery API over gRPC transport.
+// gRPCClient is a client for interacting with Managed Service for Apache Kafka API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {
@@ -638,6 +639,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://managedkafka.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1407,11 +1409,11 @@ func (c *restClient) UpdateCluster(ctx context.Context, req *managedkafkapb.Upda
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1769,11 +1771,11 @@ func (c *restClient) UpdateTopic(ctx context.Context, req *managedkafkapb.Update
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2034,11 +2036,11 @@ func (c *restClient) UpdateConsumerGroup(ctx context.Context, req *managedkafkap
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

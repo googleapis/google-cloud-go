@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/video/livestream/apiv1",
-    "version": "1.21.0",
+    "version": "1.23.0",
     "language": "GO",
     "apis": [
       {
@@ -133,6 +133,52 @@
         "method": {
           "shortName": "CreateChannel",
           "fullName": "google.cloud.video.livestream.v1.LivestreamService.CreateChannel",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_CreateClip_sync",
+      "title": "livestream CreateClip Sample",
+      "description": "CreateClip creates a clip with the provided clip ID in the specified channel.",
+      "file": "Client/CreateClip/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateClip",
+        "fullName": "google.cloud.video.livestream.v1.Client.CreateClip",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.CreateClipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateClipOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateClip",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.CreateClip",
           "service": {
             "shortName": "LivestreamService",
             "fullName": "google.cloud.video.livestream.v1.LivestreamService"
@@ -317,6 +363,52 @@
         "method": {
           "shortName": "DeleteChannel",
           "fullName": "google.cloud.video.livestream.v1.LivestreamService.DeleteChannel",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_DeleteClip_sync",
+      "title": "livestream DeleteClip Sample",
+      "description": "DeleteClip deletes the specified clip job resource. This method only deletes the clip\njob and does not delete the VOD clip stored in the GCS.",
+      "file": "Client/DeleteClip/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteClip",
+        "fullName": "google.cloud.video.livestream.v1.Client.DeleteClip",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.DeleteClipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteClipOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteClip",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.DeleteClip",
           "service": {
             "shortName": "LivestreamService",
             "fullName": "google.cloud.video.livestream.v1.LivestreamService"
@@ -545,6 +637,52 @@
         "method": {
           "shortName": "GetChannel",
           "fullName": "google.cloud.video.livestream.v1.LivestreamService.GetChannel",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_GetClip_sync",
+      "title": "livestream GetClip Sample",
+      "description": "GetClip returns the specified clip.",
+      "file": "Client/GetClip/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetClip",
+        "fullName": "google.cloud.video.livestream.v1.Client.GetClip",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.GetClipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*livestreampb.Clip",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "GetClip",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.GetClip",
           "service": {
             "shortName": "LivestreamService",
             "fullName": "google.cloud.video.livestream.v1.LivestreamService"
@@ -867,6 +1005,52 @@
         "method": {
           "shortName": "ListChannels",
           "fullName": "google.cloud.video.livestream.v1.LivestreamService.ListChannels",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_ListClips_sync",
+      "title": "livestream ListClips Sample",
+      "description": "ListClips returns a list of all clips in the specified channel.",
+      "file": "Client/ListClips/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListClips",
+        "fullName": "google.cloud.video.livestream.v1.Client.ListClips",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.ListClipsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ClipIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "ListClips",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.ListClips",
           "service": {
             "shortName": "LivestreamService",
             "fullName": "google.cloud.video.livestream.v1.LivestreamService"

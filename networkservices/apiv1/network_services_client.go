@@ -107,6 +107,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://networkservices.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -454,6 +455,8 @@ type internalClient interface {
 
 // Client is a client for interacting with Network Services API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service describing handlers for resources.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -909,6 +912,8 @@ type gRPCClient struct {
 
 // NewClient creates a new network services client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Service describing handlers for resources.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -997,6 +1002,8 @@ type restClient struct {
 }
 
 // NewRESTClient creates a new network services rest client.
+//
+// Service describing handlers for resources.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1033,6 +1040,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://networkservices.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -2482,11 +2490,11 @@ func (c *restClient) UpdateEndpointPolicy(ctx context.Context, req *networkservi
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2845,11 +2853,11 @@ func (c *restClient) UpdateGateway(ctx context.Context, req *networkservicespb.U
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3208,11 +3216,11 @@ func (c *restClient) UpdateGrpcRoute(ctx context.Context, req *networkservicespb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3571,11 +3579,11 @@ func (c *restClient) UpdateHttpRoute(ctx context.Context, req *networkservicespb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3934,11 +3942,11 @@ func (c *restClient) UpdateTcpRoute(ctx context.Context, req *networkservicespb.
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4297,11 +4305,11 @@ func (c *restClient) UpdateTlsRoute(ctx context.Context, req *networkservicespb.
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4945,11 +4953,11 @@ func (c *restClient) UpdateMesh(ctx context.Context, req *networkservicespb.Upda
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

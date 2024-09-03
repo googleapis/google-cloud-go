@@ -236,6 +236,7 @@ func defaultTargetVpnGatewaysRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -279,7 +280,7 @@ func (c *targetVpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *c
 			req.PageToken = proto.String(pageToken)
 		}
 		if pageSize > math.MaxInt32 {
-			req.MaxResults = proto.Uint32(math.MaxInt32)
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
@@ -591,7 +592,7 @@ func (c *targetVpnGatewaysRESTClient) List(ctx context.Context, req *computepb.L
 			req.PageToken = proto.String(pageToken)
 		}
 		if pageSize > math.MaxInt32 {
-			req.MaxResults = proto.Uint32(math.MaxInt32)
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}

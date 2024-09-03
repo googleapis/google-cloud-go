@@ -96,6 +96,7 @@ func defaultAlloyDBAdminGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://alloydb.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -1028,6 +1029,7 @@ func defaultAlloyDBAdminRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://alloydb.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -2200,11 +2202,11 @@ func (c *alloyDBAdminRESTClient) UpdateCluster(ctx context.Context, req *alloydb
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -2984,11 +2986,11 @@ func (c *alloyDBAdminRESTClient) UpdateInstance(ctx context.Context, req *alloyd
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -3591,11 +3593,11 @@ func (c *alloyDBAdminRESTClient) UpdateBackup(ctx context.Context, req *alloydbp
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -4202,11 +4204,11 @@ func (c *alloyDBAdminRESTClient) UpdateUser(ctx context.Context, req *alloydbpb.
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))

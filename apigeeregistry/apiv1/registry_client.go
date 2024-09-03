@@ -97,6 +97,7 @@ func defaultRegistryGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://apigeeregistry.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

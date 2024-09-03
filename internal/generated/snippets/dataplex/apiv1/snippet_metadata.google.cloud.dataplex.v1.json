@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataplex/apiv1",
-    "version": "1.16.0",
+    "version": "1.19.0",
     "language": "GO",
     "apis": [
       {
@@ -2123,7 +2123,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataScanService_GenerateDataQualityRules_sync",
       "title": "dataplex GenerateDataQualityRules Sample",
-      "description": "GenerateDataQualityRules generates recommended DataQualityRule from a data profiling DataScan.",
+      "description": "GenerateDataQualityRules generates recommended data quality rules based on the results of a data\nprofiling scan.\n\nUse the recommendations to build rules for a data quality scan.",
       "file": "DataScanClient/GenerateDataQualityRules/main.go",
       "language": "GO",
       "clientMethod": {

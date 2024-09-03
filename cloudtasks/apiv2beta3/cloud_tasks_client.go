@@ -75,6 +75,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudtasks.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -748,6 +749,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudtasks.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1211,11 +1213,11 @@ func (c *restClient) ListQueues(ctx context.Context, req *cloudtaskspb.ListQueue
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1288,11 +1290,11 @@ func (c *restClient) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueReq
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetReadMask() != nil {
-		readMask, err := protojson.Marshal(req.GetReadMask())
+		field, err := protojson.Marshal(req.GetReadMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask[1:len(readMask)-1]))
+		params.Add("readMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1454,11 +1456,11 @@ func (c *restClient) UpdateQueue(ctx context.Context, req *cloudtaskspb.UpdateQu
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

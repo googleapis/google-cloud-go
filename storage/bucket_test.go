@@ -172,7 +172,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Logging:               &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:               &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		Autoclass:             &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
-		SoftDeletePolicy:      &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 60 * 60},
+		SoftDeletePolicy:      &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 60 * 60, ForceSendFields: []string{"RetentionDurationSeconds"}},
 		HierarchicalNamespace: &raw.BucketHierarchicalNamespace{Enabled: true},
 		Lifecycle: &raw.BucketLifecycle{
 			Rule: []*raw.BucketLifecycleRule{{
@@ -448,7 +448,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Website:          &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass:     "NEARLINE",
 		Autoclass:        &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "ARCHIVE", ForceSendFields: []string{"Enabled"}},
-		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 3600},
+		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{RetentionDurationSeconds: 3600, ForceSendFields: []string{"RetentionDurationSeconds"}},
 		ForceSendFields:  []string{"DefaultEventBasedHold", "Lifecycle", "Autoclass"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -605,6 +605,7 @@ func TestNewBucket(t *testing.T) {
 		Metageneration:        3,
 		StorageClass:          "sc",
 		TimeCreated:           "2017-10-23T04:05:06Z",
+		Updated:               "2024-08-21T17:24:53Z",
 		Versioning:            &raw.BucketVersioning{Enabled: true},
 		Labels:                labels,
 		Billing:               &raw.BucketBilling{RequesterPays: true},
@@ -676,6 +677,7 @@ func TestNewBucket(t *testing.T) {
 		MetaGeneration:        3,
 		StorageClass:          "sc",
 		Created:               time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+		Updated:               time.Date(2024, 8, 21, 17, 24, 53, 0, time.UTC),
 		VersioningEnabled:     true,
 		Labels:                labels,
 		Etag:                  "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
@@ -767,6 +769,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		Rpo:            rpoAsyncTurbo,
 		Metageneration: int64(39),
 		CreateTime:     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		UpdateTime:     toProtoTimestamp(time.Date(2024, 1, 2, 3, 4, 5, 6, time.UTC)),
 		Labels:         map[string]string{"label": "value"},
 		Cors: []*storagepb.Bucket_Cors{
 			{
@@ -820,6 +823,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		RPO:                      RPOAsyncTurbo,
 		MetaGeneration:           39,
 		Created:                  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		Updated:                  time.Date(2024, 1, 2, 3, 4, 5, 6, time.UTC),
 		Labels:                   map[string]string{"label": "value"},
 		CORS: []CORS{
 			{

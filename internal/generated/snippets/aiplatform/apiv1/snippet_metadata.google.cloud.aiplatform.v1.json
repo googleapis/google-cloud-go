@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.67.0",
+    "version": "1.68.0",
     "language": "GO",
     "apis": [
       {
@@ -1986,6 +1986,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_DeploymentResourcePoolService_UpdateDeploymentResourcePool_sync",
+      "title": "aiplatform UpdateDeploymentResourcePool Sample",
+      "description": "UpdateDeploymentResourcePool update a DeploymentResourcePool.",
+      "file": "DeploymentResourcePoolClient/UpdateDeploymentResourcePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDeploymentResourcePool",
+        "fullName": "google.cloud.aiplatform.v1.DeploymentResourcePoolClient.UpdateDeploymentResourcePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateDeploymentResourcePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDeploymentResourcePoolOperation",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "UpdateDeploymentResourcePool",
+          "fullName": "google.cloud.aiplatform.v1.DeploymentResourcePoolService.UpdateDeploymentResourcePool",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_DeploymentResourcePoolService_WaitOperation_sync",
       "title": "aiplatform WaitOperation Sample",
       "description": "WaitOperation is a utility method from google.longrunning.Operations.",
@@ -2838,6 +2884,510 @@
         "client": {
           "shortName": "EndpointClient",
           "fullName": "google.cloud.aiplatform.v1.EndpointClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "EvaluationClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "EvaluationClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_EvaluateInstances_sync",
+      "title": "aiplatform EvaluateInstances Sample",
+      "description": "EvaluateInstances evaluates instances based on a given metric.",
+      "file": "EvaluationClient/EvaluateInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EvaluateInstances",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.EvaluateInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.EvaluateInstancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.EvaluateInstancesResponse",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "EvaluateInstances",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationService.EvaluateInstances",
+          "service": {
+            "shortName": "EvaluationService",
+            "fullName": "google.cloud.aiplatform.v1.EvaluationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "EvaluationClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "EvaluationClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "EvaluationClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "EvaluationClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "EvaluationClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "EvaluationClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "EvaluationClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EvaluationService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "EvaluationClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1.EvaluationClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.aiplatform.v1.EvaluationClient"
         },
         "method": {
           "shortName": "WaitOperation",
@@ -17125,6 +17675,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_NotebookService_CreateNotebookExecutionJob_sync",
+      "title": "aiplatform CreateNotebookExecutionJob Sample",
+      "description": "CreateNotebookExecutionJob creates a NotebookExecutionJob.",
+      "file": "NotebookClient/CreateNotebookExecutionJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateNotebookExecutionJob",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.CreateNotebookExecutionJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateNotebookExecutionJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateNotebookExecutionJobOperation",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "CreateNotebookExecutionJob",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.CreateNotebookExecutionJob",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_NotebookService_CreateNotebookRuntimeTemplate_sync",
       "title": "aiplatform CreateNotebookRuntimeTemplate Sample",
       "description": "CreateNotebookRuntimeTemplate creates a NotebookRuntimeTemplate.",
@@ -17166,6 +17762,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_NotebookService_DeleteNotebookExecutionJob_sync",
+      "title": "aiplatform DeleteNotebookExecutionJob Sample",
+      "description": "DeleteNotebookExecutionJob deletes a NotebookExecutionJob.",
+      "file": "NotebookClient/DeleteNotebookExecutionJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteNotebookExecutionJob",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.DeleteNotebookExecutionJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteNotebookExecutionJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteNotebookExecutionJobOperation",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "DeleteNotebookExecutionJob",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.DeleteNotebookExecutionJob",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -17400,6 +18042,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_NotebookService_GetNotebookExecutionJob_sync",
+      "title": "aiplatform GetNotebookExecutionJob Sample",
+      "description": "GetNotebookExecutionJob gets a NotebookExecutionJob.",
+      "file": "NotebookClient/GetNotebookExecutionJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNotebookExecutionJob",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.GetNotebookExecutionJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetNotebookExecutionJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.NotebookExecutionJob",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "GetNotebookExecutionJob",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.GetNotebookExecutionJob",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_NotebookService_GetNotebookRuntime_sync",
       "title": "aiplatform GetNotebookRuntime Sample",
       "description": "GetNotebookRuntime gets a NotebookRuntime.",
@@ -17571,6 +18259,52 @@
           "service": {
             "shortName": "Locations",
             "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_NotebookService_ListNotebookExecutionJobs_sync",
+      "title": "aiplatform ListNotebookExecutionJobs Sample",
+      "description": "ListNotebookExecutionJobs lists NotebookExecutionJobs in a Location.",
+      "file": "NotebookClient/ListNotebookExecutionJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNotebookExecutionJobs",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.ListNotebookExecutionJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListNotebookExecutionJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NotebookExecutionJobIterator",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "ListNotebookExecutionJobs",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.ListNotebookExecutionJobs",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
           }
         }
       },

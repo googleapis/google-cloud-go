@@ -17,7 +17,7 @@ package datastore
 import (
 	"fmt"
 
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 )
 
 // A Mutation represents a change to a Datastore entity.

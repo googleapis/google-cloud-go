@@ -67,6 +67,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://fleetengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -376,9 +377,9 @@ func (c *Client) GetDeliveryVehicle(ctx context.Context, req *deliverypb.GetDeli
 
 // UpdateDeliveryVehicle writes updated DeliveryVehicle data to Fleet Engine, and assigns
 // Tasks to the DeliveryVehicle. You cannot update the name of the
-// DeliveryVehicle. You can update remaining_vehicle_journey_segments
-// though, but it must contain all of the VehicleJourneySegments currently
-// on the DeliveryVehicle. The task_ids are retrieved from
+// DeliveryVehicle. You can update remaining_vehicle_journey_segments,
+// but it must contain all of the VehicleJourneySegments to be persisted on
+// the DeliveryVehicle. The task_ids are retrieved from
 // remaining_vehicle_journey_segments, and their corresponding Tasks are
 // assigned to the DeliveryVehicle if they have not yet been assigned.
 func (c *Client) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.UpdateDeliveryVehicleRequest, opts ...gax.CallOption) (*deliverypb.DeliveryVehicle, error) {
@@ -538,6 +539,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://fleetengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1108,9 +1110,9 @@ func (c *restClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.Get
 
 // UpdateDeliveryVehicle writes updated DeliveryVehicle data to Fleet Engine, and assigns
 // Tasks to the DeliveryVehicle. You cannot update the name of the
-// DeliveryVehicle. You can update remaining_vehicle_journey_segments
-// though, but it must contain all of the VehicleJourneySegments currently
-// on the DeliveryVehicle. The task_ids are retrieved from
+// DeliveryVehicle. You can update remaining_vehicle_journey_segments,
+// but it must contain all of the VehicleJourneySegments to be persisted on
+// the DeliveryVehicle. The task_ids are retrieved from
 // remaining_vehicle_journey_segments, and their corresponding Tasks are
 // assigned to the DeliveryVehicle if they have not yet been assigned.
 func (c *restClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.UpdateDeliveryVehicleRequest, opts ...gax.CallOption) (*deliverypb.DeliveryVehicle, error) {
@@ -1164,11 +1166,11 @@ func (c *restClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.
 		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1570,11 +1572,11 @@ func (c *restClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskR
 		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

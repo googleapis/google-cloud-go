@@ -196,7 +196,11 @@ func TestTakeFromIdleList(t *testing.T) {
 	// Make sure maintainer keeps the idle sessions.
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
-			SessionPoolConfig: SessionPoolConfig{MaxIdle: 10, MaxOpened: 10},
+			SessionPoolConfig: SessionPoolConfig{
+				MaxIdle:                   10,
+				MaxOpened:                 10,
+				healthCheckSampleInterval: 10 * time.Millisecond,
+			},
 		})
 	defer teardown()
 	sp := client.idleSessions
@@ -231,6 +235,9 @@ func TestTakeFromIdleList(t *testing.T) {
 	}
 	if len(gotSessions) != 10 {
 		t.Fatalf("got %v unique sessions, want 10", len(gotSessions))
+	}
+	if sp.multiplexedSession != nil {
+		gotSessions[sp.multiplexedSession.getID()] = true
 	}
 	if !testEqual(gotSessions, wantSessions) {
 		t.Fatalf("got sessions: %v, want %v", gotSessions, wantSessions)
@@ -361,12 +368,12 @@ func TestSessionLeak(t *testing.T) {
 		t.Fatalf("Idle sessions count mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 	// The checked out session should contain a stack trace.
-	if single.sh.stack == nil {
+	if single.sh.stack == nil && !isMultiplexEnabled {
 		t.Fatalf("Missing stacktrace from session handle")
 	}
 	stack := fmt.Sprintf("%s", single.sh.stack)
 	testMethod := "TestSessionLeak"
-	if !strings.Contains(stack, testMethod) {
+	if !strings.Contains(stack, testMethod) && !isMultiplexEnabled {
 		t.Fatalf("Stacktrace does not contain '%s'\nGot: %s", testMethod, stack)
 	}
 	// Return the session to the pool.
@@ -395,13 +402,18 @@ func TestSessionLeak(t *testing.T) {
 	iter2 := single2.Query(ctxWithTimeout, NewStatement(SelectFooFromBar))
 	_, gotErr := iter2.Next()
 	wantErr := client.idleSessions.errGetSessionTimeoutWithTrackedSessionHandles(codes.DeadlineExceeded)
+	if isMultiplexEnabled {
+		wantErr = nil
+	}
 	// The error should contain the stacktraces of all the checked out
 	// sessions.
 	if !testEqual(gotErr, wantErr) {
 		t.Fatalf("Error mismatch on iterating result set.\nGot: %v\nWant: %v\n", gotErr, wantErr)
 	}
-	if !strings.Contains(gotErr.Error(), testMethod) {
-		t.Fatalf("Error does not contain '%s'\nGot: %s", testMethod, gotErr.Error())
+	if wantErr != nil {
+		if !strings.Contains(gotErr.Error(), testMethod) {
+			t.Fatalf("Error does not contain '%s'\nGot: %s", testMethod, gotErr.Error())
+		}
 	}
 	// Close iterators to check sessions back into the pool before closing.
 	iter2.Stop()
@@ -447,8 +459,10 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 	// The checked out session should contain a stack trace as Logging is true.
 	single.sh.mu.Lock()
 	if single.sh.stack == nil {
-		single.sh.mu.Unlock()
-		t.Fatalf("Missing stacktrace from session handle")
+		if !isMultiplexEnabled {
+			single.sh.mu.Unlock()
+			t.Fatalf("Missing stacktrace from session handle")
+		}
 	}
 	if g, w := single.sh.eligibleForLongRunning, false; g != w {
 		single.sh.mu.Unlock()
@@ -464,7 +478,6 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 
 	// The session should have been removed from pool.
 	p.mu.Lock()
-	defer p.mu.Unlock()
 	if g, w := p.idleList.Len(), 0; g != w {
 		t.Fatalf("Idle Sessions in pool, count mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
@@ -474,14 +487,19 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 	if g, w := p.numOpened, uint64(0); g != w {
 		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
-	if g, w := p.numOfLeakedSessionsRemoved, uint64(1); g != w {
+	expectedLeakedSession := uint64(1)
+	if isMultiplexEnabled {
+		expectedLeakedSession = 0
+	}
+	if g, w := p.numOfLeakedSessionsRemoved, expectedLeakedSession; g != w {
 		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
+	p.mu.Unlock()
 	iter.Stop()
 }
 
 func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *testing.T) {
-	t.Parallel()
+
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{
@@ -997,7 +1015,7 @@ func TestMinOpenedSessions(t *testing.T) {
 
 	// Simulate session expiration.
 	for _, s := range ss {
-		s.destroy(true)
+		s.destroy(true, false)
 	}
 
 	// Wait until the maintainer has had a chance to replenish the pool.
@@ -1022,6 +1040,52 @@ func TestMinOpenedSessions(t *testing.T) {
 	}
 }
 
+// TestPositiveNumInUseSessions tests that num_in_use session should always be greater than 0.
+func TestPositiveNumInUseSessions(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: SessionPoolConfig{
+				MinOpened:                 1,
+				healthCheckSampleInterval: time.Millisecond,
+			},
+		})
+	defer teardown()
+	sp := client.idleSessions
+	defer sp.close(ctx)
+	// Take ten sessions from session pool and recycle them.
+	var shs []*sessionHandle
+	for i := 0; i < 10; i++ {
+		sh, err := sp.take(ctx)
+		if err != nil {
+			t.Fatalf("failed to get session(%v): %v", i, err)
+		}
+		shs = append(shs, sh)
+	}
+	for _, sh := range shs {
+		sh.recycle()
+	}
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		if sp.idleList.Len() != 1 {
+			sp.mu.Unlock()
+			return errInvalidSessionPool
+		}
+		sp.mu.Unlock()
+		return nil
+	})
+	sp.mu.Lock()
+	defer sp.mu.Unlock()
+	if int64(sp.numInUse) < 0 {
+		t.Fatal("numInUse must be >= 0")
+	}
+	// There should be still one session left in the idle list.
+	if sp.idleList.Len() != 1 {
+		t.Fatalf("got %v sessions in idle lists, want 1. Opened: %d, Creation: %d", sp.idleList.Len(), sp.numOpened, sp.createReqs)
+	}
+}
+
 // TestMaxBurst tests max burst constraint.
 func TestMaxBurst(t *testing.T) {
 	t.Parallel()
@@ -1033,6 +1097,7 @@ func TestMaxBurst(t *testing.T) {
 			},
 		})
 	defer teardown()
+
 	sp := client.idleSessions
 
 	// Will cause session creation RPC to be retried forever.
@@ -1145,11 +1210,11 @@ func TestSessionDestroy(t *testing.T) {
 	}
 	s := sh.session
 	sh.recycle()
-	if d := s.destroy(true); d || !s.isValid() {
-		// Session should be remaining because of min open sessions constraint.
+	if d := s.destroy(true, false); d || !s.isValid() {
+		// Session should be remaining because of min open session's constraint.
 		t.Fatalf("session %s invalid, want it to stay alive. (destroy in expiration mode, success: %v)", s.id, d)
 	}
-	if d := s.destroy(false); !d || s.isValid() {
+	if d := s.destroy(false, true); !d || s.isValid() {
 		// Session should be destroyed.
 		t.Fatalf("failed to destroy session %s. (destroy in default mode, success: %v)", s.id, d)
 	}
@@ -1225,6 +1290,13 @@ func TestHealthCheckScheduler(t *testing.T) {
 			gotPings[p]++
 		}
 		for s := range liveSessions {
+			if strings.Contains(s, "multiplexed") {
+				// no pings for multiplexed sessions
+				if gotPings[s] > 0 {
+					return fmt.Errorf("got %v healthchecks on multiplexed session %v, want 0", gotPings[s], s)
+				}
+				continue
+			}
 			want := int64(20)
 			if got := gotPings[s]; got < want/2 || got > want+want/2 {
 				// This is an unnacceptable amount of pings.
@@ -1607,6 +1679,82 @@ func TestMaintainer(t *testing.T) {
 	})
 }
 
+func TestMultiplexSessionWorker(t *testing.T) {
+	t.Parallel()
+	if !isMultiplexEnabled {
+		t.Skip("Multiplexing is not enabled")
+	}
+	ctx := context.Background()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: SessionPoolConfig{
+				MultiplexSessionCheckInterval: time.Millisecond,
+			},
+		})
+	defer teardown()
+	_, err := client.Single().ReadRow(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if sp.multiplexedSession == nil {
+			return errInvalidSessionPool
+		}
+		return nil
+	})
+	if !testEqual(uint(1), server.TestSpanner.TotalSessionsCreated()) {
+		t.Fatalf("expected 1 session to be created, got %v", server.TestSpanner.TotalSessionsCreated())
+	}
+	// Will cause session creation RPC to be fail.
+	server.TestSpanner.PutExecutionTime(MethodCreateSession,
+		SimulatedExecutionTime{
+			Errors:    []error{status.Errorf(codes.PermissionDenied, "try later")},
+			KeepError: true,
+		})
+	// To save test time, update the multiplex session creation time to trigger refresh.
+	sp.mu.Lock()
+	oldMultiplexedSession := sp.multiplexedSession.id
+	sp.multiplexedSession.createTime = sp.multiplexedSession.createTime.Add(-10 * 24 * time.Hour)
+	sp.mu.Unlock()
+
+	// Subsequent read should use existing session.
+	_, err = client.Single().ReadRow(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	// To save test time, update the multiplex session creation time to trigger refresh.
+	sp.mu.Lock()
+	multiplexSessionID := sp.multiplexedSession.id
+	sp.mu.Unlock()
+	if !testEqual(oldMultiplexedSession, multiplexSessionID) {
+		t.Errorf("TestMultiplexSessionWorker expected multiplexed session id to be=%v, got: %v", oldMultiplexedSession, multiplexSessionID)
+	}
+
+	// Let the first session request succeed.
+	server.TestSpanner.Freeze()
+	server.TestSpanner.PutExecutionTime(MethodCreateSession, SimulatedExecutionTime{})
+	server.TestSpanner.Unfreeze()
+
+	waitFor(t, func() error {
+		if server.TestSpanner.TotalSessionsCreated() != 2 {
+			return errInvalidSessionPool
+		}
+		return nil
+	})
+
+	sp.mu.Lock()
+	multiplexSessionID = sp.multiplexedSession.id
+	sp.mu.Unlock()
+
+	if testEqual(oldMultiplexedSession, multiplexSessionID) {
+		t.Errorf("TestMultiplexSessionWorker expected multiplexed session id to be different, got: %v", multiplexSessionID)
+	}
+}
+
 // Tests that the session pool creates up to MinOpened connections.
 //
 // Historical context: This test also checks that a low
@@ -1643,6 +1791,11 @@ loop:
 			numOpened = sp.idleList.Len()
 			sp.mu.Unlock()
 			if numOpened == 10 {
+				if isMultiplexEnabled {
+					if sp.multiplexedSession == nil {
+						continue
+					}
+				}
 				break loop
 			}
 		}

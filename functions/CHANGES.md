@@ -1,6 +1,91 @@
 # Changes
 
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.18.0...functions/v1.19.0) (2024-08-20)
+
+
+### Features
+
+* **functions:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.17.0...functions/v1.18.0) (2024-08-13)
+
+
+### Features
+
+* **functions:** Additional field on the output that specified whether the deployment supports Physical Zone Separation. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** Generate upload URL now supports for specifying the GCF generation that the generated upload url will be used for. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** ListRuntimes response now includes deprecation and decommissioning dates. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** Optional field for binary authorization policy. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** Optional field for deploying a source from a GitHub repository. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** Optional field for specifying a revision on GetFunction. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** Optional field for specifying a service account to use for the build. This helps navigate the change of historical default on new projects. For more details, see https ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+* **functions:** Optional fields for setting up automatic base image updates. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+
+
+### Documentation
+
+* **functions:** Refined description in several fields. ([6593c0d](https://github.com/googleapis/google-cloud-go/commit/6593c0d62d48751c857bce3d3f858127467a4489))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.16.6...functions/v1.17.0) (2024-08-08)
+
+
+### Features
+
+* **functions:** Added `build_service_account` field to CloudFunction ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** Additional field on the output that specified whether the deployment supports Physical Zone Separation. ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** Generate upload URL now supports for specifying the GCF generation that the generated upload url will be used for. ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** ListRuntimes response now includes deprecation and decommissioning dates. ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** Optional field for binary authorization policy. ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** Optional field for deploying a source from a GitHub repository. ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** Optional field for specifying a revision on GetFunction. ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** Optional field for specifying a service account to use for the build. This helps navigate the change of historical default on new projects. For more details, see https ([#10650](https://github.com/googleapis/google-cloud-go/issues/10650)) ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** Optional fields for setting up automatic base image updates. ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+
+
+### Bug Fixes
+
+* **functions:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **functions:** A comment for field `automatic_update_policy` in message `.google.cloud.functions.v1.CloudFunction` is changed ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** A comment for field `docker_repository` in message `.google.cloud.functions.v1.CloudFunction` is changed ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** A comment for field `on_deploy_update_policy` in message `.google.cloud.functions.v1.CloudFunction` is changed ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** A comment for field `runtime_version` in message `.google.cloud.functions.v1.CloudFunction` is changed ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** A comment for field `url` in message `.google.cloud.functions.v1.HttpsTrigger` is changed ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** A comment for field `url` in message `.google.cloud.functions.v1.SourceRepository` is changed ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **functions:** Refined description in several fields. ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+
+## [1.16.6](https://github.com/googleapis/google-cloud-go/compare/functions/v1.16.5...functions/v1.16.6) (2024-07-24)
+
+
+### Bug Fixes
+
+* **functions:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.16.5](https://github.com/googleapis/google-cloud-go/compare/functions/v1.16.4...functions/v1.16.5) (2024-07-10)
+
+
+### Bug Fixes
+
+* **functions:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.16.4](https://github.com/googleapis/google-cloud-go/compare/functions/v1.16.3...functions/v1.16.4) (2024-07-01)
+
+
+### Bug Fixes
+
+* **functions:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.16.3](https://github.com/googleapis/google-cloud-go/compare/functions/v1.16.2...functions/v1.16.3) (2024-06-26)
+
+
+### Bug Fixes
+
+* **functions:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/functions/v1.16.1...functions/v1.16.2) (2024-05-01)
 
 

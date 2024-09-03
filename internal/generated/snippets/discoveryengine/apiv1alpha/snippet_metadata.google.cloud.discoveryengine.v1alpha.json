@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1alpha",
-    "version": "1.8.0",
+    "version": "1.13.0",
     "language": "GO",
     "apis": [
       {
@@ -607,6 +607,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1alpha_generated_CompletionService_ImportCompletionSuggestions_sync",
+      "title": "discoveryengine ImportCompletionSuggestions Sample",
+      "description": "ImportCompletionSuggestions imports\n[CompletionSuggestion][google.cloud.discoveryengine.v1alpha.CompletionSuggestion]s\nfor a DataStore.",
+      "file": "CompletionClient/ImportCompletionSuggestions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportCompletionSuggestions",
+        "fullName": "google.cloud.discoveryengine.v1alpha.CompletionClient.ImportCompletionSuggestions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ImportCompletionSuggestionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportCompletionSuggestionsOperation",
+        "client": {
+          "shortName": "CompletionClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.CompletionClient"
+        },
+        "method": {
+          "shortName": "ImportCompletionSuggestions",
+          "fullName": "google.cloud.discoveryengine.v1alpha.CompletionService.ImportCompletionSuggestions",
+          "service": {
+            "shortName": "CompletionService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.CompletionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1alpha_generated_CompletionService_ImportSuggestionDenyListEntries_sync",
       "title": "discoveryengine ImportSuggestionDenyListEntries Sample",
       "description": "ImportSuggestionDenyListEntries imports all\n[SuggestionDenyListEntry][google.cloud.discoveryengine.v1alpha.SuggestionDenyListEntry]\nfor a DataStore.",
@@ -694,6 +740,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_CompletionService_PurgeCompletionSuggestions_sync",
+      "title": "discoveryengine PurgeCompletionSuggestions Sample",
+      "description": "PurgeCompletionSuggestions permanently deletes all\n[CompletionSuggestion][google.cloud.discoveryengine.v1alpha.CompletionSuggestion]s\nfor a DataStore.",
+      "file": "CompletionClient/PurgeCompletionSuggestions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PurgeCompletionSuggestions",
+        "fullName": "google.cloud.discoveryengine.v1alpha.CompletionClient.PurgeCompletionSuggestions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.PurgeCompletionSuggestionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PurgeCompletionSuggestionsOperation",
+        "client": {
+          "shortName": "CompletionClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.CompletionClient"
+        },
+        "method": {
+          "shortName": "PurgeCompletionSuggestions",
+          "fullName": "google.cloud.discoveryengine.v1alpha.CompletionService.PurgeCompletionSuggestions",
+          "service": {
+            "shortName": "CompletionService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.CompletionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -3495,6 +3587,327 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_CancelOperation_sync",
+      "title": "discoveryengine CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "EvaluationClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_CreateEvaluation_sync",
+      "title": "discoveryengine CreateEvaluation Sample",
+      "description": "CreateEvaluation creates a [Evaluation][google.cloud.discoveryengine.v1alpha.Evaluation].\n\nUpon creation, the evaluation will be automatically triggered and begin\nexecution.",
+      "file": "EvaluationClient/CreateEvaluation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEvaluation",
+        "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient.CreateEvaluation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateEvaluationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateEvaluationOperation",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient"
+        },
+        "method": {
+          "shortName": "CreateEvaluation",
+          "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationService.CreateEvaluation",
+          "service": {
+            "shortName": "EvaluationService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_GetEvaluation_sync",
+      "title": "discoveryengine GetEvaluation Sample",
+      "description": "GetEvaluation gets a [Evaluation][google.cloud.discoveryengine.v1alpha.Evaluation].",
+      "file": "EvaluationClient/GetEvaluation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEvaluation",
+        "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient.GetEvaluation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetEvaluationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Evaluation",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient"
+        },
+        "method": {
+          "shortName": "GetEvaluation",
+          "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationService.GetEvaluation",
+          "service": {
+            "shortName": "EvaluationService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "EvaluationClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_ListEvaluationResults_sync",
+      "title": "discoveryengine ListEvaluationResults Sample",
+      "description": "ListEvaluationResults gets a list of results for a given a\n[Evaluation][google.cloud.discoveryengine.v1alpha.Evaluation].",
+      "file": "EvaluationClient/ListEvaluationResults/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEvaluationResults",
+        "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient.ListEvaluationResults",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListEvaluationResultsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ListEvaluationResultsResponse_EvaluationResultIterator",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient"
+        },
+        "method": {
+          "shortName": "ListEvaluationResults",
+          "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationService.ListEvaluationResults",
+          "service": {
+            "shortName": "EvaluationService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_ListEvaluations_sync",
+      "title": "discoveryengine ListEvaluations Sample",
+      "description": "ListEvaluations gets a list of\n[Evaluation][google.cloud.discoveryengine.v1alpha.Evaluation]s.",
+      "file": "EvaluationClient/ListEvaluations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEvaluations",
+        "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient.ListEvaluations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListEvaluationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EvaluationIterator",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient"
+        },
+        "method": {
+          "shortName": "ListEvaluations",
+          "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationService.ListEvaluations",
+          "service": {
+            "shortName": "EvaluationService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "EvaluationClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "EvaluationClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.EvaluationClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1alpha_generated_GroundedGenerationService_CancelOperation_sync",
       "title": "discoveryengine CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -4306,6 +4719,784 @@
           "service": {
             "shortName": "RecommendationService",
             "fullName": "google.cloud.discoveryengine.v1alpha.RecommendationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_CancelOperation_sync",
+      "title": "discoveryengine CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "SampleQueryClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SampleQueryClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_CreateSampleQuery_sync",
+      "title": "discoveryengine CreateSampleQuery Sample",
+      "description": "CreateSampleQuery creates a [SampleQuery][google.cloud.discoveryengine.v1alpha.SampleQuery]",
+      "file": "SampleQueryClient/CreateSampleQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSampleQuery",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient.CreateSampleQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateSampleQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.SampleQuery",
+        "client": {
+          "shortName": "SampleQueryClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient"
+        },
+        "method": {
+          "shortName": "CreateSampleQuery",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryService.CreateSampleQuery",
+          "service": {
+            "shortName": "SampleQueryService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_DeleteSampleQuery_sync",
+      "title": "discoveryengine DeleteSampleQuery Sample",
+      "description": "DeleteSampleQuery deletes a [SampleQuery][google.cloud.discoveryengine.v1alpha.SampleQuery].",
+      "file": "SampleQueryClient/DeleteSampleQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSampleQuery",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient.DeleteSampleQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteSampleQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SampleQueryClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient"
+        },
+        "method": {
+          "shortName": "DeleteSampleQuery",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryService.DeleteSampleQuery",
+          "service": {
+            "shortName": "SampleQueryService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SampleQueryClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "SampleQueryClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_GetSampleQuery_sync",
+      "title": "discoveryengine GetSampleQuery Sample",
+      "description": "GetSampleQuery gets a [SampleQuery][google.cloud.discoveryengine.v1alpha.SampleQuery].",
+      "file": "SampleQueryClient/GetSampleQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSampleQuery",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient.GetSampleQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetSampleQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.SampleQuery",
+        "client": {
+          "shortName": "SampleQueryClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient"
+        },
+        "method": {
+          "shortName": "GetSampleQuery",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryService.GetSampleQuery",
+          "service": {
+            "shortName": "SampleQueryService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_ImportSampleQueries_sync",
+      "title": "discoveryengine ImportSampleQueries Sample",
+      "description": "ImportSampleQueries bulk import of multiple\n[SampleQuery][google.cloud.discoveryengine.v1alpha.SampleQuery]s. Sample\nqueries that already exist may be deleted.\n\nNote: It is possible for a subset of the\n[SampleQuery][google.cloud.discoveryengine.v1alpha.SampleQuery]s to be\nsuccessfully imported.",
+      "file": "SampleQueryClient/ImportSampleQueries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportSampleQueries",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient.ImportSampleQueries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ImportSampleQueriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportSampleQueriesOperation",
+        "client": {
+          "shortName": "SampleQueryClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient"
+        },
+        "method": {
+          "shortName": "ImportSampleQueries",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryService.ImportSampleQueries",
+          "service": {
+            "shortName": "SampleQueryService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SampleQueryClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "SampleQueryClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_ListSampleQueries_sync",
+      "title": "discoveryengine ListSampleQueries Sample",
+      "description": "ListSampleQueries gets a list of\n[SampleQuery][google.cloud.discoveryengine.v1alpha.SampleQuery]s.",
+      "file": "SampleQueryClient/ListSampleQueries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSampleQueries",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient.ListSampleQueries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListSampleQueriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SampleQueryIterator",
+        "client": {
+          "shortName": "SampleQueryClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient"
+        },
+        "method": {
+          "shortName": "ListSampleQueries",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryService.ListSampleQueries",
+          "service": {
+            "shortName": "SampleQueryService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_UpdateSampleQuery_sync",
+      "title": "discoveryengine UpdateSampleQuery Sample",
+      "description": "UpdateSampleQuery updates a [SampleQuery][google.cloud.discoveryengine.v1alpha.SampleQuery].",
+      "file": "SampleQueryClient/UpdateSampleQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSampleQuery",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient.UpdateSampleQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.UpdateSampleQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.SampleQuery",
+        "client": {
+          "shortName": "SampleQueryClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryClient"
+        },
+        "method": {
+          "shortName": "UpdateSampleQuery",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryService.UpdateSampleQuery",
+          "service": {
+            "shortName": "SampleQueryService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.SampleQueryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_CancelOperation_sync",
+      "title": "discoveryengine CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "SampleQuerySetClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SampleQuerySetClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_CreateSampleQuerySet_sync",
+      "title": "discoveryengine CreateSampleQuerySet Sample",
+      "description": "CreateSampleQuerySet creates a\n[SampleQuerySet][google.cloud.discoveryengine.v1alpha.SampleQuerySet]",
+      "file": "SampleQuerySetClient/CreateSampleQuerySet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSampleQuerySet",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient.CreateSampleQuerySet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateSampleQuerySetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.SampleQuerySet",
+        "client": {
+          "shortName": "SampleQuerySetClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient"
+        },
+        "method": {
+          "shortName": "CreateSampleQuerySet",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetService.CreateSampleQuerySet",
+          "service": {
+            "shortName": "SampleQuerySetService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_DeleteSampleQuerySet_sync",
+      "title": "discoveryengine DeleteSampleQuerySet Sample",
+      "description": "DeleteSampleQuerySet deletes a\n[SampleQuerySet][google.cloud.discoveryengine.v1alpha.SampleQuerySet].",
+      "file": "SampleQuerySetClient/DeleteSampleQuerySet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSampleQuerySet",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient.DeleteSampleQuerySet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteSampleQuerySetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SampleQuerySetClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient"
+        },
+        "method": {
+          "shortName": "DeleteSampleQuerySet",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetService.DeleteSampleQuerySet",
+          "service": {
+            "shortName": "SampleQuerySetService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SampleQuerySetClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "SampleQuerySetClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_GetSampleQuerySet_sync",
+      "title": "discoveryengine GetSampleQuerySet Sample",
+      "description": "GetSampleQuerySet gets a\n[SampleQuerySet][google.cloud.discoveryengine.v1alpha.SampleQuerySet].",
+      "file": "SampleQuerySetClient/GetSampleQuerySet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSampleQuerySet",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient.GetSampleQuerySet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetSampleQuerySetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.SampleQuerySet",
+        "client": {
+          "shortName": "SampleQuerySetClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient"
+        },
+        "method": {
+          "shortName": "GetSampleQuerySet",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetService.GetSampleQuerySet",
+          "service": {
+            "shortName": "SampleQuerySetService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SampleQuerySetClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "SampleQuerySetClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_ListSampleQuerySets_sync",
+      "title": "discoveryengine ListSampleQuerySets Sample",
+      "description": "ListSampleQuerySets gets a list of\n[SampleQuerySet][google.cloud.discoveryengine.v1alpha.SampleQuerySet]s.",
+      "file": "SampleQuerySetClient/ListSampleQuerySets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSampleQuerySets",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient.ListSampleQuerySets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListSampleQuerySetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SampleQuerySetIterator",
+        "client": {
+          "shortName": "SampleQuerySetClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient"
+        },
+        "method": {
+          "shortName": "ListSampleQuerySets",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetService.ListSampleQuerySets",
+          "service": {
+            "shortName": "SampleQuerySetService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_UpdateSampleQuerySet_sync",
+      "title": "discoveryengine UpdateSampleQuerySet Sample",
+      "description": "UpdateSampleQuerySet updates a\n[SampleQuerySet][google.cloud.discoveryengine.v1alpha.SampleQuerySet].",
+      "file": "SampleQuerySetClient/UpdateSampleQuerySet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSampleQuerySet",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient.UpdateSampleQuerySet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.UpdateSampleQuerySetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.SampleQuerySet",
+        "client": {
+          "shortName": "SampleQuerySetClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetClient"
+        },
+        "method": {
+          "shortName": "UpdateSampleQuerySet",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetService.UpdateSampleQuerySet",
+          "service": {
+            "shortName": "SampleQuerySetService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.SampleQuerySetService"
           }
         }
       },
@@ -5878,6 +7069,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_GetUriPatternDocumentData_sync",
+      "title": "discoveryengine GetUriPatternDocumentData Sample",
+      "description": "GetUriPatternDocumentData gets the URI Pattern to Document data mapping for an Advanced Site Search\nDataStore.",
+      "file": "SiteSearchEngineClient/GetUriPatternDocumentData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetUriPatternDocumentData",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SiteSearchEngineClient.GetUriPatternDocumentData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetUriPatternDocumentDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.GetUriPatternDocumentDataResponse",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "GetUriPatternDocumentData",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SiteSearchEngineService.GetUriPatternDocumentData",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_ListOperations_sync",
       "title": "discoveryengine ListOperations Sample",
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
@@ -6000,6 +7237,52 @@
         "method": {
           "shortName": "RecrawlUris",
           "fullName": "google.cloud.discoveryengine.v1alpha.SiteSearchEngineService.RecrawlUris",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_SetUriPatternDocumentData_sync",
+      "title": "discoveryengine SetUriPatternDocumentData Sample",
+      "description": "SetUriPatternDocumentData sets the URI Pattern to Document data mapping for an Advanced Site Search\nDataStore.",
+      "file": "SiteSearchEngineClient/SetUriPatternDocumentData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetUriPatternDocumentData",
+        "fullName": "google.cloud.discoveryengine.v1alpha.SiteSearchEngineClient.SetUriPatternDocumentData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.SetUriPatternDocumentDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SetUriPatternDocumentDataOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "SetUriPatternDocumentData",
+          "fullName": "google.cloud.discoveryengine.v1alpha.SiteSearchEngineService.SetUriPatternDocumentData",
           "service": {
             "shortName": "SiteSearchEngineService",
             "fullName": "google.cloud.discoveryengine.v1alpha.SiteSearchEngineService"

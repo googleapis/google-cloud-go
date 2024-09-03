@@ -1,0 +1,888 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/privilegedaccessmanager/apiv1",
+    "version": "0.2.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.privilegedaccessmanager.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_ApproveGrant_sync",
+      "title": "privilegedaccessmanager ApproveGrant Sample",
+      "description": "ApproveGrant `ApproveGrant` is used to approve a grant. This method can only be called\non a grant when it's in the `APPROVAL_AWAITED` state. This operation can't\nbe undone.",
+      "file": "Client/ApproveGrant/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ApproveGrant",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.ApproveGrant",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.ApproveGrantRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privilegedaccessmanagerpb.Grant",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ApproveGrant",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.ApproveGrant",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_CheckOnboardingStatus_sync",
+      "title": "privilegedaccessmanager CheckOnboardingStatus Sample",
+      "description": "CheckOnboardingStatus checkOnboardingStatus reports the onboarding status for a\nproject/folder/organization. Any findings reported by this API need to be\nfixed before PAM can be used on the resource.",
+      "file": "Client/CheckOnboardingStatus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckOnboardingStatus",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.CheckOnboardingStatus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.CheckOnboardingStatusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privilegedaccessmanagerpb.CheckOnboardingStatusResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CheckOnboardingStatus",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.CheckOnboardingStatus",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_CreateEntitlement_sync",
+      "title": "privilegedaccessmanager CreateEntitlement Sample",
+      "description": "CreateEntitlement creates a new entitlement in a given project/folder/organization and\nlocation.",
+      "file": "Client/CreateEntitlement/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEntitlement",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.CreateEntitlement",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.CreateEntitlementRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateEntitlementOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateEntitlement",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.CreateEntitlement",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_CreateGrant_sync",
+      "title": "privilegedaccessmanager CreateGrant Sample",
+      "description": "CreateGrant creates a new grant in a given project and location.",
+      "file": "Client/CreateGrant/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateGrant",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.CreateGrant",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.CreateGrantRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privilegedaccessmanagerpb.Grant",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateGrant",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.CreateGrant",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_DeleteEntitlement_sync",
+      "title": "privilegedaccessmanager DeleteEntitlement Sample",
+      "description": "DeleteEntitlement deletes a single entitlement. This method can only be called when there\nare no in-progress (ACTIVE/ACTIVATING/REVOKING) grants under the\nentitlement.",
+      "file": "Client/DeleteEntitlement/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEntitlement",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.DeleteEntitlement",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.DeleteEntitlementRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteEntitlementOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteEntitlement",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.DeleteEntitlement",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_DeleteOperation_sync",
+      "title": "privilegedaccessmanager DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_DenyGrant_sync",
+      "title": "privilegedaccessmanager DenyGrant Sample",
+      "description": "DenyGrant `DenyGrant` is used to deny a grant. This method can only be called on a\ngrant when it's in the `APPROVAL_AWAITED` state. This operation can't be\nundone.",
+      "file": "Client/DenyGrant/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DenyGrant",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.DenyGrant",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.DenyGrantRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privilegedaccessmanagerpb.Grant",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DenyGrant",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.DenyGrant",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_GetEntitlement_sync",
+      "title": "privilegedaccessmanager GetEntitlement Sample",
+      "description": "GetEntitlement gets details of a single entitlement.",
+      "file": "Client/GetEntitlement/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEntitlement",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.GetEntitlement",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.GetEntitlementRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privilegedaccessmanagerpb.Entitlement",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetEntitlement",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.GetEntitlement",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_GetGrant_sync",
+      "title": "privilegedaccessmanager GetGrant Sample",
+      "description": "GetGrant get details of a single grant.",
+      "file": "Client/GetGrant/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGrant",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.GetGrant",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.GetGrantRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privilegedaccessmanagerpb.Grant",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetGrant",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.GetGrant",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_GetLocation_sync",
+      "title": "privilegedaccessmanager GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_GetOperation_sync",
+      "title": "privilegedaccessmanager GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_ListEntitlements_sync",
+      "title": "privilegedaccessmanager ListEntitlements Sample",
+      "description": "ListEntitlements lists entitlements in a given project/folder/organization and location.",
+      "file": "Client/ListEntitlements/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEntitlements",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.ListEntitlements",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.ListEntitlementsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EntitlementIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListEntitlements",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.ListEntitlements",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_ListGrants_sync",
+      "title": "privilegedaccessmanager ListGrants Sample",
+      "description": "ListGrants lists grants for a given entitlement.",
+      "file": "Client/ListGrants/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGrants",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.ListGrants",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.ListGrantsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GrantIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListGrants",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.ListGrants",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_ListLocations_sync",
+      "title": "privilegedaccessmanager ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_ListOperations_sync",
+      "title": "privilegedaccessmanager ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_RevokeGrant_sync",
+      "title": "privilegedaccessmanager RevokeGrant Sample",
+      "description": "RevokeGrant `RevokeGrant` is used to immediately revoke access for a grant. This method\ncan be called when the grant is in a non-terminal state.",
+      "file": "Client/RevokeGrant/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RevokeGrant",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.RevokeGrant",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.RevokeGrantRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RevokeGrantOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "RevokeGrant",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.RevokeGrant",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_SearchEntitlements_sync",
+      "title": "privilegedaccessmanager SearchEntitlements Sample",
+      "description": "SearchEntitlements `SearchEntitlements` returns entitlements on which the caller has the\nspecified access.",
+      "file": "Client/SearchEntitlements/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchEntitlements",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.SearchEntitlements",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.SearchEntitlementsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EntitlementIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "SearchEntitlements",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.SearchEntitlements",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_SearchGrants_sync",
+      "title": "privilegedaccessmanager SearchGrants Sample",
+      "description": "SearchGrants `SearchGrants` returns grants that are related to the calling user in the\nspecified way.",
+      "file": "Client/SearchGrants/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchGrants",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.SearchGrants",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.SearchGrantsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GrantIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "SearchGrants",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.SearchGrants",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_UpdateEntitlement_sync",
+      "title": "privilegedaccessmanager UpdateEntitlement Sample",
+      "description": "UpdateEntitlement updates the entitlement specified in the request. Updated fields in the\nentitlement need to be specified in an update mask. The changes made to an\nentitlement are applicable only on future grants of the entitlement.\nHowever, if new approvers are added or existing approvers are removed from\nthe approval workflow, the changes are effective on existing grants.\n\nThe following fields are not supported for updates: \n\n* All immutable fields\n* Entitlement name\n* Resource name\n* Resource type\n* Adding an approval workflow in an entitlement which previously had no\napproval workflow.\n* Deleting the approval workflow from an entitlement.\n* Adding or deleting a step in the approval workflow (only one step is\nsupported)\n\nNote that updates are allowed on the list of approvers in an approval\nworkflow step.",
+      "file": "Client/UpdateEntitlement/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEntitlement",
+        "fullName": "google.cloud.privilegedaccessmanager.v1.Client.UpdateEntitlement",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privilegedaccessmanagerpb.UpdateEntitlementRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEntitlementOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateEntitlement",
+          "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager.UpdateEntitlement",
+          "service": {
+            "shortName": "PrivilegedAccessManager",
+            "fullName": "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

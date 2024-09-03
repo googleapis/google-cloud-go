@@ -55,6 +55,7 @@ func defaultCloudCatalogGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudbilling.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -260,6 +261,7 @@ func defaultCloudCatalogRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudbilling.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -493,11 +495,11 @@ func (c *cloudCatalogRESTClient) ListSkus(ctx context.Context, req *billingpb.Li
 			params.Add("currencyCode", fmt.Sprintf("%v", req.GetCurrencyCode()))
 		}
 		if req.GetEndTime() != nil {
-			endTime, err := protojson.Marshal(req.GetEndTime())
+			field, err := protojson.Marshal(req.GetEndTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("endTime", string(endTime[1:len(endTime)-1]))
+			params.Add("endTime", string(field[1:len(field)-1]))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -506,11 +508,11 @@ func (c *cloudCatalogRESTClient) ListSkus(ctx context.Context, req *billingpb.Li
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetStartTime() != nil {
-			startTime, err := protojson.Marshal(req.GetStartTime())
+			field, err := protojson.Marshal(req.GetStartTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("startTime", string(startTime[1:len(startTime)-1]))
+			params.Add("startTime", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()

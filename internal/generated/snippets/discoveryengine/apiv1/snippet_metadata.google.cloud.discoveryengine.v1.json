@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1",
-    "version": "1.8.0",
+    "version": "1.13.0",
     "language": "GO",
     "apis": [
       {
@@ -149,6 +149,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1_generated_CompletionService_ImportCompletionSuggestions_sync",
+      "title": "discoveryengine ImportCompletionSuggestions Sample",
+      "description": "ImportCompletionSuggestions imports\n[CompletionSuggestion][google.cloud.discoveryengine.v1.CompletionSuggestion]s\nfor a DataStore.",
+      "file": "CompletionClient/ImportCompletionSuggestions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportCompletionSuggestions",
+        "fullName": "google.cloud.discoveryengine.v1.CompletionClient.ImportCompletionSuggestions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ImportCompletionSuggestionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportCompletionSuggestionsOperation",
+        "client": {
+          "shortName": "CompletionClient",
+          "fullName": "google.cloud.discoveryengine.v1.CompletionClient"
+        },
+        "method": {
+          "shortName": "ImportCompletionSuggestions",
+          "fullName": "google.cloud.discoveryengine.v1.CompletionService.ImportCompletionSuggestions",
+          "service": {
+            "shortName": "CompletionService",
+            "fullName": "google.cloud.discoveryengine.v1.CompletionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1_generated_CompletionService_ImportSuggestionDenyListEntries_sync",
       "title": "discoveryengine ImportSuggestionDenyListEntries Sample",
       "description": "ImportSuggestionDenyListEntries imports all\n[SuggestionDenyListEntry][google.cloud.discoveryengine.v1.SuggestionDenyListEntry]\nfor a DataStore.",
@@ -236,6 +282,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_CompletionService_PurgeCompletionSuggestions_sync",
+      "title": "discoveryengine PurgeCompletionSuggestions Sample",
+      "description": "PurgeCompletionSuggestions permanently deletes all\n[CompletionSuggestion][google.cloud.discoveryengine.v1.CompletionSuggestion]s\nfor a DataStore.",
+      "file": "CompletionClient/PurgeCompletionSuggestions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PurgeCompletionSuggestions",
+        "fullName": "google.cloud.discoveryengine.v1.CompletionClient.PurgeCompletionSuggestions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.PurgeCompletionSuggestionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PurgeCompletionSuggestionsOperation",
+        "client": {
+          "shortName": "CompletionClient",
+          "fullName": "google.cloud.discoveryengine.v1.CompletionClient"
+        },
+        "method": {
+          "shortName": "PurgeCompletionSuggestions",
+          "fullName": "google.cloud.discoveryengine.v1.CompletionService.PurgeCompletionSuggestions",
+          "service": {
+            "shortName": "CompletionService",
+            "fullName": "google.cloud.discoveryengine.v1.CompletionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

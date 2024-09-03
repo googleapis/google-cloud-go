@@ -185,6 +185,10 @@ type ReadOptions struct {
 
 	// An option to control the order in which rows are returned from a read.
 	OrderBy sppb.ReadRequest_OrderBy
+
+	// A lock hint mechanism to use for this request. This setting is only applicable for
+	// read-write transaction as as read-only transactions do not take locks.
+	LockHint sppb.ReadRequest_LockHint
 }
 
 // merge combines two ReadOptions that the input parameter will have higher
@@ -198,6 +202,7 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 		DataBoostEnabled:    ro.DataBoostEnabled,
 		DirectedReadOptions: ro.DirectedReadOptions,
 		OrderBy:             ro.OrderBy,
+		LockHint:            ro.LockHint,
 	}
 	if opts.Index != "" {
 		merged.Index = opts.Index
@@ -219,6 +224,9 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 	}
 	if opts.OrderBy != sppb.ReadRequest_ORDER_BY_UNSPECIFIED {
 		merged.OrderBy = opts.OrderBy
+	}
+	if opts.LockHint != sppb.ReadRequest_LOCK_HINT_UNSPECIFIED {
+		merged.LockHint = opts.LockHint
 	}
 	return merged
 }
@@ -253,6 +261,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	dataBoostEnabled := t.ro.DataBoostEnabled
 	directedReadOptions := t.ro.DirectedReadOptions
 	orderBy := t.ro.OrderBy
+	lockHint := t.ro.LockHint
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
@@ -269,6 +278,10 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		if opts.OrderBy != sppb.ReadRequest_ORDER_BY_UNSPECIFIED {
 			orderBy = opts.OrderBy
 		}
+		if opts.LockHint != sppb.ReadRequest_LOCK_HINT_UNSPECIFIED {
+			lockHint = opts.LockHint
+		}
+
 	}
 	var setTransactionID func(transactionID)
 	if _, ok := ts.Selector.(*sppb.TransactionSelector_Begin); ok {
@@ -297,6 +310,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 					DataBoostEnabled:    dataBoostEnabled,
 					DirectedReadOptions: directedReadOptions,
 					OrderBy:             orderBy,
+					LockHint:            lockHint,
 				})
 			if err != nil {
 				if _, ok := t.getTransactionSelector().GetSelector().(*sppb.TransactionSelector_Begin); ok {
@@ -326,12 +340,16 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 // errRowNotFound returns error for not being able to read the row identified by
 // key.
 func errRowNotFound(table string, key Key) error {
-	return spannerErrorf(codes.NotFound, "row not found(Table: %v, PrimaryKey: %v)", table, key)
+	err := spannerErrorf(codes.NotFound, "row not found(Table: %v, PrimaryKey: %v)", table, key)
+	err.(*Error).err = ErrRowNotFound
+	return err
 }
 
 // errRowNotFoundByIndex returns error for not being able to read the row by index.
 func errRowNotFoundByIndex(table string, key Key, index string) error {
-	return spannerErrorf(codes.NotFound, "row not found(Table: %v, IndexKey: %v, Index: %v)", table, key, index)
+	err := spannerErrorf(codes.NotFound, "row not found(Table: %v, IndexKey: %v, Index: %v)", table, key, index)
+	err.(*Error).err = ErrRowNotFound
+	return err
 }
 
 // errMultipleRowsFound returns error for receiving more than one row when reading a single row using an index.
@@ -346,8 +364,14 @@ func errInlineBeginTransactionFailed() error {
 
 // ReadRow reads a single row from the database.
 //
-// If no row is present with the given key, then ReadRow returns an error where
+// If no row is present with the given key, then ReadRow returns an error(spanner.ErrRowNotFound) where
 // spanner.ErrCode(err) is codes.NotFound.
+//
+// To check if the error is spanner.ErrRowNotFound:
+//
+//	if errors.Is(err, spanner.ErrRowNotFound) {
+//			...
+//	}
 func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns []string) (*Row, error) {
 	return t.ReadRowWithOptions(ctx, table, key, columns, nil)
 }
@@ -356,6 +380,12 @@ func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns
 //
 // If no row is present with the given key, then ReadRowWithOptions returns an error where
 // spanner.ErrCode(err) is codes.NotFound.
+//
+// To check if the error is spanner.ErrRowNotFound:
+//
+//	if errors.Is(err, spanner.ErrRowNotFound) {
+//			...
+//	}
 func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key Key, columns []string, opts *ReadOptions) (*Row, error) {
 	iter := t.ReadWithOptions(ctx, table, key, columns, opts)
 	defer iter.Stop()
@@ -373,7 +403,13 @@ func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key K
 // ReadRowUsingIndex reads a single row from the database using an index.
 //
 // If no row is present with the given index, then ReadRowUsingIndex returns an
-// error where spanner.ErrCode(err) is codes.NotFound.
+// error(spanner.ErrRowNotFound) where spanner.ErrCode(err) is codes.NotFound.
+//
+// To check if the error is spanner.ErrRowNotFound:
+//
+//	if errors.Is(err, spanner.ErrRowNotFound) {
+//			...
+//	}
 //
 // If more than one row received with the given index, then ReadRowUsingIndex
 // returns an error where spanner.ErrCode(err) is codes.FailedPrecondition.
@@ -740,7 +776,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 	}()
 	// Retry the BeginTransaction call if a 'Session not found' is returned.
 	for {
-		sh, err = t.sp.take(ctx)
+		sh, err = t.sp.takeMultiplexed(ctx)
 		if err != nil {
 			return err
 		}
@@ -830,7 +866,7 @@ func (t *ReadOnlyTransaction) acquireSingleUse(ctx context.Context) (*sessionHan
 				},
 			},
 		}
-		sh, err := t.sp.take(ctx)
+		sh, err := t.sp.takeMultiplexed(ctx)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -1756,6 +1792,7 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 			txReadyOrClosed: make(chan struct{}),
 		},
 	}
+	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
@@ -1822,6 +1859,8 @@ type writeOnlyTransaction struct {
 	// current transaction from the allowed tracking change streams with DDL option
 	// allow_txn_exclusion=true.
 	excludeTxnFromChangeStreams bool
+	// commitOptions are applied to the Commit request for the writeOnlyTransaction..
+	commitOptions CommitOptions
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1846,6 +1885,11 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 		return ts, err
 	}
 
+	var maxCommitDelay *durationpb.Duration
+	if t.commitOptions.MaxCommitDelay != nil {
+		maxCommitDelay = durationpb.New(*(t.commitOptions.MaxCommitDelay))
+	}
+
 	// Make a retryer for Aborted and certain Internal errors.
 	retryer := onCodes(DefaultRetryBackoff, codes.Aborted, codes.Internal)
 	// Apply the mutation and retry if the commit is aborted.
@@ -1853,7 +1897,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 		for {
 			if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 				// No usable session for doing the commit, take one from pool.
-				sh, err = t.sp.take(ctx)
+				sh, err = t.sp.takeMultiplexed(ctx)
 				if err != nil {
 					// sessionPool.Take already retries for session
 					// creations/retrivals.
@@ -1873,8 +1917,10 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 				},
 				Mutations:      mPb,
 				RequestOptions: createRequestOptions(t.commitPriority, "", t.transactionTag),
+				MaxCommitDelay: maxCommitDelay,
 			})
 			if err != nil && !isAbortedErr(err) {
+				// should not be the case with multiplexed sessions
 				if isSessionNotFoundError(err) {
 					// Discard the bad session.
 					sh.destroy()

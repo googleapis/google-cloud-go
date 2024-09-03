@@ -54,6 +54,7 @@ func defaultMessagesV1Beta3GRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dataflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -250,6 +251,7 @@ func defaultMessagesV1Beta3RESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -354,11 +356,11 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetEndTime() != nil {
-			endTime, err := protojson.Marshal(req.GetEndTime())
+			field, err := protojson.Marshal(req.GetEndTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("endTime", string(endTime[1:len(endTime)-1]))
+			params.Add("endTime", string(field[1:len(field)-1]))
 		}
 		if req.GetMinimumImportance() != 0 {
 			params.Add("minimumImportance", fmt.Sprintf("%v", req.GetMinimumImportance()))
@@ -370,11 +372,11 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetStartTime() != nil {
-			startTime, err := protojson.Marshal(req.GetStartTime())
+			field, err := protojson.Marshal(req.GetStartTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("startTime", string(startTime[1:len(startTime)-1]))
+			params.Add("startTime", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()

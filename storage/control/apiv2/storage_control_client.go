@@ -65,6 +65,7 @@ func defaultStorageControlGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://storage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -243,28 +244,24 @@ func (c *StorageControlClient) Connection() *grpc.ClientConn {
 
 // CreateFolder creates a new folder. This operation is only applicable to a hierarchical
 // namespace enabled bucket.
-// Hierarchical namespace buckets are in allowlist preview.
 func (c *StorageControlClient) CreateFolder(ctx context.Context, req *controlpb.CreateFolderRequest, opts ...gax.CallOption) (*controlpb.Folder, error) {
 	return c.internalClient.CreateFolder(ctx, req, opts...)
 }
 
 // DeleteFolder permanently deletes an empty folder. This operation is only applicable to a
 // hierarchical namespace enabled bucket.
-// Hierarchical namespace buckets are in allowlist preview.
 func (c *StorageControlClient) DeleteFolder(ctx context.Context, req *controlpb.DeleteFolderRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteFolder(ctx, req, opts...)
 }
 
 // GetFolder returns metadata for the specified folder. This operation is only
 // applicable to a hierarchical namespace enabled bucket.
-// Hierarchical namespace buckets are in allowlist preview.
 func (c *StorageControlClient) GetFolder(ctx context.Context, req *controlpb.GetFolderRequest, opts ...gax.CallOption) (*controlpb.Folder, error) {
 	return c.internalClient.GetFolder(ctx, req, opts...)
 }
 
 // ListFolders retrieves a list of folders. This operation is only applicable to a
 // hierarchical namespace enabled bucket.
-// Hierarchical namespace buckets are in allowlist preview.
 func (c *StorageControlClient) ListFolders(ctx context.Context, req *controlpb.ListFoldersRequest, opts ...gax.CallOption) *FolderIterator {
 	return c.internalClient.ListFolders(ctx, req, opts...)
 }
@@ -273,7 +270,6 @@ func (c *StorageControlClient) ListFolders(ctx context.Context, req *controlpb.L
 // applicable to a hierarchical namespace enabled bucket. During a rename, the
 // source and destination folders are locked until the long running operation
 // completes.
-// Hierarchical namespace buckets are in allowlist preview.
 func (c *StorageControlClient) RenameFolder(ctx context.Context, req *controlpb.RenameFolderRequest, opts ...gax.CallOption) (*RenameFolderOperation, error) {
 	return c.internalClient.RenameFolder(ctx, req, opts...)
 }

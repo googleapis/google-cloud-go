@@ -1,6 +1,82 @@
 # Changelog
 
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.4...batch/v1.10.0) (2024-08-20)
+
+
+### Features
+
+* **batch:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+
+### Documentation
+
+* **batch:** Clarify tasks success criteria for background runnable ([#10702](https://github.com/googleapis/google-cloud-go/issues/10702)) ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.9.4](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.3...batch/v1.9.4) (2024-08-13)
+
+
+### Documentation
+
+* **batch:** Batch CentOS images and HPC CentOS images are EOS ([#10680](https://github.com/googleapis/google-cloud-go/issues/10680)) ([578ce14](https://github.com/googleapis/google-cloud-go/commit/578ce14068881a40d0c1d26d33b570973ec1a5bc))
+* **batch:** Clarify required fields for Runnable.Container ([578ce14](https://github.com/googleapis/google-cloud-go/commit/578ce14068881a40d0c1d26d33b570973ec1a5bc))
+* **batch:** Clarify required oneof fields for Runnable.Script ([578ce14](https://github.com/googleapis/google-cloud-go/commit/578ce14068881a40d0c1d26d33b570973ec1a5bc))
+* **batch:** Clarify TaskSpec requires one or more runnables ([578ce14](https://github.com/googleapis/google-cloud-go/commit/578ce14068881a40d0c1d26d33b570973ec1a5bc))
+
+## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.2...batch/v1.9.3) (2024-08-08)
+
+
+### Bug Fixes
+
+* **batch:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **batch:** Refine usage scope for fields `task_execution` and `task_state` in StatusEvent ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
+## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.1...batch/v1.9.2) (2024-07-24)
+
+
+### Bug Fixes
+
+* **batch:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.0...batch/v1.9.1) (2024-07-10)
+
+
+### Bug Fixes
+
+* **batch:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.8...batch/v1.9.0) (2024-07-01)
+
+
+### Features
+
+* **batch:** Add a install_ops_agent field to InstancePolicyOrTemplate for Ops Agent support ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+
+### Bug Fixes
+
+* **batch:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+
+### Documentation
+
+* **batch:** Add instructions on how to configure cross-project pubsub publisher ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **batch:** Document default disk type ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **batch:** Update GCS description of volume.mount_options field ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **batch:** Update links in the description of volume.mount_options field ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **batch:** Update list of volume.mount_options field ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+## [1.8.8](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.7...batch/v1.8.8) (2024-06-26)
+
+
+### Bug Fixes
+
+* **batch:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.8.7](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.6...batch/v1.8.7) (2024-06-05)
 
 

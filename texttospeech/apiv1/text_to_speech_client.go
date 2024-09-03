@@ -19,6 +19,7 @@ package texttospeech
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -45,10 +46,11 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListVoices       []gax.CallOption
-	SynthesizeSpeech []gax.CallOption
-	GetOperation     []gax.CallOption
-	ListOperations   []gax.CallOption
+	ListVoices          []gax.CallOption
+	SynthesizeSpeech    []gax.CallOption
+	StreamingSynthesize []gax.CallOption
+	GetOperation        []gax.CallOption
+	ListOperations      []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -60,6 +62,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://texttospeech.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -82,6 +85,18 @@ func defaultCallOptions() *CallOptions {
 		},
 		SynthesizeSpeech: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		StreamingSynthesize: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -124,6 +139,18 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		StreamingSynthesize: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		GetOperation:   []gax.CallOption{},
 		ListOperations: []gax.CallOption{},
 	}
@@ -136,6 +163,7 @@ type internalClient interface {
 	Connection() *grpc.ClientConn
 	ListVoices(context.Context, *texttospeechpb.ListVoicesRequest, ...gax.CallOption) (*texttospeechpb.ListVoicesResponse, error)
 	SynthesizeSpeech(context.Context, *texttospeechpb.SynthesizeSpeechRequest, ...gax.CallOption) (*texttospeechpb.SynthesizeSpeechResponse, error)
+	StreamingSynthesize(context.Context, ...gax.CallOption) (texttospeechpb.TextToSpeech_StreamingSynthesizeClient, error)
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -184,6 +212,14 @@ func (c *Client) ListVoices(ctx context.Context, req *texttospeechpb.ListVoicesR
 // has been processed.
 func (c *Client) SynthesizeSpeech(ctx context.Context, req *texttospeechpb.SynthesizeSpeechRequest, opts ...gax.CallOption) (*texttospeechpb.SynthesizeSpeechResponse, error) {
 	return c.internalClient.SynthesizeSpeech(ctx, req, opts...)
+}
+
+// StreamingSynthesize performs bidirectional streaming speech synthesis: receive audio while
+// sending text.
+//
+// This method is not supported for the REST transport.
+func (c *Client) StreamingSynthesize(ctx context.Context, opts ...gax.CallOption) (texttospeechpb.TextToSpeech_StreamingSynthesizeClient, error) {
+	return c.internalClient.StreamingSynthesize(ctx, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -317,6 +353,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://texttospeech.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -367,6 +404,21 @@ func (c *gRPCClient) SynthesizeSpeech(ctx context.Context, req *texttospeechpb.S
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.SynthesizeSpeech(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) StreamingSynthesize(ctx context.Context, opts ...gax.CallOption) (texttospeechpb.TextToSpeech_StreamingSynthesizeClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	var resp texttospeechpb.TextToSpeech_StreamingSynthesizeClient
+	opts = append((*c.CallOptions).StreamingSynthesize[0:len((*c.CallOptions).StreamingSynthesize):len((*c.CallOptions).StreamingSynthesize)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.StreamingSynthesize(ctx, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -561,6 +613,14 @@ func (c *restClient) SynthesizeSpeech(ctx context.Context, req *texttospeechpb.S
 		return nil, e
 	}
 	return resp, nil
+}
+
+// StreamingSynthesize performs bidirectional streaming speech synthesis: receive audio while
+// sending text.
+//
+// This method is not supported for the REST transport.
+func (c *restClient) StreamingSynthesize(ctx context.Context, opts ...gax.CallOption) (texttospeechpb.TextToSpeech_StreamingSynthesizeClient, error) {
+	return nil, errors.New("StreamingSynthesize not yet supported for REST clients")
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.

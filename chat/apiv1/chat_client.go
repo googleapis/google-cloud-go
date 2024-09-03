@@ -70,6 +70,8 @@ type CallOptions struct {
 	GetSpaceReadState    []gax.CallOption
 	UpdateSpaceReadState []gax.CallOption
 	GetThreadReadState   []gax.CallOption
+	GetSpaceEvent        []gax.CallOption
+	ListSpaceEvents      []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -81,6 +83,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://chat.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -400,6 +403,30 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		GetSpaceEvent: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSpaceEvents: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -691,6 +718,28 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetSpaceEvent: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSpaceEvents: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -725,6 +774,8 @@ type internalClient interface {
 	GetSpaceReadState(context.Context, *chatpb.GetSpaceReadStateRequest, ...gax.CallOption) (*chatpb.SpaceReadState, error)
 	UpdateSpaceReadState(context.Context, *chatpb.UpdateSpaceReadStateRequest, ...gax.CallOption) (*chatpb.SpaceReadState, error)
 	GetThreadReadState(context.Context, *chatpb.GetThreadReadStateRequest, ...gax.CallOption) (*chatpb.ThreadReadState, error)
+	GetSpaceEvent(context.Context, *chatpb.GetSpaceEventRequest, ...gax.CallOption) (*chatpb.SpaceEvent, error)
+	ListSpaceEvents(context.Context, *chatpb.ListSpaceEventsRequest, ...gax.CallOption) *SpaceEventIterator
 }
 
 // Client is a client for interacting with Google Chat API.
@@ -921,6 +972,10 @@ func (c *Client) UploadAttachment(ctx context.Context, req *chatpb.UploadAttachm
 //
 // Lists spaces visible to the caller or authenticated user. Group chats
 // and DMs aren’t listed until the first message is sent.
+//
+// To list all named spaces by Google Workspace organization, use the
+// spaces.search() (at https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)
+// method using Workspace administrator privileges instead.
 func (c *Client) ListSpaces(ctx context.Context, req *chatpb.ListSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
 	return c.internalClient.ListSpaces(ctx, req, opts...)
 }
@@ -968,6 +1023,17 @@ func (c *Client) CreateSpace(ctx context.Context, req *chatpb.CreateSpaceRequest
 // if the People API Person profile ID for user@example.com is 123456789,
 // you can add the user to the space by setting the membership.member.name
 // to users/user@example.com or users/123456789.
+//
+// To specify the Google groups to add, add memberships with the
+// appropriate membership.group_member.name. To add or invite a Google
+// group, use groups/{group}, where {group} is the id for the group from
+// the Cloud Identity Groups API. For example, you can use Cloud Identity
+// Groups lookup
+// API (at https://cloud.google.com/identity/docs/reference/rest/v1/groups/lookup)
+// to retrieve the ID 123456789 for group email group@example.com, then
+// you can add the group to the space by setting the
+// membership.group_member.name to groups/123456789. Group email is not
+// supported, and Google groups can only be added as members in named spaces.
 //
 // For a named space or group chat, if the caller blocks, or is blocked
 // by some members, or doesn’t have permission to add some members, then
@@ -1069,7 +1135,8 @@ func (c *Client) FindDirectMessage(ctx context.Context, req *chatpb.FindDirectMe
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 //
 // To specify the member to add, set the membership.member.name for the
-// human or app member.
+// human or app member, or set the membership.group_member.name for the
+// group member.
 //
 //	To add the calling app to a space or a direct message between two human
 //	users, use users/app. Unable to add other
@@ -1082,6 +1149,15 @@ func (c *Client) FindDirectMessage(ctx context.Context, req *chatpb.FindDirectMe
 //	profile ID for user@example.com is 123456789, you can add the user to
 //	the space by setting the membership.member.name to
 //	users/user@example.com or users/123456789.
+//
+//	To add or invite a Google group in a named space, use
+//	groups/{group}, where {group} is the id for the group from the Cloud
+//	Identity Groups API. For example, you can use Cloud Identity Groups lookup
+//	API (at https://cloud.google.com/identity/docs/reference/rest/v1/groups/lookup)
+//	to retrieve the ID 123456789 for group email group@example.com, then
+//	you can add or invite the group to a named space by setting the
+//	membership.group_member.name to groups/123456789. Group email is not
+//	supported, and Google groups can only be added as members in named spaces.
 func (c *Client) CreateMembership(ctx context.Context, req *chatpb.CreateMembershipRequest, opts ...gax.CallOption) (*chatpb.Membership, error) {
 	return c.internalClient.CreateMembership(ctx, req, opts...)
 }
@@ -1164,6 +1240,42 @@ func (c *Client) UpdateSpaceReadState(ctx context.Context, req *chatpb.UpdateSpa
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *Client) GetThreadReadState(ctx context.Context, req *chatpb.GetThreadReadStateRequest, opts ...gax.CallOption) (*chatpb.ThreadReadState, error) {
 	return c.internalClient.GetThreadReadState(ctx, req, opts...)
+}
+
+// GetSpaceEvent returns an event from a Google Chat space. The event
+// payload (at https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces.spaceEvents#SpaceEvent.FIELDS.oneof_payload)
+// contains the most recent version of the resource that changed. For example,
+// if you request an event about a new message but the message was later
+// updated, the server returns the updated Message resource in the event
+// payload.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// To get an event, the authenticated user must be a member of the space.
+//
+// For an example, see Get details about an
+// event from a Google Chat
+// space (at https://developers.google.com/workspace/chat/get-space-event).
+func (c *Client) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEventRequest, opts ...gax.CallOption) (*chatpb.SpaceEvent, error) {
+	return c.internalClient.GetSpaceEvent(ctx, req, opts...)
+}
+
+// ListSpaceEvents lists events from a Google Chat space. For each event, the
+// payload (at https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces.spaceEvents#SpaceEvent.FIELDS.oneof_payload)
+// contains the most recent version of the Chat resource. For example, if you
+// list events about new space members, the server returns Membership
+// resources that contain the latest membership details. If new members were
+// removed during the requested period, the event payload contains an empty
+// Membership resource.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// To list events, the authenticated user must be a member of the space.
+//
+// For an example, see List events from a Google Chat
+// space (at https://developers.google.com/workspace/chat/list-space-events).
+func (c *Client) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceEventsRequest, opts ...gax.CallOption) *SpaceEventIterator {
+	return c.internalClient.ListSpaceEvents(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Google Chat API over gRPC transport.
@@ -1286,6 +1398,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://chat.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1870,6 +1983,70 @@ func (c *gRPCClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 	return resp, nil
 }
 
+func (c *gRPCClient) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEventRequest, opts ...gax.CallOption) (*chatpb.SpaceEvent, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetSpaceEvent[0:len((*c.CallOptions).GetSpaceEvent):len((*c.CallOptions).GetSpaceEvent)], opts...)
+	var resp *chatpb.SpaceEvent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetSpaceEvent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceEventsRequest, opts ...gax.CallOption) *SpaceEventIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSpaceEvents[0:len((*c.CallOptions).ListSpaceEvents):len((*c.CallOptions).ListSpaceEvents)], opts...)
+	it := &SpaceEventIterator{}
+	req = proto.Clone(req).(*chatpb.ListSpaceEventsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.SpaceEvent, string, error) {
+		resp := &chatpb.ListSpaceEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListSpaceEvents(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSpaceEvents(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // CreateMessage creates a message in a Google Chat space. The maximum message size,
 // including text and cards, is 32,000 bytes. For an example, see Send a
 // message (at https://developers.google.com/workspace/chat/create-messages).
@@ -2357,11 +2534,11 @@ func (c *restClient) UpdateMessage(ctx context.Context, req *chatpb.UpdateMessag
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2626,6 +2803,10 @@ func (c *restClient) UploadAttachment(ctx context.Context, req *chatpb.UploadAtt
 //
 // Lists spaces visible to the caller or authenticated user. Group chats
 // and DMs aren’t listed until the first message is sent.
+//
+// To list all named spaces by Google Workspace organization, use the
+// spaces.search() (at https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)
+// method using Workspace administrator privileges instead.
 func (c *restClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
 	it := &SpaceIterator{}
 	req = proto.Clone(req).(*chatpb.ListSpacesRequest)
@@ -2878,6 +3059,17 @@ func (c *restClient) CreateSpace(ctx context.Context, req *chatpb.CreateSpaceReq
 // you can add the user to the space by setting the membership.member.name
 // to users/user@example.com or users/123456789.
 //
+// To specify the Google groups to add, add memberships with the
+// appropriate membership.group_member.name. To add or invite a Google
+// group, use groups/{group}, where {group} is the id for the group from
+// the Cloud Identity Groups API. For example, you can use Cloud Identity
+// Groups lookup
+// API (at https://cloud.google.com/identity/docs/reference/rest/v1/groups/lookup)
+// to retrieve the ID 123456789 for group email group@example.com, then
+// you can add the group to the space by setting the
+// membership.group_member.name to groups/123456789. Group email is not
+// supported, and Google groups can only be added as members in named spaces.
+//
 // For a named space or group chat, if the caller blocks, or is blocked
 // by some members, or doesn’t have permission to add some members, then
 // those members aren’t added to the created space.
@@ -2993,11 +3185,11 @@ func (c *restClient) UpdateSpace(ctx context.Context, req *chatpb.UpdateSpaceReq
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3256,7 +3448,8 @@ func (c *restClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDire
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 //
 // To specify the member to add, set the membership.member.name for the
-// human or app member.
+// human or app member, or set the membership.group_member.name for the
+// group member.
 //
 //	To add the calling app to a space or a direct message between two human
 //	users, use users/app. Unable to add other
@@ -3269,6 +3462,15 @@ func (c *restClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDire
 //	profile ID for user@example.com is 123456789, you can add the user to
 //	the space by setting the membership.member.name to
 //	users/user@example.com or users/123456789.
+//
+//	To add or invite a Google group in a named space, use
+//	groups/{group}, where {group} is the id for the group from the Cloud
+//	Identity Groups API. For example, you can use Cloud Identity Groups lookup
+//	API (at https://cloud.google.com/identity/docs/reference/rest/v1/groups/lookup)
+//	to retrieve the ID 123456789 for group email group@example.com, then
+//	you can add or invite the group to a named space by setting the
+//	membership.group_member.name to groups/123456789. Group email is not
+//	supported, and Google groups can only be added as members in named spaces.
 func (c *restClient) CreateMembership(ctx context.Context, req *chatpb.CreateMembershipRequest, opts ...gax.CallOption) (*chatpb.Membership, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetMembership()
@@ -3357,11 +3559,11 @@ func (c *restClient) UpdateMembership(ctx context.Context, req *chatpb.UpdateMem
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3782,11 +3984,11 @@ func (c *restClient) UpdateSpaceReadState(ctx context.Context, req *chatpb.Updat
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3902,4 +4104,180 @@ func (c *restClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 		return nil, e
 	}
 	return resp, nil
+}
+
+// GetSpaceEvent returns an event from a Google Chat space. The event
+// payload (at https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces.spaceEvents#SpaceEvent.FIELDS.oneof_payload)
+// contains the most recent version of the resource that changed. For example,
+// if you request an event about a new message but the message was later
+// updated, the server returns the updated Message resource in the event
+// payload.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// To get an event, the authenticated user must be a member of the space.
+//
+// For an example, see Get details about an
+// event from a Google Chat
+// space (at https://developers.google.com/workspace/chat/get-space-event).
+func (c *restClient) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEventRequest, opts ...gax.CallOption) (*chatpb.SpaceEvent, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSpaceEvent[0:len((*c.CallOptions).GetSpaceEvent):len((*c.CallOptions).GetSpaceEvent)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.SpaceEvent{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListSpaceEvents lists events from a Google Chat space. For each event, the
+// payload (at https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces.spaceEvents#SpaceEvent.FIELDS.oneof_payload)
+// contains the most recent version of the Chat resource. For example, if you
+// list events about new space members, the server returns Membership
+// resources that contain the latest membership details. If new members were
+// removed during the requested period, the event payload contains an empty
+// Membership resource.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
+// To list events, the authenticated user must be a member of the space.
+//
+// For an example, see List events from a Google Chat
+// space (at https://developers.google.com/workspace/chat/list-space-events).
+func (c *restClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceEventsRequest, opts ...gax.CallOption) *SpaceEventIterator {
+	it := &SpaceEventIterator{}
+	req = proto.Clone(req).(*chatpb.ListSpaceEventsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.SpaceEvent, string, error) {
+		resp := &chatpb.ListSpaceEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/spaceEvents", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSpaceEvents(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }

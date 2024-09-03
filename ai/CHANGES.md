@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.8.2](https://github.com/googleapis/google-cloud-go/compare/ai/v0.8.1...ai/v0.8.2) (2024-07-22)
+
+
+### Bug Fixes
+
+* **ai:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.8.0...ai/v0.8.1) (2024-07-19)
+
+
+### Bug Fixes
+
+* **ai:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **ai:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.7.0...ai/v0.8.0) (2024-07-01)
+
+
+### Features
+
+* **ai/generativelanguage:** Add code execution ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **ai/generativelanguage:** Add max_temperature ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+
+### Documentation
+
+* **ai/generativelanguage:** Minor fixes ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.6.0...ai/v0.7.0) (2024-06-12)
+
+
+### Features
+
+* **ai/generativelanguage/apiv1beta:** Add SetGoogleClientInfo for all clients ([#10272](https://github.com/googleapis/google-cloud-go/issues/10272)) ([0dee490](https://github.com/googleapis/google-cloud-go/commit/0dee49034889f59160bd1beb8d5573fe002eb56a))
+* **ai/generativelanguage:** Add cached_content_token_count to CountTokensResponse ([fc9e895](https://github.com/googleapis/google-cloud-go/commit/fc9e895c460d6911edbe0b47d8fc689cf76a4a58))
+* **ai/generativelanguage:** Add cached_content_token_count to generative_service's UsageMetadata ([fc9e895](https://github.com/googleapis/google-cloud-go/commit/fc9e895c460d6911edbe0b47d8fc689cf76a4a58))
+* **ai/generativelanguage:** Add content caching ([fc9e895](https://github.com/googleapis/google-cloud-go/commit/fc9e895c460d6911edbe0b47d8fc689cf76a4a58))
+
+
+### Documentation
+
+* **ai/generativelanguage:** Small fixes ([fc9e895](https://github.com/googleapis/google-cloud-go/commit/fc9e895c460d6911edbe0b47d8fc689cf76a4a58))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.5.0...ai/v0.6.0) (2024-05-29)
 
 

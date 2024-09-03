@@ -58,6 +58,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudtrace.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -342,6 +343,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudtrace.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -472,11 +474,11 @@ func (c *restClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequ
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetEndTime() != nil {
-			endTime, err := protojson.Marshal(req.GetEndTime())
+			field, err := protojson.Marshal(req.GetEndTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("endTime", string(endTime[1:len(endTime)-1]))
+			params.Add("endTime", string(field[1:len(field)-1]))
 		}
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
@@ -491,11 +493,11 @@ func (c *restClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequ
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetStartTime() != nil {
-			startTime, err := protojson.Marshal(req.GetStartTime())
+			field, err := protojson.Marshal(req.GetStartTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("startTime", string(startTime[1:len(startTime)-1]))
+			params.Add("startTime", string(field[1:len(field)-1]))
 		}
 		if req.GetView() != 0 {
 			params.Add("view", fmt.Sprintf("%v", req.GetView()))

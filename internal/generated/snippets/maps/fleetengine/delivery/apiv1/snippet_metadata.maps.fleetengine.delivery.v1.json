@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/fleetengine/delivery/apiv1",
-    "version": "1.11.0",
+    "version": "1.12.0",
     "language": "GO",
     "apis": [
       {
@@ -382,7 +382,7 @@
     {
       "regionTag": "fleetengine_v1_generated_DeliveryService_UpdateDeliveryVehicle_sync",
       "title": "fleetengine UpdateDeliveryVehicle Sample",
-      "description": "UpdateDeliveryVehicle writes updated `DeliveryVehicle` data to Fleet Engine, and assigns\n`Tasks` to the `DeliveryVehicle`. You cannot update the name of the\n`DeliveryVehicle`. You *can* update `remaining_vehicle_journey_segments`\nthough, but it must contain all of the `VehicleJourneySegment`s currently\non the `DeliveryVehicle`. The `task_id`s are retrieved from\n`remaining_vehicle_journey_segments`, and their corresponding `Tasks` are\nassigned to the `DeliveryVehicle` if they have not yet been assigned.",
+      "description": "UpdateDeliveryVehicle writes updated `DeliveryVehicle` data to Fleet Engine, and assigns\n`Tasks` to the `DeliveryVehicle`. You cannot update the name of the\n`DeliveryVehicle`. You *can* update `remaining_vehicle_journey_segments`,\nbut it must contain all of the `VehicleJourneySegment`s to be persisted on\nthe `DeliveryVehicle`. The `task_id`s are retrieved from\n`remaining_vehicle_journey_segments`, and their corresponding `Tasks` are\nassigned to the `DeliveryVehicle` if they have not yet been assigned.",
       "file": "Client/UpdateDeliveryVehicle/main.go",
       "language": "GO",
       "clientMethod": {

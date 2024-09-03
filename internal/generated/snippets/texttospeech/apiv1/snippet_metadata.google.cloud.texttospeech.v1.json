@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/texttospeech/apiv1",
-    "version": "1.7.7",
+    "version": "1.7.10",
     "language": "GO",
     "apis": [
       {
@@ -145,6 +145,48 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "texttospeech_v1_generated_TextToSpeech_StreamingSynthesize_sync",
+      "title": "texttospeech StreamingSynthesize Sample",
+      "description": "StreamingSynthesize performs bidirectional streaming speech synthesis: receive audio while\nsending text.\n\n\nThis method is not supported for the REST transport.",
+      "file": "Client/StreamingSynthesize/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamingSynthesize",
+        "fullName": "google.cloud.texttospeech.v1.Client.StreamingSynthesize",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "texttospeechpb.TextToSpeech_StreamingSynthesizeClient",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.texttospeech.v1.Client"
+        },
+        "method": {
+          "shortName": "StreamingSynthesize",
+          "fullName": "google.cloud.texttospeech.v1.TextToSpeech.StreamingSynthesize",
+          "service": {
+            "shortName": "TextToSpeech",
+            "fullName": "google.cloud.texttospeech.v1.TextToSpeech"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
           "type": "FULL"
         }
       ]

@@ -26,6 +26,7 @@ import (
 	"strings"
 	"time"
 
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -599,6 +599,7 @@ type FamilyInfo struct {
 	Name         string
 	GCPolicy     string
 	FullGCPolicy GCPolicy
+	ValueType    Type
 }
 
 func (ac *AdminClient) getTable(ctx context.Context, table string, view btapb.Table_View) (*btapb.Table, error) {
@@ -638,6 +639,7 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 			Name:         name,
 			GCPolicy:     GCRuleToString(fam.GcRule),
 			FullGCPolicy: gcRuleToPolicy(fam.GcRule),
+			ValueType:    ProtoToType(fam.ValueType),
 		})
 	}
 	// we expect DeletionProtection to be in the response because Table_SCHEMA_VIEW is being used in this function
@@ -665,58 +667,87 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 	return ti, nil
 }
 
-type gcPolicySettings struct {
+type updateFamilyOption struct {
 	ignoreWarnings bool
 }
 
-// GCPolicyOption is the interface to change GC policy settings
+// GCPolicyOption is deprecated, kept for backwards compatibility, use UpdateFamilyOption in new code
 type GCPolicyOption interface {
-	apply(s *gcPolicySettings)
+	apply(s *updateFamilyOption)
 }
+
+// UpdateFamilyOption is the interface to update family settings
+type UpdateFamilyOption GCPolicyOption
 
 type ignoreWarnings bool
 
-func (w ignoreWarnings) apply(s *gcPolicySettings) {
+func (w ignoreWarnings) apply(s *updateFamilyOption) {
 	s.ignoreWarnings = bool(w)
 }
 
-// IgnoreWarnings returns a gcPolicyOption that ignores safety checks when modifying the column families
+// IgnoreWarnings returns a updateFamilyOption that ignores safety checks when modifying the column families
 func IgnoreWarnings() GCPolicyOption {
 	return ignoreWarnings(true)
-}
-
-func (ac *AdminClient) setGCPolicy(ctx context.Context, table, family string, policy GCPolicy, opts ...GCPolicyOption) error {
-	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	prefix := ac.instancePrefix()
-
-	s := gcPolicySettings{}
-	for _, opt := range opts {
-		if opt != nil {
-			opt.apply(&s)
-		}
-	}
-	req := &btapb.ModifyColumnFamiliesRequest{
-		Name: prefix + "/tables/" + table,
-		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
-			Id:  family,
-			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{Update: &btapb.ColumnFamily{GcRule: policy.proto()}},
-		}},
-		IgnoreWarnings: s.ignoreWarnings,
-	}
-	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
-	return err
 }
 
 // SetGCPolicy specifies which cells in a column family should be garbage collected.
 // GC executes opportunistically in the background; table reads may return data
 // matching the GC policy.
 func (ac *AdminClient) SetGCPolicy(ctx context.Context, table, family string, policy GCPolicy) error {
-	return ac.SetGCPolicyWithOptions(ctx, table, family, policy)
+	return ac.UpdateFamily(ctx, table, family, Family{GCPolicy: policy})
 }
 
 // SetGCPolicyWithOptions is similar to SetGCPolicy but allows passing options
 func (ac *AdminClient) SetGCPolicyWithOptions(ctx context.Context, table, family string, policy GCPolicy, opts ...GCPolicyOption) error {
-	return ac.setGCPolicy(ctx, table, family, policy, opts...)
+	familyOpts := []UpdateFamilyOption{}
+	for _, opt := range opts {
+		if opt != nil {
+			familyOpts = append(familyOpts, opt.(UpdateFamilyOption))
+		}
+	}
+	return ac.UpdateFamily(ctx, table, family, Family{GCPolicy: policy}, familyOpts...)
+}
+
+// UpdateFamily updates column families' garbage colleciton policies and value type.
+func (ac *AdminClient) UpdateFamily(ctx context.Context, table, familyName string, family Family, opts ...UpdateFamilyOption) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+
+	s := updateFamilyOption{}
+	for _, opt := range opts {
+		if opt != nil {
+			opt.apply(&s)
+		}
+	}
+
+	cf := &btapb.ColumnFamily{}
+	mask := &field_mask.FieldMask{}
+	if family.GCPolicy != nil {
+		cf.GcRule = family.GCPolicy.proto()
+		mask.Paths = append(mask.Paths, "gc_rule")
+
+	}
+	if family.ValueType != nil {
+		cf.ValueType = family.ValueType.proto()
+		mask.Paths = append(mask.Paths, "value_type")
+	}
+
+	// No update
+	if len(mask.Paths) == 0 {
+		return nil
+	}
+
+	req := &btapb.ModifyColumnFamiliesRequest{
+		Name: prefix + "/tables/" + table,
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id:         familyName,
+			Mod:        &btapb.ModifyColumnFamiliesRequest_Modification_Update{Update: cf},
+			UpdateMask: mask,
+		}},
+		IgnoreWarnings: s.ignoreWarnings,
+	}
+	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
+	return err
 }
 
 // DropRowRange permanently deletes a row range from the specified table.

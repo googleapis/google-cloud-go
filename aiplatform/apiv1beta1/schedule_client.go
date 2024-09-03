@@ -887,6 +887,11 @@ func (c *scheduleRESTClient) CreateSchedule(ctx context.Context, req *aiplatform
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/schedules", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -941,6 +946,11 @@ func (c *scheduleRESTClient) DeleteSchedule(ctx context.Context, req *aiplatform
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1000,6 +1010,11 @@ func (c *scheduleRESTClient) GetSchedule(ctx context.Context, req *aiplatformpb.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1070,6 +1085,7 @@ func (c *scheduleRESTClient) ListSchedules(ctx context.Context, req *aiplatformp
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/schedules", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1159,6 +1175,11 @@ func (c *scheduleRESTClient) PauseSchedule(ctx context.Context, req *aiplatformp
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:pause", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1208,6 +1229,11 @@ func (c *scheduleRESTClient) ResumeSchedule(ctx context.Context, req *aiplatform
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:resume", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1260,12 +1286,13 @@ func (c *scheduleRESTClient) UpdateSchedule(ctx context.Context, req *aiplatform
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetSchedule().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1324,6 +1351,11 @@ func (c *scheduleRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1394,6 +1426,7 @@ func (c *scheduleRESTClient) ListLocations(ctx context.Context, req *locationpb.
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1478,6 +1511,11 @@ func (c *scheduleRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1542,6 +1580,11 @@ func (c *scheduleRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
@@ -1610,6 +1653,11 @@ func (c *scheduleRESTClient) TestIamPermissions(ctx context.Context, req *iampb.
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1665,6 +1713,11 @@ func (c *scheduleRESTClient) CancelOperation(ctx context.Context, req *longrunni
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1702,6 +1755,11 @@ func (c *scheduleRESTClient) DeleteOperation(ctx context.Context, req *longrunni
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1738,6 +1796,11 @@ func (c *scheduleRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1808,6 +1871,7 @@ func (c *scheduleRESTClient) ListOperations(ctx context.Context, req *longrunnin
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1886,12 +1950,13 @@ func (c *scheduleRESTClient) WaitOperation(ctx context.Context, req *longrunning
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

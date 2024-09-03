@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dlp/apiv2",
-    "version": "1.14.0",
+    "version": "1.18.0",
     "language": "GO",
     "apis": [
       {
@@ -651,6 +651,51 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteFileStoreDataProfile_sync",
+      "title": "dlp DeleteFileStoreDataProfile Sample",
+      "description": "DeleteFileStoreDataProfile delete a FileStoreDataProfile. Will not prevent the profile from being\nregenerated if the resource is still included in a discovery configuration.",
+      "file": "Client/DeleteFileStoreDataProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFileStoreDataProfile",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteFileStoreDataProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteFileStoreDataProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteFileStoreDataProfile",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteFileStoreDataProfile",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_DeleteInspectTemplate_sync",
       "title": "dlp DeleteInspectTemplate Sample",
       "description": "DeleteInspectTemplate deletes an InspectTemplate.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-templates\nto learn more.",
@@ -1106,6 +1151,52 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_GetFileStoreDataProfile_sync",
+      "title": "dlp GetFileStoreDataProfile Sample",
+      "description": "GetFileStoreDataProfile gets a file store data profile.",
+      "file": "Client/GetFileStoreDataProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFileStoreDataProfile",
+        "fullName": "google.privacy.dlp.v2.Client.GetFileStoreDataProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetFileStoreDataProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.FileStoreDataProfile",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetFileStoreDataProfile",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetFileStoreDataProfile",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_GetInspectTemplate_sync",
       "title": "dlp GetInspectTemplate Sample",
       "description": "GetInspectTemplate gets an InspectTemplate.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-templates\nto learn more.",
@@ -1522,7 +1613,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_ListConnections_sync",
       "title": "dlp ListConnections Sample",
-      "description": "ListConnections lists Connections in a parent.",
+      "description": "ListConnections lists Connections in a parent. Use SearchConnections to see all connections\nwithin an organization.",
       "file": "Client/ListConnections/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1688,6 +1779,52 @@
         "method": {
           "shortName": "ListDlpJobs",
           "fullName": "google.privacy.dlp.v2.DlpService.ListDlpJobs",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListFileStoreDataProfiles_sync",
+      "title": "dlp ListFileStoreDataProfiles Sample",
+      "description": "ListFileStoreDataProfiles lists file store data profiles for an organization.",
+      "file": "Client/ListFileStoreDataProfiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFileStoreDataProfiles",
+        "fullName": "google.privacy.dlp.v2.Client.ListFileStoreDataProfiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListFileStoreDataProfilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FileStoreDataProfileIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListFileStoreDataProfiles",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListFileStoreDataProfiles",
           "service": {
             "shortName": "DlpService",
             "fullName": "google.privacy.dlp.v2.DlpService"

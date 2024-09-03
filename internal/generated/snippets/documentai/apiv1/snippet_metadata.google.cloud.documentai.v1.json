@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/documentai/apiv1",
-    "version": "1.30.0",
+    "version": "1.33.0",
     "language": "GO",
     "apis": [
       {
@@ -105,7 +105,7 @@
     {
       "regionTag": "documentai_v1_generated_DocumentProcessorService_CreateProcessor_sync",
       "title": "documentai CreateProcessor Sample",
-      "description": "CreateProcessor creates a processor from the\n[ProcessorType][google.cloud.documentai.v1.ProcessorType] provided. The\nprocessor will be at `ENABLED` state by default after its creation.",
+      "description": "CreateProcessor creates a processor from the\n[ProcessorType][google.cloud.documentai.v1.ProcessorType] provided. The\nprocessor will be at `ENABLED` state by default after its creation. Note\nthat this method requires the `documentai.processors.create` permission on\nthe project, which is highly privileged. A user or service account with\nthis permission can create new processors that can interact with any gcs\nbucket in your project.",
       "file": "DocumentProcessorClient/CreateProcessor/main.go",
       "language": "GO",
       "clientMethod": {

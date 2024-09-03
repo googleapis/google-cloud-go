@@ -18,12 +18,18 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+)
+
+var (
+	// ErrRowNotFound row not found error
+	ErrRowNotFound = errors.New("row not found")
 )
 
 // Error is the structured error returned by Cloud Spanner client.
@@ -94,7 +100,7 @@ func (e *Error) Unwrap() error {
 // This allows the error to be converted to a gRPC status using
 // `status.Convert(error)`.
 func (e *Error) GRPCStatus() *status.Status {
-	err := unwrap(e)
+	err := errors.Unwrap(e)
 	for {
 		// If the base error is nil, return status created from e.Code and e.Desc.
 		if err == nil {
@@ -104,7 +110,7 @@ func (e *Error) GRPCStatus() *status.Status {
 		if code != codes.Unknown {
 			return status.New(code, e.Desc)
 		}
-		err = unwrap(err)
+		err = errors.Unwrap(err)
 	}
 }
 
@@ -155,7 +161,7 @@ func toSpannerErrorWithCommitInfo(err error, errorDuringCommit bool) error {
 		return nil
 	}
 	var se *Error
-	if errorAs(err, &se) {
+	if errors.As(err, &se) {
 		return se
 	}
 	switch {
@@ -193,7 +199,7 @@ func ErrCode(err error) codes.Code {
 // ErrDesc extracts the Cloud Spanner error description from a Go error.
 func ErrDesc(err error) string {
 	var se *Error
-	if !errorAs(err, &se) {
+	if !errors.As(err, &se) {
 		return err.Error()
 	}
 	return se.Desc
@@ -204,7 +210,7 @@ func ErrDesc(err error) string {
 func extractResourceType(err error) (string, bool) {
 	var s *status.Status
 	var se *Error
-	if errorAs(err, &se) {
+	if errors.As(err, &se) {
 		// Unwrap statusError.
 		s = status.Convert(se.Unwrap())
 	} else {

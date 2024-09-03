@@ -1,5 +1,84 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.17.0...dlp/v1.18.0) (2024-08-20)
+
+
+### Features
+
+* **dlp:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **dlp:** File store data profiles can now be filtered by type and storage location ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **dlp:** Inspect template modified cadence discovery config for Cloud SQL ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+
+### Documentation
+
+* **dlp:** Small improvements ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.16.0...dlp/v1.17.0) (2024-08-08)
+
+
+### Features
+
+* **dlp:** Add the TagResources API ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
+
+### Bug Fixes
+
+* **dlp:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.15.0...dlp/v1.16.0) (2024-08-01)
+
+
+### Features
+
+* **dlp:** Add refresh frequency for data profiling ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **dlp:** GRPC config for get, list, and delete FileStoreDataProfiles ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+* **dlp:** Org-level connection bindings ([#10601](https://github.com/googleapis/google-cloud-go/issues/10601)) ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
+
+### Documentation
+
+* **dlp:** Replace HTML tags with CommonMark notation ([#10613](https://github.com/googleapis/google-cloud-go/issues/10613)) ([d949cc0](https://github.com/googleapis/google-cloud-go/commit/d949cc0e5d44af62154d9d5fd393f25a852f93ed))
+* **dlp:** Small improvements ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.14.3...dlp/v1.15.0) (2024-07-24)
+
+
+### Features
+
+* **dlp:** Add Cloud Storage discovery support ([#10527](https://github.com/googleapis/google-cloud-go/issues/10527)) ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+
+### Bug Fixes
+
+* **dlp:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **dlp:** Updated method documentation ([eb63f0d](https://github.com/googleapis/google-cloud-go/commit/eb63f0d4f42a06581e1425f99c2a03d52d6cb404))
+
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.14.2...dlp/v1.14.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **dlp:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.14.1...dlp/v1.14.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **dlp:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.14.0...dlp/v1.14.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **dlp:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.13.0...dlp/v1.14.0) (2024-05-29)
 
 

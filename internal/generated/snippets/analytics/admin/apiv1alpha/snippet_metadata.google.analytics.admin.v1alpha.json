@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
-    "version": "0.23.2",
+    "version": "0.25.0",
     "language": "GO",
     "apis": [
       {
@@ -606,6 +606,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateBigQueryLink_sync",
+      "title": "analyticsadmin CreateBigQueryLink Sample",
+      "description": "CreateBigQueryLink creates a BigQueryLink.",
+      "file": "AnalyticsAdminClient/CreateBigQueryLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBigQueryLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateBigQueryLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateBigQueryLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.BigQueryLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateBigQueryLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateBigQueryLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateCalculatedMetric_sync",
       "title": "analyticsadmin CreateCalculatedMetric Sample",
       "description": "CreateCalculatedMetric creates a CalculatedMetric.",
@@ -746,7 +792,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateConversionEvent_sync",
       "title": "analyticsadmin CreateConversionEvent Sample",
-      "description": "CreateConversionEvent creates a conversion event with the specified attributes.",
+      "description": "CreateConversionEvent deprecated: Use `CreateKeyEvent` instead.\nCreates a conversion event with the specified attributes.\n\n\nDeprecated: CreateConversionEvent may be removed in a future version.",
       "file": "AnalyticsAdminClient/CreateConversionEvent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1066,6 +1112,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateEventEditRule_sync",
+      "title": "analyticsadmin CreateEventEditRule Sample",
+      "description": "CreateEventEditRule creates an EventEditRule.",
+      "file": "AnalyticsAdminClient/CreateEventEditRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEventEditRule",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateEventEditRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateEventEditRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.EventEditRule",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateEventEditRule",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateEventEditRule",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateExpandedDataSet_sync",
       "title": "analyticsadmin CreateExpandedDataSet Sample",
       "description": "CreateExpandedDataSet creates a ExpandedDataSet.",
@@ -1188,6 +1280,52 @@
         "method": {
           "shortName": "CreateGoogleAdsLink",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateGoogleAdsLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateKeyEvent_sync",
+      "title": "analyticsadmin CreateKeyEvent Sample",
+      "description": "CreateKeyEvent creates a Key Event.",
+      "file": "AnalyticsAdminClient/CreateKeyEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateKeyEvent",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateKeyEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateKeyEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.KeyEvent",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateKeyEvent",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateKeyEvent",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -1480,52 +1618,6 @@
       ]
     },
     {
-      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateSubproperty_sync",
-      "title": "analyticsadmin CreateSubproperty Sample",
-      "description": "CreateSubproperty create a subproperty and a subproperty event filter that applies to the\ncreated subproperty.",
-      "file": "AnalyticsAdminClient/CreateSubproperty/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateSubproperty",
-        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateSubproperty",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "adminpb.CreateSubpropertyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*adminpb.CreateSubpropertyResponse",
-        "client": {
-          "shortName": "AnalyticsAdminClient",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
-        },
-        "method": {
-          "shortName": "CreateSubproperty",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSubproperty",
-          "service": {
-            "shortName": "AnalyticsAdminService",
-            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateSubpropertyEventFilter_sync",
       "title": "analyticsadmin CreateSubpropertyEventFilter Sample",
       "description": "CreateSubpropertyEventFilter creates a subproperty Event Filter.",
@@ -1707,6 +1799,51 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteBigQueryLink_sync",
+      "title": "analyticsadmin DeleteBigQueryLink Sample",
+      "description": "DeleteBigQueryLink deletes a BigQueryLink on a property.",
+      "file": "AnalyticsAdminClient/DeleteBigQueryLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBigQueryLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteBigQueryLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteBigQueryLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteBigQueryLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteBigQueryLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteCalculatedMetric_sync",
       "title": "analyticsadmin DeleteCalculatedMetric Sample",
       "description": "DeleteCalculatedMetric deletes a CalculatedMetric on a property.",
@@ -1844,7 +1981,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteConversionEvent_sync",
       "title": "analyticsadmin DeleteConversionEvent Sample",
-      "description": "DeleteConversionEvent deletes a conversion event in a property.",
+      "description": "DeleteConversionEvent deprecated: Use `DeleteKeyEvent` instead.\nDeletes a conversion event in a property.\n\n\nDeprecated: DeleteConversionEvent may be removed in a future version.",
       "file": "AnalyticsAdminClient/DeleteConversionEvent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2067,6 +2204,51 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteEventEditRule_sync",
+      "title": "analyticsadmin DeleteEventEditRule Sample",
+      "description": "DeleteEventEditRule deletes an EventEditRule.",
+      "file": "AnalyticsAdminClient/DeleteEventEditRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEventEditRule",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteEventEditRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteEventEditRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteEventEditRule",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteEventEditRule",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteExpandedDataSet_sync",
       "title": "analyticsadmin DeleteExpandedDataSet Sample",
       "description": "DeleteExpandedDataSet deletes a ExpandedDataSet on a property.",
@@ -2186,6 +2368,51 @@
         "method": {
           "shortName": "DeleteGoogleAdsLink",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteGoogleAdsLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteKeyEvent_sync",
+      "title": "analyticsadmin DeleteKeyEvent Sample",
+      "description": "DeleteKeyEvent deletes a Key Event.",
+      "file": "AnalyticsAdminClient/DeleteKeyEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteKeyEvent",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteKeyEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteKeyEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteKeyEvent",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteKeyEvent",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -2935,7 +3162,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetConversionEvent_sync",
       "title": "analyticsadmin GetConversionEvent Sample",
-      "description": "GetConversionEvent retrieve a single conversion event.",
+      "description": "GetConversionEvent deprecated: Use `GetKeyEvent` instead.\nRetrieve a single conversion event.\n\n\nDeprecated: GetConversionEvent may be removed in a future version.",
       "file": "AnalyticsAdminClient/GetConversionEvent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3439,6 +3666,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetEventEditRule_sync",
+      "title": "analyticsadmin GetEventEditRule Sample",
+      "description": "GetEventEditRule lookup for a single EventEditRule.",
+      "file": "AnalyticsAdminClient/GetEventEditRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEventEditRule",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetEventEditRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetEventEditRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.EventEditRule",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetEventEditRule",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetEventEditRule",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetExpandedDataSet_sync",
       "title": "analyticsadmin GetExpandedDataSet Sample",
       "description": "GetExpandedDataSet lookup for a single ExpandedDataSet.",
@@ -3561,6 +3834,52 @@
         "method": {
           "shortName": "GetGoogleSignalsSettings",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetGoogleSignalsSettings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetKeyEvent_sync",
+      "title": "analyticsadmin GetKeyEvent Sample",
+      "description": "GetKeyEvent retrieve a single Key Event.",
+      "file": "AnalyticsAdminClient/GetKeyEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetKeyEvent",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetKeyEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetKeyEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.KeyEvent",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetKeyEvent",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetKeyEvent",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -4269,7 +4588,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListConversionEvents_sync",
       "title": "analyticsadmin ListConversionEvents Sample",
-      "description": "ListConversionEvents returns a list of conversion events in the specified parent property.\n\nReturns an empty list if no conversion events are found.",
+      "description": "ListConversionEvents deprecated: Use `ListKeyEvents` instead.\nReturns a list of conversion events in the specified parent property.\n\nReturns an empty list if no conversion events are found.\n\n\nDeprecated: ListConversionEvents may be removed in a future version.",
       "file": "AnalyticsAdminClient/ListConversionEvents/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4589,6 +4908,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListEventEditRules_sync",
+      "title": "analyticsadmin ListEventEditRules Sample",
+      "description": "ListEventEditRules lists EventEditRules on a web data stream.",
+      "file": "AnalyticsAdminClient/ListEventEditRules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEventEditRules",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListEventEditRules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListEventEditRulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EventEditRuleIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListEventEditRules",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListEventEditRules",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListExpandedDataSets_sync",
       "title": "analyticsadmin ListExpandedDataSets Sample",
       "description": "ListExpandedDataSets lists ExpandedDataSets on a property.",
@@ -4711,6 +5076,52 @@
         "method": {
           "shortName": "ListGoogleAdsLinks",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListGoogleAdsLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListKeyEvents_sync",
+      "title": "analyticsadmin ListKeyEvents Sample",
+      "description": "ListKeyEvents returns a list of Key Events in the specified parent property.\nReturns an empty list if no Key Events are found.",
+      "file": "AnalyticsAdminClient/ListKeyEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListKeyEvents",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListKeyEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListKeyEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "KeyEventIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListKeyEvents",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListKeyEvents",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -5049,6 +5460,97 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ProvisionSubproperty_sync",
+      "title": "analyticsadmin ProvisionSubproperty Sample",
+      "description": "ProvisionSubproperty create a subproperty and a subproperty event filter that applies to the\ncreated subproperty.",
+      "file": "AnalyticsAdminClient/ProvisionSubproperty/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ProvisionSubproperty",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ProvisionSubproperty",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ProvisionSubpropertyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ProvisionSubpropertyResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ProvisionSubproperty",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ProvisionSubproperty",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ReorderEventEditRules_sync",
+      "title": "analyticsadmin ReorderEventEditRules Sample",
+      "description": "ReorderEventEditRules changes the processing order of event edit rules on the specified stream.",
+      "file": "AnalyticsAdminClient/ReorderEventEditRules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReorderEventEditRules",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ReorderEventEditRules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ReorderEventEditRulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ReorderEventEditRules",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ReorderEventEditRules",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_RunAccessReport_sync",
       "title": "analyticsadmin RunAccessReport Sample",
       "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. Reports may be\nrequested for any property, but dimensions that aren't related to quota can\nonly be requested on Google Analytics 360 properties. This method is only\navailable to Administrators.\n\nThese data access records include GA4 UI Reporting, GA4 UI Explorations,\nGA4 Data API, and other products like Firebase & Admob that can retrieve\ndata from Google Analytics through a linkage. These records don't include\nproperty configuration changes like adding a stream or changing a\nproperty's time zone. For configuration change history, see\n[searchChangeHistoryEvents](https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).",
@@ -5371,6 +5873,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateBigQueryLink_sync",
+      "title": "analyticsadmin UpdateBigQueryLink Sample",
+      "description": "UpdateBigQueryLink updates a BigQueryLink.",
+      "file": "AnalyticsAdminClient/UpdateBigQueryLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBigQueryLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateBigQueryLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateBigQueryLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.BigQueryLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateBigQueryLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateBigQueryLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateCalculatedMetric_sync",
       "title": "analyticsadmin UpdateCalculatedMetric Sample",
       "description": "UpdateCalculatedMetric updates a CalculatedMetric on a property.",
@@ -5465,7 +6013,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateConversionEvent_sync",
       "title": "analyticsadmin UpdateConversionEvent Sample",
-      "description": "UpdateConversionEvent updates a conversion event with the specified attributes.",
+      "description": "UpdateConversionEvent deprecated: Use `UpdateKeyEvent` instead.\nUpdates a conversion event with the specified attributes.\n\n\nDeprecated: UpdateConversionEvent may be removed in a future version.",
       "file": "AnalyticsAdminClient/UpdateConversionEvent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5877,6 +6425,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateEventEditRule_sync",
+      "title": "analyticsadmin UpdateEventEditRule Sample",
+      "description": "UpdateEventEditRule updates an EventEditRule.",
+      "file": "AnalyticsAdminClient/UpdateEventEditRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEventEditRule",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateEventEditRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateEventEditRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.EventEditRule",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateEventEditRule",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateEventEditRule",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateExpandedDataSet_sync",
       "title": "analyticsadmin UpdateExpandedDataSet Sample",
       "description": "UpdateExpandedDataSet updates a ExpandedDataSet on a property.",
@@ -5999,6 +6593,52 @@
         "method": {
           "shortName": "UpdateGoogleSignalsSettings",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateGoogleSignalsSettings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateKeyEvent_sync",
+      "title": "analyticsadmin UpdateKeyEvent Sample",
+      "description": "UpdateKeyEvent updates a Key Event.",
+      "file": "AnalyticsAdminClient/UpdateKeyEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateKeyEvent",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateKeyEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateKeyEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.KeyEvent",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateKeyEvent",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateKeyEvent",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"

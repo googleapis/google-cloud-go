@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/spanner/admin/database/apiv1",
-    "version": "1.63.0",
+    "version": "1.67.0",
     "language": "GO",
     "apis": [
       {
@@ -149,6 +149,52 @@
       ]
     },
     {
+      "regionTag": "spanner_v1_generated_DatabaseAdmin_CreateBackupSchedule_sync",
+      "title": "spanner CreateBackupSchedule Sample",
+      "description": "CreateBackupSchedule creates a new backup schedule.",
+      "file": "DatabaseAdminClient/CreateBackupSchedule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBackupSchedule",
+        "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient.CreateBackupSchedule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "databasepb.CreateBackupScheduleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*databasepb.BackupSchedule",
+        "client": {
+          "shortName": "DatabaseAdminClient",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
+        },
+        "method": {
+          "shortName": "CreateBackupSchedule",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.CreateBackupSchedule",
+          "service": {
+            "shortName": "DatabaseAdmin",
+            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_CreateDatabase_sync",
       "title": "spanner CreateDatabase Sample",
       "description": "CreateDatabase creates a new Cloud Spanner database and starts to prepare it for serving.\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format `<database_name>/operations/<operation_id>` and\ncan be used to track preparation of the database. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[CreateDatabaseMetadata][google.spanner.admin.database.v1.CreateDatabaseMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[Database][google.spanner.admin.database.v1.Database], if successful.",
@@ -224,6 +270,51 @@
         "method": {
           "shortName": "DeleteBackup",
           "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.DeleteBackup",
+          "service": {
+            "shortName": "DatabaseAdmin",
+            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_DatabaseAdmin_DeleteBackupSchedule_sync",
+      "title": "spanner DeleteBackupSchedule Sample",
+      "description": "DeleteBackupSchedule deletes a backup schedule.",
+      "file": "DatabaseAdminClient/DeleteBackupSchedule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBackupSchedule",
+        "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient.DeleteBackupSchedule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "databasepb.DeleteBackupScheduleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DatabaseAdminClient",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteBackupSchedule",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.DeleteBackupSchedule",
           "service": {
             "shortName": "DatabaseAdmin",
             "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
@@ -360,6 +451,52 @@
         "method": {
           "shortName": "GetBackup",
           "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.GetBackup",
+          "service": {
+            "shortName": "DatabaseAdmin",
+            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_DatabaseAdmin_GetBackupSchedule_sync",
+      "title": "spanner GetBackupSchedule Sample",
+      "description": "GetBackupSchedule gets backup schedule for the input schedule name.",
+      "file": "DatabaseAdminClient/GetBackupSchedule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackupSchedule",
+        "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient.GetBackupSchedule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "databasepb.GetBackupScheduleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*databasepb.BackupSchedule",
+        "client": {
+          "shortName": "DatabaseAdminClient",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
+        },
+        "method": {
+          "shortName": "GetBackupSchedule",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.GetBackupSchedule",
           "service": {
             "shortName": "DatabaseAdmin",
             "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
@@ -590,6 +727,52 @@
         "method": {
           "shortName": "ListBackupOperations",
           "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.ListBackupOperations",
+          "service": {
+            "shortName": "DatabaseAdmin",
+            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_DatabaseAdmin_ListBackupSchedules_sync",
+      "title": "spanner ListBackupSchedules Sample",
+      "description": "ListBackupSchedules lists all the backup schedules for the database.",
+      "file": "DatabaseAdminClient/ListBackupSchedules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackupSchedules",
+        "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient.ListBackupSchedules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "databasepb.ListBackupSchedulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupScheduleIterator",
+        "client": {
+          "shortName": "DatabaseAdminClient",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
+        },
+        "method": {
+          "shortName": "ListBackupSchedules",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.ListBackupSchedules",
           "service": {
             "shortName": "DatabaseAdmin",
             "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
@@ -1004,6 +1187,52 @@
         "method": {
           "shortName": "UpdateBackup",
           "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.UpdateBackup",
+          "service": {
+            "shortName": "DatabaseAdmin",
+            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_DatabaseAdmin_UpdateBackupSchedule_sync",
+      "title": "spanner UpdateBackupSchedule Sample",
+      "description": "UpdateBackupSchedule updates a backup schedule.",
+      "file": "DatabaseAdminClient/UpdateBackupSchedule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBackupSchedule",
+        "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient.UpdateBackupSchedule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "databasepb.UpdateBackupScheduleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*databasepb.BackupSchedule",
+        "client": {
+          "shortName": "DatabaseAdminClient",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateBackupSchedule",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.UpdateBackupSchedule",
           "service": {
             "shortName": "DatabaseAdmin",
             "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"

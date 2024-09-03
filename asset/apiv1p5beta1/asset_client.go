@@ -55,6 +55,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudasset.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -262,6 +263,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudasset.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -375,11 +377,11 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadTime() != nil {
-			readTime, err := protojson.Marshal(req.GetReadTime())
+			field, err := protojson.Marshal(req.GetReadTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readTime", string(readTime[1:len(readTime)-1]))
+			params.Add("readTime", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()

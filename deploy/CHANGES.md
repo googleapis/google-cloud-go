@@ -1,6 +1,81 @@
 # Changes
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.21.2...deploy/v1.22.0) (2024-08-20)
+
+
+### Features
+
+* **deploy:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.21.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.21.1...deploy/v1.21.2) (2024-08-13)
+
+
+### Documentation
+
+* **deploy:** Very minor documentation updates ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.21.0...deploy/v1.21.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **deploy:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.20.0...deploy/v1.21.0) (2024-08-01)
+
+
+### Features
+
+* **deploy:** Add support for different Pod selector labels when doing canaries ([#10581](https://github.com/googleapis/google-cloud-go/issues/10581)) ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+
+### Bug Fixes
+
+* **deploy:** Make changes to an API that is disabled on the server, but whose client libraries were prematurely published ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **deploy:** Remove an API that was mistakenly made public ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.19.3...deploy/v1.20.0) (2024-07-24)
+
+
+### Features
+
+* **deploy:** Added support for configuring a proxy_url to a Kubernetes server ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **deploy:** Added support for deploy policies ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **deploy:** Added support for new custom target type and deploy policy platform logs ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
+
+### Bug Fixes
+
+* **deploy:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+
+### Documentation
+
+* **deploy:** Small Cloud Deploy API documentation updates ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **deploy:** Small corrections to Cloud Deploy API documentation ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
+## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.19.2...deploy/v1.19.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **deploy:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.19.1...deploy/v1.19.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **deploy:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.19.0...deploy/v1.19.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **deploy:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.18.1...deploy/v1.19.0) (2024-05-16)
 
 

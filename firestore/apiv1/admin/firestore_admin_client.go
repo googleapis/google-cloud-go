@@ -56,6 +56,7 @@ type FirestoreAdminCallOptions struct {
 	ListFields           []gax.CallOption
 	ExportDocuments      []gax.CallOption
 	ImportDocuments      []gax.CallOption
+	BulkDeleteDocuments  []gax.CallOption
 	CreateDatabase       []gax.CallOption
 	GetDatabase          []gax.CallOption
 	ListDatabases        []gax.CallOption
@@ -174,6 +175,9 @@ func defaultFirestoreAdminCallOptions() *FirestoreAdminCallOptions {
 		ImportDocuments: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		BulkDeleteDocuments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		CreateDatabase:       []gax.CallOption{},
 		GetDatabase:          []gax.CallOption{},
 		ListDatabases:        []gax.CallOption{},
@@ -274,6 +278,9 @@ func defaultFirestoreAdminRESTCallOptions() *FirestoreAdminCallOptions {
 		ImportDocuments: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		BulkDeleteDocuments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		CreateDatabase:       []gax.CallOption{},
 		GetDatabase:          []gax.CallOption{},
 		ListDatabases:        []gax.CallOption{},
@@ -313,6 +320,8 @@ type internalFirestoreAdminClient interface {
 	ExportDocumentsOperation(name string) *ExportDocumentsOperation
 	ImportDocuments(context.Context, *adminpb.ImportDocumentsRequest, ...gax.CallOption) (*ImportDocumentsOperation, error)
 	ImportDocumentsOperation(name string) *ImportDocumentsOperation
+	BulkDeleteDocuments(context.Context, *adminpb.BulkDeleteDocumentsRequest, ...gax.CallOption) (*BulkDeleteDocumentsOperation, error)
+	BulkDeleteDocumentsOperation(name string) *BulkDeleteDocumentsOperation
 	CreateDatabase(context.Context, *adminpb.CreateDatabaseRequest, ...gax.CallOption) (*CreateDatabaseOperation, error)
 	CreateDatabaseOperation(name string) *CreateDatabaseOperation
 	GetDatabase(context.Context, *adminpb.GetDatabaseRequest, ...gax.CallOption) (*adminpb.Database, error)
@@ -511,6 +520,24 @@ func (c *FirestoreAdminClient) ImportDocuments(ctx context.Context, req *adminpb
 // The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
 func (c *FirestoreAdminClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
 	return c.internalClient.ImportDocumentsOperation(name)
+}
+
+// BulkDeleteDocuments bulk deletes a subset of documents from Google Cloud Firestore.
+// Documents created or updated after the underlying system starts to process
+// the request will not be deleted. The bulk delete occurs in the background
+// and its progress can be monitored and managed via the Operation resource
+// that is created.
+//
+// For more details on bulk delete behavior, refer to:
+// https://cloud.google.com/firestore/docs/manage-data/bulk-delete (at https://cloud.google.com/firestore/docs/manage-data/bulk-delete)
+func (c *FirestoreAdminClient) BulkDeleteDocuments(ctx context.Context, req *adminpb.BulkDeleteDocumentsRequest, opts ...gax.CallOption) (*BulkDeleteDocumentsOperation, error) {
+	return c.internalClient.BulkDeleteDocuments(ctx, req, opts...)
+}
+
+// BulkDeleteDocumentsOperation returns a new BulkDeleteDocumentsOperation from a given name.
+// The name must be that of a previously created BulkDeleteDocumentsOperation, possibly from a different process.
+func (c *FirestoreAdminClient) BulkDeleteDocumentsOperation(name string) *BulkDeleteDocumentsOperation {
+	return c.internalClient.BulkDeleteDocumentsOperation(name)
 }
 
 // CreateDatabase create a database.
@@ -1097,6 +1124,26 @@ func (c *firestoreAdminGRPCClient) ImportDocuments(ctx context.Context, req *adm
 		return nil, err
 	}
 	return &ImportDocumentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *firestoreAdminGRPCClient) BulkDeleteDocuments(ctx context.Context, req *adminpb.BulkDeleteDocumentsRequest, opts ...gax.CallOption) (*BulkDeleteDocumentsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BulkDeleteDocuments[0:len((*c.CallOptions).BulkDeleteDocuments):len((*c.CallOptions).BulkDeleteDocuments)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.firestoreAdminClient.BulkDeleteDocuments(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BulkDeleteDocumentsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1806,11 +1853,11 @@ func (c *firestoreAdminRESTClient) UpdateField(ctx context.Context, req *adminpb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2120,6 +2167,83 @@ func (c *firestoreAdminRESTClient) ImportDocuments(ctx context.Context, req *adm
 	}, nil
 }
 
+// BulkDeleteDocuments bulk deletes a subset of documents from Google Cloud Firestore.
+// Documents created or updated after the underlying system starts to process
+// the request will not be deleted. The bulk delete occurs in the background
+// and its progress can be monitored and managed via the Operation resource
+// that is created.
+//
+// For more details on bulk delete behavior, refer to:
+// https://cloud.google.com/firestore/docs/manage-data/bulk-delete (at https://cloud.google.com/firestore/docs/manage-data/bulk-delete)
+func (c *firestoreAdminRESTClient) BulkDeleteDocuments(ctx context.Context, req *adminpb.BulkDeleteDocumentsRequest, opts ...gax.CallOption) (*BulkDeleteDocumentsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:bulkDeleteDocuments", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &BulkDeleteDocumentsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // CreateDatabase create a database.
 func (c *firestoreAdminRESTClient) CreateDatabase(ctx context.Context, req *adminpb.CreateDatabaseRequest, opts ...gax.CallOption) (*CreateDatabaseOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2262,6 +2386,9 @@ func (c *firestoreAdminRESTClient) ListDatabases(ctx context.Context, req *admin
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetShowDeleted() {
+		params.Add("showDeleted", fmt.Sprintf("%v", req.GetShowDeleted()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2330,11 +2457,11 @@ func (c *firestoreAdminRESTClient) UpdateDatabase(ctx context.Context, req *admi
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2912,11 +3039,11 @@ func (c *firestoreAdminRESTClient) UpdateBackupSchedule(ctx context.Context, req
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3250,6 +3377,24 @@ func (c *firestoreAdminRESTClient) ListOperations(ctx context.Context, req *long
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// BulkDeleteDocumentsOperation returns a new BulkDeleteDocumentsOperation from a given name.
+// The name must be that of a previously created BulkDeleteDocumentsOperation, possibly from a different process.
+func (c *firestoreAdminGRPCClient) BulkDeleteDocumentsOperation(name string) *BulkDeleteDocumentsOperation {
+	return &BulkDeleteDocumentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BulkDeleteDocumentsOperation returns a new BulkDeleteDocumentsOperation from a given name.
+// The name must be that of a previously created BulkDeleteDocumentsOperation, possibly from a different process.
+func (c *firestoreAdminRESTClient) BulkDeleteDocumentsOperation(name string) *BulkDeleteDocumentsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &BulkDeleteDocumentsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // CreateDatabaseOperation returns a new CreateDatabaseOperation from a given name.

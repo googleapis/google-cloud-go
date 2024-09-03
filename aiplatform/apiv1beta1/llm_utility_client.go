@@ -638,6 +638,11 @@ func (c *llmUtilityRESTClient) ComputeTokens(ctx context.Context, req *aiplatfor
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:computeTokens", req.GetEndpoint())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
 
@@ -692,6 +697,11 @@ func (c *llmUtilityRESTClient) GetLocation(ctx context.Context, req *locationpb.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -762,6 +772,7 @@ func (c *llmUtilityRESTClient) ListLocations(ctx context.Context, req *locationp
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -846,6 +857,11 @@ func (c *llmUtilityRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -910,6 +926,11 @@ func (c *llmUtilityRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
@@ -978,6 +999,11 @@ func (c *llmUtilityRESTClient) TestIamPermissions(ctx context.Context, req *iamp
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1033,6 +1059,11 @@ func (c *llmUtilityRESTClient) CancelOperation(ctx context.Context, req *longrun
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1070,6 +1101,11 @@ func (c *llmUtilityRESTClient) DeleteOperation(ctx context.Context, req *longrun
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1106,6 +1142,11 @@ func (c *llmUtilityRESTClient) GetOperation(ctx context.Context, req *longrunnin
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1176,6 +1217,7 @@ func (c *llmUtilityRESTClient) ListOperations(ctx context.Context, req *longrunn
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1254,12 +1296,13 @@ func (c *llmUtilityRESTClient) WaitOperation(ctx context.Context, req *longrunni
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
