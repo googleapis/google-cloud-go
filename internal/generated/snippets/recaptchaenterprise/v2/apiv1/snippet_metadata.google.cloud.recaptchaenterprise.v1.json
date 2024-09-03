@@ -14,7 +14,7 @@
     {
       "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_AddIpOverride_sync",
       "title": "recaptchaenterprise AddIpOverride Sample",
-      "description": "AddIpOverride adds an IP override to a key. The following restrictions hold: \n* The maximum number of IP overrides per key is 100.\n* For any conflict (such as IP already exists or IP part of an existing\nIP range), an error will be returned.",
+      "description": "AddIpOverride adds an IP override to a key. The following restrictions hold: \n* The maximum number of IP overrides per key is 100.\n* For any conflict (such as IP already exists or IP part of an existing\nIP range), an error is returned.",
       "file": "Client/AddIpOverride/main.go",
       "language": "GO",
       "clientMethod": {
