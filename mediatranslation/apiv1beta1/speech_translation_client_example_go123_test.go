@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package mediatranslation_test
-
-import (
-	mediatranslation "cloud.google.com/go/mediatranslation/apiv1beta1"
-)
