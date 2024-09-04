@@ -282,25 +282,12 @@ func TestIntegration_ReadRowList(t *testing.T) {
 }
 
 func TestIntegration_UpdateFamilyValueType(t *testing.T) {
-	testEnv, err := NewIntegrationEnv()
+	ctx := context.Background()
+	testEnv, _, adminClient, _, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
-		t.Fatalf("IntegrationEnv: %v", err)
+		t.Fatal(err)
 	}
-	defer testEnv.Close()
-
-	if !testEnv.Config().UseProd {
-		t.Skip("emulator doesn't support update column family operation")
-	}
-
-	timeout := 15 * time.Minute
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	adminClient, err := testEnv.NewAdminClient()
-	if err != nil {
-		t.Fatalf("NewAdminClient: %v", err)
-	}
-	defer adminClient.Close()
+	defer cleanup()
 
 	tblConf := TableConf{
 		TableID: testEnv.Config().Table,
