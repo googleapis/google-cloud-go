@@ -517,9 +517,9 @@ const (
 	DistanceMeasureDotProduct DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_DOT_PRODUCT)
 )
 
-// FindNearestOptions are options for a FindNearest vector query.
+// VectorQueryOptions are options for a FindNearest vector query.
 // At present, there are no options.
-type FindNearestOptions struct {
+type VectorQueryOptions struct {
 }
 
 // VectorQuery represents a query that uses [Query.FindNearest] or [Query.FindNearestPath].
@@ -545,7 +545,7 @@ type VectorQuery struct {
 //   - []float64
 //   - Vector32
 //   - Vector64
-func (q Query) FindNearest(vectorField string, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
+func (q Query) FindNearest(vectorField string, queryVector any, limit int, measure DistanceMeasure, options *VectorQueryOptions) VectorQuery {
 	// Validate field path
 	fieldPath, err := parseDotSeparatedString(vectorField)
 	if err != nil {
@@ -561,7 +561,7 @@ func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
 }
 
 // FindNearestPath is like [Query.FindNearest] but it accepts a [FieldPath].
-func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
+func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit int, measure DistanceMeasure, options *VectorQueryOptions) VectorQuery {
 	vq := VectorQuery{q: q}
 
 	// Convert field path to field reference
