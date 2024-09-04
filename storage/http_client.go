@@ -905,7 +905,6 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 						res.Body.Close()
 					}
 				case <-done:
-					log.Println("Request completed successfully.")
 					cancel = nil
 				}
 
