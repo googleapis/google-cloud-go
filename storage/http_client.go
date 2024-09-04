@@ -905,7 +905,6 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 						res.Body.Close()
 					}
 				case <-done:
-					log.Println("Request completed successfully.")
 					cancel = nil
 				}
 
@@ -1592,7 +1591,7 @@ func parseReadResponse(ctx context.Context, res *http.Response, params *newRange
 					// the case where the application is not making calls to Read and so
 					// throughput is low for that reason.
 					if (stats.readCalls-initialReadCalls > 1 || stats.readCallOpen) && stats.seen-initialSeen < s.retry.minReadThroughput.bytes {
-						log.Printf("Closing stream for %s due to slowness\n", params.object)
+						log.Printf("Closing stream for %s due to slowness (%d bytes read)\n", params.object, stats.seen-initialSeen)
 						httpReader.body.Close()
 					}
 					// Reset these to test throughput again in the next period.
