@@ -26,23 +26,6 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
-func ExampleNewHostProjectRegistrationClient() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewHostProjectRegistrationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	// TODO: Use client.
-	_ = c
-}
-
 func ExampleNewHostProjectRegistrationRESTClient() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -67,7 +50,7 @@ func ExampleHostProjectRegistrationClient_CreateHostProjectRegistration() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewHostProjectRegistrationClient(ctx)
+	c, err := apihub.NewHostProjectRegistrationRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -92,7 +75,7 @@ func ExampleHostProjectRegistrationClient_GetHostProjectRegistration() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewHostProjectRegistrationClient(ctx)
+	c, err := apihub.NewHostProjectRegistrationRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -117,7 +100,7 @@ func ExampleHostProjectRegistrationClient_ListHostProjectRegistrations() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewHostProjectRegistrationClient(ctx)
+	c, err := apihub.NewHostProjectRegistrationRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -154,7 +137,7 @@ func ExampleHostProjectRegistrationClient_GetLocation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewHostProjectRegistrationClient(ctx)
+	c, err := apihub.NewHostProjectRegistrationRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -179,7 +162,7 @@ func ExampleHostProjectRegistrationClient_ListLocations() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewHostProjectRegistrationClient(ctx)
+	c, err := apihub.NewHostProjectRegistrationRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -216,7 +199,7 @@ func ExampleHostProjectRegistrationClient_CancelOperation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewHostProjectRegistrationClient(ctx)
+	c, err := apihub.NewHostProjectRegistrationRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -239,7 +222,7 @@ func ExampleHostProjectRegistrationClient_DeleteOperation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewHostProjectRegistrationClient(ctx)
+	c, err := apihub.NewHostProjectRegistrationRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -262,7 +245,7 @@ func ExampleHostProjectRegistrationClient_GetOperation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewHostProjectRegistrationClient(ctx)
+	c, err := apihub.NewHostProjectRegistrationRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -287,7 +270,7 @@ func ExampleHostProjectRegistrationClient_ListOperations() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewHostProjectRegistrationClient(ctx)
+	c, err := apihub.NewHostProjectRegistrationRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

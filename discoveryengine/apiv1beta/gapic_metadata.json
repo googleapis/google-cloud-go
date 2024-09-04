@@ -466,6 +466,11 @@
         "grpc": {
           "libraryClient": "DocumentClient",
           "rpcs": {
+            "BatchGetDocumentsMetadata": {
+              "methods": [
+                "BatchGetDocumentsMetadata"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -521,6 +526,11 @@
         "rest": {
           "libraryClient": "DocumentClient",
           "rpcs": {
+            "BatchGetDocumentsMetadata": {
+              "methods": [
+                "BatchGetDocumentsMetadata"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
