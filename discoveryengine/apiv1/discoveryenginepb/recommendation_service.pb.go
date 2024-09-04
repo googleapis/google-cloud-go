@@ -22,9 +22,6 @@ package discoveryenginepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -47,7 +46,8 @@ type RecommendRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Full resource name of a [ServingConfig][]:
+	// Required. Full resource name of a
+	// [ServingConfig][google.cloud.discoveryengine.v1.ServingConfig]:
 	// `projects/*/locations/global/collections/*/engines/*/servingConfigs/*`, or
 	// `projects/*/locations/global/collections/*/dataStores/*/servingConfigs/*`
 	//

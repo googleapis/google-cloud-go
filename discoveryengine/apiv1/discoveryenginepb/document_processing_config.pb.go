@@ -21,12 +21,11 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -68,6 +67,8 @@ type DocumentProcessingConfig struct {
 	// * `docx`: Override parsing config for DOCX files, only digital parsing and
 	// layout parsing are supported.
 	// * `pptx`: Override parsing config for PPTX files, only digital parsing and
+	// layout parsing are supported.
+	// * `xlsx`: Override parsing config for XLSX files, only digital parsing and
 	// layout parsing are supported.
 	ParsingConfigOverrides map[string]*DocumentProcessingConfig_ParsingConfig `protobuf:"bytes,5,rep,name=parsing_config_overrides,json=parsingConfigOverrides,proto3" json:"parsing_config_overrides,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }

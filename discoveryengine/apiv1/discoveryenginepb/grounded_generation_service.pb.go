@@ -22,15 +22,14 @@ package discoveryenginepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -296,8 +295,9 @@ type CheckGroundingResponse_Claim struct {
 	// field will be set to false. In that case, no grounding check was done for
 	// the claim and therefore
 	// [citation_indices][google.cloud.discoveryengine.v1.CheckGroundingResponse.Claim.citation_indices],
+	// [anti_citation_indices][google.cloud.discoveryengine.v1.CheckGroundingResponse.Claim.anti_citation_indices],
 	// and
-	// [anti_citation_indices][google.cloud.discoveryengine.v1.CheckGroundingResponse.Claim.anti_citation_indices]
+	// [score][google.cloud.discoveryengine.v1.CheckGroundingResponse.Claim.score]
 	// should not be returned.
 	GroundingCheckRequired *bool `protobuf:"varint,6,opt,name=grounding_check_required,json=groundingCheckRequired,proto3,oneof" json:"grounding_check_required,omitempty"`
 }
