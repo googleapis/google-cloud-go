@@ -197,7 +197,7 @@ func (c *AclConfigClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// UpdateAclConfig default Acl Configuration for use in a location of a customer’s project.
+// UpdateAclConfig default ACL configuration for use in a location of a customer’s project.
 // Updates will only reflect to new data stores. Existing data stores will
 // still use the old value.
 func (c *AclConfigClient) UpdateAclConfig(ctx context.Context, req *discoveryenginepb.UpdateAclConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.AclConfig, error) {
@@ -488,7 +488,7 @@ func (c *aclConfigGRPCClient) ListOperations(ctx context.Context, req *longrunni
 	return it
 }
 
-// UpdateAclConfig default Acl Configuration for use in a location of a customer’s project.
+// UpdateAclConfig default ACL configuration for use in a location of a customer’s project.
 // Updates will only reflect to new data stores. Existing data stores will
 // still use the old value.
 func (c *aclConfigRESTClient) UpdateAclConfig(ctx context.Context, req *discoveryenginepb.UpdateAclConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.AclConfig, error) {

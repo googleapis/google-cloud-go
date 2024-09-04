@@ -26,23 +26,6 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
-func ExampleNewRuntimeProjectAttachmentClient() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	// TODO: Use client.
-	_ = c
-}
-
 func ExampleNewRuntimeProjectAttachmentRESTClient() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -67,7 +50,7 @@ func ExampleRuntimeProjectAttachmentClient_CreateRuntimeProjectAttachment() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -92,7 +75,7 @@ func ExampleRuntimeProjectAttachmentClient_DeleteRuntimeProjectAttachment() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -115,7 +98,7 @@ func ExampleRuntimeProjectAttachmentClient_GetRuntimeProjectAttachment() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -140,7 +123,7 @@ func ExampleRuntimeProjectAttachmentClient_ListRuntimeProjectAttachments() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -177,7 +160,7 @@ func ExampleRuntimeProjectAttachmentClient_LookupRuntimeProjectAttachment() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -202,7 +185,7 @@ func ExampleRuntimeProjectAttachmentClient_GetLocation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -227,7 +210,7 @@ func ExampleRuntimeProjectAttachmentClient_ListLocations() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -264,7 +247,7 @@ func ExampleRuntimeProjectAttachmentClient_CancelOperation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -287,7 +270,7 @@ func ExampleRuntimeProjectAttachmentClient_DeleteOperation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -310,7 +293,7 @@ func ExampleRuntimeProjectAttachmentClient_GetOperation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -335,7 +318,7 @@ func ExampleRuntimeProjectAttachmentClient_ListOperations() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

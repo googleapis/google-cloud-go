@@ -1,5 +1,12 @@
 # Changes
 
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.10.0...gkeconnect/v0.11.0) (2024-08-27)
+
+
+### Features
+
+* **gkeconnect:** New client(s) ([#10773](https://github.com/googleapis/google-cloud-go/issues/10773)) ([eeee867](https://github.com/googleapis/google-cloud-go/commit/eeee867c16397d617ff8071959ca7fd86f7232ca))
+
 ## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.9.0...gkeconnect/v0.10.0) (2024-08-23)
 
 

@@ -33,7 +33,7 @@ func ExampleApiHubPluginClient_ListLocations_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubPluginClient(ctx)
+	c, err := apihub.NewApiHubPluginRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -59,7 +59,7 @@ func ExampleApiHubPluginClient_ListOperations_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubPluginClient(ctx)
+	c, err := apihub.NewApiHubPluginRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

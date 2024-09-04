@@ -563,6 +563,9 @@ func TestEncodeValue(t *testing.T) {
 		{[]*pb.Genre{nil, (*pb.Genre)(nil)}, listProto(nullProto(), nullProto()), listType(tProtoEnum), "Array of Proto Enum with nil values"},
 		{[]*pb.SingerInfo{singer1ProtoMsg, singer2ProtoMsg, nil, (*pb.SingerInfo)(nil)}, listProto(protoMessageProto(singer1ProtoMsg), protoMessageProto(singer2ProtoMsg), nullProto(), nullProto()), listType(tProtoMessage), "Array of Proto Message with non-nil and nil values"},
 		{[]*pb.Genre{&singer1ProtoEnum, &singer2ProtoEnum, nil, (*pb.Genre)(nil)}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum), nullProto(), nullProto()), listType(tProtoEnum), "Array of Proto Enum with non-nil and nil values"},
+		// PROTO MESSAGE AND ENUM WITH CUSTOM ENCODER
+		{&pb.CustomSingerInfo{SingerName: &sValue}, stringProto("abc"), tString, "Proto message with encoder interface to string"},
+		{pb.CustomGenre_CUSTOM_ROCK, stringProto("CUSTOM_ROCK"), tString, "Proto Enum with encoder interface to string"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -1996,6 +1999,8 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode all NULL elements in ARRAY<PROTO<>> to []*pb.SingerInfo", proto: listProto(nullProto(), nullProto()), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo{nil, nil}},
 		{desc: "decode ARRAY<ENUM<>> to []*pb.Genre", proto: listProto(nullProto(), protoEnumProto(pb.Genre_ROCK), protoEnumProto(pb.Genre_FOLK)), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{nil, &singerEnumValue, &singer2ProtoEnum}},
 		{desc: "decode all NULL elements in ARRAY<ENUM<>> to []*pb.Genre", proto: listProto(nullProto(), nullProto()), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{nil, nil}},
+		// PROTO MESSAGE WITH CUSTOM DECODER
+		{desc: "decode STRING to Proto message", proto: stringProto("abc"), protoType: stringType(), want: pb.CustomSingerInfo{SingerName: proto.String("abc")}},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()
