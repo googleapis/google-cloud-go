@@ -102,6 +102,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		wantCreateTSCallsCount int // No. of CreateTimeSeries calls
 		wantMethods            []string
 		wantOTELValue          map[string]map[string]int64
+		wantOTELMetrics        map[string][]string
 	}{
 		{
 			desc:                   "should create a new tracer factory with default meter provider",
@@ -118,6 +119,11 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 					nativeMetricsPrefix + metricNameAttemptCount:   2,
 					nativeMetricsPrefix + metricNameOperationCount: 1,
 				},
+			},
+			wantOTELMetrics: map[string][]string{
+				createSessionRPC: wantMetricTypesGCM,
+				// since operation will be retries once we will have extra attempt latency for this operation
+				"Spanner.StreamingRead": append(wantMetricTypesGCM, nativeMetricsPrefix+metricNameAttemptLatencies),
 			},
 		},
 		{
@@ -201,7 +207,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 				}
 				for method, gotMetricTypes := range gotMetricTypesPerMethod {
 					sort.Strings(gotMetricTypes)
-					if !testutil.Equal(gotMetricTypes, wantMetricTypesGCM) {
+					if !testutil.Equal(gotMetricTypes, test.wantOTELMetrics[method]) {
 						t.Errorf("Metric types missing in req. %s got: %v, want: %v", method, gotMetricTypes, wantMetricTypesGCM)
 					}
 				}

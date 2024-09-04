@@ -628,10 +628,11 @@ type wrappedStream struct {
 	grpc.ClientStream
 }
 
-func (w *wrappedStream) SendMsg(m any) error {
+func (w *wrappedStream) RecvMsg(m any) error {
 	attempt := &attemptTracer{}
 	attempt.setStartTime(time.Now())
-	err := w.ClientStream.SendMsg(m)
+	err := w.ClientStream.RecvMsg(m)
+	statusCode, _ := status.FromError(err)
 	ctx := w.ClientStream.Context()
 	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
 	if !ok || !w.isFirstRecv {
@@ -646,7 +647,6 @@ func (w *wrappedStream) SendMsg(m any) error {
 	if strings.HasPrefix(w.target, "google-c2p") {
 		mt.currOp.setDirectPathEnabled(true)
 	}
-	statusCode, _ := status.FromError(err)
 	isDirectPathUsed := false
 	peerInfo, ok := peer.FromContext(ctx)
 	if ok {
@@ -663,8 +663,8 @@ func (w *wrappedStream) SendMsg(m any) error {
 	return err
 }
 
-func (w *wrappedStream) RecvMsg(m any) error {
-	return w.ClientStream.RecvMsg(m)
+func (w *wrappedStream) SendMsg(m any) error {
+	return w.ClientStream.SendMsg(m)
 }
 
 func newWrappedStream(s grpc.ClientStream, method, target string) grpc.ClientStream {
