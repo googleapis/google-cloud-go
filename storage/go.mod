@@ -18,11 +18,11 @@ require (
 	go.opentelemetry.io/otel/sdk v1.29.0
 	go.opentelemetry.io/otel/sdk/metric v1.29.0
 	golang.org/x/oauth2 v0.22.0
-	google.golang.org/api v0.194.0
+	google.golang.org/api v0.195.0
 	google.golang.org/genproto v0.0.0-20240827150818-7e3bb234dfed
 	google.golang.org/genproto/googleapis/api v0.0.0-20240827150818-7e3bb234dfed
 	google.golang.org/grpc v1.66.0
-	google.golang.org/grpc/stats/opentelemetry v0.0.0-20240815194846-86135c37f383
+	google.golang.org/grpc/stats/opentelemetry v0.0.0-20240903060519-cd05c9e58fb9
 	google.golang.org/protobuf v1.34.2
 )
 

@@ -14,8 +14,8 @@ require (
 	github.com/googleapis/gax-go/v2 v2.13.0
 	go.opencensus.io v0.24.0
 	golang.org/x/sync v0.8.0
-	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9
-	google.golang.org/api v0.194.0
+	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da
+	google.golang.org/api v0.195.0
 	google.golang.org/genproto v0.0.0-20240827150818-7e3bb234dfed
 	google.golang.org/genproto/googleapis/api v0.0.0-20240827150818-7e3bb234dfed
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240827150818-7e3bb234dfed
