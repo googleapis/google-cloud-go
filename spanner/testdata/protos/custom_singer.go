@@ -14,32 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-syntax = "proto3";
+package protos
 
-package examples.spanner.music;
-option go_package = "protos/";
+import (
+	"errors"
+)
 
-message SingerInfo {
-  optional int64 singer_id = 1;
-  optional string birth_date = 2;
-  optional string nationality = 3;
-  optional Genre genre = 4;
+func (c *CustomSingerInfo) EncodeSpanner() (interface{}, error) {
+	if c == nil {
+		return nil, nil
+	}
+	return c.SingerName, nil
 }
 
-enum Genre {
-  POP = 0;
-  JAZZ = 1;
-  FOLK = 2;
-  ROCK = 3;
+func (c CustomGenre) EncodeSpanner() (interface{}, error) {
+	return c.String(), nil
 }
 
-message CustomSingerInfo {
-  optional string singer_name = 1;
-}
-
-enum CustomGenre {
-  CUSTOM_POP = 0;
-  CUSTOM_JAZZ = 1;
-  CUSTOM_FOLK = 2;
-  CUSTOM_ROCK = 3;
+func (c *CustomSingerInfo) DecodeSpanner(input interface{}) error {
+	str, ok := input.(string)
+	if !ok {
+		return errors.New("the interface does not contain a string")
+	}
+	c.SingerName = &str
+	return nil
 }

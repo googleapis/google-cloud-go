@@ -2279,6 +2279,15 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 		reflect.ValueOf(p.ProtoEnumVal).Elem().SetInt(y)
 		p.Valid = true
 	case proto.Message:
+		// Check if the pointer is a custom type that implements spanner.Decoder
+		// interface.
+		if decodedVal, ok := ptr.(Decoder); ok {
+			x, err := getGenericValue(t, v)
+			if err != nil {
+				return err
+			}
+			return decodedVal.DecodeSpanner(x)
+		}
 		if p == nil {
 			return errNilDst(p)
 		}
@@ -4429,6 +4438,16 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 	case []GenericColumnValue:
 		return nil, nil, errEncoderUnsupportedType(v)
 	case protoreflect.Enum:
+		// Check if the value is of protoreflect.Enum type that implements spanner.Encoder
+		// interface.
+		if encodedVal, ok := v.(Encoder); ok {
+			nv, err := encodedVal.EncodeSpanner()
+			if err != nil {
+				return nil, nil, err
+			}
+			return encodeValue(nv)
+		}
+
 		if v != nil {
 			var protoEnumfqn string
 			rv := reflect.ValueOf(v)
@@ -4447,6 +4466,16 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		}
 		return nil, nil, errNotValidSrc(v)
 	case proto.Message:
+		// Check if the value is of proto.Message type that implements spanner.Encoder
+		// interface.
+		if encodedVal, ok := v.(Encoder); ok {
+			nv, err := encodedVal.EncodeSpanner()
+			if err != nil {
+				return nil, nil, err
+			}
+			return encodeValue(nv)
+		}
+
 		if v != nil {
 			if v.ProtoReflect().IsValid() {
 				bytes, err := proto.Marshal(v)

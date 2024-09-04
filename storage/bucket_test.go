@@ -1113,6 +1113,7 @@ func TestBucketRetryer(t *testing.T) {
 					WithMaxAttempts(5),
 					WithErrorFunc(func(err error) bool { return false }),
 					WithMinReadThroughput(1024, time.Second))
+					WithReadDynamicTimeout(0.99, 15, time.Second, time.Second, 2*time.Second))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1126,6 +1127,13 @@ func TestBucketRetryer(t *testing.T) {
 				minReadThroughput: &readThroughput{
 					bytes:  1024,
 					period: time.Second,
+				},
+				readDynamicTimeout: &readDynamicTimeout{
+					targetPercentile: 0.99,
+					increaseRate:     15,
+					initial:          time.Second,
+					min:              time.Second,
+					max:              time.Second,
 				},
 			},
 		},
@@ -1182,6 +1190,22 @@ func TestBucketRetryer(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "set read stall timeout only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(
+					WithReadDynamicTimeout(0.99, 15, time.Second, time.Second, 2*time.Second))
+			},
+			want: &retryConfig{
+				readDynamicTimeout: &readDynamicTimeout{
+					targetPercentile: 0.99,
+					increaseRate:     15,
+					initial:          time.Second,
+					min:              time.Second,
+					max:              time.Second,
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
@@ -1189,7 +1213,7 @@ func TestBucketRetryer(t *testing.T) {
 			if diff := cmp.Diff(
 				b.retry,
 				tc.want,
-				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}, readThroughput{}),
+				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
 				// ErrorFunc cannot be compared directly, but we check if both are
 				// either nil or non-nil.
 				cmp.Comparer(func(a, b func(err error) bool) bool {
