@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package iam_test
-
-import (
-	iam "cloud.google.com/go/policytroubleshooter/iam/apiv3"
-)
