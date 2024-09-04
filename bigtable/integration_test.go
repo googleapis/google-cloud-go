@@ -287,7 +287,7 @@ func TestIntegration_UpdateFamilyValueType(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer cleanup()
+	t.Cleanup(cleanup)
 
 	tblConf := TableConf{
 		TableID: testEnv.Config().Table,
@@ -300,8 +300,9 @@ func TestIntegration_UpdateFamilyValueType(t *testing.T) {
 	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
 		t.Fatalf("Create table from TableConf error: %v", err)
 	}
-	// Clean-up
-	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Clean-up admin table
+	t.Cleanup(func() { deleteTable(ctx, t, adminClient, tblConf.TableID) })
 
 	// Update column family type to string type should be successful
 	update := Family{
