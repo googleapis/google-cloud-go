@@ -3218,6 +3218,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 		cancel()
 	})
 	queryField := "EmbeddedField64"
+	resultField := "vector_distance"
 	indexNames := createVectorIndexes(adminCtx, t, wantDBPath, []vectorIndex{
 		{
 			fieldPath: queryField,
@@ -3302,10 +3303,12 @@ func TestIntegration_FindNearest(t *testing.T) {
 		},
 		{
 			desc: "FindNearest threshold and resultField",
-			vq: collRef.FindNearest(queryField, []float64{1, 2, 3}, 3, DistanceMeasureEuclidean, nil).
-				DistanceResultField("res").DistanceThreshold(20),
+			vq: collRef.FindNearest(queryField, []float64{1, 2, 3}, 3, DistanceMeasureEuclidean, &VectorQueryOptions{
+				DistanceThreshold:   Ptr[float64](20),
+				DistanceResultField: resultField,
+			}),
 			wantBeans:    beans[:3],
-			wantResField: "res",
+			wantResField: resultField,
 		},
 	} {
 

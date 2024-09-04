@@ -523,9 +523,31 @@ const (
 	DistanceMeasureDotProduct DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_DOT_PRODUCT)
 )
 
-// FindNearestOptions are options for a FindNearest vector query.
-// At present, there are no options.
-type FindNearestOptions struct {
+// Ptr returns a pointer to its argument.
+// It can be used to initialize pointer fields:
+//
+//	vectorQueryOptions.DistanceThreshold = firestore.Ptr[float64](0.1)
+func Ptr[T any](t T) *T { return &t }
+
+// VectorQueryOptions are options for a FindNearest vector query.
+type VectorQueryOptions struct {
+	// DistanceThreshold specifies a threshold for which no less similar documents
+	// will be returned. The behavior of the specified [DistanceMeasure] will
+	// affect the meaning of the distance threshold. Since [DistanceMeasureDotProduct]
+	// distances increase when the vectors are more similar, the comparison is inverted.
+	// For [DistanceMeasureEuclidean], [DistanceMeasureCosine]: WHERE distance <= distanceThreshold
+	// For [DistanceMeasureDotProduct]:                         WHERE distance >= distance_threshold
+	//
+	// Ptr can be used to set this field. E.g.
+	//  VectorQueryOptions{
+	// 		DistanceThreshold: firestore.Ptr[float64](0.1)
+	//      DistanceResultField: "vector_distance"
+	// 	}
+	DistanceThreshold *float64
+
+	// DistanceResultField specifies name of the field to output the result of
+	// the vector distance calculation.
+	DistanceResultField string
 }
 
 // VectorQuery represents a query that uses [Query.FindNearest] or [Query.FindNearestPath].
@@ -551,7 +573,7 @@ type VectorQuery struct {
 //   - []float64
 //   - Vector32
 //   - Vector64
-func (q Query) FindNearest(vectorField string, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
+func (q Query) FindNearest(vectorField string, queryVector any, limit int, measure DistanceMeasure, options *VectorQueryOptions) VectorQuery {
 	// Validate field path
 	fieldPath, err := parseDotSeparatedString(vectorField)
 	if err != nil {
@@ -566,42 +588,8 @@ func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
 	return vq.q.Documents(ctx)
 }
 
-// DistanceThreshold returns a new vector query that specifies a threshold for
-// which no less similar documents will be returned. The behavior of the specified
-// [DistanceMeasure] will affect the meaning of the distance threshold. Since
-// [DistanceMeasureDotProduct] distances increase when the vectors are more similar,
-// the comparison is inverted.
-//
-// For [DistanceMeasureEuclidean], [DistanceMeasureCosine]: WHERE distance <= distanceThreshold
-// For [DistanceMeasureDotProduct]:                         WHERE distance >= distance_threshold
-func (vq VectorQuery) DistanceThreshold(threshold float64) VectorQuery {
-	if vq.q.err != nil {
-		return vq
-	}
-	if vq.q.findNearest == nil {
-		vq.q.err = errMalformedVectorQuery
-		return vq
-	}
-	vq.q.findNearest.DistanceThreshold = &wrapperspb.DoubleValue{Value: threshold}
-	return vq
-}
-
-// DistanceResultField returns a new vector query that specifies name of the field
-// to output the result of the vector distance calculation.
-func (vq VectorQuery) DistanceResultField(field string) VectorQuery {
-	if vq.q.err != nil {
-		return vq
-	}
-	if vq.q.findNearest == nil {
-		vq.q.err = errMalformedVectorQuery
-		return vq
-	}
-	vq.q.findNearest.DistanceResultField = field
-	return vq
-}
-
 // FindNearestPath is like [Query.FindNearest] but it accepts a [FieldPath].
-func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
+func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit int, measure DistanceMeasure, options *VectorQueryOptions) VectorQuery {
 	vq := VectorQuery{q: q}
 
 	// Convert field path to field reference
@@ -631,6 +619,13 @@ func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit
 		QueryVector:     fnvq,
 		Limit:           &wrapperspb.Int32Value{Value: trunc32(limit)},
 		DistanceMeasure: pb.StructuredQuery_FindNearest_DistanceMeasure(measure),
+	}
+
+	if options != nil {
+		if options.DistanceThreshold != nil {
+			vq.q.findNearest.DistanceThreshold = &wrapperspb.DoubleValue{Value: *options.DistanceThreshold}
+		}
+		vq.q.findNearest.DistanceResultField = *&options.DistanceResultField
 	}
 	return vq
 }
