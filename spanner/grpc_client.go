@@ -25,7 +25,6 @@ import (
 	"cloud.google.com/go/spanner/internal"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
@@ -44,7 +43,6 @@ const metricsTracerKey contextKey = "metricsTracer"
 type spannerClient interface {
 	CallOptions() *vkit.CallOptions
 	Close() error
-	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	CreateSession(context.Context, *spannerpb.CreateSessionRequest, ...gax.CallOption) (*spannerpb.Session, error)
 	BatchCreateSessions(context.Context, *spannerpb.BatchCreateSessionsRequest, ...gax.CallOption) (*spannerpb.BatchCreateSessionsResponse, error)
@@ -68,9 +66,6 @@ type spannerClient interface {
 // spannerClient interface.
 type grpcSpannerClient struct {
 	raw                  *vkit.Client
-	connPool             gtransport.ConnPool
-	client               spannerpb.SpannerClient
-	xGoogHeaders         []string
 	metricsTracerFactory *builtinMetricsTracerFactory
 }
 
@@ -86,11 +81,8 @@ func newGRPCSpannerClient(ctx context.Context, sc *sessionClient, opts ...option
 	if err != nil {
 		return nil, err
 	}
-	clientOpts := vkit.DefaultClientOptions()
-	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
-	if err != nil {
-		return nil, err
-	}
+
+	g := &grpcSpannerClient{raw: raw, metricsTracerFactory: sc.metricsTracerFactory}
 	clientInfo := []string{"gccl", internal.Version}
 	if sc.userAgent != "" {
 		agentWithVersion := strings.SplitN(sc.userAgent, "/", 2)
@@ -98,11 +90,10 @@ func newGRPCSpannerClient(ctx context.Context, sc *sessionClient, opts ...option
 			clientInfo = append(clientInfo, agentWithVersion[0], agentWithVersion[1])
 		}
 	}
+	raw.SetGoogleClientInfo(clientInfo...)
 	if sc.callOptions != nil {
 		raw.CallOptions = mergeCallOptions(raw.CallOptions, sc.callOptions)
 	}
-	g := &grpcSpannerClient{raw: raw, metricsTracerFactory: sc.metricsTracerFactory, connPool: connPool, client: spannerpb.NewSpannerClient(connPool)}
-	g.setGoogleClientInfo(clientInfo...)
 	return g, nil
 }
 
@@ -113,15 +104,6 @@ func (g *grpcSpannerClient) newBuiltinMetricsTracer(ctx context.Context) *builti
 
 func (g *grpcSpannerClient) CallOptions() *vkit.CallOptions {
 	return g.raw.CallOptions
-}
-
-func (g *grpcSpannerClient) setGoogleClientInfo(keyval ...string) {
-	g.raw.SetGoogleClientInfo(keyval...)
-	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", internal.Version, "gax", gax.Version, "grpc", grpc.Version)
-	g.xGoogHeaders = []string{
-		"x-goog-api-client", gax.XGoogHeader(kv...),
-	}
 }
 
 func (g *grpcSpannerClient) Close() error {
