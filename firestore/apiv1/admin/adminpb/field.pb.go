@@ -103,7 +103,7 @@ func (Field_TtlConfig_State) EnumDescriptor() ([]byte, []int) {
 // Represents a single field in the database.
 //
 // Fields are grouped by their "Collection Group", which represent all
-// collections in the database with the same id.
+// collections in the database with the same ID.
 type Field struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

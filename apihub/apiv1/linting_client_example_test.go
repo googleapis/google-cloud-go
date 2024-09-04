@@ -26,23 +26,6 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
-func ExampleNewLintingClient() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewLintingClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	// TODO: Use client.
-	_ = c
-}
-
 func ExampleNewLintingRESTClient() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -67,7 +50,7 @@ func ExampleLintingClient_GetStyleGuide() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewLintingClient(ctx)
+	c, err := apihub.NewLintingRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -92,7 +75,7 @@ func ExampleLintingClient_GetStyleGuideContents() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewLintingClient(ctx)
+	c, err := apihub.NewLintingRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -117,7 +100,7 @@ func ExampleLintingClient_LintSpec() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewLintingClient(ctx)
+	c, err := apihub.NewLintingRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -140,7 +123,7 @@ func ExampleLintingClient_UpdateStyleGuide() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewLintingClient(ctx)
+	c, err := apihub.NewLintingRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -165,7 +148,7 @@ func ExampleLintingClient_GetLocation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewLintingClient(ctx)
+	c, err := apihub.NewLintingRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -190,7 +173,7 @@ func ExampleLintingClient_ListLocations() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewLintingClient(ctx)
+	c, err := apihub.NewLintingRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -227,7 +210,7 @@ func ExampleLintingClient_CancelOperation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewLintingClient(ctx)
+	c, err := apihub.NewLintingRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -250,7 +233,7 @@ func ExampleLintingClient_DeleteOperation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewLintingClient(ctx)
+	c, err := apihub.NewLintingRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -273,7 +256,7 @@ func ExampleLintingClient_GetOperation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewLintingClient(ctx)
+	c, err := apihub.NewLintingRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -298,7 +281,7 @@ func ExampleLintingClient_ListOperations() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewLintingClient(ctx)
+	c, err := apihub.NewLintingRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
