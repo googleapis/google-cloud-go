@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package automl_test
-
-import (
-	automl "cloud.google.com/go/automl/apiv1beta1"
-)
