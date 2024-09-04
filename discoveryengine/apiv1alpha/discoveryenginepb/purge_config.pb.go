@@ -347,7 +347,7 @@ type PurgeDocumentsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The desired input source for the purging documents based on document ids.
+	// The desired input source for the purging documents based on document IDs.
 	//
 	// Types that are assignable to Source:
 	//

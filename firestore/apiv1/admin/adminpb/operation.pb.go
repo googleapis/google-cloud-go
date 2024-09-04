@@ -453,11 +453,11 @@ type ExportDocumentsMetadata struct {
 	ProgressDocuments *Progress `protobuf:"bytes,4,opt,name=progress_documents,json=progressDocuments,proto3" json:"progress_documents,omitempty"`
 	// The progress, in bytes, of this operation.
 	ProgressBytes *Progress `protobuf:"bytes,5,opt,name=progress_bytes,json=progressBytes,proto3" json:"progress_bytes,omitempty"`
-	// Which collection ids are being exported.
+	// Which collection IDs are being exported.
 	CollectionIds []string `protobuf:"bytes,6,rep,name=collection_ids,json=collectionIds,proto3" json:"collection_ids,omitempty"`
 	// Where the documents are being exported to.
 	OutputUriPrefix string `protobuf:"bytes,7,opt,name=output_uri_prefix,json=outputUriPrefix,proto3" json:"output_uri_prefix,omitempty"`
-	// Which namespace ids are being exported.
+	// Which namespace IDs are being exported.
 	NamespaceIds []string `protobuf:"bytes,8,rep,name=namespace_ids,json=namespaceIds,proto3" json:"namespace_ids,omitempty"`
 	// The timestamp that corresponds to the version of the database that is being
 	// exported. If unspecified, there are no guarantees about the consistency of
@@ -579,11 +579,11 @@ type ImportDocumentsMetadata struct {
 	ProgressDocuments *Progress `protobuf:"bytes,4,opt,name=progress_documents,json=progressDocuments,proto3" json:"progress_documents,omitempty"`
 	// The progress, in bytes, of this operation.
 	ProgressBytes *Progress `protobuf:"bytes,5,opt,name=progress_bytes,json=progressBytes,proto3" json:"progress_bytes,omitempty"`
-	// Which collection ids are being imported.
+	// Which collection IDs are being imported.
 	CollectionIds []string `protobuf:"bytes,6,rep,name=collection_ids,json=collectionIds,proto3" json:"collection_ids,omitempty"`
 	// The location of the documents being imported.
 	InputUriPrefix string `protobuf:"bytes,7,opt,name=input_uri_prefix,json=inputUriPrefix,proto3" json:"input_uri_prefix,omitempty"`
-	// Which namespace ids are being imported.
+	// Which namespace IDs are being imported.
 	NamespaceIds []string `protobuf:"bytes,8,rep,name=namespace_ids,json=namespaceIds,proto3" json:"namespace_ids,omitempty"`
 }
 
@@ -694,9 +694,9 @@ type BulkDeleteDocumentsMetadata struct {
 	ProgressDocuments *Progress `protobuf:"bytes,4,opt,name=progress_documents,json=progressDocuments,proto3" json:"progress_documents,omitempty"`
 	// The progress, in bytes, of this operation.
 	ProgressBytes *Progress `protobuf:"bytes,5,opt,name=progress_bytes,json=progressBytes,proto3" json:"progress_bytes,omitempty"`
-	// The ids of the collection groups that are being deleted.
+	// The IDs of the collection groups that are being deleted.
 	CollectionIds []string `protobuf:"bytes,6,rep,name=collection_ids,json=collectionIds,proto3" json:"collection_ids,omitempty"`
-	// Which namespace ids are being deleted.
+	// Which namespace IDs are being deleted.
 	NamespaceIds []string `protobuf:"bytes,7,rep,name=namespace_ids,json=namespaceIds,proto3" json:"namespace_ids,omitempty"`
 	// The timestamp that corresponds to the version of the database that is being
 	// read to get the list of documents to delete. This time can also be used as
