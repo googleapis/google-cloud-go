@@ -25,9 +25,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
-
-	"google.golang.org/grpc/status"
 
 	"cloud.google.com/go/internal/trace"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
@@ -47,6 +46,7 @@ import (
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
+	"google.golang.org/grpc/status"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/internal"
@@ -559,8 +559,8 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 		option.WithGRPCConnectionPool(numChannels),
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
 		internaloption.AllowNonDefaultServiceAccount(true),
-		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(AddNativeMetricsInterceptor()...)),
-		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(AddStreamNativeMetricsInterceptor()...)),
+		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(addNativeMetricsInterceptor()...)),
+		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(addStreamNativeMetricsInterceptor()...)),
 	}
 	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
@@ -618,6 +618,59 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 	}
 }
 
+// wrappedStream  wraps around the embedded grpc.ClientStream, and intercepts the RecvMsg and
+// SendMsg method call.
+type wrappedStream struct {
+	sync.Mutex
+	isFirstRecv bool
+	method      string
+	target      string
+	grpc.ClientStream
+}
+
+func (w *wrappedStream) SendMsg(m any) error {
+	attempt := &attemptTracer{}
+	attempt.setStartTime(time.Now())
+	err := w.ClientStream.SendMsg(m)
+	ctx := w.ClientStream.Context()
+	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+	if !ok || !w.isFirstRecv {
+		return err
+	}
+	w.Lock()
+	w.isFirstRecv = false
+	w.Unlock()
+	mt.method = w.method
+	mt.currOp.incrementAttemptCount()
+	mt.currOp.currAttempt = attempt
+	if strings.HasPrefix(w.target, "google-c2p") {
+		mt.currOp.setDirectPathEnabled(true)
+	}
+	statusCode, _ := status.FromError(err)
+	isDirectPathUsed := false
+	peerInfo, ok := peer.FromContext(ctx)
+	if ok {
+		if peerInfo.Addr != nil {
+			remoteIP := peerInfo.Addr.String()
+			if strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix) {
+				isDirectPathUsed = true
+			}
+		}
+	}
+	mt.currOp.currAttempt.setStatus(statusCode.Code().String())
+	mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
+	recordAttemptCompletion(mt)
+	return err
+}
+
+func (w *wrappedStream) RecvMsg(m any) error {
+	return w.ClientStream.RecvMsg(m)
+}
+
+func newWrappedStream(s grpc.ClientStream, method, target string) grpc.ClientStream {
+	return &wrappedStream{ClientStream: s, method: method, target: target, isFirstRecv: true}
+}
+
 // metricsInterceptor is a gRPC stream client interceptor that records metrics for stream RPCs.
 func metricsStreamInterceptor() grpc.StreamClientInterceptor {
 	return func(
@@ -628,52 +681,23 @@ func metricsStreamInterceptor() grpc.StreamClientInterceptor {
 		streamer grpc.Streamer,
 		opts ...grpc.CallOption,
 	) (grpc.ClientStream, error) {
-		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-		if !ok {
-			return streamer(ctx, desc, cc, method, opts...)
-		}
-
-		mt.method = method
-		mt.currOp.incrementAttemptCount()
-		mt.currOp.currAttempt = &attemptTracer{}
-		mt.currOp.currAttempt.setStartTime(time.Now())
-		if strings.HasPrefix(cc.Target(), "google-c2p") {
-			mt.currOp.setDirectPathEnabled(true)
-		}
-		clientStream, err := streamer(ctx, desc, cc, method, opts...)
+		s, err := streamer(ctx, desc, cc, method, opts...)
 		if err != nil {
-			statusCode, _ := status.FromError(err)
-			mt.currOp.currAttempt.setStatus(statusCode.Code().String())
-			recordAttemptCompletion(mt)
-			return clientStream, err
+			return nil, err
 		}
-		isDirectPathUsed := false
-		peerInfo, ok := peer.FromContext(clientStream.Context())
-		if ok {
-			if peerInfo.Addr != nil {
-				remoteIP := peerInfo.Addr.String()
-				if strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix) {
-					isDirectPathUsed = true
-				}
-			}
-		}
-		statusCode, _ := status.FromError(err)
-		mt.currOp.currAttempt.setStatus(statusCode.Code().String())
-		mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
-		recordAttemptCompletion(mt)
-		return clientStream, err
+		return newWrappedStream(s, method, cc.Target()), nil
 	}
 }
 
 // AddNativeMetricsInterceptor intercepts unary requests and records metrics for them.
-func AddNativeMetricsInterceptor() []grpc.UnaryClientInterceptor {
+func addNativeMetricsInterceptor() []grpc.UnaryClientInterceptor {
 	unaryInterceptors := []grpc.UnaryClientInterceptor{}
 	unaryInterceptors = append(unaryInterceptors, metricsInterceptor())
 	return unaryInterceptors
 }
 
 // AddStreamNativeMetricsInterceptor intercepts stream requests and records metrics for them.
-func AddStreamNativeMetricsInterceptor() []grpc.StreamClientInterceptor {
+func addStreamNativeMetricsInterceptor() []grpc.StreamClientInterceptor {
 	streamInterceptors := []grpc.StreamClientInterceptor{}
 	streamInterceptors = append(streamInterceptors, metricsStreamInterceptor())
 	return streamInterceptors
