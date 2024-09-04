@@ -21,11 +21,14 @@
 package executorpb
 
 import (
+	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	databasepb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	instancepb "cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
 	spannerpb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -34,8 +37,6 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
