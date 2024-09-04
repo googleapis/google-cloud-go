@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package routeoptimization_test
+
+import (
+	routeoptimization "cloud.google.com/go/maps/routeoptimization/apiv1"
+)
