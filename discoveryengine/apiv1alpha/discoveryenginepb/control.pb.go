@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -129,7 +128,7 @@ type Control struct {
 	// Otherwise an INVALID ARGUMENT error is thrown.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Output only. List of all
-	// [ServingConfig][google.cloud.discoveryengine.v1alpha.ServingConfig] ids
+	// [ServingConfig][google.cloud.discoveryengine.v1alpha.ServingConfig] IDs
 	// this control is attached to. May take up to 10 minutes to update after
 	// changes.
 	AssociatedServingConfigIds []string `protobuf:"bytes,3,rep,name=associated_serving_config_ids,json=associatedServingConfigIds,proto3" json:"associated_serving_config_ids,omitempty"`
