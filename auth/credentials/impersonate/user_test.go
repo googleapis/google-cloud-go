@@ -82,10 +82,6 @@ func TestNewCredentials_user(t *testing.T) {
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
 					defer req.Body.Close()
-					headerAPIClient := req.Header.Get(header.GOOGLE_API_CLIENT_HEADER)
-					if got, want := headerAPIClient, header.GetGoogHeaderToken(header.CredTypeImp, header.TokenTypeAccess); got != want {
-						t.Errorf("header = %q; want %q", got, want)
-					}
 					if strings.Contains(req.URL.Path, "signJwt") {
 						b, err := io.ReadAll(req.Body)
 						if err != nil {
@@ -124,6 +120,10 @@ func TestNewCredentials_user(t *testing.T) {
 						}
 					}
 					if strings.Contains(req.URL.Path, "/token") {
+						headerAPIClient := req.Header.Get(header.GOOGLE_API_CLIENT_HEADER)
+						if got, want := headerAPIClient, header.GetGoogHeaderToken(header.CredTypeImp, header.TokenTypeAccess); got != want {
+							t.Errorf("header = %q; want %q", got, want)
+						}
 						resp := exchangeTokenResponse{
 							AccessToken: userTok,
 							TokenType:   internal.TokenTypeBearer,
