@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package containeranalysis_test
-
-import (
-	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
-)
