@@ -45,10 +45,10 @@ const (
 	Index_QUERY_SCOPE_UNSPECIFIED Index_QueryScope = 0
 	// Indexes with a collection query scope specified allow queries
 	// against a collection that is the child of a specific document, specified
-	// at query time, and that has the collection id specified by the index.
+	// at query time, and that has the collection ID specified by the index.
 	Index_COLLECTION Index_QueryScope = 1
 	// Indexes with a collection group query scope specified allow queries
-	// against all collections that has the collection id specified by the
+	// against all collections that has the collection ID specified by the
 	// index.
 	Index_COLLECTION_GROUP Index_QueryScope = 2
 	// Include all the collections's ancestor in the index. Only available for
@@ -338,11 +338,11 @@ type Index struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Indexes with a collection query scope specified allow queries
 	// against a collection that is the child of a specific document, specified at
-	// query time, and that has the same collection id.
+	// query time, and that has the same collection ID.
 	//
 	// Indexes with a collection group query scope specified allow queries against
 	// all collections descended from a specific document, specified at query
-	// time, and that have the same collection id as this index.
+	// time, and that have the same collection ID as this index.
 	QueryScope Index_QueryScope `protobuf:"varint,2,opt,name=query_scope,json=queryScope,proto3,enum=google.firestore.admin.v1.Index_QueryScope" json:"query_scope,omitempty"`
 	// The API scope supported by this index.
 	ApiScope Index_ApiScope `protobuf:"varint,5,opt,name=api_scope,json=apiScope,proto3,enum=google.firestore.admin.v1.Index_ApiScope" json:"api_scope,omitempty"`
