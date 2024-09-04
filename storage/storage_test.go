@@ -984,7 +984,7 @@ func TestObjectRetryer(t *testing.T) {
 					WithMaxAttempts(5),
 					WithPolicy(RetryAlways),
 					WithErrorFunc(func(err error) bool { return false }),
-					WithMinReadThroughput(1024*1024, 2*time.Second))
+					WithMinReadThroughput(1024*1024, 2*time.Second),
 					WithReadDynamicTimeout(0.99, 15, time.Second, time.Second, 2*time.Second))
 			},
 			want: &retryConfig{

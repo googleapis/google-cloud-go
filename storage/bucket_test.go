@@ -1112,7 +1112,7 @@ func TestBucketRetryer(t *testing.T) {
 					WithPolicy(RetryAlways),
 					WithMaxAttempts(5),
 					WithErrorFunc(func(err error) bool { return false }),
-					WithMinReadThroughput(1024, time.Second))
+					WithMinReadThroughput(1024, time.Second),
 					WithReadDynamicTimeout(0.99, 15, time.Second, time.Second, 2*time.Second))
 			},
 			want: &retryConfig{

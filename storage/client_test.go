@@ -15,9 +15,11 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/url"
 	"os"
@@ -1514,12 +1516,6 @@ func TestRetryReadStallEmulated(t *testing.T) {
 	})
 }
 
-// createRetryTest creates a bucket in the emulator and sets up a test using the
-// Retry Test API for the given instructions. This is intended for emulator tests
-// of retry behavior that are not covered by conformance tests.
-func createRetryTest(t *testing.T, project, bucket string, client storageClient, instructions map[string][]string) string {
-	t.Helper()
-	ctx := context.Background()
 // Test that a stall during a read request is retried when ReadStallTimeout is set.
 func TestRetryReadStallBeginningEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
@@ -1565,6 +1561,18 @@ func TestRetryReadStallBeginningEmulated(t *testing.T) {
 		}
 		defer r.Close()
 
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, r); err != nil {
+			t.Fatalf("io.Copy: %v", err)
+		}
+		if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
+			t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+		}
+
+	})
+}
+
+func plantRetryInstructions(t *testing.T, client storageClient, instructions map[string][]string) string {
 	// Need the HTTP hostname to set up a retry test, as well as knowledge of
 	// underlying transport to specify instructions.
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
