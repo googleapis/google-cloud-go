@@ -68,7 +68,7 @@ func (c computeIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) 
 	if c.format == ComputeTokenFormatFullWithLicense {
 		v.Set("licenses", "TRUE")
 	}
-	callctx.SetHeaders(ctx, header.GOOGLE_API_CLIENT_HEADER, header.GetGoogHeaderToken(header.CredTypeMDS, header.TokenTypeID))
+	ctx = callctx.SetHeaders(ctx, header.GOOGLE_API_CLIENT_HEADER, header.GetGoogHeaderToken(header.CredTypeMDS, header.TokenTypeID))
 	urlSuffix := identitySuffix + "?" + v.Encode()
 	res, err := c.client.GetWithContext(ctx, urlSuffix)
 	if err != nil {

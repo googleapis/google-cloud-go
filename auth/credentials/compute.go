@@ -68,7 +68,7 @@ func (cs computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 		v.Set("scopes", strings.Join(cs.scopes, ","))
 		tokenURI.RawQuery = v.Encode()
 	}
-	callctx.SetHeaders(ctx, header.GOOGLE_API_CLIENT_HEADER, header.GetGoogHeaderToken(header.CredTypeMDS, header.TokenTypeAccess))
+	ctx = callctx.SetHeaders(ctx, header.GOOGLE_API_CLIENT_HEADER, header.GetGoogHeaderToken(header.CredTypeMDS, header.TokenTypeAccess))
 	tokenJSON, err := metadata.GetWithContext(ctx, tokenURI.String())
 	if err != nil {
 		return nil, fmt.Errorf("credentials: cannot fetch token: %w", err)
