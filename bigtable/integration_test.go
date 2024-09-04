@@ -283,43 +283,27 @@ func TestIntegration_ReadRowList(t *testing.T) {
 
 func TestIntegration_UpdateFamilyValueType(t *testing.T) {
 	ctx := context.Background()
-	testEnv, _, adminClient, _, _, cleanup, err := setupIntegration(ctx, t)
+	_, _, adminClient, _, tableName, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(cleanup)
-
-	tblConf := TableConf{
-		TableID: testEnv.Config().Table,
-		ColumnFamilies: map[string]Family{
-			"cf": {
-				GCPolicy: MaxVersionsPolicy(1),
-			},
-		},
-	}
-	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
-		t.Fatalf("Create table from TableConf error: %v", err)
-	}
-
-	// Clean-up admin table
-	t.Cleanup(func() { deleteTable(ctx, t, adminClient, tblConf.TableID) })
-
 	// Update column family type to string type should be successful
 	update := Family{
 		ValueType: StringType{
 			Encoding: StringUtf8BytesEncoding{},
 		},
 	}
-	err = adminClient.UpdateFamily(ctx, tblConf.TableID, "cf", update)
+	err = adminClient.UpdateFamily(ctx, tableName, "follows", update)
 	if err != nil {
 		t.Fatalf("Failed to update value type of family: %v", err)
 	}
 	// Get FamilyInfo to check if the type is updated
-	table, err := adminClient.getTable(ctx, tblConf.TableID, btapb.Table_SCHEMA_VIEW)
+	table, err := adminClient.getTable(ctx, tableName, btapb.Table_SCHEMA_VIEW)
 	if err != nil {
 		t.Fatalf("Failed to get table info: %v", err)
 	}
-	family := table.GetColumnFamilies()["cf"]
+	family := table.GetColumnFamilies()["follows"]
 	if !testutil.Equal(family.ValueType, update.ValueType.proto()) {
 		t.Fatalf("got %v, want %v", family.ValueType, update.ValueType.proto())
 	}
