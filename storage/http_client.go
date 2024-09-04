@@ -1531,9 +1531,10 @@ func parseReadResponse(ctx context.Context, res *http.Response, params *newRange
 			var initialSeen int64
 			var done bool
 			var stats httpReaderStats
+			timer := time.After(s.retry.minReadThroughput.period)
 			for !done {
 				select {
-				case <-time.After(s.retry.minReadThroughput.period):
+				case <-timer:
 					// Only close here if a Read call is in progress or if there have been calls
 					// to Read in the past second. This avoids needlessly closing the stream in
 					// the case where the application is not making calls to Read and so
@@ -1541,9 +1542,10 @@ func parseReadResponse(ctx context.Context, res *http.Response, params *newRange
 					if (stats.readCalls-initialReadCalls > 1 || stats.readCallOpen) && stats.seen-initialSeen < s.retry.minReadThroughput.bytes {
 						httpReader.body.Close()
 					}
-					// Reset these to test throughput again in the next period.
+					// Reset these to test throughput again in the next period, and reset the timer.
 					initialReadCalls = stats.readCalls
 					initialSeen = stats.seen
+					timer = time.After(s.retry.minReadThroughput.period)
 				case <-httpReader.closed:
 					done = true
 				case <-r.ctx.Done():
