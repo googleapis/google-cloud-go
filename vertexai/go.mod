@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.115.1
 	cloud.google.com/go/aiplatform v1.68.0
 	github.com/google/go-cmp v0.6.0
-	google.golang.org/api v0.194.0
+	google.golang.org/api v0.195.0
 	google.golang.org/genproto v0.0.0-20240827150818-7e3bb234dfed
 	google.golang.org/protobuf v1.34.2
 )
