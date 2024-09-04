@@ -74,7 +74,7 @@ func Test3LO_StandardExchange(t *testing.T) {
 		if headerContentType != "application/x-www-form-urlencoded" {
 			t.Errorf("Unexpected Content-Type header %q", headerContentType)
 		}
-		headerAPIClient := r.Header[http.CanonicalHeaderKey(header.GOOGLE_API_CLIENT_HEADER)][0]
+		headerAPIClient := r.Header.Get(header.GOOGLE_API_CLIENT_HEADER)
 		if got, want := headerAPIClient, header.GetGoogHeaderToken(header.CredTypeUser, header.TokenTypeNone); got != want {
 			t.Errorf("header = %q; want %q", got, want)
 		}

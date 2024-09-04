@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	"cloud.google.com/go/auth/credentials/internal/stsexchange"
+	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/header"
 )
@@ -401,7 +402,7 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 func getGoogHeaderValue(conf *Options, p subjectTokenProvider) string {
 	return fmt.Sprintf("gl-go/%s auth/%s google-byoid-sdk source/%s sa-impersonation/%t config-lifetime/%t",
 		header.GoVersion(),
-		"unknown",
+		internal.Version,
 		p.providerType(),
 		conf.ServiceAccountImpersonationURL != "",
 		conf.ServiceAccountImpersonationLifetimeSeconds != 0)

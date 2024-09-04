@@ -355,7 +355,7 @@ func cloneTestOpts() *Options {
 }
 
 func expectedMetricsHeader(source string, saImpersonation bool, configLifetime bool) string {
-	return fmt.Sprintf("gl-go/%s auth/unknown google-byoid-sdk source/%s sa-impersonation/%t config-lifetime/%t", header.GoVersion(), source, saImpersonation, configLifetime)
+	return fmt.Sprintf("gl-go/%s auth/%s google-byoid-sdk source/%s sa-impersonation/%t config-lifetime/%t", header.GoVersion(), internal.Version, source, saImpersonation, configLifetime)
 }
 
 func TestOptionsValidate(t *testing.T) {

@@ -31,14 +31,27 @@ type credType string
 
 const (
 	// GOOGLE_API_CLIENT_HEADER is the header key "x-goog-api-client"
-	GOOGLE_API_CLIENT_HEADER           = "x-goog-api-client"
-	CredTypeImp              credType  = "imp" // SA_IMPERSONATE
-	CredTypeMDS              credType  = "mds" // SA_MDS
-	CredTypeSA               credType  = "sa"  // SA_ASSERTION
-	CredTypeUser             credType  = "u"
-	TokenTypeAccess          tokenType = "at"
-	TokenTypeID              tokenType = "it"
-	TokenTypeNone            tokenType = "NONE"
+	GOOGLE_API_CLIENT_HEADER = "x-goog-api-client"
+	// CredTypeImp is the x-goog-api-client header credential type for
+	// impersonated service accounts.
+	CredTypeImp credType = "imp" // SA_IMPERSONATE
+	// CredTypeMDS is the x-goog-api-client header credential type for compute
+	// metadata server service accounts.
+	CredTypeMDS credType = "mds" // SA_MDS
+	// CredTypeSA is the x-goog-api-client header credential type for service
+	// accounts using assertion flows.
+	CredTypeSA credType = "sa" // SA_ASSERTION
+	// CredTypeUser is the x-goog-api-client header credential type for user
+	// credentials.
+	CredTypeUser credType = "u"
+	// TokenTypeAccess is the x-goog-api-client header token type for access
+	// tokens.
+	TokenTypeAccess tokenType = "at"
+	// TokenTypeID is the x-goog-api-client header token type for ID tokens.
+	TokenTypeID tokenType = "it"
+	// TokenTypeNone is a sentinel value for the x-goog-api-client header token
+	// type, indicating that no value should be sent.
+	TokenTypeNone tokenType = "NONE"
 
 	// versionUnknown is only used when the runtime version cannot be determined.
 	versionUnknown = "UNKNOWN"

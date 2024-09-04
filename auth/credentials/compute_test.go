@@ -26,7 +26,7 @@ const computeMetadataEnvVar = "GCE_METADATA_HOST"
 
 func TestComputeTokenProvider(t *testing.T) {
 	// TODO(quartzmo): un-comment after compute/metadata packages sends x-goog-api-client
-	// headerAPIClient := r.Header[http.CanonicalHeaderKey(header.GOOGLE_API_CLIENT_HEADER)][0]
+	// headerAPIClient := r.Header.Get(header.GOOGLE_API_CLIENT_HEADER)
 	// if got, want := headerAPIClient, header.GetGoogHeaderToken(header.CredTypeMDS, header.TokenTypeAccess); got != want {
 	// 	t.Errorf("header = %q; want %q", got, want)
 	// }
