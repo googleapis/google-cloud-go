@@ -526,11 +526,11 @@ const (
 // Ptr returns a pointer to its argument.
 // It can be used to initialize pointer fields:
 //
-//	vectorQueryOptions.DistanceThreshold = firestore.Ptr[float64](0.1)
+//	findNearestOptions.DistanceThreshold = firestore.Ptr[float64](0.1)
 func Ptr[T any](t T) *T { return &t }
 
-// VectorQueryOptions are options for a FindNearest vector query.
-type VectorQueryOptions struct {
+// FindNearestOptions are options for a FindNearest vector query.
+type FindNearestOptions struct {
 	// DistanceThreshold specifies a threshold for which no less similar documents
 	// will be returned. The behavior of the specified [DistanceMeasure] will
 	// affect the meaning of the distance threshold. Since [DistanceMeasureDotProduct]
@@ -539,7 +539,7 @@ type VectorQueryOptions struct {
 	// For [DistanceMeasureDotProduct]:                         WHERE distance >= distance_threshold
 	//
 	// Ptr can be used to set this field. E.g.
-	//  VectorQueryOptions{
+	//  FindNearestOptions{
 	// 		DistanceThreshold: firestore.Ptr[float64](0.1)
 	//      DistanceResultField: "vector_distance"
 	// 	}
@@ -573,7 +573,7 @@ type VectorQuery struct {
 //   - []float64
 //   - Vector32
 //   - Vector64
-func (q Query) FindNearest(vectorField string, queryVector any, limit int, measure DistanceMeasure, options *VectorQueryOptions) VectorQuery {
+func (q Query) FindNearest(vectorField string, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
 	// Validate field path
 	fieldPath, err := parseDotSeparatedString(vectorField)
 	if err != nil {
@@ -589,7 +589,7 @@ func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
 }
 
 // FindNearestPath is like [Query.FindNearest] but it accepts a [FieldPath].
-func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit int, measure DistanceMeasure, options *VectorQueryOptions) VectorQuery {
+func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
 	vq := VectorQuery{q: q}
 
 	// Convert field path to field reference

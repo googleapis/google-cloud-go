@@ -1874,7 +1874,7 @@ func TestFindNearest(t *testing.T) {
 		{
 			desc: "Valid path with valid vector type WithDistanceResultField and WithDistanceThreshold ",
 			vQuery: c.Collection(collName).
-				FindNearest("path", []float32{5, 6, 7}, limit, DistanceMeasureEuclidean, &VectorQueryOptions{
+				FindNearest("path", []float32{5, 6, 7}, limit, DistanceMeasureEuclidean, &FindNearestOptions{
 					DistanceThreshold:   Ptr[float64](threshold),
 					DistanceResultField: resultField,
 				}),

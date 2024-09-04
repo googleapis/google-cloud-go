@@ -3303,7 +3303,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 		},
 		{
 			desc: "FindNearest threshold and resultField",
-			vq: collRef.FindNearest(queryField, []float64{1, 2, 3}, 3, DistanceMeasureEuclidean, &VectorQueryOptions{
+			vq: collRef.FindNearest(queryField, []float64{1, 2, 3}, 3, DistanceMeasureEuclidean, &FindNearestOptions{
 				DistanceThreshold:   Ptr[float64](20),
 				DistanceResultField: resultField,
 			}),
