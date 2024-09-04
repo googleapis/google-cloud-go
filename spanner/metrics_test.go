@@ -207,6 +207,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 				}
 				for method, gotMetricTypes := range gotMetricTypesPerMethod {
 					sort.Strings(gotMetricTypes)
+					sort.Strings(test.wantOTELMetrics[method])
 					if !testutil.Equal(gotMetricTypes, test.wantOTELMetrics[method]) {
 						t.Errorf("Metric types missing in req. %s got: %v, want: %v", method, gotMetricTypes, wantMetricTypesGCM)
 					}
