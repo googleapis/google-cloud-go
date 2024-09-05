@@ -891,6 +891,9 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 					if err == nil {
 						reqLatency := time.Since(reqStartTime)
 						c.readReqDynamicTimeout.Update(reqLatency)
+					} else if errors.Is(err, context.Canceled) {
+						// Avoid the corner case if current dynamic timeout is less than min latency.
+						c.readReqDynamicTimeout.Increase()
 					}
 					done <- true
 				}()
