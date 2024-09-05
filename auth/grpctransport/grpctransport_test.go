@@ -189,6 +189,19 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 			},
 		},
 		{
+			name: "self-signed, UniverseDomain is non-GDU",
+			in: &Options{
+				DetectOpts: &credentials.DetectOptions{
+					CredentialsFile: "/path/to/a/file",
+				},
+				UniverseDomain: "example.com",
+			},
+			want: &credentials.DetectOptions{
+				CredentialsFile:  "/path/to/a/file",
+				UseSelfSignedJWT: true,
+			},
+		},
+		{
 			name: "use default scopes",
 			in: &Options{
 				InternalOptions: &InternalOptions{
