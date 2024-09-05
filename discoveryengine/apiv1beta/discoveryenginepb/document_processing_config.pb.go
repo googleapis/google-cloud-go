@@ -69,6 +69,8 @@ type DocumentProcessingConfig struct {
 	// layout parsing are supported.
 	// * `pptx`: Override parsing config for PPTX files, only digital parsing and
 	// layout parsing are supported.
+	// * `xlsx`: Override parsing config for XLSX files, only digital parsing and
+	// layout parsing are supported.
 	ParsingConfigOverrides map[string]*DocumentProcessingConfig_ParsingConfig `protobuf:"bytes,5,rep,name=parsing_config_overrides,json=parsingConfigOverrides,proto3" json:"parsing_config_overrides,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
