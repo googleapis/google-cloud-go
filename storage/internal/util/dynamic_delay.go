@@ -82,6 +82,20 @@ func NewDelay(targetPercentile float64, increaseRate float64, minDelay, maxDelay
 	}, nil
 }
 
+func (d *Delay) Increase() {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+
+	d.increase()
+}
+
+func (d *Delay) Decrease() {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+
+	d.decrease()
+}
+
 // increase notes that the RPC took longer than the delay returned by Value.
 func (d *Delay) increase() {
 	v := time.Duration(float64(d.value) * d.increaseFactor)
