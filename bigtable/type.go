@@ -99,13 +99,22 @@ type StringEncoding interface {
 	proto() *btapb.Type_String_Encoding
 }
 
-// StringUtf8Encoding represents a string with UTF-8 encoding.
-type StringUtf8Encoding struct {
-}
+// StringUtf8Encoding represents an UTF-8 raw encoding for a string.
+// DEPRECATED: Please use StringUtf8BytesEncoding.
+type StringUtf8Encoding struct{}
 
 func (encoding StringUtf8Encoding) proto() *btapb.Type_String_Encoding {
 	return &btapb.Type_String_Encoding{
 		Encoding: &btapb.Type_String_Encoding_Utf8Raw_{},
+	}
+}
+
+// StringUtf8BytesEncoding represents an UTF-8 bytes encoding for a string.
+type StringUtf8BytesEncoding struct{}
+
+func (encoding StringUtf8BytesEncoding) proto() *btapb.Type_String_Encoding {
+	return &btapb.Type_String_Encoding{
+		Encoding: &btapb.Type_String_Encoding_Utf8Bytes_{},
 	}
 }
 
