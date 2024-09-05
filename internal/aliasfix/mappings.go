@@ -710,6 +710,10 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/datastore/admin/apiv1/adminpb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/datastore/v1": {
+		ImportPath: "cloud.google.com/go/datastore/apiv1/datastorepb",
+		Status:     StatusMigrated,
+	},
 	"google.golang.org/genproto/googleapis/devtools/artifactregistry/v1": {
 		ImportPath: "cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb",
 		Status:     StatusMigrated,

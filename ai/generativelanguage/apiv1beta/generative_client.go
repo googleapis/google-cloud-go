@@ -262,13 +262,13 @@ func (c *GenerativeClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GenerateContent generates a response from the model given an input
-// GenerateContentRequest.
-//
-// Input capabilities differ between models, including tuned models. See the
-// model guide (at https://ai.google.dev/models/gemini) and
-// tuning guide (at https://ai.google.dev/docs/model_tuning_guidance) for
-// details.
+// GenerateContent generates a model response given an input GenerateContentRequest.
+// Refer to the text generation
+// guide (at https://ai.google.dev/gemini-api/docs/text-generation) for detailed
+// usage information. Input capabilities differ between models, including
+// tuned models. Refer to the model
+// guide (at https://ai.google.dev/gemini-api/docs/models/gemini) and tuning
+// guide (at https://ai.google.dev/gemini-api/docs/model-tuning) for details.
 func (c *GenerativeClient) GenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (*generativelanguagepb.GenerateContentResponse, error) {
 	return c.internalClient.GenerateContent(ctx, req, opts...)
 }
@@ -279,24 +279,30 @@ func (c *GenerativeClient) GenerateAnswer(ctx context.Context, req *generativela
 	return c.internalClient.GenerateAnswer(ctx, req, opts...)
 }
 
-// StreamGenerateContent generates a streamed response from the model given an input
-// GenerateContentRequest.
+// StreamGenerateContent generates a streamed
+// response (at https://ai.google.dev/gemini-api/docs/text-generation?lang=python#generate-a-text-stream)
+// from the model given an input GenerateContentRequest.
 func (c *GenerativeClient) StreamGenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (generativelanguagepb.GenerativeService_StreamGenerateContentClient, error) {
 	return c.internalClient.StreamGenerateContent(ctx, req, opts...)
 }
 
-// EmbedContent generates an embedding from the model given an input Content.
+// EmbedContent generates a text embedding vector from the input Content using the
+// specified Gemini Embedding
+// model (at https://ai.google.dev/gemini-api/docs/models/gemini#text-embedding).
 func (c *GenerativeClient) EmbedContent(ctx context.Context, req *generativelanguagepb.EmbedContentRequest, opts ...gax.CallOption) (*generativelanguagepb.EmbedContentResponse, error) {
 	return c.internalClient.EmbedContent(ctx, req, opts...)
 }
 
-// BatchEmbedContents generates multiple embeddings from the model given input text in a
-// synchronous call.
+// BatchEmbedContents generates multiple embedding vectors from the input Content which
+// consists of a batch of strings represented as EmbedContentRequest
+// objects.
 func (c *GenerativeClient) BatchEmbedContents(ctx context.Context, req *generativelanguagepb.BatchEmbedContentsRequest, opts ...gax.CallOption) (*generativelanguagepb.BatchEmbedContentsResponse, error) {
 	return c.internalClient.BatchEmbedContents(ctx, req, opts...)
 }
 
-// CountTokens runs a model’s tokenizer on input content and returns the token count.
+// CountTokens runs a model’s tokenizer on input Content and returns the token count.
+// Refer to the tokens guide (at https://ai.google.dev/gemini-api/docs/tokens)
+// to learn more about tokens.
 func (c *GenerativeClient) CountTokens(ctx context.Context, req *generativelanguagepb.CountTokensRequest, opts ...gax.CallOption) (*generativelanguagepb.CountTokensResponse, error) {
 	return c.internalClient.CountTokens(ctx, req, opts...)
 }
@@ -557,13 +563,13 @@ func (c *generativeGRPCClient) CountTokens(ctx context.Context, req *generativel
 	return resp, nil
 }
 
-// GenerateContent generates a response from the model given an input
-// GenerateContentRequest.
-//
-// Input capabilities differ between models, including tuned models. See the
-// model guide (at https://ai.google.dev/models/gemini) and
-// tuning guide (at https://ai.google.dev/docs/model_tuning_guidance) for
-// details.
+// GenerateContent generates a model response given an input GenerateContentRequest.
+// Refer to the text generation
+// guide (at https://ai.google.dev/gemini-api/docs/text-generation) for detailed
+// usage information. Input capabilities differ between models, including
+// tuned models. Refer to the model
+// guide (at https://ai.google.dev/gemini-api/docs/models/gemini) and tuning
+// guide (at https://ai.google.dev/gemini-api/docs/model-tuning) for details.
 func (c *generativeRESTClient) GenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (*generativelanguagepb.GenerateContentResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -696,8 +702,9 @@ func (c *generativeRESTClient) GenerateAnswer(ctx context.Context, req *generati
 	return resp, nil
 }
 
-// StreamGenerateContent generates a streamed response from the model given an input
-// GenerateContentRequest.
+// StreamGenerateContent generates a streamed
+// response (at https://ai.google.dev/gemini-api/docs/text-generation?lang=python#generate-a-text-stream)
+// from the model given an input GenerateContentRequest.
 func (c *generativeRESTClient) StreamGenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (generativelanguagepb.GenerativeService_StreamGenerateContentClient, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -803,7 +810,9 @@ func (c *streamGenerateContentRESTClient) RecvMsg(m interface{}) error {
 	return errors.New("this method is not implemented, use Recv")
 }
 
-// EmbedContent generates an embedding from the model given an input Content.
+// EmbedContent generates a text embedding vector from the input Content using the
+// specified Gemini Embedding
+// model (at https://ai.google.dev/gemini-api/docs/models/gemini#text-embedding).
 func (c *generativeRESTClient) EmbedContent(ctx context.Context, req *generativelanguagepb.EmbedContentRequest, opts ...gax.CallOption) (*generativelanguagepb.EmbedContentResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -869,8 +878,9 @@ func (c *generativeRESTClient) EmbedContent(ctx context.Context, req *generative
 	return resp, nil
 }
 
-// BatchEmbedContents generates multiple embeddings from the model given input text in a
-// synchronous call.
+// BatchEmbedContents generates multiple embedding vectors from the input Content which
+// consists of a batch of strings represented as EmbedContentRequest
+// objects.
 func (c *generativeRESTClient) BatchEmbedContents(ctx context.Context, req *generativelanguagepb.BatchEmbedContentsRequest, opts ...gax.CallOption) (*generativelanguagepb.BatchEmbedContentsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -936,7 +946,9 @@ func (c *generativeRESTClient) BatchEmbedContents(ctx context.Context, req *gene
 	return resp, nil
 }
 
-// CountTokens runs a model’s tokenizer on input content and returns the token count.
+// CountTokens runs a model’s tokenizer on input Content and returns the token count.
+// Refer to the tokens guide (at https://ai.google.dev/gemini-api/docs/tokens)
+// to learn more about tokens.
 func (c *generativeRESTClient) CountTokens(ctx context.Context, req *generativelanguagepb.CountTokensRequest, opts ...gax.CallOption) (*generativelanguagepb.CountTokensResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

@@ -22,9 +22,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

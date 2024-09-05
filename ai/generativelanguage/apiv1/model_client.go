@@ -131,12 +131,18 @@ func (c *ModelClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetModel gets information about a specific Model.
+// GetModel gets information about a specific Model such as its version number, token
+// limits,
+// parameters (at https://ai.google.dev/gemini-api/docs/models/generative-models#model-parameters)
+// and other metadata. Refer to the Gemini models
+// guide (at https://ai.google.dev/gemini-api/docs/models/gemini) for detailed
+// model information.
 func (c *ModelClient) GetModel(ctx context.Context, req *generativelanguagepb.GetModelRequest, opts ...gax.CallOption) (*generativelanguagepb.Model, error) {
 	return c.internalClient.GetModel(ctx, req, opts...)
 }
 
-// ListModels lists models available through the API.
+// ListModels lists the Models (at https://ai.google.dev/gemini-api/docs/models/gemini)
+// available through the Gemini API.
 func (c *ModelClient) ListModels(ctx context.Context, req *generativelanguagepb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	return c.internalClient.ListModels(ctx, req, opts...)
 }
@@ -444,7 +450,12 @@ func (c *modelGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 	return it
 }
 
-// GetModel gets information about a specific Model.
+// GetModel gets information about a specific Model such as its version number, token
+// limits,
+// parameters (at https://ai.google.dev/gemini-api/docs/models/generative-models#model-parameters)
+// and other metadata. Refer to the Gemini models
+// guide (at https://ai.google.dev/gemini-api/docs/models/gemini) for detailed
+// model information.
 func (c *modelRESTClient) GetModel(ctx context.Context, req *generativelanguagepb.GetModelRequest, opts ...gax.CallOption) (*generativelanguagepb.Model, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -504,7 +515,8 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *generativelanguagep
 	return resp, nil
 }
 
-// ListModels lists models available through the API.
+// ListModels lists the Models (at https://ai.google.dev/gemini-api/docs/models/gemini)
+// available through the Gemini API.
 func (c *modelRESTClient) ListModels(ctx context.Context, req *generativelanguagepb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	it := &ModelIterator{}
 	req = proto.Clone(req).(*generativelanguagepb.ListModelsRequest)

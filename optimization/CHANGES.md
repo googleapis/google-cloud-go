@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.10...optimization/v1.7.0) (2024-08-20)
+
+
+### Features
+
+* **optimization:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [1.6.10](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.9...optimization/v1.6.10) (2024-08-08)
 
 

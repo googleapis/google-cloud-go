@@ -1166,11 +1166,11 @@ func (c *restClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.
 		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1572,11 +1572,11 @@ func (c *restClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskR
 		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

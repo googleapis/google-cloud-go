@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.7.11...clouddms/v1.8.0) (2024-08-20)
+
+
+### Features
+
+* **clouddms:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [1.7.11](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.7.10...clouddms/v1.7.11) (2024-08-08)
 
 
