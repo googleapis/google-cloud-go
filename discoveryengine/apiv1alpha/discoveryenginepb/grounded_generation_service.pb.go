@@ -296,8 +296,9 @@ type CheckGroundingResponse_Claim struct {
 	// field will be set to false. In that case, no grounding check was done for
 	// the claim and therefore
 	// [citation_indices][google.cloud.discoveryengine.v1alpha.CheckGroundingResponse.Claim.citation_indices],
+	// [anti_citation_indices][google.cloud.discoveryengine.v1alpha.CheckGroundingResponse.Claim.anti_citation_indices],
 	// and
-	// [anti_citation_indices][google.cloud.discoveryengine.v1alpha.CheckGroundingResponse.Claim.anti_citation_indices]
+	// [score][google.cloud.discoveryengine.v1alpha.CheckGroundingResponse.Claim.score]
 	// should not be returned.
 	GroundingCheckRequired *bool `protobuf:"varint,6,opt,name=grounding_check_required,json=groundingCheckRequired,proto3,oneof" json:"grounding_check_required,omitempty"`
 }
