@@ -197,7 +197,7 @@
     {
       "regionTag": "discoveryengine_v1alpha_generated_AclConfigService_UpdateAclConfig_sync",
       "title": "discoveryengine UpdateAclConfig Sample",
-      "description": "UpdateAclConfig default Acl Configuration for use in a location of a customer's project.\nUpdates will only reflect to new data stores. Existing data stores will\nstill use the old value.",
+      "description": "UpdateAclConfig default ACL configuration for use in a location of a customer's project.\nUpdates will only reflect to new data stores. Existing data stores will\nstill use the old value.",
       "file": "AclConfigClient/UpdateAclConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2382,6 +2382,52 @@
           "service": {
             "shortName": "DataStoreService",
             "fullName": "google.cloud.discoveryengine.v1alpha.DataStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_DocumentService_BatchGetDocumentsMetadata_sync",
+      "title": "discoveryengine BatchGetDocumentsMetadata Sample",
+      "description": "BatchGetDocumentsMetadata gets index freshness metadata for\n[Document][google.cloud.discoveryengine.v1alpha.Document]s. Supported for\nwebsite search only.",
+      "file": "DocumentClient/BatchGetDocumentsMetadata/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchGetDocumentsMetadata",
+        "fullName": "google.cloud.discoveryengine.v1alpha.DocumentClient.BatchGetDocumentsMetadata",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.BatchGetDocumentsMetadataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.BatchGetDocumentsMetadataResponse",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.DocumentClient"
+        },
+        "method": {
+          "shortName": "BatchGetDocumentsMetadata",
+          "fullName": "google.cloud.discoveryengine.v1alpha.DocumentService.BatchGetDocumentsMetadata",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.DocumentService"
           }
         }
       },
