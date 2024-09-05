@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package dataflow_test
-
-import (
-	dataflow "cloud.google.com/go/dataflow/apiv1beta3"
-)
