@@ -107,7 +107,7 @@ func (o *Options) resolveDetectOptions() *detect.DetectOptions {
 	do := transport.CloneDetectOptions(o.DetectOpts)
 
 	// If scoped JWTs are enabled user provided an aud, allow self-signed JWT.
-	if (io != nil && io.EnableJWTWithScope) || do.Audience != "" {
+	if (io != nil && io.EnableJWTWithScope) || do.Audience != "" || !o.isUniverseDomainGDU() {
 		do.UseSelfSignedJWT = true
 	}
 	// Only default scopes if user did not also set an audience.
@@ -126,6 +126,21 @@ func (o *Options) resolveDetectOptions() *detect.DetectOptions {
 		do.TokenURL = detect.GoogleMTLSTokenURL
 	}
 	return do
+}
+
+// getUniverseDomain returns the default service domain for a given Cloud
+// universe.
+func (o *Options) getUniverseDomain() string {
+	if o.UniverseDomain == "" {
+		return internal.DefaultUniverseDomain
+	}
+	return o.UniverseDomain
+}
+
+// isUniverseDomainGDU returns true if the universe domain is the default Google
+// universe.
+func (o *Options) isUniverseDomainGDU() bool {
+	return o.getUniverseDomain() == internal.DefaultUniverseDomain
 }
 
 // InternalOptions are only meant to be set by generated client code. These are
