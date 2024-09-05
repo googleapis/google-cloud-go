@@ -72,6 +72,7 @@ const (
 	envProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envPrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
 	envDatabases  = "GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES"
+	envEmulator   = "FIRESTORE_EMULATOR_HOST"
 )
 
 var (
@@ -82,6 +83,7 @@ var (
 	wantDBPath       string
 	testParams       map[string]interface{}
 	seededFirstIndex bool
+	useEmulator      bool
 )
 
 func initIntegrationTest() {
@@ -90,6 +92,9 @@ func initIntegrationTest() {
 	flag.Parse() // needed for testing.Short()
 	if testing.Short() {
 		return
+	}
+	if addr := os.Getenv(envEmulator); addr != "" {
+		useEmulator = true
 	}
 	ctx := context.Background()
 	testProjectID := os.Getenv(envProjID)
@@ -559,6 +564,163 @@ func TestIntegration_GetAll(t *testing.T) {
 	})
 }
 
+type runWithOptionsTestcase struct {
+	desc               string
+	wantExplainMetrics *ExplainMetrics
+	wantSnapshots      bool
+	opts               []RunOption
+}
+
+func getRunWithOptionsTestcases(t *testing.T) ([]runWithOptionsTestcase, []*DocumentRef) {
+	type getAll struct{ N int }
+
+	count := 5
+	h := testHelper{t}
+	coll := integrationColl(t)
+	var wantDocRefs []*DocumentRef
+	for i := 0; i < count; i++ {
+		doc := coll.Doc("getRunWithOptionsTestcases" + fmt.Sprint(i))
+		wantDocRefs = append(wantDocRefs, doc)
+		h.mustCreate(doc, getAll{N: i})
+	}
+
+	wantPlanSummary := &PlanSummary{
+		IndexesUsed: []*map[string]interface{}{
+			{
+				"properties":  "(__name__ ASC)",
+				"query_scope": "Collection",
+			},
+		},
+	}
+	return []runWithOptionsTestcase{
+		{
+			desc:          "No ExplainOptions",
+			wantSnapshots: true,
+		},
+
+		{
+			desc: "ExplainOptions.Analyze is false",
+			opts: []RunOption{ExplainOptions{}},
+			wantExplainMetrics: &ExplainMetrics{
+				PlanSummary: wantPlanSummary,
+			},
+		},
+		{
+			desc: "ExplainOptions.Analyze is true",
+			opts: []RunOption{ExplainOptions{Analyze: true}},
+			wantExplainMetrics: &ExplainMetrics{
+				ExecutionStats: &ExecutionStats{
+					ReadOperations:  int64(count),
+					ResultsReturned: int64(count),
+					DebugStats: &map[string]interface{}{
+						"documents_scanned":     fmt.Sprint(count),
+						"index_entries_scanned": fmt.Sprint(count),
+					},
+				},
+				PlanSummary: wantPlanSummary,
+			},
+			wantSnapshots: true,
+		},
+	}, wantDocRefs
+}
+
+func TestIntegration_GetAll_WithRunOptions(t *testing.T) {
+	if useEmulator {
+		t.Skip("Skipping. Query profiling not supported in emulator.")
+	}
+	coll := integrationColl(t)
+	ctx := context.Background()
+	testcases, wantDocRefs := getRunWithOptionsTestcases(t)
+	snapshotRefIDs := []string{}
+	for _, wantRef := range wantDocRefs {
+		snapshotRefIDs = append(snapshotRefIDs, wantRef.ID)
+	}
+
+	defer func() {
+		deleteDocuments(wantDocRefs)
+	}()
+
+	for _, testcase := range testcases {
+		t.Run(testcase.desc, func(t *testing.T) {
+			docIter := coll.WithRunOptions(testcase.opts...).Documents(ctx)
+			gotDocSnaps, gotErr := docIter.GetAll()
+			if gotErr != nil {
+				t.Fatalf("err: got: %+v, want: nil", gotErr)
+			}
+
+			gotExpM, gotExpMErr := docIter.ExplainMetrics()
+			if gotExpMErr != nil {
+				t.Fatalf("ExplainMetrics() err: got: %+v, want: nil", gotExpMErr)
+			}
+
+			gotIDs := []string{}
+			for _, gotSnapshot := range gotDocSnaps {
+				gotIDs = append(gotIDs, gotSnapshot.Ref.ID)
+			}
+
+			if testcase.wantSnapshots && !testutil.Equal(gotIDs, snapshotRefIDs) {
+				t.Errorf("snapshots ID: got: %+v, want: %+v", gotIDs, snapshotRefIDs)
+			}
+			if !testcase.wantSnapshots && len(gotIDs) != 0 {
+				t.Errorf("snapshots ID: got: %+v, want: %+v", gotIDs, nil)
+			}
+
+			if err := cmpExplainMetrics(gotExpM, testcase.wantExplainMetrics); err != nil {
+				t.Error(err)
+			}
+
+			if gotExpM != nil && gotExpM.PlanSummary != nil && len(gotExpM.PlanSummary.IndexesUsed) != 0 {
+				indexesUsed := *gotExpM.PlanSummary.IndexesUsed[0]
+				fmt.Printf("type=%T\n", indexesUsed["properties"])
+			}
+		})
+	}
+}
+
+func TestIntegration_Query_WithRunOptions(t *testing.T) {
+	if useEmulator {
+		t.Skip("Skipping. Query profiling not supported in emulator.")
+	}
+	coll := integrationColl(t)
+	ctx := context.Background()
+	testcases, wantDocRefs := getRunWithOptionsTestcases(t)
+	snapshotRefIDs := []string{}
+	for _, wantRef := range wantDocRefs {
+		snapshotRefIDs = append(snapshotRefIDs, wantRef.ID)
+	}
+
+	defer func() {
+		deleteDocuments(wantDocRefs)
+	}()
+
+	for _, testcase := range testcases {
+		gotIDs := []string{}
+		gotDocIter := coll.WithRunOptions(testcase.opts...).Documents(ctx)
+		for {
+			gotDocSnap, err := gotDocIter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("%v: Failed to get next document: %+v\n", testcase.desc, err)
+			}
+			gotIDs = append(gotIDs, gotDocSnap.Ref.ID)
+		}
+
+		if (testcase.wantSnapshots && !testutil.Equal(gotIDs, snapshotRefIDs)) || (!testcase.wantSnapshots && len(gotIDs) != 0) {
+			t.Errorf("%v: snapshots ID: got: %+v, want: %+v", testcase.desc, gotIDs, snapshotRefIDs)
+		}
+
+		gotExp, gotExpErr := gotDocIter.ExplainMetrics()
+		if gotExpErr != nil {
+			t.Fatalf("%v: Failed to get explain metrics: %+v\n", testcase.desc, gotExpErr)
+		}
+		if err := cmpExplainMetrics(gotExp, testcase.wantExplainMetrics); err != nil {
+			t.Errorf("%v: %+v", testcase.desc, err)
+		}
+
+	}
+}
 func TestIntegration_Add(t *testing.T) {
 	start := time.Now()
 	docRef, wr, err := integrationColl(t).Add(context.Background(), integrationTestMap)
@@ -924,7 +1086,8 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 
 	indexFields := [][]string{
 		{"updatedAt", "weight", "height"},
-		{"weight", "height"}}
+		{"weight", "height"},
+	}
 	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	defer cancel()
 	indexNames := createIndexes(adminCtx, wantDBPath, indexFields)
@@ -1393,6 +1556,59 @@ func TestIntegration_RunTransaction(t *testing.T) {
 
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{patDoc})
+	})
+}
+
+func TestIntegration_RunTransaction_WithRunOptions(t *testing.T) {
+	if useEmulator {
+		t.Skip("Skipping. Query profiling not supported in emulator.")
+	}
+	ctx := context.Background()
+	client := integrationClient(t)
+	testcases, wantDocRefs := getRunWithOptionsTestcases(t)
+	numDocs := len(wantDocRefs)
+	for _, testcase := range testcases {
+		t.Run(testcase.desc, func(t *testing.T) {
+			err := client.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+				docIter := tx.Documents(iColl.WithRunOptions(testcase.opts...))
+				docsRead := 0
+				for {
+					_, err := docIter.Next()
+					if err == iterator.Done {
+						break
+					}
+					if err != nil {
+						return fmt.Errorf("Next got %+v, want %+v", err, nil)
+					}
+
+					docsRead++
+
+					// There are documents available in the iterator,
+					// error should be received
+					_, gotExpErr := docIter.ExplainMetrics()
+					if docsRead < numDocs && (gotExpErr == nil || !strings.Contains(errMetricsBeforeEnd.Error(), gotExpErr.Error())) {
+						fmt.Printf("Error thrown from here %v %v\n", gotExpErr == nil, strings.Contains(errMetricsBeforeEnd.Error(), gotExpErr.Error()))
+						return fmt.Errorf("ExplainMetrics got %+v, want %+v", gotExpErr, errMetricsBeforeEnd)
+					}
+				}
+
+				gotExp, gotExpErr := docIter.ExplainMetrics()
+				if gotExpErr != nil {
+					return fmt.Errorf("ExplainMetrics got %+v, want %+v", gotExpErr, nil)
+				}
+				if err := cmpExplainMetrics(gotExp, testcase.wantExplainMetrics); err != nil {
+					return fmt.Errorf("ExplainMetrics %+v", err)
+				}
+				return nil
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+
+	t.Cleanup(func() {
+		deleteDocuments(wantDocRefs)
 	})
 }
 
@@ -2737,6 +2953,153 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			continue
 		}
 	}
+}
+
+func TestIntegration_AggregationQueries_WithRunOptions(t *testing.T) {
+	if useEmulator {
+		t.Skip("Skipping. Query profiling not supported in emulator.")
+	}
+	ctx := context.Background()
+	coll := integrationColl(t)
+
+	h := testHelper{t}
+	docs := []map[string]interface{}{
+		{"weight": 0.5, "height": 99, "model": "A"},
+		{"weight": 0.5, "height": 98, "model": "A"},
+		{"weight": 0.5, "height": 97, "model": "B"},
+	}
+	for _, doc := range docs {
+		newDoc := coll.NewDoc()
+		h.mustCreate(newDoc, doc)
+	}
+
+	aggResult := map[string]interface{}{
+		"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(3)}},
+		"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(1.5)}},
+		"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(0.5)}},
+	}
+	wantPlanSummary := &PlanSummary{
+		IndexesUsed: []*map[string]interface{}{
+			{
+				"properties":  "(weight ASC, __name__ ASC)",
+				"query_scope": "Collection",
+			},
+		},
+	}
+
+	testcases := []struct {
+		desc       string
+		wantRes    *AggregationResponse
+		wantErrMsg string
+		query      Query
+	}{
+		{
+			desc:  "no options",
+			query: coll.Where("weight", "<=", 1),
+			wantRes: &AggregationResponse{
+				Result: aggResult,
+			},
+		},
+		{
+			desc:  "ExplainOptions.Analyze is false",
+			query: coll.Where("weight", "<=", 1).WithRunOptions(ExplainOptions{Analyze: false}),
+			wantRes: &AggregationResponse{
+				ExplainMetrics: &ExplainMetrics{
+					PlanSummary: wantPlanSummary,
+				},
+			},
+		},
+		{
+			desc:  "ExplainOptions.Analyze is true",
+			query: coll.Where("weight", "<=", 1).WithRunOptions(ExplainOptions{Analyze: true}),
+			wantRes: &AggregationResponse{
+				Result: aggResult,
+				ExplainMetrics: &ExplainMetrics{
+					ExecutionStats: &ExecutionStats{
+						ReadOperations:  int64(1),
+						ResultsReturned: int64(1),
+						DebugStats: &map[string]interface{}{
+							"documents_scanned":     fmt.Sprint(0),
+							"index_entries_scanned": fmt.Sprint(3),
+						},
+					},
+					PlanSummary: wantPlanSummary,
+				},
+			},
+		},
+	}
+
+	for _, testcase := range testcases {
+		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+			aq := testcase.query.NewAggregationQuery().WithCount("count1").
+				WithAvg("weight", "weight_avg1").
+				WithSum("weight", "weight_sum1")
+			gotRes, gotErr := aq.GetResponse(ctx)
+
+			gotErrMsg := ""
+			if gotErr != nil {
+				gotErrMsg = gotErr.Error()
+			}
+
+			gotFailed := gotErr != nil
+			wantFailed := len(testcase.wantErrMsg) != 0
+			if gotFailed != wantFailed || !strings.Contains(gotErrMsg, testcase.wantErrMsg) {
+				r.Errorf("%s: Mismatch in error got: %v, want: %v", testcase.desc, gotErr, testcase.wantErrMsg)
+				return
+			}
+			if !gotFailed && !testutil.Equal(gotRes.Result, testcase.wantRes.Result) {
+				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testcase.desc, gotRes.Result, testcase.wantRes.Result)
+				return
+			}
+
+			if err := cmpExplainMetrics(gotRes.ExplainMetrics, testcase.wantRes.ExplainMetrics); err != nil {
+				r.Errorf("%q: Mismatch in ExplainMetrics %+v", testcase.desc, err)
+			}
+		})
+	}
+}
+
+func cmpExplainMetrics(got *ExplainMetrics, want *ExplainMetrics) error {
+	if (got != nil && want == nil) || (got == nil && want != nil) {
+		return fmt.Errorf("ExplainMetrics: got: %+v, want: %+v", got, want)
+	}
+	if got == nil {
+		return nil
+	}
+	if !testutil.Equal(got.PlanSummary, want.PlanSummary) {
+		return fmt.Errorf("PlanSummary diff (-want +got): %+v", testutil.Diff(got.PlanSummary, want.PlanSummary))
+	}
+	if err := cmpExecutionStats(got.ExecutionStats, want.ExecutionStats); err != nil {
+		return err
+	}
+	return nil
+}
+
+func cmpExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
+	if (got != nil && want == nil) || (got == nil && want != nil) {
+		return fmt.Errorf("ExecutionStats: got: %+v, want: %+v", got, want)
+	}
+	if got == nil {
+		return nil
+	}
+
+	// Compare all fields except DebugStats
+	if !testutil.Equal(want, got, cmpopts.IgnoreFields(ExecutionStats{}, "DebugStats", "ExecutionDuration")) {
+		return fmt.Errorf("ExecutionStats: mismatch (-want +got):\n%s", testutil.Diff(want, got, cmpopts.IgnoreFields(ExecutionStats{}, "DebugStats", "ExecutionDuration")))
+	}
+
+	// Compare DebugStats
+	gotDebugStats := *got.DebugStats
+	for wantK, wantV := range *want.DebugStats {
+		// ExecutionStats.Debugstats has some keys whose values cannot be predicted. So, those values have not been included in want
+		// Here, compare only those values included in want
+		gotV, ok := gotDebugStats[wantK]
+		if !ok || !testutil.Equal(gotV, wantV) {
+			return fmt.Errorf("ExecutionStats.DebugStats: wantKey: %v  gotValue: %+v, wantValue: %+v", wantK, gotV, wantV)
+		}
+	}
+
+	return nil
 }
 
 func TestIntegration_CountAggregationQuery(t *testing.T) {

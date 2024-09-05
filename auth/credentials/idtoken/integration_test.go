@@ -66,6 +66,7 @@ func TestNewCredentials_CredentialsFile(t *testing.T) {
 }
 
 func TestNewCredentials_CredentialsJSON(t *testing.T) {
+	testutil.IntegrationTestCheck(t)
 	ctx := context.Background()
 	f := os.Getenv(credsfile.GoogleAppCredsEnvVar)
 	if f == "" {
