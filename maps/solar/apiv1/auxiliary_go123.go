@@ -17,5 +17,3 @@
 //go:build go1.23
 
 package solar
-
-import ()
