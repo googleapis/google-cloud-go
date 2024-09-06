@@ -1,5 +1,19 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/vpcaccess/v1.7.12...vpcaccess/v1.8.0) (2024-08-20)
+
+
+### Features
+
+* **vpcaccess:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.7.12](https://github.com/googleapis/google-cloud-go/compare/vpcaccess/v1.7.11...vpcaccess/v1.7.12) (2024-08-08)
+
+
+### Bug Fixes
+
+* **vpcaccess:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.7.11](https://github.com/googleapis/google-cloud-go/compare/vpcaccess/v1.7.10...vpcaccess/v1.7.11) (2024-07-24)
 
 

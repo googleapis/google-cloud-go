@@ -86,7 +86,7 @@ func TestExchangeToken(t *testing.T) {
 	headers.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := ExchangeToken(context.Background(), &Options{
-		Client:         internal.CloneDefaultClient(),
+		Client:         internal.DefaultClient(),
 		Endpoint:       ts.URL,
 		Request:        &tokReq,
 		Authentication: clientAuth,
@@ -112,7 +112,7 @@ func TestExchangeToken_Err(t *testing.T) {
 	headers := http.Header{}
 	headers.Set("Content-Type", "application/x-www-form-urlencoded")
 	if _, err := ExchangeToken(context.Background(), &Options{
-		Client:         internal.CloneDefaultClient(),
+		Client:         internal.DefaultClient(),
 		Endpoint:       ts.URL,
 		Request:        &tokReq,
 		Authentication: clientAuth,
@@ -202,7 +202,7 @@ func TestExchangeToken_Opts(t *testing.T) {
 	inputOpts["two"] = secondOption
 
 	ExchangeToken(context.Background(), &Options{
-		Client:         internal.CloneDefaultClient(),
+		Client:         internal.DefaultClient(),
 		Endpoint:       ts.URL,
 		Request:        &tokReq,
 		Authentication: clientAuth,

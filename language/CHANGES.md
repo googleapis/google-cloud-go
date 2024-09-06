@@ -1,6 +1,32 @@
 # Changes
 
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.13.1...language/v1.14.0) (2024-08-20)
+
+
+### Features
+
+* **language:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.13.0...language/v1.13.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **language:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.9...language/v1.13.0) (2024-08-01)
+
+
+### Features
+
+* **language:** Add model_version in ModerateTextRequest and expose severity score in ClassificationCategory ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
+
+### Documentation
+
+* **language:** Minor update on documentation ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
 ## [1.12.9](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.8...language/v1.12.9) (2024-07-24)
 
 

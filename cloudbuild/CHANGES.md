@@ -1,5 +1,19 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.16.6...cloudbuild/v1.17.0) (2024-08-20)
+
+
+### Features
+
+* **cloudbuild:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.16.6](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.16.5...cloudbuild/v1.16.6) (2024-08-08)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.16.5](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.16.4...cloudbuild/v1.16.5) (2024-07-24)
 
 

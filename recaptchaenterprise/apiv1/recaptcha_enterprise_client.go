@@ -46,6 +46,7 @@ type CallOptions struct {
 	UpdateKey                            []gax.CallOption
 	DeleteKey                            []gax.CallOption
 	MigrateKey                           []gax.CallOption
+	AddIpOverride                        []gax.CallOption
 	GetMetrics                           []gax.CallOption
 	CreateFirewallPolicy                 []gax.CallOption
 	ListFirewallPolicies                 []gax.CallOption
@@ -98,6 +99,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		MigrateKey:                           []gax.CallOption{},
+		AddIpOverride:                        []gax.CallOption{},
 		GetMetrics:                           []gax.CallOption{},
 		CreateFirewallPolicy:                 []gax.CallOption{},
 		ListFirewallPolicies:                 []gax.CallOption{},
@@ -125,6 +127,7 @@ type internalClient interface {
 	UpdateKey(context.Context, *recaptchaenterprisepb.UpdateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
 	DeleteKey(context.Context, *recaptchaenterprisepb.DeleteKeyRequest, ...gax.CallOption) error
 	MigrateKey(context.Context, *recaptchaenterprisepb.MigrateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
+	AddIpOverride(context.Context, *recaptchaenterprisepb.AddIpOverrideRequest, ...gax.CallOption) (*recaptchaenterprisepb.AddIpOverrideResponse, error)
 	GetMetrics(context.Context, *recaptchaenterprisepb.GetMetricsRequest, ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error)
 	CreateFirewallPolicy(context.Context, *recaptchaenterprisepb.CreateFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
 	ListFirewallPolicies(context.Context, *recaptchaenterprisepb.ListFirewallPoliciesRequest, ...gax.CallOption) *FirewallPolicyIterator
@@ -223,6 +226,16 @@ func (c *Client) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.Delet
 // destination project.
 func (c *Client) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.MigrateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
 	return c.internalClient.MigrateKey(ctx, req, opts...)
+}
+
+// AddIpOverride adds an IP override to a key. The following restrictions hold:
+//
+//	The maximum number of IP overrides per key is 100.
+//
+//	For any conflict (such as IP already exists or IP part of an existing
+//	IP range), an error is returned.
+func (c *Client) AddIpOverride(ctx context.Context, req *recaptchaenterprisepb.AddIpOverrideRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.AddIpOverrideResponse, error) {
+	return c.internalClient.AddIpOverride(ctx, req, opts...)
 }
 
 // GetMetrics get some aggregated metrics for a Key. This data can be used to build
@@ -530,6 +543,24 @@ func (c *gRPCClient) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.MigrateKey(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) AddIpOverride(ctx context.Context, req *recaptchaenterprisepb.AddIpOverrideRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.AddIpOverrideResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AddIpOverride[0:len((*c.CallOptions).AddIpOverride):len((*c.CallOptions).AddIpOverride)], opts...)
+	var resp *recaptchaenterprisepb.AddIpOverrideResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.AddIpOverride(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

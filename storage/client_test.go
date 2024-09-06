@@ -33,6 +33,7 @@ import (
 	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var emulatorClients map[string]storageClient
@@ -1411,6 +1412,43 @@ func TestRetryMaxAttemptsEmulated(t *testing.T) {
 		// Error should be wrapped so it indicates that MaxAttempts has been reached.
 		if got, want := err.Error(), "retry failed after 3 attempts"; !strings.Contains(got, want) {
 			t.Errorf("got error: %q, want to contain: %q", got, want)
+		}
+	})
+}
+
+// Test that a timeout returns a DeadlineExceeded error, in spite of DeadlineExceeded being a retryable
+// status when it is returned by the server.
+func TestTimeoutErrorEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Nanosecond)
+		defer cancel()
+		time.Sleep(5 * time.Nanosecond)
+		config := &retryConfig{backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+		_, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config))
+
+		// Error may come through as a context.DeadlineExceeded (HTTP) or status.DeadlineExceeded (gRPC)
+		if !(errors.Is(err, context.DeadlineExceeded) || status.Code(err) == codes.DeadlineExceeded) {
+			t.Errorf("GetBucket: got unexpected error %v; want DeadlineExceeded", err)
+		}
+
+		// Validate that error was not retried. If it was retried, that will be mentioned
+		// in the error string because of wrapping.
+		if strings.Contains(err.Error(), "retry") {
+			t.Errorf("GetBucket: got error %v, expected non-retried error", err)
+		}
+	})
+}
+
+// Test that server-side DEADLINE_EXCEEDED errors are retried as expected with gRPC.
+func TestRetryDeadlineExceedeEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		instructions := map[string][]string{"storage.buckets.get": {"return-504", "return-504"}}
+		testID := createRetryTest(t, project, bucket, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+		config := &retryConfig{maxAttempts: expectedAttempts(4), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+		if _, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config)); err != nil {
+			t.Fatalf("GetBucket: got unexpected error %v, want nil", err)
 		}
 	})
 }

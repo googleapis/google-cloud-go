@@ -27,13 +27,16 @@ name: bigtable_conformance
 permissions:
   contents: read
 
+env:
+  GOTOOLCHAIN: local
+
 jobs:
   bigtable_conformance:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         # Bigtable test proxy can be run on any of these Go versions
-        go: [ '1.20', '1.22']
+        go: [ '1.21', '1.23']
         folders: ['bigtable']
     steps:
     - uses: actions/checkout@v4

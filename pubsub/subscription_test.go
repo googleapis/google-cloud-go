@@ -350,7 +350,9 @@ func newFake(t *testing.T) (*Client, *pstest.Server) {
 	client, err := NewClient(ctx, projName,
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithInsecure()))
+		option.WithGRPCDialOption(grpc.WithInsecure()),
+		option.WithTelemetryDisabled(),
+	)
 	if err != nil {
 		t.Fatal(err)
 	}

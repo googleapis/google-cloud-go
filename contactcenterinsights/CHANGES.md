@@ -1,5 +1,19 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.7...contactcenterinsights/v1.14.0) (2024-08-20)
+
+
+### Features
+
+* **contactcenterinsights:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.13.7](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.6...contactcenterinsights/v1.13.7) (2024-08-08)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.13.6](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.5...contactcenterinsights/v1.13.6) (2024-07-24)
 
 

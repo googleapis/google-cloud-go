@@ -1,6 +1,41 @@
 # Changes
 
 
+## [2.17.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.16.0...recaptchaenterprise/v2.17.0) (2024-08-27)
+
+
+### Features
+
+* **recaptchaenterprise:** Add AssessmentEnvironment for CreateAssessement to explicitly describe the environment of the assessment ([#10777](https://github.com/googleapis/google-cloud-go/issues/10777)) ([78c4aca](https://github.com/googleapis/google-cloud-go/commit/78c4aca925e40b4cf80fb4912e63b4623d392778))
+
+## [2.16.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.15.0...recaptchaenterprise/v2.16.0) (2024-08-23)
+
+
+### Features
+
+* **recaptchaenterprise:** Add `express_settings` to `Key` ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+* **recaptchaenterprise:** Add AddIpOverride RPC ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+
+
+### Documentation
+
+* **recaptchaenterprise:** Clarify `Event.express` field ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+* **recaptchaenterprise:** Fix billing, quota, and usecase links ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+
+## [2.15.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.14.3...recaptchaenterprise/v2.15.0) (2024-08-20)
+
+
+### Features
+
+* **recaptchaenterprise:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [2.14.3](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.14.2...recaptchaenterprise/v2.14.3) (2024-08-08)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [2.14.2](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.14.1...recaptchaenterprise/v2.14.2) (2024-07-24)
 
 

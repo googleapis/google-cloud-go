@@ -2,6 +2,20 @@
 
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v1.0.4...telcoautomation/v1.1.0) (2024-08-20)
+
+
+### Features
+
+* **telcoautomation:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.0.4](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v1.0.3...telcoautomation/v1.0.4) (2024-08-08)
+
+
+### Bug Fixes
+
+* **telcoautomation:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.0.3](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v1.0.2...telcoautomation/v1.0.3) (2024-07-24)
 
 

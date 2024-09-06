@@ -68,6 +68,7 @@ type InstanceAdminCallOptions struct {
 	DeleteInstancePartition         []gax.CallOption
 	UpdateInstancePartition         []gax.CallOption
 	ListInstancePartitionOperations []gax.CallOption
+	MoveInstance                    []gax.CallOption
 }
 
 func defaultInstanceAdminGRPCClientOptions() []option.ClientOption {
@@ -186,6 +187,7 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 		DeleteInstancePartition:         []gax.CallOption{},
 		UpdateInstancePartition:         []gax.CallOption{},
 		ListInstancePartitionOperations: []gax.CallOption{},
+		MoveInstance:                    []gax.CallOption{},
 	}
 }
 
@@ -285,6 +287,7 @@ func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 		DeleteInstancePartition:         []gax.CallOption{},
 		UpdateInstancePartition:         []gax.CallOption{},
 		ListInstancePartitionOperations: []gax.CallOption{},
+		MoveInstance:                    []gax.CallOption{},
 	}
 }
 
@@ -319,6 +322,8 @@ type internalInstanceAdminClient interface {
 	UpdateInstancePartition(context.Context, *instancepb.UpdateInstancePartitionRequest, ...gax.CallOption) (*UpdateInstancePartitionOperation, error)
 	UpdateInstancePartitionOperation(name string) *UpdateInstancePartitionOperation
 	ListInstancePartitionOperations(context.Context, *instancepb.ListInstancePartitionOperationsRequest, ...gax.CallOption) *OperationIterator
+	MoveInstance(context.Context, *instancepb.MoveInstanceRequest, ...gax.CallOption) (*MoveInstanceOperation, error)
+	MoveInstanceOperation(name string) *MoveInstanceOperation
 }
 
 // InstanceAdminClient is a client for interacting with Cloud Spanner Instance Admin API.
@@ -391,40 +396,40 @@ func (c *InstanceAdminClient) GetInstanceConfig(ctx context.Context, req *instan
 	return c.internalClient.GetInstanceConfig(ctx, req, opts...)
 }
 
-// CreateInstanceConfig creates an instance config and begins preparing it to be used. The
+// CreateInstanceConfig creates an instance configuration and begins preparing it to be used. The
 // returned [long-running operation][google.longrunning.Operation]
 // can be used to track the progress of preparing the new
-// instance config. The instance config name is assigned by the caller. If the
-// named instance config already exists, CreateInstanceConfig returns
-// ALREADY_EXISTS.
+// instance configuration. The instance configuration name is assigned by the
+// caller. If the named instance configuration already exists,
+// CreateInstanceConfig returns ALREADY_EXISTS.
 //
 // Immediately after the request returns:
 //
-//	The instance config is readable via the API, with all requested
-//	attributes. The instance config’s
+//	The instance configuration is readable via the API, with all requested
+//	attributes. The instance configuration’s
 //	reconciling
 //	field is set to true. Its state is CREATING.
 //
 // While the operation is pending:
 //
-//	Cancelling the operation renders the instance config immediately
+//	Cancelling the operation renders the instance configuration immediately
 //	unreadable via the API.
 //
 //	Except for deleting the creating resource, all other attempts to modify
-//	the instance config are rejected.
+//	the instance configuration are rejected.
 //
 // Upon completion of the returned operation:
 //
 //	Instances can be created using the instance configuration.
 //
-//	The instance config’s
+//	The instance configuration’s
 //	reconciling
 //	field becomes false. Its state becomes READY.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
 // <instance_config_name>/operations/<operation_id> and can be used to track
-// creation of the instance config. The
+// creation of the instance configuration. The
 // metadata field type is
 // CreateInstanceConfigMetadata.
 // The response field type is
@@ -444,16 +449,16 @@ func (c *InstanceAdminClient) CreateInstanceConfigOperation(name string) *Create
 	return c.internalClient.CreateInstanceConfigOperation(name)
 }
 
-// UpdateInstanceConfig updates an instance config. The returned
+// UpdateInstanceConfig updates an instance configuration. The returned
 // [long-running operation][google.longrunning.Operation] can be used to track
-// the progress of updating the instance. If the named instance config does
-// not exist, returns NOT_FOUND.
+// the progress of updating the instance. If the named instance configuration
+// does not exist, returns NOT_FOUND.
 //
-// Only user managed configurations can be updated.
+// Only user-managed configurations can be updated.
 //
 // Immediately after the request returns:
 //
-//	The instance config’s
+//	The instance configuration’s
 //	reconciling
 //	field is set to true.
 //
@@ -464,9 +469,9 @@ func (c *InstanceAdminClient) CreateInstanceConfigOperation(name string) *Create
 //	The operation is guaranteed to succeed at undoing all changes, after
 //	which point it terminates with a CANCELLED status.
 //
-//	All other attempts to modify the instance config are rejected.
+//	All other attempts to modify the instance configuration are rejected.
 //
-//	Reading the instance config via the API continues to give the
+//	Reading the instance configuration via the API continues to give the
 //	pre-request values.
 //
 // Upon completion of the returned operation:
@@ -474,16 +479,16 @@ func (c *InstanceAdminClient) CreateInstanceConfigOperation(name string) *Create
 //	Creating instances using the instance configuration uses the new
 //	values.
 //
-//	The instance config’s new values are readable via the API.
+//	The new values of the instance configuration are readable via the API.
 //
-//	The instance config’s
+//	The instance configuration’s
 //	reconciling
 //	field becomes false.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
 // <instance_config_name>/operations/<operation_id> and can be used to track
-// the instance config modification.  The
+// the instance configuration modification.  The
 // metadata field type is
 // UpdateInstanceConfigMetadata.
 // The response field type is
@@ -502,11 +507,11 @@ func (c *InstanceAdminClient) UpdateInstanceConfigOperation(name string) *Update
 	return c.internalClient.UpdateInstanceConfigOperation(name)
 }
 
-// DeleteInstanceConfig deletes the instance config. Deletion is only allowed when no
+// DeleteInstanceConfig deletes the instance configuration. Deletion is only allowed when no
 // instances are using the configuration. If any instances are using
-// the config, returns FAILED_PRECONDITION.
+// the configuration, returns FAILED_PRECONDITION.
 //
-// Only user managed configurations can be deleted.
+// Only user-managed configurations can be deleted.
 //
 // Authorization requires spanner.instanceConfigs.delete permission on
 // the resource [name][google.spanner.admin.instance.v1.InstanceConfig.name (at http://google.spanner.admin.instance.v1.InstanceConfig.name)].
@@ -514,9 +519,9 @@ func (c *InstanceAdminClient) DeleteInstanceConfig(ctx context.Context, req *ins
 	return c.internalClient.DeleteInstanceConfig(ctx, req, opts...)
 }
 
-// ListInstanceConfigOperations lists the user-managed instance config [long-running
+// ListInstanceConfigOperations lists the user-managed instance configuration [long-running
 // operations][google.longrunning.Operation] in the given project. An instance
-// config operation has a name of the form
+// configuration operation has a name of the form
 // projects/<project>/instanceConfigs/<instance_config>/operations/<operation>.
 // The long-running operation
 // metadata field type
@@ -833,6 +838,88 @@ func (c *InstanceAdminClient) UpdateInstancePartitionOperation(name string) *Upd
 // parent.
 func (c *InstanceAdminClient) ListInstancePartitionOperations(ctx context.Context, req *instancepb.ListInstancePartitionOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListInstancePartitionOperations(ctx, req, opts...)
+}
+
+// MoveInstance moves an instance to the target instance configuration. You can use the
+// returned [long-running operation][google.longrunning.Operation] to track
+// the progress of moving the instance.
+//
+// MoveInstance returns FAILED_PRECONDITION if the instance meets any of
+// the following criteria:
+//
+//	Is undergoing a move to a different instance configuration
+//
+//	Has backups
+//
+//	Has an ongoing update
+//
+//	Contains any CMEK-enabled databases
+//
+//	Is a free trial instance
+//
+// While the operation is pending:
+//
+//	All other attempts to modify the instance, including changes to its
+//	compute capacity, are rejected.
+//
+//	The following database and backup admin operations are rejected:
+//
+//	  DatabaseAdmin.CreateDatabase
+//
+//	  DatabaseAdmin.UpdateDatabaseDdl (disabled if default_leader is
+//	  specified in the request.)
+//
+//	  DatabaseAdmin.RestoreDatabase
+//
+//	  DatabaseAdmin.CreateBackup
+//
+//	  DatabaseAdmin.CopyBackup
+//
+//	Both the source and target instance configurations are subject to
+//	hourly compute and storage charges.
+//
+//	The instance might experience higher read-write latencies and a higher
+//	transaction abort rate. However, moving an instance doesn’t cause any
+//	downtime.
+//
+// The returned [long-running operation][google.longrunning.Operation] has
+// a name of the format
+// <instance_name>/operations/<operation_id> and can be used to track
+// the move instance operation. The
+// metadata field type is
+// MoveInstanceMetadata.
+// The response field type is
+// Instance,
+// if successful.
+// Cancelling the operation sets its metadata’s
+// cancel_time.
+// Cancellation is not immediate because it involves moving any data
+// previously moved to the target instance configuration back to the original
+// instance configuration. You can use this operation to track the progress of
+// the cancellation. Upon successful completion of the cancellation, the
+// operation terminates with CANCELLED status.
+//
+// If not cancelled, upon completion of the returned operation:
+//
+//	The instance successfully moves to the target instance
+//	configuration.
+//
+//	You are billed for compute and storage in target instance
+//	configuration.
+//
+// Authorization requires the spanner.instances.update permission on
+// the resource instance.
+//
+// For more details, see
+// Move an instance (at https://cloud.google.com/spanner/docs/move-instance).
+func (c *InstanceAdminClient) MoveInstance(ctx context.Context, req *instancepb.MoveInstanceRequest, opts ...gax.CallOption) (*MoveInstanceOperation, error) {
+	return c.internalClient.MoveInstance(ctx, req, opts...)
+}
+
+// MoveInstanceOperation returns a new MoveInstanceOperation from a given name.
+// The name must be that of a previously created MoveInstanceOperation, possibly from a different process.
+func (c *InstanceAdminClient) MoveInstanceOperation(name string) *MoveInstanceOperation {
+	return c.internalClient.MoveInstanceOperation(name)
 }
 
 // instanceAdminGRPCClient is a client for interacting with Cloud Spanner Instance Admin API over gRPC transport.
@@ -1552,6 +1639,26 @@ func (c *instanceAdminGRPCClient) ListInstancePartitionOperations(ctx context.Co
 	return it
 }
 
+func (c *instanceAdminGRPCClient) MoveInstance(ctx context.Context, req *instancepb.MoveInstanceRequest, opts ...gax.CallOption) (*MoveInstanceOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).MoveInstance[0:len((*c.CallOptions).MoveInstance):len((*c.CallOptions).MoveInstance)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.instanceAdminClient.MoveInstance(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &MoveInstanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 // ListInstanceConfigs lists the supported instance configurations for a given project.
 func (c *instanceAdminRESTClient) ListInstanceConfigs(ctx context.Context, req *instancepb.ListInstanceConfigsRequest, opts ...gax.CallOption) *InstanceConfigIterator {
 	it := &InstanceConfigIterator{}
@@ -1701,40 +1808,40 @@ func (c *instanceAdminRESTClient) GetInstanceConfig(ctx context.Context, req *in
 	return resp, nil
 }
 
-// CreateInstanceConfig creates an instance config and begins preparing it to be used. The
+// CreateInstanceConfig creates an instance configuration and begins preparing it to be used. The
 // returned [long-running operation][google.longrunning.Operation]
 // can be used to track the progress of preparing the new
-// instance config. The instance config name is assigned by the caller. If the
-// named instance config already exists, CreateInstanceConfig returns
-// ALREADY_EXISTS.
+// instance configuration. The instance configuration name is assigned by the
+// caller. If the named instance configuration already exists,
+// CreateInstanceConfig returns ALREADY_EXISTS.
 //
 // Immediately after the request returns:
 //
-//	The instance config is readable via the API, with all requested
-//	attributes. The instance config’s
+//	The instance configuration is readable via the API, with all requested
+//	attributes. The instance configuration’s
 //	reconciling
 //	field is set to true. Its state is CREATING.
 //
 // While the operation is pending:
 //
-//	Cancelling the operation renders the instance config immediately
+//	Cancelling the operation renders the instance configuration immediately
 //	unreadable via the API.
 //
 //	Except for deleting the creating resource, all other attempts to modify
-//	the instance config are rejected.
+//	the instance configuration are rejected.
 //
 // Upon completion of the returned operation:
 //
 //	Instances can be created using the instance configuration.
 //
-//	The instance config’s
+//	The instance configuration’s
 //	reconciling
 //	field becomes false. Its state becomes READY.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
 // <instance_config_name>/operations/<operation_id> and can be used to track
-// creation of the instance config. The
+// creation of the instance configuration. The
 // metadata field type is
 // CreateInstanceConfigMetadata.
 // The response field type is
@@ -1813,16 +1920,16 @@ func (c *instanceAdminRESTClient) CreateInstanceConfig(ctx context.Context, req 
 	}, nil
 }
 
-// UpdateInstanceConfig updates an instance config. The returned
+// UpdateInstanceConfig updates an instance configuration. The returned
 // [long-running operation][google.longrunning.Operation] can be used to track
-// the progress of updating the instance. If the named instance config does
-// not exist, returns NOT_FOUND.
+// the progress of updating the instance. If the named instance configuration
+// does not exist, returns NOT_FOUND.
 //
-// Only user managed configurations can be updated.
+// Only user-managed configurations can be updated.
 //
 // Immediately after the request returns:
 //
-//	The instance config’s
+//	The instance configuration’s
 //	reconciling
 //	field is set to true.
 //
@@ -1833,9 +1940,9 @@ func (c *instanceAdminRESTClient) CreateInstanceConfig(ctx context.Context, req 
 //	The operation is guaranteed to succeed at undoing all changes, after
 //	which point it terminates with a CANCELLED status.
 //
-//	All other attempts to modify the instance config are rejected.
+//	All other attempts to modify the instance configuration are rejected.
 //
-//	Reading the instance config via the API continues to give the
+//	Reading the instance configuration via the API continues to give the
 //	pre-request values.
 //
 // Upon completion of the returned operation:
@@ -1843,16 +1950,16 @@ func (c *instanceAdminRESTClient) CreateInstanceConfig(ctx context.Context, req 
 //	Creating instances using the instance configuration uses the new
 //	values.
 //
-//	The instance config’s new values are readable via the API.
+//	The new values of the instance configuration are readable via the API.
 //
-//	The instance config’s
+//	The instance configuration’s
 //	reconciling
 //	field becomes false.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
 // <instance_config_name>/operations/<operation_id> and can be used to track
-// the instance config modification.  The
+// the instance configuration modification.  The
 // metadata field type is
 // UpdateInstanceConfigMetadata.
 // The response field type is
@@ -1930,11 +2037,11 @@ func (c *instanceAdminRESTClient) UpdateInstanceConfig(ctx context.Context, req 
 	}, nil
 }
 
-// DeleteInstanceConfig deletes the instance config. Deletion is only allowed when no
+// DeleteInstanceConfig deletes the instance configuration. Deletion is only allowed when no
 // instances are using the configuration. If any instances are using
-// the config, returns FAILED_PRECONDITION.
+// the configuration, returns FAILED_PRECONDITION.
 //
-// Only user managed configurations can be deleted.
+// Only user-managed configurations can be deleted.
 //
 // Authorization requires spanner.instanceConfigs.delete permission on
 // the resource [name][google.spanner.admin.instance.v1.InstanceConfig.name (at http://google.spanner.admin.instance.v1.InstanceConfig.name)].
@@ -1985,9 +2092,9 @@ func (c *instanceAdminRESTClient) DeleteInstanceConfig(ctx context.Context, req 
 	}, opts...)
 }
 
-// ListInstanceConfigOperations lists the user-managed instance config [long-running
+// ListInstanceConfigOperations lists the user-managed instance configuration [long-running
 // operations][google.longrunning.Operation] in the given project. An instance
-// config operation has a name of the form
+// configuration operation has a name of the form
 // projects/<project>/instanceConfigs/<instance_config>/operations/<operation>.
 // The long-running operation
 // metadata field type
@@ -2114,11 +2221,11 @@ func (c *instanceAdminRESTClient) ListInstances(ctx context.Context, req *instan
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
 		if req.GetInstanceDeadline() != nil {
-			instanceDeadline, err := protojson.Marshal(req.GetInstanceDeadline())
+			field, err := protojson.Marshal(req.GetInstanceDeadline())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("instanceDeadline", string(instanceDeadline[1:len(instanceDeadline)-1]))
+			params.Add("instanceDeadline", string(field[1:len(field)-1]))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -2210,11 +2317,11 @@ func (c *instanceAdminRESTClient) ListInstancePartitions(ctx context.Context, re
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetInstancePartitionDeadline() != nil {
-			instancePartitionDeadline, err := protojson.Marshal(req.GetInstancePartitionDeadline())
+			field, err := protojson.Marshal(req.GetInstancePartitionDeadline())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("instancePartitionDeadline", string(instancePartitionDeadline[1:len(instancePartitionDeadline)-1]))
+			params.Add("instancePartitionDeadline", string(field[1:len(field)-1]))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -2293,11 +2400,11 @@ func (c *instanceAdminRESTClient) GetInstance(ctx context.Context, req *instance
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFieldMask() != nil {
-		fieldMask, err := protojson.Marshal(req.GetFieldMask())
+		field, err := protojson.Marshal(req.GetFieldMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+		params.Add("fieldMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3213,11 +3320,11 @@ func (c *instanceAdminRESTClient) ListInstancePartitionOperations(ctx context.Co
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
 		if req.GetInstancePartitionDeadline() != nil {
-			instancePartitionDeadline, err := protojson.Marshal(req.GetInstancePartitionDeadline())
+			field, err := protojson.Marshal(req.GetInstancePartitionDeadline())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("instancePartitionDeadline", string(instancePartitionDeadline[1:len(instancePartitionDeadline)-1]))
+			params.Add("instancePartitionDeadline", string(field[1:len(field)-1]))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -3285,6 +3392,147 @@ func (c *instanceAdminRESTClient) ListInstancePartitionOperations(ctx context.Co
 	return it
 }
 
+// MoveInstance moves an instance to the target instance configuration. You can use the
+// returned [long-running operation][google.longrunning.Operation] to track
+// the progress of moving the instance.
+//
+// MoveInstance returns FAILED_PRECONDITION if the instance meets any of
+// the following criteria:
+//
+//	Is undergoing a move to a different instance configuration
+//
+//	Has backups
+//
+//	Has an ongoing update
+//
+//	Contains any CMEK-enabled databases
+//
+//	Is a free trial instance
+//
+// While the operation is pending:
+//
+//	All other attempts to modify the instance, including changes to its
+//	compute capacity, are rejected.
+//
+//	The following database and backup admin operations are rejected:
+//
+//	  DatabaseAdmin.CreateDatabase
+//
+//	  DatabaseAdmin.UpdateDatabaseDdl (disabled if default_leader is
+//	  specified in the request.)
+//
+//	  DatabaseAdmin.RestoreDatabase
+//
+//	  DatabaseAdmin.CreateBackup
+//
+//	  DatabaseAdmin.CopyBackup
+//
+//	Both the source and target instance configurations are subject to
+//	hourly compute and storage charges.
+//
+//	The instance might experience higher read-write latencies and a higher
+//	transaction abort rate. However, moving an instance doesn’t cause any
+//	downtime.
+//
+// The returned [long-running operation][google.longrunning.Operation] has
+// a name of the format
+// <instance_name>/operations/<operation_id> and can be used to track
+// the move instance operation. The
+// metadata field type is
+// MoveInstanceMetadata.
+// The response field type is
+// Instance,
+// if successful.
+// Cancelling the operation sets its metadata’s
+// cancel_time.
+// Cancellation is not immediate because it involves moving any data
+// previously moved to the target instance configuration back to the original
+// instance configuration. You can use this operation to track the progress of
+// the cancellation. Upon successful completion of the cancellation, the
+// operation terminates with CANCELLED status.
+//
+// If not cancelled, upon completion of the returned operation:
+//
+//	The instance successfully moves to the target instance
+//	configuration.
+//
+//	You are billed for compute and storage in target instance
+//	configuration.
+//
+// Authorization requires the spanner.instances.update permission on
+// the resource instance.
+//
+// For more details, see
+// Move an instance (at https://cloud.google.com/spanner/docs/move-instance).
+func (c *instanceAdminRESTClient) MoveInstance(ctx context.Context, req *instancepb.MoveInstanceRequest, opts ...gax.CallOption) (*MoveInstanceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:move", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &MoveInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // CreateInstanceOperation returns a new CreateInstanceOperation from a given name.
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
@@ -3334,6 +3582,24 @@ func (c *instanceAdminGRPCClient) CreateInstancePartitionOperation(name string) 
 func (c *instanceAdminRESTClient) CreateInstancePartitionOperation(name string) *CreateInstancePartitionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstancePartitionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// MoveInstanceOperation returns a new MoveInstanceOperation from a given name.
+// The name must be that of a previously created MoveInstanceOperation, possibly from a different process.
+func (c *instanceAdminGRPCClient) MoveInstanceOperation(name string) *MoveInstanceOperation {
+	return &MoveInstanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// MoveInstanceOperation returns a new MoveInstanceOperation from a given name.
+// The name must be that of a previously created MoveInstanceOperation, possibly from a different process.
+func (c *instanceAdminRESTClient) MoveInstanceOperation(name string) *MoveInstanceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &MoveInstanceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

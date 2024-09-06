@@ -1,5 +1,19 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/automl/v1.13.12...automl/v1.14.0) (2024-08-20)
+
+
+### Features
+
+* **automl:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.13.12](https://github.com/googleapis/google-cloud-go/compare/automl/v1.13.11...automl/v1.13.12) (2024-08-08)
+
+
+### Bug Fixes
+
+* **automl:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.13.11](https://github.com/googleapis/google-cloud-go/compare/automl/v1.13.10...automl/v1.13.11) (2024-07-24)
 
 

@@ -41,7 +41,8 @@ type AcceleratorType int32
 const (
 	// Unspecified accelerator type, which means no accelerator.
 	AcceleratorType_ACCELERATOR_TYPE_UNSPECIFIED AcceleratorType = 0
-	// Nvidia Tesla K80 GPU.
+	// Deprecated: Nvidia Tesla K80 GPU has reached end of support,
+	// see https://cloud.google.com/compute/docs/eol/k80-eol.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/aiplatform/v1/accelerator_type.proto.
 	AcceleratorType_NVIDIA_TESLA_K80 AcceleratorType = 1

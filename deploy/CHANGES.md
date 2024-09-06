@@ -1,6 +1,40 @@
 # Changes
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.21.2...deploy/v1.22.0) (2024-08-20)
+
+
+### Features
+
+* **deploy:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.21.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.21.1...deploy/v1.21.2) (2024-08-13)
+
+
+### Documentation
+
+* **deploy:** Very minor documentation updates ([564c355](https://github.com/googleapis/google-cloud-go/commit/564c355c6dfbf5a1033a04c8f48135f5d937592b))
+
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.21.0...deploy/v1.21.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **deploy:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.20.0...deploy/v1.21.0) (2024-08-01)
+
+
+### Features
+
+* **deploy:** Add support for different Pod selector labels when doing canaries ([#10581](https://github.com/googleapis/google-cloud-go/issues/10581)) ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
+
+### Bug Fixes
+
+* **deploy:** Make changes to an API that is disabled on the server, but whose client libraries were prematurely published ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+* **deploy:** Remove an API that was mistakenly made public ([123c886](https://github.com/googleapis/google-cloud-go/commit/123c8861625142b1d58605c008355bc569a3b47b))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.19.3...deploy/v1.20.0) (2024-07-24)
 
 

@@ -1,5 +1,65 @@
 # Changes
 
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.30.0...bigtable/v1.31.0) (2024-08-28)
+
+
+### Features
+
+* **bigtable:** Using new auth library ([#10766](https://github.com/googleapis/google-cloud-go/issues/10766)) ([8daf304](https://github.com/googleapis/google-cloud-go/commit/8daf304faf3808690996ad3a45d2890b107a0939))
+
+
+### Performance Improvements
+
+* **bigtable:** Use RecvMsg instead of Recv ([#10674](https://github.com/googleapis/google-cloud-go/issues/10674)) ([7e4fbc5](https://github.com/googleapis/google-cloud-go/commit/7e4fbc5612441c59bfaa1e5b9bbd06e3387b5c02))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.29.0...bigtable/v1.30.0) (2024-08-26)
+
+
+### Features
+
+* **bigtable:** Add MarshalJSON to allow clients to get a stringified version of the protobuf ([#10679](https://github.com/googleapis/google-cloud-go/issues/10679)) ([663f399](https://github.com/googleapis/google-cloud-go/commit/663f3996ced66c312c8202535574d3ffcb72d283))
+* **bigtable:** Add nil checks to Equal method ([#10758](https://github.com/googleapis/google-cloud-go/issues/10758)) ([f1aad7f](https://github.com/googleapis/google-cloud-go/commit/f1aad7f3a05a959d0dd973e026026391deda7657))
+* **bigtable:** Add UpdateFamily to allow updating a family type ([#10759](https://github.com/googleapis/google-cloud-go/issues/10759)) ([ec0cbb2](https://github.com/googleapis/google-cloud-go/commit/ec0cbb20ba42b7ef03688a06dc0a380e9b27e394))
+* **bigtable:** Update go version for conformance tests ([#10743](https://github.com/googleapis/google-cloud-go/issues/10743)) ([74cf45e](https://github.com/googleapis/google-cloud-go/commit/74cf45efe7dc6f74cadac3f015a705f8dbf69622))
+
+
+### Bug Fixes
+
+* **bigtable:** Use new auth library ([#10670](https://github.com/googleapis/google-cloud-go/issues/10670)) ([fab520d](https://github.com/googleapis/google-cloud-go/commit/fab520d226340bbf1aedc001dcb7384651e075a0))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.28.0...bigtable/v1.29.0) (2024-08-09)
+
+
+### Features
+
+* **bigtable/admin:** Add fields and the BackupType proto for Hot Backups ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+* **bigtable:** Remove deprecated Bytes from BigEndianBytesEncoding ([#10659](https://github.com/googleapis/google-cloud-go/issues/10659)) ([0bb1a6d](https://github.com/googleapis/google-cloud-go/commit/0bb1a6de1fba3307cc770e2bcaebe93c8fe9d628))
+
+
+### Bug Fixes
+
+* **bigtable:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **bigtable/admin:** Clarify comments and fix typos ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.27.1...bigtable/v1.28.0) (2024-08-03)
+
+
+### Features
+
+* **bigtable:** Add MergeToCell support to the bigtable emulator and client ([#10366](https://github.com/googleapis/google-cloud-go/issues/10366)) ([0211c95](https://github.com/googleapis/google-cloud-go/commit/0211c95e0404aad31be5bec6d5855f0bc5358161))
+* **bigtable:** Add support for new functions ([#10582](https://github.com/googleapis/google-cloud-go/issues/10582)) ([a49ab59](https://github.com/googleapis/google-cloud-go/commit/a49ab593a7495c2cfff106594762b9a6c79eb8b2))
+* **bigtable:** Expose protoToType ([#10602](https://github.com/googleapis/google-cloud-go/issues/10602)) ([643a8e3](https://github.com/googleapis/google-cloud-go/commit/643a8e356632160c143e94f905c72b4e6452f5a6))
+
+
+### Bug Fixes
+
+* **bigtable/emulator:** Sending empty row in SampleRowKeys response ([#10611](https://github.com/googleapis/google-cloud-go/issues/10611)) ([928f1a7](https://github.com/googleapis/google-cloud-go/commit/928f1a77191fbf4736051305e0ad67b69bae11fb))
+* **bigtable:** Move usage to local proto definitions ([#10598](https://github.com/googleapis/google-cloud-go/issues/10598)) ([ce31365](https://github.com/googleapis/google-cloud-go/commit/ce31365acc54fdf0970fc9552b1758c8fef4762f))
+
 ## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.27.0...bigtable/v1.27.1) (2024-07-25)
 
 

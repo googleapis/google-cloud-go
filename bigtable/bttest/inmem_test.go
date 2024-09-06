@@ -17,6 +17,7 @@ package bttest
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/binary"
 	"fmt"
 	"math"
@@ -32,7 +33,6 @@ import (
 
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
-	"cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
@@ -274,11 +274,25 @@ func TestSampleRowKeys(t *testing.T) {
 	if len(mock.responses) == 0 {
 		t.Fatal("Response count: got 0, want > 0")
 	}
-	// Make sure the offset of the final response is the offset of the final row
-	got := mock.responses[len(mock.responses)-1].OffsetBytes
+	// Make sure the offset of the penultimate response is the offset of the final row
+	got := mock.responses[len(mock.responses)-2].OffsetBytes
 	want := int64((rowCount - 1) * len(val))
 	if got != want {
-		t.Errorf("Invalid offset: got %d, want %d", got, want)
+		t.Errorf("Invalid penultimate offset: got %d, want %d", got, want)
+	}
+
+	// Make sure the offset of the final response is the offset of all the rows
+	got = mock.responses[len(mock.responses)-1].OffsetBytes
+	want = int64(rowCount * len(val))
+	if got != want {
+		t.Errorf("Invalid final offset: got %d, want %d", got, want)
+	}
+
+	// Make sure the key of the final response is empty
+	gotLastKey := mock.responses[len(mock.responses)-1].RowKey
+	wantLastKey := ""
+	if got != want {
+		t.Errorf("Invalid final RowKey: got %s, want %s", gotLastKey, wantLastKey)
 	}
 }
 
@@ -787,6 +801,22 @@ func TestReadRows(t *testing.T) {
 	}
 }
 
+// withFeatureFlags set the feature flags the client supports in the
+// `bigtable-features` header sent on each request.
+func withFeatureFlags() metadata.MD {
+	ffStr := ""
+	ff := btpb.FeatureFlags{
+		ReverseScans:             true,
+		LastScannedRowResponses:  true,
+		ClientSideMetricsEnabled: false, // Not suppported in emulator
+	}
+	b, err := proto.Marshal(&ff)
+	if err == nil {
+		ffStr = base64.URLEncoding.EncodeToString(b)
+	}
+	return metadata.Pairs("bigtable-features", ffStr)
+}
+
 func TestReadRowsLastScannedRow(t *testing.T) {
 	ctx := context.Background()
 	s := &server{
@@ -826,7 +856,7 @@ func TestReadRowsLastScannedRow(t *testing.T) {
 			EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("s")},
 		}}},
 	} {
-		featureFlags := option.WithFeatureFlags()
+		featureFlags := withFeatureFlags()
 		ctx := metadata.NewIncomingContext(context.Background(), featureFlags)
 
 		mock := &MockReadRowsServer{ctx: ctx}
@@ -1232,7 +1262,7 @@ func TestReadRowsReversed(t *testing.T) {
 		}
 	}
 
-	serverCtx := metadata.NewIncomingContext(context.Background(), option.WithFeatureFlags())
+	serverCtx := metadata.NewIncomingContext(context.Background(), withFeatureFlags())
 	rrss := &MockReadRowsServer{ctx: serverCtx}
 	rreq := &btpb.ReadRowsRequest{TableName: tbl.Name, Reversed: true}
 	if err := srv.ReadRows(rreq, rrss); err != nil {

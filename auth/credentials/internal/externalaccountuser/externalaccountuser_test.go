@@ -57,7 +57,7 @@ func TestExernalAccountAuthorizedUser_TokenRefreshWithRefreshTokenInResponse(t *
 		TokenURL:     s.server.URL,
 		ClientID:     "CLIENT_ID",
 		ClientSecret: "CLIENT_SECRET",
-		Client:       internal.CloneDefaultClient(),
+		Client:       internal.DefaultClient(),
 	}
 	tp, err := NewTokenProvider(opts)
 	if err != nil {
@@ -96,7 +96,7 @@ func TestExernalAccountAuthorizedUser_MinimumFieldsRequiredForRefresh(t *testing
 		TokenURL:     s.server.URL,
 		ClientID:     "CLIENT_ID",
 		ClientSecret: "CLIENT_SECRET",
-		Client:       internal.CloneDefaultClient(),
+		Client:       internal.DefaultClient(),
 	}
 	ts, err := NewTokenProvider(opts)
 	if err != nil {
