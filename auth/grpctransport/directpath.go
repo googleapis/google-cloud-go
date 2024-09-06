@@ -98,7 +98,7 @@ func isDirectPathXdsUsed(o *Options) bool {
 // configuration allows the use of direct path. If it does not the provided
 // grpcOpts and endpoint are returned.
 func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint string, creds *auth.Credentials) ([]grpc.DialOption, string) {
-	if isDirectPathEnabled(endpoint, opts) && onGCE() && isTokenProviderDirectPathCompatible(creds, opts) {
+	if isDirectPathEnabled(endpoint, opts) && OnComputeEngine() && isTokenProviderDirectPathCompatible(creds, opts) {
 		// Overwrite all of the previously specific DialOptions, DirectPath uses its own set of credentials and certificates.
 		grpcOpts = []grpc.DialOption{
 			grpc.WithCredentialsBundle(grpcgoogle.NewDefaultCredentialsWithOptions(grpcgoogle.DefaultCredentialsOptions{PerRPCCreds: &grpcCredentialsProvider{creds: creds}}))}
@@ -129,11 +129,11 @@ func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint str
 	return grpcOpts, endpoint
 }
 
-// onGCE returns whether the client is running on GCE.
+// OnComputeEngine returns whether the client is running on GCE.
 //
 // It is a copy of the gRPC internal OnGCE() func at:
 // https://github.com/grpc/grpc-go/blob/master/internal/googlecloud/googlecloud.go
-func onGCE() bool {
+func OnComputeEngine() bool {
 	vmOnGCEOnce.Do(func() {
 		mf, err := manufacturer()
 		if err != nil {
