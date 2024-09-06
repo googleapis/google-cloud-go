@@ -41,12 +41,12 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
-		tp, err = handleServiceAccount(f, opts, universeDomain)
+		tp, err = handleServiceAccount(f, opts)
 		if err != nil {
 			return nil, err
 		}
 		projectID = f.ProjectID
+		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
 	case credsfile.UserCredentialsKey:
 		f, err := credsfile.ParseUserCredentials(b)
 		if err != nil {
@@ -123,10 +123,11 @@ func resolveUniverseDomain(optsUniverseDomain, fileUniverseDomain string) string
 	return fileUniverseDomain
 }
 
-func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions, universeDomain string) (auth.TokenProvider, error) {
+func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
+	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
 	if opts.UseSelfSignedJWT {
 		return configureSelfSignedJWT(f, opts)
-	} else if universeDomain != "" && universeDomain != internalauth.DefaultUniverseDomain {
+	} else if ud != "" && ud != internalauth.DefaultUniverseDomain {
 		// For non-GDU universe domains, token exchange is impossible and services
 		// must support self-signed JWTs.
 		if opts.Audience == "" && len(opts.scopes()) == 0 {
