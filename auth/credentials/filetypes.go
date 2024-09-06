@@ -41,12 +41,12 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		tp, err = handleServiceAccount(f, opts)
+		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
+		tp, err = handleServiceAccount(f, opts, universeDomain)
 		if err != nil {
 			return nil, err
 		}
 		projectID = f.ProjectID
-		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
 	case credsfile.UserCredentialsKey:
 		f, err := credsfile.ParseUserCredentials(b)
 		if err != nil {
@@ -123,8 +123,18 @@ func resolveUniverseDomain(optsUniverseDomain, fileUniverseDomain string) string
 	return fileUniverseDomain
 }
 
-func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
+func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions, universeDomain string) (auth.TokenProvider, error) {
 	if opts.UseSelfSignedJWT {
+		return configureSelfSignedJWT(f, opts)
+	} else if universeDomain != "" && universeDomain != internalauth.DefaultUniverseDomain {
+		// For non-GDU universe domains, token exchange is impossible and services
+		// must support self-signed JWTs.
+		if opts.Audience == "" && len(opts.scopes()) == 0 {
+			// Audience or scopes must be provided, although the scopes may be
+			// the default scopes available in resolveDetectOptions.
+			return nil, fmt.Errorf("credentials: audience or scopes must be provided for self-signed JWT")
+		}
+		opts.UseSelfSignedJWT = true
 		return configureSelfSignedJWT(f, opts)
 	}
 	opts2LO := &auth.Options2LO{
