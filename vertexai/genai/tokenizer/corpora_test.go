@@ -39,7 +39,9 @@ type corporaInfo struct {
 	Content []byte
 }
 
-// corporaGenerator is a generator function that returns a channel to iterate over files in the zip archive
+// corporaGenerator is a helper function that downloads a zip archive from a given URL,
+// extracts the content of each file in the archive,
+// and returns a slice of corporaInfo objects containing the name and content of each file.
 func corporaGenerator(url string) ([]corporaInfo, error) {
 	var corpora []corporaInfo
 
