@@ -667,7 +667,7 @@ type CreateAssessmentRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the project in which the assessment will be created,
+	// Required. The name of the project in which the assessment is created,
 	// in the format `projects/{project_number}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The assessment details.
@@ -810,7 +810,7 @@ type AnnotateAssessmentRequest struct {
 	// Required. The resource name of the Assessment, in the format
 	// `projects/{project_number}/assessments/{assessment_id}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. The annotation that will be assigned to the Event. This field can
+	// Optional. The annotation that is assigned to the Event. This field can
 	// be left empty to provide reasons that apply to an event without concluding
 	// whether the event is legitimate or fraudulent.
 	Annotation AnnotateAssessmentRequest_Annotation `protobuf:"varint,2,opt,name=annotation,proto3,enum=google.cloud.recaptchaenterprise.v1beta1.AnnotateAssessmentRequest_Annotation" json:"annotation,omitempty"`

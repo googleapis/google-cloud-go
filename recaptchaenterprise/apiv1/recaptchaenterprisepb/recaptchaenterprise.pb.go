@@ -1209,7 +1209,7 @@ type CreateAssessmentRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the project in which the assessment will be created,
+	// Required. The name of the project in which the assessment is created,
 	// in the format `projects/{project}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The assessment details.
@@ -1352,7 +1352,7 @@ type AnnotateAssessmentRequest struct {
 	// Required. The resource name of the Assessment, in the format
 	// `projects/{project}/assessments/{assessment}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. The annotation that will be assigned to the Event. This field can
+	// Optional. The annotation that is assigned to the Event. This field can
 	// be left empty to provide reasons that apply to an event without concluding
 	// whether the event is legitimate or fraudulent.
 	Annotation AnnotateAssessmentRequest_Annotation `protobuf:"varint,2,opt,name=annotation,proto3,enum=google.cloud.recaptchaenterprise.v1.AnnotateAssessmentRequest_Annotation" json:"annotation,omitempty"`
@@ -1944,7 +1944,7 @@ type Event struct {
 	// Deprecated: Marked as deprecated in google/cloud/recaptchaenterprise/v1/recaptchaenterprise.proto.
 	HashedAccountId []byte `protobuf:"bytes,6,opt,name=hashed_account_id,json=hashedAccountId,proto3" json:"hashed_account_id,omitempty"`
 	// Optional. Flag for a reCAPTCHA express request for an assessment without a
-	// token. If enabled, `site_key` must reference an Express site key.
+	// token. If enabled, `site_key` must reference an express key.
 	Express bool `protobuf:"varint,14,opt,name=express,proto3" json:"express,omitempty"`
 	// Optional. The URI resource the user requested that triggered an assessment.
 	RequestedUri string `protobuf:"bytes,8,opt,name=requested_uri,json=requestedUri,proto3" json:"requested_uri,omitempty"`
@@ -1957,11 +1957,11 @@ type Event struct {
 	// Optional. HTTP header information about the request.
 	Headers []string `protobuf:"bytes,11,rep,name=headers,proto3" json:"headers,omitempty"`
 	// Optional. Flag for enabling firewall policy config assessment.
-	// If this flag is enabled, the firewall policy will be evaluated and a
-	// suggested firewall action will be returned in the response.
+	// If this flag is enabled, the firewall policy is evaluated and a
+	// suggested firewall action is returned in the response.
 	FirewallPolicyEvaluation bool `protobuf:"varint,12,opt,name=firewall_policy_evaluation,json=firewallPolicyEvaluation,proto3" json:"firewall_policy_evaluation,omitempty"`
 	// Optional. Data describing a payment transaction to be assessed. Sending
-	// this data enables reCAPTCHA Enterprise Fraud Prevention and the
+	// this data enables reCAPTCHA Fraud Prevention and the
 	// FraudPreventionAssessment component in the response.
 	TransactionData *TransactionData `protobuf:"bytes,13,opt,name=transaction_data,json=transactionData,proto3" json:"transaction_data,omitempty"`
 	// Optional. Information about the user that generates this event, when they
@@ -2939,7 +2939,7 @@ type CreateKeyRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the project in which the key will be created, in the
+	// Required. The name of the project in which the key is created, in the
 	// format `projects/{project}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. Information to create a reCAPTCHA Enterprise key.
@@ -2998,7 +2998,7 @@ type ListKeysRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the project that contains the keys that will be
+	// Required. The name of the project that contains the keys that are
 	// listed, in the format `projects/{project}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of keys to return. Default is 10. Max limit is
@@ -3230,7 +3230,7 @@ type UpdateKeyRequest struct {
 	// Required. The key to update.
 	Key *Key `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
 	// Optional. The mask to control which fields of the key get updated. If the
-	// mask is not present, all fields will be updated.
+	// mask is not present, all fields are updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -3577,7 +3577,7 @@ type UpdateFirewallPolicyRequest struct {
 	// Required. The policy to update.
 	FirewallPolicy *FirewallPolicy `protobuf:"bytes,1,opt,name=firewall_policy,json=firewallPolicy,proto3" json:"firewall_policy,omitempty"`
 	// Optional. The mask to control which fields of the policy get updated. If
-	// the mask is not present, all fields will be updated.
+	// the mask is not present, all fields are updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -3903,10 +3903,10 @@ type Metrics struct {
 	Name string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
 	// Inclusive start time aligned to a day (UTC).
 	StartTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
-	// Metrics will be continuous and in order by dates, and in the granularity
+	// Metrics are continuous and in order by dates, and in the granularity
 	// of day. All Key types should have score-based data.
 	ScoreMetrics []*ScoreMetrics `protobuf:"bytes,2,rep,name=score_metrics,json=scoreMetrics,proto3" json:"score_metrics,omitempty"`
-	// Metrics will be continuous and in order by dates, and in the granularity
+	// Metrics are continuous and in order by dates, and in the granularity
 	// of day. Only challenge-based keys (CHECKBOX, INVISIBLE), will have
 	// challenge-based data.
 	ChallengeMetrics []*ChallengeMetrics `protobuf:"bytes,3,rep,name=challenge_metrics,json=challengeMetrics,proto3" json:"challenge_metrics,omitempty"`
@@ -4187,7 +4187,7 @@ type Key_IosSettings struct {
 }
 
 type Key_ExpressSettings struct {
-	// Settings for keys that can be used by reCAPTCHA Express.
+	// Settings specific to keys that can be used for reCAPTCHA Express.
 	ExpressSettings *ExpressKeySettings `protobuf:"bytes,11,opt,name=express_settings,json=expressSettings,proto3,oneof"`
 }
 
@@ -4798,12 +4798,12 @@ type FirewallPolicyAssessment struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. If the processing of a policy config fails, an error will be
-	// populated and the firewall_policy will be left empty.
+	// Output only. If the processing of a policy config fails, an error is
+	// populated and the firewall_policy is left empty.
 	Error *status.Status `protobuf:"bytes,5,opt,name=error,proto3" json:"error,omitempty"`
 	// Output only. The policy that matched the request. If more than one policy
 	// may match, this is the first match. If no policy matches the incoming
-	// request, the policy field will be left empty.
+	// request, the policy field is left empty.
 	FirewallPolicy *FirewallPolicy `protobuf:"bytes,8,opt,name=firewall_policy,json=firewallPolicy,proto3" json:"firewall_policy,omitempty"`
 }
 
@@ -9741,7 +9741,7 @@ type RecaptchaEnterpriseServiceClient interface {
 	// Adds an IP override to a key. The following restrictions hold:
 	//   - The maximum number of IP overrides per key is 100.
 	//   - For any conflict (such as IP already exists or IP part of an existing
-	//     IP range), an error will be returned.
+	//     IP range), an error is returned.
 	AddIpOverride(ctx context.Context, in *AddIpOverrideRequest, opts ...grpc.CallOption) (*AddIpOverrideResponse, error)
 	// Get some aggregated metrics for a Key. This data can be used to build
 	// dashboards.
@@ -9987,7 +9987,7 @@ type RecaptchaEnterpriseServiceServer interface {
 	// Adds an IP override to a key. The following restrictions hold:
 	//   - The maximum number of IP overrides per key is 100.
 	//   - For any conflict (such as IP already exists or IP part of an existing
-	//     IP range), an error will be returned.
+	//     IP range), an error is returned.
 	AddIpOverride(context.Context, *AddIpOverrideRequest) (*AddIpOverrideResponse, error)
 	// Get some aggregated metrics for a Key. This data can be used to build
 	// dashboards.
