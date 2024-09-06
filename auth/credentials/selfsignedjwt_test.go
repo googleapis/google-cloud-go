@@ -164,6 +164,25 @@ func TestDefaultCredentials_SelfSignedWithScope(t *testing.T) {
 	}
 }
 
+func TestDefaultCredentials_SelfSignedWithAudienceAndScope(t *testing.T) {
+	_, jsonKey, err := setupFakeKey()
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = DetectDefault(&DetectOptions{
+		CredentialsJSON:  jsonKey,
+		Audience:         "audience",
+		Scopes:           []string{"scope1", "scope2"},
+		UseSelfSignedJWT: true,
+	})
+	if err == nil {
+		t.Fatal("Token(): want non-nil err")
+	}
+	if want := "credentials: both scopes and audience were provided"; err.Error() != want {
+		t.Errorf("TokenType = %q, want %q", err, want)
+	}
+}
+
 // setupFakeKey generates a key we can use in the test data.
 func setupFakeKey() (*rsa.PrivateKey, []byte, error) {
 	// Generate a key we can use in the test data.

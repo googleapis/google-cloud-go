@@ -130,11 +130,6 @@ func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) 
 	} else if ud != "" && ud != internalauth.DefaultUniverseDomain {
 		// For non-GDU universe domains, token exchange is impossible and services
 		// must support self-signed JWTs.
-		if opts.Audience == "" && len(opts.scopes()) == 0 {
-			// Audience or scopes must be provided, although the scopes may be
-			// the default scopes available in resolveDetectOptions.
-			return nil, fmt.Errorf("credentials: audience or scopes must be provided for self-signed JWT")
-		}
 		opts.UseSelfSignedJWT = true
 		return configureSelfSignedJWT(f, opts)
 	}
