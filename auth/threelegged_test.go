@@ -23,6 +23,8 @@ import (
 	"net/url"
 	"testing"
 	"time"
+
+	"cloud.google.com/go/auth/internal/header"
 )
 
 const day = 24 * time.Hour
@@ -71,6 +73,10 @@ func Test3LO_StandardExchange(t *testing.T) {
 		headerContentType := r.Header.Get("Content-Type")
 		if headerContentType != "application/x-www-form-urlencoded" {
 			t.Errorf("Unexpected Content-Type header %q", headerContentType)
+		}
+		headerAPIClient := r.Header.Get(header.GOOGLE_API_CLIENT_HEADER)
+		if got, want := headerAPIClient, header.GetGoogHeaderToken(header.CredTypeUser, header.TokenTypeNone); got != want {
+			t.Errorf("header = %q; want %q", got, want)
 		}
 		body, err := io.ReadAll(r.Body)
 		if err != nil {

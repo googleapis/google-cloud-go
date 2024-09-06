@@ -27,7 +27,9 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	"cloud.google.com/go/auth/credentials/internal/stsexchange"
+	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
+	"cloud.google.com/go/auth/internal/header"
 )
 
 const (
@@ -287,9 +289,9 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 		SubjectToken:       subjectToken,
 		SubjectTokenType:   tp.opts.SubjectTokenType,
 	}
-	header := make(http.Header)
-	header.Set("Content-Type", "application/x-www-form-urlencoded")
-	header.Add("x-goog-api-client", getGoogHeaderValue(tp.opts, tp.stp))
+	hdr := make(http.Header)
+	hdr.Set("Content-Type", "application/x-www-form-urlencoded")
+	hdr.Add(header.GOOGLE_API_CLIENT_HEADER, getGoogHeaderValue(tp.opts, tp.stp))
 	clientAuth := stsexchange.ClientAuthentication{
 		AuthStyle:    auth.StyleInHeader,
 		ClientID:     tp.opts.ClientID,
@@ -308,7 +310,7 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 		Endpoint:       tp.opts.TokenURL,
 		Request:        stsRequest,
 		Authentication: clientAuth,
-		Headers:        header,
+		Headers:        hdr,
 		ExtraOpts:      options,
 	})
 	if err != nil {
@@ -399,8 +401,8 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 
 func getGoogHeaderValue(conf *Options, p subjectTokenProvider) string {
 	return fmt.Sprintf("gl-go/%s auth/%s google-byoid-sdk source/%s sa-impersonation/%t config-lifetime/%t",
-		goVersion(),
-		"unknown",
+		header.GoVersion(),
+		internal.Version,
 		p.providerType(),
 		conf.ServiceAccountImpersonationURL != "",
 		conf.ServiceAccountImpersonationLifetimeSeconds != 0)

@@ -25,6 +25,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/header"
 )
 
 const (
@@ -106,6 +107,7 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 		return nil, fmt.Errorf("credentials: unable to create impersonation request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set(header.GOOGLE_API_CLIENT_HEADER, header.GetGoogHeaderToken(header.CredTypeImp, header.TokenTypeAccess))
 	if err := setAuthHeader(ctx, o.Tp, req); err != nil {
 		return nil, err
 	}

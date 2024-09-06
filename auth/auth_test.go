@@ -25,6 +25,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/auth/internal/header"
 	"cloud.google.com/go/auth/internal/jwt"
 	"github.com/google/go-cmp/cmp"
 )
@@ -213,6 +214,10 @@ func TestError_Error(t *testing.T) {
 
 func TestNew2LOTokenProvider_JSONResponse(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		headerAPIClient := r.Header.Get(header.GOOGLE_API_CLIENT_HEADER)
+		if got, want := headerAPIClient, header.GetGoogHeaderToken(header.CredTypeSA, header.TokenTypeAccess); got != want {
+			t.Errorf("header = %q; want %q", got, want)
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{
 			"access_token": "90d64460d14870c08c81352a05dedd3465940a7c",

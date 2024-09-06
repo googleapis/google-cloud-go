@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/header"
 	"cloud.google.com/go/auth/internal/jwt"
 )
 
@@ -119,6 +120,10 @@ func TestNewCredentials_user(t *testing.T) {
 						}
 					}
 					if strings.Contains(req.URL.Path, "/token") {
+						headerAPIClient := req.Header.Get(header.GOOGLE_API_CLIENT_HEADER)
+						if got, want := headerAPIClient, header.GetGoogHeaderToken(header.CredTypeImp, header.TokenTypeAccess); got != want {
+							t.Errorf("header = %q; want %q", got, want)
+						}
 						resp := exchangeTokenResponse{
 							AccessToken: userTok,
 							TokenType:   internal.TokenTypeBearer,

@@ -21,6 +21,8 @@ import (
 	"io"
 	"net/http"
 	"testing"
+
+	"cloud.google.com/go/auth/internal/header"
 )
 
 func TestNewIDTokenCredentials(t *testing.T) {
@@ -56,6 +58,10 @@ func TestNewIDTokenCredentials(t *testing.T) {
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
 					defer req.Body.Close()
+					headerAPIClient := req.Header.Get(header.GOOGLE_API_CLIENT_HEADER)
+					if got, want := headerAPIClient, header.GetGoogHeaderToken(header.CredTypeImp, header.TokenTypeID); got != want {
+						t.Errorf("header = %q; want %q", got, want)
+					}
 					b, err := io.ReadAll(req.Body)
 					if err != nil {
 						t.Error(err)

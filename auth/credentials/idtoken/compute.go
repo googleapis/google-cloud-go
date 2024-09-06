@@ -22,7 +22,10 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/header"
 	"cloud.google.com/go/compute/metadata"
+
+	"github.com/googleapis/gax-go/v2/callctx"
 )
 
 const identitySuffix = "instance/service-accounts/default/identity"
@@ -65,6 +68,7 @@ func (c computeIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) 
 	if c.format == ComputeTokenFormatFullWithLicense {
 		v.Set("licenses", "TRUE")
 	}
+	ctx = callctx.SetHeaders(ctx, header.GOOGLE_API_CLIENT_HEADER, header.GetGoogHeaderToken(header.CredTypeMDS, header.TokenTypeID))
 	urlSuffix := identitySuffix + "?" + v.Encode()
 	res, err := c.client.GetWithContext(ctx, urlSuffix)
 	if err != nil {

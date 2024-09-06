@@ -28,6 +28,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/header"
 )
 
 // AuthorizationHandler is a 3-legged-OAuth helper that prompts the user for
@@ -293,6 +294,7 @@ func fetchToken(ctx context.Context, o *Options3LO, v url.Values) (*Token, strin
 	if o.AuthStyle == StyleInHeader {
 		req.SetBasicAuth(url.QueryEscape(o.ClientID), url.QueryEscape(o.ClientSecret))
 	}
+	req.Header.Set(header.GOOGLE_API_CLIENT_HEADER, header.GetGoogHeaderToken(header.CredTypeUser, header.TokenTypeNone))
 
 	// Make request
 	resp, body, err := internal.DoRequest(o.client(), req)

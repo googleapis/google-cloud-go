@@ -24,7 +24,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/internal/header"
 	"cloud.google.com/go/compute/metadata"
+
+	"github.com/googleapis/gax-go/v2/callctx"
 )
 
 var (
@@ -65,6 +68,7 @@ func (cs computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 		v.Set("scopes", strings.Join(cs.scopes, ","))
 		tokenURI.RawQuery = v.Encode()
 	}
+	ctx = callctx.SetHeaders(ctx, header.GOOGLE_API_CLIENT_HEADER, header.GetGoogHeaderToken(header.CredTypeMDS, header.TokenTypeAccess))
 	tokenJSON, err := metadata.GetWithContext(ctx, tokenURI.String())
 	if err != nil {
 		return nil, fmt.Errorf("credentials: cannot fetch token: %w", err)

@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/auth/credentials/internal/stsexchange"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
+	"cloud.google.com/go/auth/internal/header"
 )
 
 const (
@@ -293,7 +294,7 @@ func run(t *testing.T, opts *Options, tets *testExchangeTokenServer) (*auth.Toke
 		if got, want := headerContentType, tets.contentType; got != want {
 			t.Errorf("got %v, want %v", got, want)
 		}
-		headerMetrics := r.Header.Get("x-goog-api-client")
+		headerMetrics := r.Header.Get(header.GOOGLE_API_CLIENT_HEADER)
 		if got, want := headerMetrics, tets.metricsHeader; got != want {
 			t.Errorf("got %v but want %v", got, want)
 		}
@@ -354,7 +355,7 @@ func cloneTestOpts() *Options {
 }
 
 func expectedMetricsHeader(source string, saImpersonation bool, configLifetime bool) string {
-	return fmt.Sprintf("gl-go/%s auth/unknown google-byoid-sdk source/%s sa-impersonation/%t config-lifetime/%t", goVersion(), source, saImpersonation, configLifetime)
+	return fmt.Sprintf("gl-go/%s auth/%s google-byoid-sdk source/%s sa-impersonation/%t config-lifetime/%t", header.GoVersion(), internal.Version, source, saImpersonation, configLifetime)
 }
 
 func TestOptionsValidate(t *testing.T) {

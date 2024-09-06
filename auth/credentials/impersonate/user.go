@@ -26,6 +26,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/header"
 )
 
 // user provides an auth flow for domain-wide delegation, setting
@@ -153,6 +154,7 @@ func (u userTokenProvider) exchangeToken(ctx context.Context, signedJWT string) 
 	if err != nil {
 		return nil, err
 	}
+	req.Header.Set(header.GOOGLE_API_CLIENT_HEADER, header.GetGoogHeaderToken(header.CredTypeImp, header.TokenTypeAccess))
 	resp, body, err := internal.DoRequest(u.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to exchange token: %w", err)

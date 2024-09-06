@@ -31,6 +31,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/header"
 	"cloud.google.com/go/auth/internal/jwt"
 )
 
@@ -564,6 +565,7 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set(header.GOOGLE_API_CLIENT_HEADER, getGoogHeaderToken(tp.opts))
 	resp, body, err := internal.DoRequest(tp.Client, req)
 	if err != nil {
 		return nil, fmt.Errorf("auth: cannot fetch token: %w", err)
@@ -609,4 +611,12 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 		token.Value = tokenRes.IDToken
 	}
 	return token, nil
+}
+
+func getGoogHeaderToken(opts *Options2LO) string {
+	tokenType := header.TokenTypeAccess
+	if opts.UseIDToken {
+		tokenType = header.TokenTypeID
+	}
+	return header.GetGoogHeaderToken(header.CredTypeSA, tokenType)
 }

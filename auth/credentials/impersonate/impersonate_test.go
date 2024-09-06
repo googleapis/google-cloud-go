@@ -24,6 +24,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/auth/internal/header"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -82,6 +83,10 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
 					if strings.Contains(req.URL.Path, "generateAccessToken") {
 						defer req.Body.Close()
+						headerAPIClient := req.Header.Get(header.GOOGLE_API_CLIENT_HEADER)
+						if got, want := headerAPIClient, header.GetGoogHeaderToken(header.CredTypeImp, header.TokenTypeAccess); got != want {
+							t.Errorf("header = %q; want %q", got, want)
+						}
 						b, err := io.ReadAll(req.Body)
 						if err != nil {
 							t.Error(err)
