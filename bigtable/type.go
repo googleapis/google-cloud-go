@@ -56,6 +56,13 @@ func Equal(a, b Type) bool {
 	return proto.Equal(a.proto(), b.proto())
 }
 
+// TypeUnspecified represents the absence of a type.
+type TypeUnspecified struct{}
+
+func (n TypeUnspecified) proto() *btapb.Type {
+	return &btapb.Type{}
+}
+
 type unknown[T interface{}] struct {
 	wrapped *T
 }
@@ -240,7 +247,9 @@ func ProtoToType(pb *btapb.Type) Type {
 	if pb == nil {
 		return unknown[btapb.Type]{wrapped: nil}
 	}
-
+	if pb.Kind == nil {
+		return TypeUnspecified{}
+	}
 	switch t := pb.Kind.(type) {
 	case *btapb.Type_Int64Type:
 		return int64ProtoToType(t.Int64Type)
