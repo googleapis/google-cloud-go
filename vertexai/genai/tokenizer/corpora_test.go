@@ -152,6 +152,9 @@ func newUdhrCorpus() *udhrCorpus {
 		"Azeri_Azerbaijani_Latin-Az.Times.Lat0117":           charmap.ISO8859_2,
 	}
 
+	// The skip list comes from the NLTK source code which says these are unsupported encodings,
+	// or in general encodings Go doesn't support.
+	// See NLTK source code reference: https://github.com/nltk/nltk/blob/f6567388b4399000b9aa2a6b0db713bff3fe332a/nltk/corpus/reader/udhr.py#L14
 	Skip := map[string]bool{
 		// The following files are not fully decodable because they
 		// were truncated at wrong bytes:
