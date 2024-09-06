@@ -241,8 +241,8 @@ func TestCountTokensWithCorpora(t *testing.T) {
 	model := client.GenerativeModel(defaultModel)
 	ucr := newUdhrCorpus()
 
-	corporaUrl := "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/udhr.zip"
-	files, err := corporaGenerator(corporaUrl)
+	corporaURL := "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/udhr.zip"
+	files, err := corporaGenerator(corporaURL)
 	if err != nil {
 		t.Fatalf("Failed to generate corpora: %v", err)
 	}
