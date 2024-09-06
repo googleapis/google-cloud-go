@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.11.12...assuredworkloads/v1.12.0) (2024-08-20)
+
+
+### Features
+
+* **assuredworkloads:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [1.11.12](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.11.11...assuredworkloads/v1.11.12) (2024-08-08)
 
 

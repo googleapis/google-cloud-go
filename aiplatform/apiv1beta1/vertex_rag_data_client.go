@@ -48,6 +48,7 @@ var newVertexRagDataClientHook clientHook
 // VertexRagDataCallOptions contains the retry settings for each method of VertexRagDataClient.
 type VertexRagDataCallOptions struct {
 	CreateRagCorpus    []gax.CallOption
+	UpdateRagCorpus    []gax.CallOption
 	GetRagCorpus       []gax.CallOption
 	ListRagCorpora     []gax.CallOption
 	DeleteRagCorpus    []gax.CallOption
@@ -85,6 +86,7 @@ func defaultVertexRagDataGRPCClientOptions() []option.ClientOption {
 func defaultVertexRagDataCallOptions() *VertexRagDataCallOptions {
 	return &VertexRagDataCallOptions{
 		CreateRagCorpus:    []gax.CallOption{},
+		UpdateRagCorpus:    []gax.CallOption{},
 		GetRagCorpus:       []gax.CallOption{},
 		ListRagCorpora:     []gax.CallOption{},
 		DeleteRagCorpus:    []gax.CallOption{},
@@ -109,6 +111,7 @@ func defaultVertexRagDataCallOptions() *VertexRagDataCallOptions {
 func defaultVertexRagDataRESTCallOptions() *VertexRagDataCallOptions {
 	return &VertexRagDataCallOptions{
 		CreateRagCorpus:    []gax.CallOption{},
+		UpdateRagCorpus:    []gax.CallOption{},
 		GetRagCorpus:       []gax.CallOption{},
 		ListRagCorpora:     []gax.CallOption{},
 		DeleteRagCorpus:    []gax.CallOption{},
@@ -137,6 +140,8 @@ type internalVertexRagDataClient interface {
 	Connection() *grpc.ClientConn
 	CreateRagCorpus(context.Context, *aiplatformpb.CreateRagCorpusRequest, ...gax.CallOption) (*CreateRagCorpusOperation, error)
 	CreateRagCorpusOperation(name string) *CreateRagCorpusOperation
+	UpdateRagCorpus(context.Context, *aiplatformpb.UpdateRagCorpusRequest, ...gax.CallOption) (*UpdateRagCorpusOperation, error)
+	UpdateRagCorpusOperation(name string) *UpdateRagCorpusOperation
 	GetRagCorpus(context.Context, *aiplatformpb.GetRagCorpusRequest, ...gax.CallOption) (*aiplatformpb.RagCorpus, error)
 	ListRagCorpora(context.Context, *aiplatformpb.ListRagCorporaRequest, ...gax.CallOption) *RagCorpusIterator
 	DeleteRagCorpus(context.Context, *aiplatformpb.DeleteRagCorpusRequest, ...gax.CallOption) (*DeleteRagCorpusOperation, error)
@@ -209,6 +214,17 @@ func (c *VertexRagDataClient) CreateRagCorpus(ctx context.Context, req *aiplatfo
 // The name must be that of a previously created CreateRagCorpusOperation, possibly from a different process.
 func (c *VertexRagDataClient) CreateRagCorpusOperation(name string) *CreateRagCorpusOperation {
 	return c.internalClient.CreateRagCorpusOperation(name)
+}
+
+// UpdateRagCorpus updates a RagCorpus.
+func (c *VertexRagDataClient) UpdateRagCorpus(ctx context.Context, req *aiplatformpb.UpdateRagCorpusRequest, opts ...gax.CallOption) (*UpdateRagCorpusOperation, error) {
+	return c.internalClient.UpdateRagCorpus(ctx, req, opts...)
+}
+
+// UpdateRagCorpusOperation returns a new UpdateRagCorpusOperation from a given name.
+// The name must be that of a previously created UpdateRagCorpusOperation, possibly from a different process.
+func (c *VertexRagDataClient) UpdateRagCorpusOperation(name string) *UpdateRagCorpusOperation {
+	return c.internalClient.UpdateRagCorpusOperation(name)
 }
 
 // GetRagCorpus gets a RagCorpus.
@@ -532,6 +548,26 @@ func (c *vertexRagDataGRPCClient) CreateRagCorpus(ctx context.Context, req *aipl
 		return nil, err
 	}
 	return &CreateRagCorpusOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *vertexRagDataGRPCClient) UpdateRagCorpus(ctx context.Context, req *aiplatformpb.UpdateRagCorpusRequest, opts ...gax.CallOption) (*UpdateRagCorpusOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "rag_corpus.name", url.QueryEscape(req.GetRagCorpus().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateRagCorpus[0:len((*c.CallOptions).UpdateRagCorpus):len((*c.CallOptions).UpdateRagCorpus)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.vertexRagDataClient.UpdateRagCorpus(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateRagCorpusOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1036,6 +1072,77 @@ func (c *vertexRagDataRESTClient) CreateRagCorpus(ctx context.Context, req *aipl
 
 	override := fmt.Sprintf("/ui/%s", resp.GetName())
 	return &CreateRagCorpusOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateRagCorpus updates a RagCorpus.
+func (c *vertexRagDataRESTClient) UpdateRagCorpus(ctx context.Context, req *aiplatformpb.UpdateRagCorpusRequest, opts ...gax.CallOption) (*UpdateRagCorpusOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRagCorpus()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetRagCorpus().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "rag_corpus.name", url.QueryEscape(req.GetRagCorpus().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &UpdateRagCorpusOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -2214,11 +2321,11 @@ func (c *vertexRagDataRESTClient) WaitOperation(ctx context.Context, req *longru
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2337,6 +2444,24 @@ func (c *vertexRagDataGRPCClient) ImportRagFilesOperation(name string) *ImportRa
 func (c *vertexRagDataRESTClient) ImportRagFilesOperation(name string) *ImportRagFilesOperation {
 	override := fmt.Sprintf("/ui/%s", name)
 	return &ImportRagFilesOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateRagCorpusOperation returns a new UpdateRagCorpusOperation from a given name.
+// The name must be that of a previously created UpdateRagCorpusOperation, possibly from a different process.
+func (c *vertexRagDataGRPCClient) UpdateRagCorpusOperation(name string) *UpdateRagCorpusOperation {
+	return &UpdateRagCorpusOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateRagCorpusOperation returns a new UpdateRagCorpusOperation from a given name.
+// The name must be that of a previously created UpdateRagCorpusOperation, possibly from a different process.
+func (c *vertexRagDataRESTClient) UpdateRagCorpusOperation(name string) *UpdateRagCorpusOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &UpdateRagCorpusOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

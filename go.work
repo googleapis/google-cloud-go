@@ -1,7 +1,5 @@
 go 1.21
 
-toolchain go1.21.0
-
 use (
 	.
 	./accessapproval
@@ -14,6 +12,7 @@ use (
 	./apigateway
 	./apigeeconnect
 	./apigeeregistry
+	./apihub
 	./apikeys
 	./appengine
 	./apphub

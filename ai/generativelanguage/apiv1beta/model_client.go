@@ -296,12 +296,18 @@ func (c *ModelClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetModel gets information about a specific Model.
+// GetModel gets information about a specific Model such as its version number, token
+// limits,
+// parameters (at https://ai.google.dev/gemini-api/docs/models/generative-models#model-parameters)
+// and other metadata. Refer to the Gemini models
+// guide (at https://ai.google.dev/gemini-api/docs/models/gemini) for detailed
+// model information.
 func (c *ModelClient) GetModel(ctx context.Context, req *generativelanguagepb.GetModelRequest, opts ...gax.CallOption) (*generativelanguagepb.Model, error) {
 	return c.internalClient.GetModel(ctx, req, opts...)
 }
 
-// ListModels lists models available through the API.
+// ListModels lists the Models (at https://ai.google.dev/gemini-api/docs/models/gemini)
+// available through the Gemini API.
 func (c *ModelClient) ListModels(ctx context.Context, req *generativelanguagepb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	return c.internalClient.ListModels(ctx, req, opts...)
 }
@@ -311,16 +317,16 @@ func (c *ModelClient) GetTunedModel(ctx context.Context, req *generativelanguage
 	return c.internalClient.GetTunedModel(ctx, req, opts...)
 }
 
-// ListTunedModels lists tuned models owned by the user.
+// ListTunedModels lists created tuned models.
 func (c *ModelClient) ListTunedModels(ctx context.Context, req *generativelanguagepb.ListTunedModelsRequest, opts ...gax.CallOption) *TunedModelIterator {
 	return c.internalClient.ListTunedModels(ctx, req, opts...)
 }
 
 // CreateTunedModel creates a tuned model.
-// Intermediate tuning progress (if any) is accessed through the
+// Check intermediate tuning progress (if any) through the
 // [google.longrunning.Operations] service.
 //
-// Status and results can be accessed through the Operations service.
+// Access status and results through the Operations service.
 // Example:
 // GET /v1/tunedModels/az2mb0bpw6i/operations/000-111-222
 func (c *ModelClient) CreateTunedModel(ctx context.Context, req *generativelanguagepb.CreateTunedModelRequest, opts ...gax.CallOption) (*CreateTunedModelOperation, error) {
@@ -691,7 +697,12 @@ func (c *modelGRPCClient) DeleteTunedModel(ctx context.Context, req *generativel
 	return err
 }
 
-// GetModel gets information about a specific Model.
+// GetModel gets information about a specific Model such as its version number, token
+// limits,
+// parameters (at https://ai.google.dev/gemini-api/docs/models/generative-models#model-parameters)
+// and other metadata. Refer to the Gemini models
+// guide (at https://ai.google.dev/gemini-api/docs/models/gemini) for detailed
+// model information.
 func (c *modelRESTClient) GetModel(ctx context.Context, req *generativelanguagepb.GetModelRequest, opts ...gax.CallOption) (*generativelanguagepb.Model, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -751,7 +762,8 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *generativelanguagep
 	return resp, nil
 }
 
-// ListModels lists models available through the API.
+// ListModels lists the Models (at https://ai.google.dev/gemini-api/docs/models/gemini)
+// available through the Gemini API.
 func (c *modelRESTClient) ListModels(ctx context.Context, req *generativelanguagepb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	it := &ModelIterator{}
 	req = proto.Clone(req).(*generativelanguagepb.ListModelsRequest)
@@ -900,7 +912,7 @@ func (c *modelRESTClient) GetTunedModel(ctx context.Context, req *generativelang
 	return resp, nil
 }
 
-// ListTunedModels lists tuned models owned by the user.
+// ListTunedModels lists created tuned models.
 func (c *modelRESTClient) ListTunedModels(ctx context.Context, req *generativelanguagepb.ListTunedModelsRequest, opts ...gax.CallOption) *TunedModelIterator {
 	it := &TunedModelIterator{}
 	req = proto.Clone(req).(*generativelanguagepb.ListTunedModelsRequest)
@@ -993,10 +1005,10 @@ func (c *modelRESTClient) ListTunedModels(ctx context.Context, req *generativela
 }
 
 // CreateTunedModel creates a tuned model.
-// Intermediate tuning progress (if any) is accessed through the
+// Check intermediate tuning progress (if any) through the
 // [google.longrunning.Operations] service.
 //
-// Status and results can be accessed through the Operations service.
+// Access status and results through the Operations service.
 // Example:
 // GET /v1/tunedModels/az2mb0bpw6i/operations/000-111-222
 func (c *modelRESTClient) CreateTunedModel(ctx context.Context, req *generativelanguagepb.CreateTunedModelRequest, opts ...gax.CallOption) (*CreateTunedModelOperation, error) {
@@ -1087,11 +1099,11 @@ func (c *modelRESTClient) UpdateTunedModel(ctx context.Context, req *generativel
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

@@ -31,40 +31,54 @@ func TestApplyStorageOpt(t *testing.T) {
 			desc: "set JSON option",
 			opts: []option.ClientOption{WithJSONReads()},
 			want: storageConfig{
-				useJSONforReads: true,
-				readAPIWasSet:   true,
+				useJSONforReads:      true,
+				readAPIWasSet:        true,
+				disableClientMetrics: false,
 			},
 		},
 		{
 			desc: "set XML option",
 			opts: []option.ClientOption{WithXMLReads()},
 			want: storageConfig{
-				useJSONforReads: false,
-				readAPIWasSet:   true,
+				useJSONforReads:      false,
+				readAPIWasSet:        true,
+				disableClientMetrics: false,
 			},
 		},
 		{
 			desc: "set conflicting options, last option set takes precedence",
 			opts: []option.ClientOption{WithJSONReads(), WithXMLReads()},
 			want: storageConfig{
-				useJSONforReads: false,
-				readAPIWasSet:   true,
+				useJSONforReads:      false,
+				readAPIWasSet:        true,
+				disableClientMetrics: false,
 			},
 		},
 		{
 			desc: "empty options",
 			opts: []option.ClientOption{},
 			want: storageConfig{
-				useJSONforReads: false,
-				readAPIWasSet:   false,
+				useJSONforReads:      false,
+				readAPIWasSet:        false,
+				disableClientMetrics: false,
 			},
 		},
 		{
 			desc: "set Google API option",
 			opts: []option.ClientOption{option.WithEndpoint("")},
 			want: storageConfig{
-				useJSONforReads: false,
-				readAPIWasSet:   false,
+				useJSONforReads:      false,
+				readAPIWasSet:        false,
+				disableClientMetrics: false,
+			},
+		},
+		{
+			desc: "disable metrics option",
+			opts: []option.ClientOption{WithDisabledClientMetrics()},
+			want: storageConfig{
+				useJSONforReads:      false,
+				readAPIWasSet:        false,
+				disableClientMetrics: true,
 			},
 		},
 	} {

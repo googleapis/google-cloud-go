@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.18.0...functions/v1.19.0) (2024-08-20)
+
+
+### Features
+
+* **functions:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.17.0...functions/v1.18.0) (2024-08-13)
 
 

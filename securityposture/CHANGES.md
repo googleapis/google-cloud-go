@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/securityposture/v0.1.8...securityposture/v0.2.0) (2024-08-20)
+
+
+### Features
+
+* **securityposture:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [0.1.8](https://github.com/googleapis/google-cloud-go/compare/securityposture/v0.1.7...securityposture/v0.1.8) (2024-08-08)
 
 

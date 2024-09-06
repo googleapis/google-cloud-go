@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.11...metastore/v1.14.0) (2024-08-20)
+
+
+### Features
+
+* **metastore:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [1.13.11](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.10...metastore/v1.13.11) (2024-08-08)
 
 

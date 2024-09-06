@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/shell/v1.7.12...shell/v1.8.0) (2024-08-20)
+
+
+### Features
+
+* **shell:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [1.7.12](https://github.com/googleapis/google-cloud-go/compare/shell/v1.7.11...shell/v1.7.12) (2024-08-08)
 
 

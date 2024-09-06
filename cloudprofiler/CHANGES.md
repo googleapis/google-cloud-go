@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.3.6...cloudprofiler/v0.4.0) (2024-08-20)
+
+
+### Features
+
+* **cloudprofiler:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [0.3.6](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.3.5...cloudprofiler/v0.3.6) (2024-08-08)
 
 
