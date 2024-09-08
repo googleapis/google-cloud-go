@@ -153,6 +153,18 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	}, nil
 }
 
+func (c *httpStorageClient) RetryUpdate(config retryConfig) error {
+	if config.readDynamicTimeout != nil {
+		rdt := config.readDynamicTimeout
+		dynamicDelay, err := util.NewDelay(rdt.targetPercentile, rdt.increaseRate, rdt.min, rdt.max)
+		if err != nil {
+			return fmt.Errorf("creating dynamice delay obj: %w", err)
+		}
+		c.readReqDynamicTimeout = dynamicDelay
+	}
+	return nil
+}
+
 func (c *httpStorageClient) Close() error {
 	c.hc.CloseIdleConnections()
 	return nil

@@ -1001,6 +1001,9 @@ func (bytesCodec) Name() string {
 	// value and we get errors.
 	return ""
 }
+func (c *grpcStorageClient) RetryUpdate(config retryConfig) error {
+	return nil
+}
 
 func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.NewRangeReader")
