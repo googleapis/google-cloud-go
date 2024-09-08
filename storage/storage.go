@@ -2135,6 +2135,7 @@ func (c *Client) SetRetry(opts ...RetryOption) {
 		opt.apply(retry)
 	}
 	c.retry = retry
+	c.tc.RetryUpdate(*retry)
 }
 
 // RetryOption allows users to configure non-default retry behavior for API
