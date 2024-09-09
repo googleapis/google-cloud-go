@@ -34,7 +34,7 @@ func ExampleClient_ListApiOperations_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewClient(ctx)
+	c, err := apihub.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -60,7 +60,7 @@ func ExampleClient_ListApis_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewClient(ctx)
+	c, err := apihub.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -86,7 +86,7 @@ func ExampleClient_ListAttributes_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewClient(ctx)
+	c, err := apihub.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -112,7 +112,7 @@ func ExampleClient_ListDeployments_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewClient(ctx)
+	c, err := apihub.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -138,7 +138,7 @@ func ExampleClient_ListExternalApis_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewClient(ctx)
+	c, err := apihub.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -164,7 +164,7 @@ func ExampleClient_ListSpecs_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewClient(ctx)
+	c, err := apihub.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -190,7 +190,7 @@ func ExampleClient_ListVersions_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewClient(ctx)
+	c, err := apihub.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -216,7 +216,7 @@ func ExampleClient_SearchResources_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewClient(ctx)
+	c, err := apihub.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -242,7 +242,7 @@ func ExampleClient_ListLocations_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewClient(ctx)
+	c, err := apihub.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -268,7 +268,7 @@ func ExampleClient_ListOperations_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewClient(ctx)
+	c, err := apihub.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

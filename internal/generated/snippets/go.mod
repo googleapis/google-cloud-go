@@ -60,7 +60,7 @@ require (
 	cloud.google.com/go/firestore v1.16.0
 	cloud.google.com/go/functions v1.19.0
 	cloud.google.com/go/gkebackup v1.6.0
-	cloud.google.com/go/gkeconnect v0.10.0
+	cloud.google.com/go/gkeconnect v0.11.0
 	cloud.google.com/go/gkehub v0.15.0
 	cloud.google.com/go/gkemulticloud v1.3.0
 	cloud.google.com/go/gsuiteaddons v1.7.0
@@ -93,7 +93,7 @@ require (
 	cloud.google.com/go/privatecatalog v0.10.0
 	cloud.google.com/go/pubsub v1.42.0
 	cloud.google.com/go/pubsublite v1.8.2
-	cloud.google.com/go/recaptchaenterprise/v2 v2.16.0
+	cloud.google.com/go/recaptchaenterprise/v2 v2.17.0
 	cloud.google.com/go/recommendationengine v0.9.0
 	cloud.google.com/go/recommender v1.13.0
 	cloud.google.com/go/redis v1.17.0
@@ -131,8 +131,8 @@ require (
 	cloud.google.com/go/workflows v1.13.0
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.194.0
-	google.golang.org/genproto v0.0.0-20240827150818-7e3bb234dfed
+	google.golang.org/api v0.196.0
+	google.golang.org/genproto v0.0.0-20240903143218-8af14fe29dc1
 )
 
 require (
@@ -171,7 +171,7 @@ require (
 )
 
 require (
-	cloud.google.com/go/auth v0.9.1 // indirect
+	cloud.google.com/go/auth v0.9.3 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
 	cloud.google.com/go/compute/metadata v0.5.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -194,8 +194,8 @@ require (
 	golang.org/x/sys v0.24.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240827150818-7e3bb234dfed // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240827150818-7e3bb234dfed // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240903143218-8af14fe29dc1 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/grpc v1.66.0 // indirect
 )
 

@@ -329,7 +329,7 @@ type BigQuerySource struct {
 	//
 	//	*BigQuerySource_PartitionDate
 	Partition isBigQuerySource_Partition `protobuf_oneof:"partition"`
-	// The project ID (can be project # or ID) that the BigQuery source is in with
+	// The project ID or the project number that contains the BigQuery source. Has
 	// a length limit of 128 characters. If not specified, inherits the project
 	// ID from the parent request.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
@@ -465,7 +465,7 @@ type SpannerSource struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The project ID that the Spanner source is in with a length limit of 128
+	// The project ID that contains the Spanner source. Has a length limit of 128
 	// characters. If not specified, inherits the project ID from the parent
 	// request.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
@@ -616,7 +616,7 @@ type BigtableSource struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The project ID that the Bigtable source is in with a length limit of 128
+	// The project ID that contains the Bigtable source. Has a length limit of 128
 	// characters. If not specified, inherits the project ID from the parent
 	// request.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
@@ -769,8 +769,8 @@ type CloudSqlSource struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The project ID that the Cloud SQL source is in with a length limit of 128
-	// characters. If not specified, inherits the project ID from the parent
+	// The project ID that contains the Cloud SQL source. Has a length limit of
+	// 128 characters. If not specified, inherits the project ID from the parent
 	// request.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// Required. The Cloud SQL instance to copy the data from with a length limit
@@ -875,8 +875,8 @@ type AlloyDbSource struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The project ID that the AlloyDB source is in
-	// with a length limit of 128 characters. If not specified, inherits the
+	// The project ID that contains the AlloyDB source.
+	// Has a length limit of 128 characters. If not specified, inherits the
 	// project ID from the parent request.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// Required. The AlloyDB location to copy the data from with a length limit of
