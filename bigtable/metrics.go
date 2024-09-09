@@ -150,17 +150,10 @@ type builtinMetricsTracerFactory struct {
 	retryCount         metric.Int64Counter
 }
 
-func wrapMetricsError(err error) error {
-	if err == nil {
-		return err
-	}
-	return fmt.Errorf("%v%w", metricsErrorPrefix, err)
-}
-
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
-		return nil, wrapMetricsError(err)
+		return nil, err
 	}
 
 	tracerFactory := &builtinMetricsTracerFactory{
@@ -193,7 +186,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 			return tracerFactory, nil
 		default:
 			tracerFactory.enabled = false
-			return tracerFactory, wrapMetricsError(errors.New("unknown MetricsProvider type"))
+			return tracerFactory, errors.New("unknown MetricsProvider type")
 		}
 	}
 
@@ -207,7 +200,7 @@ func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([
 	allOpts := createExporterOptions(opts...)
 	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
 	if err != nil {
-		return nil, wrapMetricsError(err)
+		return nil, err
 	}
 
 	return []sdkmetric.Option{sdkmetric.WithReader(
@@ -229,7 +222,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
-		return wrapMetricsError(err)
+		return err
 	}
 
 	// Create attempt_latencies
@@ -240,7 +233,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
-		return wrapMetricsError(err)
+		return err
 	}
 
 	// Create server_latencies
@@ -251,7 +244,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
-		return wrapMetricsError(err)
+		return err
 	}
 
 	// Create retry_count
@@ -260,7 +253,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("The number of additional RPCs sent after the initial attempt."),
 		metric.WithUnit(metricUnitCount),
 	)
-	return wrapMetricsError(err)
+	return err
 }
 
 // builtinMetricsTracer is created one per operation
@@ -400,7 +393,7 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 	// Get metric details
 	mDetails, found := metricsDetails[metricName]
 	if !found {
-		return attrKeyValues, wrapMetricsError(fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName))
+		return attrKeyValues, fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
 	}
 
 	status := mt.currOp.status
@@ -416,7 +409,7 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 		case metricLabelKeyStreamingOperation:
 			attrKeyValues = append(attrKeyValues, attribute.Bool(metricLabelKeyStreamingOperation, mt.isStreaming))
 		default:
-			return attrKeyValues, wrapMetricsError(fmt.Errorf("unknown additional attribute: %v", attrKey))
+			return attrKeyValues, fmt.Errorf("unknown additional attribute: %v", attrKey)
 		}
 	}
 

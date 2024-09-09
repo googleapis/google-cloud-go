@@ -80,13 +80,20 @@ type monitoringExporter struct {
 func newMonitoringExporter(ctx context.Context, project string, opts ...option.ClientOption) (*monitoringExporter, error) {
 	client, err := monitoring.NewMetricClient(ctx, opts...)
 	if err != nil {
-		return nil, wrapMetricsError(err)
+		return nil, err
 	}
 	return &monitoringExporter{
 		client:    client,
 		shutdown:  make(chan struct{}),
 		projectID: project,
 	}, nil
+}
+
+func wrapMetricsError(err error) error {
+	if err == nil {
+		return err
+	}
+	return fmt.Errorf("%v%w", metricsErrorPrefix, err)
 }
 
 // ForceFlush does nothing, the exporter holds no state.
@@ -149,7 +156,7 @@ func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetr
 		errs = append(errs, me.client.CreateServiceTimeSeries(ctx, req))
 	}
 
-	return wrapMetricsError(errors.Join(errs...))
+	return errors.Join(errs...)
 }
 
 // recordToMetricAndMonitoredResourcePbs converts data from records to Metric and Monitored resource proto type for Cloud Monitoring.
@@ -199,7 +206,7 @@ func (me *monitoringExporter) recordsToTimeSeriesPbs(rm *otelmetricdata.Resource
 		}
 	}
 
-	return tss, wrapMetricsError(errors.Join(errs...))
+	return tss, errors.Join(errs...)
 }
 
 // recordToTimeSeriesPb converts record to TimeSeries proto type with common resource.
@@ -238,7 +245,7 @@ func (me *monitoringExporter) recordToTimeSeriesPb(m otelmetricdata.Metrics) ([]
 	default:
 		errs = append(errs, errUnexpectedAggregationKind{kind: reflect.TypeOf(m.Data).String()})
 	}
-	return tss, wrapMetricsError(errors.Join(errs...))
+	return tss, errors.Join(errs...)
 }
 
 func sumToTimeSeries[N int64 | float64](point otelmetricdata.DataPoint[N], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource) (*monitoringpb.TimeSeries, error) {
@@ -295,7 +302,7 @@ func toNonemptyTimeIntervalpb(start, end time.Time) (*monitoringpb.TimeInterval,
 		endpb.CheckValid(),
 	)
 	if err != nil {
-		return nil, wrapMetricsError(err)
+		return nil, err
 	}
 
 	return &monitoringpb.TimeInterval{
