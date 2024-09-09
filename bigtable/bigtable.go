@@ -49,9 +49,10 @@ import (
 )
 
 const (
-	prodAddr           = "bigtable.googleapis.com:443"
-	mtlsProdAddr       = "bigtable.mtls.googleapis.com:443"
-	methodNameReadRows = "ReadRows"
+	prodAddr              = "bigtable.googleapis.com:443"
+	mtlsProdAddr          = "bigtable.mtls.googleapis.com:443"
+	featureFlagsHeaderKey = "bigtable-features"
+	methodNameReadRows    = "ReadRows"
 )
 
 // Client is a client for reading and writing data to tables in an instance.
@@ -423,7 +424,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 		for {
 			proto.Reset(res)
 			err := stream.RecvMsg(res)
-      mt.currOp.setFirstRespTime(time.Now())
+			mt.currOp.setFirstRespTime(time.Now())
 			if err == io.EOF {
 				*trailerMD = stream.Trailer()
 				break

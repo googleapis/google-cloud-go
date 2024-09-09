@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/bigtable/internal"
@@ -318,7 +319,8 @@ type opTracer struct {
 	startTime time.Time
 
 	// Only for ReadRows. Time when the response headers are received in a streaming RPC.
-	firstRespTime time.Time
+	firstRespTime     time.Time
+	firstRespTimeOnce sync.Once
 
 	// gRPC status code of last completed attempt
 	status string
@@ -331,7 +333,9 @@ func (o *opTracer) setStartTime(t time.Time) {
 }
 
 func (o *opTracer) setFirstRespTime(t time.Time) {
-	o.firstRespTime = t
+	o.firstRespTimeOnce.Do(func() {
+		o.firstRespTime = t
+	})
 }
 
 func (o *opTracer) setStatus(status string) {
