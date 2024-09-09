@@ -18,6 +18,7 @@ package bigtable // import "cloud.google.com/go/bigtable"
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -49,6 +50,7 @@ import (
 
 const prodAddr = "bigtable.googleapis.com:443"
 const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
+const featureFlagsHeaderKey = "bigtable-features"
 
 // Client is a client for reading and writing data to tables in an instance.
 //
@@ -267,6 +269,25 @@ type Table struct {
 	authorizedView string
 }
 
+// newFeatureFlags creates the feature flags `bigtable-features` header
+// to be sent on each request. This includes all features supported and
+// and enabled on the client
+func (c *Client) newFeatureFlags() metadata.MD {
+	ff := btpb.FeatureFlags{
+		ReverseScans:             true,
+		LastScannedRowResponses:  true,
+		ClientSideMetricsEnabled: c.metricsTracerFactory.enabled,
+	}
+
+	val := ""
+	b, err := proto.Marshal(&ff)
+	if err == nil {
+		val = base64.URLEncoding.EncodeToString(b)
+	}
+
+	return metadata.Pairs(featureFlagsHeaderKey, val)
+}
+
 // Open opens a table.
 func (c *Client) Open(table string) *Table {
 	return &Table{
@@ -275,7 +296,7 @@ func (c *Client) Open(table string) *Table {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-		), btopt.WithFeatureFlags()),
+		), c.newFeatureFlags()),
 	}
 }
 
@@ -287,7 +308,7 @@ func (c *Client) OpenTable(table string) TableAPI {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-		), btopt.WithFeatureFlags()),
+		), c.newFeatureFlags()),
 	}}
 }
 
@@ -299,7 +320,7 @@ func (c *Client) OpenAuthorizedView(table, authorizedView string) TableAPI {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullAuthorizedViewName(table, authorizedView),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-		), btopt.WithFeatureFlags()),
+		), c.newFeatureFlags()),
 		authorizedView: authorizedView,
 	}}
 }

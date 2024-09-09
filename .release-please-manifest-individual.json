@@ -1,7 +1,7 @@
 {
   "ai": "0.8.2",
   "aiplatform": "1.68.0",
-  "auth": "0.9.2",
+  "auth": "0.9.3",
   "auth/oauth2adapt": "0.2.4",
   "bigquery": "1.62.0",
   "bigtable": "1.31.0",
@@ -14,5 +14,5 @@
   "pubsublite": "1.8.2",
   "spanner": "1.67.0",
   "storage": "1.43.0",
-  "vertexai": "0.13.0"
+  "vertexai": "0.13.1"
 }

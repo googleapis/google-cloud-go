@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.3](https://github.com/googleapis/google-cloud-go/compare/auth/v0.9.2...auth/v0.9.3) (2024-09-03)
+
+
+### Bug Fixes
+
+* **auth:** Choose quota project envvar over file when both present ([#10807](https://github.com/googleapis/google-cloud-go/issues/10807)) ([2d8dd77](https://github.com/googleapis/google-cloud-go/commit/2d8dd7700eff92d4b95027be55e26e1e7aa79181)), refs [#10804](https://github.com/googleapis/google-cloud-go/issues/10804)
+
 ## [0.9.2](https://github.com/googleapis/google-cloud-go/compare/auth/v0.9.1...auth/v0.9.2) (2024-08-30)
 
 

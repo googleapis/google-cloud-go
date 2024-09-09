@@ -620,7 +620,7 @@ func (*ListMetastorePartitionsResponse_Partitions) isListMetastorePartitionsResp
 func (*ListMetastorePartitionsResponse_Streams) isListMetastorePartitionsResponse_Response() {}
 
 // The top-level message sent by the client to the
-// [Partitions.StreamMetastorePartitions]() method.
+// [Partitions.StreamMetastorePartitions][] method.
 // Follows the default gRPC streaming maximum size of 4 MB.
 type StreamMetastorePartitionsRequest struct {
 	state         protoimpl.MessageState
@@ -698,7 +698,7 @@ func (x *StreamMetastorePartitionsRequest) GetSkipExistingPartitions() bool {
 }
 
 // This is the response message sent by the server
-// to the client for the [Partitions.StreamMetastorePartitions]() method when
+// to the client for the [Partitions.StreamMetastorePartitions][] method when
 // the commit is successful. Server will close the stream after sending this
 // message.
 type StreamMetastorePartitionsResponse struct {

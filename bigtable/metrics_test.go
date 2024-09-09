@@ -19,6 +19,7 @@ package bigtable
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"sort"
@@ -135,13 +136,18 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 
 	// Setup fake Bigtable server
 	isFirstAttempt := true
-	headerAndErrorInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	receivedHeader := metadata.MD{}
+	serverStreamInterceptor := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		// Capture incoming metadata
+		receivedHeader, _ = metadata.FromIncomingContext(ss.Context())
 		if strings.HasSuffix(info.FullMethod, "ReadRows") {
 			if isFirstAttempt {
 				// Fail first attempt
 				isFirstAttempt = false
 				return status.Error(codes.Unavailable, "Mock Unavailable error")
 			}
+
+			// Send server headers
 			header := metadata.New(map[string]string{
 				serverTimingMDKey: "gfet4t7; dur=123",
 				locationMDKey:     string(testHeaders),
@@ -182,7 +188,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			}
 
 			// open table and compare errors
-			tbl, cleanup, gotErr := setupFakeServer(project, instance, test.config, grpc.StreamInterceptor(headerAndErrorInjector))
+			tbl, cleanup, gotErr := setupFakeServer(project, instance, test.config, grpc.StreamInterceptor(serverStreamInterceptor))
 			defer cleanup()
 			if gotErr != nil {
 				t.Fatalf("err: got: %v, want: %v", gotErr, nil)
@@ -222,6 +228,29 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			})
 			if err != nil {
 				t.Fatalf("ReadRows failed: %v", err)
+			}
+
+			// Check feature flags
+			ffStrs := receivedHeader.Get(featureFlagsHeaderKey)
+			if len(ffStrs) < 1 {
+				t.Errorf("Feature flags not sent by client")
+			}
+			ffBytes, err := base64.URLEncoding.DecodeString(ffStrs[0])
+			if err != nil {
+				t.Errorf("Feature flags not encoded correctly: %v", err)
+			}
+			ff := &btpb.FeatureFlags{}
+			if err = proto.Unmarshal(ffBytes, ff); err != nil {
+				t.Errorf("Feature flags not marshalled correctly: %v", err)
+			}
+			if ff.ClientSideMetricsEnabled != test.wantBuiltinEnabled || !ff.LastScannedRowResponses || !ff.ReverseScans {
+				t.Errorf("Feature flags: ClientSideMetricsEnabled got: %v, want: %v\n"+
+					"LastScannedRowResponses got: %v, want: %v\n"+
+					"ReverseScans got: %v, want: %v\n",
+					ff.ClientSideMetricsEnabled, test.wantBuiltinEnabled,
+					ff.LastScannedRowResponses, true,
+					ff.ReverseScans, true,
+				)
 			}
 
 			// Calculate elapsed time
