@@ -10,7 +10,7 @@
   "firestore": "1.16.0",
   "logging": "1.11.0",
   "profiler": "0.4.1",
-  "pubsub": "1.42.0",
+  "pubsub": "1.43.0",
   "pubsublite": "1.8.2",
   "spanner": "1.67.0",
   "storage": "1.43.0",
