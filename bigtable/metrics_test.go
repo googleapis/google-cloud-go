@@ -17,17 +17,21 @@ limitations under the License.
 package bigtable
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -275,6 +279,89 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			}
 		})
 	}
+}
+
+func setMockErrorHandler(t *testing.T, mockErrorHandler *MockErrorHandler) {
+	origErrHandler := otel.GetErrorHandler()
+	otel.SetErrorHandler(mockErrorHandler)
+	t.Cleanup(func() {
+		otel.SetErrorHandler(origErrHandler)
+	})
+}
+
+func TestExporterLogs(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+
+	// Reduce sampling period to reduce test run time
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 5 * time.Second
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+
+	tbl, cleanup, gotErr := setupFakeServer(project, instance, ClientConfig{})
+	t.Cleanup(func() { defer cleanup() })
+	if gotErr != nil {
+		t.Fatalf("err: got: %v, want: %v", gotErr, nil)
+		return
+	}
+
+	// Set up mock error handler
+	mer := &MockErrorHandler{
+		buffer: new(bytes.Buffer),
+	}
+	setMockErrorHandler(t, mer)
+
+	// record start time
+	testStartTime := time.Now()
+
+	// Perform read rows operation
+	tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool {
+		return true
+	})
+
+	// Calculate elapsed time
+	elapsedTime := time.Since(testStartTime)
+	if elapsedTime < 3*defaultSamplePeriod {
+		// Ensure at least 2 datapoints are recorded
+		time.Sleep(3*defaultSamplePeriod - elapsedTime)
+	}
+
+	// In setupFakeServer above, Bigtable client is created with options :
+	// option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock())
+	// These same options will be used to create Monitoring client but since there
+	// is no fake Monitoring server at that grpc conn, all the exports result in failure.
+	// Thus, there should be errors in errBuf.
+	data, readErr := mer.read()
+	if readErr != nil {
+		t.Errorf("Failed to read errBuf: %v", readErr)
+	}
+	if !strings.Contains(data, metricsErrorPrefix) {
+		t.Errorf("Expected %v to contain %v", data, metricsErrorPrefix)
+	}
+}
+
+type MockErrorHandler struct {
+	buffer      *bytes.Buffer
+	bufferMutex sync.Mutex
+}
+
+func (m *MockErrorHandler) Handle(err error) {
+	m.bufferMutex.Lock()
+	defer m.bufferMutex.Unlock()
+	fmt.Fprintln(m.buffer, err)
+}
+
+func (m *MockErrorHandler) read() (string, error) {
+	m.bufferMutex.Lock()
+	defer m.bufferMutex.Unlock()
+	data, err := io.ReadAll(m.buffer)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
 }
 
 func TestToOtelMetricAttrs(t *testing.T) {
