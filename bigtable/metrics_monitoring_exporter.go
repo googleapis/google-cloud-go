@@ -119,7 +119,7 @@ func (me *monitoringExporter) Export(ctx context.Context, rm *otelmetricdata.Res
 	default:
 	}
 
-	return me.exportTimeSeries(ctx, rm)
+	return wrapMetricsError(me.exportTimeSeries(ctx, rm))
 }
 
 // Temporality returns the Temporality to use for an instrument kind.
