@@ -65,7 +65,9 @@ func NewDelay(targetPercentile float64, increaseRate float64, initialDelay, minD
 	if initialDelay > maxDelay {
 		initialDelay = maxDelay
 	}
-	// See http://google3/net/rpc/contrib/hedged_call/dynamic_delay.h?l=35&rcl=194811090
+
+	// Compute increaseFactor and decreaseFactor such that:
+	// (increaseFactor ^ (1 - targetPercentile)) * (decreaseFactor ^ targetPercentile) = 1
 	increaseFactor := math.Exp(math.Log(2) / increaseRate)
 	if increaseFactor < 1.001 {
 		increaseFactor = 1.001

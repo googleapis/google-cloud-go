@@ -162,3 +162,15 @@ func TestOverflow(t *testing.T) {
 		t.Fatalf("unexpected d.Value: got %v, want %v", got, want)
 	}
 }
+
+func TestInvalidArgument(t *testing.T) {
+	_, err := NewDelay(1-0.1, 15, 1*time.Millisecond, 2*time.Hour, 1*time.Hour)
+	if err == nil {
+		t.Fatal("unexpected, should throw error as minDelay is greater than maxDelay")
+	}
+
+	_, err = NewDelay(1-0.1, 0, 1*time.Millisecond, 2*time.Hour, 1*time.Hour)
+	if err == nil {
+		t.Fatal("unexpected, should throw error as increaseRate can't be zero")
+	}
+}
