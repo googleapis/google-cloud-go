@@ -26,7 +26,6 @@ import (
 	"testing"
 
 	"cloud.google.com/go/vertexai/genai"
-	"cloud.google.com/go/vertexai/genai/tokenizer"
 
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/charmap"
@@ -243,6 +242,11 @@ func TestCountTokensWithCorpora(t *testing.T) {
 	model := client.GenerativeModel(defaultModel)
 	ucr := newUdhrCorpus()
 
+	tok, err := New(defaultModel)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	corporaURL := "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/udhr.zip"
 	corporaFiles, err := corporaGenerator(corporaURL)
 	if err != nil {
@@ -269,11 +273,6 @@ func TestCountTokensWithCorpora(t *testing.T) {
 			decodedContent, err := decodeBytes(enc, corpora.Content)
 			if err != nil {
 				log.Fatalf("Failed to decode bytes: %v", err)
-			}
-
-			tok, err := tokenizer.New(defaultModel)
-			if err != nil {
-				log.Fatal(err)
 			}
 
 			localNtoks, err := tok.CountTokens(genai.Text(decodedContent))
