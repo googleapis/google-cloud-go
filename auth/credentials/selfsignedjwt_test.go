@@ -40,7 +40,7 @@ var jwtJSONKey = []byte(`{
 	"audience": "https://testpervice.googleapis.com/"
   }`)
 
-func TestDefaultCredentials_SelfSignedJSON(t *testing.T) {
+func TestDetectDefault_SelfSignedJSON(t *testing.T) {
 	privateKey, jsonKey, err := setupFakeKey()
 	if err != nil {
 		t.Fatal(err)
@@ -51,7 +51,7 @@ func TestDefaultCredentials_SelfSignedJSON(t *testing.T) {
 		UseSelfSignedJWT: true,
 	})
 	if err != nil {
-		t.Fatalf("DefaultCredentials(%s): %v", jsonKey, err)
+		t.Fatalf("DetectDefault(%s): %v", jsonKey, err)
 	}
 
 	tok, err := tp.Token(context.Background())
@@ -102,7 +102,7 @@ func TestDefaultCredentials_SelfSignedJSON(t *testing.T) {
 	}
 }
 
-func TestDefaultCredentials_SelfSignedWithScope(t *testing.T) {
+func TestDetectDefault_SelfSignedWithScope(t *testing.T) {
 	privateKey, jsonKey, err := setupFakeKey()
 	if err != nil {
 		t.Fatal(err)
@@ -113,7 +113,7 @@ func TestDefaultCredentials_SelfSignedWithScope(t *testing.T) {
 		UseSelfSignedJWT: true,
 	})
 	if err != nil {
-		t.Fatalf("DefaultCredentials(%s): %v", jsonKey, err)
+		t.Fatalf("DetectDefault(%s): %v", jsonKey, err)
 	}
 
 	tok, err := tp.Token(context.Background())
@@ -164,7 +164,7 @@ func TestDefaultCredentials_SelfSignedWithScope(t *testing.T) {
 	}
 }
 
-func TestDefaultCredentials_SelfSignedWithAudienceAndScope(t *testing.T) {
+func TestDetectDefault_SelfSignedWithAudienceAndScope(t *testing.T) {
 	_, jsonKey, err := setupFakeKey()
 	if err != nil {
 		t.Fatal(err)
@@ -176,10 +176,27 @@ func TestDefaultCredentials_SelfSignedWithAudienceAndScope(t *testing.T) {
 		UseSelfSignedJWT: true,
 	})
 	if err == nil {
-		t.Fatal("Token(): want non-nil err")
+		t.Fatal("DetectDefault(): want non-nil err")
 	}
 	if want := "credentials: both scopes and audience were provided"; err.Error() != want {
 		t.Errorf("TokenType = %q, want %q", err, want)
+	}
+}
+
+func TestDetectDefault_SelfSignedWithoutAudienceOrScope(t *testing.T) {
+	_, jsonKey, err := setupFakeKey()
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = DetectDefault(&DetectOptions{
+		CredentialsJSON:  jsonKey,
+		UseSelfSignedJWT: true,
+	})
+	if err == nil {
+		t.Fatal("DetectDefault(): want non-nil err")
+	}
+	if want := "credentials: both scopes and audience are empty"; err.Error() != want {
+		t.Errorf("DetectDefault = %q, want %q", err, want)
 	}
 }
 
