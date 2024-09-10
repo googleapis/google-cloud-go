@@ -1890,19 +1890,16 @@ func TestFindNearest(t *testing.T) {
 				})
 			}
 			_, gotErr := tc.vQuery.Documents(ctx).GetAll()
-			if !equalErrs(gotErr, tc.wantErr) {
+			if !errorsMatch(gotErr, tc.wantErr) {
 				t.Fatalf("got %v, want %v", gotErr, tc.wantErr)
 			}
 		})
 	}
 }
 
-func equalErrs(gotErr error, wantErr error) bool {
-	if gotErr == nil && wantErr == nil {
-		return true
+func errorsMatch(got, want error) bool {
+	if got == nil || want == nil {
+		return got == want
 	}
-	if gotErr == nil || wantErr == nil {
-		return false
-	}
-	return strings.Contains(gotErr.Error(), wantErr.Error())
+	return strings.Contains(got.Error(), want.Error())
 }

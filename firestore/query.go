@@ -537,16 +537,12 @@ type FindNearestOptions struct {
 	// distances increase when the vectors are more similar, the comparison is inverted.
 	// For [DistanceMeasureEuclidean], [DistanceMeasureCosine]: WHERE distance <= distanceThreshold
 	// For [DistanceMeasureDotProduct]:                         WHERE distance >= distance_threshold
-	//
-	// Ptr can be used to set this field. E.g.
-	//  FindNearestOptions{
-	// 		DistanceThreshold: firestore.Ptr[float64](0.1)
-	//      DistanceResultField: "vector_distance"
-	// 	}
 	DistanceThreshold *float64
 
-	// DistanceResultField specifies name of the field to output the result of
+	// DistanceResultField specifies name of the document field to output the result of
 	// the vector distance calculation.
+	// If the field already exists in the document, its value get overwritten with the distance calculation.
+	// Otherwise, a new field gets added to the document.
 	DistanceResultField string
 }
 

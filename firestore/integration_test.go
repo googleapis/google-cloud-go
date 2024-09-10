@@ -3304,14 +3304,13 @@ func TestIntegration_FindNearest(t *testing.T) {
 		{
 			desc: "FindNearest threshold and resultField",
 			vq: collRef.FindNearest(queryField, []float64{1, 2, 3}, 3, DistanceMeasureEuclidean, &FindNearestOptions{
-				DistanceThreshold:   Ptr[float64](20),
+				DistanceThreshold:   Ptr(20.0),
 				DistanceResultField: resultField,
 			}),
 			wantBeans:    beans[:3],
 			wantResField: resultField,
 		},
 	} {
-
 		t.Run(tc.desc, func(t *testing.T) {
 			iter := tc.vq.Documents(ctx)
 			gotDocs, err := iter.GetAll()
@@ -3324,7 +3323,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 			}
 
 			for i, doc := range gotDocs {
-				gotBean := coffeeBean{}
+				var gotBean coffeeBean
 				if len(tc.wantResField) != 0 {
 					_, ok := doc.Data()[tc.wantResField]
 					if !ok {
@@ -3334,6 +3333,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 				err := doc.DataTo(&gotBean)
 				if err != nil {
 					t.Errorf("#%v: DataTo: %+v", doc.Ref.ID, err)
+					continue
 				}
 				if tc.wantBeans[i].ID != gotBean.ID {
 					t.Errorf("#%v: want: %v, got: %v", i, beans[i].ID, gotBean.ID)
