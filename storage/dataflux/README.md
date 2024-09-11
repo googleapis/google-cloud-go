@@ -1,10 +1,12 @@
 # Dataflux for Google Cloud Storage Go client library
 
 ## Overview
-The purpose of this client is to quickly list data stored in GCS. The core functionalities of this client can be broken down into two key parts.
+The purpose of this client is to quickly list data stored in GCS.
 
 ## Fast List
-The fast list component of this client leverages GCS API to parallelize the listing of files within a GCS bucket. It does this by implementing a workstealing algorithm, where each worker in the list operation is able to steal work from its siblings once it has finished all currently stated listing work. This parallelization leads to a significant real world speed increase than sequential listing. Note that paralellization is limited by the machine on which the client runs. Benchmarking has demonstrated that the larger the object count, the better Dataflux performs when compared to a linear listing.
+The fast list component of this client leverages GCS API to parallelize the listing of files within a GCS bucket. It does this by implementing a workstealing algorithm, where each worker in the list operation is able to steal work from its siblings once it has finished all currently stated listing work. This parallelization leads to a significant real world speed increase than sequential listing. Note that paralellization is limited by the machine on which the client runs. 
+
+Benchmarking has demonstrated that the larger the object count, the better Dataflux performs when compared to a linear listing. Around 100k objects, users will see improvemement in listing speed.
 
 ### Example Usage
 
@@ -26,9 +28,9 @@ if err != nil {
 query := storage.Query{}
 // Input for fast-listing.
 dfopts := dataflux.ListerInput{
-    BucketName:		bucketName,
-    Parallelism:		parallelism,
-    BatchSize:		batchSize,
+    BucketName:		"bucket",
+    Parallelism:	500,
+    BatchSize:		500000,
     Query:			query,
 }
 
@@ -47,11 +49,14 @@ for {
     if err != nil {
         log.Fatal(err)
         }
+    // TODO: process objects
 }
 ```
 
 ### Fast List Benchmark Results
-
+VM used : n2d-standard-48
+Region: us-central1-a
+NIC type: gVNIC
 |File Count|VM Core Count|List Time Without Dataflux  |List Time With Dataflux|
 |------------|-------------|--------------------------|-----------------------|
 |5000000 Obj |48 Core      |319.72s                   |17.35s                 |

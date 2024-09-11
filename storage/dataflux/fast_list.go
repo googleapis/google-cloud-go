@@ -63,14 +63,8 @@ type Lister struct {
 	// pageToken is the token to use for sequential listing.
 	pageToken string
 
-	// ranges is the channel to store the start and end ranges to be listed by the workers in worksteal listing.
-	ranges chan *listRange
-
 	// bucket is the bucket handle to list objects from.
 	bucket *storage.BucketHandle
-
-	// parallelism is number of parallel workers to use for listing.
-	parallelism int
 
 	// batchSize is the number of objects to list.
 	batchSize int
@@ -111,7 +105,9 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 	defer cancel()
 	g, childCtx := errgroup.WithContext(ctx)
 
-	// Run worksteal listing when method is Open or WorkSteal.
+	// To start listing method is Open and runs both worksteal and sequential listing in parallel.
+	// The method which completes first is used for all subsequent runs.
+	// TODO: Run worksteal listing when method is Open or WorkSteal.
 	// Run sequential listing when method is Open or Sequential.
 	if c.method != worksteal {
 
@@ -126,7 +122,6 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 			results = objects
 			c.pageToken = nextToken
 			c.method = sequential
-			c.ranges = nil
 			// Close context when sequential listing is complete.
 			cancel()
 			return nil
@@ -144,7 +139,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 	}
 
 	// If ranges for worksteal and pageToken for sequential listing is empty, then listing is complete.
-	if len(c.ranges) == 0 && c.pageToken == "" {
+	if c.pageToken == "" {
 		return results, iterator.Done
 	}
 	return results, nil
@@ -152,7 +147,6 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 
 // Close closes the range channel of the Lister.
 func (c *Lister) Close() {
-	if c.ranges != nil {
-		close(c.ranges)
-	}
+
+	// TODO: Close range channel for worksteal lister.
 }

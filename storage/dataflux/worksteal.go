@@ -82,11 +82,6 @@ type nextPageResult struct {
 	generation int64
 }
 
-// newObjectLister creates a new ObjectLister using the given lister options.
-func newObjectLister(ctx context.Context, opts newObjectListerOpts) *nextPageResult {
-	return &nextPageResult{}
-}
-
 func addPrefix(name, prefix string) string {
 	if name != "" {
 		return prefix + name

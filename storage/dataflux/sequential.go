@@ -17,6 +17,7 @@ package dataflux
 import (
 	"context"
 	"fmt"
+	"math"
 	"strings"
 
 	"cloud.google.com/go/storage"
@@ -33,39 +34,28 @@ const (
 // If the next token is empty, then listing is complete.
 func sequentialListing(ctx context.Context, opts Lister) ([]*storage.ObjectAttrs, string, error) {
 	var result []*storage.ObjectAttrs
+
 	objectIterator := opts.bucket.Objects(ctx, &opts.query)
-	// Number of pages to request from GCS pagination.
-	numPageRequest := opts.batchSize / defaultPageSize
-	var lastToken string
-	i := 0
-	for {
-		// If page size is set, then stop listing after numPageRequest.
-		if opts.batchSize > 0 && i >= numPageRequest {
-			break
-		}
-		i++
-		objects, nextToken, err := doListing(opts, objectIterator)
-		if err != nil {
-			return nil, "", fmt.Errorf("failed while listing objects: %w", err)
-		}
-		result = append(result, objects...)
-		lastToken = nextToken
-		if nextToken == "" {
-			break
-		}
-		opts.pageToken = nextToken
+
+	var numObject int
+	if opts.batchSize < defaultPageSize {
+		numObject = defaultPageSize
+	} else {
+		numObject = int(math.Floor(float64(opts.batchSize)/float64(defaultPageSize))) * defaultPageSize
 	}
-	return result, lastToken, nil
-}
-
-func doListing(opts Lister, objectIterator *storage.ObjectIterator) ([]*storage.ObjectAttrs, string, error) {
-
-	var objects []*storage.ObjectAttrs
 
 	pageInfo := objectIterator.PageInfo()
 	pageInfo.MaxSize = defaultPageSize
 	pageInfo.Token = opts.pageToken
+
+	i := 0
 	for {
+		// If page size is set, then stop listing after numPageRequest.
+		if opts.batchSize > 0 && i >= numObject {
+			break
+		}
+		i++
+
 		attrs, err := objectIterator.Next()
 		// When last item for the assigned range is listed, then stop listing.
 		if err == iterator.Done {
@@ -75,12 +65,8 @@ func doListing(opts Lister, objectIterator *storage.ObjectIterator) ([]*storage.
 			return nil, "", fmt.Errorf("iterating through objects %w", err)
 		}
 		if !(opts.skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
-			objects = append(objects, attrs)
-		}
-		if defaultPageSize != 0 && (pageInfo.Remaining() == 0) {
-			break
+			result = append(result, attrs)
 		}
 	}
-	nextToken := objectIterator.PageInfo().Token
-	return objects, nextToken, nil
+	return result, objectIterator.PageInfo().Token, nil
 }
