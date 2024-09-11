@@ -117,6 +117,7 @@ func (h *CloudStreamHandler) Execute() error {
 	}
 	// End the top-level OpenTelemetry span.
 	trace.EndSpan(ctx, nil)
+	log.Println("Done executing actions")
 
 	// OpenTelemetry trace created for a streaming request will be verified using Cloud Trace APIs to make sure that
 	// Spanner server side tracing is working. Check will be performed only if there is atleast one action of type
@@ -141,7 +142,6 @@ func (h *CloudStreamHandler) Execute() error {
 			return err
 		}
 	}
-	log.Println("Done executing actions")
 	return nil
 }
 

@@ -48,12 +48,19 @@ func NewCloudProxyServer(ctx context.Context, opts []option.ClientOption, traceC
 // streaming method in which client and server exchange SpannerActions and SpannerActionOutcomes.
 func (s *CloudProxyServer) ExecuteActionAsync(inputStream executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer) error {
 	handler := &inputstream.CloudStreamHandler{
-		Stream:                 inputStream,
-		ServerContext:          s.serverContext,
-		Options:                s.options,
-		TraceClientOptions:     s.traceClientOptions,
-		CloudTraceCheckAllowed: (s.cloudTraceCheckCount < MAX_CLOUD_TRACE_CHECK_LIMIT),
+		Stream:             inputStream,
+		ServerContext:      s.serverContext,
+		Options:            s.options,
+		TraceClientOptions: s.traceClientOptions,
 	}
+	func() {
+		s.mu.Lock()
+		defer s.mu.Unlock()
+		if s.cloudTraceCheckCount < MAX_CLOUD_TRACE_CHECK_LIMIT {
+			handler.CloudTraceCheckAllowed = true
+		}
+	}()
+
 	if err := handler.Execute(); err != nil {
 		return err
 	}
