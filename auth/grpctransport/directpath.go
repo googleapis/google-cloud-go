@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/internal/compute"
+	"cloud.google.com/go/auth/internal/compute"
 	"google.golang.org/grpc"
 	grpcgoogle "google.golang.org/grpc/credentials/google"
 )
