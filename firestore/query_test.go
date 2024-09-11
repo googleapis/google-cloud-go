@@ -25,6 +25,7 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/pretty"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/testing/protocmp"
 	tspb "google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -1747,12 +1748,16 @@ func TestQueryRunOptionsAndGetAllWithOptions(t *testing.T) {
 		t.Fatal(err)
 	}
 }
-
 func TestFindNearest(t *testing.T) {
 	ctx := context.Background()
 	c, srv, cleanup := newMock(t)
-	defer cleanup()
+	t.Cleanup(func() { cleanup() })
 
+	collName := "C"
+	limit := 2
+	threshold := float64(24)
+	resultField := "res"
+	vectorField := "path"
 	const dbPath = "projects/projectID/databases/(default)"
 	mapFields := map[string]*pb.Value{
 		typeKey: {ValueType: &pb.Value_StringValue{StringValue: typeValVector}},
@@ -1770,55 +1775,131 @@ func TestFindNearest(t *testing.T) {
 	}
 	wantPBDocs := []*pb.Document{
 		{
-			Name:       dbPath + "/documents/C/a",
+			Name:       dbPath + "/documents/" + collName + "/a",
 			CreateTime: aTimestamp,
 			UpdateTime: aTimestamp,
 			Fields:     map[string]*pb.Value{"EmbeddedField": mapval(mapFields)},
 		},
 	}
+	wantQueryVector := &pb.Value{
+		ValueType: &pb.Value_MapValue{
+			MapValue: &pb.MapValue{
+				Fields: map[string]*pb.Value{
+					"__type__": {
+						ValueType: &pb.Value_StringValue{StringValue: "__vector__"},
+					},
+					"value": {
+						ValueType: &pb.Value_ArrayValue{
+							ArrayValue: &pb.ArrayValue{
+								Values: []*pb.Value{
+									{
+										ValueType: &pb.Value_DoubleValue{DoubleValue: 5},
+									},
+									{
+										ValueType: &pb.Value_DoubleValue{DoubleValue: 6},
+									},
+									{
+										ValueType: &pb.Value_DoubleValue{DoubleValue: 7},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	wantReq := pb.RunQueryRequest{
+		Parent: fmt.Sprintf("%v/documents", dbPath),
+		QueryType: &pb.RunQueryRequest_StructuredQuery{
+			StructuredQuery: &pb.StructuredQuery{
+				From: []*pb.StructuredQuery_CollectionSelector{{CollectionId: collName}},
+				FindNearest: &pb.StructuredQuery_FindNearest{
+					VectorField:     &pb.StructuredQuery_FieldReference{FieldPath: vectorField},
+					QueryVector:     wantQueryVector,
+					Limit:           &wrapperspb.Int32Value{Value: int32(limit)},
+					DistanceMeasure: pb.StructuredQuery_FindNearest_EUCLIDEAN,
+				},
+			},
+		},
+	}
+
+	wantReqThresholdField := pb.RunQueryRequest{
+		Parent: fmt.Sprintf("%v/documents", dbPath),
+		QueryType: &pb.RunQueryRequest_StructuredQuery{
+			StructuredQuery: &pb.StructuredQuery{
+				From: []*pb.StructuredQuery_CollectionSelector{{CollectionId: collName}},
+				FindNearest: &pb.StructuredQuery_FindNearest{
+					VectorField:         &pb.StructuredQuery_FieldReference{FieldPath: vectorField},
+					QueryVector:         wantQueryVector,
+					Limit:               &wrapperspb.Int32Value{Value: int32(limit)},
+					DistanceMeasure:     pb.StructuredQuery_FindNearest_EUCLIDEAN,
+					DistanceThreshold:   &wrapperspb.DoubleValue{Value: float64(threshold)},
+					DistanceResultField: resultField,
+				},
+			},
+		},
+	}
 
 	testcases := []struct {
-		desc        string
-		path        string
-		queryVector interface{}
-		wantErr     bool
+		desc    string
+		vQuery  VectorQuery
+		wantReq protoreflect.ProtoMessage
+		wantErr error
 	}{
 		{
-			desc:    "Invalid path",
-			path:    "path*",
-			wantErr: true,
+			desc: "Invalid path",
+			vQuery: c.Collection(collName).
+				FindNearest("path*", nil, limit, DistanceMeasureEuclidean, nil),
+			wantErr: errInvalidRunesField("path*"),
 		},
 		{
-			desc:        "Valid path",
-			path:        "path",
-			queryVector: []float64{5, 6, 7},
-			wantErr:     false,
+			desc: "Invalid vector type",
+			vQuery: c.Collection(collName).
+				FindNearest("path", "abcd", limit, DistanceMeasureEuclidean, nil),
+			wantErr: errInvalidVector,
 		},
 		{
-			desc:        "Invalid vector type",
-			path:        "path",
-			queryVector: "abcd",
-			wantErr:     true,
+			desc: "Valid path with valid vector type []float64",
+			vQuery: c.Collection(collName).
+				FindNearest("path", []float64{5, 6, 7}, limit, DistanceMeasureEuclidean, nil),
+			wantReq: &wantReq,
 		},
 		{
-			desc:        "Valid vector type",
-			path:        "path",
-			queryVector: []float32{5, 6, 7},
-			wantErr:     false,
+			desc: "Valid path with valid vector type []float32",
+			vQuery: c.Collection(collName).
+				FindNearest("path", []float32{5, 6, 7}, limit, DistanceMeasureEuclidean, nil),
+			wantReq: &wantReq,
+		},
+		{
+			desc: "Valid path with valid vector type WithDistanceResultField and WithDistanceThreshold ",
+			vQuery: c.Collection(collName).
+				FindNearest("path", []float32{5, 6, 7}, limit, DistanceMeasureEuclidean, &FindNearestOptions{
+					DistanceThreshold:   Ptr[float64](threshold),
+					DistanceResultField: resultField,
+				}),
+			wantReq: &wantReqThresholdField,
 		},
 	}
 	for _, tc := range testcases {
-		srv.reset()
-		srv.addRPC(nil, []interface{}{
-			&pb.RunQueryResponse{Document: wantPBDocs[0]},
+		t.Run(tc.desc, func(t *testing.T) {
+			srv.reset()
+			if tc.wantErr == nil {
+				srv.addRPC(tc.wantReq, []interface{}{
+					&pb.RunQueryResponse{Document: wantPBDocs[0]},
+				})
+			}
+			_, gotErr := tc.vQuery.Documents(ctx).GetAll()
+			if !errorsMatch(gotErr, tc.wantErr) {
+				t.Fatalf("got %v, want %v", gotErr, tc.wantErr)
+			}
 		})
-		vQuery := c.Collection("C").FindNearest(tc.path, tc.queryVector, 2, DistanceMeasureEuclidean, nil)
-
-		_, err := vQuery.Documents(ctx).GetAll()
-		if err == nil && tc.wantErr {
-			t.Fatalf("%s: got nil wanted error", tc.desc)
-		} else if err != nil && !tc.wantErr {
-			t.Fatalf("%s: got %v, want nil", tc.desc, err)
-		}
 	}
+}
+
+func errorsMatch(got, want error) bool {
+	if got == nil || want == nil {
+		return got == want
+	}
+	return strings.Contains(got.Error(), want.Error())
 }
