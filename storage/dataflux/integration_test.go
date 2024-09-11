@@ -80,8 +80,8 @@ func TestIntegration_NextBatch(t *testing.T) {
 		BucketName: httpTestBucket.bucket,
 	}
 
-	df, close := NewLister(c, in)
-	defer close()
+	df := NewLister(c, in)
+	defer df.Close()
 
 	objects, err := df.NextBatch(ctx)
 	if err != nil && err != iterator.Done {

@@ -76,11 +76,8 @@ type Lister struct {
 	skipDirectoryObjects bool
 }
 
-// CloseFunc is the function to close the range channel of a Lister.
-type CloseFunc func()
-
 // NewLister creates a new dataflux Lister to list objects in the give bucket.
-func NewLister(c *storage.Client, in *ListerInput) (*Lister, CloseFunc) {
+func NewLister(c *storage.Client, in *ListerInput) *Lister {
 	bucket := c.Bucket(in.BucketName)
 	lister := &Lister{
 		method:               open,
@@ -90,7 +87,7 @@ func NewLister(c *storage.Client, in *ListerInput) (*Lister, CloseFunc) {
 		query:                in.Query,
 		skipDirectoryObjects: in.SkipDirectoryObjects,
 	}
-	return lister, func() { lister.Close() }
+	return lister
 }
 
 // NextBatch runs worksteal algorithm and sequential listing in parallel to quickly
