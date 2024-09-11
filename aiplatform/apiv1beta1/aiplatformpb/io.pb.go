@@ -745,6 +745,55 @@ func (x *JiraSource) GetJiraQueries() []*JiraSource_JiraQueries {
 	return nil
 }
 
+// The SharePointSources to pass to ImportRagFiles.
+type SharePointSources struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The SharePoint sources.
+	SharePointSources []*SharePointSources_SharePointSource `protobuf:"bytes,1,rep,name=share_point_sources,json=sharePointSources,proto3" json:"share_point_sources,omitempty"`
+}
+
+func (x *SharePointSources) Reset() {
+	*x = SharePointSources{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SharePointSources) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SharePointSources) ProtoMessage() {}
+
+func (x *SharePointSources) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SharePointSources.ProtoReflect.Descriptor instead.
+func (*SharePointSources) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1beta1_io_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *SharePointSources) GetSharePointSources() []*SharePointSources_SharePointSource {
+	if x != nil {
+		return x.SharePointSources
+	}
+	return nil
+}
+
 // The type and ID of the Google Drive resource.
 type GoogleDriveSource_ResourceId struct {
 	state         protoimpl.MessageState
@@ -760,7 +809,7 @@ type GoogleDriveSource_ResourceId struct {
 func (x *GoogleDriveSource_ResourceId) Reset() {
 	*x = GoogleDriveSource_ResourceId{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[13]
+		mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -773,7 +822,7 @@ func (x *GoogleDriveSource_ResourceId) String() string {
 func (*GoogleDriveSource_ResourceId) ProtoMessage() {}
 
 func (x *GoogleDriveSource_ResourceId) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[13]
+	mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -821,7 +870,7 @@ type SlackSource_SlackChannels struct {
 func (x *SlackSource_SlackChannels) Reset() {
 	*x = SlackSource_SlackChannels{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[14]
+		mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -834,7 +883,7 @@ func (x *SlackSource_SlackChannels) String() string {
 func (*SlackSource_SlackChannels) ProtoMessage() {}
 
 func (x *SlackSource_SlackChannels) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[14]
+	mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -881,7 +930,7 @@ type SlackSource_SlackChannels_SlackChannel struct {
 func (x *SlackSource_SlackChannels_SlackChannel) Reset() {
 	*x = SlackSource_SlackChannels_SlackChannel{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[15]
+		mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -894,7 +943,7 @@ func (x *SlackSource_SlackChannels_SlackChannel) String() string {
 func (*SlackSource_SlackChannels_SlackChannel) ProtoMessage() {}
 
 func (x *SlackSource_SlackChannels_SlackChannel) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[15]
+	mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -957,7 +1006,7 @@ type JiraSource_JiraQueries struct {
 func (x *JiraSource_JiraQueries) Reset() {
 	*x = JiraSource_JiraQueries{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[16]
+		mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -970,7 +1019,7 @@ func (x *JiraSource_JiraQueries) String() string {
 func (*JiraSource_JiraQueries) ProtoMessage() {}
 
 func (x *JiraSource_JiraQueries) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[16]
+	mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1019,6 +1068,181 @@ func (x *JiraSource_JiraQueries) GetApiKeyConfig() *ApiAuth_ApiKeyConfig {
 		return x.ApiKeyConfig
 	}
 	return nil
+}
+
+// An individual SharePointSource.
+type SharePointSources_SharePointSource struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The SharePoint folder source. If not provided, uses "root".
+	//
+	// Types that are assignable to FolderSource:
+	//
+	//	*SharePointSources_SharePointSource_SharepointFolderPath
+	//	*SharePointSources_SharePointSource_SharepointFolderId
+	FolderSource isSharePointSources_SharePointSource_FolderSource `protobuf_oneof:"folder_source"`
+	// The SharePoint drive source.
+	//
+	// Types that are assignable to DriveSource:
+	//
+	//	*SharePointSources_SharePointSource_DriveName
+	//	*SharePointSources_SharePointSource_DriveId
+	DriveSource isSharePointSources_SharePointSource_DriveSource `protobuf_oneof:"drive_source"`
+	// The Application ID for the app registered in Microsoft Azure Portal.
+	// The application must also be configured with MS Graph permissions
+	// "Files.ReadAll", "Sites.ReadAll" and BrowserSiteLists.Read.All.
+	ClientId string `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	// The application secret for the app registered in Azure.
+	ClientSecret *ApiAuth_ApiKeyConfig `protobuf:"bytes,2,opt,name=client_secret,json=clientSecret,proto3" json:"client_secret,omitempty"`
+	// Unique identifier of the Azure Active Directory Instance.
+	TenantId string `protobuf:"bytes,3,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
+	// The name of the SharePoint site to download from. This can be the site
+	// name or the site id.
+	SharepointSiteName string `protobuf:"bytes,4,opt,name=sharepoint_site_name,json=sharepointSiteName,proto3" json:"sharepoint_site_name,omitempty"`
+}
+
+func (x *SharePointSources_SharePointSource) Reset() {
+	*x = SharePointSources_SharePointSource{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[18]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SharePointSources_SharePointSource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SharePointSources_SharePointSource) ProtoMessage() {}
+
+func (x *SharePointSources_SharePointSource) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[18]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SharePointSources_SharePointSource.ProtoReflect.Descriptor instead.
+func (*SharePointSources_SharePointSource) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1beta1_io_proto_rawDescGZIP(), []int{13, 0}
+}
+
+func (m *SharePointSources_SharePointSource) GetFolderSource() isSharePointSources_SharePointSource_FolderSource {
+	if m != nil {
+		return m.FolderSource
+	}
+	return nil
+}
+
+func (x *SharePointSources_SharePointSource) GetSharepointFolderPath() string {
+	if x, ok := x.GetFolderSource().(*SharePointSources_SharePointSource_SharepointFolderPath); ok {
+		return x.SharepointFolderPath
+	}
+	return ""
+}
+
+func (x *SharePointSources_SharePointSource) GetSharepointFolderId() string {
+	if x, ok := x.GetFolderSource().(*SharePointSources_SharePointSource_SharepointFolderId); ok {
+		return x.SharepointFolderId
+	}
+	return ""
+}
+
+func (m *SharePointSources_SharePointSource) GetDriveSource() isSharePointSources_SharePointSource_DriveSource {
+	if m != nil {
+		return m.DriveSource
+	}
+	return nil
+}
+
+func (x *SharePointSources_SharePointSource) GetDriveName() string {
+	if x, ok := x.GetDriveSource().(*SharePointSources_SharePointSource_DriveName); ok {
+		return x.DriveName
+	}
+	return ""
+}
+
+func (x *SharePointSources_SharePointSource) GetDriveId() string {
+	if x, ok := x.GetDriveSource().(*SharePointSources_SharePointSource_DriveId); ok {
+		return x.DriveId
+	}
+	return ""
+}
+
+func (x *SharePointSources_SharePointSource) GetClientId() string {
+	if x != nil {
+		return x.ClientId
+	}
+	return ""
+}
+
+func (x *SharePointSources_SharePointSource) GetClientSecret() *ApiAuth_ApiKeyConfig {
+	if x != nil {
+		return x.ClientSecret
+	}
+	return nil
+}
+
+func (x *SharePointSources_SharePointSource) GetTenantId() string {
+	if x != nil {
+		return x.TenantId
+	}
+	return ""
+}
+
+func (x *SharePointSources_SharePointSource) GetSharepointSiteName() string {
+	if x != nil {
+		return x.SharepointSiteName
+	}
+	return ""
+}
+
+type isSharePointSources_SharePointSource_FolderSource interface {
+	isSharePointSources_SharePointSource_FolderSource()
+}
+
+type SharePointSources_SharePointSource_SharepointFolderPath struct {
+	// The path of the SharePoint folder to download from.
+	SharepointFolderPath string `protobuf:"bytes,5,opt,name=sharepoint_folder_path,json=sharepointFolderPath,proto3,oneof"`
+}
+
+type SharePointSources_SharePointSource_SharepointFolderId struct {
+	// The ID of the SharePoint folder to download from.
+	SharepointFolderId string `protobuf:"bytes,6,opt,name=sharepoint_folder_id,json=sharepointFolderId,proto3,oneof"`
+}
+
+func (*SharePointSources_SharePointSource_SharepointFolderPath) isSharePointSources_SharePointSource_FolderSource() {
+}
+
+func (*SharePointSources_SharePointSource_SharepointFolderId) isSharePointSources_SharePointSource_FolderSource() {
+}
+
+type isSharePointSources_SharePointSource_DriveSource interface {
+	isSharePointSources_SharePointSource_DriveSource()
+}
+
+type SharePointSources_SharePointSource_DriveName struct {
+	// The name of the drive to download from.
+	DriveName string `protobuf:"bytes,7,opt,name=drive_name,json=driveName,proto3,oneof"`
+}
+
+type SharePointSources_SharePointSource_DriveId struct {
+	// The ID of the drive to download from.
+	DriveId string `protobuf:"bytes,8,opt,name=drive_id,json=driveId,proto3,oneof"`
+}
+
+func (*SharePointSources_SharePointSource_DriveName) isSharePointSources_SharePointSource_DriveSource() {
+}
+
+func (*SharePointSources_SharePointSource_DriveId) isSharePointSources_SharePointSource_DriveSource() {
 }
 
 var File_google_cloud_aiplatform_v1beta1_io_proto protoreflect.FileDescriptor
@@ -1159,22 +1383,57 @@ var file_google_cloud_aiplatform_v1beta1_io_proto_rawDesc = []byte{
 	0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
 	0x61, 0x31, 0x2e, 0x41, 0x70, 0x69, 0x41, 0x75, 0x74, 0x68, 0x2e, 0x41, 0x70, 0x69, 0x4b, 0x65,
 	0x79, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0c, 0x61, 0x70,
-	0x69, 0x4b, 0x65, 0x79, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0xde, 0x01, 0x0a, 0x23, 0x63,
-	0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
-	0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
-	0x61, 0x31, 0x42, 0x07, 0x49, 0x6f, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x43, 0x63,
-	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x67, 0x6f, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2f, 0x61, 0x70,
-	0x69, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66,
-	0x6f, 0x72, 0x6d, 0x70, 0x62, 0x3b, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d,
-	0x70, 0x62, 0xaa, 0x02, 0x1f, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75,
-	0x64, 0x2e, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x56, 0x31, 0x42,
-	0x65, 0x74, 0x61, 0x31, 0xca, 0x02, 0x1f, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c,
-	0x6f, 0x75, 0x64, 0x5c, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5c, 0x56,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xea, 0x02, 0x22, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a,
-	0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f,
-	0x72, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x69, 0x4b, 0x65, 0x79, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x22, 0xb0, 0x04, 0x0a, 0x11, 0x53,
+	0x68, 0x61, 0x72, 0x65, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73,
+	0x12, 0x73, 0x0a, 0x13, 0x73, 0x68, 0x61, 0x72, 0x65, 0x5f, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x5f,
+	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x43, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70,
+	0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
+	0x53, 0x68, 0x61, 0x72, 0x65, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65,
+	0x73, 0x2e, 0x53, 0x68, 0x61, 0x72, 0x65, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x53, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x52, 0x11, 0x73, 0x68, 0x61, 0x72, 0x65, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x53, 0x6f,
+	0x75, 0x72, 0x63, 0x65, 0x73, 0x1a, 0xa5, 0x03, 0x0a, 0x10, 0x53, 0x68, 0x61, 0x72, 0x65, 0x50,
+	0x6f, 0x69, 0x6e, 0x74, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x12, 0x36, 0x0a, 0x16, 0x73, 0x68,
+	0x61, 0x72, 0x65, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x5f, 0x66, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x5f,
+	0x70, 0x61, 0x74, 0x68, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00, 0x52, 0x14, 0x73, 0x68,
+	0x61, 0x72, 0x65, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x46, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x50, 0x61,
+	0x74, 0x68, 0x12, 0x32, 0x0a, 0x14, 0x73, 0x68, 0x61, 0x72, 0x65, 0x70, 0x6f, 0x69, 0x6e, 0x74,
+	0x5f, 0x66, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09,
+	0x48, 0x00, 0x52, 0x12, 0x73, 0x68, 0x61, 0x72, 0x65, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x46, 0x6f,
+	0x6c, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0a, 0x64, 0x72, 0x69, 0x76, 0x65, 0x5f,
+	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x48, 0x01, 0x52, 0x09, 0x64, 0x72,
+	0x69, 0x76, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x1b, 0x0a, 0x08, 0x64, 0x72, 0x69, 0x76, 0x65,
+	0x5f, 0x69, 0x64, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09, 0x48, 0x01, 0x52, 0x07, 0x64, 0x72, 0x69,
+	0x76, 0x65, 0x49, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x69,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x49,
+	0x64, 0x12, 0x5a, 0x0a, 0x0d, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x73, 0x65, 0x63, 0x72,
+	0x65, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x35, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f,
+	0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x41, 0x70, 0x69, 0x41, 0x75,
+	0x74, 0x68, 0x2e, 0x41, 0x70, 0x69, 0x4b, 0x65, 0x79, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52,
+	0x0c, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74, 0x12, 0x1b, 0x0a,
+	0x09, 0x74, 0x65, 0x6e, 0x61, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x08, 0x74, 0x65, 0x6e, 0x61, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x14, 0x73, 0x68,
+	0x61, 0x72, 0x65, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x5f, 0x73, 0x69, 0x74, 0x65, 0x5f, 0x6e, 0x61,
+	0x6d, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x12, 0x73, 0x68, 0x61, 0x72, 0x65, 0x70,
+	0x6f, 0x69, 0x6e, 0x74, 0x53, 0x69, 0x74, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x42, 0x0f, 0x0a, 0x0d,
+	0x66, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x5f, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x42, 0x0e, 0x0a,
+	0x0c, 0x64, 0x72, 0x69, 0x76, 0x65, 0x5f, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x42, 0xde, 0x01,
+	0x0a, 0x23, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f,
+	0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31,
+	0x62, 0x65, 0x74, 0x61, 0x31, 0x42, 0x07, 0x49, 0x6f, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
+	0x5a, 0x43, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d,
+	0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x61, 0x69, 0x70, 0x6c,
+	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0x3b, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66,
+	0x6f, 0x72, 0x6d, 0x70, 0x62, 0xaa, 0x02, 0x1f, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43,
+	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e,
+	0x56, 0x31, 0x42, 0x65, 0x74, 0x61, 0x31, 0xca, 0x02, 0x1f, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
+	0x6d, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xea, 0x02, 0x22, 0x47, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x41, 0x49, 0x50, 0x6c, 0x61,
+	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1190,7 +1449,7 @@ func file_google_cloud_aiplatform_v1beta1_io_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_aiplatform_v1beta1_io_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_google_cloud_aiplatform_v1beta1_io_proto_goTypes = []any{
 	(GoogleDriveSource_ResourceId_ResourceType)(0), // 0: google.cloud.aiplatform.v1beta1.GoogleDriveSource.ResourceId.ResourceType
 	(*AvroSource)(nil),                             // 1: google.cloud.aiplatform.v1beta1.AvroSource
@@ -1206,32 +1465,36 @@ var file_google_cloud_aiplatform_v1beta1_io_proto_goTypes = []any{
 	(*DirectUploadSource)(nil),                     // 11: google.cloud.aiplatform.v1beta1.DirectUploadSource
 	(*SlackSource)(nil),                            // 12: google.cloud.aiplatform.v1beta1.SlackSource
 	(*JiraSource)(nil),                             // 13: google.cloud.aiplatform.v1beta1.JiraSource
-	(*GoogleDriveSource_ResourceId)(nil),           // 14: google.cloud.aiplatform.v1beta1.GoogleDriveSource.ResourceId
-	(*SlackSource_SlackChannels)(nil),              // 15: google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels
-	(*SlackSource_SlackChannels_SlackChannel)(nil), // 16: google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels.SlackChannel
-	(*JiraSource_JiraQueries)(nil),                 // 17: google.cloud.aiplatform.v1beta1.JiraSource.JiraQueries
-	(*ApiAuth_ApiKeyConfig)(nil),                   // 18: google.cloud.aiplatform.v1beta1.ApiAuth.ApiKeyConfig
-	(*timestamppb.Timestamp)(nil),                  // 19: google.protobuf.Timestamp
+	(*SharePointSources)(nil),                      // 14: google.cloud.aiplatform.v1beta1.SharePointSources
+	(*GoogleDriveSource_ResourceId)(nil),           // 15: google.cloud.aiplatform.v1beta1.GoogleDriveSource.ResourceId
+	(*SlackSource_SlackChannels)(nil),              // 16: google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels
+	(*SlackSource_SlackChannels_SlackChannel)(nil), // 17: google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels.SlackChannel
+	(*JiraSource_JiraQueries)(nil),                 // 18: google.cloud.aiplatform.v1beta1.JiraSource.JiraQueries
+	(*SharePointSources_SharePointSource)(nil),     // 19: google.cloud.aiplatform.v1beta1.SharePointSources.SharePointSource
+	(*ApiAuth_ApiKeyConfig)(nil),                   // 20: google.cloud.aiplatform.v1beta1.ApiAuth.ApiKeyConfig
+	(*timestamppb.Timestamp)(nil),                  // 21: google.protobuf.Timestamp
 }
 var file_google_cloud_aiplatform_v1beta1_io_proto_depIdxs = []int32{
 	3,  // 0: google.cloud.aiplatform.v1beta1.AvroSource.gcs_source:type_name -> google.cloud.aiplatform.v1beta1.GcsSource
 	3,  // 1: google.cloud.aiplatform.v1beta1.CsvSource.gcs_source:type_name -> google.cloud.aiplatform.v1beta1.GcsSource
 	4,  // 2: google.cloud.aiplatform.v1beta1.CsvDestination.gcs_destination:type_name -> google.cloud.aiplatform.v1beta1.GcsDestination
 	4,  // 3: google.cloud.aiplatform.v1beta1.TFRecordDestination.gcs_destination:type_name -> google.cloud.aiplatform.v1beta1.GcsDestination
-	14, // 4: google.cloud.aiplatform.v1beta1.GoogleDriveSource.resource_ids:type_name -> google.cloud.aiplatform.v1beta1.GoogleDriveSource.ResourceId
-	15, // 5: google.cloud.aiplatform.v1beta1.SlackSource.channels:type_name -> google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels
-	17, // 6: google.cloud.aiplatform.v1beta1.JiraSource.jira_queries:type_name -> google.cloud.aiplatform.v1beta1.JiraSource.JiraQueries
-	0,  // 7: google.cloud.aiplatform.v1beta1.GoogleDriveSource.ResourceId.resource_type:type_name -> google.cloud.aiplatform.v1beta1.GoogleDriveSource.ResourceId.ResourceType
-	16, // 8: google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels.channels:type_name -> google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels.SlackChannel
-	18, // 9: google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels.api_key_config:type_name -> google.cloud.aiplatform.v1beta1.ApiAuth.ApiKeyConfig
-	19, // 10: google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels.SlackChannel.start_time:type_name -> google.protobuf.Timestamp
-	19, // 11: google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels.SlackChannel.end_time:type_name -> google.protobuf.Timestamp
-	18, // 12: google.cloud.aiplatform.v1beta1.JiraSource.JiraQueries.api_key_config:type_name -> google.cloud.aiplatform.v1beta1.ApiAuth.ApiKeyConfig
-	13, // [13:13] is the sub-list for method output_type
-	13, // [13:13] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	15, // 4: google.cloud.aiplatform.v1beta1.GoogleDriveSource.resource_ids:type_name -> google.cloud.aiplatform.v1beta1.GoogleDriveSource.ResourceId
+	16, // 5: google.cloud.aiplatform.v1beta1.SlackSource.channels:type_name -> google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels
+	18, // 6: google.cloud.aiplatform.v1beta1.JiraSource.jira_queries:type_name -> google.cloud.aiplatform.v1beta1.JiraSource.JiraQueries
+	19, // 7: google.cloud.aiplatform.v1beta1.SharePointSources.share_point_sources:type_name -> google.cloud.aiplatform.v1beta1.SharePointSources.SharePointSource
+	0,  // 8: google.cloud.aiplatform.v1beta1.GoogleDriveSource.ResourceId.resource_type:type_name -> google.cloud.aiplatform.v1beta1.GoogleDriveSource.ResourceId.ResourceType
+	17, // 9: google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels.channels:type_name -> google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels.SlackChannel
+	20, // 10: google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels.api_key_config:type_name -> google.cloud.aiplatform.v1beta1.ApiAuth.ApiKeyConfig
+	21, // 11: google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels.SlackChannel.start_time:type_name -> google.protobuf.Timestamp
+	21, // 12: google.cloud.aiplatform.v1beta1.SlackSource.SlackChannels.SlackChannel.end_time:type_name -> google.protobuf.Timestamp
+	20, // 13: google.cloud.aiplatform.v1beta1.JiraSource.JiraQueries.api_key_config:type_name -> google.cloud.aiplatform.v1beta1.ApiAuth.ApiKeyConfig
+	20, // 14: google.cloud.aiplatform.v1beta1.SharePointSources.SharePointSource.client_secret:type_name -> google.cloud.aiplatform.v1beta1.ApiAuth.ApiKeyConfig
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1beta1_io_proto_init() }
@@ -1398,7 +1661,7 @@ func file_google_cloud_aiplatform_v1beta1_io_proto_init() {
 			}
 		}
 		file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[13].Exporter = func(v any, i int) any {
-			switch v := v.(*GoogleDriveSource_ResourceId); i {
+			switch v := v.(*SharePointSources); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1410,7 +1673,7 @@ func file_google_cloud_aiplatform_v1beta1_io_proto_init() {
 			}
 		}
 		file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[14].Exporter = func(v any, i int) any {
-			switch v := v.(*SlackSource_SlackChannels); i {
+			switch v := v.(*GoogleDriveSource_ResourceId); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1422,7 +1685,7 @@ func file_google_cloud_aiplatform_v1beta1_io_proto_init() {
 			}
 		}
 		file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[15].Exporter = func(v any, i int) any {
-			switch v := v.(*SlackSource_SlackChannels_SlackChannel); i {
+			switch v := v.(*SlackSource_SlackChannels); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1434,6 +1697,18 @@ func file_google_cloud_aiplatform_v1beta1_io_proto_init() {
 			}
 		}
 		file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[16].Exporter = func(v any, i int) any {
+			switch v := v.(*SlackSource_SlackChannels_SlackChannel); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[17].Exporter = func(v any, i int) any {
 			switch v := v.(*JiraSource_JiraQueries); i {
 			case 0:
 				return &v.state
@@ -1445,6 +1720,24 @@ func file_google_cloud_aiplatform_v1beta1_io_proto_init() {
 				return nil
 			}
 		}
+		file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[18].Exporter = func(v any, i int) any {
+			switch v := v.(*SharePointSources_SharePointSource); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+	}
+	file_google_cloud_aiplatform_v1beta1_io_proto_msgTypes[18].OneofWrappers = []any{
+		(*SharePointSources_SharePointSource_SharepointFolderPath)(nil),
+		(*SharePointSources_SharePointSource_SharepointFolderId)(nil),
+		(*SharePointSources_SharePointSource_DriveName)(nil),
+		(*SharePointSources_SharePointSource_DriveId)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1452,7 +1745,7 @@ func file_google_cloud_aiplatform_v1beta1_io_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_aiplatform_v1beta1_io_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   17,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
