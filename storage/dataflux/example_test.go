@@ -44,8 +44,8 @@ func ExampleNextBatch_batch() {
 
 	// Create Lister with desired options, including number of workers,
 	// part size, per operation timeout, etc.
-	df, close := dataflux.NewLister(client, in)
-	defer close()
+	df := dataflux.NewLister(client, in)
+	defer df.Close()
 
 	var numOfObjects int
 
