@@ -12,7 +12,7 @@ require (
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/otel v1.29.0
 	go.opentelemetry.io/otel/metric v1.29.0
-	golang.org/x/oauth2 v0.22.0
+	golang.org/x/oauth2 v0.23.0
 	golang.org/x/sync v0.8.0
 	google.golang.org/api v0.196.0
 	google.golang.org/genproto v0.0.0-20240903143218-8af14fe29dc1
