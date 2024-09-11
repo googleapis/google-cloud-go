@@ -67,35 +67,3 @@ func ExampleNextBatch_batch() {
 	}
 	log.Printf("listing %d objects in bucket %q is complete.", numOfObjects, in.BucketName)
 }
-
-func ExampleNextBatch_all() {
-	ctx := context.Background()
-	// Pass in any client opts or set retry policy here.
-	client, err := storage.NewClient(ctx)
-	if err != nil {
-		// handle error
-	}
-
-	// Create dataflux fast-list input and provide desired options,
-	//  including number of workers, batch size, query to filer objects, etc.
-	in := &dataflux.ListerInput{
-		BucketName: "mybucket",
-		// Optionally specify params to apply to lister.
-		Parallelism:          100,
-		Query:                storage.Query{},
-		SkipDirectoryObjects: false,
-	}
-
-	// Create Lister with desired options, including number of workers,
-	// part size, per operation timeout, etc.
-	df, close := dataflux.NewLister(client, in)
-	defer close()
-
-	objects, err := df.NextBatch(ctx)
-	if err != nil {
-		// handle error
-	}
-	numOfObjects := len(objects)
-
-	log.Printf("listing %d objects in bucket %q is complete.", numOfObjects, in.BucketName)
-}
