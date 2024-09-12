@@ -80,6 +80,7 @@ func defaultInstanceAdminGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -1111,6 +1112,7 @@ func defaultInstanceAdminRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -2221,11 +2223,11 @@ func (c *instanceAdminRESTClient) ListInstances(ctx context.Context, req *instan
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
 		if req.GetInstanceDeadline() != nil {
-			instanceDeadline, err := protojson.Marshal(req.GetInstanceDeadline())
+			field, err := protojson.Marshal(req.GetInstanceDeadline())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("instanceDeadline", string(instanceDeadline[1:len(instanceDeadline)-1]))
+			params.Add("instanceDeadline", string(field[1:len(field)-1]))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -2317,11 +2319,11 @@ func (c *instanceAdminRESTClient) ListInstancePartitions(ctx context.Context, re
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetInstancePartitionDeadline() != nil {
-			instancePartitionDeadline, err := protojson.Marshal(req.GetInstancePartitionDeadline())
+			field, err := protojson.Marshal(req.GetInstancePartitionDeadline())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("instancePartitionDeadline", string(instancePartitionDeadline[1:len(instancePartitionDeadline)-1]))
+			params.Add("instancePartitionDeadline", string(field[1:len(field)-1]))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -2400,11 +2402,11 @@ func (c *instanceAdminRESTClient) GetInstance(ctx context.Context, req *instance
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFieldMask() != nil {
-		fieldMask, err := protojson.Marshal(req.GetFieldMask())
+		field, err := protojson.Marshal(req.GetFieldMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+		params.Add("fieldMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3320,11 +3322,11 @@ func (c *instanceAdminRESTClient) ListInstancePartitionOperations(ctx context.Co
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
 		if req.GetInstancePartitionDeadline() != nil {
-			instancePartitionDeadline, err := protojson.Marshal(req.GetInstancePartitionDeadline())
+			field, err := protojson.Marshal(req.GetInstancePartitionDeadline())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("instancePartitionDeadline", string(instancePartitionDeadline[1:len(instancePartitionDeadline)-1]))
+			params.Add("instancePartitionDeadline", string(field[1:len(field)-1]))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))

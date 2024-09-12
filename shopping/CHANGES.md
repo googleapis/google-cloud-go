@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.9.0...shopping/v0.9.1) (2024-08-23)
+
+
+### Documentation
+
+* **shopping/css:** Update `Certification` field descriptions ([946a5fc](https://github.com/googleapis/google-cloud-go/commit/946a5fcfeb85e22b1d8e995cda6b18b745459656))
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.7...shopping/v0.9.0) (2024-08-20)
+
+
+### Features
+
+* **shopping:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [0.8.7](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.6...shopping/v0.8.7) (2024-08-08)
 
 

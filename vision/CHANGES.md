@@ -1,5 +1,12 @@
 # Changes
 
+## [2.9.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.8.7...vision/v2.9.0) (2024-08-20)
+
+
+### Features
+
+* **vision:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
 ## [2.8.7](https://github.com/googleapis/google-cloud-go/compare/vision/v2.8.6...vision/v2.8.7) (2024-08-08)
 
 

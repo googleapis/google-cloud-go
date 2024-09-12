@@ -1438,11 +1438,11 @@ func (c *productRESTClient) ListProducts(ctx context.Context, req *retailpb.List
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1525,11 +1525,11 @@ func (c *productRESTClient) UpdateProduct(ctx context.Context, req *retailpb.Upd
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

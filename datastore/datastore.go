@@ -23,12 +23,12 @@ import (
 	"reflect"
 	"time"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	"google.golang.org/api/transport"
 	gtransport "google.golang.org/api/transport/grpc"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -540,7 +540,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 			multiErr[i] = fmt.Errorf("datastore: can't get the incomplete key: %v", k)
 			any = true
 		} else {
-			ks := k.String()
+			ks := k.stringInternal()
 			if _, ok := keyMap[ks]; !ok {
 				pbKeys = append(pbKeys, keyToProto(k))
 			}
@@ -584,8 +584,8 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		if err != nil {
 			return txnID, errors.New("datastore: internal error: server returned an invalid key")
 		}
-		filled += len(keyMap[k.String()])
-		for _, index := range keyMap[k.String()] {
+		filled += len(keyMap[k.stringInternal()])
+		for _, index := range keyMap[k.stringInternal()] {
 			elem := v.Index(index)
 			if multiArgType == multiArgTypePropertyLoadSaver || multiArgType == multiArgTypeStruct {
 				elem = elem.Addr()
@@ -604,8 +604,8 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		if err != nil {
 			return txnID, errors.New("datastore: internal error: server returned an invalid key")
 		}
-		filled += len(keyMap[k.String()])
-		for _, index := range keyMap[k.String()] {
+		filled += len(keyMap[k.stringInternal()])
+		for _, index := range keyMap[k.stringInternal()] {
 			multiErr[index] = ErrNoSuchEntity
 		}
 		any = true
@@ -798,7 +798,7 @@ func deleteMutations(keys []*Key) ([]*pb.Mutation, error) {
 			multiErr[i] = fmt.Errorf("datastore: can't delete the incomplete key: %v", k)
 			hasErr = true
 		} else {
-			ks := k.String()
+			ks := k.stringInternal()
 			if !set[ks] {
 				mutations = append(mutations, &pb.Mutation{
 					Operation: &pb.Mutation_Delete{Delete: keyToProto(k)},

@@ -1722,18 +1722,18 @@ func (c *restClient) ListAssets(ctx context.Context, req *securitycenterpb.ListA
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetCompareDuration() != nil {
-			compareDuration, err := protojson.Marshal(req.GetCompareDuration())
+			field, err := protojson.Marshal(req.GetCompareDuration())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("compareDuration", string(compareDuration[1:len(compareDuration)-1]))
+			params.Add("compareDuration", string(field[1:len(field)-1]))
 		}
 		if req.GetFieldMask() != nil {
-			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			field, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+			params.Add("fieldMask", string(field[1:len(field)-1]))
 		}
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
@@ -1748,11 +1748,11 @@ func (c *restClient) ListAssets(ctx context.Context, req *securitycenterpb.ListA
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadTime() != nil {
-			readTime, err := protojson.Marshal(req.GetReadTime())
+			field, err := protojson.Marshal(req.GetReadTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readTime", string(readTime[1:len(readTime)-1]))
+			params.Add("readTime", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1841,11 +1841,11 @@ func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFieldMask() != nil {
-			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			field, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+			params.Add("fieldMask", string(field[1:len(field)-1]))
 		}
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
@@ -1860,11 +1860,11 @@ func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadTime() != nil {
-			readTime, err := protojson.Marshal(req.GetReadTime())
+			field, err := protojson.Marshal(req.GetReadTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readTime", string(readTime[1:len(readTime)-1]))
+			params.Add("readTime", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2307,11 +2307,11 @@ func (c *restClient) UpdateFinding(ctx context.Context, req *securitycenterpb.Up
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2381,11 +2381,11 @@ func (c *restClient) UpdateOrganizationSettings(ctx context.Context, req *securi
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2455,11 +2455,11 @@ func (c *restClient) UpdateSource(ctx context.Context, req *securitycenterpb.Upd
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2529,18 +2529,18 @@ func (c *restClient) UpdateSecurityMarks(ctx context.Context, req *securitycente
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetStartTime() != nil {
-		startTime, err := protojson.Marshal(req.GetStartTime())
+		field, err := protojson.Marshal(req.GetStartTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("startTime", string(startTime[1:len(startTime)-1]))
+		params.Add("startTime", string(field[1:len(field)-1]))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

@@ -27,9 +27,9 @@ import (
 	"reflect"
 	"testing"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/option"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/prototext"

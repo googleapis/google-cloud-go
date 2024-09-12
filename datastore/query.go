@@ -25,10 +25,10 @@ import (
 	"strings"
 	"time"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/protostruct"
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/iterator"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
