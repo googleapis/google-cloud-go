@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.4.0...cloudprofiler/v0.4.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **cloudprofiler:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.3.6...cloudprofiler/v0.4.0) (2024-08-20)
 
 
