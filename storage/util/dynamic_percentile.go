@@ -20,6 +20,7 @@ import (
 	"sync"
 )
 
+// MetricType is the metric type DynamicPercentile algo expects.
 type MetricType int64
 
 // DynamicPercentile dynamically calculates the delay at a fixed percentile, based on
