@@ -333,9 +333,11 @@ to add a [custom audit logging] header:
 
 # gRPC API
 
-This package includes support for the Cloud Storage gRPC API. This implementation uses gRPC rather than the current JSON & XML
-APIs to make requests to Cloud Storage.
-The Go Storage gRPC library is not yet generally available, so it may be subject to breaking changes.
+This package includes support for the Cloud Storage gRPC API. The
+implementation uses gRPC rather than the current
+JSON & XML APIs to make requests to Cloud Storage.
+The Go Storage gRPC library is not yet generally available, so it may be
+subject to breaking changes.
 
 To create a client which will use gRPC, use the alternate constructor:
 
@@ -348,7 +350,10 @@ To create a client which will use gRPC, use the alternate constructor:
 
 Using the gRPC API inside GCP with a bucket in the same region can allow direct
 connectivity (enabling requests to skip Google Front Ends (GFEs) and reducing
-response latency) from compute to GCS. For more information see docs on [direct connectivity] A warning is emmitted if gRPC is not used within GCP to warn that direct connectivity could not be initialized. Direct connectivity is not required to access the gRPC API.
+response latency) from compute to GCS. For more information see docs on [direct connectivity].
+A warning is emmitted if gRPC is not used within GCP to warn that direct
+connectivity could not be initialized. Direct connectivity is not required
+to access the gRPC API.
 
 Dependencies for the gRPC API may slightly increase the size of binaries for
 applications depending on this package. If you are not using gRPC, you can use
