@@ -336,8 +336,7 @@ to add a [custom audit logging] header:
 This package includes support for the Cloud Storage gRPC API. The
 implementation uses gRPC rather than the current
 JSON & XML APIs to make requests to Cloud Storage.
-The Go Storage gRPC library is not yet generally available, so it may be
-subject to breaking changes.
+The Go Storage gRPC library is generally available.
 
 To create a client which will use gRPC, use the alternate constructor:
 
