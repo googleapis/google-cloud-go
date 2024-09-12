@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.10.0...batch/v1.11.0) (2024-09-12)
+
+
+### Features
+
+* **batch:** Promote block_project_ssh_keys support to batch v1 API ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+
+
+### Bug Fixes
+
+* **batch:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.9.4...batch/v1.10.0) (2024-08-20)
 
 
