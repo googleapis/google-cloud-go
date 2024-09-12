@@ -4439,6 +4439,32 @@ func TestClient_WithoutServerSideTracingHeader(t *testing.T) {
 	}
 }
 
+func TestClient_WithServerSideTracingHeaderUsingEnvironmentVariable(t *testing.T) {
+	// Set the env variable to opt-in for server side tracing.
+	old := os.Getenv("SPANNER_ENABLE_SERVER_SIDE_TRACING")
+	defer os.Setenv("SPANNER_ENABLE_SERVER_SIDE_TRACING", old)
+	os.Setenv("SPANNER_ENABLE_SERVER_SIDE_TRACING", "true")
+
+	t.Parallel()
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	defer serverTeardown()
+
+	wantServerSideTracing := true
+	client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{}, server.ServerAddress, opts...)
+	if err != nil {
+		t.Fatalf("failed to get a client: %v", err)
+	}
+	gotServerSideTracing := false
+	for _, val := range client.sc.md.Get(serverSideTracingHeader) {
+		if val == "true" {
+			gotServerSideTracing = true
+		}
+	}
+	if gotServerSideTracing != wantServerSideTracing {
+		t.Fatalf("mismatch in client configuration for property EnableServerSideTracing: got %v, want %v", gotServerSideTracing, wantServerSideTracing)
+	}
+}
+
 func TestClient_WithCustomBatchTimeout(t *testing.T) {
 	t.Parallel()
 

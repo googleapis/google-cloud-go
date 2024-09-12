@@ -458,7 +458,17 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.Compression == gzip.Name {
 		md.Append(requestsCompressionHeader, gzip.Name)
 	}
+	// Append server side tracing header if SPANNER_ENABLE_SERVER_SIDE_TRACING
+	// environment variable has been set or client has passed the opt-in option
+	// in ClientConfig.
+	appendServerSideTracingHeader := false
 	if config.EnableServerSideTracing {
+		appendServerSideTracingHeader = true
+	}
+	if serverSideTracingEnvironmentVariable := os.Getenv("SPANNER_ENABLE_SERVER_SIDE_TRACING"); serverSideTracingEnvironmentVariable == "true" {
+		appendServerSideTracingHeader = true
+	}
+	if appendServerSideTracingHeader {
 		md.Append(serverSideTracingHeader, "true")
 	}
 
