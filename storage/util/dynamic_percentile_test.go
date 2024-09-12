@@ -22,10 +22,10 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
-func applySamples(numSamples int, expectedValue float64, rnd *rand.Rand, d *Delay) int {
+func applySamples(numSamples int, expectedValue float64, rnd *rand.Rand, d *DynamicPercentile) int {
 	var samplesOverThreshold int
 	for i := 0; i < numSamples; i++ {
-		randomDelay := time.Duration(-math.Log(rnd.Float64()) * expectedValue * float64(time.Second))
+		randomDelay := MetricType(-math.Log(rnd.Float64()) * expectedValue * float64(time.Second))
 		if randomDelay > d.Value() {
 			samplesOverThreshold++
 			d.Increase()
@@ -36,25 +36,25 @@ func applySamples(numSamples int, expectedValue float64, rnd *rand.Rand, d *Dela
 	return samplesOverThreshold
 }
 
-func applySamplesWithUpdate(numSamples int, expectedValue float64, rnd *rand.Rand, d *Delay) {
+func applySamplesWithUpdate(numSamples int, expectedValue float64, rnd *rand.Rand, d *DynamicPercentile) {
 	for i := 0; i < numSamples; i++ {
-		randomDelay := time.Duration(-math.Log(rnd.Float64()) * expectedValue * float64(time.Second))
+		randomDelay := MetricType(-math.Log(rnd.Float64()) * expectedValue * float64(time.Second))
 		d.Update(randomDelay)
 	}
 }
 
-func TestNewDelay(t *testing.T) {
-	d, err := NewDelay(1-0.01, 15, 1*time.Millisecond, 1*time.Millisecond, 1*time.Hour)
+func TestNewDynamicPercentile(t *testing.T) {
+	d, err := NewDynamicPercentile(1-0.01, 15, MetricType(1*time.Millisecond), MetricType(1*time.Millisecond), MetricType(1*time.Hour))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := &Delay{
+	want := &DynamicPercentile{
 		increaseFactor: 1.047294,
 		decreaseFactor: 0.999533,
-		minDelay:       1 * time.Millisecond,
-		maxDelay:       1 * time.Hour,
-		value:          1 * time.Millisecond,
+		min:            MetricType(1 * time.Millisecond),
+		max:            MetricType(1 * time.Hour),
+		value:          MetricType(1 * time.Millisecond),
 	}
 
 	if diff := cmp.Diff(d.increaseFactor, want.increaseFactor, cmpopts.EquateApprox(0, 0.000001)); diff != "" {
@@ -65,11 +65,11 @@ func TestNewDelay(t *testing.T) {
 		t.Fatalf("unexpected diff (-got +want):\n%s", diff)
 	}
 
-	if diff := cmp.Diff(d.minDelay, want.minDelay, cmpopts.EquateApprox(0, 0.000001)); diff != "" {
+	if diff := cmp.Diff(d.min, want.min, cmpopts.EquateApprox(0, 0.000001)); diff != "" {
 		t.Fatalf("unexpected diff (-got +want):\n%s", diff)
 	}
 
-	if diff := cmp.Diff(d.maxDelay, want.maxDelay, cmpopts.EquateApprox(0, 0.000001)); diff != "" {
+	if diff := cmp.Diff(d.max, want.max, cmpopts.EquateApprox(0, 0.000001)); diff != "" {
 		t.Fatalf("unexpected diff (-got +want):\n%s", diff)
 	}
 
@@ -84,7 +84,7 @@ func TestNewDelay(t *testing.T) {
 
 func TestConvergence99(t *testing.T) {
 	// d should converge to the 99-percentile value.
-	d, err := NewDelay(1-0.01, 15, 1*time.Millisecond, 1*time.Millisecond, 1*time.Hour)
+	d, err := NewDynamicPercentile(1-0.01, 15, MetricType(1*time.Millisecond), MetricType(1*time.Millisecond), MetricType(1*time.Hour))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -122,7 +122,7 @@ func TestConvergence99(t *testing.T) {
 
 func TestConvergence90(t *testing.T) {
 	// d should converge to the 90-percentile value.
-	d, err := NewDelay(1-0.1, 15, 1*time.Millisecond, 1*time.Millisecond, 1*time.Hour)
+	d, err := NewDynamicPercentile(1-0.1, 15, MetricType(1*time.Millisecond), MetricType(1*time.Millisecond), MetricType(1*time.Hour))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -145,7 +145,7 @@ func TestConvergence90(t *testing.T) {
 }
 
 func TestOverflow(t *testing.T) {
-	d, err := NewDelay(1-0.1, 15, 1*time.Millisecond, 1*time.Millisecond, 1*time.Hour)
+	d, err := NewDynamicPercentile(1-0.1, 15, MetricType(1*time.Millisecond), MetricType(1*time.Millisecond), MetricType(1*time.Hour))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -158,18 +158,18 @@ func TestOverflow(t *testing.T) {
 	for i := 0; i < 100*n; i++ {
 		d.Decrease()
 	}
-	if got, want := d.Value(), 1*time.Millisecond; got != want {
+	if got, want := d.Value(), MetricType(1*time.Millisecond); got != want {
 		t.Fatalf("unexpected d.Value: got %v, want %v", got, want)
 	}
 }
 
 func TestInvalidArgument(t *testing.T) {
-	_, err := NewDelay(1-0.1, 15, 1*time.Millisecond, 2*time.Hour, 1*time.Hour)
+	_, err := NewDynamicPercentile(1-0.1, 15, MetricType(1*time.Millisecond), MetricType(2*time.Hour), MetricType(1*time.Hour))
 	if err == nil {
 		t.Fatal("unexpected, should throw error as minDelay is greater than maxDelay")
 	}
 
-	_, err = NewDelay(1-0.1, 0, 1*time.Millisecond, 2*time.Hour, 1*time.Hour)
+	_, err = NewDynamicPercentile(1-0.1, 0, MetricType(1*time.Millisecond), MetricType(2*time.Hour), MetricType(1*time.Hour))
 	if err == nil {
 		t.Fatal("unexpected, should throw error as increaseRate can't be zero")
 	}
