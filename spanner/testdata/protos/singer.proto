@@ -32,3 +32,14 @@ enum Genre {
   FOLK = 2;
   ROCK = 3;
 }
+
+message CustomSingerInfo {
+  optional string singer_name = 1;
+}
+
+enum CustomGenre {
+  CUSTOM_POP = 0;
+  CUSTOM_JAZZ = 1;
+  CUSTOM_FOLK = 2;
+  CUSTOM_ROCK = 3;
+}
