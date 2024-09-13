@@ -54,6 +54,7 @@ type CallOptions struct {
 	GetAttachment        []gax.CallOption
 	UploadAttachment     []gax.CallOption
 	ListSpaces           []gax.CallOption
+	SearchSpaces         []gax.CallOption
 	GetSpace             []gax.CallOption
 	CreateSpace          []gax.CallOption
 	SetUpSpace           []gax.CallOption
@@ -200,6 +201,18 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListSpaces: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		SearchSpaces: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -542,6 +555,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		SearchSpaces: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetSpace: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -758,6 +782,7 @@ type internalClient interface {
 	GetAttachment(context.Context, *chatpb.GetAttachmentRequest, ...gax.CallOption) (*chatpb.Attachment, error)
 	UploadAttachment(context.Context, *chatpb.UploadAttachmentRequest, ...gax.CallOption) (*chatpb.UploadAttachmentResponse, error)
 	ListSpaces(context.Context, *chatpb.ListSpacesRequest, ...gax.CallOption) *SpaceIterator
+	SearchSpaces(context.Context, *chatpb.SearchSpacesRequest, ...gax.CallOption) *SpaceIterator
 	GetSpace(context.Context, *chatpb.GetSpaceRequest, ...gax.CallOption) (*chatpb.Space, error)
 	CreateSpace(context.Context, *chatpb.CreateSpaceRequest, ...gax.CallOption) (*chatpb.Space, error)
 	SetUpSpace(context.Context, *chatpb.SetUpSpaceRequest, ...gax.CallOption) (*chatpb.Space, error)
@@ -978,6 +1003,15 @@ func (c *Client) UploadAttachment(ctx context.Context, req *chatpb.UploadAttachm
 // method using Workspace administrator privileges instead.
 func (c *Client) ListSpaces(ctx context.Context, req *chatpb.ListSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
 	return c.internalClient.ListSpaces(ctx, req, opts...)
+}
+
+// SearchSpaces returns a list of spaces in a Google Workspace organization based on an
+// administrator’s search. Requires user
+// authentication with administrator
+// privileges (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges).
+// In the request, set use_admin_access to true.
+func (c *Client) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
+	return c.internalClient.SearchSpaces(ctx, req, opts...)
 }
 
 // GetSpace returns details about a space. For an example, see
@@ -1684,6 +1718,49 @@ func (c *gRPCClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesReque
 	return it
 }
 
+func (c *gRPCClient) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).SearchSpaces[0:len((*c.CallOptions).SearchSpaces):len((*c.CallOptions).SearchSpaces)], opts...)
+	it := &SpaceIterator{}
+	req = proto.Clone(req).(*chatpb.SearchSpacesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Space, string, error) {
+		resp := &chatpb.SearchSpacesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.SearchSpaces(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSpaces(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, opts ...gax.CallOption) (*chatpb.Space, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2296,6 +2373,9 @@ func (c *restClient) ListMemberships(ctx context.Context, req *chatpb.ListMember
 		if req.GetShowInvited() {
 			params.Add("showInvited", fmt.Sprintf("%v", req.GetShowInvited()))
 		}
+		if req.GetUseAdminAccess() {
+			params.Add("useAdminAccess", fmt.Sprintf("%v", req.GetUseAdminAccess()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -2376,6 +2456,9 @@ func (c *restClient) GetMembership(ctx context.Context, req *chatpb.GetMembershi
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUseAdminAccess() {
+		params.Add("useAdminAccess", fmt.Sprintf("%v", req.GetUseAdminAccess()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2898,6 +2981,106 @@ func (c *restClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesReque
 	return it
 }
 
+// SearchSpaces returns a list of spaces in a Google Workspace organization based on an
+// administrator’s search. Requires user
+// authentication with administrator
+// privileges (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges).
+// In the request, set use_admin_access to true.
+func (c *restClient) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
+	it := &SpaceIterator{}
+	req = proto.Clone(req).(*chatpb.SearchSpacesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Space, string, error) {
+		resp := &chatpb.SearchSpacesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/spaces:search")
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		params.Add("query", fmt.Sprintf("%v", req.GetQuery()))
+		if req.GetUseAdminAccess() {
+			params.Add("useAdminAccess", fmt.Sprintf("%v", req.GetUseAdminAccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSpaces(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // GetSpace returns details about a space. For an example, see
 // Get details about a
 // space (at https://developers.google.com/workspace/chat/get-spaces).
@@ -2918,6 +3101,9 @@ func (c *restClient) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, 
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUseAdminAccess() {
+		params.Add("useAdminAccess", fmt.Sprintf("%v", req.GetUseAdminAccess()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3191,6 +3377,9 @@ func (c *restClient) UpdateSpace(ctx context.Context, req *chatpb.UpdateSpaceReq
 		}
 		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
+	if req.GetUseAdminAccess() {
+		params.Add("useAdminAccess", fmt.Sprintf("%v", req.GetUseAdminAccess()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3258,6 +3447,9 @@ func (c *restClient) DeleteSpace(ctx context.Context, req *chatpb.DeleteSpaceReq
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUseAdminAccess() {
+		params.Add("useAdminAccess", fmt.Sprintf("%v", req.GetUseAdminAccess()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3487,6 +3679,9 @@ func (c *restClient) CreateMembership(ctx context.Context, req *chatpb.CreateMem
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUseAdminAccess() {
+		params.Add("useAdminAccess", fmt.Sprintf("%v", req.GetUseAdminAccess()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3565,6 +3760,9 @@ func (c *restClient) UpdateMembership(ctx context.Context, req *chatpb.UpdateMem
 		}
 		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
+	if req.GetUseAdminAccess() {
+		params.Add("useAdminAccess", fmt.Sprintf("%v", req.GetUseAdminAccess()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3630,6 +3828,9 @@ func (c *restClient) DeleteMembership(ctx context.Context, req *chatpb.DeleteMem
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUseAdminAccess() {
+		params.Add("useAdminAccess", fmt.Sprintf("%v", req.GetUseAdminAccess()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
