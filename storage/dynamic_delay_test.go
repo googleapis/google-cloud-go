@@ -10,7 +10,7 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF
 
-package util
+package storage
 
 import (
 	"math"
@@ -22,21 +22,21 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
-func applySamples(numSamples int, expectedValue float64, rnd *rand.Rand, d *Delay) int {
+func applySamples(numSamples int, expectedValue float64, rnd *rand.Rand, d *dynamicDelay) int {
 	var samplesOverThreshold int
 	for i := 0; i < numSamples; i++ {
 		randomDelay := time.Duration(-math.Log(rnd.Float64()) * expectedValue * float64(time.Second))
-		if randomDelay > d.Value() {
+		if randomDelay > d.getValue() {
 			samplesOverThreshold++
-			d.Increase()
+			d.increase()
 		} else {
-			d.Decrease()
+			d.decrease()
 		}
 	}
 	return samplesOverThreshold
 }
 
-func applySamplesWithUpdate(numSamples int, expectedValue float64, rnd *rand.Rand, d *Delay) {
+func applySamplesWithUpdate(numSamples int, expectedValue float64, rnd *rand.Rand, d *dynamicDelay) {
 	for i := 0; i < numSamples; i++ {
 		randomDelay := time.Duration(-math.Log(rnd.Float64()) * expectedValue * float64(time.Second))
 		d.Update(randomDelay)
@@ -44,12 +44,12 @@ func applySamplesWithUpdate(numSamples int, expectedValue float64, rnd *rand.Ran
 }
 
 func TestNewDelay(t *testing.T) {
-	d, err := NewDelay(1-0.01, 15, 1*time.Millisecond, 1*time.Millisecond, 1*time.Hour)
+	d, err := newDynamicDelay(1-0.01, 15, 1*time.Millisecond, 1*time.Millisecond, 1*time.Hour)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := &Delay{
+	want := &dynamicDelay{
 		increaseFactor: 1.047294,
 		decreaseFactor: 0.999533,
 		minDelay:       1 * time.Millisecond,
@@ -84,7 +84,7 @@ func TestNewDelay(t *testing.T) {
 
 func TestConvergence99(t *testing.T) {
 	// d should converge to the 99-percentile value.
-	d, err := NewDelay(1-0.01, 15, 1*time.Millisecond, 1*time.Millisecond, 1*time.Hour)
+	d, err := newDynamicDelay(1-0.01, 15, 1*time.Millisecond, 1*time.Millisecond, 1*time.Hour)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -122,7 +122,7 @@ func TestConvergence99(t *testing.T) {
 
 func TestConvergence90(t *testing.T) {
 	// d should converge to the 90-percentile value.
-	d, err := NewDelay(1-0.1, 15, 1*time.Millisecond, 1*time.Millisecond, 1*time.Hour)
+	d, err := newDynamicDelay(1-0.1, 15, 1*time.Millisecond, 1*time.Millisecond, 1*time.Hour)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -145,31 +145,31 @@ func TestConvergence90(t *testing.T) {
 }
 
 func TestOverflow(t *testing.T) {
-	d, err := NewDelay(1-0.1, 15, 1*time.Millisecond, 1*time.Millisecond, 1*time.Hour)
+	d, err := newDynamicDelay(1-0.1, 15, 1*time.Millisecond, 1*time.Millisecond, 1*time.Hour)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	n := 10000
 	for i := 0; i < n; i++ {
-		d.Increase()
+		d.increase()
 	}
-	t.Log(d.Value())
+	t.Log(d.getValue())
 	for i := 0; i < 100*n; i++ {
-		d.Decrease()
+		d.decrease()
 	}
-	if got, want := d.Value(), 1*time.Millisecond; got != want {
+	if got, want := d.getValue(), 1*time.Millisecond; got != want {
 		t.Fatalf("unexpected d.Value: got %v, want %v", got, want)
 	}
 }
 
 func TestInvalidArgument(t *testing.T) {
-	_, err := NewDelay(1-0.1, 15, 1*time.Millisecond, 2*time.Hour, 1*time.Hour)
+	_, err := newDynamicDelay(1-0.1, 15, 1*time.Millisecond, 2*time.Hour, 1*time.Hour)
 	if err == nil {
 		t.Fatal("unexpected, should throw error as minDelay is greater than maxDelay")
 	}
 
-	_, err = NewDelay(1-0.1, 0, 1*time.Millisecond, 2*time.Hour, 1*time.Hour)
+	_, err = newDynamicDelay(1-0.1, 0, 1*time.Millisecond, 2*time.Hour, 1*time.Hour)
 	if err == nil {
 		t.Fatal("unexpected, should throw error as increaseRate can't be zero")
 	}

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package util
+package storage
 
 import (
 	"fmt"
@@ -21,11 +21,11 @@ import (
 	"time"
 )
 
-// Delay dynamically calculates the delay at a fixed percentile, based on
+// dynamicDelay dynamically calculates the delay at a fixed percentile, based on
 // delay samples.
 //
-// Delay is goroutine-safe.
-type Delay struct {
+// dynamicDelay is goroutine-safe.
+type dynamicDelay struct {
 	increaseFactor float64
 	decreaseFactor float64
 	minDelay       time.Duration
@@ -36,20 +36,20 @@ type Delay struct {
 	mu *sync.RWMutex
 }
 
-// NewDelay returns a Delay.
+// NewDynamicDelay returns a dynamicDelay.
 //
 // targetPercentile is the desired percentile to be computed. For example, a
 // targetPercentile of 0.99 computes the delay at the 99th percentile. Must be
 // in the range [0, 1].
 //
-// increaseRate (must be > 0) determines how many Increase calls it takes for
+// increaseRate (must be > 0) determines how many increase calls it takes for
 // Value to double.
 //
 // initialDelay is the start value of the delay.
 //
-// Decrease can never lower the delay past minDelay, Increase can never raise
+// decrease can never lower the delay past minDelay, increase can never raise
 // the delay past maxDelay.
-func NewDelay(targetPercentile float64, increaseRate float64, initialDelay, minDelay, maxDelay time.Duration) (*Delay, error) {
+func newDynamicDelay(targetPercentile float64, increaseRate float64, initialDelay, minDelay, maxDelay time.Duration) (*dynamicDelay, error) {
 	if targetPercentile < 0 || targetPercentile > 1 {
 		return nil, fmt.Errorf("invalid targetPercentile (%v): must be within [0, 1]", targetPercentile)
 	}
@@ -77,7 +77,7 @@ func NewDelay(targetPercentile float64, increaseRate float64, initialDelay, minD
 		decreaseFactor = 0.9999
 	}
 
-	return &Delay{
+	return &dynamicDelay{
 		increaseFactor: increaseFactor,
 		decreaseFactor: decreaseFactor,
 		minDelay:       minDelay,
@@ -87,7 +87,7 @@ func NewDelay(targetPercentile float64, increaseRate float64, initialDelay, minD
 	}, nil
 }
 
-func (d *Delay) increase() {
+func (d *dynamicDelay) unsafeIncrease() {
 	v := time.Duration(float64(d.value) * d.increaseFactor)
 	if v > d.maxDelay {
 		d.value = d.maxDelay
@@ -96,15 +96,15 @@ func (d *Delay) increase() {
 	}
 }
 
-// Increase notes that the operation took longer than the delay returned by Value.
-func (d *Delay) Increase() {
+// increase notes that the operation took longer than the delay returned by Value.
+func (d *dynamicDelay) increase() {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 
-	d.increase()
+	d.unsafeIncrease()
 }
 
-func (d *Delay) decrease() {
+func (d *dynamicDelay) unsafeDecrease() {
 	v := time.Duration(float64(d.value) * d.decreaseFactor)
 	if v < d.minDelay {
 		d.value = d.minDelay
@@ -113,29 +113,29 @@ func (d *Delay) decrease() {
 	}
 }
 
-// Decrease notes that the operation completed before the delay returned by Value.
-func (d *Delay) Decrease() {
+// decrease notes that the operation completed before the delay returned by getValue.
+func (d *dynamicDelay) decrease() {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 
-	d.decrease()
+	d.unsafeDecrease()
 }
 
 // Update notes that the RPC either took longer than the delay or completed
 // before the delay, depending on the specified latency.
-func (d *Delay) Update(latency time.Duration) {
+func (d *dynamicDelay) Update(latency time.Duration) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 
 	if latency > d.value {
-		d.increase()
+		d.unsafeIncrease()
 	} else {
-		d.decrease()
+		d.unsafeDecrease()
 	}
 }
 
-// Value returns the desired delay to wait before retry the operation.
-func (d *Delay) Value() time.Duration {
+// getValue returns the desired delay to wait before retry the operation.
+func (d *dynamicDelay) getValue() time.Duration {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
 
@@ -143,7 +143,7 @@ func (d *Delay) Value() time.Duration {
 }
 
 // PrintDelay prints the state of delay, helpful in debugging.
-func (d *Delay) PrintDelay() {
+func (d *dynamicDelay) printDelay() {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
 
