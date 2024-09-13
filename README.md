@@ -60,14 +60,14 @@ client, err := storage.NewClient(ctx, option.WithCredentialsFile("path/to/keyfil
 ```
 
 You can exert more control over authorization by using the
-[`golang.org/x/oauth2`](https://pkg.go.dev/golang.org/x/oauth2) package to
-create an `oauth2.TokenSource`. Then pass
-[`option.WithTokenSource`](https://pkg.go.dev/google.golang.org/api/option#WithTokenSource)
+[credentials](https://pkg.go.dev/cloud.google.com/go/auth/credentials) package to
+create an [auth.Credentials](https://pkg.go.dev/cloud.google.com/go/auth#Credentials).
+Then pass [`option.WithAuthCredentials`](https://pkg.go.dev/google.golang.org/api/option#WithAuthCredentials)
 to the `NewClient` function:
 
 ```go
-tokenSource := ...
-client, err := storage.NewClient(ctx, option.WithTokenSource(tokenSource))
+creds := ...
+client, err := storage.NewClient(ctx, option.WithAuthCredentials(creds))
 ```
 
 ## Contributing
