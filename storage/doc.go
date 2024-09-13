@@ -334,9 +334,9 @@ to add a [custom audit logging] header:
 # gRPC API
 
 This package includes support for the Cloud Storage gRPC API. The
-implementation uses gRPC rather than the current
+implementation uses gRPC rather than the Default
 JSON & XML APIs to make requests to Cloud Storage.
-The Go Storage gRPC library is generally available.
+The Go Storage gRPC client is generally available.
 
 To create a client which will use gRPC, use the alternate constructor:
 
@@ -347,12 +347,11 @@ To create a client which will use gRPC, use the alternate constructor:
 	}
 	// Use client as usual.
 
-Using the gRPC API inside GCP with a bucket in the same region can allow direct
-connectivity (enabling requests to skip Google Front Ends (GFEs) and reducing
-response latency) from compute to GCS. For more information see docs on [direct connectivity].
-A warning is emmitted if gRPC is not used within GCP to warn that direct
-connectivity could not be initialized. Direct connectivity is not required
-to access the gRPC API.
+Using the gRPC API inside GCP with a bucket in the same region can allow for
+[Direct Connectivity] (enabling requests to skip some proxy steps and reducing
+response latency). A warning is emmitted if gRPC is not used within GCP to
+warn that Direct Connectivity could not be initialized. Direct Connectivity
+is not required to access the gRPC API.
 
 Dependencies for the gRPC API may slightly increase the size of binaries for
 applications depending on this package. If you are not using gRPC, you can use
@@ -408,6 +407,6 @@ client, which is available as a subpackage in this module. See package docs at
 [custom audit logging]: https://cloud.google.com/storage/docs/audit-logging#add-custom-metadata
 [Storage Control API]: https://cloud.google.com/storage/docs/reference/rpc/google.storage.control.v2
 [metric explorer]: https://console.cloud.google.com/projectselector/monitoring/metrics-explorer
-[direct connectivity]: https://cloud.google.com/vpc-service-controls/docs/set-up-private-connectivity#direct-connectivity
+[Direct Connectivity]: https://cloud.google.com/vpc-service-controls/docs/set-up-private-connectivity#direct-connectivity
 */
 package storage // import "cloud.google.com/go/storage"
