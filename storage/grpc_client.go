@@ -96,6 +96,7 @@ func defaultGRPCOptions() []option.ClientOption {
 			option.WithEndpoint(host),
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 			option.WithoutAuthentication(),
+			WithDisabledClientMetrics(),
 		)
 	} else {
 		// Only enable DirectPath when the emulator is not being targeted.
