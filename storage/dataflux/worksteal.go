@@ -49,7 +49,7 @@ type worker struct {
 
 // workstealListing is the main entry point of the worksteal algorithm.
 // It performs worksteal to achieve highly dynamic object listing.
-func workstealListing(ctx context.Context, opts Lister) []*storage.ObjectAttrs {
+func (c *Lister) workstealListing(ctx context.Context) []*storage.ObjectAttrs {
 	return nil
 }
 

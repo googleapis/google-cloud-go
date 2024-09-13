@@ -41,16 +41,16 @@ type ListerInput struct {
 	// BucketName is the name of the bucket to list objects from. Required.
 	BucketName string
 
-	// Parallelism is number of parallel workers to use for listing. Optional.
+	// Parallelism is number of parallel workers to use for listing. Default value is 10x number of available CPU. Optional.
 	Parallelism int
 
-	// BatchSize is the number of objects to list. Optional.
+	// BatchSize is the number of objects to list. Default value returns all objects at once. Optional.
 	BatchSize int
 
-	// Query is the query to filter objects for listing. Optional.
+	// Query is the query to filter objects for listing. Default value is nil. Optional.
 	Query storage.Query
 
-	// SkipDirectoryObjects is to indicate whether to list directory objects. Optional.
+	// SkipDirectoryObjects is to indicate whether to list directory objects. Default value is false. Optional.
 	SkipDirectoryObjects bool
 }
 
@@ -100,6 +100,8 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 	var results []*storage.ObjectAttrs
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
+	// Errgroup takes care of running both methods in parallel. As soon as one of the method
+	// is complete, the running method also stops.
 	g, childCtx := errgroup.WithContext(ctx)
 
 	// To start listing method is Open and runs both worksteal and sequential listing in parallel.
@@ -109,7 +111,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 	if c.method != worksteal {
 
 		g.Go(func() error {
-			objects, nextToken, err := sequentialListing(childCtx, *c)
+			objects, nextToken, err := c.sequentialListing(childCtx)
 			if err != nil {
 				countError++
 				return fmt.Errorf("error in running sequential listing: %w", err)
@@ -128,9 +130,11 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 	// Close all functions if either sequential listing or worksteal listing is complete.
 	err := g.Wait()
 
-	// If there is not context.Canceled, then return error.
+	// If the error is not context.Canceled, then return error instead of falling back
+	// to the other method. This is so that the error can be fixed and user can take
+	//  advantage of fast-listing.
 	// As one of the listing method completes, it is expected to cancel context for the other method.
-	// If both sequential and worksteal listing fail due to context canceled, then return error.
+	// If both sequential and worksteal listing fail due to context canceled, only then return error.
 	if err != nil && (!errors.Is(err, context.Canceled) || countError > 1) {
 		return nil, fmt.Errorf("failed waiting for sequntial and work steal lister : %w", err)
 	}

@@ -33,7 +33,6 @@ type listRange struct {
 
 // newRangeSplitter creates a new RangeSplitter with the given alphabets.
 func newRangeSplitter(alphabet string) *rangeSplitter {
-
 	return &rangeSplitter{}
 }
 

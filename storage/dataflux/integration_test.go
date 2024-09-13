@@ -45,7 +45,6 @@ var (
 	//  These buckets are shared amongst download tests. They are created,
 	// populated with objects and cleaned up in TestMain.
 	httpTestBucket = downloadTestBucket{}
-	grpcTestBucket = downloadTestBucket{}
 )
 
 func TestMain(m *testing.M) {
@@ -85,7 +84,7 @@ func TestIntegration_NextBatch(t *testing.T) {
 
 	objects, err := df.NextBatch(ctx)
 	if err != nil && err != iterator.Done {
-		t.Errorf("df.NextBatch(: %v", err)
+		t.Errorf("df.NextBatch : %v", err)
 	}
 
 	if len(objects) != len(httpTestBucket.objects) {
@@ -256,8 +255,4 @@ func (tb *downloadTestBucket) Cleanup() error {
 	}
 
 	return b.Delete(ctx)
-}
-
-func crc32c(b []byte) uint32 {
-	return crc32.Checksum(b, crc32.MakeTable(crc32.Castagnoli))
 }

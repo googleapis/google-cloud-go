@@ -32,26 +32,26 @@ const (
 // sequentialListing performs a sequential listing on the given bucket.
 // It returns a list of objects and the next token to use to continue listing.
 // If the next token is empty, then listing is complete.
-func sequentialListing(ctx context.Context, opts Lister) ([]*storage.ObjectAttrs, string, error) {
+func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs, string, error) {
 	var result []*storage.ObjectAttrs
 
-	objectIterator := opts.bucket.Objects(ctx, &opts.query)
+	objectIterator := c.bucket.Objects(ctx, &c.query)
 
 	var numObject int
-	if opts.batchSize < defaultPageSize {
+	if c.batchSize < defaultPageSize {
 		numObject = defaultPageSize
 	} else {
-		numObject = int(math.Floor(float64(opts.batchSize)/float64(defaultPageSize))) * defaultPageSize
+		numObject = int(math.Floor(float64(c.batchSize)/float64(defaultPageSize))) * defaultPageSize
 	}
 
 	pageInfo := objectIterator.PageInfo()
 	pageInfo.MaxSize = defaultPageSize
-	pageInfo.Token = opts.pageToken
+	pageInfo.Token = c.pageToken
 
 	i := 0
 	for {
 		// If page size is set, then stop listing after numPageRequest.
-		if opts.batchSize > 0 && i >= numObject {
+		if c.batchSize > 0 && i >= numObject {
 			break
 		}
 		i++
@@ -64,7 +64,7 @@ func sequentialListing(ctx context.Context, opts Lister) ([]*storage.ObjectAttrs
 		if err != nil {
 			return nil, "", fmt.Errorf("iterating through objects %w", err)
 		}
-		if !(opts.skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
+		if !(c.skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
 			result = append(result, attrs)
 		}
 	}
