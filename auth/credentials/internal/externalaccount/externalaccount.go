@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	"cloud.google.com/go/auth/credentials/internal/stsexchange"
 	"cloud.google.com/go/auth/internal/credsfile"
+	"github.com/googleapis/gax-go/v2/clog"
 )
 
 const (
@@ -331,11 +332,13 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 // subjectTokenProvider
 func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 	reqOpts := &RequestOptions{Audience: o.Audience, SubjectTokenType: o.SubjectTokenType}
+	l := clog.New()
 	if o.AwsSecurityCredentialsProvider != nil {
 		return &awsSubjectProvider{
 			securityCredentialsProvider: o.AwsSecurityCredentialsProvider,
 			TargetResource:              o.Audience,
 			reqOpts:                     reqOpts,
+			logger:                      l,
 		}, nil
 	} else if o.SubjectTokenProvider != nil {
 		return &programmaticProvider{stp: o.SubjectTokenProvider, opts: reqOpts}, nil
@@ -362,7 +365,13 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 	} else if o.CredentialSource.File != "" {
 		return &fileSubjectProvider{File: o.CredentialSource.File, Format: o.CredentialSource.Format}, nil
 	} else if o.CredentialSource.URL != "" {
-		return &urlSubjectProvider{URL: o.CredentialSource.URL, Headers: o.CredentialSource.Headers, Format: o.CredentialSource.Format, Client: o.Client}, nil
+		return &urlSubjectProvider{
+			URL:     o.CredentialSource.URL,
+			Headers: o.CredentialSource.Headers,
+			Format:  o.CredentialSource.Format,
+			Client:  o.Client,
+			logger:  l,
+		}, nil
 	} else if o.CredentialSource.Executable != nil {
 		ec := o.CredentialSource.Executable
 		if ec.Command == "" {

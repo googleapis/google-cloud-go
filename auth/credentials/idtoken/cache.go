@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
@@ -25,6 +26,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/internal"
+	"github.com/googleapis/gax-go/v2/clog"
 )
 
 type cachingClient struct {
@@ -36,12 +38,14 @@ type cachingClient struct {
 
 	mu    sync.Mutex
 	certs map[string]*cachedResponse
+	logger     *slog.Logger
 }
 
 func newCachingClient(client *http.Client) *cachingClient {
 	return &cachingClient{
 		client: client,
 		certs:  make(map[string]*cachedResponse, 2),
+		logger:      clog.New(),
 	}
 }
 
@@ -58,10 +62,12 @@ func (c *cachingClient) getCert(ctx context.Context, url string) (*certResponse,
 	if err != nil {
 		return nil, err
 	}
+	c.logger.Log(ctx, clog.DynamicLevel(), "cert fetch", "request", clog.HTTPRequest(req, nil))
 	resp, body, err := internal.DoRequest(c.client, req)
 	if err != nil {
 		return nil, err
 	}
+	c.logger.Log(ctx, clog.DynamicLevel(), "cert response", "response", clog.HTTPResponse(resp, body))
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("idtoken: unable to retrieve cert, got status code %d", resp.StatusCode)
 	}

@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"mime"
 	"net/http"
 	"net/url"
@@ -28,6 +29,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/internal"
+	"github.com/googleapis/gax-go/v2/clog"
 )
 
 // AuthorizationHandler is a 3-legged-OAuth helper that prompts the user for
@@ -69,6 +71,8 @@ type Options3LO struct {
 	// AuthHandlerOpts provides a set of options for doing a
 	// 3-legged OAuth2 flow with a custom [AuthorizationHandler]. Optional.
 	AuthHandlerOpts *AuthorizationHandlerOptions
+
+	logger *slog.Logger
 }
 
 func (o *Options3LO) validate() error {
@@ -177,10 +181,16 @@ func New3LOTokenProvider(opts *Options3LO) (TokenProvider, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
+	opts.logger = clog.New()
 	if opts.AuthHandlerOpts != nil {
 		return new3LOTokenProviderWithAuthHandler(opts), nil
 	}
-	return NewCachedTokenProvider(&tokenProvider3LO{opts: opts, refreshToken: opts.RefreshToken, client: opts.client()}, &CachedTokenProviderOptions{
+
+	return NewCachedTokenProvider(&tokenProvider3LO{
+		opts:         opts,
+		refreshToken: opts.RefreshToken,
+		client:       opts.client(),
+	}, &CachedTokenProviderOptions{
 		ExpireEarly: opts.EarlyTokenExpiry,
 	}), nil
 }
@@ -199,9 +209,13 @@ type AuthorizationHandlerOptions struct {
 }
 
 func new3LOTokenProviderWithAuthHandler(opts *Options3LO) TokenProvider {
-	return NewCachedTokenProvider(&tokenProviderWithHandler{opts: opts, state: opts.AuthHandlerOpts.State}, &CachedTokenProviderOptions{
-		ExpireEarly: opts.EarlyTokenExpiry,
-	})
+	return NewCachedTokenProvider(&tokenProviderWithHandler{
+		opts:  opts,
+		state: opts.AuthHandlerOpts.State,
+	},
+		&CachedTokenProviderOptions{
+			ExpireEarly: opts.EarlyTokenExpiry,
+		})
 }
 
 // exchange handles the final exchange portion of the 3lo flow. Returns a Token,
@@ -294,11 +308,13 @@ func fetchToken(ctx context.Context, o *Options3LO, v url.Values) (*Token, strin
 		req.SetBasicAuth(url.QueryEscape(o.ClientID), url.QueryEscape(o.ClientSecret))
 	}
 
+	o.logger.Log(ctx, clog.DynamicLevel(), "3LO token fetch", "request", clog.HTTPRequest(req, []byte(v.Encode())))
 	// Make request
 	resp, body, err := internal.DoRequest(o.client(), req)
 	if err != nil {
 		return nil, refreshToken, err
 	}
+	o.logger.Log(ctx, clog.DynamicLevel(), "3LO token response", "response", clog.HTTPResponse(resp, body))
 	failureStatus := resp.StatusCode < 200 || resp.StatusCode > 299
 	tokError := &Error{
 		Response: resp,

@@ -19,6 +19,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -26,6 +27,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"github.com/googleapis/gax-go/v2/clog"
 )
 
 const (
@@ -48,10 +50,13 @@ type Options struct {
 	// request body.
 	ExtraOpts    map[string]interface{}
 	RefreshToken string
+
+	logger *slog.Logger
 }
 
 // RefreshAccessToken performs the token exchange using a refresh token flow.
 func RefreshAccessToken(ctx context.Context, opts *Options) (*TokenResponse, error) {
+	opts.logger = clog.New()
 	data := url.Values{}
 	data.Set("grant_type", "refresh_token")
 	data.Set("refresh_token", opts.RefreshToken)
@@ -60,6 +65,7 @@ func RefreshAccessToken(ctx context.Context, opts *Options) (*TokenResponse, err
 
 // ExchangeToken performs an oauth2 token exchange with the provided endpoint.
 func ExchangeToken(ctx context.Context, opts *Options) (*TokenResponse, error) {
+	opts.logger = clog.New()
 	data := url.Values{}
 	data.Set("audience", opts.Request.Audience)
 	data.Set("grant_type", GrantType)
@@ -93,10 +99,12 @@ func doRequest(ctx context.Context, opts *Options, data url.Values) (*TokenRespo
 	}
 	req.Header.Set("Content-Length", strconv.Itoa(len(encodedData)))
 
+	opts.logger.Log(ctx, clog.DynamicLevel(), "sts token fetch", "request", clog.HTTPRequest(req, []byte(encodedData)))
 	resp, body, err := internal.DoRequest(opts.Client, req)
 	if err != nil {
 		return nil, fmt.Errorf("credentials: invalid response from Secure Token Server: %w", err)
 	}
+	opts.logger.Log(ctx, clog.DynamicLevel(), "sts token response", "response", clog.HTTPResponse(resp, body))
 	if c := resp.StatusCode; c < http.StatusOK || c > http.StatusMultipleChoices {
 		return nil, fmt.Errorf("credentials: status code %d: %s", c, body)
 	}

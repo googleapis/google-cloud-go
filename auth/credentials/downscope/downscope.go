@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
@@ -25,6 +26,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"github.com/googleapis/gax-go/v2/clog"
 )
 
 const (
@@ -128,6 +130,7 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 			Options:                 opts,
 			Client:                  opts.client(),
 			identityBindingEndpoint: opts.identityBindingEndpoint(),
+			logger:                       clog.New(),
 		},
 		ProjectIDProvider:      auth.CredentialsPropertyFunc(opts.Credentials.ProjectID),
 		QuotaProjectIDProvider: auth.CredentialsPropertyFunc(opts.Credentials.QuotaProjectID),
@@ -142,6 +145,7 @@ type downscopedTokenProvider struct {
 	// identityBindingEndpoint is the identity binding endpoint with the
 	// configured universe domain.
 	identityBindingEndpoint string
+	logger                       *slog.Logger
 }
 
 type downscopedOptions struct {
@@ -187,10 +191,12 @@ func (dts *downscopedTokenProvider) Token(ctx context.Context) (*auth.Token, err
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	dts.logger.Log(ctx, clog.DynamicLevel(), "downscoped token fetch", "request", clog.HTTPRequest(req, []byte(form.Encode())))
 	resp, body, err := internal.DoRequest(dts.Client, req)
 	if err != nil {
 		return nil, err
 	}
+	dts.logger.Log(ctx, clog.DynamicLevel(), "downscoped token response", "response", clog.HTTPResponse(resp, body))
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("downscope: unable to exchange token, %v: %s", resp.StatusCode, body)
 	}

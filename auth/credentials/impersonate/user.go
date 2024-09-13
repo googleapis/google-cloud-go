@@ -19,6 +19,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
@@ -26,6 +27,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"github.com/googleapis/gax-go/v2/clog"
 )
 
 // user provides an auth flow for domain-wide delegation, setting
@@ -89,6 +91,7 @@ type userTokenProvider struct {
 	scopes          []string
 	lifetime        time.Duration
 	delegates       []string
+	logger               *slog.Logger
 }
 
 func (u userTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
@@ -129,10 +132,12 @@ func (u userTokenProvider) signJWT(ctx context.Context) (string, error) {
 		return "", fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	u.logger.Log(ctx, clog.DynamicLevel(), "impersonated user sign JWT request", "request", clog.HTTPRequest(req, bodyBytes))
 	resp, body, err := internal.DoRequest(u.client, req)
 	if err != nil {
 		return "", fmt.Errorf("impersonate: unable to sign JWT: %w", err)
 	}
+	u.logger.Log(ctx, clog.DynamicLevel(), "impersonated user sign JWT response", "response", clog.HTTPResponse(resp, body))
 	if c := resp.StatusCode; c < 200 || c > 299 {
 		return "", fmt.Errorf("impersonate: status code %d: %s", c, body)
 	}
@@ -153,10 +158,12 @@ func (u userTokenProvider) exchangeToken(ctx context.Context, signedJWT string) 
 	if err != nil {
 		return nil, err
 	}
+	u.logger.Log(ctx, clog.DynamicLevel(), "impersonated user token exchange request", "request", clog.HTTPRequest(req, []byte(v.Encode())))
 	resp, body, err := internal.DoRequest(u.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to exchange token: %w", err)
 	}
+	u.logger.Log(ctx, clog.DynamicLevel(), "impersonated user token exchange response", "response", clog.HTTPResponse(resp, body))
 	if c := resp.StatusCode; c < 200 || c > 299 {
 		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)
 	}

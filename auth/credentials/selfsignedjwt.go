@@ -18,6 +18,7 @@ import (
 	"context"
 	"crypto/rsa"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -25,6 +26,7 @@ import (
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/jwt"
+	"github.com/googleapis/gax-go/v2/clog"
 )
 
 var (
@@ -45,6 +47,7 @@ func configureSelfSignedJWT(f *credsfile.ServiceAccountFile, opts *DetectOptions
 		scopes:   opts.scopes(),
 		pk:       pk,
 		pkID:     f.PrivateKeyID,
+		log:      clog.New(),
 	}, nil
 }
 
@@ -54,6 +57,7 @@ type selfSignedTokenProvider struct {
 	scopes   []string
 	pk       *rsa.PrivateKey
 	pkID     string
+	log      *slog.Logger
 }
 
 func (tp *selfSignedTokenProvider) Token(context.Context) (*auth.Token, error) {
@@ -73,9 +77,10 @@ func (tp *selfSignedTokenProvider) Token(context.Context) (*auth.Token, error) {
 		Type:      jwt.HeaderType,
 		KeyID:     string(tp.pkID),
 	}
-	msg, err := jwt.EncodeJWS(h, c, tp.pk)
+	tok, err := jwt.EncodeJWS(h, c, tp.pk)
 	if err != nil {
 		return nil, fmt.Errorf("credentials: could not encode JWT: %w", err)
 	}
-	return &auth.Token{Value: msg, Type: internal.TokenTypeBearer, Expiry: exp}, nil
+	tp.log.Debug("created self-signed JWT", "token", tok)
+	return &auth.Token{Value: tok, Type: internal.TokenTypeBearer, Expiry: exp}, nil
 }

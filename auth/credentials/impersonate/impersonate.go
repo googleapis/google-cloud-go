@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -27,6 +28,7 @@ import (
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/httptransport"
 	"cloud.google.com/go/auth/internal"
+	"github.com/googleapis/gax-go/v2/clog"
 )
 
 var (
@@ -111,6 +113,7 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 		client:          client,
 		targetPrincipal: opts.TargetPrincipal,
 		lifetime:        fmt.Sprintf("%.fs", lifetime.Seconds()),
+		logger:               clog.New(),
 	}
 	for _, v := range opts.Delegates {
 		its.delegates = append(its.delegates, formatIAMServiceAccountName(v))
@@ -224,6 +227,7 @@ type impersonatedTokenProvider struct {
 	lifetime        string
 	scopes          []string
 	delegates       []string
+	logger               *slog.Logger
 }
 
 // Token returns an impersonated Token.
@@ -243,10 +247,12 @@ func (i impersonatedTokenProvider) Token(ctx context.Context) (*auth.Token, erro
 		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	i.logger.Log(ctx, clog.DynamicLevel(), "impersonated token fetch", "request", clog.HTTPRequest(req, b))
 	resp, body, err := internal.DoRequest(i.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to generate access token: %w", err)
 	}
+	i.logger.Log(ctx, clog.DynamicLevel(), "impersonated token response", "response", clog.HTTPResponse(resp, body))
 	if c := resp.StatusCode; c < 200 || c > 299 {
 		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)
 	}

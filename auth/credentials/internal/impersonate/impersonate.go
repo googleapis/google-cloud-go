@@ -20,11 +20,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"github.com/googleapis/gax-go/v2/clog"
 )
 
 const (
@@ -50,6 +52,7 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
+	opts.logger = clog.New()
 	return opts, nil
 }
 
@@ -74,6 +77,8 @@ type Options struct {
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. Required.
 	Client *http.Client
+
+	logger *slog.Logger
 }
 
 func (o *Options) validate() error {
@@ -109,10 +114,12 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 	if err := setAuthHeader(ctx, o.Tp, req); err != nil {
 		return nil, err
 	}
+	o.logger.Log(ctx, clog.DynamicLevel(), "impersonated token fetch", "request", clog.HTTPRequest(req, b))
 	resp, body, err := internal.DoRequest(o.Client, req)
 	if err != nil {
 		return nil, fmt.Errorf("credentials: unable to generate access token: %w", err)
 	}
+	o.logger.Log(ctx, clog.DynamicLevel(), "impersonated token response", "response", clog.HTTPResponse(resp, body))
 	if c := resp.StatusCode; c < http.StatusOK || c >= http.StatusMultipleChoices {
 		return nil, fmt.Errorf("credentials: status code %d: %s", c, body)
 	}

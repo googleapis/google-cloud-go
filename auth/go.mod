@@ -3,6 +3,7 @@ module cloud.google.com/go/auth
 go 1.21
 
 require (
+	github.com/googleapis/gax-go/v2 v2.13.0
 	cloud.google.com/go/compute/metadata v0.5.0
 	github.com/google/go-cmp v0.6.0
 	github.com/google/s2a-go v0.1.8

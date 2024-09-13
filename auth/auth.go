@@ -24,6 +24,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
@@ -32,6 +33,7 @@ import (
 
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/jwt"
+	"github.com/googleapis/gax-go/v2/clog"
 )
 
 const (
@@ -524,10 +526,15 @@ func New2LOTokenProvider(opts *Options2LO) (TokenProvider, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
-	return tokenProvider2LO{opts: opts, Client: opts.client()}, nil
+	return tokenProvider2LO{
+		logger:      clog.New(),
+		opts:   opts,
+		Client: opts.client(),
+	}, nil
 }
 
 type tokenProvider2LO struct {
+	logger      *slog.Logger
 	opts   *Options2LO
 	Client *http.Client
 }
@@ -564,10 +571,12 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	tp.logger.Log(ctx, clog.DynamicLevel(), "2LO token fetch", "request", clog.HTTPRequest(req, []byte(v.Encode())))
 	resp, body, err := internal.DoRequest(tp.Client, req)
 	if err != nil {
 		return nil, fmt.Errorf("auth: cannot fetch token: %w", err)
 	}
+	tp.logger.Log(ctx, clog.DynamicLevel(), "2LO token response", "response", clog.HTTPResponse(resp, body))
 	if c := resp.StatusCode; c < http.StatusOK || c >= http.StatusMultipleChoices {
 		return nil, &Error{
 			Response: resp,

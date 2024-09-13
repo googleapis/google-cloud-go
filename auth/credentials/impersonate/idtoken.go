@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -27,6 +28,7 @@ import (
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/httptransport"
 	"cloud.google.com/go/auth/internal"
+	"github.com/googleapis/gax-go/v2/clog"
 )
 
 // IDTokenOptions for generating an impersonated ID token.
@@ -116,6 +118,7 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 		targetPrincipal: opts.TargetPrincipal,
 		audience:        opts.Audience,
 		includeEmail:    opts.IncludeEmail,
+		logger:          clog.New(),
 	}
 	for _, v := range opts.Delegates {
 		itp.delegates = append(itp.delegates, formatIAMServiceAccountName(v))
@@ -148,6 +151,7 @@ type impersonatedIDTokenProvider struct {
 	audience        string
 	includeEmail    bool
 	delegates       []string
+	logger          *slog.Logger
 }
 
 func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
@@ -167,10 +171,12 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	i.logger.Log(ctx, clog.DynamicLevel(), "impersonated idtoken fetch", "request", clog.HTTPRequest(req, bodyBytes))
 	resp, body, err := internal.DoRequest(i.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to generate ID token: %w", err)
 	}
+	i.logger.Log(ctx, clog.DynamicLevel(), "impersonated idtoken response", "response", clog.HTTPResponse(resp, body))
 	if c := resp.StatusCode; c < 200 || c > 299 {
 		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)
 	}
