@@ -39,7 +39,7 @@ func applySamples(numSamples int, expectedValue float64, rnd *rand.Rand, d *dyna
 func applySamplesWithUpdate(numSamples int, expectedValue float64, rnd *rand.Rand, d *dynamicDelay) {
 	for i := 0; i < numSamples; i++ {
 		randomDelay := time.Duration(-math.Log(rnd.Float64()) * expectedValue * float64(time.Second))
-		d.Update(randomDelay)
+		d.update(randomDelay)
 	}
 }
 

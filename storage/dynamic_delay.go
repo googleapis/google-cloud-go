@@ -121,9 +121,8 @@ func (d *dynamicDelay) decrease() {
 	d.unsafeDecrease()
 }
 
-// Update notes that the RPC either took longer than the delay or completed
-// before the delay, depending on the specified latency.
-func (d *dynamicDelay) Update(latency time.Duration) {
+// update updates the delay value depending on the specified latency.
+func (d *dynamicDelay) update(latency time.Duration) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 
