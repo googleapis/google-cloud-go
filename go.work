@@ -1,4 +1,4 @@
-go 1.20
+go 1.21
 
 use (
 	.
@@ -12,6 +12,7 @@ use (
 	./apigateway
 	./apigeeconnect
 	./apigeeregistry
+	./apihub
 	./apikeys
 	./appengine
 	./apphub

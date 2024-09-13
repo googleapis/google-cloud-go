@@ -1,5 +1,26 @@
 # Changes
 
+## [1.28.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.28.0...compute/v1.28.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **compute:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.5...compute/v1.28.0) (2024-08-20)
+
+
+### Features
+
+* **compute:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.27.5](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.4...compute/v1.27.5) (2024-08-08)
+
+
+### Bug Fixes
+
+* **compute:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.27.4](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.3...compute/v1.27.4) (2024-07-24)
 
 

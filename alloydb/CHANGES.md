@@ -2,6 +2,37 @@
 
 
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.12.0...alloydb/v1.12.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **alloydb:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.11.0...alloydb/v1.12.0) (2024-08-27)
+
+
+### Features
+
+* **alloydb:** Support for enabling outbound public IP on an instance ([2b2c673](https://github.com/googleapis/google-cloud-go/commit/2b2c673ade81b686fa579b49e557d51853aa370a))
+* **alloydb:** Support for getting maintenance schedule of a cluster ([2b2c673](https://github.com/googleapis/google-cloud-go/commit/2b2c673ade81b686fa579b49e557d51853aa370a))
+* **alloydb:** Support for getting outbound public IP addresses of an instance ([2b2c673](https://github.com/googleapis/google-cloud-go/commit/2b2c673ade81b686fa579b49e557d51853aa370a))
+* **alloydb:** Support for setting maintenance update policy on a cluster ([2b2c673](https://github.com/googleapis/google-cloud-go/commit/2b2c673ade81b686fa579b49e557d51853aa370a))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.10.7...alloydb/v1.11.0) (2024-08-20)
+
+
+### Features
+
+* **alloydb:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.10.7](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.10.6...alloydb/v1.10.7) (2024-08-08)
+
+
+### Bug Fixes
+
+* **alloydb:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.10.6](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.10.5...alloydb/v1.10.6) (2024-07-24)
 
 

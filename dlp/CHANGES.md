@@ -1,5 +1,38 @@
 # Changes
 
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.18.0...dlp/v1.18.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **dlp:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.17.0...dlp/v1.18.0) (2024-08-20)
+
+
+### Features
+
+* **dlp:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **dlp:** File store data profiles can now be filtered by type and storage location ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **dlp:** Inspect template modified cadence discovery config for Cloud SQL ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+
+### Documentation
+
+* **dlp:** Small improvements ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.16.0...dlp/v1.17.0) (2024-08-08)
+
+
+### Features
+
+* **dlp:** Add the TagResources API ([649c075](https://github.com/googleapis/google-cloud-go/commit/649c075d5310e2fac64a0b65ec445e7caef42cb0))
+
+
+### Bug Fixes
+
+* **dlp:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.15.0...dlp/v1.16.0) (2024-08-01)
 
 

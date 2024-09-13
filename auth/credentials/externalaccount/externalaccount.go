@@ -219,7 +219,7 @@ func (o *Options) client() *http.Client {
 	if o.Client != nil {
 		return o.Client
 	}
-	return internal.CloneDefaultClient()
+	return internal.DefaultClient()
 }
 
 func (o *Options) toInternalOpts() *iexacc.Options {
@@ -242,6 +242,7 @@ func (o *Options) toInternalOpts() *iexacc.Options {
 		SubjectTokenProvider:           toInternalSubjectTokenProvider(o.SubjectTokenProvider),
 		AwsSecurityCredentialsProvider: toInternalAwsSecurityCredentialsProvider(o.AwsSecurityCredentialsProvider),
 		Client:                         o.client(),
+		IsDefaultClient:                o.Client == nil,
 	}
 	if o.CredentialSource != nil {
 		cs := o.CredentialSource

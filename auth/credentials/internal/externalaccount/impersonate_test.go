@@ -114,7 +114,7 @@ func TestImpersonation(t *testing.T) {
 			testImpersonateOpts := tt.opts
 			testImpersonateOpts.ServiceAccountImpersonationURL = ts.URL + "/impersonate"
 			testImpersonateOpts.TokenURL = ts.URL + "/target"
-			testImpersonateOpts.Client = internal.CloneDefaultClient()
+			testImpersonateOpts.Client = internal.DefaultClient()
 
 			tp, err := NewTokenProvider(testImpersonateOpts)
 			if err != nil {

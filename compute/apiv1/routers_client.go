@@ -357,7 +357,7 @@ func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.A
 			req.PageToken = proto.String(pageToken)
 		}
 		if pageSize > math.MaxInt32 {
-			req.MaxResults = proto.Uint32(math.MaxInt32)
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
@@ -654,7 +654,7 @@ func (c *routersRESTClient) GetNatMappingInfo(ctx context.Context, req *computep
 			req.PageToken = proto.String(pageToken)
 		}
 		if pageSize > math.MaxInt32 {
-			req.MaxResults = proto.Uint32(math.MaxInt32)
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
@@ -886,7 +886,7 @@ func (c *routersRESTClient) List(ctx context.Context, req *computepb.ListRouters
 			req.PageToken = proto.String(pageToken)
 		}
 		if pageSize > math.MaxInt32 {
-			req.MaxResults = proto.Uint32(math.MaxInt32)
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}

@@ -1976,11 +1976,11 @@ func (c *restClient) UpdateChannel(ctx context.Context, req *livestreampb.Update
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2496,11 +2496,11 @@ func (c *restClient) UpdateInput(ctx context.Context, req *livestreampb.UpdateIn
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3504,11 +3504,11 @@ func (c *restClient) UpdatePool(ctx context.Context, req *livestreampb.UpdatePoo
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

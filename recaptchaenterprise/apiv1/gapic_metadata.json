@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "AddIpOverride": {
+              "methods": [
+                "AddIpOverride"
+              ]
+            },
             "AnnotateAssessment": {
               "methods": [
                 "AnnotateAssessment"

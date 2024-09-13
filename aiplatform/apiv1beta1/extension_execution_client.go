@@ -68,6 +68,7 @@ func defaultExtensionExecutionGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -359,6 +360,7 @@ func defaultExtensionExecutionRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1391,11 +1393,11 @@ func (c *extensionExecutionRESTClient) WaitOperation(ctx context.Context, req *l
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

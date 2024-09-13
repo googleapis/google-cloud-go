@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/chat/apiv1",
-    "version": "0.3.0",
+    "version": "0.5.0",
     "language": "GO",
     "apis": [
       {
@@ -1005,6 +1005,52 @@
         "method": {
           "shortName": "ListSpaces",
           "fullName": "google.chat.v1.ChatService.ListSpaces",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_SearchSpaces_sync",
+      "title": "chat SearchSpaces Sample",
+      "description": "SearchSpaces returns a list of spaces in a Google Workspace organization based on an\nadministrator's search. Requires [user\nauthentication with administrator\nprivileges](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges).\nIn the request, set `use_admin_access` to `true`.",
+      "file": "Client/SearchSpaces/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchSpaces",
+        "fullName": "google.chat.v1.Client.SearchSpaces",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.SearchSpacesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SpaceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "SearchSpaces",
+          "fullName": "google.chat.v1.ChatService.SearchSpaces",
           "service": {
             "shortName": "ChatService",
             "fullName": "google.chat.v1.ChatService"

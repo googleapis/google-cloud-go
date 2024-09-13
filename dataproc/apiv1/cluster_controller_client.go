@@ -1078,21 +1078,21 @@ func (c *clusterControllerRESTClient) UpdateCluster(ctx context.Context, req *da
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetGracefulDecommissionTimeout() != nil {
-		gracefulDecommissionTimeout, err := protojson.Marshal(req.GetGracefulDecommissionTimeout())
+		field, err := protojson.Marshal(req.GetGracefulDecommissionTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("gracefulDecommissionTimeout", string(gracefulDecommissionTimeout[1:len(gracefulDecommissionTimeout)-1]))
+		params.Add("gracefulDecommissionTimeout", string(field[1:len(field)-1]))
 	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

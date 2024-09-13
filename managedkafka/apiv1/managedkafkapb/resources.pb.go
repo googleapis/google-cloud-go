@@ -706,7 +706,7 @@ type ConsumerPartitionMetadata struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The offset for this partition, or 0 if no offset has been
+	// Required. The current offset for this partition, or 0 if no offset has been
 	// committed.
 	Offset int64 `protobuf:"varint,1,opt,name=offset,proto3" json:"offset,omitempty"`
 	// Optional. The associated metadata for this partition, or empty if it does

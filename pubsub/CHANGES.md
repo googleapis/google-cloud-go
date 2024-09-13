@@ -1,5 +1,47 @@
 # Changes
 
+## [1.43.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.42.0...pubsub/v1.43.0) (2024-09-09)
+
+
+### Features
+
+* **pubsub:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **pubsub:** Allow trace extraction from protobuf message ([#10827](https://github.com/googleapis/google-cloud-go/issues/10827)) ([caa826c](https://github.com/googleapis/google-cloud-go/commit/caa826cea826473ebf4c806b57b0c3b0a2f0f365))
+
+
+### Bug Fixes
+
+* **pubsub:** Add attributes before startSpan ([#10800](https://github.com/googleapis/google-cloud-go/issues/10800)) ([48addbf](https://github.com/googleapis/google-cloud-go/commit/48addbff725ee2bb226ce0ab926415c27fd4ffad))
+* **pubsub:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+* **pubsub:** Close grpc streams on retry ([#10624](https://github.com/googleapis/google-cloud-go/issues/10624)) ([79a0e11](https://github.com/googleapis/google-cloud-go/commit/79a0e118c88190cbe1b56250a75b67bd98b0d7f2))
+
+## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.41.0...pubsub/v1.42.0) (2024-08-19)
+
+
+### Features
+
+* **pubsub:** Add opentelemetry tracing support ([#10709](https://github.com/googleapis/google-cloud-go/issues/10709)) ([bbd3366](https://github.com/googleapis/google-cloud-go/commit/bbd3366b01afc28c6137668c29d2895738ed849d))
+
+
+### Bug Fixes
+
+* **pubsub:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.40.0...pubsub/v1.41.0) (2024-08-01)
+
+
+### Features
+
+* **pubsub/pstest:** Add Message.Topic field and populate on publish ([#10510](https://github.com/googleapis/google-cloud-go/issues/10510)) ([01bf051](https://github.com/googleapis/google-cloud-go/commit/01bf0519093f2e9d6a579bcb312004eba0fbd895))
+* **pubsub:** Add max messages batching for Cloud Storage subscriptions ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+
+
+### Bug Fixes
+
+* **pubsub:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **pubsub:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+* **pubsub:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.39.0...pubsub/v1.40.0) (2024-06-26)
 
 

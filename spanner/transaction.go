@@ -776,7 +776,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 	}()
 	// Retry the BeginTransaction call if a 'Session not found' is returned.
 	for {
-		sh, err = t.sp.take(ctx)
+		sh, err = t.sp.takeMultiplexed(ctx)
 		if err != nil {
 			return err
 		}
@@ -866,7 +866,7 @@ func (t *ReadOnlyTransaction) acquireSingleUse(ctx context.Context) (*sessionHan
 				},
 			},
 		}
-		sh, err := t.sp.take(ctx)
+		sh, err := t.sp.takeMultiplexed(ctx)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -1859,6 +1859,8 @@ type writeOnlyTransaction struct {
 	// current transaction from the allowed tracking change streams with DDL option
 	// allow_txn_exclusion=true.
 	excludeTxnFromChangeStreams bool
+	// commitOptions are applied to the Commit request for the writeOnlyTransaction..
+	commitOptions CommitOptions
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1883,6 +1885,11 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 		return ts, err
 	}
 
+	var maxCommitDelay *durationpb.Duration
+	if t.commitOptions.MaxCommitDelay != nil {
+		maxCommitDelay = durationpb.New(*(t.commitOptions.MaxCommitDelay))
+	}
+
 	// Make a retryer for Aborted and certain Internal errors.
 	retryer := onCodes(DefaultRetryBackoff, codes.Aborted, codes.Internal)
 	// Apply the mutation and retry if the commit is aborted.
@@ -1890,7 +1897,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 		for {
 			if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 				// No usable session for doing the commit, take one from pool.
-				sh, err = t.sp.take(ctx)
+				sh, err = t.sp.takeMultiplexed(ctx)
 				if err != nil {
 					// sessionPool.Take already retries for session
 					// creations/retrivals.
@@ -1910,8 +1917,10 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 				},
 				Mutations:      mPb,
 				RequestOptions: createRequestOptions(t.commitPriority, "", t.transactionTag),
+				MaxCommitDelay: maxCommitDelay,
 			})
 			if err != nil && !isAbortedErr(err) {
+				// should not be the case with multiplexed sessions
 				if isSessionNotFoundError(err) {
 					// Discard the bad session.
 					sh.destroy()

@@ -1,6 +1,27 @@
 # Changelog
 
 
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.3.0...netapp/v1.3.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **netapp:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.2.1...netapp/v1.3.0) (2024-08-20)
+
+
+### Features
+
+* **netapp:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.2.0...netapp/v1.2.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **netapp:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.1.4...netapp/v1.2.0) (2024-08-01)
 
 

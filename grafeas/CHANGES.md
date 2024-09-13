@@ -1,5 +1,19 @@
 # Changes
 
+## [0.3.11](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.10...grafeas/v0.3.11) (2024-09-12)
+
+
+### Bug Fixes
+
+* **grafeas:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [0.3.10](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.9...grafeas/v0.3.10) (2024-08-08)
+
+
+### Bug Fixes
+
+* **grafeas:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [0.3.9](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.8...grafeas/v0.3.9) (2024-07-24)
 
 
