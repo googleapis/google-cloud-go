@@ -24,6 +24,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net"
 	"net/http"
 	"net/url"
@@ -31,6 +32,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/googleapis/gax-go/v2/clog"
 )
 
 const (
@@ -60,7 +63,20 @@ var (
 	instID  = &cachedValue{k: "instance/id", trim: true}
 )
 
-var defaultClient = &Client{hc: newDefaultHTTPClient()}
+var (
+	once                  sync.Once
+	defaultMetadataClient *Client
+)
+
+func defaultClient() *Client {
+	once.Do(func() {
+		defaultMetadataClient = &Client{
+			hc:     newDefaultHTTPClient(),
+			logger: clog.New(),
+		}
+	})
+	return defaultMetadataClient
+}
 
 func newDefaultHTTPClient() *http.Client {
 	return &http.Client{
@@ -193,84 +209,84 @@ func testOnGCE() bool {
 //
 // Deprecated: Please use the context aware variant [SubscribeWithContext].
 func Subscribe(suffix string, fn func(v string, ok bool) error) error {
-	return defaultClient.SubscribeWithContext(context.Background(), suffix, func(ctx context.Context, v string, ok bool) error { return fn(v, ok) })
+	return defaultClient().SubscribeWithContext(context.Background(), suffix, func(ctx context.Context, v string, ok bool) error { return fn(v, ok) })
 }
 
 // SubscribeWithContext calls Client.SubscribeWithContext on the default client.
 func SubscribeWithContext(ctx context.Context, suffix string, fn func(ctx context.Context, v string, ok bool) error) error {
-	return defaultClient.SubscribeWithContext(ctx, suffix, fn)
+	return defaultClient().SubscribeWithContext(ctx, suffix, fn)
 }
 
 // Get calls Client.GetWithContext on the default client.
 //
 // Deprecated: Please use the context aware variant [GetWithContext].
 func Get(suffix string) (string, error) {
-	return defaultClient.GetWithContext(context.Background(), suffix)
+	return defaultClient().GetWithContext(context.Background(), suffix)
 }
 
 // GetWithContext calls Client.GetWithContext on the default client.
 func GetWithContext(ctx context.Context, suffix string) (string, error) {
-	return defaultClient.GetWithContext(ctx, suffix)
+	return defaultClient().GetWithContext(ctx, suffix)
 }
 
 // ProjectID returns the current instance's project ID string.
 //
 // Deprecated: Please use the context aware variant [ProjectIDWithContext].
 func ProjectID() (string, error) {
-	return defaultClient.ProjectIDWithContext(context.Background())
+	return defaultClient().ProjectIDWithContext(context.Background())
 }
 
 // ProjectIDWithContext returns the current instance's project ID string.
 func ProjectIDWithContext(ctx context.Context) (string, error) {
-	return defaultClient.ProjectIDWithContext(ctx)
+	return defaultClient().ProjectIDWithContext(ctx)
 }
 
 // NumericProjectID returns the current instance's numeric project ID.
 //
 // Deprecated: Please use the context aware variant [NumericProjectIDWithContext].
 func NumericProjectID() (string, error) {
-	return defaultClient.NumericProjectIDWithContext(context.Background())
+	return defaultClient().NumericProjectIDWithContext(context.Background())
 }
 
 // NumericProjectIDWithContext returns the current instance's numeric project ID.
 func NumericProjectIDWithContext(ctx context.Context) (string, error) {
-	return defaultClient.NumericProjectIDWithContext(ctx)
+	return defaultClient().NumericProjectIDWithContext(ctx)
 }
 
 // InternalIP returns the instance's primary internal IP address.
 //
 // Deprecated: Please use the context aware variant [InternalIPWithContext].
 func InternalIP() (string, error) {
-	return defaultClient.InternalIPWithContext(context.Background())
+	return defaultClient().InternalIPWithContext(context.Background())
 }
 
 // InternalIPWithContext returns the instance's primary internal IP address.
 func InternalIPWithContext(ctx context.Context) (string, error) {
-	return defaultClient.InternalIPWithContext(ctx)
+	return defaultClient().InternalIPWithContext(ctx)
 }
 
 // ExternalIP returns the instance's primary external (public) IP address.
 //
 // Deprecated: Please use the context aware variant [ExternalIPWithContext].
 func ExternalIP() (string, error) {
-	return defaultClient.ExternalIPWithContext(context.Background())
+	return defaultClient().ExternalIPWithContext(context.Background())
 }
 
 // ExternalIPWithContext returns the instance's primary external (public) IP address.
 func ExternalIPWithContext(ctx context.Context) (string, error) {
-	return defaultClient.ExternalIPWithContext(ctx)
+	return defaultClient().ExternalIPWithContext(ctx)
 }
 
 // Email calls Client.EmailWithContext on the default client.
 //
 // Deprecated: Please use the context aware variant [EmailWithContext].
 func Email(serviceAccount string) (string, error) {
-	return defaultClient.EmailWithContext(context.Background(), serviceAccount)
+	return defaultClient().EmailWithContext(context.Background(), serviceAccount)
 }
 
 // EmailWithContext calls Client.EmailWithContext on the default client.
 func EmailWithContext(ctx context.Context, serviceAccount string) (string, error) {
-	return defaultClient.EmailWithContext(ctx, serviceAccount)
+	return defaultClient().EmailWithContext(ctx, serviceAccount)
 }
 
 // Hostname returns the instance's hostname. This will be of the form
@@ -278,13 +294,13 @@ func EmailWithContext(ctx context.Context, serviceAccount string) (string, error
 //
 // Deprecated: Please use the context aware variant [HostnameWithContext].
 func Hostname() (string, error) {
-	return defaultClient.HostnameWithContext(context.Background())
+	return defaultClient().HostnameWithContext(context.Background())
 }
 
 // HostnameWithContext returns the instance's hostname. This will be of the form
 // "<instanceID>.c.<projID>.internal".
 func HostnameWithContext(ctx context.Context) (string, error) {
-	return defaultClient.HostnameWithContext(ctx)
+	return defaultClient().HostnameWithContext(ctx)
 }
 
 // InstanceTags returns the list of user-defined instance tags,
@@ -292,109 +308,109 @@ func HostnameWithContext(ctx context.Context) (string, error) {
 //
 // Deprecated: Please use the context aware variant [InstanceTagsWithContext].
 func InstanceTags() ([]string, error) {
-	return defaultClient.InstanceTagsWithContext(context.Background())
+	return defaultClient().InstanceTagsWithContext(context.Background())
 }
 
 // InstanceTagsWithContext returns the list of user-defined instance tags,
 // assigned when initially creating a GCE instance.
 func InstanceTagsWithContext(ctx context.Context) ([]string, error) {
-	return defaultClient.InstanceTagsWithContext(ctx)
+	return defaultClient().InstanceTagsWithContext(ctx)
 }
 
 // InstanceID returns the current VM's numeric instance ID.
 //
 // Deprecated: Please use the context aware variant [InstanceIDWithContext].
 func InstanceID() (string, error) {
-	return defaultClient.InstanceIDWithContext(context.Background())
+	return defaultClient().InstanceIDWithContext(context.Background())
 }
 
 // InstanceIDWithContext returns the current VM's numeric instance ID.
 func InstanceIDWithContext(ctx context.Context) (string, error) {
-	return defaultClient.InstanceIDWithContext(ctx)
+	return defaultClient().InstanceIDWithContext(ctx)
 }
 
 // InstanceName returns the current VM's instance ID string.
 //
 // Deprecated: Please use the context aware variant [InstanceNameWithContext].
 func InstanceName() (string, error) {
-	return defaultClient.InstanceNameWithContext(context.Background())
+	return defaultClient().InstanceNameWithContext(context.Background())
 }
 
 // InstanceNameWithContext returns the current VM's instance ID string.
 func InstanceNameWithContext(ctx context.Context) (string, error) {
-	return defaultClient.InstanceNameWithContext(ctx)
+	return defaultClient().InstanceNameWithContext(ctx)
 }
 
 // Zone returns the current VM's zone, such as "us-central1-b".
 //
 // Deprecated: Please use the context aware variant [ZoneWithContext].
 func Zone() (string, error) {
-	return defaultClient.ZoneWithContext(context.Background())
+	return defaultClient().ZoneWithContext(context.Background())
 }
 
 // ZoneWithContext returns the current VM's zone, such as "us-central1-b".
 func ZoneWithContext(ctx context.Context) (string, error) {
-	return defaultClient.ZoneWithContext(ctx)
+	return defaultClient().ZoneWithContext(ctx)
 }
 
 // InstanceAttributes calls Client.InstanceAttributesWithContext on the default client.
 //
 // Deprecated: Please use the context aware variant [InstanceAttributesWithContext.
 func InstanceAttributes() ([]string, error) {
-	return defaultClient.InstanceAttributesWithContext(context.Background())
+	return defaultClient().InstanceAttributesWithContext(context.Background())
 }
 
 // InstanceAttributesWithContext calls Client.ProjectAttributesWithContext on the default client.
 func InstanceAttributesWithContext(ctx context.Context) ([]string, error) {
-	return defaultClient.InstanceAttributesWithContext(ctx)
+	return defaultClient().InstanceAttributesWithContext(ctx)
 }
 
 // ProjectAttributes calls Client.ProjectAttributesWithContext on the default client.
 //
 // Deprecated: Please use the context aware variant [ProjectAttributesWithContext].
 func ProjectAttributes() ([]string, error) {
-	return defaultClient.ProjectAttributesWithContext(context.Background())
+	return defaultClient().ProjectAttributesWithContext(context.Background())
 }
 
 // ProjectAttributesWithContext calls Client.ProjectAttributesWithContext on the default client.
 func ProjectAttributesWithContext(ctx context.Context) ([]string, error) {
-	return defaultClient.ProjectAttributesWithContext(ctx)
+	return defaultClient().ProjectAttributesWithContext(ctx)
 }
 
 // InstanceAttributeValue calls Client.InstanceAttributeValueWithContext on the default client.
 //
 // Deprecated: Please use the context aware variant [InstanceAttributeValueWithContext].
 func InstanceAttributeValue(attr string) (string, error) {
-	return defaultClient.InstanceAttributeValueWithContext(context.Background(), attr)
+	return defaultClient().InstanceAttributeValueWithContext(context.Background(), attr)
 }
 
 // InstanceAttributeValueWithContext calls Client.InstanceAttributeValueWithContext on the default client.
 func InstanceAttributeValueWithContext(ctx context.Context, attr string) (string, error) {
-	return defaultClient.InstanceAttributeValueWithContext(ctx, attr)
+	return defaultClient().InstanceAttributeValueWithContext(ctx, attr)
 }
 
 // ProjectAttributeValue calls Client.ProjectAttributeValueWithContext on the default client.
 //
 // Deprecated: Please use the context aware variant [ProjectAttributeValueWithContext].
 func ProjectAttributeValue(attr string) (string, error) {
-	return defaultClient.ProjectAttributeValueWithContext(context.Background(), attr)
+	return defaultClient().ProjectAttributeValueWithContext(context.Background(), attr)
 }
 
 // ProjectAttributeValueWithContext calls Client.ProjectAttributeValueWithContext on the default client.
 func ProjectAttributeValueWithContext(ctx context.Context, attr string) (string, error) {
-	return defaultClient.ProjectAttributeValueWithContext(ctx, attr)
+	return defaultClient().ProjectAttributeValueWithContext(ctx, attr)
 }
 
 // Scopes calls Client.ScopesWithContext on the default client.
 //
 // Deprecated: Please use the context aware variant [ScopesWithContext].
 func Scopes(serviceAccount string) ([]string, error) {
-	return defaultClient.ScopesWithContext(context.Background(), serviceAccount)
+	return defaultClient().ScopesWithContext(context.Background(), serviceAccount)
 }
 
 // ScopesWithContext calls Client.ScopesWithContext on the default client.
 func ScopesWithContext(ctx context.Context, serviceAccount string) ([]string, error) {
-	return defaultClient.ScopesWithContext(ctx, serviceAccount)
+	return defaultClient().ScopesWithContext(ctx, serviceAccount)
 }
 
 func strsContains(ss []string, s string) bool {
@@ -408,17 +424,21 @@ func strsContains(ss []string, s string) bool {
 
 // A Client provides metadata.
 type Client struct {
-	hc *http.Client
+	hc     *http.Client
+	logger *slog.Logger
 }
 
 // NewClient returns a Client that can be used to fetch metadata.
 // Returns the client that uses the specified http.Client for HTTP requests.
-// If nil is specified, returns the default client.
+// If nil is specified, returns a default client.
 func NewClient(c *http.Client) *Client {
 	if c == nil {
-		return defaultClient
+		return defaultClient()
 	}
-	return &Client{hc: c}
+	return &Client{
+		hc:     c,
+		logger: clog.New(),
+	}
 }
 
 // getETag returns a value from the metadata service as well as the associated ETag.
@@ -448,12 +468,23 @@ func (c *Client) getETag(ctx context.Context, suffix string) (value, etag string
 	req.Header.Set("User-Agent", userAgent)
 	var res *http.Response
 	var reqErr error
+	var body []byte
 	retryer := newRetryer()
 	for {
+		c.logger.Log(ctx, clog.DynamicLevel(), "metadata request", "request", clog.HTTPRequest(req, nil))
 		res, reqErr = c.hc.Do(req)
 		var code int
 		if res != nil {
 			code = res.StatusCode
+		}
+		if res != nil {
+			body, err = io.ReadAll(res.Body)
+			if err != nil {
+				res.Body.Close()
+				return "", "", err
+			}
+			c.logger.Log(ctx, clog.DynamicLevel(), "metadata response", "response", clog.HTTPResponse(res, body))
+			res.Body.Close()
 		}
 		if delay, shouldRetry := retryer.Retry(code, reqErr); shouldRetry {
 			if err := sleep(ctx, delay); err != nil {
@@ -466,18 +497,13 @@ func (c *Client) getETag(ctx context.Context, suffix string) (value, etag string
 	if reqErr != nil {
 		return "", "", reqErr
 	}
-	defer res.Body.Close()
 	if res.StatusCode == http.StatusNotFound {
 		return "", "", NotDefinedError(suffix)
 	}
-	all, err := io.ReadAll(res.Body)
-	if err != nil {
-		return "", "", err
-	}
 	if res.StatusCode != 200 {
-		return "", "", &Error{Code: res.StatusCode, Message: string(all)}
+		return "", "", &Error{Code: res.StatusCode, Message: string(body)}
 	}
-	return string(all), res.Header.Get("Etag"), nil
+	return string(body), res.Header.Get("Etag"), nil
 }
 
 // Get returns a value from the metadata service.
