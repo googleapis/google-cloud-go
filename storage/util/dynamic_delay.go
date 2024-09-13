@@ -18,26 +18,25 @@ import (
 	"fmt"
 	"math"
 	"sync"
+	"time"
 )
 
-type MetricType int64
-
-// DynamicPercentile dynamically calculates the delay at a fixed percentile, based on
-// provided sample metricx.
+// Delay dynamically calculates the delay at a fixed percentile, based on
+// delay samples.
 //
-// DynamicPercentile is goroutine-safe.
-type DynamicPercentile struct {
+// Delay is goroutine-safe.
+type Delay struct {
 	increaseFactor float64
 	decreaseFactor float64
-	min            MetricType
-	max            MetricType
-	value          MetricType
+	minDelay       time.Duration
+	maxDelay       time.Duration
+	value          time.Duration
 
 	// Guards the value
 	mu *sync.RWMutex
 }
 
-// NewDynamicPercentile returns a DynamicPercentile.
+// NewDelay returns a Delay.
 //
 // targetPercentile is the desired percentile to be computed. For example, a
 // targetPercentile of 0.99 computes the delay at the 99th percentile. Must be
@@ -46,25 +45,25 @@ type DynamicPercentile struct {
 // increaseRate (must be > 0) determines how many Increase calls it takes for
 // Value to double.
 //
-// start is the start value of the delay.
+// initialDelay is the start value of the delay.
 //
-// Decrease can never lower the delay past min, Increase can never raise
-// the delay past max.
-func NewDynamicPercentile(targetPercentile float64, increaseRate float64, startVal, minVal, maxVal MetricType) (*DynamicPercentile, error) {
+// Decrease can never lower the delay past minDelay, Increase can never raise
+// the delay past maxDelay.
+func NewDelay(targetPercentile float64, increaseRate float64, initialDelay, minDelay, maxDelay time.Duration) (*Delay, error) {
 	if targetPercentile < 0 || targetPercentile > 1 {
 		return nil, fmt.Errorf("invalid targetPercentile (%v): must be within [0, 1]", targetPercentile)
 	}
 	if increaseRate <= 0 {
 		return nil, fmt.Errorf("invalid increaseRate (%v): must be > 0", increaseRate)
 	}
-	if minVal >= maxVal {
-		return nil, fmt.Errorf("invalid min (%v) and max (%v) combination: min must be smaller than max", minVal, maxVal)
+	if minDelay >= maxDelay {
+		return nil, fmt.Errorf("invalid minDelay (%v) and maxDelay (%v) combination: minDelay must be smaller than maxDelay", minDelay, maxDelay)
 	}
-	if startVal < minVal {
-		startVal = minVal
+	if initialDelay < minDelay {
+		initialDelay = minDelay
 	}
-	if startVal > maxVal {
-		startVal = maxVal
+	if initialDelay > maxDelay {
+		initialDelay = maxDelay
 	}
 
 	// Compute increaseFactor and decreaseFactor such that:
@@ -78,79 +77,79 @@ func NewDynamicPercentile(targetPercentile float64, increaseRate float64, startV
 		decreaseFactor = 0.9999
 	}
 
-	return &DynamicPercentile{
+	return &Delay{
 		increaseFactor: increaseFactor,
 		decreaseFactor: decreaseFactor,
-		min:            minVal,
-		max:            maxVal,
-		value:          startVal,
+		minDelay:       minDelay,
+		maxDelay:       maxDelay,
+		value:          initialDelay,
 		mu:             &sync.RWMutex{},
 	}, nil
 }
 
-func (dp *DynamicPercentile) increase() {
-	v := MetricType(float64(dp.value) * dp.increaseFactor)
-	if v > dp.max {
-		dp.value = dp.max
+func (d *Delay) increase() {
+	v := time.Duration(float64(d.value) * d.increaseFactor)
+	if v > d.maxDelay {
+		d.value = d.maxDelay
 	} else {
-		dp.value = v
+		d.value = v
 	}
 }
 
 // Increase notes that the operation took longer than the delay returned by Value.
-func (dp *DynamicPercentile) Increase() {
-	dp.mu.Lock()
-	defer dp.mu.Unlock()
+func (d *Delay) Increase() {
+	d.mu.Lock()
+	defer d.mu.Unlock()
 
-	dp.increase()
+	d.increase()
 }
 
-func (dp *DynamicPercentile) decrease() {
-	v := MetricType(float64(dp.value) * dp.decreaseFactor)
-	if v < dp.min {
-		dp.value = dp.min
+func (d *Delay) decrease() {
+	v := time.Duration(float64(d.value) * d.decreaseFactor)
+	if v < d.minDelay {
+		d.value = d.minDelay
 	} else {
-		dp.value = v
+		d.value = v
 	}
 }
 
 // Decrease notes that the operation completed before the delay returned by Value.
-func (dp *DynamicPercentile) Decrease() {
-	dp.mu.Lock()
-	defer dp.mu.Unlock()
+func (d *Delay) Decrease() {
+	d.mu.Lock()
+	defer d.mu.Unlock()
 
-	dp.decrease()
+	d.decrease()
 }
 
 // Update notes that the RPC either took longer than the delay or completed
 // before the delay, depending on the specified latency.
-func (dp *DynamicPercentile) Update(latency MetricType) {
-	dp.mu.Lock()
-	defer dp.mu.Unlock()
+func (d *Delay) Update(latency time.Duration) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
 
-	if latency > dp.value {
-		dp.increase()
+	if latency > d.value {
+		d.increase()
 	} else {
-		dp.decrease()
+		d.decrease()
 	}
 }
 
-// Value returns the approximate percentile (given) of all the previously given samples.
-func (dp *DynamicPercentile) Value() MetricType {
-	dp.mu.RLock()
-	defer dp.mu.RUnlock()
+// Value returns the desired delay to wait before retry the operation.
+func (d *Delay) Value() time.Duration {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 
-	return dp.value
+	return d.value
 }
 
-// PrintDynamicPercentile prints the state of delay, helpful in debugging.
-func (dp *DynamicPercentile) PrintDynamicPercentile() {
-	dp.mu.RLock()
-	defer dp.mu.RUnlock()
+// PrintDelay prints the state of delay, helpful in debugging.
+func (d *Delay) PrintDelay() {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 
-	fmt.Println("IncreaseFactor: ", dp.increaseFactor)
-	fmt.Println("DecreaseFactor: ", dp.decreaseFactor)
-	fmt.Println("Min: ", dp.min)
-	fmt.Println("Max: ", dp.max)
-	fmt.Println("Value: ", dp.value)
+	fmt.Println("IncreaseFactor: ", d.increaseFactor)
+	fmt.Println("DecreaseFactor: ", d.decreaseFactor)
+	fmt.Println("MinDelay: ", d.minDelay)
+	fmt.Println("MaxDelay: ", d.maxDelay)
+	fmt.Println("Value: ", d.value)
 }
