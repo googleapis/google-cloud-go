@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.14.0...contactcenterinsights/v1.14.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.7...contactcenterinsights/v1.14.0) (2024-08-20)
 
 

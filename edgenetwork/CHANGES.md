@@ -2,6 +2,18 @@
 
 
 
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v1.2.0...edgenetwork/v1.2.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **edgenetwork:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+
+### Documentation
+
+* **edgenetwork:** Swap comments on `BONDED` and `NON_BONDED` enums in `BondingType` ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v1.1.3...edgenetwork/v1.2.0) (2024-08-20)
 
 
