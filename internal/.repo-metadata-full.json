@@ -1392,7 +1392,7 @@
   "cloud.google.com/go/gkemulticloud/apiv1": {
     "api_shortname": "gkemulticloud",
     "distribution_name": "cloud.google.com/go/gkemulticloud/apiv1",
-    "description": "Anthos Multi-Cloud API",
+    "description": "GKE Multi-Cloud API",
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/gkemulticloud/latest/apiv1",
