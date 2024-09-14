@@ -21,14 +21,13 @@
 package gkemulticloudpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -843,7 +842,7 @@ type AzureProxyConfig struct {
 	//
 	// The secret must be a JSON encoded proxy configuration
 	// as described in
-	// https://cloud.google.com/anthos/clusters/docs/multi-cloud/azure/how-to/use-a-proxy#create_a_proxy_configuration_file
+	// https://cloud.google.com/kubernetes-engine/multi-cloud/docs/azure/how-to/use-a-proxy#create_a_proxy_configuration_file
 	//
 	// Secret ids are formatted as
 	// `https://<key-vault-name>.vault.azure.net/secrets/<secret-name>/<secret-version>`.
