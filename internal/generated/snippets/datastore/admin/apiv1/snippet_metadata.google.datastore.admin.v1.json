@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datastore/admin/apiv1",
-    "version": "$VERSION",
+    "version": "1.19.0",
     "language": "GO",
     "apis": [
       {
