@@ -66,7 +66,7 @@ func TestMain(m *testing.M) {
 }
 
 // Lists the all the objects in the bucket.
-func TestIntegration_NextBatch(t *testing.T) {
+func TestIntegration_NextBatch_All(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -89,6 +89,47 @@ func TestIntegration_NextBatch(t *testing.T) {
 
 	if len(objects) != len(httpTestBucket.objects) {
 		t.Errorf("expected to receive %d results, got %d results", len(httpTestBucket.objects), len(objects))
+	}
+}
+
+func TestIntegration_NextBatch(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	const landsatBucket = "gcp-public-data-landsat"
+	const landsatPrefix = "LC08/01/001/00"
+	wantObjects := 17225
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+
+	in := &ListerInput{
+		BucketName: landsatBucket,
+		Query:      storage.Query{Prefix: landsatPrefix},
+		BatchSize:  2000,
+	}
+
+	df := NewLister(c, in)
+	defer df.Close()
+	totalObjects := 0
+	for {
+		objects, err := df.NextBatch(ctx)
+		if err != nil && err != iterator.Done {
+			t.Errorf("df.NextBatch : %v", err)
+		}
+		totalObjects += len(objects)
+		if err == iterator.Done {
+			break
+		}
+		if len(objects) > in.BatchSize {
+			t.Errorf("expected to receive %d objects in each batch, got %d objects in a batch", in.BatchSize, len(objects))
+		}
+	}
+	if totalObjects != wantObjects {
+		t.Errorf("expected to receive %d objects in results, got %d objects in results", wantObjects, totalObjects)
+
 	}
 }
 

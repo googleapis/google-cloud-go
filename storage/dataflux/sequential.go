@@ -17,7 +17,6 @@ package dataflux
 import (
 	"context"
 	"fmt"
-	"math"
 	"strings"
 
 	"cloud.google.com/go/storage"
@@ -26,7 +25,7 @@ import (
 
 const (
 	// defaultPageSize specifies the number of object results to include on a single page.
-	defaultPageSize = 5000
+	defaultPageSize = 2000
 )
 
 // sequentialListing performs a sequential listing on the given bucket.
@@ -34,39 +33,43 @@ const (
 // If the next token is empty, then listing is complete.
 func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs, string, error) {
 	var result []*storage.ObjectAttrs
-
+	var objectsListed int
+	var lastToken string
 	objectIterator := c.bucket.Objects(ctx, &c.query)
+	objectIterator.PageInfo().Token = c.pageToken
+	objectIterator.PageInfo().MaxSize = defaultPageSize
 
-	var numObject int
-	if c.batchSize < defaultPageSize {
-		numObject = defaultPageSize
-	} else {
-		numObject = int(math.Floor(float64(c.batchSize)/float64(defaultPageSize))) * defaultPageSize
-	}
-
-	pageInfo := objectIterator.PageInfo()
-	pageInfo.MaxSize = defaultPageSize
-	pageInfo.Token = c.pageToken
-
-	i := 0
 	for {
-		// If page size is set, then stop listing after numPageRequest.
-		if c.batchSize > 0 && i >= numObject {
+		nextToken, err := doListing(objectIterator, &result, c.skipDirectoryObjects, &objectsListed)
+		if err != nil {
+			return nil, "", fmt.Errorf("failed while listing objects: %w", err)
+		}
+		lastToken = nextToken
+		if nextToken == "" || (c.batchSize > 0 && objectsListed >= c.batchSize) {
 			break
 		}
-		i++
+		c.pageToken = nextToken
+	}
+	return result, lastToken, nil
+}
 
+func doListing(objectIterator *storage.ObjectIterator, result *[]*storage.ObjectAttrs, skipDirectoryObjects bool, objectsListed *int) (string, error) {
+	for {
 		attrs, err := objectIterator.Next()
-		// When last item for the assigned range is listed, then stop listing.
+		*objectsListed++
+		// Stop listing when all the requested objects have been listed.
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
-			return nil, "", fmt.Errorf("iterating through objects %w", err)
+			return "", fmt.Errorf("iterating through objects %w", err)
 		}
-		if !(c.skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
-			result = append(result, attrs)
+		if !(skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
+			*result = append(*result, attrs)
+		}
+		if objectIterator.PageInfo().Remaining() == 0 {
+			break
 		}
 	}
-	return result, objectIterator.PageInfo().Token, nil
+	return objectIterator.PageInfo().Token, nil
 }
