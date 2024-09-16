@@ -6280,11 +6280,11 @@ func blackholeOrAllowDirectPath(t *testing.T, blackholeDP bool) {
 		if blackholeDP {
 			cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
 			out, _ := cmdRes.CombinedOutput()
-			t.Logf(string(out))
+			t.Log(string(out))
 		} else {
 			cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
 			out, _ := cmdRes.CombinedOutput()
-			t.Logf(string(out))
+			t.Log(string(out))
 		}
 		return
 	}
@@ -6292,17 +6292,17 @@ func blackholeOrAllowDirectPath(t *testing.T, blackholeDP bool) {
 	if blackholeDP {
 		cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
 		out, _ := cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		t.Log(string(out))
 		cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
 		out, _ = cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		t.Log(string(out))
 	} else {
 		cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
 		out, _ := cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		t.Log(string(out))
 		cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
 		out, _ = cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		t.Log(string(out))
 	}
 }
 
