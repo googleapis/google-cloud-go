@@ -1068,7 +1068,6 @@ func (x *EffectiveTagDetails) GetEffectiveTags() []*Tag {
 }
 
 // A result of Resource Search, containing information of a cloud resource.
-// Next ID: 34
 type ResourceSearchResult struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1147,8 +1146,8 @@ type ResourceSearchResult struct {
 	// * Use a field query. Example: `location:us-west*`
 	// * Use a free text query. Example: `us-west*`
 	Location string `protobuf:"bytes,6,opt,name=location,proto3" json:"location,omitempty"`
-	// Labels associated with this resource. See [Labelling and grouping Google
-	// Cloud
+	// User labels associated with this resource. See [Labelling and grouping
+	// Google Cloud
 	// resources](https://cloud.google.com/blog/products/gcp/labelling-and-grouping-your-google-cloud-platform-resources)
 	// for more information. This field is available only when the resource's
 	// Protobuf contains it.

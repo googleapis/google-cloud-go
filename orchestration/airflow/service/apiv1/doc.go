@@ -67,11 +67,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &servicepb.CreateEnvironmentRequest{
+//	req := &servicepb.CheckUpgradeRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#CreateEnvironmentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#CheckUpgradeRequest.
 //	}
-//	op, err := c.CreateEnvironment(ctx, req)
+//	op, err := c.CheckUpgrade(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

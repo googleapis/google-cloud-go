@@ -233,7 +233,7 @@ func (c *Client) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.Migr
 //	The maximum number of IP overrides per key is 100.
 //
 //	For any conflict (such as IP already exists or IP part of an existing
-//	IP range), an error will be returned.
+//	IP range), an error is returned.
 func (c *Client) AddIpOverride(ctx context.Context, req *recaptchaenterprisepb.AddIpOverrideRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.AddIpOverrideResponse, error) {
 	return c.internalClient.AddIpOverride(ctx, req, opts...)
 }
