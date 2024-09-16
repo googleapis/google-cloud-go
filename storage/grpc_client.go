@@ -1448,15 +1448,15 @@ func (c *grpcStorageClient) DeleteHMACKey(ctx context.Context, project string, a
 // Notification methods are not implemented in gRPC client.
 
 func (c *grpcStorageClient) ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (n map[string]*Notification, err error) {
-	return nil, fmt.Errorf("ListNotifications is not implemented")
+	return nil, errMethodNotSupported
 }
 
 func (c *grpcStorageClient) CreateNotification(ctx context.Context, bucket string, n *Notification, opts ...storageOption) (ret *Notification, err error) {
-	return nil, fmt.Errorf("CreateNotification is not implemented")
+	return nil, errMethodNotSupported
 }
 
 func (c *grpcStorageClient) DeleteNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (err error) {
-	return fmt.Errorf("DeleteNotification is not implemented")
+	return errMethodNotSupported
 }
 
 // setUserProjectMetadata appends a project ID to the outgoing Context metadata
