@@ -20,9 +20,9 @@ import (
 	"sync"
 	"time"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -400,6 +400,11 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 		rollbackErr := tx.rollbackWithRetry()
 		if rollbackErr != nil {
 			// Do not restart transaction if rollback failed
+			return nil, err
+		}
+
+		// If this is the last attempt, exit without delaying.
+		if n+1 == settings.attempts {
 			return nil, err
 		}
 

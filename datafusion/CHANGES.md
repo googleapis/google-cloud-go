@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/datafusion/v1.8.0...datafusion/v1.8.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **datafusion:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/datafusion/v1.7.12...datafusion/v1.8.0) (2024-08-20)
 
 

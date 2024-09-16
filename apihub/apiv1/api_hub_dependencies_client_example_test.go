@@ -26,23 +26,6 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
-func ExampleNewApiHubDependenciesClient() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubDependenciesClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	// TODO: Use client.
-	_ = c
-}
-
 func ExampleNewApiHubDependenciesRESTClient() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -67,7 +50,7 @@ func ExampleApiHubDependenciesClient_CreateDependency() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubDependenciesClient(ctx)
+	c, err := apihub.NewApiHubDependenciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -92,7 +75,7 @@ func ExampleApiHubDependenciesClient_DeleteDependency() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubDependenciesClient(ctx)
+	c, err := apihub.NewApiHubDependenciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -115,7 +98,7 @@ func ExampleApiHubDependenciesClient_GetDependency() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubDependenciesClient(ctx)
+	c, err := apihub.NewApiHubDependenciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -140,7 +123,7 @@ func ExampleApiHubDependenciesClient_ListDependencies() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubDependenciesClient(ctx)
+	c, err := apihub.NewApiHubDependenciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -177,7 +160,7 @@ func ExampleApiHubDependenciesClient_UpdateDependency() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubDependenciesClient(ctx)
+	c, err := apihub.NewApiHubDependenciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -202,7 +185,7 @@ func ExampleApiHubDependenciesClient_GetLocation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubDependenciesClient(ctx)
+	c, err := apihub.NewApiHubDependenciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -227,7 +210,7 @@ func ExampleApiHubDependenciesClient_ListLocations() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubDependenciesClient(ctx)
+	c, err := apihub.NewApiHubDependenciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -264,7 +247,7 @@ func ExampleApiHubDependenciesClient_CancelOperation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubDependenciesClient(ctx)
+	c, err := apihub.NewApiHubDependenciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -287,7 +270,7 @@ func ExampleApiHubDependenciesClient_DeleteOperation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubDependenciesClient(ctx)
+	c, err := apihub.NewApiHubDependenciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -310,7 +293,7 @@ func ExampleApiHubDependenciesClient_GetOperation() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubDependenciesClient(ctx)
+	c, err := apihub.NewApiHubDependenciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -335,7 +318,7 @@ func ExampleApiHubDependenciesClient_ListOperations() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewApiHubDependenciesClient(ctx)
+	c, err := apihub.NewApiHubDependenciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

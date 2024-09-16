@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/gkeconnect/gateway/apiv1",
+    "version": "0.8.10",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.gkeconnect.gateway.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "connectgateway_v1_generated_GatewayControl_GenerateCredentials_sync",
+      "title": "connectgateway GenerateCredentials Sample",
+      "description": "GenerateCredentials generateCredentials provides connection information that allows a user to\naccess the specified membership using Connect Gateway.",
+      "file": "GatewayControlClient/GenerateCredentials/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateCredentials",
+        "fullName": "google.cloud.gkeconnect.gateway.v1.GatewayControlClient.GenerateCredentials",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gatewaypb.GenerateCredentialsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gatewaypb.GenerateCredentialsResponse",
+        "client": {
+          "shortName": "GatewayControlClient",
+          "fullName": "google.cloud.gkeconnect.gateway.v1.GatewayControlClient"
+        },
+        "method": {
+          "shortName": "GenerateCredentials",
+          "fullName": "google.cloud.gkeconnect.gateway.v1.GatewayControl.GenerateCredentials",
+          "service": {
+            "shortName": "GatewayControl",
+            "fullName": "google.cloud.gkeconnect.gateway.v1.GatewayControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
