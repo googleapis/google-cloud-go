@@ -5335,7 +5335,7 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			gotErr := tt.test()
 			// convert the error to lower case because resource names are in lower case for PG dialect.
-			if gotErr != nil && strings.ToLower(gotErr.Error()) != strings.ToLower(tt.wantErr.Error()) {
+			if gotErr != nil && !strings.EqualFold(gotErr.Error(), tt.wantErr.Error()) {
 				t.Errorf("FKDC error=%v, wantErr: %v", gotErr, tt.wantErr)
 			} else {
 				tt.validate()
@@ -5628,7 +5628,7 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotErr := tt.test()
-			if gotErr != nil && strings.ToLower(gotErr.Error()) != strings.ToLower(tt.wantErr.Error()) {
+			if gotErr != nil && !strings.EqualFold(gotErr.Error(), tt.wantErr.Error()) {
 				t.Errorf("BIT REVERSED SEQUENECES error=%v, wantErr: %v", gotErr, tt.wantErr)
 			}
 		})
