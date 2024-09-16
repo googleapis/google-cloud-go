@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 
 	"cloud.google.com/go/vertexai/genai"
@@ -253,21 +254,25 @@ func TestCountTokensWithCorpora(t *testing.T) {
 		t.Fatalf("Failed to generate corpora: %v", err)
 	}
 
-	// Create channels for work distribution and results collection
-	corporaChan := make(chan corporaInfo)
-	doneChan := make(chan bool)
-
-	worker := func() {
-		for corpora := range corporaChan {
+	workerCountChan := make(chan int, 10)
+	var wg sync.WaitGroup
+	for _, corpora := range corporaFiles {
+		wg.Add(1)
+		go func(corpora corporaInfo) {
+			workerCountChan <- 1
+			defer func() {
+				<-workerCountChan
+				wg.Done()
+			}()
 			if ucr.shouldSkip(corpora.Name) {
-				fmt.Printf("Skipping file: %s\n", corpora.Name)
-				continue
+				log.Printf("Skipping file: %s\n", corpora.Name)
+				return
 			}
 
 			enc, found := ucr.getEncoding(corpora.Name)
 			if !found {
-				fmt.Printf("No encoding found for file: %s\n", corpora.Name)
-				continue
+				log.Printf("No encoding found for file: %s\n", corpora.Name)
+				return
 			}
 
 			decodedContent, err := decodeBytes(enc, corpora.Content)
@@ -286,22 +291,7 @@ func TestCountTokensWithCorpora(t *testing.T) {
 			if localNtoks.TotalTokens != remoteNtoks.TotalTokens {
 				t.Errorf("expected %d(remote count-token results), but got %d(local count-token results)", remoteNtoks, localNtoks)
 			}
-		}
-		doneChan <- true
+		}(corpora)
 	}
-
-	const numWorkers = 10
-	for i := 0; i < numWorkers; i++ {
-		go worker()
-	}
-
-	for _, corporaInfo := range corporaFiles {
-		corporaChan <- corporaInfo
-	}
-	close(corporaChan)
-
-	for i := 0; i < numWorkers; i++ {
-		<-doneChan
-	}
-
+	wg.Wait()
 }
