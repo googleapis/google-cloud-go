@@ -104,18 +104,6 @@ func toNotificationFromProto(pbn *storagepb.NotificationConfig) *Notification {
 	return n
 }
 
-func toProtoNotification(n *Notification) *storagepb.NotificationConfig {
-	return &storagepb.NotificationConfig{
-		Name: n.ID,
-		Topic: fmt.Sprintf("//pubsub.googleapis.com/projects/%s/topics/%s",
-			n.TopicProjectID, n.TopicID),
-		EventTypes:       n.EventTypes,
-		ObjectNamePrefix: n.ObjectNamePrefix,
-		CustomAttributes: n.CustomAttributes,
-		PayloadFormat:    n.PayloadFormat,
-	}
-}
-
 var topicRE = regexp.MustCompile(`^//pubsub\.googleapis\.com/projects/([^/]+)/topics/([^/]+)`)
 
 // parseNotificationTopic extracts the project and topic IDs from from the full
@@ -178,14 +166,6 @@ func notificationsToMap(rns []*raw.Notification) map[string]*Notification {
 	m := map[string]*Notification{}
 	for _, rn := range rns {
 		m[rn.Id] = toNotification(rn)
-	}
-	return m
-}
-
-func notificationsToMapFromProto(ns []*storagepb.NotificationConfig) map[string]*Notification {
-	m := map[string]*Notification{}
-	for _, n := range ns {
-		m[n.Name] = toNotificationFromProto(n)
 	}
 	return m
 }

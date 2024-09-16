@@ -1445,73 +1445,19 @@ func (c *grpcStorageClient) DeleteHMACKey(ctx context.Context, project string, a
 	}, s.retry, s.idempotent)
 }
 
-// Notification methods.
+// Notification methods are not implemented in gRPC client.
+// Use https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2
 
 func (c *grpcStorageClient) ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (n map[string]*Notification, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.ListNotifications")
-	defer func() { trace.EndSpan(ctx, err) }()
-
-	s := callSettings(c.settings, opts...)
-	if s.userProject != "" {
-		ctx = setUserProjectMetadata(ctx, s.userProject)
-	}
-	req := &storagepb.ListNotificationConfigsRequest{
-		Parent: bucketResourceName(globalProjectAlias, bucket),
-	}
-	var notifications []*storagepb.NotificationConfig
-	err = run(ctx, func(ctx context.Context) error {
-		gitr := c.raw.ListNotificationConfigs(ctx, req, s.gax...)
-		for {
-			// PageSize is not set and fallbacks to the API default pageSize of 100.
-			items, nextPageToken, err := gitr.InternalFetch(int(req.GetPageSize()), req.GetPageToken())
-			if err != nil {
-				return err
-			}
-			notifications = append(notifications, items...)
-			// If there are no more results, nextPageToken is empty and err is nil.
-			if nextPageToken == "" {
-				return err
-			}
-			req.PageToken = nextPageToken
-		}
-	}, s.retry, s.idempotent)
-	if err != nil {
-		return nil, err
-	}
-
-	return notificationsToMapFromProto(notifications), nil
+	return nil, fmt.Errorf("ListNotifications is not implemented use https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2")
 }
 
 func (c *grpcStorageClient) CreateNotification(ctx context.Context, bucket string, n *Notification, opts ...storageOption) (ret *Notification, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.CreateNotification")
-	defer func() { trace.EndSpan(ctx, err) }()
-
-	s := callSettings(c.settings, opts...)
-	req := &storagepb.CreateNotificationConfigRequest{
-		Parent:             bucketResourceName(globalProjectAlias, bucket),
-		NotificationConfig: toProtoNotification(n),
-	}
-	var pbn *storagepb.NotificationConfig
-	err = run(ctx, func(ctx context.Context) error {
-		var err error
-		pbn, err = c.raw.CreateNotificationConfig(ctx, req, s.gax...)
-		return err
-	}, s.retry, s.idempotent)
-	if err != nil {
-		return nil, err
-	}
-	return toNotificationFromProto(pbn), err
+	return nil, fmt.Errorf("CreateNotification is not implemented use https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2")
 }
 
 func (c *grpcStorageClient) DeleteNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.grpcStorageClient.DeleteNotification")
-	defer func() { trace.EndSpan(ctx, err) }()
-
-	s := callSettings(c.settings, opts...)
-	req := &storagepb.DeleteNotificationConfigRequest{Name: id}
-	return run(ctx, func(ctx context.Context) error {
-		return c.raw.DeleteNotificationConfig(ctx, req, s.gax...)
-	}, s.retry, s.idempotent)
+	return fmt.Errorf("DeleteNotification is not implemented use https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2")
 }
 
 // setUserProjectMetadata appends a project ID to the outgoing Context metadata
