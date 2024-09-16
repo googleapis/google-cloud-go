@@ -33,7 +33,7 @@ func main() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewHostProjectRegistrationClient(ctx)
+	c, err := apihub.NewHostProjectRegistrationRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -569,7 +569,6 @@ loop:
 // Test SingleUse transaction.
 func TestIntegration_SingleUse(t *testing.T) {
 	t.Parallel()
-	skipEmulatorTestForPG(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -6218,12 +6217,6 @@ func skipEmulatorTest(t *testing.T) {
 	}
 }
 
-func skipEmulatorTestForPG(t *testing.T) {
-	if isEmulatorEnvSet() && testDialect == adminpb.DatabaseDialect_POSTGRESQL {
-		t.Skip("Skipping PG testing against the emulator.")
-	}
-}
-
 func skipUnsupportedPGTest(t *testing.T) {
 	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
 		t.Skip("Skipping testing of unsupported tests in Postgres dialect.")
@@ -6233,12 +6226,6 @@ func skipUnsupportedPGTest(t *testing.T) {
 func onlyRunForPGTest(t *testing.T) {
 	if testDialect != adminpb.DatabaseDialect_POSTGRESQL {
 		t.Skip("Skipping tests supported only in Postgres dialect.")
-	}
-}
-
-func skipForPGTest(t *testing.T) {
-	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
-		t.Skip("Skipping tests non needed for Postgres dialect.")
 	}
 }
 

@@ -1,5 +1,37 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.16.0...firestore/v1.17.0) (2024-09-11)
+
+
+### Features
+
+* **firestore/apiv1:** Add Database.CmekConfig and Database.cmek_config (information about CMEK enablement) ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore/apiv1:** Add Database.delete_time (the time a database was deleted, if it ever was) ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore/apiv1:** Add Database.previous_id (if a database was deleted, what ID it was using beforehand) ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore/apiv1:** Add Database.SourceInfo and Database.source_info (information about database provenance, specifically for restored databases) ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore/apiv1:** Allow specifying an encryption_config when restoring a database ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **firestore:** Expose the `FindNearest.distance_result_field` parameter ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **firestore:** Expose the `FindNearest.distance_threshold` parameter ([9a5144e](https://github.com/googleapis/google-cloud-go/commit/9a5144e7d30c6f058b13fdf3fd9436904e77dff0))
+* **firestore:** Query profiling ([#10164](https://github.com/googleapis/google-cloud-go/issues/10164)) ([58052a2](https://github.com/googleapis/google-cloud-go/commit/58052a2eefd56b3129e04f177398b3ffb688d4d7))
+
+
+### Bug Fixes
+
+* **firestore:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+* **firestore:** Retry batchwrite only on retryable errors ([#10603](https://github.com/googleapis/google-cloud-go/issues/10603)) ([23e5df5](https://github.com/googleapis/google-cloud-go/commit/23e5df5b8ee40317ab0d1ac6bb2b92ccc054426c))
+* **firestore:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **firestore/apiv1:** Clarify maximum retention of backups (max 14 weeks) ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **firestore/apiv1:** Clarify restore details ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore/apiv1:** Fix assorted capitalization issues with the word "ID" ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+* **firestore/apiv1:** Remove note about backups running at a specific time ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **firestore/apiv1:** Standardize on the capitalization of "ID" ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **firestore:** Minor documentation clarifications on FindNearest DistanceMeasure options ([5b4b0f7](https://github.com/googleapis/google-cloud-go/commit/5b4b0f7878276ab5709011778b1b4a6ffd30a60b))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.15.0...firestore/v1.16.0) (2024-07-24)
 
 
