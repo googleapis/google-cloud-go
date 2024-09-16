@@ -254,14 +254,15 @@ func TestCountTokensWithCorpora(t *testing.T) {
 		t.Fatalf("Failed to generate corpora: %v", err)
 	}
 
-	workerCountChan := make(chan int, 10)
+	numWorkersChan := make(chan int, 10)
+	defer close(numWorkersChan)
 	var wg sync.WaitGroup
 	for _, corpora := range corporaFiles {
 		wg.Add(1)
 		go func(corpora corporaInfo) {
-			workerCountChan <- 1
+			numWorkersChan <- 1
 			defer func() {
-				<-workerCountChan
+				<-numWorkersChan
 				wg.Done()
 			}()
 			if ucr.shouldSkip(corpora.Name) {
