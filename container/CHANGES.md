@@ -1,5 +1,17 @@
 # Changes
 
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.39.0...container/v1.40.0) (2024-09-12)
+
+
+### Features
+
+* **container:** Add ReleaseChannel EXTENDED value ([b3ea577](https://github.com/googleapis/google-cloud-go/commit/b3ea5776b171fc60b4e96035d56d35dbd7505f3b))
+
+
+### Bug Fixes
+
+* **container:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.38.1...container/v1.39.0) (2024-08-20)
 
 
