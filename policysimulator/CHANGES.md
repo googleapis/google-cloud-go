@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.3.0...policysimulator/v0.3.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **policysimulator:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.10...policysimulator/v0.3.0) (2024-08-20)
 
 
