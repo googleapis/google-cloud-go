@@ -2,6 +2,18 @@
 
 
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.12.0...maps/v1.12.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **maps:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Update comment link for ListTasks filter ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.7...maps/v1.12.0) (2024-08-20)
 
 
@@ -341,3 +353,4 @@
 
 * **maps/addressvalidation:** Start generating apiv1 ([#7012](https://github.com/googleapis/google-cloud-go/issues/7012)) ([3e88250](https://github.com/googleapis/google-cloud-go/commit/3e882501ea196ff4f122989e5726bfd4c72e5133))
 * **maps/routing:** Start generating apiv2 ([#7056](https://github.com/googleapis/google-cloud-go/issues/7056)) ([1b7993d](https://github.com/googleapis/google-cloud-go/commit/1b7993d6931cf33bab07124da4180eeb3faffe7e))
+

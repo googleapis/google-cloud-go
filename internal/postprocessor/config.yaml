@@ -1102,6 +1102,9 @@ service-configs:
   - input-directory: google/maps/addressvalidation/v1
     service-config: addressvalidation_v1.yaml
     import-path: cloud.google.com/go/maps/addressvalidation/apiv1
+  - input-directory: google/maps/areainsights/v1
+    service-config: areainsights_v1.yaml
+    import-path: cloud.google.com/go/maps/areainsights/apiv1
   - input-directory: google/maps/fleetengine/v1
     service-config: fleetengine_v1.yaml
     import-path: cloud.google.com/go/maps/fleetengine/apiv1

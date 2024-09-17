@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/vpcaccess/v1.8.0...vpcaccess/v1.8.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **vpcaccess:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/vpcaccess/v1.7.12...vpcaccess/v1.8.0) (2024-08-20)
 
 

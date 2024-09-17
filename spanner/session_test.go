@@ -371,7 +371,7 @@ func TestSessionLeak(t *testing.T) {
 	if single.sh.stack == nil && !isMultiplexEnabled {
 		t.Fatalf("Missing stacktrace from session handle")
 	}
-	stack := fmt.Sprintf("%s", single.sh.stack)
+	stack := string(single.sh.stack)
 	testMethod := "TestSessionLeak"
 	if !strings.Contains(stack, testMethod) && !isMultiplexEnabled {
 		t.Fatalf("Stacktrace does not contain '%s'\nGot: %s", testMethod, stack)
