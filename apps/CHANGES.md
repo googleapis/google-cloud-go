@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/apps/v0.5.0...apps/v0.5.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **apps:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/apps/v0.4.7...apps/v0.5.0) (2024-08-20)
 
 

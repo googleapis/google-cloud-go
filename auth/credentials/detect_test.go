@@ -459,11 +459,10 @@ func TestDefaultCredentials_ServiceAccountKeySelfSigned_UniverseDomain(t *testin
 	now = func() time.Time { return time.Date(2000, 2, 1, 12, 30, 0, 0, time.UTC) }
 	defer func() { now = oldNow }()
 	wantTok := "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFiY2RlZjEyMzQ1Njc4OTAifQ.eyJpc3MiOiJnb3BoZXJAZmFrZV9wcm9qZWN0LmlhbS5nc2VydmljZWFjY291bnQuY29tIiwic2NvcGUiOiJodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9hdXRoL2Nsb3VkLXBsYXRmb3JtIiwiZXhwIjo5NDk0MTE4MDAsImlhdCI6OTQ5NDA4MjAwLCJhdWQiOiIiLCJzdWIiOiJnb3BoZXJAZmFrZV9wcm9qZWN0LmlhbS5nc2VydmljZWFjY291bnQuY29tIn0.n9Hggd-1Vw4WTQiWkh7q9r5eDsz-khU5vwkZl2VmgdUF3ZxDq1ARzchCNtTifeorzbp9C0i0vCr855G7FZkVCJXPVMcnxbwfMSafUYmVsmutbQiV9eTWfWM0_Ljiwa9GEbv1bN06Lz4LrelPKEaxsDbY6tU8LJUiome_gSMLfLk"
-
 	creds, err := DetectDefault(&DetectOptions{
-		CredentialsJSON:  b,
-		Scopes:           []string{"https://www.googleapis.com/auth/cloud-platform"},
-		UseSelfSignedJWT: true,
+		// default scopes are set in resolveDetectOptions before calling DetectDefault.
+		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+		CredentialsJSON: b,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -805,26 +804,29 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 		{
 			name: "service account json with file universe domain",
 			opts: &DetectOptions{
-				CredentialsFile:  "../internal/testdata/sa_universe_domain.json",
-				UseSelfSignedJWT: true,
+				CredentialsFile: "../internal/testdata/sa_universe_domain.json",
+				// default scopes are set in resolveDetectOptions before calling DetectDefault.
+				Scopes: []string{"https://www.googleapis.com/auth/cloud-platform"},
 			},
 			want: "example.com",
 		},
 		{
 			name: "service account json with options universe domain",
 			opts: &DetectOptions{
-				CredentialsFile:  "../internal/testdata/sa.json",
-				UseSelfSignedJWT: true,
-				UniverseDomain:   "foo.com",
+				CredentialsFile: "../internal/testdata/sa.json",
+				// default scopes are set in resolveDetectOptions before calling DetectDefault.
+				Scopes:         []string{"https://www.googleapis.com/auth/cloud-platform"},
+				UniverseDomain: "foo.com",
 			},
 			want: "foo.com",
 		},
 		{
 			name: "service account json with file and options universe domain",
 			opts: &DetectOptions{
-				CredentialsFile:  "../internal/testdata/sa_universe_domain.json",
-				UseSelfSignedJWT: true,
-				UniverseDomain:   "foo.com",
+				CredentialsFile: "../internal/testdata/sa_universe_domain.json",
+				// default scopes are set in resolveDetectOptions before calling DetectDefault.
+				Scopes:         []string{"https://www.googleapis.com/auth/cloud-platform"},
+				UniverseDomain: "foo.com",
 			},
 			want: "foo.com",
 		},
@@ -923,8 +925,9 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 		{
 			name: "impersonated service account json",
 			opts: &DetectOptions{
-				CredentialsFile:  "../internal/testdata/imp.json",
-				UseSelfSignedJWT: true,
+				CredentialsFile: "../internal/testdata/imp.json",
+				// default scopes are set in resolveDetectOptions before calling DetectDefault.
+				Scopes: []string{"https://www.googleapis.com/auth/cloud-platform"},
 			},
 			want: "googleapis.com",
 		},
@@ -938,9 +941,10 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 		{
 			name: "impersonated service account json with options universe domain",
 			opts: &DetectOptions{
-				CredentialsFile:  "../internal/testdata/imp.json",
-				UseSelfSignedJWT: true,
-				UniverseDomain:   "foo.com",
+				CredentialsFile: "../internal/testdata/imp.json",
+				// default scopes are set in resolveDetectOptions before calling DetectDefault.
+				Scopes:         []string{"https://www.googleapis.com/auth/cloud-platform"},
+				UniverseDomain: "foo.com",
 			},
 			want: "foo.com",
 		},
@@ -948,7 +952,9 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 			name: "impersonated service account json with file and options universe domain",
 			opts: &DetectOptions{
 				CredentialsFile: "../internal/testdata/imp_universe_domain.json",
-				UniverseDomain:  "foo.com",
+				// default scopes are set in resolveDetectOptions before calling DetectDefault.
+				Scopes:         []string{"https://www.googleapis.com/auth/cloud-platform"},
+				UniverseDomain: "foo.com",
 			},
 			want: "foo.com",
 		},

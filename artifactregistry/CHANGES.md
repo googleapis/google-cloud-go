@@ -1,5 +1,12 @@
 # Changes
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.15.0...artifactregistry/v1.15.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.14...artifactregistry/v1.15.0) (2024-08-20)
 
 

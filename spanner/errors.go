@@ -82,7 +82,7 @@ func (e *TransactionOutcomeUnknownError) Unwrap() error { return e.err }
 // Error implements error.Error.
 func (e *Error) Error() string {
 	if e == nil {
-		return fmt.Sprintf("spanner: OK")
+		return "spanner: OK"
 	}
 	code := ErrCode(e)
 	if e.additionalInformation == "" {
