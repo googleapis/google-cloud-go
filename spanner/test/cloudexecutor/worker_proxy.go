@@ -209,6 +209,7 @@ func getCredentials() credentials.TransportCredentials {
 	if err != nil {
 		log.Println(err)
 	}
+	fmt.Printf("CAcert credentials: %v", creds)
 	return creds
 }
 
@@ -218,6 +219,7 @@ func getRootCredentials() credentials.TransportCredentials {
 	if err != nil {
 		log.Println(err)
 	}
+	fmt.Printf("Root credentials: %v", creds)
 	return creds
 }
 
