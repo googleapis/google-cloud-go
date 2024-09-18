@@ -93,6 +93,8 @@ func TestIntegration_NextBatch_All(t *testing.T) {
 }
 
 func TestIntegration_NextBatch(t *testing.T) {
+	// Accessing public bucket to list large number of files in batches.
+	// See https://cloud.google.com/storage/docs/public-datasets/landsat
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -108,7 +110,7 @@ func TestIntegration_NextBatch(t *testing.T) {
 	in := &ListerInput{
 		BucketName: landsatBucket,
 		Query:      storage.Query{Prefix: landsatPrefix},
-		BatchSize:  2000,
+		BatchSize:  6000,
 	}
 
 	df := NewLister(c, in)
@@ -123,7 +125,7 @@ func TestIntegration_NextBatch(t *testing.T) {
 		if err == iterator.Done {
 			break
 		}
-		if len(objects) > in.BatchSize {
+		if len(objects) >= in.BatchSize {
 			t.Errorf("expected to receive %d objects in each batch, got %d objects in a batch", in.BatchSize, len(objects))
 		}
 	}
