@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/quota/apiv1beta",
-    "version": "$VERSION",
+    "version": "0.9.2",
     "language": "GO",
     "apis": [
       {
