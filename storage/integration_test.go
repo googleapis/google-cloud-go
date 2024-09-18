@@ -73,6 +73,10 @@ const (
 	envFirestoreProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envFirestorePrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
 	grpcTestPrefix         = "golang-grpc-test"
+	testUniverseDomain     = "TEST_UNIVERSE_DOMAIN"
+	testUniverseProject    = "TEST_UNIVERSE_PROJECT_ID"
+	testUniverseLocation   = "TEST_UNIVERSE_LOCATION"
+	testUniverseCreds      = "TEST_UNIVERSE_DOMAIN_CREDENTIAL"
 )
 
 var (
@@ -5784,6 +5788,47 @@ func TestIntegration_OCTracing(t *testing.T) {
 			t.Fatalf("Expected some spans to be created, but got %d", 0)
 		}
 	})
+}
+
+func TestIntegration_UniverseDomains(t *testing.T) {
+	ctx := skipJSONReads(skipGRPC("not supported"), "no reads in test")
+
+	universeDomain := os.Getenv(testUniverseDomain)
+	if universeDomain == "" {
+		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
+	}
+	creds := os.Getenv(testUniverseCreds)
+	if creds == "" {
+		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseCreds)
+	}
+	project := os.Getenv(testUniverseProject)
+	if project == "" {
+		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseProject)
+	}
+	location := os.Getenv(testUniverseLocation)
+	if location == "" {
+		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
+	}
+
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		bucket := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bucket, project, &BucketAttrs{Location: location})
+		defer h.mustDeleteBucket(bucket)
+
+		obj := bucket.Object(uidSpaceObjects.New())
+		contents := generateRandomBytes(1024)
+		h.mustWrite(obj.NewWriter(ctx), contents)
+		defer h.mustDeleteObject(obj)
+
+		// Verify contents.
+		got := h.mustRead(obj)
+		if !bytes.Equal(got, contents) {
+			t.Errorf("object contents mismatch\ngot:  %q\nwant: %q", got, contents)
+		}
+
+	}, option.WithUniverseDomain(universeDomain), option.WithCredentialsFile(creds))
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
