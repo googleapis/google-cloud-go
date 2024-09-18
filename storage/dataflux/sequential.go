@@ -25,7 +25,7 @@ import (
 
 const (
 	// defaultPageSize specifies the number of object results to include on a single page.
-	defaultPageSize = 2000
+	defaultPageSize = 5000
 )
 
 // sequentialListing performs a sequential listing on the given bucket.
