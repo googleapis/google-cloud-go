@@ -21,9 +21,6 @@
 package placespb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -31,6 +28,8 @@ import (
 	localized_text "google.golang.org/genproto/googleapis/type/localized_text"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1076,8 +1075,10 @@ type Place_OpeningHours struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Is this place open right now?  Always present unless we lack time-of-day
-	// or timezone data for these opening hours.
+	// Whether the opening hours period is currently active. For regular opening
+	// hours and current opening hours, this field means whether the place is
+	// open. For secondary opening hours and current secondary opening hours,
+	// this field means whether the secondary hours of this place is active.
 	OpenNow *bool `protobuf:"varint,1,opt,name=open_now,json=openNow,proto3,oneof" json:"open_now,omitempty"`
 	// The periods that this place is open during the week. The periods are in
 	// chronological order, starting with Sunday in the place-local timezone. An
