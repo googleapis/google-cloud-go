@@ -26,9 +26,9 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/storage"
-	"cloud.google.com/go/storage/dataflux"
 	"google.golang.org/api/iterator"
 )
 
@@ -75,11 +75,11 @@ func TestIntegration_NextBatch_All(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}
-	in := &dataflux.ListerInput{
+	in := &ListerInput{
 		BucketName: httpTestBucket.bucket,
 	}
 
-	df := dataflux.NewLister(c, in)
+	df := NewLister(c, in)
 	defer df.Close()
 
 	objects, err := df.NextBatch(ctx)
@@ -93,7 +93,7 @@ func TestIntegration_NextBatch_All(t *testing.T) {
 }
 
 func TestIntegration_NextBatch(t *testing.T) {
-	// Accessing public bucket to list large number of files.
+	// Accessing public bucket to list large number of files in batches.
 	// See https://cloud.google.com/storage/docs/public-datasets/landsat
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
@@ -107,13 +107,13 @@ func TestIntegration_NextBatch(t *testing.T) {
 		t.Fatalf("NewClient: %v", err)
 	}
 
-	in := &dataflux.ListerInput{
+	in := &ListerInput{
 		BucketName: landsatBucket,
 		Query:      storage.Query{Prefix: landsatPrefix},
 		BatchSize:  6000,
 	}
 
-	df := dataflux.NewLister(c, in)
+	df := NewLister(c, in)
 	defer df.Close()
 	totalObjects := 0
 	for {
@@ -170,7 +170,7 @@ func deleteExpiredBuckets(prefix string) error {
 		return fmt.Errorf("NewClient: %v", err)
 	}
 
-	projectID := "zimbruplayground"
+	projectID := testutil.ProjID()
 	it := client.Buckets(ctx, projectID)
 	it.Prefix = prefix
 	for {
@@ -259,7 +259,7 @@ func (tb *downloadTestBucket) Create(prefix string) error {
 	defer client.Close()
 
 	b := client.Bucket(tb.bucket)
-	if err := b.Create(ctx, "zimbruplayground", nil); err != nil {
+	if err := b.Create(ctx, testutil.ProjID(), nil); err != nil {
 		return fmt.Errorf("bucket(%q).Create: %v", tb.bucket, err)
 	}
 
