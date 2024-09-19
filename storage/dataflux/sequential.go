@@ -40,12 +40,13 @@ func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs,
 	objectIterator.PageInfo().MaxSize = defaultPageSize
 
 	for {
-		objects, nextToken, err := doListing(objectIterator, c.skipDirectoryObjects, &objectsListed)
+		objects, nextToken, numObjects, err := doListing(objectIterator, c.skipDirectoryObjects)
 		if err != nil {
 			return nil, "", fmt.Errorf("failed while listing objects: %w", err)
 		}
 		result = append(result, objects...)
 		lastToken = nextToken
+		objectsListed += numObjects
 		if nextToken == "" || (c.batchSize > 0 && objectsListed >= c.batchSize) {
 			break
 		}
@@ -54,18 +55,18 @@ func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs,
 	return result, lastToken, nil
 }
 
-func doListing(objectIterator *storage.ObjectIterator, skipDirectoryObjects bool, objectsListed *int) ([]*storage.ObjectAttrs, string, error) {
+func doListing(objectIterator *storage.ObjectIterator, skipDirectoryObjects bool) (result []*storage.ObjectAttrs, token string, objectsListed int, err error) {
 
-	var result []*storage.ObjectAttrs
 	for {
-		attrs, err := objectIterator.Next()
-		*objectsListed++
+		attrs, errObjectIterator := objectIterator.Next()
+		objectsListed++
 		// Stop listing when all the requested objects have been listed.
-		if err == iterator.Done {
+		if errObjectIterator == iterator.Done {
 			break
 		}
-		if err != nil {
-			return nil, "", fmt.Errorf("iterating through objects %w", err)
+		if errObjectIterator != nil {
+			err = fmt.Errorf("iterating through objects %w", errObjectIterator)
+			return
 		}
 		if !(skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
 			result = append(result, attrs)
@@ -74,5 +75,6 @@ func doListing(objectIterator *storage.ObjectIterator, skipDirectoryObjects bool
 			break
 		}
 	}
-	return result, objectIterator.PageInfo().Token, nil
+	token = objectIterator.PageInfo().Token
+	return
 }

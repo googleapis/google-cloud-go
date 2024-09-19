@@ -45,6 +45,7 @@ type ListerInput struct {
 	Parallelism int
 
 	// BatchSize is the number of objects to list. Default value returns all objects at once. Optional.
+	// The number of objects returned will be rounded up to a multiple of gcs page size.
 	BatchSize int
 
 	// Query is the query to filter objects for listing. Default value is nil. Optional.

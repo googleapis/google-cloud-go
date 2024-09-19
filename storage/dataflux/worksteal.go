@@ -21,14 +21,14 @@ import (
 	"cloud.google.com/go/storage"
 )
 
-// WorkerStatus indicates the status of a worker.
-type WorkerStatus int
+// workerStatus indicates the status of a worker.
+type workerStatus int
 
 const (
-	// Idle status shows that the worker is currently not listing.
-	Idle WorkerStatus = iota
-	// Active status shows that the worker is currently listing objects within assigned range.
-	Active
+	// idle status shows that the worker is currently not listing.
+	idle workerStatus = iota
+	// active status shows that the worker is currently listing objects within assigned range.
+	active
 )
 
 type listerResult struct {
@@ -40,7 +40,7 @@ type worker struct {
 	goroutineID   int
 	startRange    string
 	endRange      string
-	status        WorkerStatus
+	status        workerStatus
 	rangesplitter *rangeSplitter
 	idleChannel   chan int
 	result        *listerResult
