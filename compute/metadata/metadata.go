@@ -456,6 +456,7 @@ func (c *Client) getETag(ctx context.Context, suffix string) (value, etag string
 			code = res.StatusCode
 		}
 		if delay, shouldRetry := retryer.Retry(code, reqErr); shouldRetry {
+			res.Body.Close()
 			if err := sleep(ctx, delay); err != nil {
 				return "", "", err
 			}
