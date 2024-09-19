@@ -184,7 +184,7 @@ func TestNilChecks(t *testing.T) {
 	if val, ok := ProtoToType(nil).(unknown[btapb.Type]); !ok {
 		t.Errorf("got: %T, wanted unknown[btapb.Type]", val)
 	}
-	if val, ok := ProtoToType(&btapb.Type{}).(unknown[btapb.Type]); !ok {
+	if val, ok := ProtoToType(&btapb.Type{}).(TypeUnspecified); !ok {
 		t.Errorf("got: %T, wanted unknown[btapb.Type]", val)
 	}
 
@@ -219,5 +219,15 @@ func TestNilChecks(t *testing.T) {
 	}
 	if val, ok := aggType2.Input.(unknown[btapb.Type]); !ok {
 		t.Errorf("got: %T, wanted unknown[btapb.Type]", val)
+	}
+}
+
+func TestTypeUnspecified(t *testing.T) {
+	pb := &btapb.Type{}
+	tpe := ProtoToType(pb)
+	assertType(t, tpe, &btapb.Type{})
+	expect := TypeUnspecified{}
+	if tpe != expect {
+		t.Errorf("got: %v, wanted: %v", tpe, expect)
 	}
 }

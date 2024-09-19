@@ -13,6 +13,8 @@
     "commitMessageAction": "update",
     "groupName": "deps",
     "ignoreDeps": [
+        "golang.org/x/mod",
+        "golang.org/x/tools",
         "google.golang.org/genproto",
         "github.com/google/pprof"
     ],

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
-    "version": "0.25.0",
+    "version": "0.25.1",
     "language": "GO",
     "apis": [
       {

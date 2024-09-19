@@ -92,7 +92,7 @@ func (x SearchNearbyRequest_RankPreference) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SearchNearbyRequest_RankPreference.Descriptor instead.
 func (SearchNearbyRequest_RankPreference) EnumDescriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{0, 0}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{1, 0}
 }
 
 // How results will be ranked in the response.
@@ -148,7 +148,89 @@ func (x SearchTextRequest_RankPreference) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SearchTextRequest_RankPreference.Descriptor instead.
 func (SearchTextRequest_RankPreference) EnumDescriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{2, 0}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{3, 0}
+}
+
+// Parameters to configure the routing calculations to the places in the
+// response, both along a route (where result ranking will be influenced) and
+// for calculating travel times on results.
+type RoutingParameters struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Optional. An explicit routing origin that overrides the origin defined in
+	// the polyline. By default, the polyline origin is used.
+	Origin *latlng.LatLng `protobuf:"bytes,1,opt,name=origin,proto3" json:"origin,omitempty"`
+	// Optional. The travel mode.
+	TravelMode TravelMode `protobuf:"varint,2,opt,name=travel_mode,json=travelMode,proto3,enum=google.maps.places.v1.TravelMode" json:"travel_mode,omitempty"`
+	// Optional. The route modifiers.
+	RouteModifiers *RouteModifiers `protobuf:"bytes,3,opt,name=route_modifiers,json=routeModifiers,proto3" json:"route_modifiers,omitempty"`
+	// Optional. Specifies how to compute the routing summaries. The server
+	// attempts to use the selected routing preference to compute the route. The
+	// traffic aware routing preference is only available for the `DRIVE` or
+	// `TWO_WHEELER` `travelMode`.
+	RoutingPreference RoutingPreference `protobuf:"varint,4,opt,name=routing_preference,json=routingPreference,proto3,enum=google.maps.places.v1.RoutingPreference" json:"routing_preference,omitempty"`
+}
+
+func (x *RoutingParameters) Reset() {
+	*x = RoutingParameters{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RoutingParameters) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoutingParameters) ProtoMessage() {}
+
+func (x *RoutingParameters) ProtoReflect() protoreflect.Message {
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoutingParameters.ProtoReflect.Descriptor instead.
+func (*RoutingParameters) Descriptor() ([]byte, []int) {
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *RoutingParameters) GetOrigin() *latlng.LatLng {
+	if x != nil {
+		return x.Origin
+	}
+	return nil
+}
+
+func (x *RoutingParameters) GetTravelMode() TravelMode {
+	if x != nil {
+		return x.TravelMode
+	}
+	return TravelMode_TRAVEL_MODE_UNSPECIFIED
+}
+
+func (x *RoutingParameters) GetRouteModifiers() *RouteModifiers {
+	if x != nil {
+		return x.RouteModifiers
+	}
+	return nil
+}
+
+func (x *RoutingParameters) GetRoutingPreference() RoutingPreference {
+	if x != nil {
+		return x.RoutingPreference
+	}
+	return RoutingPreference_ROUTING_PREFERENCE_UNSPECIFIED
 }
 
 // Request proto for Search Nearby.
@@ -258,12 +340,14 @@ type SearchNearbyRequest struct {
 	LocationRestriction *SearchNearbyRequest_LocationRestriction `protobuf:"bytes,8,opt,name=location_restriction,json=locationRestriction,proto3" json:"location_restriction,omitempty"`
 	// How results will be ranked in the response.
 	RankPreference SearchNearbyRequest_RankPreference `protobuf:"varint,9,opt,name=rank_preference,json=rankPreference,proto3,enum=google.maps.places.v1.SearchNearbyRequest_RankPreference" json:"rank_preference,omitempty"`
+	// Optional. Parameters that affect the routing to the search results.
+	RoutingParameters *RoutingParameters `protobuf:"bytes,10,opt,name=routing_parameters,json=routingParameters,proto3" json:"routing_parameters,omitempty"`
 }
 
 func (x *SearchNearbyRequest) Reset() {
 	*x = SearchNearbyRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[0]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -276,7 +360,7 @@ func (x *SearchNearbyRequest) String() string {
 func (*SearchNearbyRequest) ProtoMessage() {}
 
 func (x *SearchNearbyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[0]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -289,7 +373,7 @@ func (x *SearchNearbyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchNearbyRequest.ProtoReflect.Descriptor instead.
 func (*SearchNearbyRequest) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{0}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *SearchNearbyRequest) GetLanguageCode() string {
@@ -355,6 +439,13 @@ func (x *SearchNearbyRequest) GetRankPreference() SearchNearbyRequest_RankPrefer
 	return SearchNearbyRequest_RANK_PREFERENCE_UNSPECIFIED
 }
 
+func (x *SearchNearbyRequest) GetRoutingParameters() *RoutingParameters {
+	if x != nil {
+		return x.RoutingParameters
+	}
+	return nil
+}
+
 // Response proto for Search Nearby.
 type SearchNearbyResponse struct {
 	state         protoimpl.MessageState
@@ -364,12 +455,18 @@ type SearchNearbyResponse struct {
 	// A list of places that meets user's requirements like places
 	// types, number of places and specific location restriction.
 	Places []*Place `protobuf:"bytes,1,rep,name=places,proto3" json:"places,omitempty"`
+	// A list of routing summaries where each entry associates to the
+	// corresponding place in the same index in the places field. If the routing
+	// summary is not available for one of the places, it will contain an empty
+	// entry. This list should have as many entries as the list of places if
+	// requested.
+	RoutingSummaries []*RoutingSummary `protobuf:"bytes,2,rep,name=routing_summaries,json=routingSummaries,proto3" json:"routing_summaries,omitempty"`
 }
 
 func (x *SearchNearbyResponse) Reset() {
 	*x = SearchNearbyResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[1]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -382,7 +479,7 @@ func (x *SearchNearbyResponse) String() string {
 func (*SearchNearbyResponse) ProtoMessage() {}
 
 func (x *SearchNearbyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[1]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -395,12 +492,19 @@ func (x *SearchNearbyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchNearbyResponse.ProtoReflect.Descriptor instead.
 func (*SearchNearbyResponse) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{1}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *SearchNearbyResponse) GetPlaces() []*Place {
 	if x != nil {
 		return x.Places
+	}
+	return nil
+}
+
+func (x *SearchNearbyResponse) GetRoutingSummaries() []*RoutingSummary {
+	if x != nil {
+		return x.RoutingSummaries
 	}
 	return nil
 }
@@ -468,12 +572,16 @@ type SearchTextRequest struct {
 	LocationRestriction *SearchTextRequest_LocationRestriction `protobuf:"bytes,14,opt,name=location_restriction,json=locationRestriction,proto3" json:"location_restriction,omitempty"`
 	// Optional. Set the searchable EV options of a place search request.
 	EvOptions *SearchTextRequest_EVOptions `protobuf:"bytes,15,opt,name=ev_options,json=evOptions,proto3" json:"ev_options,omitempty"`
+	// Optional. Additional parameters for routing to results.
+	RoutingParameters *RoutingParameters `protobuf:"bytes,16,opt,name=routing_parameters,json=routingParameters,proto3" json:"routing_parameters,omitempty"`
+	// Optional. Additional parameters proto for searching along a route.
+	SearchAlongRouteParameters *SearchTextRequest_SearchAlongRouteParameters `protobuf:"bytes,17,opt,name=search_along_route_parameters,json=searchAlongRouteParameters,proto3" json:"search_along_route_parameters,omitempty"`
 }
 
 func (x *SearchTextRequest) Reset() {
 	*x = SearchTextRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[2]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -486,7 +594,7 @@ func (x *SearchTextRequest) String() string {
 func (*SearchTextRequest) ProtoMessage() {}
 
 func (x *SearchTextRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[2]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -499,7 +607,7 @@ func (x *SearchTextRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchTextRequest.ProtoReflect.Descriptor instead.
 func (*SearchTextRequest) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{2}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *SearchTextRequest) GetTextQuery() string {
@@ -593,6 +701,20 @@ func (x *SearchTextRequest) GetEvOptions() *SearchTextRequest_EVOptions {
 	return nil
 }
 
+func (x *SearchTextRequest) GetRoutingParameters() *RoutingParameters {
+	if x != nil {
+		return x.RoutingParameters
+	}
+	return nil
+}
+
+func (x *SearchTextRequest) GetSearchAlongRouteParameters() *SearchTextRequest_SearchAlongRouteParameters {
+	if x != nil {
+		return x.SearchAlongRouteParameters
+	}
+	return nil
+}
+
 // Response proto for SearchText.
 type SearchTextResponse struct {
 	state         protoimpl.MessageState
@@ -601,6 +723,12 @@ type SearchTextResponse struct {
 
 	// A list of places that meet the user's text search criteria.
 	Places []*Place `protobuf:"bytes,1,rep,name=places,proto3" json:"places,omitempty"`
+	// A list of routing summaries where each entry associates to the
+	// corresponding place in the same index in the places field. If the routing
+	// summary is not available for one of the places, it will contain an empty
+	// entry. This list will have as many entries as the list of places if
+	// requested.
+	RoutingSummaries []*RoutingSummary `protobuf:"bytes,2,rep,name=routing_summaries,json=routingSummaries,proto3" json:"routing_summaries,omitempty"`
 	// Experimental: See
 	// https://developers.google.com/maps/documentation/places/web-service/experimental/places-generative
 	// for more details.
@@ -610,7 +738,7 @@ type SearchTextResponse struct {
 	// that are relevant to the `text_query` in the request are preferred. If the
 	// contextual content is not available for one of the places, it will return
 	// non-contextual content. It will be empty only when the content is
-	// unavailable for this place. This list should have as many entries as the
+	// unavailable for this place. This list will have as many entries as the
 	// list of places if requested.
 	ContextualContents []*ContextualContent `protobuf:"bytes,3,rep,name=contextual_contents,json=contextualContents,proto3" json:"contextual_contents,omitempty"`
 }
@@ -618,7 +746,7 @@ type SearchTextResponse struct {
 func (x *SearchTextResponse) Reset() {
 	*x = SearchTextResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[3]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -631,7 +759,7 @@ func (x *SearchTextResponse) String() string {
 func (*SearchTextResponse) ProtoMessage() {}
 
 func (x *SearchTextResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[3]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -644,12 +772,19 @@ func (x *SearchTextResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchTextResponse.ProtoReflect.Descriptor instead.
 func (*SearchTextResponse) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{3}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *SearchTextResponse) GetPlaces() []*Place {
 	if x != nil {
 		return x.Places
+	}
+	return nil
+}
+
+func (x *SearchTextResponse) GetRoutingSummaries() []*RoutingSummary {
+	if x != nil {
+		return x.RoutingSummaries
 	}
 	return nil
 }
@@ -709,7 +844,7 @@ type GetPhotoMediaRequest struct {
 func (x *GetPhotoMediaRequest) Reset() {
 	*x = GetPhotoMediaRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[4]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -722,7 +857,7 @@ func (x *GetPhotoMediaRequest) String() string {
 func (*GetPhotoMediaRequest) ProtoMessage() {}
 
 func (x *GetPhotoMediaRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[4]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -735,7 +870,7 @@ func (x *GetPhotoMediaRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPhotoMediaRequest.ProtoReflect.Descriptor instead.
 func (*GetPhotoMediaRequest) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{4}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetPhotoMediaRequest) GetName() string {
@@ -782,7 +917,7 @@ type PhotoMedia struct {
 func (x *PhotoMedia) Reset() {
 	*x = PhotoMedia{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[5]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -795,7 +930,7 @@ func (x *PhotoMedia) String() string {
 func (*PhotoMedia) ProtoMessage() {}
 
 func (x *PhotoMedia) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[5]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -808,7 +943,7 @@ func (x *PhotoMedia) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoMedia.ProtoReflect.Descriptor instead.
 func (*PhotoMedia) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{5}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *PhotoMedia) GetName() string {
@@ -881,7 +1016,7 @@ type GetPlaceRequest struct {
 func (x *GetPlaceRequest) Reset() {
 	*x = GetPlaceRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[6]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -894,7 +1029,7 @@ func (x *GetPlaceRequest) String() string {
 func (*GetPlaceRequest) ProtoMessage() {}
 
 func (x *GetPlaceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[6]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -907,7 +1042,7 @@ func (x *GetPlaceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPlaceRequest.ProtoReflect.Descriptor instead.
 func (*GetPlaceRequest) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{6}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetPlaceRequest) GetName() string {
@@ -1027,7 +1162,7 @@ type AutocompletePlacesRequest struct {
 func (x *AutocompletePlacesRequest) Reset() {
 	*x = AutocompletePlacesRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[7]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1040,7 +1175,7 @@ func (x *AutocompletePlacesRequest) String() string {
 func (*AutocompletePlacesRequest) ProtoMessage() {}
 
 func (x *AutocompletePlacesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[7]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1053,7 +1188,7 @@ func (x *AutocompletePlacesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AutocompletePlacesRequest.ProtoReflect.Descriptor instead.
 func (*AutocompletePlacesRequest) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{7}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *AutocompletePlacesRequest) GetInput() string {
@@ -1146,7 +1281,7 @@ type AutocompletePlacesResponse struct {
 func (x *AutocompletePlacesResponse) Reset() {
 	*x = AutocompletePlacesResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[8]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1159,7 +1294,7 @@ func (x *AutocompletePlacesResponse) String() string {
 func (*AutocompletePlacesResponse) ProtoMessage() {}
 
 func (x *AutocompletePlacesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[8]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1172,7 +1307,7 @@ func (x *AutocompletePlacesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AutocompletePlacesResponse.ProtoReflect.Descriptor instead.
 func (*AutocompletePlacesResponse) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{8}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *AutocompletePlacesResponse) GetSuggestions() []*AutocompletePlacesResponse_Suggestion {
@@ -1197,7 +1332,7 @@ type SearchNearbyRequest_LocationRestriction struct {
 func (x *SearchNearbyRequest_LocationRestriction) Reset() {
 	*x = SearchNearbyRequest_LocationRestriction{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[9]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1210,7 +1345,7 @@ func (x *SearchNearbyRequest_LocationRestriction) String() string {
 func (*SearchNearbyRequest_LocationRestriction) ProtoMessage() {}
 
 func (x *SearchNearbyRequest_LocationRestriction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[9]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1223,7 +1358,7 @@ func (x *SearchNearbyRequest_LocationRestriction) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use SearchNearbyRequest_LocationRestriction.ProtoReflect.Descriptor instead.
 func (*SearchNearbyRequest_LocationRestriction) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{0, 0}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{1, 0}
 }
 
 func (m *SearchNearbyRequest_LocationRestriction) GetType() isSearchNearbyRequest_LocationRestriction_Type {
@@ -1269,7 +1404,7 @@ type SearchTextRequest_LocationBias struct {
 func (x *SearchTextRequest_LocationBias) Reset() {
 	*x = SearchTextRequest_LocationBias{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[10]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1282,7 +1417,7 @@ func (x *SearchTextRequest_LocationBias) String() string {
 func (*SearchTextRequest_LocationBias) ProtoMessage() {}
 
 func (x *SearchTextRequest_LocationBias) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[10]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1295,7 +1430,7 @@ func (x *SearchTextRequest_LocationBias) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchTextRequest_LocationBias.ProtoReflect.Descriptor instead.
 func (*SearchTextRequest_LocationBias) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{2, 0}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{3, 0}
 }
 
 func (m *SearchTextRequest_LocationBias) GetType() isSearchTextRequest_LocationBias_Type {
@@ -1358,7 +1493,7 @@ type SearchTextRequest_LocationRestriction struct {
 func (x *SearchTextRequest_LocationRestriction) Reset() {
 	*x = SearchTextRequest_LocationRestriction{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[11]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1371,7 +1506,7 @@ func (x *SearchTextRequest_LocationRestriction) String() string {
 func (*SearchTextRequest_LocationRestriction) ProtoMessage() {}
 
 func (x *SearchTextRequest_LocationRestriction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[11]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1384,7 +1519,7 @@ func (x *SearchTextRequest_LocationRestriction) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use SearchTextRequest_LocationRestriction.ProtoReflect.Descriptor instead.
 func (*SearchTextRequest_LocationRestriction) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{2, 1}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{3, 1}
 }
 
 func (m *SearchTextRequest_LocationRestriction) GetType() isSearchTextRequest_LocationRestriction_Type {
@@ -1435,7 +1570,7 @@ type SearchTextRequest_EVOptions struct {
 func (x *SearchTextRequest_EVOptions) Reset() {
 	*x = SearchTextRequest_EVOptions{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[12]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1448,7 +1583,7 @@ func (x *SearchTextRequest_EVOptions) String() string {
 func (*SearchTextRequest_EVOptions) ProtoMessage() {}
 
 func (x *SearchTextRequest_EVOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[12]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1461,7 +1596,7 @@ func (x *SearchTextRequest_EVOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchTextRequest_EVOptions.ProtoReflect.Descriptor instead.
 func (*SearchTextRequest_EVOptions) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{2, 2}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{3, 2}
 }
 
 func (x *SearchTextRequest_EVOptions) GetMinimumChargingRateKw() float64 {
@@ -1474,6 +1609,68 @@ func (x *SearchTextRequest_EVOptions) GetMinimumChargingRateKw() float64 {
 func (x *SearchTextRequest_EVOptions) GetConnectorTypes() []EVConnectorType {
 	if x != nil {
 		return x.ConnectorTypes
+	}
+	return nil
+}
+
+// Specifies a precalculated polyline from the [Routes
+// API](https://developers.google.com/maps/documentation/routes) defining the
+// route to search. Searching along a route is similar to using the
+// `locationBias` or `locationRestriction` request option to bias the search
+// results. However, while the `locationBias` and `locationRestriction`
+// options let you specify a region to bias the search results, this option
+// lets you bias the results along a trip route.
+//
+// Results are not guaranteed to be along the route provided, but rather are
+// ranked within the search area defined by the polyline and, optionally, by
+// the `locationBias` or `locationRestriction` based on minimal detour times
+// from origin to destination. The results might be along an alternate route,
+// especially if the provided polyline does not define an optimal route from
+// origin to destination.
+type SearchTextRequest_SearchAlongRouteParameters struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. The route polyline.
+	Polyline *Polyline `protobuf:"bytes,1,opt,name=polyline,proto3" json:"polyline,omitempty"`
+}
+
+func (x *SearchTextRequest_SearchAlongRouteParameters) Reset() {
+	*x = SearchTextRequest_SearchAlongRouteParameters{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SearchTextRequest_SearchAlongRouteParameters) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchTextRequest_SearchAlongRouteParameters) ProtoMessage() {}
+
+func (x *SearchTextRequest_SearchAlongRouteParameters) ProtoReflect() protoreflect.Message {
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchTextRequest_SearchAlongRouteParameters.ProtoReflect.Descriptor instead.
+func (*SearchTextRequest_SearchAlongRouteParameters) Descriptor() ([]byte, []int) {
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{3, 3}
+}
+
+func (x *SearchTextRequest_SearchAlongRouteParameters) GetPolyline() *Polyline {
+	if x != nil {
+		return x.Polyline
 	}
 	return nil
 }
@@ -1495,7 +1692,7 @@ type AutocompletePlacesRequest_LocationBias struct {
 func (x *AutocompletePlacesRequest_LocationBias) Reset() {
 	*x = AutocompletePlacesRequest_LocationBias{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[13]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1508,7 +1705,7 @@ func (x *AutocompletePlacesRequest_LocationBias) String() string {
 func (*AutocompletePlacesRequest_LocationBias) ProtoMessage() {}
 
 func (x *AutocompletePlacesRequest_LocationBias) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[13]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1521,7 +1718,7 @@ func (x *AutocompletePlacesRequest_LocationBias) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use AutocompletePlacesRequest_LocationBias.ProtoReflect.Descriptor instead.
 func (*AutocompletePlacesRequest_LocationBias) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{7, 0}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{8, 0}
 }
 
 func (m *AutocompletePlacesRequest_LocationBias) GetType() isAutocompletePlacesRequest_LocationBias_Type {
@@ -1582,7 +1779,7 @@ type AutocompletePlacesRequest_LocationRestriction struct {
 func (x *AutocompletePlacesRequest_LocationRestriction) Reset() {
 	*x = AutocompletePlacesRequest_LocationRestriction{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[14]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1595,7 +1792,7 @@ func (x *AutocompletePlacesRequest_LocationRestriction) String() string {
 func (*AutocompletePlacesRequest_LocationRestriction) ProtoMessage() {}
 
 func (x *AutocompletePlacesRequest_LocationRestriction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[14]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1608,7 +1805,7 @@ func (x *AutocompletePlacesRequest_LocationRestriction) ProtoReflect() protorefl
 
 // Deprecated: Use AutocompletePlacesRequest_LocationRestriction.ProtoReflect.Descriptor instead.
 func (*AutocompletePlacesRequest_LocationRestriction) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{7, 1}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{8, 1}
 }
 
 func (m *AutocompletePlacesRequest_LocationRestriction) GetType() isAutocompletePlacesRequest_LocationRestriction_Type {
@@ -1668,7 +1865,7 @@ type AutocompletePlacesResponse_Suggestion struct {
 func (x *AutocompletePlacesResponse_Suggestion) Reset() {
 	*x = AutocompletePlacesResponse_Suggestion{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[15]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1681,7 +1878,7 @@ func (x *AutocompletePlacesResponse_Suggestion) String() string {
 func (*AutocompletePlacesResponse_Suggestion) ProtoMessage() {}
 
 func (x *AutocompletePlacesResponse_Suggestion) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[15]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1694,7 +1891,7 @@ func (x *AutocompletePlacesResponse_Suggestion) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use AutocompletePlacesResponse_Suggestion.ProtoReflect.Descriptor instead.
 func (*AutocompletePlacesResponse_Suggestion) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{8, 0}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{9, 0}
 }
 
 func (m *AutocompletePlacesResponse_Suggestion) GetKind() isAutocompletePlacesResponse_Suggestion_Kind {
@@ -1754,7 +1951,7 @@ type AutocompletePlacesResponse_Suggestion_StringRange struct {
 func (x *AutocompletePlacesResponse_Suggestion_StringRange) Reset() {
 	*x = AutocompletePlacesResponse_Suggestion_StringRange{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[16]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1767,7 +1964,7 @@ func (x *AutocompletePlacesResponse_Suggestion_StringRange) String() string {
 func (*AutocompletePlacesResponse_Suggestion_StringRange) ProtoMessage() {}
 
 func (x *AutocompletePlacesResponse_Suggestion_StringRange) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[16]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1780,7 +1977,7 @@ func (x *AutocompletePlacesResponse_Suggestion_StringRange) ProtoReflect() proto
 
 // Deprecated: Use AutocompletePlacesResponse_Suggestion_StringRange.ProtoReflect.Descriptor instead.
 func (*AutocompletePlacesResponse_Suggestion_StringRange) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{8, 0, 0}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{9, 0, 0}
 }
 
 func (x *AutocompletePlacesResponse_Suggestion_StringRange) GetStartOffset() int32 {
@@ -1820,7 +2017,7 @@ type AutocompletePlacesResponse_Suggestion_FormattableText struct {
 func (x *AutocompletePlacesResponse_Suggestion_FormattableText) Reset() {
 	*x = AutocompletePlacesResponse_Suggestion_FormattableText{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[17]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1833,7 +2030,7 @@ func (x *AutocompletePlacesResponse_Suggestion_FormattableText) String() string 
 func (*AutocompletePlacesResponse_Suggestion_FormattableText) ProtoMessage() {}
 
 func (x *AutocompletePlacesResponse_Suggestion_FormattableText) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[17]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1846,7 +2043,7 @@ func (x *AutocompletePlacesResponse_Suggestion_FormattableText) ProtoReflect() p
 
 // Deprecated: Use AutocompletePlacesResponse_Suggestion_FormattableText.ProtoReflect.Descriptor instead.
 func (*AutocompletePlacesResponse_Suggestion_FormattableText) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{8, 0, 1}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{9, 0, 1}
 }
 
 func (x *AutocompletePlacesResponse_Suggestion_FormattableText) GetText() string {
@@ -1886,7 +2083,7 @@ type AutocompletePlacesResponse_Suggestion_StructuredFormat struct {
 func (x *AutocompletePlacesResponse_Suggestion_StructuredFormat) Reset() {
 	*x = AutocompletePlacesResponse_Suggestion_StructuredFormat{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[18]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1899,7 +2096,7 @@ func (x *AutocompletePlacesResponse_Suggestion_StructuredFormat) String() string
 func (*AutocompletePlacesResponse_Suggestion_StructuredFormat) ProtoMessage() {}
 
 func (x *AutocompletePlacesResponse_Suggestion_StructuredFormat) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[18]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1912,7 +2109,7 @@ func (x *AutocompletePlacesResponse_Suggestion_StructuredFormat) ProtoReflect() 
 
 // Deprecated: Use AutocompletePlacesResponse_Suggestion_StructuredFormat.ProtoReflect.Descriptor instead.
 func (*AutocompletePlacesResponse_Suggestion_StructuredFormat) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{8, 0, 2}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{9, 0, 2}
 }
 
 func (x *AutocompletePlacesResponse_Suggestion_StructuredFormat) GetMainText() *AutocompletePlacesResponse_Suggestion_FormattableText {
@@ -1982,7 +2179,7 @@ type AutocompletePlacesResponse_Suggestion_PlacePrediction struct {
 func (x *AutocompletePlacesResponse_Suggestion_PlacePrediction) Reset() {
 	*x = AutocompletePlacesResponse_Suggestion_PlacePrediction{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[19]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1995,7 +2192,7 @@ func (x *AutocompletePlacesResponse_Suggestion_PlacePrediction) String() string 
 func (*AutocompletePlacesResponse_Suggestion_PlacePrediction) ProtoMessage() {}
 
 func (x *AutocompletePlacesResponse_Suggestion_PlacePrediction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[19]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2008,7 +2205,7 @@ func (x *AutocompletePlacesResponse_Suggestion_PlacePrediction) ProtoReflect() p
 
 // Deprecated: Use AutocompletePlacesResponse_Suggestion_PlacePrediction.ProtoReflect.Descriptor instead.
 func (*AutocompletePlacesResponse_Suggestion_PlacePrediction) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{8, 0, 3}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{9, 0, 3}
 }
 
 func (x *AutocompletePlacesResponse_Suggestion_PlacePrediction) GetPlace() string {
@@ -2088,7 +2285,7 @@ type AutocompletePlacesResponse_Suggestion_QueryPrediction struct {
 func (x *AutocompletePlacesResponse_Suggestion_QueryPrediction) Reset() {
 	*x = AutocompletePlacesResponse_Suggestion_QueryPrediction{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[20]
+		mi := &file_google_maps_places_v1_places_service_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2101,7 +2298,7 @@ func (x *AutocompletePlacesResponse_Suggestion_QueryPrediction) String() string 
 func (*AutocompletePlacesResponse_Suggestion_QueryPrediction) ProtoMessage() {}
 
 func (x *AutocompletePlacesResponse_Suggestion_QueryPrediction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[20]
+	mi := &file_google_maps_places_v1_places_service_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2114,7 +2311,7 @@ func (x *AutocompletePlacesResponse_Suggestion_QueryPrediction) ProtoReflect() p
 
 // Deprecated: Use AutocompletePlacesResponse_Suggestion_QueryPrediction.ProtoReflect.Descriptor instead.
 func (*AutocompletePlacesResponse_Suggestion_QueryPrediction) Descriptor() ([]byte, []int) {
-	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{8, 0, 4}
+	return file_google_maps_places_v1_places_service_proto_rawDescGZIP(), []int{9, 0, 4}
 }
 
 func (x *AutocompletePlacesResponse_Suggestion_QueryPrediction) GetText() *AutocompletePlacesResponse_Suggestion_FormattableText {
@@ -2157,58 +2354,103 @@ var file_google_maps_places_v1_places_service_proto_rawDesc = []byte{
 	0x63, 0x65, 0x73, 0x2f, 0x76, 0x31, 0x2f, 0x67, 0x65, 0x6f, 0x6d, 0x65, 0x74, 0x72, 0x79, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x21, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x6d, 0x61,
 	0x70, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x6c, 0x61,
-	0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x18, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2f, 0x74, 0x79, 0x70, 0x65, 0x2f, 0x6c, 0x61, 0x74, 0x6c, 0x6e, 0x67, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x22, 0xc4, 0x05, 0x0a, 0x13, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x4e, 0x65, 0x61,
-	0x72, 0x62, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x23, 0x0a, 0x0d, 0x6c, 0x61,
-	0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x5f, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x0c, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x43, 0x6f, 0x64, 0x65, 0x12,
-	0x1f, 0x0a, 0x0b, 0x72, 0x65, 0x67, 0x69, 0x6f, 0x6e, 0x5f, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x72, 0x65, 0x67, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x64, 0x65,
-	0x12, 0x25, 0x0a, 0x0e, 0x69, 0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x64, 0x5f, 0x74, 0x79, 0x70,
-	0x65, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0d, 0x69, 0x6e, 0x63, 0x6c, 0x75, 0x64,
-	0x65, 0x64, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x25, 0x0a, 0x0e, 0x65, 0x78, 0x63, 0x6c, 0x75,
-	0x64, 0x65, 0x64, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x09, 0x52,
-	0x0d, 0x65, 0x78, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x64, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x34,
-	0x0a, 0x16, 0x69, 0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x64, 0x5f, 0x70, 0x72, 0x69, 0x6d, 0x61,
-	0x72, 0x79, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x05, 0x20, 0x03, 0x28, 0x09, 0x52, 0x14,
-	0x69, 0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x64, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x54,
-	0x79, 0x70, 0x65, 0x73, 0x12, 0x34, 0x0a, 0x16, 0x65, 0x78, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x64,
-	0x5f, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x06,
-	0x20, 0x03, 0x28, 0x09, 0x52, 0x14, 0x65, 0x78, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x64, 0x50, 0x72,
-	0x69, 0x6d, 0x61, 0x72, 0x79, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x28, 0x0a, 0x10, 0x6d, 0x61,
-	0x78, 0x5f, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x07,
-	0x20, 0x01, 0x28, 0x05, 0x52, 0x0e, 0x6d, 0x61, 0x78, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x43,
-	0x6f, 0x75, 0x6e, 0x74, 0x12, 0x76, 0x0a, 0x14, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x5f, 0x72, 0x65, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x08, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x3e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73,
+	0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x24, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2f, 0x6d, 0x61, 0x70, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2f, 0x76, 0x31, 0x2f,
+	0x70, 0x6f, 0x6c, 0x79, 0x6c, 0x69, 0x6e, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2b,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x6d, 0x61, 0x70, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x63,
+	0x65, 0x73, 0x2f, 0x76, 0x31, 0x2f, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x5f, 0x6d, 0x6f, 0x64, 0x69,
+	0x66, 0x69, 0x65, 0x72, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2f, 0x6d, 0x61, 0x70, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2f,
+	0x76, 0x31, 0x2f, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x70, 0x72, 0x65, 0x66, 0x65,
+	0x72, 0x65, 0x6e, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2b, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2f, 0x6d, 0x61, 0x70, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2f,
+	0x76, 0x31, 0x2f, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x73, 0x75, 0x6d, 0x6d, 0x61,
+	0x72, 0x79, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x27, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2f, 0x6d, 0x61, 0x70, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2f, 0x76, 0x31, 0x2f,
+	0x74, 0x72, 0x61, 0x76, 0x65, 0x6c, 0x5f, 0x6d, 0x6f, 0x64, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x1a, 0x18, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x2f, 0x6c,
+	0x61, 0x74, 0x6c, 0x6e, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xc1, 0x02, 0x0a, 0x11,
+	0x52, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72,
+	0x73, 0x12, 0x30, 0x0a, 0x06, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x13, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x2e,
+	0x4c, 0x61, 0x74, 0x4c, 0x6e, 0x67, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x06, 0x6f, 0x72, 0x69,
+	0x67, 0x69, 0x6e, 0x12, 0x47, 0x0a, 0x0b, 0x74, 0x72, 0x61, 0x76, 0x65, 0x6c, 0x5f, 0x6d, 0x6f,
+	0x64, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76, 0x31,
+	0x2e, 0x54, 0x72, 0x61, 0x76, 0x65, 0x6c, 0x4d, 0x6f, 0x64, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x01,
+	0x52, 0x0a, 0x74, 0x72, 0x61, 0x76, 0x65, 0x6c, 0x4d, 0x6f, 0x64, 0x65, 0x12, 0x53, 0x0a, 0x0f,
+	0x72, 0x6f, 0x75, 0x74, 0x65, 0x5f, 0x6d, 0x6f, 0x64, 0x69, 0x66, 0x69, 0x65, 0x72, 0x73, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x25, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d,
+	0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x6f,
+	0x75, 0x74, 0x65, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x69, 0x65, 0x72, 0x73, 0x42, 0x03, 0xe0, 0x41,
+	0x01, 0x52, 0x0e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x69, 0x65, 0x72,
+	0x73, 0x12, 0x5c, 0x0a, 0x12, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x70, 0x72, 0x65,
+	0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x28, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63,
+	0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x50, 0x72, 0x65,
+	0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x11, 0x72, 0x6f,
+	0x75, 0x74, 0x69, 0x6e, 0x67, 0x50, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x22,
+	0xa2, 0x06, 0x0a, 0x13, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x4e, 0x65, 0x61, 0x72, 0x62, 0x79,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x23, 0x0a, 0x0d, 0x6c, 0x61, 0x6e, 0x67, 0x75,
+	0x61, 0x67, 0x65, 0x5f, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c,
+	0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x43, 0x6f, 0x64, 0x65, 0x12, 0x1f, 0x0a, 0x0b,
+	0x72, 0x65, 0x67, 0x69, 0x6f, 0x6e, 0x5f, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0a, 0x72, 0x65, 0x67, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x64, 0x65, 0x12, 0x25, 0x0a,
+	0x0e, 0x69, 0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x64, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18,
+	0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0d, 0x69, 0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x64, 0x54,
+	0x79, 0x70, 0x65, 0x73, 0x12, 0x25, 0x0a, 0x0e, 0x65, 0x78, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x64,
+	0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0d, 0x65, 0x78,
+	0x63, 0x6c, 0x75, 0x64, 0x65, 0x64, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x34, 0x0a, 0x16, 0x69,
+	0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x64, 0x5f, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x5f,
+	0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x05, 0x20, 0x03, 0x28, 0x09, 0x52, 0x14, 0x69, 0x6e, 0x63,
+	0x6c, 0x75, 0x64, 0x65, 0x64, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x54, 0x79, 0x70, 0x65,
+	0x73, 0x12, 0x34, 0x0a, 0x16, 0x65, 0x78, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x64, 0x5f, 0x70, 0x72,
+	0x69, 0x6d, 0x61, 0x72, 0x79, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x06, 0x20, 0x03, 0x28,
+	0x09, 0x52, 0x14, 0x65, 0x78, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x64, 0x50, 0x72, 0x69, 0x6d, 0x61,
+	0x72, 0x79, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x28, 0x0a, 0x10, 0x6d, 0x61, 0x78, 0x5f, 0x72,
+	0x65, 0x73, 0x75, 0x6c, 0x74, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x0e, 0x6d, 0x61, 0x78, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x43, 0x6f, 0x75, 0x6e,
+	0x74, 0x12, 0x76, 0x0a, 0x14, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x72, 0x65,
+	0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x3e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c,
+	0x61, 0x63, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x4e, 0x65,
+	0x61, 0x72, 0x62, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x4c, 0x6f, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x42,
+	0x03, 0xe0, 0x41, 0x02, 0x52, 0x13, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65,
+	0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x62, 0x0a, 0x0f, 0x72, 0x61, 0x6e,
+	0x6b, 0x5f, 0x70, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x18, 0x09, 0x20, 0x01,
+	0x28, 0x0e, 0x32, 0x39, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73,
 	0x2e, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63,
-	0x68, 0x4e, 0x65, 0x61, 0x72, 0x62, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x4c,
+	0x68, 0x4e, 0x65, 0x61, 0x72, 0x62, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x52,
+	0x61, 0x6e, 0x6b, 0x50, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x52, 0x0e, 0x72,
+	0x61, 0x6e, 0x6b, 0x50, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x12, 0x5c, 0x0a,
+	0x12, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74,
+	0x65, 0x72, 0x73, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x28, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76,
+	0x31, 0x2e, 0x52, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74,
+	0x65, 0x72, 0x73, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x11, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e,
+	0x67, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72, 0x73, 0x1a, 0x56, 0x0a, 0x13, 0x4c,
 	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x69,
-	0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x13, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x52, 0x65, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x62, 0x0a, 0x0f,
-	0x72, 0x61, 0x6e, 0x6b, 0x5f, 0x70, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x18,
-	0x09, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x39, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d,
-	0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65,
-	0x61, 0x72, 0x63, 0x68, 0x4e, 0x65, 0x61, 0x72, 0x62, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x2e, 0x52, 0x61, 0x6e, 0x6b, 0x50, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65,
-	0x52, 0x0e, 0x72, 0x61, 0x6e, 0x6b, 0x50, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65,
-	0x1a, 0x56, 0x0a, 0x13, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x74,
-	0x72, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x37, 0x0a, 0x06, 0x63, 0x69, 0x72, 0x63, 0x6c,
-	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e,
-	0x43, 0x69, 0x72, 0x63, 0x6c, 0x65, 0x48, 0x00, 0x52, 0x06, 0x63, 0x69, 0x72, 0x63, 0x6c, 0x65,
-	0x42, 0x06, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x22, 0x4f, 0x0a, 0x0e, 0x52, 0x61, 0x6e, 0x6b,
-	0x50, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x12, 0x1f, 0x0a, 0x1b, 0x52, 0x41,
-	0x4e, 0x4b, 0x5f, 0x50, 0x52, 0x45, 0x46, 0x45, 0x52, 0x45, 0x4e, 0x43, 0x45, 0x5f, 0x55, 0x4e,
-	0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0c, 0x0a, 0x08, 0x44,
-	0x49, 0x53, 0x54, 0x41, 0x4e, 0x43, 0x45, 0x10, 0x01, 0x12, 0x0e, 0x0a, 0x0a, 0x50, 0x4f, 0x50,
-	0x55, 0x4c, 0x41, 0x52, 0x49, 0x54, 0x59, 0x10, 0x02, 0x22, 0x4c, 0x0a, 0x14, 0x53, 0x65, 0x61,
-	0x72, 0x63, 0x68, 0x4e, 0x65, 0x61, 0x72, 0x62, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x34, 0x0a, 0x06, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
-	0x0b, 0x32, 0x1c, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6c, 0x61, 0x63, 0x65, 0x52,
-	0x06, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x22, 0xe0, 0x09, 0x0a, 0x11, 0x53, 0x65, 0x61, 0x72,
+	0x6f, 0x6e, 0x12, 0x37, 0x0a, 0x06, 0x63, 0x69, 0x72, 0x63, 0x6c, 0x65, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73,
+	0x2e, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x69, 0x72, 0x63, 0x6c,
+	0x65, 0x48, 0x00, 0x52, 0x06, 0x63, 0x69, 0x72, 0x63, 0x6c, 0x65, 0x42, 0x06, 0x0a, 0x04, 0x74,
+	0x79, 0x70, 0x65, 0x22, 0x4f, 0x0a, 0x0e, 0x52, 0x61, 0x6e, 0x6b, 0x50, 0x72, 0x65, 0x66, 0x65,
+	0x72, 0x65, 0x6e, 0x63, 0x65, 0x12, 0x1f, 0x0a, 0x1b, 0x52, 0x41, 0x4e, 0x4b, 0x5f, 0x50, 0x52,
+	0x45, 0x46, 0x45, 0x52, 0x45, 0x4e, 0x43, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49,
+	0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0c, 0x0a, 0x08, 0x44, 0x49, 0x53, 0x54, 0x41, 0x4e,
+	0x43, 0x45, 0x10, 0x01, 0x12, 0x0e, 0x0a, 0x0a, 0x50, 0x4f, 0x50, 0x55, 0x4c, 0x41, 0x52, 0x49,
+	0x54, 0x59, 0x10, 0x02, 0x22, 0xa0, 0x01, 0x0a, 0x14, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x4e,
+	0x65, 0x61, 0x72, 0x62, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x34, 0x0a,
+	0x06, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63,
+	0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6c, 0x61, 0x63, 0x65, 0x52, 0x06, 0x70, 0x6c, 0x61,
+	0x63, 0x65, 0x73, 0x12, 0x52, 0x0a, 0x11, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x73,
+	0x75, 0x6d, 0x6d, 0x61, 0x72, 0x69, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x25,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61,
+	0x63, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x53, 0x75,
+	0x6d, 0x6d, 0x61, 0x72, 0x79, 0x52, 0x10, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x53, 0x75,
+	0x6d, 0x6d, 0x61, 0x72, 0x69, 0x65, 0x73, 0x22, 0xac, 0x0c, 0x0a, 0x11, 0x53, 0x65, 0x61, 0x72,
 	0x63, 0x68, 0x54, 0x65, 0x78, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x22, 0x0a,
 	0x0a, 0x74, 0x65, 0x78, 0x74, 0x5f, 0x71, 0x75, 0x65, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28,
 	0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x09, 0x74, 0x65, 0x78, 0x74, 0x51, 0x75, 0x65, 0x72,
@@ -2257,41 +2499,67 @@ var file_google_maps_places_v1_places_service_proto_rawDesc = []byte{
 	0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x54, 0x65, 0x78, 0x74,
 	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x45, 0x56, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e,
 	0x73, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x09, 0x65, 0x76, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e,
-	0x73, 0x1a, 0x8a, 0x01, 0x0a, 0x0c, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x69,
-	0x61, 0x73, 0x12, 0x39, 0x0a, 0x09, 0x72, 0x65, 0x63, 0x74, 0x61, 0x6e, 0x67, 0x6c, 0x65, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67,
-	0x65, 0x6f, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x56, 0x69, 0x65, 0x77, 0x70, 0x6f, 0x72, 0x74,
-	0x48, 0x00, 0x52, 0x09, 0x72, 0x65, 0x63, 0x74, 0x61, 0x6e, 0x67, 0x6c, 0x65, 0x12, 0x37, 0x0a,
-	0x06, 0x63, 0x69, 0x72, 0x63, 0x6c, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e,
+	0x73, 0x12, 0x5c, 0x0a, 0x12, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x70, 0x61, 0x72,
+	0x61, 0x6d, 0x65, 0x74, 0x65, 0x72, 0x73, 0x18, 0x10, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x28, 0x2e,
 	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63,
-	0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x69, 0x72, 0x63, 0x6c, 0x65, 0x48, 0x00, 0x52, 0x06,
-	0x63, 0x69, 0x72, 0x63, 0x6c, 0x65, 0x42, 0x06, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x1a, 0x58,
-	0x0a, 0x13, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x74, 0x72, 0x69,
-	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x39, 0x0a, 0x09, 0x72, 0x65, 0x63, 0x74, 0x61, 0x6e, 0x67,
-	0x6c, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x67, 0x65, 0x6f, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x56, 0x69, 0x65, 0x77, 0x70,
-	0x6f, 0x72, 0x74, 0x48, 0x00, 0x52, 0x09, 0x72, 0x65, 0x63, 0x74, 0x61, 0x6e, 0x67, 0x6c, 0x65,
-	0x42, 0x06, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x1a, 0x9f, 0x01, 0x0a, 0x09, 0x45, 0x56, 0x4f,
-	0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x3c, 0x0a, 0x18, 0x6d, 0x69, 0x6e, 0x69, 0x6d, 0x75,
-	0x6d, 0x5f, 0x63, 0x68, 0x61, 0x72, 0x67, 0x69, 0x6e, 0x67, 0x5f, 0x72, 0x61, 0x74, 0x65, 0x5f,
-	0x6b, 0x77, 0x18, 0x01, 0x20, 0x01, 0x28, 0x01, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x15, 0x6d,
-	0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x43, 0x68, 0x61, 0x72, 0x67, 0x69, 0x6e, 0x67, 0x52, 0x61,
-	0x74, 0x65, 0x4b, 0x77, 0x12, 0x54, 0x0a, 0x0f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x6f,
-	0x72, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0e, 0x32, 0x26, 0x2e,
+	0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x50, 0x61, 0x72,
+	0x61, 0x6d, 0x65, 0x74, 0x65, 0x72, 0x73, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x11, 0x72, 0x6f,
+	0x75, 0x74, 0x69, 0x6e, 0x67, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72, 0x73, 0x12,
+	0x8b, 0x01, 0x0a, 0x1d, 0x73, 0x65, 0x61, 0x72, 0x63, 0x68, 0x5f, 0x61, 0x6c, 0x6f, 0x6e, 0x67,
+	0x5f, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x5f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72,
+	0x73, 0x18, 0x11, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x43, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e,
+	0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x54, 0x65, 0x78, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x41, 0x6c, 0x6f, 0x6e, 0x67, 0x52, 0x6f, 0x75,
+	0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72, 0x73, 0x42, 0x03, 0xe0, 0x41,
+	0x01, 0x52, 0x1a, 0x73, 0x65, 0x61, 0x72, 0x63, 0x68, 0x41, 0x6c, 0x6f, 0x6e, 0x67, 0x52, 0x6f,
+	0x75, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72, 0x73, 0x1a, 0x8a, 0x01,
+	0x0a, 0x0c, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x69, 0x61, 0x73, 0x12, 0x39,
+	0x0a, 0x09, 0x72, 0x65, 0x63, 0x74, 0x61, 0x6e, 0x67, 0x6c, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x65, 0x6f, 0x2e, 0x74,
+	0x79, 0x70, 0x65, 0x2e, 0x56, 0x69, 0x65, 0x77, 0x70, 0x6f, 0x72, 0x74, 0x48, 0x00, 0x52, 0x09,
+	0x72, 0x65, 0x63, 0x74, 0x61, 0x6e, 0x67, 0x6c, 0x65, 0x12, 0x37, 0x0a, 0x06, 0x63, 0x69, 0x72,
+	0x63, 0x6c, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76,
+	0x31, 0x2e, 0x43, 0x69, 0x72, 0x63, 0x6c, 0x65, 0x48, 0x00, 0x52, 0x06, 0x63, 0x69, 0x72, 0x63,
+	0x6c, 0x65, 0x42, 0x06, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x1a, 0x58, 0x0a, 0x13, 0x4c, 0x6f,
+	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x74, 0x72, 0x69, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x12, 0x39, 0x0a, 0x09, 0x72, 0x65, 0x63, 0x74, 0x61, 0x6e, 0x67, 0x6c, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x65,
+	0x6f, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x56, 0x69, 0x65, 0x77, 0x70, 0x6f, 0x72, 0x74, 0x48,
+	0x00, 0x52, 0x09, 0x72, 0x65, 0x63, 0x74, 0x61, 0x6e, 0x67, 0x6c, 0x65, 0x42, 0x06, 0x0a, 0x04,
+	0x74, 0x79, 0x70, 0x65, 0x1a, 0x9f, 0x01, 0x0a, 0x09, 0x45, 0x56, 0x4f, 0x70, 0x74, 0x69, 0x6f,
+	0x6e, 0x73, 0x12, 0x3c, 0x0a, 0x18, 0x6d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x5f, 0x63, 0x68,
+	0x61, 0x72, 0x67, 0x69, 0x6e, 0x67, 0x5f, 0x72, 0x61, 0x74, 0x65, 0x5f, 0x6b, 0x77, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x01, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x15, 0x6d, 0x69, 0x6e, 0x69, 0x6d,
+	0x75, 0x6d, 0x43, 0x68, 0x61, 0x72, 0x67, 0x69, 0x6e, 0x67, 0x52, 0x61, 0x74, 0x65, 0x4b, 0x77,
+	0x12, 0x54, 0x0a, 0x0f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x5f, 0x74, 0x79,
+	0x70, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0e, 0x32, 0x26, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76,
+	0x31, 0x2e, 0x45, 0x56, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x54, 0x79, 0x70,
+	0x65, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x6f,
+	0x72, 0x54, 0x79, 0x70, 0x65, 0x73, 0x1a, 0x5e, 0x0a, 0x1a, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68,
+	0x41, 0x6c, 0x6f, 0x6e, 0x67, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x65,
+	0x74, 0x65, 0x72, 0x73, 0x12, 0x40, 0x0a, 0x08, 0x70, 0x6f, 0x6c, 0x79, 0x6c, 0x69, 0x6e, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50,
+	0x6f, 0x6c, 0x79, 0x6c, 0x69, 0x6e, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x08, 0x70, 0x6f,
+	0x6c, 0x79, 0x6c, 0x69, 0x6e, 0x65, 0x22, 0x4e, 0x0a, 0x0e, 0x52, 0x61, 0x6e, 0x6b, 0x50, 0x72,
+	0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x12, 0x1f, 0x0a, 0x1b, 0x52, 0x41, 0x4e, 0x4b,
+	0x5f, 0x50, 0x52, 0x45, 0x46, 0x45, 0x52, 0x45, 0x4e, 0x43, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50,
+	0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0c, 0x0a, 0x08, 0x44, 0x49, 0x53,
+	0x54, 0x41, 0x4e, 0x43, 0x45, 0x10, 0x01, 0x12, 0x0d, 0x0a, 0x09, 0x52, 0x45, 0x4c, 0x45, 0x56,
+	0x41, 0x4e, 0x43, 0x45, 0x10, 0x02, 0x22, 0xf9, 0x01, 0x0a, 0x12, 0x53, 0x65, 0x61, 0x72, 0x63,
+	0x68, 0x54, 0x65, 0x78, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x34, 0x0a,
+	0x06, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e,
 	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63,
-	0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x56, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x6f,
-	0x72, 0x54, 0x79, 0x70, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0e, 0x63, 0x6f, 0x6e, 0x6e,
-	0x65, 0x63, 0x74, 0x6f, 0x72, 0x54, 0x79, 0x70, 0x65, 0x73, 0x22, 0x4e, 0x0a, 0x0e, 0x52, 0x61,
-	0x6e, 0x6b, 0x50, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x12, 0x1f, 0x0a, 0x1b,
-	0x52, 0x41, 0x4e, 0x4b, 0x5f, 0x50, 0x52, 0x45, 0x46, 0x45, 0x52, 0x45, 0x4e, 0x43, 0x45, 0x5f,
-	0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0c, 0x0a,
-	0x08, 0x44, 0x49, 0x53, 0x54, 0x41, 0x4e, 0x43, 0x45, 0x10, 0x01, 0x12, 0x0d, 0x0a, 0x09, 0x52,
-	0x45, 0x4c, 0x45, 0x56, 0x41, 0x4e, 0x43, 0x45, 0x10, 0x02, 0x22, 0xa5, 0x01, 0x0a, 0x12, 0x53,
-	0x65, 0x61, 0x72, 0x63, 0x68, 0x54, 0x65, 0x78, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x34, 0x0a, 0x06, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
-	0x0b, 0x32, 0x1c, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6c, 0x61, 0x63, 0x65, 0x52,
-	0x06, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x12, 0x59, 0x0a, 0x13, 0x63, 0x6f, 0x6e, 0x74, 0x65,
+	0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6c, 0x61, 0x63, 0x65, 0x52, 0x06, 0x70, 0x6c, 0x61,
+	0x63, 0x65, 0x73, 0x12, 0x52, 0x0a, 0x11, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x5f, 0x73,
+	0x75, 0x6d, 0x6d, 0x61, 0x72, 0x69, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x25,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d, 0x61, 0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61,
+	0x63, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x53, 0x75,
+	0x6d, 0x6d, 0x61, 0x72, 0x79, 0x52, 0x10, 0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x53, 0x75,
+	0x6d, 0x6d, 0x61, 0x72, 0x69, 0x65, 0x73, 0x12, 0x59, 0x0a, 0x13, 0x63, 0x6f, 0x6e, 0x74, 0x65,
 	0x78, 0x74, 0x75, 0x61, 0x6c, 0x5f, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x03,
 	0x20, 0x03, 0x28, 0x0b, 0x32, 0x28, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6d, 0x61,
 	0x70, 0x73, 0x2e, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e,
@@ -2561,87 +2829,104 @@ func file_google_maps_places_v1_places_service_proto_rawDescGZIP() []byte {
 }
 
 var file_google_maps_places_v1_places_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_maps_places_v1_places_service_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_google_maps_places_v1_places_service_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_google_maps_places_v1_places_service_proto_goTypes = []any{
 	(SearchNearbyRequest_RankPreference)(0),                        // 0: google.maps.places.v1.SearchNearbyRequest.RankPreference
 	(SearchTextRequest_RankPreference)(0),                          // 1: google.maps.places.v1.SearchTextRequest.RankPreference
-	(*SearchNearbyRequest)(nil),                                    // 2: google.maps.places.v1.SearchNearbyRequest
-	(*SearchNearbyResponse)(nil),                                   // 3: google.maps.places.v1.SearchNearbyResponse
-	(*SearchTextRequest)(nil),                                      // 4: google.maps.places.v1.SearchTextRequest
-	(*SearchTextResponse)(nil),                                     // 5: google.maps.places.v1.SearchTextResponse
-	(*GetPhotoMediaRequest)(nil),                                   // 6: google.maps.places.v1.GetPhotoMediaRequest
-	(*PhotoMedia)(nil),                                             // 7: google.maps.places.v1.PhotoMedia
-	(*GetPlaceRequest)(nil),                                        // 8: google.maps.places.v1.GetPlaceRequest
-	(*AutocompletePlacesRequest)(nil),                              // 9: google.maps.places.v1.AutocompletePlacesRequest
-	(*AutocompletePlacesResponse)(nil),                             // 10: google.maps.places.v1.AutocompletePlacesResponse
-	(*SearchNearbyRequest_LocationRestriction)(nil),                // 11: google.maps.places.v1.SearchNearbyRequest.LocationRestriction
-	(*SearchTextRequest_LocationBias)(nil),                         // 12: google.maps.places.v1.SearchTextRequest.LocationBias
-	(*SearchTextRequest_LocationRestriction)(nil),                  // 13: google.maps.places.v1.SearchTextRequest.LocationRestriction
-	(*SearchTextRequest_EVOptions)(nil),                            // 14: google.maps.places.v1.SearchTextRequest.EVOptions
-	(*AutocompletePlacesRequest_LocationBias)(nil),                 // 15: google.maps.places.v1.AutocompletePlacesRequest.LocationBias
-	(*AutocompletePlacesRequest_LocationRestriction)(nil),          // 16: google.maps.places.v1.AutocompletePlacesRequest.LocationRestriction
-	(*AutocompletePlacesResponse_Suggestion)(nil),                  // 17: google.maps.places.v1.AutocompletePlacesResponse.Suggestion
-	(*AutocompletePlacesResponse_Suggestion_StringRange)(nil),      // 18: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StringRange
-	(*AutocompletePlacesResponse_Suggestion_FormattableText)(nil),  // 19: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.FormattableText
-	(*AutocompletePlacesResponse_Suggestion_StructuredFormat)(nil), // 20: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StructuredFormat
-	(*AutocompletePlacesResponse_Suggestion_PlacePrediction)(nil),  // 21: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.PlacePrediction
-	(*AutocompletePlacesResponse_Suggestion_QueryPrediction)(nil),  // 22: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.QueryPrediction
-	(*Place)(nil),             // 23: google.maps.places.v1.Place
-	(PriceLevel)(0),           // 24: google.maps.places.v1.PriceLevel
-	(*ContextualContent)(nil), // 25: google.maps.places.v1.ContextualContent
-	(*latlng.LatLng)(nil),     // 26: google.type.LatLng
-	(*Circle)(nil),            // 27: google.maps.places.v1.Circle
-	(*viewport.Viewport)(nil), // 28: google.geo.type.Viewport
-	(EVConnectorType)(0),      // 29: google.maps.places.v1.EVConnectorType
+	(*RoutingParameters)(nil),                                      // 2: google.maps.places.v1.RoutingParameters
+	(*SearchNearbyRequest)(nil),                                    // 3: google.maps.places.v1.SearchNearbyRequest
+	(*SearchNearbyResponse)(nil),                                   // 4: google.maps.places.v1.SearchNearbyResponse
+	(*SearchTextRequest)(nil),                                      // 5: google.maps.places.v1.SearchTextRequest
+	(*SearchTextResponse)(nil),                                     // 6: google.maps.places.v1.SearchTextResponse
+	(*GetPhotoMediaRequest)(nil),                                   // 7: google.maps.places.v1.GetPhotoMediaRequest
+	(*PhotoMedia)(nil),                                             // 8: google.maps.places.v1.PhotoMedia
+	(*GetPlaceRequest)(nil),                                        // 9: google.maps.places.v1.GetPlaceRequest
+	(*AutocompletePlacesRequest)(nil),                              // 10: google.maps.places.v1.AutocompletePlacesRequest
+	(*AutocompletePlacesResponse)(nil),                             // 11: google.maps.places.v1.AutocompletePlacesResponse
+	(*SearchNearbyRequest_LocationRestriction)(nil),                // 12: google.maps.places.v1.SearchNearbyRequest.LocationRestriction
+	(*SearchTextRequest_LocationBias)(nil),                         // 13: google.maps.places.v1.SearchTextRequest.LocationBias
+	(*SearchTextRequest_LocationRestriction)(nil),                  // 14: google.maps.places.v1.SearchTextRequest.LocationRestriction
+	(*SearchTextRequest_EVOptions)(nil),                            // 15: google.maps.places.v1.SearchTextRequest.EVOptions
+	(*SearchTextRequest_SearchAlongRouteParameters)(nil),           // 16: google.maps.places.v1.SearchTextRequest.SearchAlongRouteParameters
+	(*AutocompletePlacesRequest_LocationBias)(nil),                 // 17: google.maps.places.v1.AutocompletePlacesRequest.LocationBias
+	(*AutocompletePlacesRequest_LocationRestriction)(nil),          // 18: google.maps.places.v1.AutocompletePlacesRequest.LocationRestriction
+	(*AutocompletePlacesResponse_Suggestion)(nil),                  // 19: google.maps.places.v1.AutocompletePlacesResponse.Suggestion
+	(*AutocompletePlacesResponse_Suggestion_StringRange)(nil),      // 20: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StringRange
+	(*AutocompletePlacesResponse_Suggestion_FormattableText)(nil),  // 21: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.FormattableText
+	(*AutocompletePlacesResponse_Suggestion_StructuredFormat)(nil), // 22: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StructuredFormat
+	(*AutocompletePlacesResponse_Suggestion_PlacePrediction)(nil),  // 23: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.PlacePrediction
+	(*AutocompletePlacesResponse_Suggestion_QueryPrediction)(nil),  // 24: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.QueryPrediction
+	(*latlng.LatLng)(nil),                                          // 25: google.type.LatLng
+	(TravelMode)(0),                                                // 26: google.maps.places.v1.TravelMode
+	(*RouteModifiers)(nil),                                         // 27: google.maps.places.v1.RouteModifiers
+	(RoutingPreference)(0),                                         // 28: google.maps.places.v1.RoutingPreference
+	(*Place)(nil),                                                  // 29: google.maps.places.v1.Place
+	(*RoutingSummary)(nil),                                         // 30: google.maps.places.v1.RoutingSummary
+	(PriceLevel)(0),                                                // 31: google.maps.places.v1.PriceLevel
+	(*ContextualContent)(nil),                                      // 32: google.maps.places.v1.ContextualContent
+	(*Circle)(nil),                                                 // 33: google.maps.places.v1.Circle
+	(*viewport.Viewport)(nil),                                      // 34: google.geo.type.Viewport
+	(EVConnectorType)(0),                                           // 35: google.maps.places.v1.EVConnectorType
+	(*Polyline)(nil),                                               // 36: google.maps.places.v1.Polyline
 }
 var file_google_maps_places_v1_places_service_proto_depIdxs = []int32{
-	11, // 0: google.maps.places.v1.SearchNearbyRequest.location_restriction:type_name -> google.maps.places.v1.SearchNearbyRequest.LocationRestriction
-	0,  // 1: google.maps.places.v1.SearchNearbyRequest.rank_preference:type_name -> google.maps.places.v1.SearchNearbyRequest.RankPreference
-	23, // 2: google.maps.places.v1.SearchNearbyResponse.places:type_name -> google.maps.places.v1.Place
-	1,  // 3: google.maps.places.v1.SearchTextRequest.rank_preference:type_name -> google.maps.places.v1.SearchTextRequest.RankPreference
-	24, // 4: google.maps.places.v1.SearchTextRequest.price_levels:type_name -> google.maps.places.v1.PriceLevel
-	12, // 5: google.maps.places.v1.SearchTextRequest.location_bias:type_name -> google.maps.places.v1.SearchTextRequest.LocationBias
-	13, // 6: google.maps.places.v1.SearchTextRequest.location_restriction:type_name -> google.maps.places.v1.SearchTextRequest.LocationRestriction
-	14, // 7: google.maps.places.v1.SearchTextRequest.ev_options:type_name -> google.maps.places.v1.SearchTextRequest.EVOptions
-	23, // 8: google.maps.places.v1.SearchTextResponse.places:type_name -> google.maps.places.v1.Place
-	25, // 9: google.maps.places.v1.SearchTextResponse.contextual_contents:type_name -> google.maps.places.v1.ContextualContent
-	15, // 10: google.maps.places.v1.AutocompletePlacesRequest.location_bias:type_name -> google.maps.places.v1.AutocompletePlacesRequest.LocationBias
-	16, // 11: google.maps.places.v1.AutocompletePlacesRequest.location_restriction:type_name -> google.maps.places.v1.AutocompletePlacesRequest.LocationRestriction
-	26, // 12: google.maps.places.v1.AutocompletePlacesRequest.origin:type_name -> google.type.LatLng
-	17, // 13: google.maps.places.v1.AutocompletePlacesResponse.suggestions:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion
-	27, // 14: google.maps.places.v1.SearchNearbyRequest.LocationRestriction.circle:type_name -> google.maps.places.v1.Circle
-	28, // 15: google.maps.places.v1.SearchTextRequest.LocationBias.rectangle:type_name -> google.geo.type.Viewport
-	27, // 16: google.maps.places.v1.SearchTextRequest.LocationBias.circle:type_name -> google.maps.places.v1.Circle
-	28, // 17: google.maps.places.v1.SearchTextRequest.LocationRestriction.rectangle:type_name -> google.geo.type.Viewport
-	29, // 18: google.maps.places.v1.SearchTextRequest.EVOptions.connector_types:type_name -> google.maps.places.v1.EVConnectorType
-	28, // 19: google.maps.places.v1.AutocompletePlacesRequest.LocationBias.rectangle:type_name -> google.geo.type.Viewport
-	27, // 20: google.maps.places.v1.AutocompletePlacesRequest.LocationBias.circle:type_name -> google.maps.places.v1.Circle
-	28, // 21: google.maps.places.v1.AutocompletePlacesRequest.LocationRestriction.rectangle:type_name -> google.geo.type.Viewport
-	27, // 22: google.maps.places.v1.AutocompletePlacesRequest.LocationRestriction.circle:type_name -> google.maps.places.v1.Circle
-	21, // 23: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.place_prediction:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.PlacePrediction
-	22, // 24: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.query_prediction:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.QueryPrediction
-	18, // 25: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.FormattableText.matches:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StringRange
-	19, // 26: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StructuredFormat.main_text:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.FormattableText
-	19, // 27: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StructuredFormat.secondary_text:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.FormattableText
-	19, // 28: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.PlacePrediction.text:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.FormattableText
-	20, // 29: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.PlacePrediction.structured_format:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StructuredFormat
-	19, // 30: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.QueryPrediction.text:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.FormattableText
-	20, // 31: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.QueryPrediction.structured_format:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StructuredFormat
-	2,  // 32: google.maps.places.v1.Places.SearchNearby:input_type -> google.maps.places.v1.SearchNearbyRequest
-	4,  // 33: google.maps.places.v1.Places.SearchText:input_type -> google.maps.places.v1.SearchTextRequest
-	6,  // 34: google.maps.places.v1.Places.GetPhotoMedia:input_type -> google.maps.places.v1.GetPhotoMediaRequest
-	8,  // 35: google.maps.places.v1.Places.GetPlace:input_type -> google.maps.places.v1.GetPlaceRequest
-	9,  // 36: google.maps.places.v1.Places.AutocompletePlaces:input_type -> google.maps.places.v1.AutocompletePlacesRequest
-	3,  // 37: google.maps.places.v1.Places.SearchNearby:output_type -> google.maps.places.v1.SearchNearbyResponse
-	5,  // 38: google.maps.places.v1.Places.SearchText:output_type -> google.maps.places.v1.SearchTextResponse
-	7,  // 39: google.maps.places.v1.Places.GetPhotoMedia:output_type -> google.maps.places.v1.PhotoMedia
-	23, // 40: google.maps.places.v1.Places.GetPlace:output_type -> google.maps.places.v1.Place
-	10, // 41: google.maps.places.v1.Places.AutocompletePlaces:output_type -> google.maps.places.v1.AutocompletePlacesResponse
-	37, // [37:42] is the sub-list for method output_type
-	32, // [32:37] is the sub-list for method input_type
-	32, // [32:32] is the sub-list for extension type_name
-	32, // [32:32] is the sub-list for extension extendee
-	0,  // [0:32] is the sub-list for field type_name
+	25, // 0: google.maps.places.v1.RoutingParameters.origin:type_name -> google.type.LatLng
+	26, // 1: google.maps.places.v1.RoutingParameters.travel_mode:type_name -> google.maps.places.v1.TravelMode
+	27, // 2: google.maps.places.v1.RoutingParameters.route_modifiers:type_name -> google.maps.places.v1.RouteModifiers
+	28, // 3: google.maps.places.v1.RoutingParameters.routing_preference:type_name -> google.maps.places.v1.RoutingPreference
+	12, // 4: google.maps.places.v1.SearchNearbyRequest.location_restriction:type_name -> google.maps.places.v1.SearchNearbyRequest.LocationRestriction
+	0,  // 5: google.maps.places.v1.SearchNearbyRequest.rank_preference:type_name -> google.maps.places.v1.SearchNearbyRequest.RankPreference
+	2,  // 6: google.maps.places.v1.SearchNearbyRequest.routing_parameters:type_name -> google.maps.places.v1.RoutingParameters
+	29, // 7: google.maps.places.v1.SearchNearbyResponse.places:type_name -> google.maps.places.v1.Place
+	30, // 8: google.maps.places.v1.SearchNearbyResponse.routing_summaries:type_name -> google.maps.places.v1.RoutingSummary
+	1,  // 9: google.maps.places.v1.SearchTextRequest.rank_preference:type_name -> google.maps.places.v1.SearchTextRequest.RankPreference
+	31, // 10: google.maps.places.v1.SearchTextRequest.price_levels:type_name -> google.maps.places.v1.PriceLevel
+	13, // 11: google.maps.places.v1.SearchTextRequest.location_bias:type_name -> google.maps.places.v1.SearchTextRequest.LocationBias
+	14, // 12: google.maps.places.v1.SearchTextRequest.location_restriction:type_name -> google.maps.places.v1.SearchTextRequest.LocationRestriction
+	15, // 13: google.maps.places.v1.SearchTextRequest.ev_options:type_name -> google.maps.places.v1.SearchTextRequest.EVOptions
+	2,  // 14: google.maps.places.v1.SearchTextRequest.routing_parameters:type_name -> google.maps.places.v1.RoutingParameters
+	16, // 15: google.maps.places.v1.SearchTextRequest.search_along_route_parameters:type_name -> google.maps.places.v1.SearchTextRequest.SearchAlongRouteParameters
+	29, // 16: google.maps.places.v1.SearchTextResponse.places:type_name -> google.maps.places.v1.Place
+	30, // 17: google.maps.places.v1.SearchTextResponse.routing_summaries:type_name -> google.maps.places.v1.RoutingSummary
+	32, // 18: google.maps.places.v1.SearchTextResponse.contextual_contents:type_name -> google.maps.places.v1.ContextualContent
+	17, // 19: google.maps.places.v1.AutocompletePlacesRequest.location_bias:type_name -> google.maps.places.v1.AutocompletePlacesRequest.LocationBias
+	18, // 20: google.maps.places.v1.AutocompletePlacesRequest.location_restriction:type_name -> google.maps.places.v1.AutocompletePlacesRequest.LocationRestriction
+	25, // 21: google.maps.places.v1.AutocompletePlacesRequest.origin:type_name -> google.type.LatLng
+	19, // 22: google.maps.places.v1.AutocompletePlacesResponse.suggestions:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion
+	33, // 23: google.maps.places.v1.SearchNearbyRequest.LocationRestriction.circle:type_name -> google.maps.places.v1.Circle
+	34, // 24: google.maps.places.v1.SearchTextRequest.LocationBias.rectangle:type_name -> google.geo.type.Viewport
+	33, // 25: google.maps.places.v1.SearchTextRequest.LocationBias.circle:type_name -> google.maps.places.v1.Circle
+	34, // 26: google.maps.places.v1.SearchTextRequest.LocationRestriction.rectangle:type_name -> google.geo.type.Viewport
+	35, // 27: google.maps.places.v1.SearchTextRequest.EVOptions.connector_types:type_name -> google.maps.places.v1.EVConnectorType
+	36, // 28: google.maps.places.v1.SearchTextRequest.SearchAlongRouteParameters.polyline:type_name -> google.maps.places.v1.Polyline
+	34, // 29: google.maps.places.v1.AutocompletePlacesRequest.LocationBias.rectangle:type_name -> google.geo.type.Viewport
+	33, // 30: google.maps.places.v1.AutocompletePlacesRequest.LocationBias.circle:type_name -> google.maps.places.v1.Circle
+	34, // 31: google.maps.places.v1.AutocompletePlacesRequest.LocationRestriction.rectangle:type_name -> google.geo.type.Viewport
+	33, // 32: google.maps.places.v1.AutocompletePlacesRequest.LocationRestriction.circle:type_name -> google.maps.places.v1.Circle
+	23, // 33: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.place_prediction:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.PlacePrediction
+	24, // 34: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.query_prediction:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.QueryPrediction
+	20, // 35: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.FormattableText.matches:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StringRange
+	21, // 36: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StructuredFormat.main_text:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.FormattableText
+	21, // 37: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StructuredFormat.secondary_text:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.FormattableText
+	21, // 38: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.PlacePrediction.text:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.FormattableText
+	22, // 39: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.PlacePrediction.structured_format:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StructuredFormat
+	21, // 40: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.QueryPrediction.text:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.FormattableText
+	22, // 41: google.maps.places.v1.AutocompletePlacesResponse.Suggestion.QueryPrediction.structured_format:type_name -> google.maps.places.v1.AutocompletePlacesResponse.Suggestion.StructuredFormat
+	3,  // 42: google.maps.places.v1.Places.SearchNearby:input_type -> google.maps.places.v1.SearchNearbyRequest
+	5,  // 43: google.maps.places.v1.Places.SearchText:input_type -> google.maps.places.v1.SearchTextRequest
+	7,  // 44: google.maps.places.v1.Places.GetPhotoMedia:input_type -> google.maps.places.v1.GetPhotoMediaRequest
+	9,  // 45: google.maps.places.v1.Places.GetPlace:input_type -> google.maps.places.v1.GetPlaceRequest
+	10, // 46: google.maps.places.v1.Places.AutocompletePlaces:input_type -> google.maps.places.v1.AutocompletePlacesRequest
+	4,  // 47: google.maps.places.v1.Places.SearchNearby:output_type -> google.maps.places.v1.SearchNearbyResponse
+	6,  // 48: google.maps.places.v1.Places.SearchText:output_type -> google.maps.places.v1.SearchTextResponse
+	8,  // 49: google.maps.places.v1.Places.GetPhotoMedia:output_type -> google.maps.places.v1.PhotoMedia
+	29, // 50: google.maps.places.v1.Places.GetPlace:output_type -> google.maps.places.v1.Place
+	11, // 51: google.maps.places.v1.Places.AutocompletePlaces:output_type -> google.maps.places.v1.AutocompletePlacesResponse
+	47, // [47:52] is the sub-list for method output_type
+	42, // [42:47] is the sub-list for method input_type
+	42, // [42:42] is the sub-list for extension type_name
+	42, // [42:42] is the sub-list for extension extendee
+	0,  // [0:42] is the sub-list for field type_name
 }
 
 func init() { file_google_maps_places_v1_places_service_proto_init() }
@@ -2653,9 +2938,14 @@ func file_google_maps_places_v1_places_service_proto_init() {
 	file_google_maps_places_v1_ev_charging_proto_init()
 	file_google_maps_places_v1_geometry_proto_init()
 	file_google_maps_places_v1_place_proto_init()
+	file_google_maps_places_v1_polyline_proto_init()
+	file_google_maps_places_v1_route_modifiers_proto_init()
+	file_google_maps_places_v1_routing_preference_proto_init()
+	file_google_maps_places_v1_routing_summary_proto_init()
+	file_google_maps_places_v1_travel_mode_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_google_maps_places_v1_places_service_proto_msgTypes[0].Exporter = func(v any, i int) any {
-			switch v := v.(*SearchNearbyRequest); i {
+			switch v := v.(*RoutingParameters); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2667,7 +2957,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[1].Exporter = func(v any, i int) any {
-			switch v := v.(*SearchNearbyResponse); i {
+			switch v := v.(*SearchNearbyRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2679,7 +2969,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[2].Exporter = func(v any, i int) any {
-			switch v := v.(*SearchTextRequest); i {
+			switch v := v.(*SearchNearbyResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2691,7 +2981,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[3].Exporter = func(v any, i int) any {
-			switch v := v.(*SearchTextResponse); i {
+			switch v := v.(*SearchTextRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2703,7 +2993,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[4].Exporter = func(v any, i int) any {
-			switch v := v.(*GetPhotoMediaRequest); i {
+			switch v := v.(*SearchTextResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2715,7 +3005,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[5].Exporter = func(v any, i int) any {
-			switch v := v.(*PhotoMedia); i {
+			switch v := v.(*GetPhotoMediaRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2727,7 +3017,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[6].Exporter = func(v any, i int) any {
-			switch v := v.(*GetPlaceRequest); i {
+			switch v := v.(*PhotoMedia); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2739,7 +3029,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[7].Exporter = func(v any, i int) any {
-			switch v := v.(*AutocompletePlacesRequest); i {
+			switch v := v.(*GetPlaceRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2751,7 +3041,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[8].Exporter = func(v any, i int) any {
-			switch v := v.(*AutocompletePlacesResponse); i {
+			switch v := v.(*AutocompletePlacesRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2763,7 +3053,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[9].Exporter = func(v any, i int) any {
-			switch v := v.(*SearchNearbyRequest_LocationRestriction); i {
+			switch v := v.(*AutocompletePlacesResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2775,7 +3065,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[10].Exporter = func(v any, i int) any {
-			switch v := v.(*SearchTextRequest_LocationBias); i {
+			switch v := v.(*SearchNearbyRequest_LocationRestriction); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2787,7 +3077,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[11].Exporter = func(v any, i int) any {
-			switch v := v.(*SearchTextRequest_LocationRestriction); i {
+			switch v := v.(*SearchTextRequest_LocationBias); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2799,7 +3089,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[12].Exporter = func(v any, i int) any {
-			switch v := v.(*SearchTextRequest_EVOptions); i {
+			switch v := v.(*SearchTextRequest_LocationRestriction); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2811,7 +3101,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[13].Exporter = func(v any, i int) any {
-			switch v := v.(*AutocompletePlacesRequest_LocationBias); i {
+			switch v := v.(*SearchTextRequest_EVOptions); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2823,7 +3113,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[14].Exporter = func(v any, i int) any {
-			switch v := v.(*AutocompletePlacesRequest_LocationRestriction); i {
+			switch v := v.(*SearchTextRequest_SearchAlongRouteParameters); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2835,7 +3125,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[15].Exporter = func(v any, i int) any {
-			switch v := v.(*AutocompletePlacesResponse_Suggestion); i {
+			switch v := v.(*AutocompletePlacesRequest_LocationBias); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2847,7 +3137,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[16].Exporter = func(v any, i int) any {
-			switch v := v.(*AutocompletePlacesResponse_Suggestion_StringRange); i {
+			switch v := v.(*AutocompletePlacesRequest_LocationRestriction); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2859,7 +3149,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[17].Exporter = func(v any, i int) any {
-			switch v := v.(*AutocompletePlacesResponse_Suggestion_FormattableText); i {
+			switch v := v.(*AutocompletePlacesResponse_Suggestion); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2871,7 +3161,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[18].Exporter = func(v any, i int) any {
-			switch v := v.(*AutocompletePlacesResponse_Suggestion_StructuredFormat); i {
+			switch v := v.(*AutocompletePlacesResponse_Suggestion_StringRange); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2883,7 +3173,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[19].Exporter = func(v any, i int) any {
-			switch v := v.(*AutocompletePlacesResponse_Suggestion_PlacePrediction); i {
+			switch v := v.(*AutocompletePlacesResponse_Suggestion_FormattableText); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2895,6 +3185,30 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 		file_google_maps_places_v1_places_service_proto_msgTypes[20].Exporter = func(v any, i int) any {
+			switch v := v.(*AutocompletePlacesResponse_Suggestion_StructuredFormat); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_maps_places_v1_places_service_proto_msgTypes[21].Exporter = func(v any, i int) any {
+			switch v := v.(*AutocompletePlacesResponse_Suggestion_PlacePrediction); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_maps_places_v1_places_service_proto_msgTypes[22].Exporter = func(v any, i int) any {
 			switch v := v.(*AutocompletePlacesResponse_Suggestion_QueryPrediction); i {
 			case 0:
 				return &v.state
@@ -2907,25 +3221,25 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			}
 		}
 	}
-	file_google_maps_places_v1_places_service_proto_msgTypes[9].OneofWrappers = []any{
+	file_google_maps_places_v1_places_service_proto_msgTypes[10].OneofWrappers = []any{
 		(*SearchNearbyRequest_LocationRestriction_Circle)(nil),
 	}
-	file_google_maps_places_v1_places_service_proto_msgTypes[10].OneofWrappers = []any{
+	file_google_maps_places_v1_places_service_proto_msgTypes[11].OneofWrappers = []any{
 		(*SearchTextRequest_LocationBias_Rectangle)(nil),
 		(*SearchTextRequest_LocationBias_Circle)(nil),
 	}
-	file_google_maps_places_v1_places_service_proto_msgTypes[11].OneofWrappers = []any{
+	file_google_maps_places_v1_places_service_proto_msgTypes[12].OneofWrappers = []any{
 		(*SearchTextRequest_LocationRestriction_Rectangle)(nil),
 	}
-	file_google_maps_places_v1_places_service_proto_msgTypes[13].OneofWrappers = []any{
+	file_google_maps_places_v1_places_service_proto_msgTypes[15].OneofWrappers = []any{
 		(*AutocompletePlacesRequest_LocationBias_Rectangle)(nil),
 		(*AutocompletePlacesRequest_LocationBias_Circle)(nil),
 	}
-	file_google_maps_places_v1_places_service_proto_msgTypes[14].OneofWrappers = []any{
+	file_google_maps_places_v1_places_service_proto_msgTypes[16].OneofWrappers = []any{
 		(*AutocompletePlacesRequest_LocationRestriction_Rectangle)(nil),
 		(*AutocompletePlacesRequest_LocationRestriction_Circle)(nil),
 	}
-	file_google_maps_places_v1_places_service_proto_msgTypes[15].OneofWrappers = []any{
+	file_google_maps_places_v1_places_service_proto_msgTypes[17].OneofWrappers = []any{
 		(*AutocompletePlacesResponse_Suggestion_PlacePrediction_)(nil),
 		(*AutocompletePlacesResponse_Suggestion_QueryPrediction_)(nil),
 	}
@@ -2935,7 +3249,7 @@ func file_google_maps_places_v1_places_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_maps_places_v1_places_service_proto_rawDesc,
 			NumEnums:      2,
-			NumMessages:   21,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

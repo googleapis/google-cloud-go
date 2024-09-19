@@ -57,6 +57,7 @@ func defaultCursorGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://pubsublite.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
