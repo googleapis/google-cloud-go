@@ -61,7 +61,7 @@ func defaultMetastorePartitionGRPCClientOptions() []option.ClientOption {
 func defaultMetastorePartitionCallOptions() *MetastorePartitionCallOptions {
 	return &MetastorePartitionCallOptions{
 		BatchCreateMetastorePartitions: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithTimeout(240000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -73,7 +73,7 @@ func defaultMetastorePartitionCallOptions() *MetastorePartitionCallOptions {
 			}),
 		},
 		BatchDeleteMetastorePartitions: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithTimeout(240000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,7 +85,7 @@ func defaultMetastorePartitionCallOptions() *MetastorePartitionCallOptions {
 			}),
 		},
 		BatchUpdateMetastorePartitions: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithTimeout(240000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -97,7 +97,7 @@ func defaultMetastorePartitionCallOptions() *MetastorePartitionCallOptions {
 			}),
 		},
 		ListMetastorePartitions: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithTimeout(240000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
