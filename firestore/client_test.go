@@ -351,6 +351,12 @@ func TestGetAllErrors(t *testing.T) {
 	if _, err := c.GetAll(ctx, []*DocumentRef{c.Doc("C/a")}); err == nil {
 		t.Error("got nil, want error")
 	}
+
+	// Invalid UTF-8 characters
+	srv.reset()
+	if _, gotErr := c.GetAll(ctx, []*DocumentRef{c.Doc("C/Mayag\xcfez")}); !errorsMatch(gotErr, errInvalidUtf8DocRef) {
+		t.Errorf("got: %v, want: %v", gotErr, errInvalidUtf8DocRef)
+	}
 }
 
 func TestClient_WithReadOptions(t *testing.T) {

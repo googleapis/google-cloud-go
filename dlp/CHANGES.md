@@ -1,5 +1,19 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.18.1...dlp/v1.19.0) (2024-09-19)
+
+
+### Features
+
+* **dlp:** Action for publishing data profiles to SecOps (formelly known as Chronicle) ([#10884](https://github.com/googleapis/google-cloud-go/issues/10884)) ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+* **dlp:** Action for publishing data profiles to Security Command Center ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+* **dlp:** Discovery configs for AWS S3 buckets ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+
+
+### Documentation
+
+* **dlp:** Small improvements and clarifications ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.18.0...dlp/v1.18.1) (2024-09-12)
 
 
