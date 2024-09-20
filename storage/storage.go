@@ -2135,6 +2135,7 @@ func (c *Client) SetRetry(opts ...RetryOption) {
 		opt.apply(retry)
 	}
 	c.retry = retry
+	c.tc.RetryUpdate(*retry)
 }
 
 // RetryOption allows users to configure non-default retry behavior for API
@@ -2249,11 +2250,44 @@ func (wef *withErrorFunc) apply(config *retryConfig) {
 	config.shouldRetry = wef.shouldRetry
 }
 
+// WithReadStallTimeout returns a retry option that proactively terminates the
+// connection and retries if a download using storage.Reader hangs for longer
+// than the provided timeout. The default value is no timeout. This only is
+// applied for HTTP requests currently (not gRPC).
+func WithReadDynamicTimeout(targetPercentile float64, increaseRate float64, initialTimeout time.Duration, minTimeout time.Duration, maxTimeout time.Duration) RetryOption {
+	return &withReadDynamicTimeout{
+		readDynamicTimeout: &readDynamicTimeout{
+			targetPercentile: targetPercentile,
+			increaseRate:     increaseRate,
+			initial:          initialTimeout,
+			min:              minTimeout,
+			max:              maxTimeout,
+		},
+	}
+}
+
+type withReadDynamicTimeout struct {
+	readDynamicTimeout *readDynamicTimeout
+}
+
+func (wrdt *withReadDynamicTimeout) apply(config *retryConfig) {
+	config.readDynamicTimeout = wrdt.readDynamicTimeout
+}
+
+type readDynamicTimeout struct {
+	targetPercentile float64
+	increaseRate     float64
+	initial          time.Duration
+	min              time.Duration
+	max              time.Duration
+}
+
 type retryConfig struct {
-	backoff     *gax.Backoff
-	policy      RetryPolicy
-	shouldRetry func(err error) bool
-	maxAttempts *int
+	backoff            *gax.Backoff
+	policy             RetryPolicy
+	shouldRetry        func(err error) bool
+	maxAttempts        *int
+	readDynamicTimeout *readDynamicTimeout
 }
 
 func (r *retryConfig) clone() *retryConfig {
@@ -2271,10 +2305,11 @@ func (r *retryConfig) clone() *retryConfig {
 	}
 
 	return &retryConfig{
-		backoff:     bo,
-		policy:      r.policy,
-		shouldRetry: r.shouldRetry,
-		maxAttempts: r.maxAttempts,
+		backoff:            bo,
+		policy:             r.policy,
+		shouldRetry:        r.shouldRetry,
+		maxAttempts:        r.maxAttempts,
+		readDynamicTimeout: r.readDynamicTimeout,
 	}
 }
 
