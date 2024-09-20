@@ -473,6 +473,11 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		metricsProvider = noop.NewMeterProvider()
 	}
 
+	if os.Getenv("SPANNER_ENABLE_BUILTIN_METRICS") != "true" {
+		// Do not emit native metrics when SPANNER_ENABLE_BUILTIN_METRICS is not set to true
+		metricsProvider = noop.NewMeterProvider()
+	}
+
 	// Create a OpenTelemetry metrics configuration
 	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider)
 	if err != nil {
