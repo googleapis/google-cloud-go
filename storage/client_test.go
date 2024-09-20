@@ -189,7 +189,7 @@ func TestUpdateBucketEmulated(t *testing.T) {
 }
 
 func TestGetServiceAccountEmulated(t *testing.T) {
-	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+	transportClientTest(skipGRPC("serviceaccount is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		_, err := client.GetServiceAccount(ctx, project)
 		if err != nil {
 			t.Fatalf("client.GetServiceAccount: %v", err)
@@ -1059,7 +1059,7 @@ func TestComposeEmulated(t *testing.T) {
 }
 
 func TestHMACKeyCRUDEmulated(t *testing.T) {
-	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+	transportClientTest(skipGRPC("hmac not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		serviceAccountEmail := "test@test-project.iam.gserviceaccount.com"
 		want, err := client.CreateHMACKey(ctx, project, serviceAccountEmail)
 		if err != nil {
