@@ -54,7 +54,7 @@ runPresubmitTests() {
   fi
 
   if [ -z ${RUN_INTEGRATION_TESTS} ]; then
-    GOWORK=off go test -race -v -timeout 45m ./... 2>&1 |
+    GOWORK=off go test -race -v -timeout 15m -short ./... 2>&1 |
       tee sponge_log.log
   else
     GOWORK=off go test -race -v -timeout 45m ./... 2>&1 |
