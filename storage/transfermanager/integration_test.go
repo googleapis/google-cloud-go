@@ -28,6 +28,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -294,6 +295,75 @@ func TestIntegration_DownloadDirectoryAsync(t *testing.T) {
 			if !entry.IsDir() && entry.Name() != "objA" && entry.Name() != "objB" {
 				t.Errorf("unexpected file %q in dir", entry.Name())
 			}
+		}
+
+		// Now attempt to download the entire directory.
+		// The existing files should be skipped.
+		callbacks := make(chan bool)
+
+		d, err = NewDownloader(c, WithWorkers(2), SkipIfExists())
+		if err != nil {
+			t.Fatalf("NewDownloader: %v", err)
+		}
+
+		if err := d.DownloadDirectory(ctx, &DownloadDirectoryInput{
+			Bucket:         tb.bucket,
+			LocalDirectory: localDir,
+			OnObjectDownload: func(got *DownloadOutput) {
+				callbacks <- true
+
+				if got.Err != nil {
+					t.Errorf("result.Err: %v", got.Err)
+				}
+
+				if strings.EqualFold(got.Object, "dir/objA") {
+					t.Errorf("should have skipped download of object %s", got.Object)
+				}
+
+				if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+					t.Errorf("expected object size %d, got %d", want, got)
+				}
+
+				path := filepath.Join(localDir, got.Object)
+				f, err := os.Open(path)
+				if err != nil {
+					t.Errorf("os.Open(%q): %v", path, err)
+				}
+				defer f.Close()
+
+				b := bytes.NewBuffer(make([]byte, 0, got.Attrs.Size))
+				if _, err := io.Copy(b, f); err != nil {
+					t.Errorf("io.Copy: %v", err)
+				}
+
+				if wantCRC, gotCRC := tb.contentHashes[got.Object], crc32c(b.Bytes()); gotCRC != wantCRC {
+					t.Errorf("object(%q) at filepath(%q): content crc32c does not match; got: %v, expected: %v", got.Object, path, gotCRC, wantCRC)
+				}
+			},
+		}); err != nil {
+			t.Errorf("d.DownloadDirectory: %v", err)
+		}
+
+		gotCallbacks := 0
+		done := make(chan bool)
+		go func() {
+			for {
+				select {
+				case <-done:
+					break
+				case <-callbacks:
+					gotCallbacks++
+				}
+			}
+		}()
+
+		if _, err := d.WaitAndClose(); err != nil {
+			t.Errorf("d.WaitAndClose: %v", err)
+		}
+		done <- true
+
+		if want, got := len(tb.objects)-wantObjs, gotCallbacks; want != got {
+			t.Errorf("expected to receive %d callbacks, got %d", want, got)
 		}
 	})
 }
