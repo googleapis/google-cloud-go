@@ -473,6 +473,10 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		metricsProvider = noop.NewMeterProvider()
 	}
 
+	// SPANNER_ENABLE_BUILTIN_METRICS environment variable is used to enable
+	// native metrics for the Spanner client, which overrides the default.
+	//
+	// This is an EXPERIMENTAL feature and may be changed or removed in the future.
 	if os.Getenv("SPANNER_ENABLE_BUILTIN_METRICS") != "true" {
 		// Do not emit native metrics when SPANNER_ENABLE_BUILTIN_METRICS is not set to true
 		metricsProvider = noop.NewMeterProvider()
