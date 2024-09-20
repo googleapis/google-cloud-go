@@ -40,14 +40,14 @@ var emulatorClients map[string]storageClient
 var veneerClient *Client
 
 func TestCreateBucketEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		want := &BucketAttrs{
 			Name: bucket,
 			Logging: &BucketLogging{
 				LogBucket: bucket,
 			},
 		}
-		got, err := client.CreateBucket(context.Background(), project, want.Name, want, nil)
+		got, err := client.CreateBucket(ctx, project, want.Name, want, nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -65,17 +65,17 @@ func TestCreateBucketEmulated(t *testing.T) {
 }
 
 func TestDeleteBucketEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		b := &BucketAttrs{
 			Name: bucket,
 		}
 		// Create the bucket that will be deleted.
-		_, err := client.CreateBucket(context.Background(), project, b.Name, b, nil)
+		_, err := client.CreateBucket(ctx, project, b.Name, b, nil)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		// Delete the bucket that was just created.
-		err = client.DeleteBucket(context.Background(), b.Name, nil)
+		err = client.DeleteBucket(ctx, b.Name, nil)
 		if err != nil {
 			t.Fatalf("client.DeleteBucket: %v", err)
 		}
@@ -83,16 +83,16 @@ func TestDeleteBucketEmulated(t *testing.T) {
 }
 
 func TestGetBucketEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		want := &BucketAttrs{
 			Name: bucket,
 		}
 		// Create the bucket that will be retrieved.
-		_, err := client.CreateBucket(context.Background(), project, want.Name, want, nil)
+		_, err := client.CreateBucket(ctx, project, want.Name, want, nil)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
-		got, err := client.GetBucket(context.Background(), want.Name, &BucketConditions{MetagenerationMatch: 1})
+		got, err := client.GetBucket(ctx, want.Name, &BucketConditions{MetagenerationMatch: 1})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -103,12 +103,12 @@ func TestGetBucketEmulated(t *testing.T) {
 }
 
 func TestUpdateBucketEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		bkt := &BucketAttrs{
 			Name: bucket,
 		}
 		// Create the bucket that will be updated.
-		_, err := client.CreateBucket(context.Background(), project, bkt.Name, bkt, nil)
+		_, err := client.CreateBucket(ctx, project, bkt.Name, bkt, nil)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
@@ -151,7 +151,7 @@ func TestUpdateBucketEmulated(t *testing.T) {
 			RPO:          RPOAsyncTurbo,
 		}
 
-		got, err := client.UpdateBucket(context.Background(), bucket, ua, &BucketConditions{MetagenerationMatch: 1})
+		got, err := client.UpdateBucket(ctx, bucket, ua, &BucketConditions{MetagenerationMatch: 1})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -189,8 +189,8 @@ func TestUpdateBucketEmulated(t *testing.T) {
 }
 
 func TestGetServiceAccountEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		_, err := client.GetServiceAccount(context.Background(), project)
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.GetServiceAccount(ctx, project)
 		if err != nil {
 			t.Fatalf("client.GetServiceAccount: %v", err)
 		}
@@ -198,18 +198,18 @@ func TestGetServiceAccountEmulated(t *testing.T) {
 }
 
 func TestGetSetTestIamPolicyEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		battrs, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		battrs, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
-		got, err := client.GetIamPolicy(context.Background(), battrs.Name, 0)
+		got, err := client.GetIamPolicy(ctx, battrs.Name, 0)
 		if err != nil {
 			t.Fatalf("client.GetIamPolicy: %v", err)
 		}
-		err = client.SetIamPolicy(context.Background(), battrs.Name, &iampb.Policy{
+		err = client.SetIamPolicy(ctx, battrs.Name, &iampb.Policy{
 			Etag:     got.GetEtag(),
 			Bindings: []*iampb.Binding{{Role: "roles/viewer", Members: []string{"allUsers"}}},
 		})
@@ -217,7 +217,7 @@ func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 			t.Fatalf("client.SetIamPolicy: %v", err)
 		}
 		want := []string{"storage.foo", "storage.bar"}
-		perms, err := client.TestIamPermissions(context.Background(), battrs.Name, want)
+		perms, err := client.TestIamPermissions(ctx, battrs.Name, want)
 		if err != nil {
 			t.Fatalf("client.TestIamPermissions: %v", err)
 		}
@@ -228,9 +228,9 @@ func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 }
 
 func TestDeleteObjectEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test object that will be deleted.
-		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
 		if err != nil {
@@ -240,14 +240,14 @@ func TestDeleteObjectEmulated(t *testing.T) {
 			Bucket: bucket,
 			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
 		}
-		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(ctx)
 		if _, err := w.Write(randomBytesToWrite); err != nil {
 			t.Fatalf("failed to populate test object: %v", err)
 		}
 		if err := w.Close(); err != nil {
 			t.Fatalf("closing object: %v", err)
 		}
-		err = client.DeleteObject(context.Background(), bucket, want.Name, defaultGen, nil)
+		err = client.DeleteObject(ctx, bucket, want.Name, defaultGen, nil)
 		if err != nil {
 			t.Fatalf("client.DeleteBucket: %v", err)
 		}
@@ -255,9 +255,9 @@ func TestDeleteObjectEmulated(t *testing.T) {
 }
 
 func TestGetObjectEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test object.
-		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
 		if err != nil {
@@ -267,14 +267,14 @@ func TestGetObjectEmulated(t *testing.T) {
 			Bucket: bucket,
 			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
 		}
-		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(ctx)
 		if _, err := w.Write(randomBytesToWrite); err != nil {
 			t.Fatalf("failed to populate test object: %v", err)
 		}
 		if err := w.Close(); err != nil {
 			t.Fatalf("closing object: %v", err)
 		}
-		got, err := client.GetObject(context.Background(), &getObjectParams{bucket: bucket, object: want.Name, gen: defaultGen})
+		got, err := client.GetObject(ctx, &getObjectParams{bucket: bucket, object: want.Name, gen: defaultGen})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -285,9 +285,9 @@ func TestGetObjectEmulated(t *testing.T) {
 }
 
 func TestRewriteObjectEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test object.
-		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
 		if err != nil {
@@ -297,7 +297,7 @@ func TestRewriteObjectEmulated(t *testing.T) {
 			Bucket: bucket,
 			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
 		}
-		w := veneerClient.Bucket(bucket).Object(src.Name).NewWriter(context.Background())
+		w := veneerClient.Bucket(bucket).Object(src.Name).NewWriter(ctx)
 		if _, err := w.Write(randomBytesToWrite); err != nil {
 			t.Fatalf("failed to populate test object: %v", err)
 		}
@@ -316,7 +316,7 @@ func TestRewriteObjectEmulated(t *testing.T) {
 				gen:    defaultGen,
 			},
 		}
-		got, err := client.RewriteObject(context.Background(), req)
+		got, err := client.RewriteObject(ctx, req)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -330,9 +330,9 @@ func TestRewriteObjectEmulated(t *testing.T) {
 }
 
 func TestUpdateObjectEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test object.
-		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
 		if err != nil {
@@ -344,7 +344,7 @@ func TestUpdateObjectEmulated(t *testing.T) {
 			Name:       fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
 			CustomTime: ct,
 		}
-		w := veneerClient.Bucket(bucket).Object(o.Name).NewWriter(context.Background())
+		w := veneerClient.Bucket(bucket).Object(o.Name).NewWriter(ctx)
 		if _, err := w.Write(randomBytesToWrite); err != nil {
 			t.Fatalf("failed to populate test object: %v", err)
 		}
@@ -363,7 +363,7 @@ func TestUpdateObjectEmulated(t *testing.T) {
 		}
 
 		params := &updateObjectParams{bucket: bucket, object: o.Name, uattrs: want, gen: defaultGen, conds: &Conditions{MetagenerationMatch: 1}}
-		got, err := client.UpdateObject(context.Background(), params)
+		got, err := client.UpdateObject(ctx, params)
 		if err != nil {
 			t.Fatalf("client.UpdateObject: %v", err)
 		}
@@ -398,9 +398,9 @@ func TestUpdateObjectEmulated(t *testing.T) {
 }
 
 func TestListObjectsEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
-		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
 		if err != nil {
@@ -422,7 +422,7 @@ func TestListObjectsEmulated(t *testing.T) {
 			},
 		}
 		for _, obj := range want {
-			w := veneerClient.Bucket(bucket).Object(obj.Name).NewWriter(context.Background())
+			w := veneerClient.Bucket(bucket).Object(obj.Name).NewWriter(ctx)
 			if _, err := w.Write(randomBytesToWrite); err != nil {
 				t.Fatalf("failed to populate test data: %v", err)
 			}
@@ -432,7 +432,7 @@ func TestListObjectsEmulated(t *testing.T) {
 		}
 
 		// Simple list, no query.
-		it := client.ListObjects(context.Background(), bucket, nil)
+		it := client.ListObjects(ctx, bucket, nil)
 		var o *ObjectAttrs
 		var got int
 		for i := 0; err == nil && i <= len(want); i++ {
@@ -456,9 +456,9 @@ func TestListObjectsEmulated(t *testing.T) {
 }
 
 func TestListObjectsWithPrefixEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
-		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
 		if err != nil {
@@ -480,7 +480,7 @@ func TestListObjectsWithPrefixEmulated(t *testing.T) {
 			},
 		}
 		for _, obj := range want {
-			w := veneerClient.Bucket(bucket).Object(obj.Name).NewWriter(context.Background())
+			w := veneerClient.Bucket(bucket).Object(obj.Name).NewWriter(ctx)
 			if _, err := w.Write(randomBytesToWrite); err != nil {
 				t.Fatalf("failed to populate test data: %v", err)
 			}
@@ -490,7 +490,7 @@ func TestListObjectsWithPrefixEmulated(t *testing.T) {
 		}
 
 		// Query with Prefix.
-		it := client.ListObjects(context.Background(), bucket, &Query{Prefix: strconv.Itoa(prefix)})
+		it := client.ListObjects(ctx, bucket, &Query{Prefix: strconv.Itoa(prefix)})
 		var o *ObjectAttrs
 		var got int
 		want = want[:2]
@@ -515,7 +515,7 @@ func TestListObjectsWithPrefixEmulated(t *testing.T) {
 }
 
 func TestListBucketsEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		prefix := time.Now().Nanosecond()
 		want := []*BucketAttrs{
 			{Name: fmt.Sprintf("%d-%s-%d", prefix, bucket, time.Now().Nanosecond())},
@@ -524,13 +524,13 @@ func TestListBucketsEmulated(t *testing.T) {
 		}
 		// Create the buckets that will be listed.
 		for _, b := range want {
-			_, err := client.CreateBucket(context.Background(), project, b.Name, b, nil)
+			_, err := client.CreateBucket(ctx, project, b.Name, b, nil)
 			if err != nil {
 				t.Fatalf("client.CreateBucket: %v", err)
 			}
 		}
 
-		it := client.ListBuckets(context.Background(), project)
+		it := client.ListBuckets(ctx, project)
 		it.Prefix = strconv.Itoa(prefix)
 		// Drop the non-prefixed bucket from the expected results.
 		want = want[:2]
@@ -558,8 +558,7 @@ func TestListBucketsEmulated(t *testing.T) {
 }
 
 func TestListBucketACLsEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		attrs := &BucketAttrs{
 			Name:          bucket,
 			PredefinedACL: "publicRead",
@@ -580,8 +579,7 @@ func TestListBucketACLsEmulated(t *testing.T) {
 }
 
 func TestUpdateBucketACLEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		attrs := &BucketAttrs{
 			Name:          bucket,
 			PredefinedACL: "authenticatedRead",
@@ -616,8 +614,7 @@ func TestUpdateBucketACLEmulated(t *testing.T) {
 }
 
 func TestDeleteBucketACLEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		attrs := &BucketAttrs{
 			Name:          bucket,
 			PredefinedACL: "publicRead",
@@ -650,8 +647,7 @@ func TestDeleteBucketACLEmulated(t *testing.T) {
 }
 
 func TestDefaultObjectACLCRUDEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		attrs := &BucketAttrs{
 			Name:                       bucket,
 			PredefinedDefaultObjectACL: "publicRead",
@@ -698,9 +694,8 @@ func TestDefaultObjectACLCRUDEmulated(t *testing.T) {
 }
 
 func TestObjectACLCRUDEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test object.
-		ctx := context.Background()
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
@@ -711,7 +706,7 @@ func TestObjectACLCRUDEmulated(t *testing.T) {
 			Bucket: bucket,
 			Name:   fmt.Sprintf("testObject-%d", time.Now().Nanosecond()),
 		}
-		w := veneerClient.Bucket(bucket).Object(o.Name).NewWriter(context.Background())
+		w := veneerClient.Bucket(bucket).Object(o.Name).NewWriter(ctx)
 		if _, err := w.Write(randomBytesToWrite); err != nil {
 			t.Fatalf("failed to populate test object: %v", err)
 		}
@@ -753,9 +748,9 @@ func TestObjectACLCRUDEmulated(t *testing.T) {
 }
 
 func TestOpenReaderEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
-		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
 		if err != nil {
@@ -766,7 +761,7 @@ func TestOpenReaderEmulated(t *testing.T) {
 			Bucket: bucket,
 			Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
 		}
-		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(context.Background())
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(ctx)
 		if _, err := w.Write(randomBytesToWrite); err != nil {
 			t.Fatalf("failed to populate test data: %v", err)
 		}
@@ -781,7 +776,7 @@ func TestOpenReaderEmulated(t *testing.T) {
 			offset: 0,
 			length: -1,
 		}
-		r, err := client.NewRangeReader(context.Background(), params)
+		r, err := client.NewRangeReader(ctx, params)
 		if err != nil {
 			t.Fatalf("opening reading: %v", err)
 		}
@@ -798,9 +793,9 @@ func TestOpenReaderEmulated(t *testing.T) {
 }
 
 func TestOpenWriterEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
-		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
 		if err != nil {
@@ -817,7 +812,7 @@ func TestOpenWriterEmulated(t *testing.T) {
 		params := &openWriterParams{
 			attrs:    want,
 			bucket:   bucket,
-			ctx:      context.Background(),
+			ctx:      ctx,
 			donec:    make(chan struct{}),
 			setError: func(_ error) {}, // no-op
 			progress: func(_ int64) {}, // no-op
@@ -843,7 +838,7 @@ func TestOpenWriterEmulated(t *testing.T) {
 			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
 		}
 
-		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(context.Background())
+		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
 		if err != nil {
 			t.Fatalf("opening reading: %v", err)
 		}
@@ -860,9 +855,8 @@ func TestOpenWriterEmulated(t *testing.T) {
 }
 
 func TestListNotificationsEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(skipGRPC("notifications not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test object.
-		ctx := context.Background()
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
@@ -888,9 +882,8 @@ func TestListNotificationsEmulated(t *testing.T) {
 }
 
 func TestCreateNotificationEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(skipGRPC("notifications not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test object.
-		ctx := context.Background()
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
@@ -914,9 +907,8 @@ func TestCreateNotificationEmulated(t *testing.T) {
 }
 
 func TestDeleteNotificationEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(skipGRPC("notifications not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test object.
-		ctx := context.Background()
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
@@ -983,7 +975,7 @@ func initEmulatorClients() func() error {
 }
 
 func TestLockBucketRetentionPolicyEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		b := &BucketAttrs{
 			Name: bucket,
 			RetentionPolicy: &RetentionPolicy{
@@ -991,16 +983,16 @@ func TestLockBucketRetentionPolicyEmulated(t *testing.T) {
 			},
 		}
 		// Create the bucket that will be locked.
-		_, err := client.CreateBucket(context.Background(), project, b.Name, b, nil)
+		_, err := client.CreateBucket(ctx, project, b.Name, b, nil)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		// Lock the bucket's retention policy.
-		err = client.LockBucketRetentionPolicy(context.Background(), b.Name, &BucketConditions{MetagenerationMatch: 1})
+		err = client.LockBucketRetentionPolicy(ctx, b.Name, &BucketConditions{MetagenerationMatch: 1})
 		if err != nil {
 			t.Fatalf("client.LockBucketRetentionPolicy: %v", err)
 		}
-		got, err := client.GetBucket(context.Background(), bucket, nil)
+		got, err := client.GetBucket(ctx, bucket, nil)
 		if err != nil {
 			t.Fatalf("client.GetBucket: %v", err)
 		}
@@ -1011,11 +1003,9 @@ func TestLockBucketRetentionPolicyEmulated(t *testing.T) {
 }
 
 func TestComposeEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
-
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
-		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
 			Name: bucket,
 		}, nil)
 		if err != nil {
@@ -1069,8 +1059,7 @@ func TestComposeEmulated(t *testing.T) {
 }
 
 func TestHMACKeyCRUDEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		serviceAccountEmail := "test@test-project.iam.gserviceaccount.com"
 		want, err := client.CreateHMACKey(ctx, project, serviceAccountEmail)
 		if err != nil {
@@ -1130,8 +1119,7 @@ func TestHMACKeyCRUDEmulated(t *testing.T) {
 }
 
 func TestBucketConditionsEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		cases := []struct {
 			name string
 			call func(bucket string, metaGen int64) error
@@ -1178,11 +1166,10 @@ func TestBucketConditionsEmulated(t *testing.T) {
 }
 
 func TestObjectConditionsEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 
 		// Create test bucket
-		if _, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
+		if _, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 
@@ -1347,8 +1334,7 @@ func TestObjectConditionsEmulated(t *testing.T) {
 
 // Test that RetryNever prevents any retries from happening in both transports.
 func TestRetryNeverEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		instructions := map[string][]string{"storage.buckets.get": {"return-503"}}
 		testID := createRetryTest(t, project, bucket, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
@@ -1367,8 +1353,7 @@ func TestRetryNeverEmulated(t *testing.T) {
 
 // Test that errors are wrapped correctly if retry happens until a timeout.
 func TestRetryTimeoutEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503", "return-503", "return-503", "return-503"}}
 		testID := createRetryTest(t, project, bucket, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
@@ -1393,8 +1378,7 @@ func TestRetryTimeoutEmulated(t *testing.T) {
 
 // Test that errors are wrapped correctly if retry happens until max attempts.
 func TestRetryMaxAttemptsEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503", "return-503", "return-503", "return-503"}}
 		testID := createRetryTest(t, project, bucket, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
@@ -1419,8 +1403,8 @@ func TestRetryMaxAttemptsEmulated(t *testing.T) {
 // Test that a timeout returns a DeadlineExceeded error, in spite of DeadlineExceeded being a retryable
 // status when it is returned by the server.
 func TestTimeoutErrorEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Nanosecond)
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		ctx, cancel := context.WithTimeout(ctx, time.Nanosecond)
 		defer cancel()
 		time.Sleep(5 * time.Nanosecond)
 		config := &retryConfig{backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
@@ -1441,8 +1425,7 @@ func TestTimeoutErrorEmulated(t *testing.T) {
 
 // Test that server-side DEADLINE_EXCEEDED errors are retried as expected with gRPC.
 func TestRetryDeadlineExceedeEmulated(t *testing.T) {
-	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		ctx := context.Background()
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		instructions := map[string][]string{"storage.buckets.get": {"return-504", "return-504"}}
 		testID := createRetryTest(t, project, bucket, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
@@ -1527,14 +1510,17 @@ func createBucket(ctx context.Context, projectID string) (string, int64, error) 
 // based on the transport, a unique bucket name also based on the transport, and
 // the transport-specific client to run the test with. It also checks the environment
 // to ensure it is suitable for emulator-based tests, or skips.
-func transportClientTest(t *testing.T, test func(*testing.T, string, string, storageClient)) {
+func transportClientTest(ctx context.Context, t *testing.T, test func(*testing.T, context.Context, string, string, storageClient)) {
 	checkEmulatorEnvironment(t)
 
 	for transport, client := range emulatorClients {
+		if reason := ctx.Value(skipTransportTestKey(transport)); reason != nil {
+			t.Skip("transport", fmt.Sprintf("%q", transport), "explicitly skipped:", reason)
+		}
 		t.Run(transport, func(t *testing.T) {
 			project := fmt.Sprintf("%s-project", transport)
 			bucket := fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond())
-			test(t, project, bucket, client)
+			test(t, ctx, project, bucket, client)
 		})
 	}
 }
