@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.9.0...apigeeregistry/v0.9.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.10...apigeeregistry/v0.9.0) (2024-08-20)
 
 

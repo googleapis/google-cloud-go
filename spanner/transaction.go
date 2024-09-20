@@ -1587,8 +1587,7 @@ type CommitOptions struct {
 // merge combines two CommitOptions that the input parameter will have higher
 // order of precedence.
 func (co CommitOptions) merge(opts CommitOptions) CommitOptions {
-	var newOpts CommitOptions
-	newOpts = CommitOptions{
+	newOpts := CommitOptions{
 		ReturnCommitStats: co.ReturnCommitStats || opts.ReturnCommitStats,
 		MaxCommitDelay:    opts.MaxCommitDelay,
 	}

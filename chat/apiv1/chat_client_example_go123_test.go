@@ -154,3 +154,29 @@ func ExampleClient_ListSpaces_all() {
 		_ = resp
 	}
 }
+
+func ExampleClient_SearchSpaces_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := chat.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &chatpb.SearchSpacesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/chat/apiv1/chatpb#SearchSpacesRequest.
+	}
+	for resp, err := range c.SearchSpaces(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}

@@ -134,7 +134,7 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 	if cfg.GRPCgcpConfig == nil {
 		cfg.GRPCgcpConfig = &grpcgcppb.ApiConfig{}
 	}
-	if cfg.GRPCgcpConfig.Method == nil || len(cfg.GRPCgcpConfig.Method) == 0 {
+	if len(cfg.GRPCgcpConfig.Method) == 0 {
 		cfg.GRPCgcpConfig.Method = []*grpcgcppb.MethodConfig{
 			{
 				Name: []string{"/google.spanner.v1.Spanner/CreateSession"},

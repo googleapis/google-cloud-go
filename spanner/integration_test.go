@@ -566,7 +566,6 @@ loop:
 // Test SingleUse transaction.
 func TestIntegration_SingleUse(t *testing.T) {
 	t.Parallel()
-	skipEmulatorTestForPG(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -5333,7 +5332,7 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			gotErr := tt.test()
 			// convert the error to lower case because resource names are in lower case for PG dialect.
-			if gotErr != nil && strings.ToLower(gotErr.Error()) != strings.ToLower(tt.wantErr.Error()) {
+			if gotErr != nil && !strings.EqualFold(gotErr.Error(), tt.wantErr.Error()) {
 				t.Errorf("FKDC error=%v, wantErr: %v", gotErr, tt.wantErr)
 			} else {
 				tt.validate()
@@ -5626,7 +5625,7 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotErr := tt.test()
-			if gotErr != nil && strings.ToLower(gotErr.Error()) != strings.ToLower(tt.wantErr.Error()) {
+			if gotErr != nil && !strings.EqualFold(gotErr.Error(), tt.wantErr.Error()) {
 				t.Errorf("BIT REVERSED SEQUENECES error=%v, wantErr: %v", gotErr, tt.wantErr)
 			}
 		})
@@ -6215,12 +6214,6 @@ func skipEmulatorTest(t *testing.T) {
 	}
 }
 
-func skipEmulatorTestForPG(t *testing.T) {
-	if isEmulatorEnvSet() && testDialect == adminpb.DatabaseDialect_POSTGRESQL {
-		t.Skip("Skipping PG testing against the emulator.")
-	}
-}
-
 func skipUnsupportedPGTest(t *testing.T) {
 	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
 		t.Skip("Skipping testing of unsupported tests in Postgres dialect.")
@@ -6230,12 +6223,6 @@ func skipUnsupportedPGTest(t *testing.T) {
 func onlyRunForPGTest(t *testing.T) {
 	if testDialect != adminpb.DatabaseDialect_POSTGRESQL {
 		t.Skip("Skipping tests supported only in Postgres dialect.")
-	}
-}
-
-func skipForPGTest(t *testing.T) {
-	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
-		t.Skip("Skipping tests non needed for Postgres dialect.")
 	}
 }
 
@@ -6290,11 +6277,11 @@ func blackholeOrAllowDirectPath(t *testing.T, blackholeDP bool) {
 		if blackholeDP {
 			cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
 			out, _ := cmdRes.CombinedOutput()
-			t.Logf(string(out))
+			t.Log(string(out))
 		} else {
 			cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
 			out, _ := cmdRes.CombinedOutput()
-			t.Logf(string(out))
+			t.Log(string(out))
 		}
 		return
 	}
@@ -6302,17 +6289,17 @@ func blackholeOrAllowDirectPath(t *testing.T, blackholeDP bool) {
 	if blackholeDP {
 		cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
 		out, _ := cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		t.Log(string(out))
 		cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
 		out, _ = cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		t.Log(string(out))
 	} else {
 		cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
 		out, _ := cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		t.Log(string(out))
 		cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
 		out, _ = cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		t.Log(string(out))
 	}
 }
 
