@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"os"
 	"sort"
 	"testing"
 
@@ -37,6 +38,8 @@ import (
 )
 
 func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
+	os.Setenv("SPANNER_ENABLE_BUILTIN_METRICS", "true")
+	defer os.Unsetenv("SPANNER_ENABLE_BUILTIN_METRICS")
 	ctx := context.Background()
 	project := "test-project"
 	instance := "test-instance"
