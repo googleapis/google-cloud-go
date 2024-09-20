@@ -25,6 +25,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -175,8 +176,13 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 	inputs := make([]DownloadObjectInput, 0, len(objectsToQueue))
 
 	for _, object := range objectsToQueue {
-		objDirectory := filepath.Join(input.LocalDirectory, filepath.Dir(object))
-		filePath := filepath.Join(input.LocalDirectory, object)
+		objectWithoutPrefix := object
+		if len(input.StripPrefix) > 0 {
+			objectWithoutPrefix, _ = strings.CutPrefix(object, input.StripPrefix)
+		}
+
+		objDirectory := filepath.Join(input.LocalDirectory, filepath.Dir(objectWithoutPrefix))
+		filePath := filepath.Join(input.LocalDirectory, objectWithoutPrefix)
 
 		// Make sure all directories in the object path exist.
 		err := os.MkdirAll(objDirectory, fs.ModeDir|fs.ModePerm)
@@ -749,6 +755,10 @@ type DownloadDirectoryInput struct {
 	// must not be modified while the download is in progress.
 	// The directory will be created if it does not already exist. Required.
 	LocalDirectory string
+
+	// StripPrefix is a prefix to be removed from the path of an object on
+	// download from GCS. Optional.
+	StripPrefix string
 
 	// Prefix is the prefix filter to download objects whose names begin with this.
 	// Optional.

@@ -28,6 +28,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -100,6 +101,7 @@ func TestIntegration_DownloadDirectory(t *testing.T) {
 		if err := d.DownloadDirectory(ctx, &DownloadDirectoryInput{
 			Bucket:         tb.bucket,
 			LocalDirectory: localDir,
+			StripPrefix:    "dir/",
 			OnObjectDownload: func(got *DownloadOutput) {
 				callbackMu.Lock()
 				numCallbacks++
@@ -113,7 +115,9 @@ func TestIntegration_DownloadDirectory(t *testing.T) {
 					t.Errorf("expected object size %d, got %d", want, got)
 				}
 
-				path := filepath.Join(localDir, got.Object)
+				objectWithoutPrefix, _ := strings.CutPrefix(got.Object, "dir/")
+				path := filepath.Join(localDir, objectWithoutPrefix)
+
 				f, err := os.Open(path)
 				if err != nil {
 					t.Errorf("os.Open(%q): %v", path, err)
@@ -156,7 +160,8 @@ func TestIntegration_DownloadDirectory(t *testing.T) {
 				t.Errorf("expected object size %d, got %d", want, got)
 			}
 
-			path := filepath.Join(localDir, got.Object)
+			objectWithoutPrefix, _ := strings.CutPrefix(got.Object, "dir/")
+			path := filepath.Join(localDir, objectWithoutPrefix)
 			f, err := os.Open(path)
 			if err != nil {
 				t.Errorf("os.Open(%q): %v", path, err)
