@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	cloud.google.com/go v0.115.1
-	cloud.google.com/go/bigquery v1.62.0
+	cloud.google.com/go/bigquery v1.63.0
 	cloud.google.com/go/datastore v1.19.0
 	github.com/google/go-cmp v0.6.0
 	golang.org/x/tools v0.24.0
@@ -38,7 +38,6 @@ require (
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.54.0 // indirect
 	go.opentelemetry.io/otel v1.29.0 // indirect
 	go.opentelemetry.io/otel/metric v1.29.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.29.0 // indirect
 	go.opentelemetry.io/otel/trace v1.29.0 // indirect
 	golang.org/x/crypto v0.26.0 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
