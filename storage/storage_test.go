@@ -983,7 +983,8 @@ func TestObjectRetryer(t *testing.T) {
 					}),
 					WithMaxAttempts(5),
 					WithPolicy(RetryAlways),
-					WithErrorFunc(func(err error) bool { return false }))
+					WithErrorFunc(func(err error) bool { return false }),
+					WithReadStallTimeout(time.Second))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -991,9 +992,10 @@ func TestObjectRetryer(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				maxAttempts: expectedAttempts(5),
-				policy:      RetryAlways,
-				shouldRetry: func(err error) bool { return false },
+				maxAttempts:      expectedAttempts(5),
+				policy:           RetryAlways,
+				shouldRetry:      func(err error) bool { return false },
+				readStallTimeout: time.Second,
 			},
 		},
 		{
@@ -1035,6 +1037,15 @@ func TestObjectRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				shouldRetry: func(err error) bool { return false },
+			},
+		},
+		{
+			name: "set read stall timeout only",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(WithReadStallTimeout(time.Second))
+			},
+			want: &retryConfig{
+				readStallTimeout: time.Second,
 			},
 		},
 	}
@@ -1081,6 +1092,7 @@ func TestClientSetRetry(t *testing.T) {
 				WithMaxAttempts(5),
 				WithPolicy(RetryAlways),
 				WithErrorFunc(func(err error) bool { return false }),
+				WithReadStallTimeout(time.Second),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1088,9 +1100,10 @@ func TestClientSetRetry(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				maxAttempts: expectedAttempts(5),
-				policy:      RetryAlways,
-				shouldRetry: func(err error) bool { return false },
+				maxAttempts:      expectedAttempts(5),
+				policy:           RetryAlways,
+				shouldRetry:      func(err error) bool { return false },
+				readStallTimeout: time.Second,
 			},
 		},
 		{
@@ -1130,6 +1143,15 @@ func TestClientSetRetry(t *testing.T) {
 			},
 			want: &retryConfig{
 				shouldRetry: func(err error) bool { return false },
+			},
+		},
+		{
+			name: "set read stall timeout only",
+			clientOptions: []RetryOption{
+				WithReadStallTimeout(time.Second),
+			},
+			want: &retryConfig{
+				readStallTimeout: time.Second,
 			},
 		},
 	}

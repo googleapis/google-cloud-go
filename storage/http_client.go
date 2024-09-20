@@ -22,6 +22,8 @@ import (
 	"hash/crc32"
 	"io"
 	"io/ioutil"
+	"log"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -858,7 +860,34 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 	reopen := readerReopen(ctx, req.Header, params, s,
 		func(ctx context.Context) (*http.Response, error) {
 			setHeadersFromCtx(ctx, req.Header)
-			return c.hc.Do(req.WithContext(ctx))
+			cancelCtx, cancel := context.WithCancel(ctx)
+
+			var (
+				res *http.Response
+				err error
+			)
+
+			done := make(chan bool)
+			go func() {
+				res, err = c.hc.Do(req.WithContext(cancelCtx))
+				done <- true
+			}()
+
+			// Wait until timeout for read to complete.
+			select {
+			case <-time.After(s.retry.readStallTimeout):
+				log.Println("Request timed-out, hence cancelling.")
+				cancel()
+				err = context.DeadlineExceeded
+				if res != nil && res.Body != nil {
+					res.Body.Close()
+				}
+			case <-done:
+				log.Println("Request completed successfully.")
+				cancel = nil
+			}
+
+			return res, err
 		},
 		func() error { return setConditionsHeaders(req.Header, params.conds) },
 		func() { req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen) })
@@ -867,7 +896,7 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 	if err != nil {
 		return nil, err
 	}
-	return parseReadResponse(res, params, reopen)
+	return parseReadResponse(res, params, reopen, s)
 }
 
 func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newRangeReaderParams, s *settings) (r *Reader, err error) {
@@ -891,7 +920,7 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 	if err != nil {
 		return nil, err
 	}
-	return parseReadResponse(res, params, reopen)
+	return parseReadResponse(res, params, reopen, s)
 }
 
 func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
@@ -1233,18 +1262,49 @@ func (c *httpStorageClient) DeleteNotification(ctx context.Context, bucket strin
 }
 
 type httpReader struct {
-	body     io.ReadCloser
-	seen     int64
-	reopen   func(seen int64) (*http.Response, error)
-	checkCRC bool   // should we check the CRC?
-	wantCRC  uint32 // the CRC32c value the server sent in the header
-	gotCRC   uint32 // running crc
+	body         io.ReadCloser
+	seen         int64
+	reopen       func(seen int64) (*http.Response, error)
+	checkCRC     bool   // should we check the CRC?
+	wantCRC      uint32 // the CRC32c value the server sent in the header
+	gotCRC       uint32 // running crc
+	stallTimeout time.Duration
 }
 
 func (r *httpReader) Read(p []byte) (int, error) {
 	n := 0
 	for len(p[n:]) > 0 {
-		m, err := r.body.Read(p[n:])
+
+		var m int
+		var err error
+		var timedOut bool
+		stallTimeout := r.stallTimeout
+		if stallTimeout == 0 {
+			stallTimeout = math.MaxInt64
+		}
+		done := make(chan bool)
+		doRead := func() {
+			m, err = r.body.Read(p[n:])
+			done <- true
+		}
+		go doRead()
+
+		// Wait until timeout for read to complete.
+		select {
+		case <-time.After(stallTimeout):
+			// Close request body to terminate current read.
+			r.body.Close()
+			log.Println("Read(): closing the existing conn due to stall.")
+			timedOut = true
+		case <-done:
+		}
+
+		// In timeout case, wait until the error percolates up via body.Read so that we
+		// can be sure we have the correct number of bytes read in m.
+		if timedOut {
+			<-done
+		}
+
 		n += m
 		r.seen += int64(m)
 		if r.checkCRC {
@@ -1265,10 +1325,11 @@ func (r *httpReader) Read(p []byte) (int, error) {
 			}
 			return n, err
 		}
-		// Read failed (likely due to connection issues), but we will try to reopen
-		// the pipe and continue. Send a ranged read request that takes into account
-		// the number of bytes we've already seen.
+		// Read failed (likely due to connection issues or stall), but we will
+		// try to reopen the pipe and continue. Send a ranged read request that
+		// takes into account the number of bytes we've already seen.
 		res, err := r.reopen(r.seen)
+		log.Println("Read(): starting a new connection.")
 		if err != nil {
 			// reopen already retries
 			return n, err
@@ -1386,7 +1447,7 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 	}
 }
 
-func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen func(int64) (*http.Response, error)) (*Reader, error) {
+func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen func(int64) (*http.Response, error), s *settings) (*Reader, error) {
 	var err error
 	var (
 		size        int64 // total size of object, even if a range was requested.
@@ -1456,6 +1517,11 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		}
 	}
 
+	var readStallTimeout time.Duration
+	if s.retry != nil {
+		readStallTimeout = s.retry.readStallTimeout
+	}
+
 	attrs := ReaderObjectAttrs{
 		Size:            size,
 		ContentType:     res.Header.Get("Content-Type"),
@@ -1474,10 +1540,11 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		remain:   remain,
 		checkCRC: checkCRC,
 		reader: &httpReader{
-			reopen:   reopen,
-			body:     body,
-			wantCRC:  crc,
-			checkCRC: checkCRC,
+			reopen:       reopen,
+			body:         body,
+			wantCRC:      crc,
+			checkCRC:     checkCRC,
+			stallTimeout: readStallTimeout,
 		},
 	}, nil
 }

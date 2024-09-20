@@ -15,9 +15,11 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/url"
 	"os"
@@ -1440,7 +1442,7 @@ func TestTimeoutErrorEmulated(t *testing.T) {
 }
 
 // Test that server-side DEADLINE_EXCEEDED errors are retried as expected with gRPC.
-func TestRetryDeadlineExceedeEmulated(t *testing.T) {
+func TestRetryDeadlineExceededEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		ctx := context.Background()
 		instructions := map[string][]string{"storage.buckets.get": {"return-504", "return-504"}}
@@ -1450,6 +1452,100 @@ func TestRetryDeadlineExceedeEmulated(t *testing.T) {
 		if _, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config)); err != nil {
 			t.Fatalf("GetBucket: got unexpected error %v, want nil", err)
 		}
+	})
+}
+
+// Test that a stall during a read request is retried when ReadStallTimeout is set.
+func TestRetryReadStallEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+
+		// Setup bucket and upload object.
+		if _, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		name, _, _, err := createObject(ctx, bucket)
+		if err != nil {
+			t.Fatalf("createObject: %v", err)
+		}
+
+		// This causes a stall after reading 256k bytes for up to 10s.
+		ctx = callctx.SetHeaders(ctx, "x-goog-emulator-instructions", "stall-at-256KiB")
+		ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+		defer cancel()
+
+		config := &retryConfig{
+			maxAttempts:      expectedAttempts(4),
+			backoff:          &gax.Backoff{Initial: 10 * time.Millisecond},
+			readStallTimeout: 20 * time.Millisecond,
+		}
+		r, err := client.NewRangeReader(ctx, &newRangeReaderParams{
+			bucket: bucket,
+			object: name,
+			gen:    defaultGen,
+			offset: 0,
+			length: -1,
+		}, withRetryConfig(config), idempotent(true))
+		if err != nil {
+			t.Fatalf("NewRangeReader: %v", err)
+		}
+		defer r.Close()
+
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, r); err != nil {
+			t.Fatalf("io.Copy: %v", err)
+		}
+		if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
+			t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+		}
+
+	})
+}
+
+// Test that a stall during a read request is retried when ReadStallTimeout is set.
+func TestRetryReadStallAlwaysEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+
+		// Setup bucket and upload object.
+		if _, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		name, _, _, err := createObject(ctx, bucket)
+		if err != nil {
+			t.Fatalf("createObject: %v", err)
+		}
+
+		// This causes a stall after reading 256k bytes for up to 10s.
+		ctx = callctx.SetHeaders(ctx, "x-goog-emulator-instructions", "stall-always")
+		ctx, cancel := context.WithTimeout(ctx, 4*time.Second)
+		defer cancel()
+
+		config := &retryConfig{
+			maxAttempts:      expectedAttempts(4),
+			backoff:          &gax.Backoff{Initial: 200 * time.Millisecond},
+			readStallTimeout: 1 * time.Second,
+		}
+		r, err := client.NewRangeReader(ctx, &newRangeReaderParams{
+			bucket: bucket,
+			object: name,
+			gen:    defaultGen,
+			offset: 0,
+			length: -1,
+		}, withRetryConfig(config), idempotent(true))
+		if err != nil {
+			t.Fatalf("NewRangeReader: %v", err)
+		}
+		defer r.Close()
+
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, r); err != nil {
+			t.Fatalf("io.Copy: %v", err)
+		}
+		if !bytes.Equal(buf.Bytes(), randomBytes3MiB[1:]) {
+			t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+		}
+
 	})
 }
 
@@ -1494,7 +1590,7 @@ func createObject(ctx context.Context, bucket string) (string, int64, int64, err
 	objName := fmt.Sprintf("%d-object", prefix)
 
 	w := veneerClient.Bucket(bucket).Object(objName).NewWriter(ctx)
-	if _, err := w.Write(randomBytesToWrite); err != nil {
+	if _, err := w.Write(randomBytes3MiB); err != nil {
 		return "", 0, 0, fmt.Errorf("failed to populate test data: %w", err)
 	}
 	if err := w.Close(); err != nil {

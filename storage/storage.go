@@ -2249,11 +2249,30 @@ func (wef *withErrorFunc) apply(config *retryConfig) {
 	config.shouldRetry = wef.shouldRetry
 }
 
+// WithReadStallTimeout returns a retry option that proactively terminates the
+// connection and retries if a download using storage.Reader hangs for longer
+// than the provided timeout. The default value is no timeout. This only is
+// applied for HTTP requests currently (not gRPC).
+func WithReadStallTimeout(timeout time.Duration) RetryOption {
+	return &withReadStallTimeout{
+		readStallTimeout: timeout,
+	}
+}
+
+type withReadStallTimeout struct {
+	readStallTimeout time.Duration
+}
+
+func (wrst *withReadStallTimeout) apply(config *retryConfig) {
+	config.readStallTimeout = wrst.readStallTimeout
+}
+
 type retryConfig struct {
-	backoff     *gax.Backoff
-	policy      RetryPolicy
-	shouldRetry func(err error) bool
-	maxAttempts *int
+	backoff          *gax.Backoff
+	policy           RetryPolicy
+	shouldRetry      func(err error) bool
+	maxAttempts      *int
+	readStallTimeout time.Duration
 }
 
 func (r *retryConfig) clone() *retryConfig {
@@ -2271,10 +2290,11 @@ func (r *retryConfig) clone() *retryConfig {
 	}
 
 	return &retryConfig{
-		backoff:     bo,
-		policy:      r.policy,
-		shouldRetry: r.shouldRetry,
-		maxAttempts: r.maxAttempts,
+		backoff:          bo,
+		policy:           r.policy,
+		shouldRetry:      r.shouldRetry,
+		maxAttempts:      r.maxAttempts,
+		readStallTimeout: r.readStallTimeout,
 	}
 }
 
