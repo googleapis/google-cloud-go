@@ -599,6 +599,8 @@ func TestRetryConformance(t *testing.T) {
 		t.Fatalf("storage.NewClient: %v", err)
 	}
 
+	// TODO: Remove once storage testbench emits 501 Not Implemented for these
+	// operations in gRPC.
 	skippedGRPCMethods := []string{"storage.hmacKey.delete", "storage.hmacKey.create", "storage.hmacKey.list", "storage.hmacKey.get", "storage.hmacKey.update", "storage.serviceaccount.get"}
 
 	_, _, testFiles := parseFiles(t)
