@@ -983,7 +983,9 @@ func TestObjectRetryer(t *testing.T) {
 					}),
 					WithMaxAttempts(5),
 					WithPolicy(RetryAlways),
-					WithErrorFunc(func(err error) bool { return false }))
+					WithErrorFunc(func(err error) bool { return false }),
+					WithMinReadThroughput(1024*1024, 2*time.Second),
+					WithReadDynamicTimeout(0.99, 15, time.Second, time.Second, 2*time.Second))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -994,6 +996,17 @@ func TestObjectRetryer(t *testing.T) {
 				maxAttempts: expectedAttempts(5),
 				policy:      RetryAlways,
 				shouldRetry: func(err error) bool { return false },
+				minReadThroughput: &readThroughput{
+					bytes:  1024 * 1024,
+					period: 2 * time.Second,
+				},
+				readDynamicTimeout: &readDynamicTimeout{
+					targetPercentile: 0.99,
+					increaseRate:     15,
+					initial:          time.Second,
+					min:              time.Second,
+					max:              time.Second,
+				},
 			},
 		},
 		{
@@ -1035,6 +1048,33 @@ func TestObjectRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				shouldRetry: func(err error) bool { return false },
+			},
+		},
+		{
+			name: "set MinReadThroughput only",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(WithMinReadThroughput(1024, time.Second))
+			},
+			want: &retryConfig{
+				minReadThroughput: &readThroughput{
+					bytes:  1024,
+					period: time.Second,
+				},
+			},
+		},
+		{
+			name: "set read stall timeout only",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(WithReadDynamicTimeout(0.99, 15, time.Second, time.Second, 2*time.Second))
+			},
+			want: &retryConfig{
+				readDynamicTimeout: &readDynamicTimeout{
+					targetPercentile: 0.99,
+					increaseRate:     15,
+					initial:          time.Second,
+					min:              time.Second,
+					max:              time.Second,
+				},
 			},
 		},
 	}
@@ -1081,6 +1121,8 @@ func TestClientSetRetry(t *testing.T) {
 				WithMaxAttempts(5),
 				WithPolicy(RetryAlways),
 				WithErrorFunc(func(err error) bool { return false }),
+				WithMinReadThroughput(1024, time.Second),
+				WithReadDynamicTimeout(0.99, 15, time.Second, time.Second, 2*time.Second),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1091,6 +1133,17 @@ func TestClientSetRetry(t *testing.T) {
 				maxAttempts: expectedAttempts(5),
 				policy:      RetryAlways,
 				shouldRetry: func(err error) bool { return false },
+				minReadThroughput: &readThroughput{
+					bytes:  1024,
+					period: time.Second,
+				},
+				readDynamicTimeout: &readDynamicTimeout{
+					targetPercentile: 0.99,
+					increaseRate:     15,
+					initial:          time.Second,
+					min:              time.Second,
+					max:              time.Second,
+				},
 			},
 		},
 		{
@@ -1130,6 +1183,33 @@ func TestClientSetRetry(t *testing.T) {
 			},
 			want: &retryConfig{
 				shouldRetry: func(err error) bool { return false },
+			},
+		},
+		{
+			name: "set MinReadThroughput only",
+			clientOptions: []RetryOption{
+				WithMinReadThroughput(1024, time.Second),
+			},
+			want: &retryConfig{
+				minReadThroughput: &readThroughput{
+					bytes:  1024,
+					period: time.Second,
+				},
+			},
+		},
+		{
+			name: "set read stall timeout only",
+			clientOptions: []RetryOption{
+				WithReadDynamicTimeout(0.99, 15, time.Second, time.Second, 2*time.Second),
+			},
+			want: &retryConfig{
+				readDynamicTimeout: &readDynamicTimeout{
+					targetPercentile: 0.99,
+					increaseRate:     15,
+					initial:          time.Second,
+					min:              time.Second,
+					max:              time.Second,
+				},
 			},
 		},
 	}

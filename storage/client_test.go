@@ -15,9 +15,11 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/url"
 	"os"
@@ -951,7 +953,18 @@ func initEmulatorClients() func() error {
 		log.Fatalf("Error setting up gRPC client for emulator tests: %v", err)
 		return noopCloser
 	}
-	httpClient, err := newHTTPStorageClient(ctx)
+
+	config := &retryConfig{
+		maxAttempts: expectedAttempts(4),
+		backoff:     &gax.Backoff{Initial: 200 * time.Millisecond},
+		readDynamicTimeout: &readDynamicTimeout{
+			targetPercentile: 0.99,
+			increaseRate:     15,
+			min:              1 * time.Second,
+			max:              1 * time.Hour,
+		},
+	}
+	httpClient, err := newHTTPStorageClient(ctx, withRetryConfig(config))
 	if err != nil {
 		log.Fatalf("Error setting up HTTP client for emulator tests: %v", err)
 		return noopCloser
@@ -1440,7 +1453,7 @@ func TestTimeoutErrorEmulated(t *testing.T) {
 }
 
 // Test that server-side DEADLINE_EXCEEDED errors are retried as expected with gRPC.
-func TestRetryDeadlineExceedeEmulated(t *testing.T) {
+func TestRetryDeadlineExceededEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		ctx := context.Background()
 		instructions := map[string][]string{"storage.buckets.get": {"return-504", "return-504"}}
@@ -1453,18 +1466,113 @@ func TestRetryDeadlineExceedeEmulated(t *testing.T) {
 	})
 }
 
-// createRetryTest creates a bucket in the emulator and sets up a test using the
-// Retry Test API for the given instructions. This is intended for emulator tests
-// of retry behavior that are not covered by conformance tests.
-func createRetryTest(t *testing.T, project, bucket string, client storageClient, instructions map[string][]string) string {
-	t.Helper()
-	ctx := context.Background()
+// Test that a stall during a read request is retried when MinReadThroughput is set.
+func TestRetryReadStallEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
 
-	_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
-	if err != nil {
-		t.Fatalf("creating bucket: %v", err)
-	}
+		// Setup bucket and upload object.
+		if _, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		name, _, _, err := createObject(ctx, bucket)
+		if err != nil {
+			t.Fatalf("createObject: %v", err)
+		}
 
+		// This causes a stall after reading 256k bytes for up to 10s.
+		ctx = callctx.SetHeaders(ctx, "x-goog-emulator-instructions", "stall-at-256KiB")
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		config := &retryConfig{
+			maxAttempts: expectedAttempts(4),
+			backoff:     &gax.Backoff{Initial: 10 * time.Millisecond},
+			minReadThroughput: &readThroughput{
+				bytes:  1024 * 1024,
+				period: 50 * time.Millisecond, // use short period for faster testing.
+			},
+		}
+		r, err := client.NewRangeReader(ctx, &newRangeReaderParams{
+			bucket: bucket,
+			object: name,
+			gen:    defaultGen,
+			offset: 0,
+			length: -1,
+		}, withRetryConfig(config), idempotent(true))
+		if err != nil {
+			t.Fatalf("NewRangeReader: %v", err)
+		}
+		defer r.Close()
+
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, r); err != nil {
+			t.Fatalf("io.Copy: %v", err)
+		}
+		if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
+			t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+		}
+
+	})
+}
+
+// Test that a stall during a read request is retried when ReadStallTimeout is set.
+func TestRetryReadStallBeginningEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+
+		//Setup bucket and upload object.
+		if _, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+
+		name, _, _, err := createObject(ctx, bucket)
+		if err != nil {
+			t.Fatalf("createObject: %v", err)
+		}
+
+		// Plant stall for 2s.
+		instructions := map[string][]string{"storage.objects.get": {"stall-for-2s-after-0K"}}
+		testID := plantRetryInstructions(t, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		config := &retryConfig{
+			maxAttempts: expectedAttempts(4),
+			backoff:     &gax.Backoff{Initial: 200 * time.Millisecond},
+			readDynamicTimeout: &readDynamicTimeout{
+				targetPercentile: 0.99,
+				increaseRate:     15,
+				min:              1 * time.Second,
+				max:              1 * time.Hour,
+			},
+		}
+		r, err := client.NewRangeReader(ctx, &newRangeReaderParams{
+			bucket: bucket,
+			object: name,
+			gen:    defaultGen,
+			offset: 0,
+			length: -1,
+		}, withRetryConfig(config), idempotent(true))
+		if err != nil {
+			t.Fatalf("NewRangeReader: %v", err)
+		}
+		defer r.Close()
+
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, r); err != nil {
+			t.Fatalf("io.Copy: %v", err)
+		}
+		if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
+			t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+		}
+
+	})
+}
+
+func plantRetryInstructions(t *testing.T, client storageClient, instructions map[string][]string) string {
 	// Need the HTTP hostname to set up a retry test, as well as knowledge of
 	// underlying transport to specify instructions.
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
@@ -1487,6 +1595,21 @@ func createRetryTest(t *testing.T, project, bucket string, client storageClient,
 	return et.id
 }
 
+// createRetryTest creates a bucket in the emulator and sets up a test using the
+// Retry Test API for the given instructions. This is intended for emulator tests
+// of retry behavior that are not covered by conformance tests.
+func createRetryTest(t *testing.T, project, bucket string, client storageClient, instructions map[string][]string) string {
+	t.Helper()
+	ctx := context.Background()
+
+	_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+	if err != nil {
+		t.Fatalf("creating bucket: %v", err)
+	}
+
+	return plantRetryInstructions(t, client, instructions)
+}
+
 // createObject creates an object in the emulator and returns its name, generation, and
 // metageneration.
 func createObject(ctx context.Context, bucket string) (string, int64, int64, error) {
@@ -1494,7 +1617,7 @@ func createObject(ctx context.Context, bucket string) (string, int64, int64, err
 	objName := fmt.Sprintf("%d-object", prefix)
 
 	w := veneerClient.Bucket(bucket).Object(objName).NewWriter(ctx)
-	if _, err := w.Write(randomBytesToWrite); err != nil {
+	if _, err := w.Write(randomBytes3MiB); err != nil {
 		return "", 0, 0, fmt.Errorf("failed to populate test data: %w", err)
 	}
 	if err := w.Close(); err != nil {
