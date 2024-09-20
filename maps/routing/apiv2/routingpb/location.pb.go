@@ -21,13 +21,12 @@
 package routingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
