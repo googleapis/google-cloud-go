@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package internal
+/*
+Package dataflux provides an easy way to parallelize listing in Google
+Cloud Storage.
 
-// Version is the current tagged release of the library.
-const Version = "1.20.2"
+More information about Google Cloud Storage is available at
+https://cloud.google.com/storage/docs.
+
+See https://pkg.go.dev/cloud.google.com/go for authentication, timeouts,
+connection pooling and similar aspects of this package.
+
+NOTE: This package is in preview. It is not stable, and is likely to change.
+*/
+package dataflux // import "cloud.google.com/go/storage/dataflux"
