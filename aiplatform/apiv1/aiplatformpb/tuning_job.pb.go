@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -813,7 +812,7 @@ func (x *SupervisedHyperParameters) GetAdapterSize() SupervisedHyperParameters_A
 	return SupervisedHyperParameters_ADAPTER_SIZE_UNSPECIFIED
 }
 
-// Tuning Spec for Supervised Tuning.
+// Tuning Spec for Supervised Tuning for first party models.
 type SupervisedTuningSpec struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -882,6 +881,109 @@ func (x *SupervisedTuningSpec) GetHyperParameters() *SupervisedHyperParameters {
 	return nil
 }
 
+// TunedModel Reference for legacy model migration.
+type TunedModelRef struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The Tuned Model Reference for the model.
+	//
+	// Types that are assignable to TunedModelRef:
+	//
+	//	*TunedModelRef_TunedModel
+	//	*TunedModelRef_TuningJob
+	//	*TunedModelRef_PipelineJob
+	TunedModelRef isTunedModelRef_TunedModelRef `protobuf_oneof:"tuned_model_ref"`
+}
+
+func (x *TunedModelRef) Reset() {
+	*x = TunedModelRef{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TunedModelRef) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TunedModelRef) ProtoMessage() {}
+
+func (x *TunedModelRef) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TunedModelRef.ProtoReflect.Descriptor instead.
+func (*TunedModelRef) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_tuning_job_proto_rawDescGZIP(), []int{7}
+}
+
+func (m *TunedModelRef) GetTunedModelRef() isTunedModelRef_TunedModelRef {
+	if m != nil {
+		return m.TunedModelRef
+	}
+	return nil
+}
+
+func (x *TunedModelRef) GetTunedModel() string {
+	if x, ok := x.GetTunedModelRef().(*TunedModelRef_TunedModel); ok {
+		return x.TunedModel
+	}
+	return ""
+}
+
+func (x *TunedModelRef) GetTuningJob() string {
+	if x, ok := x.GetTunedModelRef().(*TunedModelRef_TuningJob); ok {
+		return x.TuningJob
+	}
+	return ""
+}
+
+func (x *TunedModelRef) GetPipelineJob() string {
+	if x, ok := x.GetTunedModelRef().(*TunedModelRef_PipelineJob); ok {
+		return x.PipelineJob
+	}
+	return ""
+}
+
+type isTunedModelRef_TunedModelRef interface {
+	isTunedModelRef_TunedModelRef()
+}
+
+type TunedModelRef_TunedModel struct {
+	// Support migration from model registry.
+	TunedModel string `protobuf:"bytes,1,opt,name=tuned_model,json=tunedModel,proto3,oneof"`
+}
+
+type TunedModelRef_TuningJob struct {
+	// Support migration from tuning job list page, from gemini-1.0-pro-002
+	// to 1.5 and above.
+	TuningJob string `protobuf:"bytes,2,opt,name=tuning_job,json=tuningJob,proto3,oneof"`
+}
+
+type TunedModelRef_PipelineJob struct {
+	// Support migration from tuning job list page, from bison model to gemini
+	// model.
+	PipelineJob string `protobuf:"bytes,3,opt,name=pipeline_job,json=pipelineJob,proto3,oneof"`
+}
+
+func (*TunedModelRef_TunedModel) isTunedModelRef_TunedModelRef() {}
+
+func (*TunedModelRef_TuningJob) isTunedModelRef_TunedModelRef() {}
+
+func (*TunedModelRef_PipelineJob) isTunedModelRef_TunedModelRef() {}
+
 // Dataset bucket used to create a histogram for the distribution given a
 // population of values.
 type SupervisedTuningDatasetDistribution_DatasetBucket struct {
@@ -900,7 +1002,7 @@ type SupervisedTuningDatasetDistribution_DatasetBucket struct {
 func (x *SupervisedTuningDatasetDistribution_DatasetBucket) Reset() {
 	*x = SupervisedTuningDatasetDistribution_DatasetBucket{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[8]
+		mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -913,7 +1015,7 @@ func (x *SupervisedTuningDatasetDistribution_DatasetBucket) String() string {
 func (*SupervisedTuningDatasetDistribution_DatasetBucket) ProtoMessage() {}
 
 func (x *SupervisedTuningDatasetDistribution_DatasetBucket) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[8]
+	mi := &file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1203,21 +1305,37 @@ var file_google_cloud_aiplatform_v1_tuning_job_proto_rawDesc = []byte{
 	0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x75, 0x70, 0x65, 0x72,
 	0x76, 0x69, 0x73, 0x65, 0x64, 0x48, 0x79, 0x70, 0x65, 0x72, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x65,
 	0x74, 0x65, 0x72, 0x73, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0f, 0x68, 0x79, 0x70, 0x65, 0x72,
-	0x50, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72, 0x73, 0x42, 0xcc, 0x01, 0x0a, 0x1e, 0x63,
-	0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
-	0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x42, 0x0e, 0x54,
-	0x75, 0x6e, 0x69, 0x6e, 0x67, 0x4a, 0x6f, 0x62, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
-	0x3e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f,
-	0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2f,
-	0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d,
-	0x70, 0x62, 0x3b, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0xaa,
-	0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x41,
-	0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1a, 0x47,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x41, 0x49, 0x50, 0x6c,
-	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5c, 0x56, 0x31, 0xea, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x41, 0x49, 0x50, 0x6c, 0x61,
-	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x50, 0x61, 0x72, 0x61, 0x6d, 0x65, 0x74, 0x65, 0x72, 0x73, 0x22, 0x87, 0x02, 0x0a, 0x0d, 0x54,
+	0x75, 0x6e, 0x65, 0x64, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x52, 0x65, 0x66, 0x12, 0x47, 0x0a, 0x0b,
+	0x74, 0x75, 0x6e, 0x65, 0x64, 0x5f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x42, 0x24, 0xfa, 0x41, 0x21, 0x0a, 0x1f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f,
+	0x72, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x48, 0x00, 0x52, 0x0a, 0x74, 0x75, 0x6e, 0x65, 0x64,
+	0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x12, 0x49, 0x0a, 0x0a, 0x74, 0x75, 0x6e, 0x69, 0x6e, 0x67, 0x5f,
+	0x6a, 0x6f, 0x62, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x28, 0xfa, 0x41, 0x25, 0x0a, 0x23,
+	0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x54, 0x75, 0x6e, 0x69, 0x6e, 0x67,
+	0x4a, 0x6f, 0x62, 0x48, 0x00, 0x52, 0x09, 0x74, 0x75, 0x6e, 0x69, 0x6e, 0x67, 0x4a, 0x6f, 0x62,
+	0x12, 0x4f, 0x0a, 0x0c, 0x70, 0x69, 0x70, 0x65, 0x6c, 0x69, 0x6e, 0x65, 0x5f, 0x6a, 0x6f, 0x62,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2a, 0xfa, 0x41, 0x27, 0x0a, 0x25, 0x61, 0x69, 0x70,
+	0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70,
+	0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x50, 0x69, 0x70, 0x65, 0x6c, 0x69, 0x6e, 0x65, 0x4a,
+	0x6f, 0x62, 0x48, 0x00, 0x52, 0x0b, 0x70, 0x69, 0x70, 0x65, 0x6c, 0x69, 0x6e, 0x65, 0x4a, 0x6f,
+	0x62, 0x42, 0x11, 0x0a, 0x0f, 0x74, 0x75, 0x6e, 0x65, 0x64, 0x5f, 0x6d, 0x6f, 0x64, 0x65, 0x6c,
+	0x5f, 0x72, 0x65, 0x66, 0x42, 0xcc, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74,
+	0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x42, 0x0e, 0x54, 0x75, 0x6e, 0x69, 0x6e, 0x67, 0x4a,
+	0x6f, 0x62, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x61,
+	0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f,
+	0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0x3b, 0x61, 0x69, 0x70,
+	0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66,
+	0x6f, 0x72, 0x6d, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c,
+	0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d,
+	0x5c, 0x56, 0x31, 0xea, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c,
+	0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x3a,
+	0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1233,7 +1351,7 @@ func file_google_cloud_aiplatform_v1_tuning_job_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_aiplatform_v1_tuning_job_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_google_cloud_aiplatform_v1_tuning_job_proto_goTypes = []any{
 	(SupervisedHyperParameters_AdapterSize)(0),  // 0: google.cloud.aiplatform.v1.SupervisedHyperParameters.AdapterSize
 	(*TuningJob)(nil),                           // 1: google.cloud.aiplatform.v1.TuningJob
@@ -1243,31 +1361,32 @@ var file_google_cloud_aiplatform_v1_tuning_job_proto_goTypes = []any{
 	(*TuningDataStats)(nil),                     // 5: google.cloud.aiplatform.v1.TuningDataStats
 	(*SupervisedHyperParameters)(nil),           // 6: google.cloud.aiplatform.v1.SupervisedHyperParameters
 	(*SupervisedTuningSpec)(nil),                // 7: google.cloud.aiplatform.v1.SupervisedTuningSpec
-	nil,                                         // 8: google.cloud.aiplatform.v1.TuningJob.LabelsEntry
-	(*SupervisedTuningDatasetDistribution_DatasetBucket)(nil), // 9: google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution.DatasetBucket
-	(JobState)(0),                 // 10: google.cloud.aiplatform.v1.JobState
-	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
-	(*status.Status)(nil),         // 12: google.rpc.Status
-	(*EncryptionSpec)(nil),        // 13: google.cloud.aiplatform.v1.EncryptionSpec
-	(*Content)(nil),               // 14: google.cloud.aiplatform.v1.Content
+	(*TunedModelRef)(nil),                       // 8: google.cloud.aiplatform.v1.TunedModelRef
+	nil,                                         // 9: google.cloud.aiplatform.v1.TuningJob.LabelsEntry
+	(*SupervisedTuningDatasetDistribution_DatasetBucket)(nil), // 10: google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution.DatasetBucket
+	(JobState)(0),                 // 11: google.cloud.aiplatform.v1.JobState
+	(*timestamppb.Timestamp)(nil), // 12: google.protobuf.Timestamp
+	(*status.Status)(nil),         // 13: google.rpc.Status
+	(*EncryptionSpec)(nil),        // 14: google.cloud.aiplatform.v1.EncryptionSpec
+	(*Content)(nil),               // 15: google.cloud.aiplatform.v1.Content
 }
 var file_google_cloud_aiplatform_v1_tuning_job_proto_depIdxs = []int32{
 	7,  // 0: google.cloud.aiplatform.v1.TuningJob.supervised_tuning_spec:type_name -> google.cloud.aiplatform.v1.SupervisedTuningSpec
-	10, // 1: google.cloud.aiplatform.v1.TuningJob.state:type_name -> google.cloud.aiplatform.v1.JobState
-	11, // 2: google.cloud.aiplatform.v1.TuningJob.create_time:type_name -> google.protobuf.Timestamp
-	11, // 3: google.cloud.aiplatform.v1.TuningJob.start_time:type_name -> google.protobuf.Timestamp
-	11, // 4: google.cloud.aiplatform.v1.TuningJob.end_time:type_name -> google.protobuf.Timestamp
-	11, // 5: google.cloud.aiplatform.v1.TuningJob.update_time:type_name -> google.protobuf.Timestamp
-	12, // 6: google.cloud.aiplatform.v1.TuningJob.error:type_name -> google.rpc.Status
-	8,  // 7: google.cloud.aiplatform.v1.TuningJob.labels:type_name -> google.cloud.aiplatform.v1.TuningJob.LabelsEntry
+	11, // 1: google.cloud.aiplatform.v1.TuningJob.state:type_name -> google.cloud.aiplatform.v1.JobState
+	12, // 2: google.cloud.aiplatform.v1.TuningJob.create_time:type_name -> google.protobuf.Timestamp
+	12, // 3: google.cloud.aiplatform.v1.TuningJob.start_time:type_name -> google.protobuf.Timestamp
+	12, // 4: google.cloud.aiplatform.v1.TuningJob.end_time:type_name -> google.protobuf.Timestamp
+	12, // 5: google.cloud.aiplatform.v1.TuningJob.update_time:type_name -> google.protobuf.Timestamp
+	13, // 6: google.cloud.aiplatform.v1.TuningJob.error:type_name -> google.rpc.Status
+	9,  // 7: google.cloud.aiplatform.v1.TuningJob.labels:type_name -> google.cloud.aiplatform.v1.TuningJob.LabelsEntry
 	2,  // 8: google.cloud.aiplatform.v1.TuningJob.tuned_model:type_name -> google.cloud.aiplatform.v1.TunedModel
 	5,  // 9: google.cloud.aiplatform.v1.TuningJob.tuning_data_stats:type_name -> google.cloud.aiplatform.v1.TuningDataStats
-	13, // 10: google.cloud.aiplatform.v1.TuningJob.encryption_spec:type_name -> google.cloud.aiplatform.v1.EncryptionSpec
-	9,  // 11: google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution.buckets:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution.DatasetBucket
+	14, // 10: google.cloud.aiplatform.v1.TuningJob.encryption_spec:type_name -> google.cloud.aiplatform.v1.EncryptionSpec
+	10, // 11: google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution.buckets:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution.DatasetBucket
 	3,  // 12: google.cloud.aiplatform.v1.SupervisedTuningDataStats.user_input_token_distribution:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution
 	3,  // 13: google.cloud.aiplatform.v1.SupervisedTuningDataStats.user_output_token_distribution:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution
 	3,  // 14: google.cloud.aiplatform.v1.SupervisedTuningDataStats.user_message_per_example_distribution:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDatasetDistribution
-	14, // 15: google.cloud.aiplatform.v1.SupervisedTuningDataStats.user_dataset_examples:type_name -> google.cloud.aiplatform.v1.Content
+	15, // 15: google.cloud.aiplatform.v1.SupervisedTuningDataStats.user_dataset_examples:type_name -> google.cloud.aiplatform.v1.Content
 	4,  // 16: google.cloud.aiplatform.v1.TuningDataStats.supervised_tuning_data_stats:type_name -> google.cloud.aiplatform.v1.SupervisedTuningDataStats
 	0,  // 17: google.cloud.aiplatform.v1.SupervisedHyperParameters.adapter_size:type_name -> google.cloud.aiplatform.v1.SupervisedHyperParameters.AdapterSize
 	6,  // 18: google.cloud.aiplatform.v1.SupervisedTuningSpec.hyper_parameters:type_name -> google.cloud.aiplatform.v1.SupervisedHyperParameters
@@ -1371,7 +1490,19 @@ func file_google_cloud_aiplatform_v1_tuning_job_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[8].Exporter = func(v any, i int) any {
+		file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[7].Exporter = func(v any, i int) any {
+			switch v := v.(*TunedModelRef); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[9].Exporter = func(v any, i int) any {
 			switch v := v.(*SupervisedTuningDatasetDistribution_DatasetBucket); i {
 			case 0:
 				return &v.state
@@ -1391,13 +1522,18 @@ func file_google_cloud_aiplatform_v1_tuning_job_proto_init() {
 	file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[4].OneofWrappers = []any{
 		(*TuningDataStats_SupervisedTuningDataStats)(nil),
 	}
+	file_google_cloud_aiplatform_v1_tuning_job_proto_msgTypes[7].OneofWrappers = []any{
+		(*TunedModelRef_TunedModel)(nil),
+		(*TunedModelRef_TuningJob)(nil),
+		(*TunedModelRef_PipelineJob)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_aiplatform_v1_tuning_job_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   9,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
