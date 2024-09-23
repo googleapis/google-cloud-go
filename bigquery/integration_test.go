@@ -1175,6 +1175,7 @@ type TestStruct struct {
 	RangeDate      *RangeValue `bigquery:"rangedate"` //TODO: remove tags when field normalization works
 	RangeDateTime  *RangeValue `bigquery:"rangedatetime"`
 	RangeTimestamp *RangeValue `bigquery:"rangetimestamp"`
+	RangeArray     []*RangeValue
 	StringArray    []string
 	IntegerArray   []int64
 	FloatArray     []float64
@@ -1208,6 +1209,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 		11: DateFieldType,
 		12: DateTimeFieldType,
 		13: TimestampFieldType,
+		14: DateFieldType,
 	} {
 		if schema[idx].Type != RangeFieldType {
 			t.Fatalf("mismatch in expected RANGE element in schema field %d", idx)
@@ -1258,6 +1260,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			rangedate,
 			rangedatetime,
 			rangetimestamp,
+			[]*RangeValue{rangedate},
 			[]string{"a", "b"},
 			[]int64{1, 2},
 			[]float64{1, 1.41},
@@ -1296,6 +1299,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			RangeDate:      rangedate,
 			RangeDateTime:  rangedatetime,
 			RangeTimestamp: rangetimestamp,
+			RangeArray:     []*RangeValue{rangedate},
 		},
 	}
 	var savers []*StructSaver
@@ -2316,6 +2320,31 @@ func initQueryParameterTestCases() {
 			},
 			[]Value{rangeTimestamp2},
 			rangeTimestamp2,
+		},
+		{
+			"RangeArray",
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							ArrayElementType: &StandardSQLDataType{
+								TypeKind: "RANGE",
+								RangeElementType: &StandardSQLDataType{
+									TypeKind: "TIMESTAMP",
+								},
+							},
+						},
+						ArrayValue: []QueryParameterValue{
+							{Value: rangeTimestamp1},
+							{Value: rangeTimestamp2},
+						},
+					},
+				},
+			},
+			[]Value{[]Value{rangeTimestamp1, rangeTimestamp2}},
+			[]interface{}{rangeTimestamp1, rangeTimestamp2},
 		},
 		{
 			"NestedStructParam",
