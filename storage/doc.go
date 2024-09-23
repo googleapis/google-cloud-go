@@ -341,6 +341,11 @@ The following RPCs are not supported through the gRPC client:
 - ListNotifications
 - CreateNotification
 - DeleteNotification
+- GetHMACKey
+- ListHMACKeys
+- UpdateHMACKey
+- CreateHMACKey
+- DeleteHMACKey
 
 Kindly contact the Google Cloud Storage gRPC
 team at gcs-grpc-contact@google.com with a list of GCS buckets you would like to
