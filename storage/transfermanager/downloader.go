@@ -756,8 +756,10 @@ type DownloadDirectoryInput struct {
 	// The directory will be created if it does not already exist. Required.
 	LocalDirectory string
 
-	// StripPrefix is a prefix to be removed from the path of an object on
-	// download from GCS. Optional.
+	// StripPrefix is a prefix to be removed from the path of the local file on
+	// download from GCS. For example, if you have an object in GCS called
+	// "mydirectory/a/file", and StripPrefix is set to "mydirectory/", the file
+	// will be downloaded to "{LocalDirectory}/a/file". Optional.
 	StripPrefix string
 
 	// Prefix is the prefix filter to download objects whose names begin with this.
