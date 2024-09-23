@@ -333,7 +333,6 @@ to add a [custom audit logging] header:
 
 # gRPC API
 
-
 This package includes support for the Cloud Storage gRPC API. The
 implementation uses gRPC rather than the Default
 JSON & XML APIs to make requests to Cloud Storage.
