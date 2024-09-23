@@ -335,13 +335,7 @@ to add a [custom audit logging] header:
 
 This package includes support for the Cloud Storage gRPC API, which is currently
 in preview. This implementation uses gRPC rather than the current JSON & XML
-APIs to make requests to Cloud Storage.
-
-The following RPCs are not supported through the gRPC client:
-- ListNotifications
-- CreateNotification
-- DeleteNotification
-
+APIs to make requests to Cloud Storage. The Notifications RPCs are not supported through the gRPC client.
 Kindly contact the Google Cloud Storage gRPC
 team at gcs-grpc-contact@google.com with a list of GCS buckets you would like to
 allowlist to access this API. The Go Storage gRPC library is not yet generally
