@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.3.1...gkemulticloud/v1.4.0) (2024-09-19)
+
+
+### Features
+
+* **gkemulticloud:** An optional field `kubelet_config` in message `.google.cloud.gkemulticloud.v1.AwsNodePool` is added ([37866ce](https://github.com/googleapis/google-cloud-go/commit/37866ce67a286a3eed1b92f53bdac2ae8f1c63ed))
+* **gkemulticloud:** An optional field `security_posture_config` in message `.google.cloud.gkemulticloud.v1.AttachedCluster` is added ([37866ce](https://github.com/googleapis/google-cloud-go/commit/37866ce67a286a3eed1b92f53bdac2ae8f1c63ed))
+
 ## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.3.0...gkemulticloud/v1.3.1) (2024-09-12)
 
 
