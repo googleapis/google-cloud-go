@@ -111,6 +111,17 @@ func (d Date) After(d2 Date) bool {
 	return d2.Before(d)
 }
 
+// Compare compares d and d2. If d is before d2, it returns -1;
+// if d is after d2, it returns +1; otherwise it returns 0.
+func (d Date) Compare(d2 Date) int {
+	if d.Before(d2) {
+		return -1
+	} else if d.After(d2) {
+		return +1
+	}
+	return 0
+}
+
 // IsZero reports whether date fields are set to their default value.
 func (d Date) IsZero() bool {
 	return (d.Year == 0) && (int(d.Month) == 0) && (d.Day == 0)
@@ -209,6 +220,17 @@ func (t Time) After(t2 Time) bool {
 	return t2.Before(t)
 }
 
+// Compare compares t and t2. If t is before t2, it returns -1;
+// if t is after t2, it returns +1; otherwise it returns 0.
+func (t Time) Compare(t2 Time) int {
+	if t.Before(t2) {
+		return -1
+	} else if t.After(t2) {
+		return +1
+	}
+	return 0
+}
+
 // MarshalText implements the encoding.TextMarshaler interface.
 // The output is the result of t.String().
 func (t Time) MarshalText() ([]byte, error) {
@@ -300,6 +322,12 @@ func (dt DateTime) Before(dt2 DateTime) bool {
 // After reports whether dt occurs after dt2.
 func (dt DateTime) After(dt2 DateTime) bool {
 	return dt2.Before(dt)
+}
+
+// Compare compares dt and dt2. If dt is before dt2, it returns -1;
+// if dt is after dt2, it returns +1; otherwise it returns 0.
+func (dt DateTime) Compare(dt2 DateTime) int {
+	return dt.In(time.UTC).Compare(dt2.In(time.UTC))
 }
 
 // IsZero reports whether datetime fields are set to their default value.

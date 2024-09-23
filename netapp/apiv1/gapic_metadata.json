@@ -20,6 +20,21 @@
                 "CreateActiveDirectory"
               ]
             },
+            "CreateBackup": {
+              "methods": [
+                "CreateBackup"
+              ]
+            },
+            "CreateBackupPolicy": {
+              "methods": [
+                "CreateBackupPolicy"
+              ]
+            },
+            "CreateBackupVault": {
+              "methods": [
+                "CreateBackupVault"
+              ]
+            },
             "CreateKmsConfig": {
               "methods": [
                 "CreateKmsConfig"
@@ -48,6 +63,21 @@
             "DeleteActiveDirectory": {
               "methods": [
                 "DeleteActiveDirectory"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteBackupPolicy": {
+              "methods": [
+                "DeleteBackupPolicy"
+              ]
+            },
+            "DeleteBackupVault": {
+              "methods": [
+                "DeleteBackupVault"
               ]
             },
             "DeleteKmsConfig": {
@@ -90,6 +120,21 @@
                 "GetActiveDirectory"
               ]
             },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupPolicy": {
+              "methods": [
+                "GetBackupPolicy"
+              ]
+            },
+            "GetBackupVault": {
+              "methods": [
+                "GetBackupVault"
+              ]
+            },
             "GetKmsConfig": {
               "methods": [
                 "GetKmsConfig"
@@ -128,6 +173,21 @@
             "ListActiveDirectories": {
               "methods": [
                 "ListActiveDirectories"
+              ]
+            },
+            "ListBackupPolicies": {
+              "methods": [
+                "ListBackupPolicies"
+              ]
+            },
+            "ListBackupVaults": {
+              "methods": [
+                "ListBackupVaults"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
               ]
             },
             "ListKmsConfigs": {
@@ -185,9 +245,29 @@
                 "StopReplication"
               ]
             },
+            "SwitchActiveReplicaZone": {
+              "methods": [
+                "SwitchActiveReplicaZone"
+              ]
+            },
             "UpdateActiveDirectory": {
               "methods": [
                 "UpdateActiveDirectory"
+              ]
+            },
+            "UpdateBackup": {
+              "methods": [
+                "UpdateBackup"
+              ]
+            },
+            "UpdateBackupPolicy": {
+              "methods": [
+                "UpdateBackupPolicy"
+              ]
+            },
+            "UpdateBackupVault": {
+              "methods": [
+                "UpdateBackupVault"
               ]
             },
             "UpdateKmsConfig": {
@@ -235,6 +315,21 @@
                 "CreateActiveDirectory"
               ]
             },
+            "CreateBackup": {
+              "methods": [
+                "CreateBackup"
+              ]
+            },
+            "CreateBackupPolicy": {
+              "methods": [
+                "CreateBackupPolicy"
+              ]
+            },
+            "CreateBackupVault": {
+              "methods": [
+                "CreateBackupVault"
+              ]
+            },
             "CreateKmsConfig": {
               "methods": [
                 "CreateKmsConfig"
@@ -263,6 +358,21 @@
             "DeleteActiveDirectory": {
               "methods": [
                 "DeleteActiveDirectory"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteBackupPolicy": {
+              "methods": [
+                "DeleteBackupPolicy"
+              ]
+            },
+            "DeleteBackupVault": {
+              "methods": [
+                "DeleteBackupVault"
               ]
             },
             "DeleteKmsConfig": {
@@ -305,6 +415,21 @@
                 "GetActiveDirectory"
               ]
             },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupPolicy": {
+              "methods": [
+                "GetBackupPolicy"
+              ]
+            },
+            "GetBackupVault": {
+              "methods": [
+                "GetBackupVault"
+              ]
+            },
             "GetKmsConfig": {
               "methods": [
                 "GetKmsConfig"
@@ -343,6 +468,21 @@
             "ListActiveDirectories": {
               "methods": [
                 "ListActiveDirectories"
+              ]
+            },
+            "ListBackupPolicies": {
+              "methods": [
+                "ListBackupPolicies"
+              ]
+            },
+            "ListBackupVaults": {
+              "methods": [
+                "ListBackupVaults"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
               ]
             },
             "ListKmsConfigs": {
@@ -400,9 +540,29 @@
                 "StopReplication"
               ]
             },
+            "SwitchActiveReplicaZone": {
+              "methods": [
+                "SwitchActiveReplicaZone"
+              ]
+            },
             "UpdateActiveDirectory": {
               "methods": [
                 "UpdateActiveDirectory"
+              ]
+            },
+            "UpdateBackup": {
+              "methods": [
+                "UpdateBackup"
+              ]
+            },
+            "UpdateBackupPolicy": {
+              "methods": [
+                "UpdateBackupPolicy"
+              ]
+            },
+            "UpdateBackupVault": {
+              "methods": [
+                "UpdateBackupVault"
               ]
             },
             "UpdateKmsConfig": {

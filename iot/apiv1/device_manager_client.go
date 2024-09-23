@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -70,10 +69,13 @@ type DeviceManagerCallOptions struct {
 func defaultDeviceManagerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudiot.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudiot.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudiot.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudiot.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -590,7 +592,7 @@ type deviceManagerGRPCClient struct {
 	deviceManagerClient iotpb.DeviceManagerClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewDeviceManagerClient creates a new device manager client based on gRPC.
@@ -639,7 +641,9 @@ func (c *deviceManagerGRPCClient) Connection() *grpc.ClientConn {
 func (c *deviceManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -656,8 +660,8 @@ type deviceManagerRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing DeviceManagerClient
 	CallOptions **DeviceManagerCallOptions
@@ -687,9 +691,12 @@ func NewDeviceManagerRESTClient(ctx context.Context, opts ...option.ClientOption
 func defaultDeviceManagerRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudiot.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudiot.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudiot.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudiot.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -699,7 +706,9 @@ func defaultDeviceManagerRESTClientOptions() []option.ClientOption {
 func (c *deviceManagerRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -717,9 +726,10 @@ func (c *deviceManagerRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *deviceManagerGRPCClient) CreateDeviceRegistry(ctx context.Context, req *iotpb.CreateDeviceRegistryRequest, opts ...gax.CallOption) (*iotpb.DeviceRegistry, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDeviceRegistry[0:len((*c.CallOptions).CreateDeviceRegistry):len((*c.CallOptions).CreateDeviceRegistry)], opts...)
 	var resp *iotpb.DeviceRegistry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -734,9 +744,10 @@ func (c *deviceManagerGRPCClient) CreateDeviceRegistry(ctx context.Context, req 
 }
 
 func (c *deviceManagerGRPCClient) GetDeviceRegistry(ctx context.Context, req *iotpb.GetDeviceRegistryRequest, opts ...gax.CallOption) (*iotpb.DeviceRegistry, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDeviceRegistry[0:len((*c.CallOptions).GetDeviceRegistry):len((*c.CallOptions).GetDeviceRegistry)], opts...)
 	var resp *iotpb.DeviceRegistry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -751,9 +762,10 @@ func (c *deviceManagerGRPCClient) GetDeviceRegistry(ctx context.Context, req *io
 }
 
 func (c *deviceManagerGRPCClient) UpdateDeviceRegistry(ctx context.Context, req *iotpb.UpdateDeviceRegistryRequest, opts ...gax.CallOption) (*iotpb.DeviceRegistry, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "device_registry.name", url.QueryEscape(req.GetDeviceRegistry().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "device_registry.name", url.QueryEscape(req.GetDeviceRegistry().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDeviceRegistry[0:len((*c.CallOptions).UpdateDeviceRegistry):len((*c.CallOptions).UpdateDeviceRegistry)], opts...)
 	var resp *iotpb.DeviceRegistry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -768,9 +780,10 @@ func (c *deviceManagerGRPCClient) UpdateDeviceRegistry(ctx context.Context, req 
 }
 
 func (c *deviceManagerGRPCClient) DeleteDeviceRegistry(ctx context.Context, req *iotpb.DeleteDeviceRegistryRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDeviceRegistry[0:len((*c.CallOptions).DeleteDeviceRegistry):len((*c.CallOptions).DeleteDeviceRegistry)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -781,9 +794,10 @@ func (c *deviceManagerGRPCClient) DeleteDeviceRegistry(ctx context.Context, req 
 }
 
 func (c *deviceManagerGRPCClient) ListDeviceRegistries(ctx context.Context, req *iotpb.ListDeviceRegistriesRequest, opts ...gax.CallOption) *DeviceRegistryIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDeviceRegistries[0:len((*c.CallOptions).ListDeviceRegistries):len((*c.CallOptions).ListDeviceRegistries)], opts...)
 	it := &DeviceRegistryIterator{}
 	req = proto.Clone(req).(*iotpb.ListDeviceRegistriesRequest)
@@ -826,9 +840,10 @@ func (c *deviceManagerGRPCClient) ListDeviceRegistries(ctx context.Context, req 
 }
 
 func (c *deviceManagerGRPCClient) CreateDevice(ctx context.Context, req *iotpb.CreateDeviceRequest, opts ...gax.CallOption) (*iotpb.Device, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDevice[0:len((*c.CallOptions).CreateDevice):len((*c.CallOptions).CreateDevice)], opts...)
 	var resp *iotpb.Device
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -843,9 +858,10 @@ func (c *deviceManagerGRPCClient) CreateDevice(ctx context.Context, req *iotpb.C
 }
 
 func (c *deviceManagerGRPCClient) GetDevice(ctx context.Context, req *iotpb.GetDeviceRequest, opts ...gax.CallOption) (*iotpb.Device, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDevice[0:len((*c.CallOptions).GetDevice):len((*c.CallOptions).GetDevice)], opts...)
 	var resp *iotpb.Device
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -860,9 +876,10 @@ func (c *deviceManagerGRPCClient) GetDevice(ctx context.Context, req *iotpb.GetD
 }
 
 func (c *deviceManagerGRPCClient) UpdateDevice(ctx context.Context, req *iotpb.UpdateDeviceRequest, opts ...gax.CallOption) (*iotpb.Device, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "device.name", url.QueryEscape(req.GetDevice().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "device.name", url.QueryEscape(req.GetDevice().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDevice[0:len((*c.CallOptions).UpdateDevice):len((*c.CallOptions).UpdateDevice)], opts...)
 	var resp *iotpb.Device
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -877,9 +894,10 @@ func (c *deviceManagerGRPCClient) UpdateDevice(ctx context.Context, req *iotpb.U
 }
 
 func (c *deviceManagerGRPCClient) DeleteDevice(ctx context.Context, req *iotpb.DeleteDeviceRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDevice[0:len((*c.CallOptions).DeleteDevice):len((*c.CallOptions).DeleteDevice)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -890,9 +908,10 @@ func (c *deviceManagerGRPCClient) DeleteDevice(ctx context.Context, req *iotpb.D
 }
 
 func (c *deviceManagerGRPCClient) ListDevices(ctx context.Context, req *iotpb.ListDevicesRequest, opts ...gax.CallOption) *DeviceIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDevices[0:len((*c.CallOptions).ListDevices):len((*c.CallOptions).ListDevices)], opts...)
 	it := &DeviceIterator{}
 	req = proto.Clone(req).(*iotpb.ListDevicesRequest)
@@ -935,9 +954,10 @@ func (c *deviceManagerGRPCClient) ListDevices(ctx context.Context, req *iotpb.Li
 }
 
 func (c *deviceManagerGRPCClient) ModifyCloudToDeviceConfig(ctx context.Context, req *iotpb.ModifyCloudToDeviceConfigRequest, opts ...gax.CallOption) (*iotpb.DeviceConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ModifyCloudToDeviceConfig[0:len((*c.CallOptions).ModifyCloudToDeviceConfig):len((*c.CallOptions).ModifyCloudToDeviceConfig)], opts...)
 	var resp *iotpb.DeviceConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -952,9 +972,10 @@ func (c *deviceManagerGRPCClient) ModifyCloudToDeviceConfig(ctx context.Context,
 }
 
 func (c *deviceManagerGRPCClient) ListDeviceConfigVersions(ctx context.Context, req *iotpb.ListDeviceConfigVersionsRequest, opts ...gax.CallOption) (*iotpb.ListDeviceConfigVersionsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDeviceConfigVersions[0:len((*c.CallOptions).ListDeviceConfigVersions):len((*c.CallOptions).ListDeviceConfigVersions)], opts...)
 	var resp *iotpb.ListDeviceConfigVersionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -969,9 +990,10 @@ func (c *deviceManagerGRPCClient) ListDeviceConfigVersions(ctx context.Context, 
 }
 
 func (c *deviceManagerGRPCClient) ListDeviceStates(ctx context.Context, req *iotpb.ListDeviceStatesRequest, opts ...gax.CallOption) (*iotpb.ListDeviceStatesResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDeviceStates[0:len((*c.CallOptions).ListDeviceStates):len((*c.CallOptions).ListDeviceStates)], opts...)
 	var resp *iotpb.ListDeviceStatesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -986,9 +1008,10 @@ func (c *deviceManagerGRPCClient) ListDeviceStates(ctx context.Context, req *iot
 }
 
 func (c *deviceManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1003,9 +1026,10 @@ func (c *deviceManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 }
 
 func (c *deviceManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1020,9 +1044,10 @@ func (c *deviceManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 }
 
 func (c *deviceManagerGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1037,9 +1062,10 @@ func (c *deviceManagerGRPCClient) TestIamPermissions(ctx context.Context, req *i
 }
 
 func (c *deviceManagerGRPCClient) SendCommandToDevice(ctx context.Context, req *iotpb.SendCommandToDeviceRequest, opts ...gax.CallOption) (*iotpb.SendCommandToDeviceResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SendCommandToDevice[0:len((*c.CallOptions).SendCommandToDevice):len((*c.CallOptions).SendCommandToDevice)], opts...)
 	var resp *iotpb.SendCommandToDeviceResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1054,9 +1080,10 @@ func (c *deviceManagerGRPCClient) SendCommandToDevice(ctx context.Context, req *
 }
 
 func (c *deviceManagerGRPCClient) BindDeviceToGateway(ctx context.Context, req *iotpb.BindDeviceToGatewayRequest, opts ...gax.CallOption) (*iotpb.BindDeviceToGatewayResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).BindDeviceToGateway[0:len((*c.CallOptions).BindDeviceToGateway):len((*c.CallOptions).BindDeviceToGateway)], opts...)
 	var resp *iotpb.BindDeviceToGatewayResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1071,9 +1098,10 @@ func (c *deviceManagerGRPCClient) BindDeviceToGateway(ctx context.Context, req *
 }
 
 func (c *deviceManagerGRPCClient) UnbindDeviceFromGateway(ctx context.Context, req *iotpb.UnbindDeviceFromGatewayRequest, opts ...gax.CallOption) (*iotpb.UnbindDeviceFromGatewayResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UnbindDeviceFromGateway[0:len((*c.CallOptions).UnbindDeviceFromGateway):len((*c.CallOptions).UnbindDeviceFromGateway)], opts...)
 	var resp *iotpb.UnbindDeviceFromGatewayResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1108,9 +1136,11 @@ func (c *deviceManagerRESTClient) CreateDeviceRegistry(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDeviceRegistry[0:len((*c.CallOptions).CreateDeviceRegistry):len((*c.CallOptions).CreateDeviceRegistry)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iotpb.DeviceRegistry{}
@@ -1166,9 +1196,11 @@ func (c *deviceManagerRESTClient) GetDeviceRegistry(ctx context.Context, req *io
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetDeviceRegistry[0:len((*c.CallOptions).GetDeviceRegistry):len((*c.CallOptions).GetDeviceRegistry)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iotpb.DeviceRegistry{}
@@ -1228,19 +1260,21 @@ func (c *deviceManagerRESTClient) UpdateDeviceRegistry(ctx context.Context, req 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "device_registry.name", url.QueryEscape(req.GetDeviceRegistry().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "device_registry.name", url.QueryEscape(req.GetDeviceRegistry().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDeviceRegistry[0:len((*c.CallOptions).UpdateDeviceRegistry):len((*c.CallOptions).UpdateDeviceRegistry)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iotpb.DeviceRegistry{}
@@ -1296,9 +1330,11 @@ func (c *deviceManagerRESTClient) DeleteDeviceRegistry(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1355,7 +1391,8 @@ func (c *deviceManagerRESTClient) ListDeviceRegistries(ctx context.Context, req 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1431,9 +1468,11 @@ func (c *deviceManagerRESTClient) CreateDevice(ctx context.Context, req *iotpb.C
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDevice[0:len((*c.CallOptions).CreateDevice):len((*c.CallOptions).CreateDevice)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iotpb.Device{}
@@ -1486,19 +1525,21 @@ func (c *deviceManagerRESTClient) GetDevice(ctx context.Context, req *iotpb.GetD
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFieldMask() != nil {
-		fieldMask, err := protojson.Marshal(req.GetFieldMask())
+		field, err := protojson.Marshal(req.GetFieldMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+		params.Add("fieldMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetDevice[0:len((*c.CallOptions).GetDevice):len((*c.CallOptions).GetDevice)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iotpb.Device{}
@@ -1558,19 +1599,21 @@ func (c *deviceManagerRESTClient) UpdateDevice(ctx context.Context, req *iotpb.U
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "device.name", url.QueryEscape(req.GetDevice().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "device.name", url.QueryEscape(req.GetDevice().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDevice[0:len((*c.CallOptions).UpdateDevice):len((*c.CallOptions).UpdateDevice)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iotpb.Device{}
@@ -1626,9 +1669,11 @@ func (c *deviceManagerRESTClient) DeleteDevice(ctx context.Context, req *iotpb.D
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1686,11 +1731,11 @@ func (c *deviceManagerRESTClient) ListDevices(ctx context.Context, req *iotpb.Li
 			}
 		}
 		if req.GetFieldMask() != nil {
-			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			field, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+			params.Add("fieldMask", string(field[1:len(field)-1]))
 		}
 		if req.GetGatewayListOptions().GetAssociationsDeviceId() != "" {
 			params.Add("gatewayListOptions.associationsDeviceId", fmt.Sprintf("%v", req.GetGatewayListOptions().GetAssociationsDeviceId()))
@@ -1711,7 +1756,8 @@ func (c *deviceManagerRESTClient) ListDevices(ctx context.Context, req *iotpb.Li
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1788,9 +1834,11 @@ func (c *deviceManagerRESTClient) ModifyCloudToDeviceConfig(ctx context.Context,
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ModifyCloudToDeviceConfig[0:len((*c.CallOptions).ModifyCloudToDeviceConfig):len((*c.CallOptions).ModifyCloudToDeviceConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iotpb.DeviceConfig{}
@@ -1850,9 +1898,11 @@ func (c *deviceManagerRESTClient) ListDeviceConfigVersions(ctx context.Context, 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ListDeviceConfigVersions[0:len((*c.CallOptions).ListDeviceConfigVersions):len((*c.CallOptions).ListDeviceConfigVersions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iotpb.ListDeviceConfigVersionsResponse{}
@@ -1912,9 +1962,11 @@ func (c *deviceManagerRESTClient) ListDeviceStates(ctx context.Context, req *iot
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ListDeviceStates[0:len((*c.CallOptions).ListDeviceStates):len((*c.CallOptions).ListDeviceStates)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iotpb.ListDeviceStatesResponse{}
@@ -1977,9 +2029,11 @@ func (c *deviceManagerRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -2043,9 +2097,11 @@ func (c *deviceManagerRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -2109,9 +2165,11 @@ func (c *deviceManagerRESTClient) TestIamPermissions(ctx context.Context, req *i
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -2187,9 +2245,11 @@ func (c *deviceManagerRESTClient) SendCommandToDevice(ctx context.Context, req *
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SendCommandToDevice[0:len((*c.CallOptions).SendCommandToDevice):len((*c.CallOptions).SendCommandToDevice)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iotpb.SendCommandToDeviceResponse{}
@@ -2251,9 +2311,11 @@ func (c *deviceManagerRESTClient) BindDeviceToGateway(ctx context.Context, req *
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).BindDeviceToGateway[0:len((*c.CallOptions).BindDeviceToGateway):len((*c.CallOptions).BindDeviceToGateway)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iotpb.BindDeviceToGatewayResponse{}
@@ -2315,9 +2377,11 @@ func (c *deviceManagerRESTClient) UnbindDeviceFromGateway(ctx context.Context, r
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UnbindDeviceFromGateway[0:len((*c.CallOptions).UnbindDeviceFromGateway):len((*c.CallOptions).UnbindDeviceFromGateway)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iotpb.UnbindDeviceFromGatewayResponse{}
@@ -2357,98 +2421,4 @@ func (c *deviceManagerRESTClient) UnbindDeviceFromGateway(ctx context.Context, r
 		return nil, e
 	}
 	return resp, nil
-}
-
-// DeviceIterator manages a stream of *iotpb.Device.
-type DeviceIterator struct {
-	items    []*iotpb.Device
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*iotpb.Device, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DeviceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DeviceIterator) Next() (*iotpb.Device, error) {
-	var item *iotpb.Device
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DeviceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DeviceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DeviceRegistryIterator manages a stream of *iotpb.DeviceRegistry.
-type DeviceRegistryIterator struct {
-	items    []*iotpb.DeviceRegistry
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*iotpb.DeviceRegistry, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DeviceRegistryIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DeviceRegistryIterator) Next() (*iotpb.DeviceRegistry, error) {
-	var item *iotpb.DeviceRegistry
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DeviceRegistryIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DeviceRegistryIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

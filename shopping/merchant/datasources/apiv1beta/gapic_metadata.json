@@ -1,0 +1,83 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.shopping.merchant.datasources.v1beta",
+  "libraryPackage": "cloud.google.com/go/shopping/merchant/datasources/apiv1beta",
+  "services": {
+    "DataSourcesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateDataSource": {
+              "methods": [
+                "CreateDataSource"
+              ]
+            },
+            "DeleteDataSource": {
+              "methods": [
+                "DeleteDataSource"
+              ]
+            },
+            "FetchDataSource": {
+              "methods": [
+                "FetchDataSource"
+              ]
+            },
+            "GetDataSource": {
+              "methods": [
+                "GetDataSource"
+              ]
+            },
+            "ListDataSources": {
+              "methods": [
+                "ListDataSources"
+              ]
+            },
+            "UpdateDataSource": {
+              "methods": [
+                "UpdateDataSource"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateDataSource": {
+              "methods": [
+                "CreateDataSource"
+              ]
+            },
+            "DeleteDataSource": {
+              "methods": [
+                "DeleteDataSource"
+              ]
+            },
+            "FetchDataSource": {
+              "methods": [
+                "FetchDataSource"
+              ]
+            },
+            "GetDataSource": {
+              "methods": [
+                "GetDataSource"
+              ]
+            },
+            "ListDataSources": {
+              "methods": [
+                "ListDataSources"
+              ]
+            },
+            "UpdateDataSource": {
+              "methods": [
+                "UpdateDataSource"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

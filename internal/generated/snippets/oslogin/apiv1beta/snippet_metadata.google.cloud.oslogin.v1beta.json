@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/oslogin/apiv1beta",
-    "version": "1.10.1",
+    "version": "1.14.1",
     "language": "GO",
     "apis": [
       {
@@ -270,6 +270,52 @@
         "method": {
           "shortName": "ImportSshPublicKey",
           "fullName": "google.cloud.oslogin.v1beta.OsLoginService.ImportSshPublicKey",
+          "service": {
+            "shortName": "OsLoginService",
+            "fullName": "google.cloud.oslogin.v1beta.OsLoginService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "oslogin_v1beta_generated_OsLoginService_SignSshPublicKey_sync",
+      "title": "oslogin SignSshPublicKey Sample",
+      "description": "SignSshPublicKey signs an SSH public key for a user to authenticate to an instance.",
+      "file": "Client/SignSshPublicKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SignSshPublicKey",
+        "fullName": "google.cloud.oslogin.v1beta.Client.SignSshPublicKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "osloginpb.SignSshPublicKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*osloginpb.SignSshPublicKeyResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.oslogin.v1beta.Client"
+        },
+        "method": {
+          "shortName": "SignSshPublicKey",
+          "fullName": "google.cloud.oslogin.v1beta.OsLoginService.SignSshPublicKey",
           "service": {
             "shortName": "OsLoginService",
             "fullName": "google.cloud.oslogin.v1beta.OsLoginService"

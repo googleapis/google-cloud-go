@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import (
 	"math"
 	"net/http"
 	"net/url"
-	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -40,7 +39,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -52,6 +50,7 @@ type DeploymentResourcePoolCallOptions struct {
 	CreateDeploymentResourcePool []gax.CallOption
 	GetDeploymentResourcePool    []gax.CallOption
 	ListDeploymentResourcePools  []gax.CallOption
+	UpdateDeploymentResourcePool []gax.CallOption
 	DeleteDeploymentResourcePool []gax.CallOption
 	QueryDeployedModels          []gax.CallOption
 	GetLocation                  []gax.CallOption
@@ -69,10 +68,13 @@ type DeploymentResourcePoolCallOptions struct {
 func defaultDeploymentResourcePoolGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -83,6 +85,7 @@ func defaultDeploymentResourcePoolCallOptions() *DeploymentResourcePoolCallOptio
 		CreateDeploymentResourcePool: []gax.CallOption{},
 		GetDeploymentResourcePool:    []gax.CallOption{},
 		ListDeploymentResourcePools:  []gax.CallOption{},
+		UpdateDeploymentResourcePool: []gax.CallOption{},
 		DeleteDeploymentResourcePool: []gax.CallOption{},
 		QueryDeployedModels:          []gax.CallOption{},
 		GetLocation:                  []gax.CallOption{},
@@ -103,6 +106,7 @@ func defaultDeploymentResourcePoolRESTCallOptions() *DeploymentResourcePoolCallO
 		CreateDeploymentResourcePool: []gax.CallOption{},
 		GetDeploymentResourcePool:    []gax.CallOption{},
 		ListDeploymentResourcePools:  []gax.CallOption{},
+		UpdateDeploymentResourcePool: []gax.CallOption{},
 		DeleteDeploymentResourcePool: []gax.CallOption{},
 		QueryDeployedModels:          []gax.CallOption{},
 		GetLocation:                  []gax.CallOption{},
@@ -127,6 +131,8 @@ type internalDeploymentResourcePoolClient interface {
 	CreateDeploymentResourcePoolOperation(name string) *CreateDeploymentResourcePoolOperation
 	GetDeploymentResourcePool(context.Context, *aiplatformpb.GetDeploymentResourcePoolRequest, ...gax.CallOption) (*aiplatformpb.DeploymentResourcePool, error)
 	ListDeploymentResourcePools(context.Context, *aiplatformpb.ListDeploymentResourcePoolsRequest, ...gax.CallOption) *DeploymentResourcePoolIterator
+	UpdateDeploymentResourcePool(context.Context, *aiplatformpb.UpdateDeploymentResourcePoolRequest, ...gax.CallOption) (*UpdateDeploymentResourcePoolOperation, error)
+	UpdateDeploymentResourcePoolOperation(name string) *UpdateDeploymentResourcePoolOperation
 	DeleteDeploymentResourcePool(context.Context, *aiplatformpb.DeleteDeploymentResourcePoolRequest, ...gax.CallOption) (*DeleteDeploymentResourcePoolOperation, error)
 	DeleteDeploymentResourcePoolOperation(name string) *DeleteDeploymentResourcePoolOperation
 	QueryDeployedModels(context.Context, *aiplatformpb.QueryDeployedModelsRequest, ...gax.CallOption) *DeployedModelIterator
@@ -201,6 +207,17 @@ func (c *DeploymentResourcePoolClient) GetDeploymentResourcePool(ctx context.Con
 // ListDeploymentResourcePools list DeploymentResourcePools in a location.
 func (c *DeploymentResourcePoolClient) ListDeploymentResourcePools(ctx context.Context, req *aiplatformpb.ListDeploymentResourcePoolsRequest, opts ...gax.CallOption) *DeploymentResourcePoolIterator {
 	return c.internalClient.ListDeploymentResourcePools(ctx, req, opts...)
+}
+
+// UpdateDeploymentResourcePool update a DeploymentResourcePool.
+func (c *DeploymentResourcePoolClient) UpdateDeploymentResourcePool(ctx context.Context, req *aiplatformpb.UpdateDeploymentResourcePoolRequest, opts ...gax.CallOption) (*UpdateDeploymentResourcePoolOperation, error) {
+	return c.internalClient.UpdateDeploymentResourcePool(ctx, req, opts...)
+}
+
+// UpdateDeploymentResourcePoolOperation returns a new UpdateDeploymentResourcePoolOperation from a given name.
+// The name must be that of a previously created UpdateDeploymentResourcePoolOperation, possibly from a different process.
+func (c *DeploymentResourcePoolClient) UpdateDeploymentResourcePoolOperation(name string) *UpdateDeploymentResourcePoolOperation {
+	return c.internalClient.UpdateDeploymentResourcePoolOperation(name)
 }
 
 // DeleteDeploymentResourcePool delete a DeploymentResourcePool.
@@ -305,7 +322,7 @@ type deploymentResourcePoolGRPCClient struct {
 	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewDeploymentResourcePoolClient creates a new deployment resource pool service client based on gRPC.
@@ -368,7 +385,9 @@ func (c *deploymentResourcePoolGRPCClient) Connection() *grpc.ClientConn {
 func (c *deploymentResourcePoolGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -390,8 +409,8 @@ type deploymentResourcePoolRESTClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing DeploymentResourcePoolClient
 	CallOptions **DeploymentResourcePoolCallOptions
@@ -431,9 +450,12 @@ func NewDeploymentResourcePoolRESTClient(ctx context.Context, opts ...option.Cli
 func defaultDeploymentResourcePoolRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://aiplatform.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://aiplatform.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://aiplatform.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -443,7 +465,9 @@ func defaultDeploymentResourcePoolRESTClientOptions() []option.ClientOption {
 func (c *deploymentResourcePoolRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -461,9 +485,10 @@ func (c *deploymentResourcePoolRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *deploymentResourcePoolGRPCClient) CreateDeploymentResourcePool(ctx context.Context, req *aiplatformpb.CreateDeploymentResourcePoolRequest, opts ...gax.CallOption) (*CreateDeploymentResourcePoolOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDeploymentResourcePool[0:len((*c.CallOptions).CreateDeploymentResourcePool):len((*c.CallOptions).CreateDeploymentResourcePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -480,9 +505,10 @@ func (c *deploymentResourcePoolGRPCClient) CreateDeploymentResourcePool(ctx cont
 }
 
 func (c *deploymentResourcePoolGRPCClient) GetDeploymentResourcePool(ctx context.Context, req *aiplatformpb.GetDeploymentResourcePoolRequest, opts ...gax.CallOption) (*aiplatformpb.DeploymentResourcePool, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDeploymentResourcePool[0:len((*c.CallOptions).GetDeploymentResourcePool):len((*c.CallOptions).GetDeploymentResourcePool)], opts...)
 	var resp *aiplatformpb.DeploymentResourcePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -497,9 +523,10 @@ func (c *deploymentResourcePoolGRPCClient) GetDeploymentResourcePool(ctx context
 }
 
 func (c *deploymentResourcePoolGRPCClient) ListDeploymentResourcePools(ctx context.Context, req *aiplatformpb.ListDeploymentResourcePoolsRequest, opts ...gax.CallOption) *DeploymentResourcePoolIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDeploymentResourcePools[0:len((*c.CallOptions).ListDeploymentResourcePools):len((*c.CallOptions).ListDeploymentResourcePools)], opts...)
 	it := &DeploymentResourcePoolIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListDeploymentResourcePoolsRequest)
@@ -541,10 +568,31 @@ func (c *deploymentResourcePoolGRPCClient) ListDeploymentResourcePools(ctx conte
 	return it
 }
 
-func (c *deploymentResourcePoolGRPCClient) DeleteDeploymentResourcePool(ctx context.Context, req *aiplatformpb.DeleteDeploymentResourcePoolRequest, opts ...gax.CallOption) (*DeleteDeploymentResourcePoolOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *deploymentResourcePoolGRPCClient) UpdateDeploymentResourcePool(ctx context.Context, req *aiplatformpb.UpdateDeploymentResourcePoolRequest, opts ...gax.CallOption) (*UpdateDeploymentResourcePoolOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "deployment_resource_pool.name", url.QueryEscape(req.GetDeploymentResourcePool().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDeploymentResourcePool[0:len((*c.CallOptions).UpdateDeploymentResourcePool):len((*c.CallOptions).UpdateDeploymentResourcePool)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.deploymentResourcePoolClient.UpdateDeploymentResourcePool(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateDeploymentResourcePoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *deploymentResourcePoolGRPCClient) DeleteDeploymentResourcePool(ctx context.Context, req *aiplatformpb.DeleteDeploymentResourcePoolRequest, opts ...gax.CallOption) (*DeleteDeploymentResourcePoolOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDeploymentResourcePool[0:len((*c.CallOptions).DeleteDeploymentResourcePool):len((*c.CallOptions).DeleteDeploymentResourcePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -561,9 +609,10 @@ func (c *deploymentResourcePoolGRPCClient) DeleteDeploymentResourcePool(ctx cont
 }
 
 func (c *deploymentResourcePoolGRPCClient) QueryDeployedModels(ctx context.Context, req *aiplatformpb.QueryDeployedModelsRequest, opts ...gax.CallOption) *DeployedModelIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "deployment_resource_pool", url.QueryEscape(req.GetDeploymentResourcePool())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "deployment_resource_pool", url.QueryEscape(req.GetDeploymentResourcePool()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).QueryDeployedModels[0:len((*c.CallOptions).QueryDeployedModels):len((*c.CallOptions).QueryDeployedModels)], opts...)
 	it := &DeployedModelIterator{}
 	req = proto.Clone(req).(*aiplatformpb.QueryDeployedModelsRequest)
@@ -606,9 +655,10 @@ func (c *deploymentResourcePoolGRPCClient) QueryDeployedModels(ctx context.Conte
 }
 
 func (c *deploymentResourcePoolGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -623,9 +673,10 @@ func (c *deploymentResourcePoolGRPCClient) GetLocation(ctx context.Context, req 
 }
 
 func (c *deploymentResourcePoolGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -668,9 +719,10 @@ func (c *deploymentResourcePoolGRPCClient) ListLocations(ctx context.Context, re
 }
 
 func (c *deploymentResourcePoolGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -685,9 +737,10 @@ func (c *deploymentResourcePoolGRPCClient) GetIamPolicy(ctx context.Context, req
 }
 
 func (c *deploymentResourcePoolGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -702,9 +755,10 @@ func (c *deploymentResourcePoolGRPCClient) SetIamPolicy(ctx context.Context, req
 }
 
 func (c *deploymentResourcePoolGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -719,9 +773,10 @@ func (c *deploymentResourcePoolGRPCClient) TestIamPermissions(ctx context.Contex
 }
 
 func (c *deploymentResourcePoolGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -732,9 +787,10 @@ func (c *deploymentResourcePoolGRPCClient) CancelOperation(ctx context.Context, 
 }
 
 func (c *deploymentResourcePoolGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -745,9 +801,10 @@ func (c *deploymentResourcePoolGRPCClient) DeleteOperation(ctx context.Context, 
 }
 
 func (c *deploymentResourcePoolGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -762,9 +819,10 @@ func (c *deploymentResourcePoolGRPCClient) GetOperation(ctx context.Context, req
 }
 
 func (c *deploymentResourcePoolGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -807,9 +865,10 @@ func (c *deploymentResourcePoolGRPCClient) ListOperations(ctx context.Context, r
 }
 
 func (c *deploymentResourcePoolGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -837,10 +896,17 @@ func (c *deploymentResourcePoolRESTClient) CreateDeploymentResourcePool(ctx cont
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/deploymentResourcePools", req.GetParent())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -894,10 +960,17 @@ func (c *deploymentResourcePoolRESTClient) GetDeploymentResourcePool(ctx context
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetDeploymentResourcePool[0:len((*c.CallOptions).GetDeploymentResourcePool):len((*c.CallOptions).GetDeploymentResourcePool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.DeploymentResourcePool{}
@@ -961,6 +1034,7 @@ func (c *deploymentResourcePoolRESTClient) ListDeploymentResourcePools(ctx conte
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/deploymentResourcePools", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -971,7 +1045,8 @@ func (c *deploymentResourcePoolRESTClient) ListDeploymentResourcePools(ctx conte
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1026,6 +1101,84 @@ func (c *deploymentResourcePoolRESTClient) ListDeploymentResourcePools(ctx conte
 	return it
 }
 
+// UpdateDeploymentResourcePool update a DeploymentResourcePool.
+func (c *deploymentResourcePoolRESTClient) UpdateDeploymentResourcePool(ctx context.Context, req *aiplatformpb.UpdateDeploymentResourcePoolRequest, opts ...gax.CallOption) (*UpdateDeploymentResourcePoolOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDeploymentResourcePool()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetDeploymentResourcePool().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "deployment_resource_pool.name", url.QueryEscape(req.GetDeploymentResourcePool().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &UpdateDeploymentResourcePoolOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // DeleteDeploymentResourcePool delete a DeploymentResourcePool.
 func (c *deploymentResourcePoolRESTClient) DeleteDeploymentResourcePool(ctx context.Context, req *aiplatformpb.DeleteDeploymentResourcePoolRequest, opts ...gax.CallOption) (*DeleteDeploymentResourcePoolOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1034,10 +1187,17 @@ func (c *deploymentResourcePoolRESTClient) DeleteDeploymentResourcePool(ctx cont
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1105,6 +1265,7 @@ func (c *deploymentResourcePoolRESTClient) QueryDeployedModels(ctx context.Conte
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:queryDeployedModels", req.GetDeploymentResourcePool())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1115,7 +1276,8 @@ func (c *deploymentResourcePoolRESTClient) QueryDeployedModels(ctx context.Conte
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1178,10 +1340,17 @@ func (c *deploymentResourcePoolRESTClient) GetLocation(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1245,6 +1414,7 @@ func (c *deploymentResourcePoolRESTClient) ListLocations(ctx context.Context, re
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1258,7 +1428,8 @@ func (c *deploymentResourcePoolRESTClient) ListLocations(ctx context.Context, re
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1328,10 +1499,17 @@ func (c *deploymentResourcePoolRESTClient) GetIamPolicy(ctx context.Context, req
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1391,10 +1569,17 @@ func (c *deploymentResourcePoolRESTClient) SetIamPolicy(ctx context.Context, req
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1456,10 +1641,17 @@ func (c *deploymentResourcePoolRESTClient) TestIamPermissions(ctx context.Contex
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -1509,10 +1701,17 @@ func (c *deploymentResourcePoolRESTClient) CancelOperation(ctx context.Context, 
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1544,10 +1743,17 @@ func (c *deploymentResourcePoolRESTClient) DeleteOperation(ctx context.Context, 
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1579,10 +1785,17 @@ func (c *deploymentResourcePoolRESTClient) GetOperation(ctx context.Context, req
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1646,6 +1859,7 @@ func (c *deploymentResourcePoolRESTClient) ListOperations(ctx context.Context, r
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1659,7 +1873,8 @@ func (c *deploymentResourcePoolRESTClient) ListOperations(ctx context.Context, r
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1723,20 +1938,23 @@ func (c *deploymentResourcePoolRESTClient) WaitOperation(ctx context.Context, re
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
-		timeout, err := protojson.Marshal(req.GetTimeout())
+		field, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout[1:len(timeout)-1]))
+		params.Add("timeout", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1778,12 +1996,6 @@ func (c *deploymentResourcePoolRESTClient) WaitOperation(ctx context.Context, re
 	return resp, nil
 }
 
-// CreateDeploymentResourcePoolOperation manages a long-running operation from CreateDeploymentResourcePool.
-type CreateDeploymentResourcePoolOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateDeploymentResourcePoolOperation returns a new CreateDeploymentResourcePoolOperation from a given name.
 // The name must be that of a previously created CreateDeploymentResourcePoolOperation, possibly from a different process.
 func (c *deploymentResourcePoolGRPCClient) CreateDeploymentResourcePoolOperation(name string) *CreateDeploymentResourcePoolOperation {
@@ -1800,70 +2012,6 @@ func (c *deploymentResourcePoolRESTClient) CreateDeploymentResourcePoolOperation
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateDeploymentResourcePoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.DeploymentResourcePool, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp aiplatformpb.DeploymentResourcePool
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateDeploymentResourcePoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.DeploymentResourcePool, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp aiplatformpb.DeploymentResourcePool
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateDeploymentResourcePoolOperation) Metadata() (*aiplatformpb.CreateDeploymentResourcePoolOperationMetadata, error) {
-	var meta aiplatformpb.CreateDeploymentResourcePoolOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateDeploymentResourcePoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateDeploymentResourcePoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDeploymentResourcePoolOperation manages a long-running operation from DeleteDeploymentResourcePool.
-type DeleteDeploymentResourcePoolOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteDeploymentResourcePoolOperation returns a new DeleteDeploymentResourcePoolOperation from a given name.
@@ -1884,143 +2032,20 @@ func (c *deploymentResourcePoolRESTClient) DeleteDeploymentResourcePoolOperation
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDeploymentResourcePoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDeploymentResourcePoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDeploymentResourcePoolOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// UpdateDeploymentResourcePoolOperation returns a new UpdateDeploymentResourcePoolOperation from a given name.
+// The name must be that of a previously created UpdateDeploymentResourcePoolOperation, possibly from a different process.
+func (c *deploymentResourcePoolGRPCClient) UpdateDeploymentResourcePoolOperation(name string) *UpdateDeploymentResourcePoolOperation {
+	return &UpdateDeploymentResourcePoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &meta, nil
 }
 
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDeploymentResourcePoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDeploymentResourcePoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeployedModelIterator manages a stream of *aiplatformpb.DeployedModel.
-type DeployedModelIterator struct {
-	items    []*aiplatformpb.DeployedModel
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DeployedModel, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DeployedModelIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DeployedModelIterator) Next() (*aiplatformpb.DeployedModel, error) {
-	var item *aiplatformpb.DeployedModel
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// UpdateDeploymentResourcePoolOperation returns a new UpdateDeploymentResourcePoolOperation from a given name.
+// The name must be that of a previously created UpdateDeploymentResourcePoolOperation, possibly from a different process.
+func (c *deploymentResourcePoolRESTClient) UpdateDeploymentResourcePoolOperation(name string) *UpdateDeploymentResourcePoolOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &UpdateDeploymentResourcePoolOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DeployedModelIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DeployedModelIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DeploymentResourcePoolIterator manages a stream of *aiplatformpb.DeploymentResourcePool.
-type DeploymentResourcePoolIterator struct {
-	items    []*aiplatformpb.DeploymentResourcePool
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DeploymentResourcePool, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DeploymentResourcePoolIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DeploymentResourcePoolIterator) Next() (*aiplatformpb.DeploymentResourcePool, error) {
-	var item *aiplatformpb.DeploymentResourcePool
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DeploymentResourcePoolIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DeploymentResourcePoolIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

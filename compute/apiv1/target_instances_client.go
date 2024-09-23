@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -44,11 +43,12 @@ var newTargetInstancesClientHook clientHook
 
 // TargetInstancesCallOptions contains the retry settings for each method of TargetInstancesClient.
 type TargetInstancesCallOptions struct {
-	AggregatedList []gax.CallOption
-	Delete         []gax.CallOption
-	Get            []gax.CallOption
-	Insert         []gax.CallOption
-	List           []gax.CallOption
+	AggregatedList    []gax.CallOption
+	Delete            []gax.CallOption
+	Get               []gax.CallOption
+	Insert            []gax.CallOption
+	List              []gax.CallOption
+	SetSecurityPolicy []gax.CallOption
 }
 
 func defaultTargetInstancesRESTCallOptions() *TargetInstancesCallOptions {
@@ -95,6 +95,9 @@ func defaultTargetInstancesRESTCallOptions() *TargetInstancesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		SetSecurityPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -108,6 +111,7 @@ type internalTargetInstancesClient interface {
 	Get(context.Context, *computepb.GetTargetInstanceRequest, ...gax.CallOption) (*computepb.TargetInstance, error)
 	Insert(context.Context, *computepb.InsertTargetInstanceRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListTargetInstancesRequest, ...gax.CallOption) *TargetInstanceIterator
+	SetSecurityPolicy(context.Context, *computepb.SetSecurityPolicyTargetInstanceRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // TargetInstancesClient is a client for interacting with Google Compute Engine API.
@@ -145,7 +149,7 @@ func (c *TargetInstancesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of target instances.
+// AggregatedList retrieves an aggregated list of target instances. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *TargetInstancesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetInstancesRequest, opts ...gax.CallOption) *TargetInstancesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -170,6 +174,11 @@ func (c *TargetInstancesClient) List(ctx context.Context, req *computepb.ListTar
 	return c.internalClient.List(ctx, req, opts...)
 }
 
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target instance. For more information, see Google Cloud Armor Overview
+func (c *TargetInstancesClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetSecurityPolicy(ctx, req, opts...)
+}
+
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type targetInstancesRESTClient struct {
 	// The http endpoint to connect to.
@@ -181,8 +190,8 @@ type targetInstancesRESTClient struct {
 	// operationClient is used to call the operation-specific management service.
 	operationClient *ZoneOperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing TargetInstancesClient
 	CallOptions **TargetInstancesCallOptions
@@ -222,9 +231,12 @@ func NewTargetInstancesRESTClient(ctx context.Context, opts ...option.ClientOpti
 func defaultTargetInstancesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -234,7 +246,9 @@ func defaultTargetInstancesRESTClientOptions() []option.ClientOption {
 func (c *targetInstancesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -255,7 +269,7 @@ func (c *targetInstancesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of target instances.
+// AggregatedList retrieves an aggregated list of target instances. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *targetInstancesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetInstancesRequest, opts ...gax.CallOption) *TargetInstancesScopedListPairIterator {
 	it := &TargetInstancesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListTargetInstancesRequest)
@@ -266,7 +280,7 @@ func (c *targetInstancesRESTClient) AggregatedList(ctx context.Context, req *com
 			req.PageToken = proto.String(pageToken)
 		}
 		if pageSize > math.MaxInt32 {
-			req.MaxResults = proto.Uint32(math.MaxInt32)
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
@@ -295,11 +309,15 @@ func (c *targetInstancesRESTClient) AggregatedList(ctx context.Context, req *com
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -377,9 +395,11 @@ func (c *targetInstancesRESTClient) Delete(ctx context.Context, req *computepb.D
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "target_instance", url.QueryEscape(req.GetTargetInstance())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "target_instance", url.QueryEscape(req.GetTargetInstance()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -438,9 +458,11 @@ func (c *targetInstancesRESTClient) Get(ctx context.Context, req *computepb.GetT
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/targetInstances/%v", req.GetProject(), req.GetZone(), req.GetTargetInstance())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "target_instance", url.QueryEscape(req.GetTargetInstance())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "target_instance", url.QueryEscape(req.GetTargetInstance()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TargetInstance{}
@@ -505,9 +527,11 @@ func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.I
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -568,7 +592,7 @@ func (c *targetInstancesRESTClient) List(ctx context.Context, req *computepb.Lis
 			req.PageToken = proto.String(pageToken)
 		}
 		if pageSize > math.MaxInt32 {
-			req.MaxResults = proto.Uint32(math.MaxInt32)
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
@@ -598,7 +622,8 @@ func (c *targetInstancesRESTClient) List(ctx context.Context, req *computepb.Lis
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -653,102 +678,79 @@ func (c *targetInstancesRESTClient) List(ctx context.Context, req *computepb.Lis
 	return it
 }
 
-// TargetInstanceIterator manages a stream of *computepb.TargetInstance.
-type TargetInstanceIterator struct {
-	items    []*computepb.TargetInstance
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.TargetInstance, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TargetInstanceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TargetInstanceIterator) Next() (*computepb.TargetInstance, error) {
-	var item *computepb.TargetInstance
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target instance. For more information, see Google Cloud Armor Overview
+func (c *targetInstancesRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetSecurityPolicyReferenceResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
 
-func (it *TargetInstanceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TargetInstanceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TargetInstancesScopedListPair is a holder type for string/*computepb.TargetInstancesScopedList map entries
-type TargetInstancesScopedListPair struct {
-	Key   string
-	Value *computepb.TargetInstancesScopedList
-}
-
-// TargetInstancesScopedListPairIterator manages a stream of TargetInstancesScopedListPair.
-type TargetInstancesScopedListPairIterator struct {
-	items    []TargetInstancesScopedListPair
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []TargetInstancesScopedListPair, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TargetInstancesScopedListPairIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TargetInstancesScopedListPairIterator) Next() (TargetInstancesScopedListPair, error) {
-	var item TargetInstancesScopedListPair
-	if err := it.nextFunc(); err != nil {
-		return item, err
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/targetInstances/%v/setSecurityPolicy", req.GetProject(), req.GetZone(), req.GetTargetInstance())
 
-func (it *TargetInstancesScopedListPairIterator) bufLen() int {
-	return len(it.items)
-}
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
 
-func (it *TargetInstancesScopedListPairIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "target_instance", url.QueryEscape(req.GetTargetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetSecurityPolicy[0:len((*c.CallOptions).SetSecurityPolicy):len((*c.CallOptions).SetSecurityPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
 }

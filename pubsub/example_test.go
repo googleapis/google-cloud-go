@@ -16,6 +16,7 @@ package pubsub_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -303,7 +304,7 @@ func ExampleSubscription_Receive() {
 		// NOTE: May be called concurrently; synchronize access to shared memory.
 		m.Ack()
 	})
-	if err != context.Canceled {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		// TODO: Handle error.
 	}
 }
@@ -324,7 +325,7 @@ func ExampleSubscription_Receive_maxExtension() {
 		// TODO: Handle message.
 		m.Ack()
 	})
-	if err != context.Canceled {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		// TODO: Handle error.
 	}
 }
@@ -345,7 +346,7 @@ func ExampleSubscription_Receive_maxOutstanding() {
 		// TODO: Handle message.
 		m.Ack()
 	})
-	if err != context.Canceled {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		// TODO: Handle error.
 	}
 }

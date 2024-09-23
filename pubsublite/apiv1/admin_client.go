@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -70,10 +69,13 @@ type AdminCallOptions struct {
 func defaultAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("pubsublite.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("pubsublite.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("pubsublite.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://pubsublite.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -656,7 +658,7 @@ type adminGRPCClient struct {
 	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewAdminClient creates a new admin service client based on gRPC.
@@ -718,7 +720,9 @@ func (c *adminGRPCClient) Connection() *grpc.ClientConn {
 func (c *adminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -728,9 +732,10 @@ func (c *adminGRPCClient) Close() error {
 }
 
 func (c *adminGRPCClient) CreateTopic(ctx context.Context, req *pubsublitepb.CreateTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateTopic[0:len((*c.CallOptions).CreateTopic):len((*c.CallOptions).CreateTopic)], opts...)
 	var resp *pubsublitepb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -745,9 +750,10 @@ func (c *adminGRPCClient) CreateTopic(ctx context.Context, req *pubsublitepb.Cre
 }
 
 func (c *adminGRPCClient) GetTopic(ctx context.Context, req *pubsublitepb.GetTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetTopic[0:len((*c.CallOptions).GetTopic):len((*c.CallOptions).GetTopic)], opts...)
 	var resp *pubsublitepb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -762,9 +768,10 @@ func (c *adminGRPCClient) GetTopic(ctx context.Context, req *pubsublitepb.GetTop
 }
 
 func (c *adminGRPCClient) GetTopicPartitions(ctx context.Context, req *pubsublitepb.GetTopicPartitionsRequest, opts ...gax.CallOption) (*pubsublitepb.TopicPartitions, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetTopicPartitions[0:len((*c.CallOptions).GetTopicPartitions):len((*c.CallOptions).GetTopicPartitions)], opts...)
 	var resp *pubsublitepb.TopicPartitions
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -779,9 +786,10 @@ func (c *adminGRPCClient) GetTopicPartitions(ctx context.Context, req *pubsublit
 }
 
 func (c *adminGRPCClient) ListTopics(ctx context.Context, req *pubsublitepb.ListTopicsRequest, opts ...gax.CallOption) *TopicIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListTopics[0:len((*c.CallOptions).ListTopics):len((*c.CallOptions).ListTopics)], opts...)
 	it := &TopicIterator{}
 	req = proto.Clone(req).(*pubsublitepb.ListTopicsRequest)
@@ -824,9 +832,10 @@ func (c *adminGRPCClient) ListTopics(ctx context.Context, req *pubsublitepb.List
 }
 
 func (c *adminGRPCClient) UpdateTopic(ctx context.Context, req *pubsublitepb.UpdateTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic.name", url.QueryEscape(req.GetTopic().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "topic.name", url.QueryEscape(req.GetTopic().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateTopic[0:len((*c.CallOptions).UpdateTopic):len((*c.CallOptions).UpdateTopic)], opts...)
 	var resp *pubsublitepb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -841,9 +850,10 @@ func (c *adminGRPCClient) UpdateTopic(ctx context.Context, req *pubsublitepb.Upd
 }
 
 func (c *adminGRPCClient) DeleteTopic(ctx context.Context, req *pubsublitepb.DeleteTopicRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteTopic[0:len((*c.CallOptions).DeleteTopic):len((*c.CallOptions).DeleteTopic)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -854,9 +864,10 @@ func (c *adminGRPCClient) DeleteTopic(ctx context.Context, req *pubsublitepb.Del
 }
 
 func (c *adminGRPCClient) ListTopicSubscriptions(ctx context.Context, req *pubsublitepb.ListTopicSubscriptionsRequest, opts ...gax.CallOption) *StringIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListTopicSubscriptions[0:len((*c.CallOptions).ListTopicSubscriptions):len((*c.CallOptions).ListTopicSubscriptions)], opts...)
 	it := &StringIterator{}
 	req = proto.Clone(req).(*pubsublitepb.ListTopicSubscriptionsRequest)
@@ -899,9 +910,10 @@ func (c *adminGRPCClient) ListTopicSubscriptions(ctx context.Context, req *pubsu
 }
 
 func (c *adminGRPCClient) CreateSubscription(ctx context.Context, req *pubsublitepb.CreateSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateSubscription[0:len((*c.CallOptions).CreateSubscription):len((*c.CallOptions).CreateSubscription)], opts...)
 	var resp *pubsublitepb.Subscription
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -916,9 +928,10 @@ func (c *adminGRPCClient) CreateSubscription(ctx context.Context, req *pubsublit
 }
 
 func (c *adminGRPCClient) GetSubscription(ctx context.Context, req *pubsublitepb.GetSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetSubscription[0:len((*c.CallOptions).GetSubscription):len((*c.CallOptions).GetSubscription)], opts...)
 	var resp *pubsublitepb.Subscription
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -933,9 +946,10 @@ func (c *adminGRPCClient) GetSubscription(ctx context.Context, req *pubsublitepb
 }
 
 func (c *adminGRPCClient) ListSubscriptions(ctx context.Context, req *pubsublitepb.ListSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListSubscriptions[0:len((*c.CallOptions).ListSubscriptions):len((*c.CallOptions).ListSubscriptions)], opts...)
 	it := &SubscriptionIterator{}
 	req = proto.Clone(req).(*pubsublitepb.ListSubscriptionsRequest)
@@ -978,9 +992,10 @@ func (c *adminGRPCClient) ListSubscriptions(ctx context.Context, req *pubsublite
 }
 
 func (c *adminGRPCClient) UpdateSubscription(ctx context.Context, req *pubsublitepb.UpdateSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription.name", url.QueryEscape(req.GetSubscription().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "subscription.name", url.QueryEscape(req.GetSubscription().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateSubscription[0:len((*c.CallOptions).UpdateSubscription):len((*c.CallOptions).UpdateSubscription)], opts...)
 	var resp *pubsublitepb.Subscription
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -995,9 +1010,10 @@ func (c *adminGRPCClient) UpdateSubscription(ctx context.Context, req *pubsublit
 }
 
 func (c *adminGRPCClient) DeleteSubscription(ctx context.Context, req *pubsublitepb.DeleteSubscriptionRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteSubscription[0:len((*c.CallOptions).DeleteSubscription):len((*c.CallOptions).DeleteSubscription)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1008,9 +1024,10 @@ func (c *adminGRPCClient) DeleteSubscription(ctx context.Context, req *pubsublit
 }
 
 func (c *adminGRPCClient) SeekSubscription(ctx context.Context, req *pubsublitepb.SeekSubscriptionRequest, opts ...gax.CallOption) (*SeekSubscriptionOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SeekSubscription[0:len((*c.CallOptions).SeekSubscription):len((*c.CallOptions).SeekSubscription)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1027,9 +1044,10 @@ func (c *adminGRPCClient) SeekSubscription(ctx context.Context, req *pubsublitep
 }
 
 func (c *adminGRPCClient) CreateReservation(ctx context.Context, req *pubsublitepb.CreateReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateReservation[0:len((*c.CallOptions).CreateReservation):len((*c.CallOptions).CreateReservation)], opts...)
 	var resp *pubsublitepb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1044,9 +1062,10 @@ func (c *adminGRPCClient) CreateReservation(ctx context.Context, req *pubsublite
 }
 
 func (c *adminGRPCClient) GetReservation(ctx context.Context, req *pubsublitepb.GetReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetReservation[0:len((*c.CallOptions).GetReservation):len((*c.CallOptions).GetReservation)], opts...)
 	var resp *pubsublitepb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1061,9 +1080,10 @@ func (c *adminGRPCClient) GetReservation(ctx context.Context, req *pubsublitepb.
 }
 
 func (c *adminGRPCClient) ListReservations(ctx context.Context, req *pubsublitepb.ListReservationsRequest, opts ...gax.CallOption) *ReservationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListReservations[0:len((*c.CallOptions).ListReservations):len((*c.CallOptions).ListReservations)], opts...)
 	it := &ReservationIterator{}
 	req = proto.Clone(req).(*pubsublitepb.ListReservationsRequest)
@@ -1106,9 +1126,10 @@ func (c *adminGRPCClient) ListReservations(ctx context.Context, req *pubsublitep
 }
 
 func (c *adminGRPCClient) UpdateReservation(ctx context.Context, req *pubsublitepb.UpdateReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateReservation[0:len((*c.CallOptions).UpdateReservation):len((*c.CallOptions).UpdateReservation)], opts...)
 	var resp *pubsublitepb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1123,9 +1144,10 @@ func (c *adminGRPCClient) UpdateReservation(ctx context.Context, req *pubsublite
 }
 
 func (c *adminGRPCClient) DeleteReservation(ctx context.Context, req *pubsublitepb.DeleteReservationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteReservation[0:len((*c.CallOptions).DeleteReservation):len((*c.CallOptions).DeleteReservation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1136,9 +1158,10 @@ func (c *adminGRPCClient) DeleteReservation(ctx context.Context, req *pubsublite
 }
 
 func (c *adminGRPCClient) ListReservationTopics(ctx context.Context, req *pubsublitepb.ListReservationTopicsRequest, opts ...gax.CallOption) *StringIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListReservationTopics[0:len((*c.CallOptions).ListReservationTopics):len((*c.CallOptions).ListReservationTopics)], opts...)
 	it := &StringIterator{}
 	req = proto.Clone(req).(*pubsublitepb.ListReservationTopicsRequest)
@@ -1181,9 +1204,10 @@ func (c *adminGRPCClient) ListReservationTopics(ctx context.Context, req *pubsub
 }
 
 func (c *adminGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1194,9 +1218,10 @@ func (c *adminGRPCClient) CancelOperation(ctx context.Context, req *longrunningp
 }
 
 func (c *adminGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1207,9 +1232,10 @@ func (c *adminGRPCClient) DeleteOperation(ctx context.Context, req *longrunningp
 }
 
 func (c *adminGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1224,9 +1250,10 @@ func (c *adminGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.G
 }
 
 func (c *adminGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1268,306 +1295,10 @@ func (c *adminGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 	return it
 }
 
-// SeekSubscriptionOperation manages a long-running operation from SeekSubscription.
-type SeekSubscriptionOperation struct {
-	lro *longrunning.Operation
-}
-
 // SeekSubscriptionOperation returns a new SeekSubscriptionOperation from a given name.
 // The name must be that of a previously created SeekSubscriptionOperation, possibly from a different process.
 func (c *adminGRPCClient) SeekSubscriptionOperation(name string) *SeekSubscriptionOperation {
 	return &SeekSubscriptionOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SeekSubscriptionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*pubsublitepb.SeekSubscriptionResponse, error) {
-	var resp pubsublitepb.SeekSubscriptionResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SeekSubscriptionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*pubsublitepb.SeekSubscriptionResponse, error) {
-	var resp pubsublitepb.SeekSubscriptionResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SeekSubscriptionOperation) Metadata() (*pubsublitepb.OperationMetadata, error) {
-	var meta pubsublitepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SeekSubscriptionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SeekSubscriptionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ReservationIterator manages a stream of *pubsublitepb.Reservation.
-type ReservationIterator struct {
-	items    []*pubsublitepb.Reservation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*pubsublitepb.Reservation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ReservationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ReservationIterator) Next() (*pubsublitepb.Reservation, error) {
-	var item *pubsublitepb.Reservation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ReservationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ReservationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// StringIterator manages a stream of string.
-type StringIterator struct {
-	items    []string
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []string, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StringIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StringIterator) Next() (string, error) {
-	var item string
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StringIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StringIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SubscriptionIterator manages a stream of *pubsublitepb.Subscription.
-type SubscriptionIterator struct {
-	items    []*pubsublitepb.Subscription
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*pubsublitepb.Subscription, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SubscriptionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SubscriptionIterator) Next() (*pubsublitepb.Subscription, error) {
-	var item *pubsublitepb.Subscription
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SubscriptionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SubscriptionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TopicIterator manages a stream of *pubsublitepb.Topic.
-type TopicIterator struct {
-	items    []*pubsublitepb.Topic
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*pubsublitepb.Topic, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TopicIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TopicIterator) Next() (*pubsublitepb.Topic, error) {
-	var item *pubsublitepb.Topic
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TopicIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TopicIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

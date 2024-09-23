@@ -191,7 +191,7 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		t.Errorf("Reservation() got: -, want: +\n%s", diff)
 	}
 
-	resIt := admin.Reservations(ctx, wire.LocationPath{proj, region}.String())
+	resIt := admin.Reservations(ctx, wire.LocationPath{Project: proj, Location: region}.String())
 	var foundRes *ReservationConfig
 	for {
 		res, err := resIt.Next()

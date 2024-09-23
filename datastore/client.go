@@ -17,14 +17,15 @@ package datastore
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/datastore/internal"
 	cloudinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go/v2"
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -43,14 +44,18 @@ type datastoreClient struct {
 }
 
 func newDatastoreClient(conn grpc.ClientConnInterface, projectID, databaseID string) pb.DatastoreClient {
-	resourcePrefixValue := "projects/" + projectID
-	if databaseID != "" {
-		resourcePrefixValue += "/databases/" + databaseID
+	resourcePrefixValue := "projects/" + url.QueryEscape(projectID)
+	reqParamsHeaderValue := "project_id=" + url.QueryEscape(projectID)
+
+	if databaseID != DefaultDatabaseID && databaseID != "" {
+		resourcePrefixValue += "/databases/" + url.QueryEscape(databaseID)
+		reqParamsHeaderValue += "&database_id=" + url.QueryEscape(databaseID)
 	}
 	return &datastoreClient{
 		c: pb.NewDatastoreClient(conn),
 		md: metadata.Pairs(
 			resourcePrefixHeader, resourcePrefixValue,
+			reqParamsHeader, reqParamsHeaderValue,
 			"x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s grpc/", version.Go(), internal.Version)),
 	}
 }
@@ -127,6 +132,17 @@ func (dc *datastoreClient) AllocateIds(ctx context.Context, in *pb.AllocateIdsRe
 
 	err = dc.invoke(ctx, func(ctx context.Context) error {
 		res, err = dc.c.AllocateIds(ctx, in, opts...)
+		return err
+	})
+	return res, err
+}
+
+func (dc *datastoreClient) ReserveIds(ctx context.Context, in *pb.ReserveIdsRequest, opts ...grpc.CallOption) (res *pb.ReserveIdsResponse, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.ReserveIds")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	err = dc.invoke(ctx, func(ctx context.Context) error {
+		res, err = dc.c.ReserveIds(ctx, in, opts...)
 		return err
 	})
 	return res, err

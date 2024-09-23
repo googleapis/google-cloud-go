@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,36 +60,6 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
-func ExampleClient_CreateCollector() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := rapidmigrationassessment.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &rapidmigrationassessmentpb.CreateCollectorRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#CreateCollectorRequest.
-	}
-	op, err := c.CreateCollector(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleClient_CreateAnnotation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -120,7 +90,7 @@ func ExampleClient_CreateAnnotation() {
 	_ = resp
 }
 
-func ExampleClient_GetAnnotation() {
+func ExampleClient_CreateCollector() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -133,92 +103,11 @@ func ExampleClient_GetAnnotation() {
 	}
 	defer c.Close()
 
-	req := &rapidmigrationassessmentpb.GetAnnotationRequest{
+	req := &rapidmigrationassessmentpb.CreateCollectorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#GetAnnotationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#CreateCollectorRequest.
 	}
-	resp, err := c.GetAnnotation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ListCollectors() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := rapidmigrationassessment.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &rapidmigrationassessmentpb.ListCollectorsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#ListCollectorsRequest.
-	}
-	it := c.ListCollectors(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetCollector() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := rapidmigrationassessment.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &rapidmigrationassessmentpb.GetCollectorRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#GetCollectorRequest.
-	}
-	resp, err := c.GetCollector(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateCollector() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := rapidmigrationassessment.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &rapidmigrationassessmentpb.UpdateCollectorRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#UpdateCollectorRequest.
-	}
-	op, err := c.UpdateCollector(ctx, req)
+	op, err := c.CreateCollector(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -261,7 +150,7 @@ func ExampleClient_DeleteCollector() {
 	_ = resp
 }
 
-func ExampleClient_ResumeCollector() {
+func ExampleClient_GetAnnotation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -274,11 +163,98 @@ func ExampleClient_ResumeCollector() {
 	}
 	defer c.Close()
 
-	req := &rapidmigrationassessmentpb.ResumeCollectorRequest{
+	req := &rapidmigrationassessmentpb.GetAnnotationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#ResumeCollectorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#GetAnnotationRequest.
 	}
-	op, err := c.ResumeCollector(ctx, req)
+	resp, err := c.GetAnnotation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetCollector() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := rapidmigrationassessment.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &rapidmigrationassessmentpb.GetCollectorRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#GetCollectorRequest.
+	}
+	resp, err := c.GetCollector(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListCollectors() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := rapidmigrationassessment.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &rapidmigrationassessmentpb.ListCollectorsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#ListCollectorsRequest.
+	}
+	it := c.ListCollectors(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*rapidmigrationassessmentpb.ListCollectorsResponse)
+	}
+}
+
+func ExampleClient_PauseCollector() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := rapidmigrationassessment.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &rapidmigrationassessmentpb.PauseCollectorRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#PauseCollectorRequest.
+	}
+	op, err := c.PauseCollector(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -321,7 +297,7 @@ func ExampleClient_RegisterCollector() {
 	_ = resp
 }
 
-func ExampleClient_PauseCollector() {
+func ExampleClient_ResumeCollector() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -334,11 +310,41 @@ func ExampleClient_PauseCollector() {
 	}
 	defer c.Close()
 
-	req := &rapidmigrationassessmentpb.PauseCollectorRequest{
+	req := &rapidmigrationassessmentpb.ResumeCollectorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#PauseCollectorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#ResumeCollectorRequest.
 	}
-	op, err := c.PauseCollector(ctx, req)
+	op, err := c.ResumeCollector(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateCollector() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := rapidmigrationassessment.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &rapidmigrationassessmentpb.UpdateCollectorRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#UpdateCollectorRequest.
+	}
+	op, err := c.UpdateCollector(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -404,6 +410,12 @@ func ExampleClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -506,5 +518,11 @@ func ExampleClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

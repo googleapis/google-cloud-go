@@ -21,8 +21,8 @@ import (
 	"time"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	pbd "github.com/golang/protobuf/ptypes/duration"
-	pbt "github.com/golang/protobuf/ptypes/timestamp"
+	pbd "google.golang.org/protobuf/types/known/durationpb"
+	pbt "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // timestampBoundType specifies the timestamp bound mode.
@@ -174,7 +174,7 @@ func ReadTimestamp(t time.Time) TimestampBound {
 func (tb TimestampBound) String() string {
 	switch tb.mode {
 	case strong:
-		return fmt.Sprintf("(strong)")
+		return "(strong)"
 	case exactStaleness:
 		return fmt.Sprintf("(exactStaleness: %s)", tb.d)
 	case maxStaleness:

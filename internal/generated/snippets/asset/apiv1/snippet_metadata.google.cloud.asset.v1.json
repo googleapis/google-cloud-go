@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/asset/apiv1",
-    "version": "1.14.1",
+    "version": "1.20.1",
     "language": "GO",
     "apis": [
       {
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -198,7 +198,7 @@
     {
       "regionTag": "cloudasset_v1_generated_AssetService_AnalyzeOrgPolicyGovernedAssets_sync",
       "title": "cloudasset AnalyzeOrgPolicyGovernedAssets Sample",
-      "description": "AnalyzeOrgPolicyGovernedAssets analyzes organization policies governed assets (Google Cloud resources or\npolicies) under a scope. This RPC supports custom constraints and the\nfollowing 10 canned constraints: \n\n* storage.uniformBucketLevelAccess\n* iam.disableServiceAccountKeyCreation\n* iam.allowedPolicyMemberDomains\n* compute.vmExternalIpAccess\n* appengine.enforceServiceAccountActAsCheck\n* gcp.resourceLocations\n* compute.trustedImageProjects\n* compute.skipDefaultNetworkCreation\n* compute.requireOsLogin\n* compute.disableNestedVirtualization\n\nThis RPC only returns either resources of types supported by [searchable\nasset\ntypes](https: //cloud.google.com/asset-inventory/docs/supported-asset-types#searchable_asset_types),\nor IAM policies.",
+      "description": "AnalyzeOrgPolicyGovernedAssets analyzes organization policies governed assets (Google Cloud resources or\npolicies) under a scope. This RPC supports custom constraints and the\nfollowing canned constraints: \n\n* constraints/ainotebooks.accessMode\n* constraints/ainotebooks.disableFileDownloads\n* constraints/ainotebooks.disableRootAccess\n* constraints/ainotebooks.disableTerminal\n* constraints/ainotebooks.environmentOptions\n* constraints/ainotebooks.requireAutoUpgradeSchedule\n* constraints/ainotebooks.restrictVpcNetworks\n* constraints/compute.disableGuestAttributesAccess\n* constraints/compute.disableInstanceDataAccessApis\n* constraints/compute.disableNestedVirtualization\n* constraints/compute.disableSerialPortAccess\n* constraints/compute.disableSerialPortLogging\n* constraints/compute.disableVpcExternalIpv6\n* constraints/compute.requireOsLogin\n* constraints/compute.requireShieldedVm\n* constraints/compute.restrictLoadBalancerCreationForTypes\n* constraints/compute.restrictProtocolForwardingCreationForTypes\n* constraints/compute.restrictXpnProjectLienRemoval\n* constraints/compute.setNewProjectDefaultToZonalDNSOnly\n* constraints/compute.skipDefaultNetworkCreation\n* constraints/compute.trustedImageProjects\n* constraints/compute.vmCanIpForward\n* constraints/compute.vmExternalIpAccess\n* constraints/gcp.detailedAuditLoggingMode\n* constraints/gcp.resourceLocations\n* constraints/iam.allowedPolicyMemberDomains\n* constraints/iam.automaticIamGrantsForDefaultServiceAccounts\n* constraints/iam.disableServiceAccountCreation\n* constraints/iam.disableServiceAccountKeyCreation\n* constraints/iam.disableServiceAccountKeyUpload\n* constraints/iam.restrictCrossProjectServiceAccountLienRemoval\n* constraints/iam.serviceAccountKeyExpiryHours\n* constraints/resourcemanager.accessBoundaries\n* constraints/resourcemanager.allowedExportDestinations\n* constraints/sql.restrictAuthorizedNetworks\n* constraints/sql.restrictNoncompliantDiagnosticDataAccess\n* constraints/sql.restrictNoncompliantResourceCreation\n* constraints/sql.restrictPublicIp\n* constraints/storage.publicAccessPrevention\n* constraints/storage.restrictAuthTypes\n* constraints/storage.uniformBucketLevelAccess\n\nThis RPC only returns either resources of types [supported by search\nAPIs](https: //cloud.google.com/asset-inventory/docs/supported-asset-types)\nor IAM policies.",
       "file": "Client/AnalyzeOrgPolicyGovernedAssets/main.go",
       "language": "GO",
       "clientMethod": {
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -786,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -878,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -886,7 +886,7 @@
     {
       "regionTag": "cloudasset_v1_generated_AssetService_QueryAssets_sync",
       "title": "cloudasset QueryAssets Sample",
-      "description": "QueryAssets issue a job that queries assets using a SQL statement compatible with\n[BigQuery Standard\nSQL](http: //cloud/bigquery/docs/reference/standard-sql/enabling-standard-sql).\n\nIf the query execution finishes within timeout and there's no pagination,\nthe full query results will be returned in the `QueryAssetsResponse`.\n\nOtherwise, full query results can be obtained by issuing extra requests\nwith the `job_reference` from the a previous `QueryAssets` call.\n\nNote, the query result has approximately 10 GB limitation enforced by\nBigQuery\nhttps: //cloud.google.com/bigquery/docs/best-practices-performance-output,\nqueries return larger results will result in errors.",
+      "description": "QueryAssets issue a job that queries assets using a SQL statement compatible with\n[BigQuery SQL](https: //cloud.google.com/bigquery/docs/introduction-sql).\n\nIf the query execution finishes within timeout and there's no pagination,\nthe full query results will be returned in the `QueryAssetsResponse`.\n\nOtherwise, full query results can be obtained by issuing extra requests\nwith the `job_reference` from the a previous `QueryAssets` call.\n\nNote, the query result has approximately 10 GB limitation enforced by\n[BigQuery](https: //cloud.google.com/bigquery/docs/best-practices-performance-output).\nQueries return larger results will result in errors.",
       "file": "Client/QueryAssets/main.go",
       "language": "GO",
       "clientMethod": {
@@ -970,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1016,7 +1016,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

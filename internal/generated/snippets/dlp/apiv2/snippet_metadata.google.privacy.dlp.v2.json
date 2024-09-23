@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dlp/apiv2",
-    "version": "1.10.1",
+    "version": "1.18.1",
     "language": "GO",
     "apis": [
       {
@@ -60,7 +60,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_CancelDlpJob_sync",
       "title": "dlp CancelDlpJob Sample",
-      "description": "CancelDlpJob starts asynchronous cancellation on a long-running DlpJob. The server\nmakes a best effort to cancel the DlpJob, but success is not\nguaranteed.\nSee https: //cloud.google.com/dlp/docs/inspecting-storage and\nhttps: //cloud.google.com/dlp/docs/compute-risk-analysis to learn more.",
+      "description": "CancelDlpJob starts asynchronous cancellation on a long-running DlpJob. The server\nmakes a best effort to cancel the DlpJob, but success is not\nguaranteed.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/inspecting-storage\nand\nhttps: //cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis\nto learn more.",
       "file": "Client/CancelDlpJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -103,9 +103,55 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_CreateConnection_sync",
+      "title": "dlp CreateConnection Sample",
+      "description": "CreateConnection create a Connection to an external data source.",
+      "file": "Client/CreateConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConnection",
+        "fullName": "google.privacy.dlp.v2.Client.CreateConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.CreateConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.Connection",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "CreateConnection",
+          "fullName": "google.privacy.dlp.v2.DlpService.CreateConnection",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_CreateDeidentifyTemplate_sync",
       "title": "dlp CreateDeidentifyTemplate Sample",
-      "description": "CreateDeidentifyTemplate creates a DeidentifyTemplate for reusing frequently used configuration\nfor de-identifying content, images, and storage.\nSee https: //cloud.google.com/dlp/docs/creating-templates-deid to learn\nmore.",
+      "description": "CreateDeidentifyTemplate creates a DeidentifyTemplate for reusing frequently used configuration\nfor de-identifying content, images, and storage.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-templates-deid\nto learn more.",
       "file": "Client/CreateDeidentifyTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -149,9 +195,55 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_CreateDiscoveryConfig_sync",
+      "title": "dlp CreateDiscoveryConfig Sample",
+      "description": "CreateDiscoveryConfig creates a config for discovery to scan and profile storage.",
+      "file": "Client/CreateDiscoveryConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDiscoveryConfig",
+        "fullName": "google.privacy.dlp.v2.Client.CreateDiscoveryConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.CreateDiscoveryConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.DiscoveryConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "CreateDiscoveryConfig",
+          "fullName": "google.privacy.dlp.v2.DlpService.CreateDiscoveryConfig",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_CreateDlpJob_sync",
       "title": "dlp CreateDlpJob Sample",
-      "description": "CreateDlpJob creates a new job to inspect storage or calculate risk metrics.\nSee https: //cloud.google.com/dlp/docs/inspecting-storage and\nhttps: //cloud.google.com/dlp/docs/compute-risk-analysis to learn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in inspect jobs, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.",
+      "description": "CreateDlpJob creates a new job to inspect storage or calculate risk metrics.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/inspecting-storage\nand\nhttps: //cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis\nto learn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in inspect jobs, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.",
       "file": "Client/CreateDlpJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -197,7 +289,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_CreateInspectTemplate_sync",
       "title": "dlp CreateInspectTemplate Sample",
-      "description": "CreateInspectTemplate creates an InspectTemplate for reusing frequently used configuration\nfor inspecting content, images, and storage.\nSee https: //cloud.google.com/dlp/docs/creating-templates to learn more.",
+      "description": "CreateInspectTemplate creates an InspectTemplate for reusing frequently used configuration\nfor inspecting content, images, and storage.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-templates\nto learn more.",
       "file": "Client/CreateInspectTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -243,7 +335,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_CreateJobTrigger_sync",
       "title": "dlp CreateJobTrigger Sample",
-      "description": "CreateJobTrigger creates a job trigger to run DLP actions such as scanning storage for\nsensitive information on a set schedule.\nSee https: //cloud.google.com/dlp/docs/creating-job-triggers to learn more.",
+      "description": "CreateJobTrigger creates a job trigger to run DLP actions such as scanning storage for\nsensitive information on a set schedule.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-job-triggers\nto learn more.",
       "file": "Client/CreateJobTrigger/main.go",
       "language": "GO",
       "clientMethod": {
@@ -289,7 +381,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_CreateStoredInfoType_sync",
       "title": "dlp CreateStoredInfoType Sample",
-      "description": "CreateStoredInfoType creates a pre-built stored infoType to be used for inspection.\nSee https: //cloud.google.com/dlp/docs/creating-stored-infotypes to\nlearn more.",
+      "description": "CreateStoredInfoType creates a pre-built stored infoType to be used for inspection.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes\nto learn more.",
       "file": "Client/CreateStoredInfoType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -335,7 +427,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_DeidentifyContent_sync",
       "title": "dlp DeidentifyContent Sample",
-      "description": "DeidentifyContent de-identifies potentially sensitive info from a ContentItem.\nThis method has limits on input size and output size.\nSee https: //cloud.google.com/dlp/docs/deidentify-sensitive-data to\nlearn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.",
+      "description": "DeidentifyContent de-identifies potentially sensitive info from a ContentItem.\nThis method has limits on input size and output size.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/deidentify-sensitive-data\nto learn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.",
       "file": "Client/DeidentifyContent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -379,9 +471,54 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteConnection_sync",
+      "title": "dlp DeleteConnection Sample",
+      "description": "DeleteConnection delete a Connection.",
+      "file": "Client/DeleteConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConnection",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteConnection",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteConnection",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_DeleteDeidentifyTemplate_sync",
       "title": "dlp DeleteDeidentifyTemplate Sample",
-      "description": "DeleteDeidentifyTemplate deletes a DeidentifyTemplate.\nSee https: //cloud.google.com/dlp/docs/creating-templates-deid to learn\nmore.",
+      "description": "DeleteDeidentifyTemplate deletes a DeidentifyTemplate.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-templates-deid\nto learn more.",
       "file": "Client/DeleteDeidentifyTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -424,9 +561,54 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteDiscoveryConfig_sync",
+      "title": "dlp DeleteDiscoveryConfig Sample",
+      "description": "DeleteDiscoveryConfig deletes a discovery configuration.",
+      "file": "Client/DeleteDiscoveryConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDiscoveryConfig",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteDiscoveryConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteDiscoveryConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteDiscoveryConfig",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteDiscoveryConfig",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_DeleteDlpJob_sync",
       "title": "dlp DeleteDlpJob Sample",
-      "description": "DeleteDlpJob deletes a long-running DlpJob. This method indicates that the client is\nno longer interested in the DlpJob result. The job will be canceled if\npossible.\nSee https: //cloud.google.com/dlp/docs/inspecting-storage and\nhttps: //cloud.google.com/dlp/docs/compute-risk-analysis to learn more.",
+      "description": "DeleteDlpJob deletes a long-running DlpJob. This method indicates that the client is\nno longer interested in the DlpJob result. The job will be canceled if\npossible.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/inspecting-storage\nand\nhttps: //cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis\nto learn more.",
       "file": "Client/DeleteDlpJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -469,9 +651,54 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteFileStoreDataProfile_sync",
+      "title": "dlp DeleteFileStoreDataProfile Sample",
+      "description": "DeleteFileStoreDataProfile delete a FileStoreDataProfile. Will not prevent the profile from being\nregenerated if the resource is still included in a discovery configuration.",
+      "file": "Client/DeleteFileStoreDataProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFileStoreDataProfile",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteFileStoreDataProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteFileStoreDataProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteFileStoreDataProfile",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteFileStoreDataProfile",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_DeleteInspectTemplate_sync",
       "title": "dlp DeleteInspectTemplate Sample",
-      "description": "DeleteInspectTemplate deletes an InspectTemplate.\nSee https: //cloud.google.com/dlp/docs/creating-templates to learn more.",
+      "description": "DeleteInspectTemplate deletes an InspectTemplate.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-templates\nto learn more.",
       "file": "Client/DeleteInspectTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -516,7 +743,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_DeleteJobTrigger_sync",
       "title": "dlp DeleteJobTrigger Sample",
-      "description": "DeleteJobTrigger deletes a job trigger.\nSee https: //cloud.google.com/dlp/docs/creating-job-triggers to learn more.",
+      "description": "DeleteJobTrigger deletes a job trigger.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-job-triggers\nto learn more.",
       "file": "Client/DeleteJobTrigger/main.go",
       "language": "GO",
       "clientMethod": {
@@ -561,7 +788,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_DeleteStoredInfoType_sync",
       "title": "dlp DeleteStoredInfoType Sample",
-      "description": "DeleteStoredInfoType deletes a stored infoType.\nSee https: //cloud.google.com/dlp/docs/creating-stored-infotypes to\nlearn more.",
+      "description": "DeleteStoredInfoType deletes a stored infoType.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes\nto learn more.",
       "file": "Client/DeleteStoredInfoType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -588,6 +815,51 @@
         "method": {
           "shortName": "DeleteStoredInfoType",
           "fullName": "google.privacy.dlp.v2.DlpService.DeleteStoredInfoType",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteTableDataProfile_sync",
+      "title": "dlp DeleteTableDataProfile Sample",
+      "description": "DeleteTableDataProfile delete a TableDataProfile. Will not prevent the profile from being\nregenerated if the table is still included in a discovery configuration.",
+      "file": "Client/DeleteTableDataProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTableDataProfile",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteTableDataProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteTableDataProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteTableDataProfile",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteTableDataProfile",
           "service": {
             "shortName": "DlpService",
             "fullName": "google.privacy.dlp.v2.DlpService"
@@ -649,9 +921,101 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_GetColumnDataProfile_sync",
+      "title": "dlp GetColumnDataProfile Sample",
+      "description": "GetColumnDataProfile gets a column data profile.",
+      "file": "Client/GetColumnDataProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetColumnDataProfile",
+        "fullName": "google.privacy.dlp.v2.Client.GetColumnDataProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetColumnDataProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.ColumnDataProfile",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetColumnDataProfile",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetColumnDataProfile",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_GetConnection_sync",
+      "title": "dlp GetConnection Sample",
+      "description": "GetConnection get a Connection by name.",
+      "file": "Client/GetConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConnection",
+        "fullName": "google.privacy.dlp.v2.Client.GetConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.Connection",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetConnection",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetConnection",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_GetDeidentifyTemplate_sync",
       "title": "dlp GetDeidentifyTemplate Sample",
-      "description": "GetDeidentifyTemplate gets a DeidentifyTemplate.\nSee https: //cloud.google.com/dlp/docs/creating-templates-deid to learn\nmore.",
+      "description": "GetDeidentifyTemplate gets a DeidentifyTemplate.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-templates-deid\nto learn more.",
       "file": "Client/GetDeidentifyTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -695,9 +1059,55 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_GetDiscoveryConfig_sync",
+      "title": "dlp GetDiscoveryConfig Sample",
+      "description": "GetDiscoveryConfig gets a discovery configuration.",
+      "file": "Client/GetDiscoveryConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDiscoveryConfig",
+        "fullName": "google.privacy.dlp.v2.Client.GetDiscoveryConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetDiscoveryConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.DiscoveryConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetDiscoveryConfig",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetDiscoveryConfig",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_GetDlpJob_sync",
       "title": "dlp GetDlpJob Sample",
-      "description": "GetDlpJob gets the latest state of a long-running DlpJob.\nSee https: //cloud.google.com/dlp/docs/inspecting-storage and\nhttps: //cloud.google.com/dlp/docs/compute-risk-analysis to learn more.",
+      "description": "GetDlpJob gets the latest state of a long-running DlpJob.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/inspecting-storage\nand\nhttps: //cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis\nto learn more.",
       "file": "Client/GetDlpJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -741,9 +1151,55 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_GetFileStoreDataProfile_sync",
+      "title": "dlp GetFileStoreDataProfile Sample",
+      "description": "GetFileStoreDataProfile gets a file store data profile.",
+      "file": "Client/GetFileStoreDataProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFileStoreDataProfile",
+        "fullName": "google.privacy.dlp.v2.Client.GetFileStoreDataProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetFileStoreDataProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.FileStoreDataProfile",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetFileStoreDataProfile",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetFileStoreDataProfile",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_GetInspectTemplate_sync",
       "title": "dlp GetInspectTemplate Sample",
-      "description": "GetInspectTemplate gets an InspectTemplate.\nSee https: //cloud.google.com/dlp/docs/creating-templates to learn more.",
+      "description": "GetInspectTemplate gets an InspectTemplate.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-templates\nto learn more.",
       "file": "Client/GetInspectTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -789,7 +1245,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_GetJobTrigger_sync",
       "title": "dlp GetJobTrigger Sample",
-      "description": "GetJobTrigger gets a job trigger.\nSee https: //cloud.google.com/dlp/docs/creating-job-triggers to learn more.",
+      "description": "GetJobTrigger gets a job trigger.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-job-triggers\nto learn more.",
       "file": "Client/GetJobTrigger/main.go",
       "language": "GO",
       "clientMethod": {
@@ -833,9 +1289,55 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_GetProjectDataProfile_sync",
+      "title": "dlp GetProjectDataProfile Sample",
+      "description": "GetProjectDataProfile gets a project data profile.",
+      "file": "Client/GetProjectDataProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProjectDataProfile",
+        "fullName": "google.privacy.dlp.v2.Client.GetProjectDataProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetProjectDataProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.ProjectDataProfile",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetProjectDataProfile",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetProjectDataProfile",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_GetStoredInfoType_sync",
       "title": "dlp GetStoredInfoType Sample",
-      "description": "GetStoredInfoType gets a stored infoType.\nSee https: //cloud.google.com/dlp/docs/creating-stored-infotypes to\nlearn more.",
+      "description": "GetStoredInfoType gets a stored infoType.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes\nto learn more.",
       "file": "Client/GetStoredInfoType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -863,6 +1365,52 @@
         "method": {
           "shortName": "GetStoredInfoType",
           "fullName": "google.privacy.dlp.v2.DlpService.GetStoredInfoType",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_GetTableDataProfile_sync",
+      "title": "dlp GetTableDataProfile Sample",
+      "description": "GetTableDataProfile gets a table data profile.",
+      "file": "Client/GetTableDataProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTableDataProfile",
+        "fullName": "google.privacy.dlp.v2.Client.GetTableDataProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetTableDataProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.TableDataProfile",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetTableDataProfile",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetTableDataProfile",
           "service": {
             "shortName": "DlpService",
             "fullName": "google.privacy.dlp.v2.DlpService"
@@ -973,7 +1521,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_InspectContent_sync",
       "title": "dlp InspectContent Sample",
-      "description": "InspectContent finds potentially sensitive info in content.\nThis method has limits on input size, processing time, and output size.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.\n\nFor how to guides, see https: //cloud.google.com/dlp/docs/inspecting-images\nand https: //cloud.google.com/dlp/docs/inspecting-text,",
+      "description": "InspectContent finds potentially sensitive info in content.\nThis method has limits on input size, processing time, and output size.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.\n\nFor how to guides, see\nhttps: //cloud.google.com/sensitive-data-protection/docs/inspecting-images\nand\nhttps: //cloud.google.com/sensitive-data-protection/docs/inspecting-text,",
       "file": "Client/InspectContent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1017,9 +1565,101 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_ListColumnDataProfiles_sync",
+      "title": "dlp ListColumnDataProfiles Sample",
+      "description": "ListColumnDataProfiles lists column data profiles for an organization.",
+      "file": "Client/ListColumnDataProfiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListColumnDataProfiles",
+        "fullName": "google.privacy.dlp.v2.Client.ListColumnDataProfiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListColumnDataProfilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ColumnDataProfileIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListColumnDataProfiles",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListColumnDataProfiles",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListConnections_sync",
+      "title": "dlp ListConnections Sample",
+      "description": "ListConnections lists Connections in a parent. Use SearchConnections to see all connections\nwithin an organization.",
+      "file": "Client/ListConnections/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConnections",
+        "fullName": "google.privacy.dlp.v2.Client.ListConnections",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListConnectionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConnectionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListConnections",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListConnections",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_ListDeidentifyTemplates_sync",
       "title": "dlp ListDeidentifyTemplates Sample",
-      "description": "ListDeidentifyTemplates lists DeidentifyTemplates.\nSee https: //cloud.google.com/dlp/docs/creating-templates-deid to learn\nmore.",
+      "description": "ListDeidentifyTemplates lists DeidentifyTemplates.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-templates-deid\nto learn more.",
       "file": "Client/ListDeidentifyTemplates/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1057,7 +1697,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListDiscoveryConfigs_sync",
+      "title": "dlp ListDiscoveryConfigs Sample",
+      "description": "ListDiscoveryConfigs lists discovery configurations.",
+      "file": "Client/ListDiscoveryConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDiscoveryConfigs",
+        "fullName": "google.privacy.dlp.v2.Client.ListDiscoveryConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListDiscoveryConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DiscoveryConfigIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListDiscoveryConfigs",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListDiscoveryConfigs",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1065,7 +1751,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_ListDlpJobs_sync",
       "title": "dlp ListDlpJobs Sample",
-      "description": "ListDlpJobs lists DlpJobs that match the specified filter in the request.\nSee https: //cloud.google.com/dlp/docs/inspecting-storage and\nhttps: //cloud.google.com/dlp/docs/compute-risk-analysis to learn more.",
+      "description": "ListDlpJobs lists DlpJobs that match the specified filter in the request.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/inspecting-storage\nand\nhttps: //cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis\nto learn more.",
       "file": "Client/ListDlpJobs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1103,7 +1789,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListFileStoreDataProfiles_sync",
+      "title": "dlp ListFileStoreDataProfiles Sample",
+      "description": "ListFileStoreDataProfiles lists file store data profiles for an organization.",
+      "file": "Client/ListFileStoreDataProfiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFileStoreDataProfiles",
+        "fullName": "google.privacy.dlp.v2.Client.ListFileStoreDataProfiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListFileStoreDataProfilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FileStoreDataProfileIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListFileStoreDataProfiles",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListFileStoreDataProfiles",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1111,7 +1843,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_ListInfoTypes_sync",
       "title": "dlp ListInfoTypes Sample",
-      "description": "ListInfoTypes returns a list of the sensitive information types that DLP API\nsupports. See https: //cloud.google.com/dlp/docs/infotypes-reference to\nlearn more.",
+      "description": "ListInfoTypes returns a list of the sensitive information types that DLP API\nsupports. See\nhttps: //cloud.google.com/sensitive-data-protection/docs/infotypes-reference\nto learn more.",
       "file": "Client/ListInfoTypes/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1157,7 +1889,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_ListInspectTemplates_sync",
       "title": "dlp ListInspectTemplates Sample",
-      "description": "ListInspectTemplates lists InspectTemplates.\nSee https: //cloud.google.com/dlp/docs/creating-templates to learn more.",
+      "description": "ListInspectTemplates lists InspectTemplates.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-templates\nto learn more.",
       "file": "Client/ListInspectTemplates/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1195,7 +1927,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1203,7 +1935,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_ListJobTriggers_sync",
       "title": "dlp ListJobTriggers Sample",
-      "description": "ListJobTriggers lists job triggers.\nSee https: //cloud.google.com/dlp/docs/creating-job-triggers to learn more.",
+      "description": "ListJobTriggers lists job triggers.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-job-triggers\nto learn more.",
       "file": "Client/ListJobTriggers/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1241,7 +1973,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListProjectDataProfiles_sync",
+      "title": "dlp ListProjectDataProfiles Sample",
+      "description": "ListProjectDataProfiles lists project data profiles for an organization.",
+      "file": "Client/ListProjectDataProfiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProjectDataProfiles",
+        "fullName": "google.privacy.dlp.v2.Client.ListProjectDataProfiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListProjectDataProfilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProjectDataProfileIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListProjectDataProfiles",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListProjectDataProfiles",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1249,7 +2027,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_ListStoredInfoTypes_sync",
       "title": "dlp ListStoredInfoTypes Sample",
-      "description": "ListStoredInfoTypes lists stored infoTypes.\nSee https: //cloud.google.com/dlp/docs/creating-stored-infotypes to\nlearn more.",
+      "description": "ListStoredInfoTypes lists stored infoTypes.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes\nto learn more.",
       "file": "Client/ListStoredInfoTypes/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1287,7 +2065,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_ListTableDataProfiles_sync",
+      "title": "dlp ListTableDataProfiles Sample",
+      "description": "ListTableDataProfiles lists table data profiles for an organization.",
+      "file": "Client/ListTableDataProfiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTableDataProfiles",
+        "fullName": "google.privacy.dlp.v2.Client.ListTableDataProfiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListTableDataProfilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TableDataProfileIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListTableDataProfiles",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListTableDataProfiles",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1295,7 +2119,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_RedactImage_sync",
       "title": "dlp RedactImage Sample",
-      "description": "RedactImage redacts potentially sensitive info from an image.\nThis method has limits on input size, processing time, and output size.\nSee https: //cloud.google.com/dlp/docs/redacting-sensitive-data-images to\nlearn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.",
+      "description": "RedactImage redacts potentially sensitive info from an image.\nThis method has limits on input size, processing time, and output size.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/redacting-sensitive-data-images\nto learn more.\n\nWhen no InfoTypes or CustomInfoTypes are specified in this request, the\nsystem will automatically choose what detectors to run. By default this may\nbe all types, but may change over time as detectors are updated.",
       "file": "Client/RedactImage/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1341,7 +2165,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_ReidentifyContent_sync",
       "title": "dlp ReidentifyContent Sample",
-      "description": "ReidentifyContent re-identifies content that has been de-identified.\nSee\nhttps: //cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example\nto learn more.",
+      "description": "ReidentifyContent re-identifies content that has been de-identified.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/pseudonymization#re-identification_in_free_text_code_example\nto learn more.",
       "file": "Client/ReidentifyContent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1385,9 +2209,101 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_SearchConnections_sync",
+      "title": "dlp SearchConnections Sample",
+      "description": "SearchConnections searches for Connections in a parent.",
+      "file": "Client/SearchConnections/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchConnections",
+        "fullName": "google.privacy.dlp.v2.Client.SearchConnections",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.SearchConnectionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConnectionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "SearchConnections",
+          "fullName": "google.privacy.dlp.v2.DlpService.SearchConnections",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_UpdateConnection_sync",
+      "title": "dlp UpdateConnection Sample",
+      "description": "UpdateConnection update a Connection.",
+      "file": "Client/UpdateConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConnection",
+        "fullName": "google.privacy.dlp.v2.Client.UpdateConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.UpdateConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.Connection",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateConnection",
+          "fullName": "google.privacy.dlp.v2.DlpService.UpdateConnection",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_UpdateDeidentifyTemplate_sync",
       "title": "dlp UpdateDeidentifyTemplate Sample",
-      "description": "UpdateDeidentifyTemplate updates the DeidentifyTemplate.\nSee https: //cloud.google.com/dlp/docs/creating-templates-deid to learn\nmore.",
+      "description": "UpdateDeidentifyTemplate updates the DeidentifyTemplate.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-templates-deid\nto learn more.",
       "file": "Client/UpdateDeidentifyTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1431,9 +2347,55 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_UpdateDiscoveryConfig_sync",
+      "title": "dlp UpdateDiscoveryConfig Sample",
+      "description": "UpdateDiscoveryConfig updates a discovery configuration.",
+      "file": "Client/UpdateDiscoveryConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDiscoveryConfig",
+        "fullName": "google.privacy.dlp.v2.Client.UpdateDiscoveryConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.UpdateDiscoveryConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.DiscoveryConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateDiscoveryConfig",
+          "fullName": "google.privacy.dlp.v2.DlpService.UpdateDiscoveryConfig",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_UpdateInspectTemplate_sync",
       "title": "dlp UpdateInspectTemplate Sample",
-      "description": "UpdateInspectTemplate updates the InspectTemplate.\nSee https: //cloud.google.com/dlp/docs/creating-templates to learn more.",
+      "description": "UpdateInspectTemplate updates the InspectTemplate.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-templates\nto learn more.",
       "file": "Client/UpdateInspectTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1479,7 +2441,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_UpdateJobTrigger_sync",
       "title": "dlp UpdateJobTrigger Sample",
-      "description": "UpdateJobTrigger updates a job trigger.\nSee https: //cloud.google.com/dlp/docs/creating-job-triggers to learn more.",
+      "description": "UpdateJobTrigger updates a job trigger.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-job-triggers\nto learn more.",
       "file": "Client/UpdateJobTrigger/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1525,7 +2487,7 @@
     {
       "regionTag": "dlp_v2_generated_DlpService_UpdateStoredInfoType_sync",
       "title": "dlp UpdateStoredInfoType Sample",
-      "description": "UpdateStoredInfoType updates the stored infoType by creating a new version. The existing version\nwill continue to be used until the new version is ready.\nSee https: //cloud.google.com/dlp/docs/creating-stored-infotypes to\nlearn more.",
+      "description": "UpdateStoredInfoType updates the stored infoType by creating a new version. The existing version\nwill continue to be used until the new version is ready.\nSee\nhttps: //cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes\nto learn more.",
       "file": "Client/UpdateStoredInfoType/main.go",
       "language": "GO",
       "clientMethod": {

@@ -52,42 +52,86 @@ func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 	}
 }
 
-// TODO: consider flipping this to an allowlist
-var skipPrefixes = []string{
-	"google.golang.org/genproto/googleapis/ads/",
-	"google.golang.org/genproto/googleapis/ai/",
-	"google.golang.org/genproto/googleapis/analytics/",
-	"google.golang.org/genproto/googleapis/api/servicecontrol/",
-	"google.golang.org/genproto/googleapis/api/servicemanagement/",
-	"google.golang.org/genproto/googleapis/api/serviceusage/",
-	"google.golang.org/genproto/googleapis/appengine/",
-	"google.golang.org/genproto/googleapis/area120/",
-	"google.golang.org/genproto/googleapis/cloud/",
-	"google.golang.org/genproto/googleapis/compute/",
-	"google.golang.org/genproto/googleapis/dataflow/",
-	"google.golang.org/genproto/googleapis/datastore/",
-	"google.golang.org/genproto/googleapis/devtools/",
-	"google.golang.org/genproto/googleapis/firestore/",
-	"google.golang.org/genproto/googleapis/iam/",
-	"google.golang.org/genproto/googleapis/identity/",
-	"google.golang.org/genproto/googleapis/logging/",
-	"google.golang.org/genproto/googleapis/longrunning/",
-	"google.golang.org/genproto/googleapis/maps/",
-	"google.golang.org/genproto/googleapis/monitoring/",
-	"google.golang.org/genproto/googleapis/privacy/",
-	"google.golang.org/genproto/googleapis/pubsub/",
-	"google.golang.org/genproto/googleapis/spanner/",
-	"google.golang.org/genproto/googleapis/storage/",
-	"google.golang.org/genproto/googleapis/storagetransfer/",
-}
-
-func hasPrefix(s string, prefixes []string) bool {
-	for _, prefix := range prefixes {
-		if strings.HasPrefix(s, prefix) {
-			return true
-		}
-	}
-	return false
+// Only the packages listed here are generated into go-genproto.
+var generateList = []string{
+	"google.golang.org/genproto/googleapis/type/expr",
+	"google.golang.org/genproto/googleapis/rpc/http",
+	"google.golang.org/genproto/googleapis/type/latlng",
+	"google.golang.org/genproto/googleapis/genomics/v1alpha2",
+	"google.golang.org/genproto/googleapis/type/date",
+	"google.golang.org/genproto/googleapis/type/date_time_range",
+	"google.golang.org/genproto/googleapis/api/metric",
+	"google.golang.org/genproto/googleapis/api/distribution",
+	"google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1",
+	"google.golang.org/genproto/googleapis/apps/script/type/slides",
+	"google.golang.org/genproto/googleapis/api/expr/v1beta1",
+	"google.golang.org/genproto/googleapis/apps/script/type/gmail",
+	"google.golang.org/genproto/googleapis/type/month",
+	"google.golang.org/genproto/googleapis/actions/sdk/v2/interactionmodel/type",
+	"google.golang.org/genproto/googleapis/apps/alertcenter/v1beta1",
+	"google.golang.org/genproto/googleapis/api/error_reason",
+	"google.golang.org/genproto/googleapis/assistant/embedded/v1alpha1",
+	"google.golang.org/genproto/googleapis/type/localized_text",
+	"google.golang.org/genproto/googleapis/type/interval",
+	"google.golang.org/genproto/googleapis/watcher/v1",
+	"google.golang.org/genproto/googleapis/apps/script/type/docs",
+	"google.golang.org/genproto/googleapis/api/monitoredres",
+	"google.golang.org/genproto/googleapis/actions/sdk/v2/interactionmodel",
+	"google.golang.org/genproto/googleapis/type/dayofweek",
+	"google.golang.org/genproto/googleapis/gapic/metadata",
+	"google.golang.org/genproto/googleapis/chat/logging/v1",
+	"google.golang.org/genproto/googleapis/api/expr/v1alpha1",
+	"google.golang.org/genproto/googleapis/grafeas/v1",
+	"google.golang.org/genproto/googleapis/type/quaternion",
+	"google.golang.org/genproto/googleapis/type/calendarperiod",
+	"google.golang.org/genproto/googleapis/type/date_range",
+	"google.golang.org/genproto/googleapis/rpc/status",
+	"google.golang.org/genproto/googleapis/rpc/context",
+	"google.golang.org/genproto/googleapis/rpc/code",
+	"google.golang.org/genproto/googleapis/api/visibility",
+	"google.golang.org/genproto/googleapis/streetview/publish/v1",
+	"google.golang.org/genproto/googleapis/type/money",
+	"google.golang.org/genproto/googleapis/type/decimal",
+	"google.golang.org/genproto/googleapis/type/color",
+	"google.golang.org/genproto/googleapis/apps/drive/activity/v2",
+	"google.golang.org/genproto/googleapis/apps/script/type/sheets",
+	"google.golang.org/genproto/googleapis/type/timeofday",
+	"google.golang.org/genproto/googleapis/home/graph/v1",
+	"google.golang.org/genproto/googleapis/container/v1alpha1",
+	"google.golang.org/genproto/googleapis/rpc/errdetails",
+	"google.golang.org/genproto/googleapis/actions/sdk/v2",
+	"google.golang.org/genproto/googleapis/networking/trafficdirector/type",
+	"google.golang.org/genproto/googleapis/actions/sdk/v2/conversation",
+	"google.golang.org/genproto/googleapis/home/enterprise/sdm/v1",
+	"google.golang.org/genproto/googleapis/bytestream",
+	"google.golang.org/genproto/googleapis/api",
+	"google.golang.org/genproto/googleapis/apps/script/type",
+	"google.golang.org/genproto/googleapis/api/configchange",
+	"google.golang.org/genproto/googleapis/ccc/hosted/marketplace/v2",
+	"google.golang.org/genproto/googleapis/chromeos/uidetection/v1",
+	"google.golang.org/genproto/googleapis/type/datetime",
+	"google.golang.org/genproto/googleapis/geo/type/viewport",
+	"google.golang.org/genproto/googleapis/type/phone_number",
+	"google.golang.org/genproto/googleapis/type/fraction",
+	"google.golang.org/genproto/googleapis/apps/drive/labels/v2",
+	"google.golang.org/genproto/googleapis/example/library/v1",
+	"google.golang.org/genproto/googleapis/api/label",
+	"google.golang.org/genproto/googleapis/api/httpbody",
+	"google.golang.org/genproto/googleapis/partner/aistreams/v1alpha1",
+	"google.golang.org/genproto/googleapis/apps/script/type/drive",
+	"google.golang.org/genproto/googleapis/search/partnerdataingestion/logging/v1",
+	"google.golang.org/genproto/googleapis/apps/script/type/calendar",
+	"google.golang.org/genproto/googleapis/rpc/context/attribute_context",
+	"google.golang.org/genproto/googleapis/api/expr/conformance/v1alpha1",
+	"google.golang.org/genproto/googleapis/actions/sdk/v2/interactionmodel/prompt",
+	"google.golang.org/genproto/googleapis/api/serviceconfig",
+	"google.golang.org/genproto/googleapis/apps/drive/labels/v2beta",
+	"google.golang.org/genproto/googleapis/genomics/v1",
+	"google.golang.org/genproto/googleapis/api/annotations",
+	"google.golang.org/genproto/googleapis/type/postaladdress",
+	"google.golang.org/genproto/googleapis/firebase/fcm/connection/v1alpha1",
+	"google.golang.org/genproto/googleapis/assistant/embedded/v1alpha2",
+	"google.golang.org/genproto/googleapis/apps/card/v1",
 }
 
 // Regen regenerates the genproto repository.
@@ -135,9 +179,6 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	log.Println("generating from protos")
 	grp, _ := errgroup.WithContext(ctx)
 	for pkg, fileNames := range pkgFiles {
-		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || hasPrefix(pkg, skipPrefixes) {
-			continue
-		}
 		pk := pkg
 		fn := fileNames
 
@@ -167,11 +208,10 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 
 func filterPackages(in map[string][]string) (map[string][]string, error) {
 	out := map[string][]string{}
-	for pkg, fileNames := range in {
-		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || hasPrefix(pkg, skipPrefixes) {
-			continue
+	for _, allowed := range generateList {
+		if files, present := in[allowed]; present {
+			out[allowed] = files
 		}
-		out[pkg] = fileNames
 	}
 	if len(out) == 0 {
 		return nil, ErrNoProcessing

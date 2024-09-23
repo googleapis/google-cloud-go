@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/retail/apiv2beta",
-    "version": "1.14.1",
+    "version": "1.18.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,144 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "retail_v2beta_generated_AnalyticsService_ExportAnalyticsMetrics_sync",
+      "title": "retail ExportAnalyticsMetrics Sample",
+      "description": "ExportAnalyticsMetrics exports analytics metrics.\n\n`Operation.response` is of type `ExportAnalyticsMetricsResponse`.\n`Operation.metadata` is of type `ExportMetadata`.",
+      "file": "AnalyticsClient/ExportAnalyticsMetrics/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportAnalyticsMetrics",
+        "fullName": "google.cloud.retail.v2beta.AnalyticsClient.ExportAnalyticsMetrics",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.ExportAnalyticsMetricsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportAnalyticsMetricsOperation",
+        "client": {
+          "shortName": "AnalyticsClient",
+          "fullName": "google.cloud.retail.v2beta.AnalyticsClient"
+        },
+        "method": {
+          "shortName": "ExportAnalyticsMetrics",
+          "fullName": "google.cloud.retail.v2beta.AnalyticsService.ExportAnalyticsMetrics",
+          "service": {
+            "shortName": "AnalyticsService",
+            "fullName": "google.cloud.retail.v2beta.AnalyticsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_AnalyticsService_GetOperation_sync",
+      "title": "retail GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AnalyticsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.retail.v2beta.AnalyticsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "AnalyticsClient",
+          "fullName": "google.cloud.retail.v2beta.AnalyticsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_AnalyticsService_ListOperations_sync",
+      "title": "retail ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "AnalyticsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.retail.v2beta.AnalyticsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "AnalyticsClient",
+          "fullName": "google.cloud.retail.v2beta.AnalyticsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "retail_v2beta_generated_CatalogService_AddCatalogAttribute_sync",
       "title": "retail AddCatalogAttribute Sample",
@@ -328,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -374,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -833,7 +971,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1062,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1108,7 +1246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1383,7 +1521,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1429,7 +1567,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1705,7 +1843,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1759,7 +1897,7 @@
     {
       "regionTag": "retail_v2beta_generated_ProductService_AddFulfillmentPlaces_sync",
       "title": "retail AddFulfillmentPlaces Sample",
-      "description": "AddFulfillmentPlaces it is recommended to use the\n[ProductService.AddLocalInventories][google.cloud.retail.v2beta.ProductService.AddLocalInventories]\nmethod instead of\n[ProductService.AddFulfillmentPlaces][google.cloud.retail.v2beta.ProductService.AddFulfillmentPlaces].\n[ProductService.AddLocalInventories][google.cloud.retail.v2beta.ProductService.AddLocalInventories]\nachieves the same results but provides more fine-grained control over\ningesting local inventory data.\n\nIncrementally adds place IDs to\n[Product.fulfillment_info.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids].\n\nThis process is asynchronous and does not require the\n[Product][google.cloud.retail.v2beta.Product] to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the added place IDs are not immediately manifested in the\n[Product][google.cloud.retail.v2beta.Product] queried by\n[ProductService.GetProduct][google.cloud.retail.v2beta.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2beta.ProductService.ListProducts].\n\nThe returned [Operation][google.longrunning.Operation]s will be obsolete\nafter 1 day, and [GetOperation][google.longrunning.Operations.GetOperation]\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\n[Operation][google.longrunning.Operation]s associated with the stale\nupdates will not be marked as [done][google.longrunning.Operation.done]\nuntil being obsolete.",
+      "description": "AddFulfillmentPlaces we recommend that you use the\n[ProductService.AddLocalInventories][google.cloud.retail.v2beta.ProductService.AddLocalInventories]\nmethod instead of the\n[ProductService.AddFulfillmentPlaces][google.cloud.retail.v2beta.ProductService.AddFulfillmentPlaces]\nmethod.\n[ProductService.AddLocalInventories][google.cloud.retail.v2beta.ProductService.AddLocalInventories]\nachieves the same results but provides more fine-grained control over\ningesting local inventory data.\n\nIncrementally adds place IDs to\n[Product.fulfillment_info.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids].\n\nThis process is asynchronous and does not require the\n[Product][google.cloud.retail.v2beta.Product] to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the added place IDs are not immediately manifested in the\n[Product][google.cloud.retail.v2beta.Product] queried by\n[ProductService.GetProduct][google.cloud.retail.v2beta.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2beta.ProductService.ListProducts].\n\nThe returned [Operation][google.longrunning.Operation]s will be obsolete\nafter 1 day, and [GetOperation][google.longrunning.Operations.GetOperation]\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\n[Operation][google.longrunning.Operation]s associated with the stale\nupdates will not be marked as [done][google.longrunning.Operation.done]\nuntil being obsolete.",
       "file": "ProductClient/AddFulfillmentPlaces/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2118,7 +2256,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2164,7 +2302,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_ProductService_PurgeProducts_sync",
+      "title": "retail PurgeProducts Sample",
+      "description": "PurgeProducts permanently deletes all selected\n[Product][google.cloud.retail.v2beta.Product]s under a branch.\n\nThis process is asynchronous. If the request is valid, the removal will be\nenqueued and processed offline. Depending on the number of\n[Product][google.cloud.retail.v2beta.Product]s, this operation could take\nhours to complete. Before the operation completes, some\n[Product][google.cloud.retail.v2beta.Product]s may still be returned by\n[ProductService.GetProduct][google.cloud.retail.v2beta.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2beta.ProductService.ListProducts].\n\nDepending on the number of [Product][google.cloud.retail.v2beta.Product]s,\nthis operation could take hours to complete. To get a sample of\n[Product][google.cloud.retail.v2beta.Product]s that would be deleted, set\n[PurgeProductsRequest.force][google.cloud.retail.v2beta.PurgeProductsRequest.force]\nto false.",
+      "file": "ProductClient/PurgeProducts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PurgeProducts",
+        "fullName": "google.cloud.retail.v2beta.ProductClient.PurgeProducts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.PurgeProductsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PurgeProductsOperation",
+        "client": {
+          "shortName": "ProductClient",
+          "fullName": "google.cloud.retail.v2beta.ProductClient"
+        },
+        "method": {
+          "shortName": "PurgeProducts",
+          "fullName": "google.cloud.retail.v2beta.ProductService.PurgeProducts",
+          "service": {
+            "shortName": "ProductService",
+            "fullName": "google.cloud.retail.v2beta.ProductService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -2172,7 +2356,7 @@
     {
       "regionTag": "retail_v2beta_generated_ProductService_RemoveFulfillmentPlaces_sync",
       "title": "retail RemoveFulfillmentPlaces Sample",
-      "description": "RemoveFulfillmentPlaces it is recommended to use the\n[ProductService.RemoveLocalInventories][google.cloud.retail.v2beta.ProductService.RemoveLocalInventories]\nmethod instead of\n[ProductService.RemoveFulfillmentPlaces][google.cloud.retail.v2beta.ProductService.RemoveFulfillmentPlaces].\n[ProductService.RemoveLocalInventories][google.cloud.retail.v2beta.ProductService.RemoveLocalInventories]\nachieves the same results but provides more fine-grained control over\ningesting local inventory data.\n\nIncrementally removes place IDs from a\n[Product.fulfillment_info.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids].\n\nThis process is asynchronous and does not require the\n[Product][google.cloud.retail.v2beta.Product] to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the removed place IDs are not immediately manifested in the\n[Product][google.cloud.retail.v2beta.Product] queried by\n[ProductService.GetProduct][google.cloud.retail.v2beta.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2beta.ProductService.ListProducts].\n\nThe returned [Operation][google.longrunning.Operation]s will be obsolete\nafter 1 day, and [GetOperation][google.longrunning.Operations.GetOperation]\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\n[Operation][google.longrunning.Operation]s associated with the stale\nupdates will not be marked as [done][google.longrunning.Operation.done]\nuntil being obsolete.",
+      "description": "RemoveFulfillmentPlaces we recommend that you use the\n[ProductService.RemoveLocalInventories][google.cloud.retail.v2beta.ProductService.RemoveLocalInventories]\nmethod instead of the\n[ProductService.RemoveFulfillmentPlaces][google.cloud.retail.v2beta.ProductService.RemoveFulfillmentPlaces]\nmethod.\n[ProductService.RemoveLocalInventories][google.cloud.retail.v2beta.ProductService.RemoveLocalInventories]\nachieves the same results but provides more fine-grained control over\ningesting local inventory data.\n\nIncrementally removes place IDs from a\n[Product.fulfillment_info.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids].\n\nThis process is asynchronous and does not require the\n[Product][google.cloud.retail.v2beta.Product] to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the removed place IDs are not immediately manifested in the\n[Product][google.cloud.retail.v2beta.Product] queried by\n[ProductService.GetProduct][google.cloud.retail.v2beta.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2beta.ProductService.ListProducts].\n\nThe returned [Operation][google.longrunning.Operation]s will be obsolete\nafter 1 day, and [GetOperation][google.longrunning.Operations.GetOperation]\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\n[Operation][google.longrunning.Operation]s associated with the stale\nupdates will not be marked as [done][google.longrunning.Operation.done]\nuntil being obsolete.",
       "file": "ProductClient/RemoveFulfillmentPlaces/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2440,7 +2624,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2486,7 +2670,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2761,7 +2945,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2807,7 +2991,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3083,7 +3267,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

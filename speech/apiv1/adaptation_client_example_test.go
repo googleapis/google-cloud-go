@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,135 +59,6 @@ func ExampleNewAdaptationRESTClient() {
 	_ = c
 }
 
-func ExampleAdaptationClient_CreatePhraseSet() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := speech.NewAdaptationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &speechpb.CreatePhraseSetRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#CreatePhraseSetRequest.
-	}
-	resp, err := c.CreatePhraseSet(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAdaptationClient_GetPhraseSet() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := speech.NewAdaptationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &speechpb.GetPhraseSetRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#GetPhraseSetRequest.
-	}
-	resp, err := c.GetPhraseSet(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAdaptationClient_ListPhraseSet() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := speech.NewAdaptationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &speechpb.ListPhraseSetRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#ListPhraseSetRequest.
-	}
-	it := c.ListPhraseSet(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleAdaptationClient_UpdatePhraseSet() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := speech.NewAdaptationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &speechpb.UpdatePhraseSetRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#UpdatePhraseSetRequest.
-	}
-	resp, err := c.UpdatePhraseSet(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAdaptationClient_DeletePhraseSet() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := speech.NewAdaptationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &speechpb.DeletePhraseSetRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#DeletePhraseSetRequest.
-	}
-	err = c.DeletePhraseSet(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
 func ExampleAdaptationClient_CreateCustomClass() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -213,6 +84,77 @@ func ExampleAdaptationClient_CreateCustomClass() {
 	_ = resp
 }
 
+func ExampleAdaptationClient_CreatePhraseSet() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := speech.NewAdaptationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &speechpb.CreatePhraseSetRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#CreatePhraseSetRequest.
+	}
+	resp, err := c.CreatePhraseSet(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAdaptationClient_DeleteCustomClass() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := speech.NewAdaptationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &speechpb.DeleteCustomClassRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#DeleteCustomClassRequest.
+	}
+	err = c.DeleteCustomClass(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAdaptationClient_DeletePhraseSet() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := speech.NewAdaptationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &speechpb.DeletePhraseSetRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#DeletePhraseSetRequest.
+	}
+	err = c.DeletePhraseSet(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleAdaptationClient_GetCustomClass() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -231,6 +173,31 @@ func ExampleAdaptationClient_GetCustomClass() {
 		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#GetCustomClassRequest.
 	}
 	resp, err := c.GetCustomClass(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAdaptationClient_GetPhraseSet() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := speech.NewAdaptationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &speechpb.GetPhraseSetRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#GetPhraseSetRequest.
+	}
+	resp, err := c.GetPhraseSet(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -266,6 +233,49 @@ func ExampleAdaptationClient_ListCustomClasses() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*speechpb.ListCustomClassesResponse)
+	}
+}
+
+func ExampleAdaptationClient_ListPhraseSet() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := speech.NewAdaptationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &speechpb.ListPhraseSetRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#ListPhraseSetRequest.
+	}
+	it := c.ListPhraseSet(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*speechpb.ListPhraseSetResponse)
 	}
 }
 
@@ -294,7 +304,7 @@ func ExampleAdaptationClient_UpdateCustomClass() {
 	_ = resp
 }
 
-func ExampleAdaptationClient_DeleteCustomClass() {
+func ExampleAdaptationClient_UpdatePhraseSet() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -307,14 +317,16 @@ func ExampleAdaptationClient_DeleteCustomClass() {
 	}
 	defer c.Close()
 
-	req := &speechpb.DeleteCustomClassRequest{
+	req := &speechpb.UpdatePhraseSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#DeleteCustomClassRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#UpdatePhraseSetRequest.
 	}
-	err = c.DeleteCustomClass(ctx, req)
+	resp, err := c.UpdatePhraseSet(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleAdaptationClient_GetOperation() {
@@ -370,5 +382,11 @@ func ExampleAdaptationClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

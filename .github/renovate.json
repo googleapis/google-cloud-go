@@ -2,7 +2,8 @@
     "extends": [
         "config:base",
         "schedule:weekly",
-        ":disableDependencyDashboard"
+        ":disableDependencyDashboard",
+        "docker:disable"
     ],
     "semanticCommits": false,
     "postUpdateOptions": [
@@ -12,14 +13,27 @@
     "commitMessageAction": "update",
     "groupName": "deps",
     "ignoreDeps": [
-        "google.golang.org/genproto"
+        "golang.org/x/mod",
+        "golang.org/x/tools",
+        "google.golang.org/genproto",
+        "github.com/google/pprof"
     ],
     "ignorePaths": [
         "**/snippets/**"
     ],
+    "packageRules": [
+        {
+            "matchPackagePatterns": [
+                "^github.com/google/go-github/v",
+                "^github.com/apache/arrow/go/v",
+                "^github.com/cloudprober/cloudprober"
+            ],
+            "enabled": false
+        }
+    ],
     "force": {
         "constraints": {
-            "go": "1.20"
+            "go": "1.21"
         }
     }
 }

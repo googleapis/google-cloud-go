@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/netapp/apiv1",
-    "version": "0.1.0",
+    "version": "1.3.1",
     "language": "GO",
     "apis": [
       {
@@ -87,6 +87,144 @@
         "method": {
           "shortName": "CreateActiveDirectory",
           "fullName": "google.cloud.netapp.v1.NetApp.CreateActiveDirectory",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_CreateBackup_sync",
+      "title": "netapp CreateBackup Sample",
+      "description": "CreateBackup creates a backup from the volume specified in the request\nThe backup can be created from the given snapshot if specified in the\nrequest. If no snapshot specified, there'll be a new snapshot taken to\ninitiate the backup creation.",
+      "file": "Client/CreateBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBackup",
+        "fullName": "google.cloud.netapp.v1.Client.CreateBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.CreateBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBackupOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateBackup",
+          "fullName": "google.cloud.netapp.v1.NetApp.CreateBackup",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_CreateBackupPolicy_sync",
+      "title": "netapp CreateBackupPolicy Sample",
+      "description": "CreateBackupPolicy creates new backup policy",
+      "file": "Client/CreateBackupPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBackupPolicy",
+        "fullName": "google.cloud.netapp.v1.Client.CreateBackupPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.CreateBackupPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBackupPolicyOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateBackupPolicy",
+          "fullName": "google.cloud.netapp.v1.NetApp.CreateBackupPolicy",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_CreateBackupVault_sync",
+      "title": "netapp CreateBackupVault Sample",
+      "description": "CreateBackupVault creates new backup vault",
+      "file": "Client/CreateBackupVault/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBackupVault",
+        "fullName": "google.cloud.netapp.v1.Client.CreateBackupVault",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.CreateBackupVaultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBackupVaultOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateBackupVault",
+          "fullName": "google.cloud.netapp.v1.NetApp.CreateBackupVault",
           "service": {
             "shortName": "NetApp",
             "fullName": "google.cloud.netapp.v1.NetApp"
@@ -363,6 +501,144 @@
         "method": {
           "shortName": "DeleteActiveDirectory",
           "fullName": "google.cloud.netapp.v1.NetApp.DeleteActiveDirectory",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_DeleteBackup_sync",
+      "title": "netapp DeleteBackup Sample",
+      "description": "DeleteBackup warning! This operation will permanently delete the backup.",
+      "file": "Client/DeleteBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBackup",
+        "fullName": "google.cloud.netapp.v1.Client.DeleteBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.DeleteBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteBackupOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteBackup",
+          "fullName": "google.cloud.netapp.v1.NetApp.DeleteBackup",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_DeleteBackupPolicy_sync",
+      "title": "netapp DeleteBackupPolicy Sample",
+      "description": "DeleteBackupPolicy warning! This operation will permanently delete the backup policy.",
+      "file": "Client/DeleteBackupPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBackupPolicy",
+        "fullName": "google.cloud.netapp.v1.Client.DeleteBackupPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.DeleteBackupPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteBackupPolicyOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteBackupPolicy",
+          "fullName": "google.cloud.netapp.v1.NetApp.DeleteBackupPolicy",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_DeleteBackupVault_sync",
+      "title": "netapp DeleteBackupVault Sample",
+      "description": "DeleteBackupVault warning! This operation will permanently delete the backup vault.",
+      "file": "Client/DeleteBackupVault/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBackupVault",
+        "fullName": "google.cloud.netapp.v1.Client.DeleteBackupVault",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.DeleteBackupVaultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteBackupVaultOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteBackupVault",
+          "fullName": "google.cloud.netapp.v1.NetApp.DeleteBackupVault",
           "service": {
             "shortName": "NetApp",
             "fullName": "google.cloud.netapp.v1.NetApp"
@@ -746,6 +1022,144 @@
       ]
     },
     {
+      "regionTag": "netapp_v1_generated_NetApp_GetBackup_sync",
+      "title": "netapp GetBackup Sample",
+      "description": "GetBackup returns the description of the specified backup",
+      "file": "Client/GetBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackup",
+        "fullName": "google.cloud.netapp.v1.Client.GetBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.GetBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*netapppb.Backup",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "GetBackup",
+          "fullName": "google.cloud.netapp.v1.NetApp.GetBackup",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_GetBackupPolicy_sync",
+      "title": "netapp GetBackupPolicy Sample",
+      "description": "GetBackupPolicy returns the description of the specified backup policy by backup_policy_id.",
+      "file": "Client/GetBackupPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackupPolicy",
+        "fullName": "google.cloud.netapp.v1.Client.GetBackupPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.GetBackupPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*netapppb.BackupPolicy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "GetBackupPolicy",
+          "fullName": "google.cloud.netapp.v1.NetApp.GetBackupPolicy",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_GetBackupVault_sync",
+      "title": "netapp GetBackupVault Sample",
+      "description": "GetBackupVault returns the description of the specified backup vault",
+      "file": "Client/GetBackupVault/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackupVault",
+        "fullName": "google.cloud.netapp.v1.Client.GetBackupVault",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.GetBackupVaultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*netapppb.BackupVault",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "GetBackupVault",
+          "fullName": "google.cloud.netapp.v1.NetApp.GetBackupVault",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "netapp_v1_generated_NetApp_GetKmsConfig_sync",
       "title": "netapp GetKmsConfig Sample",
       "description": "GetKmsConfig returns the description of the specified KMS config by kms_config_id.",
@@ -1108,7 +1522,145 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ListBackupPolicies_sync",
+      "title": "netapp ListBackupPolicies Sample",
+      "description": "ListBackupPolicies returns list of all available backup policies.",
+      "file": "Client/ListBackupPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackupPolicies",
+        "fullName": "google.cloud.netapp.v1.Client.ListBackupPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ListBackupPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupPolicyIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ListBackupPolicies",
+          "fullName": "google.cloud.netapp.v1.NetApp.ListBackupPolicies",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ListBackupVaults_sync",
+      "title": "netapp ListBackupVaults Sample",
+      "description": "ListBackupVaults returns list of all available backup vaults.",
+      "file": "Client/ListBackupVaults/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackupVaults",
+        "fullName": "google.cloud.netapp.v1.Client.ListBackupVaults",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ListBackupVaultsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupVaultIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ListBackupVaults",
+          "fullName": "google.cloud.netapp.v1.NetApp.ListBackupVaults",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ListBackups_sync",
+      "title": "netapp ListBackups Sample",
+      "description": "ListBackups returns descriptions of all backups for a backupVault.",
+      "file": "Client/ListBackups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackups",
+        "fullName": "google.cloud.netapp.v1.Client.ListBackups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ListBackupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ListBackups",
+          "fullName": "google.cloud.netapp.v1.NetApp.ListBackups",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1154,7 +1706,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1200,7 +1752,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1246,7 +1798,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1292,7 +1844,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1338,7 +1890,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1384,7 +1936,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1430,7 +1982,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1620,6 +2172,52 @@
       ]
     },
     {
+      "regionTag": "netapp_v1_generated_NetApp_SwitchActiveReplicaZone_sync",
+      "title": "netapp SwitchActiveReplicaZone Sample",
+      "description": "SwitchActiveReplicaZone this operation will switch the active/replica zone for a regional\nstoragePool.",
+      "file": "Client/SwitchActiveReplicaZone/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SwitchActiveReplicaZone",
+        "fullName": "google.cloud.netapp.v1.Client.SwitchActiveReplicaZone",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.SwitchActiveReplicaZoneRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SwitchActiveReplicaZoneOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "SwitchActiveReplicaZone",
+          "fullName": "google.cloud.netapp.v1.NetApp.SwitchActiveReplicaZone",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "netapp_v1_generated_NetApp_UpdateActiveDirectory_sync",
       "title": "netapp UpdateActiveDirectory Sample",
       "description": "UpdateActiveDirectory update the parameters of an active directories.",
@@ -1650,6 +2248,144 @@
         "method": {
           "shortName": "UpdateActiveDirectory",
           "fullName": "google.cloud.netapp.v1.NetApp.UpdateActiveDirectory",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_UpdateBackup_sync",
+      "title": "netapp UpdateBackup Sample",
+      "description": "UpdateBackup update backup with full spec.",
+      "file": "Client/UpdateBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBackup",
+        "fullName": "google.cloud.netapp.v1.Client.UpdateBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.UpdateBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateBackupOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateBackup",
+          "fullName": "google.cloud.netapp.v1.NetApp.UpdateBackup",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_UpdateBackupPolicy_sync",
+      "title": "netapp UpdateBackupPolicy Sample",
+      "description": "UpdateBackupPolicy updates settings of a specific backup policy.",
+      "file": "Client/UpdateBackupPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBackupPolicy",
+        "fullName": "google.cloud.netapp.v1.Client.UpdateBackupPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.UpdateBackupPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateBackupPolicyOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateBackupPolicy",
+          "fullName": "google.cloud.netapp.v1.NetApp.UpdateBackupPolicy",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_UpdateBackupVault_sync",
+      "title": "netapp UpdateBackupVault Sample",
+      "description": "UpdateBackupVault updates the settings of a specific backup vault.",
+      "file": "Client/UpdateBackupVault/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBackupVault",
+        "fullName": "google.cloud.netapp.v1.Client.UpdateBackupVault",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.UpdateBackupVaultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateBackupVaultOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateBackupVault",
+          "fullName": "google.cloud.netapp.v1.NetApp.UpdateBackupVault",
           "service": {
             "shortName": "NetApp",
             "fullName": "google.cloud.netapp.v1.NetApp"

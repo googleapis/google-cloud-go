@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -48,37 +47,64 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListInstances    []gax.CallOption
-	GetInstance      []gax.CallOption
-	UpdateInstance   []gax.CallOption
-	ResetInstance    []gax.CallOption
-	StartInstance    []gax.CallOption
-	StopInstance     []gax.CallOption
-	DetachLun        []gax.CallOption
-	ListVolumes      []gax.CallOption
-	GetVolume        []gax.CallOption
-	UpdateVolume     []gax.CallOption
-	ResizeVolume     []gax.CallOption
-	ListNetworks     []gax.CallOption
-	ListNetworkUsage []gax.CallOption
-	GetNetwork       []gax.CallOption
-	UpdateNetwork    []gax.CallOption
-	GetLun           []gax.CallOption
-	ListLuns         []gax.CallOption
-	GetNfsShare      []gax.CallOption
-	ListNfsShares    []gax.CallOption
-	UpdateNfsShare   []gax.CallOption
-	GetLocation      []gax.CallOption
-	ListLocations    []gax.CallOption
+	ListInstances                   []gax.CallOption
+	GetInstance                     []gax.CallOption
+	UpdateInstance                  []gax.CallOption
+	RenameInstance                  []gax.CallOption
+	ResetInstance                   []gax.CallOption
+	StartInstance                   []gax.CallOption
+	StopInstance                    []gax.CallOption
+	EnableInteractiveSerialConsole  []gax.CallOption
+	DisableInteractiveSerialConsole []gax.CallOption
+	DetachLun                       []gax.CallOption
+	ListSSHKeys                     []gax.CallOption
+	CreateSSHKey                    []gax.CallOption
+	DeleteSSHKey                    []gax.CallOption
+	ListVolumes                     []gax.CallOption
+	GetVolume                       []gax.CallOption
+	UpdateVolume                    []gax.CallOption
+	RenameVolume                    []gax.CallOption
+	EvictVolume                     []gax.CallOption
+	ResizeVolume                    []gax.CallOption
+	ListNetworks                    []gax.CallOption
+	ListNetworkUsage                []gax.CallOption
+	GetNetwork                      []gax.CallOption
+	UpdateNetwork                   []gax.CallOption
+	CreateVolumeSnapshot            []gax.CallOption
+	RestoreVolumeSnapshot           []gax.CallOption
+	DeleteVolumeSnapshot            []gax.CallOption
+	GetVolumeSnapshot               []gax.CallOption
+	ListVolumeSnapshots             []gax.CallOption
+	GetLun                          []gax.CallOption
+	ListLuns                        []gax.CallOption
+	EvictLun                        []gax.CallOption
+	GetNfsShare                     []gax.CallOption
+	ListNfsShares                   []gax.CallOption
+	UpdateNfsShare                  []gax.CallOption
+	CreateNfsShare                  []gax.CallOption
+	RenameNfsShare                  []gax.CallOption
+	DeleteNfsShare                  []gax.CallOption
+	ListProvisioningQuotas          []gax.CallOption
+	SubmitProvisioningConfig        []gax.CallOption
+	GetProvisioningConfig           []gax.CallOption
+	CreateProvisioningConfig        []gax.CallOption
+	UpdateProvisioningConfig        []gax.CallOption
+	RenameNetwork                   []gax.CallOption
+	ListOSImages                    []gax.CallOption
+	GetLocation                     []gax.CallOption
+	ListLocations                   []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("baremetalsolution.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("baremetalsolution.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("baremetalsolution.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://baremetalsolution.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -95,6 +121,9 @@ func defaultCallOptions() *CallOptions {
 		UpdateInstance: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		RenameInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ResetInstance: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -104,7 +133,22 @@ func defaultCallOptions() *CallOptions {
 		StopInstance: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		EnableInteractiveSerialConsole: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DisableInteractiveSerialConsole: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DetachLun: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListSSHKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateSSHKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteSSHKey: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListVolumes: []gax.CallOption{
@@ -114,6 +158,12 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		UpdateVolume: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RenameVolume: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		EvictVolume: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ResizeVolume: []gax.CallOption{
@@ -131,10 +181,28 @@ func defaultCallOptions() *CallOptions {
 		UpdateNetwork: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		CreateVolumeSnapshot: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RestoreVolumeSnapshot: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteVolumeSnapshot: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetVolumeSnapshot: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListVolumeSnapshots: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLun: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListLuns: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		EvictLun: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetNfsShare: []gax.CallOption{
@@ -144,6 +212,36 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		UpdateNfsShare: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateNfsShare: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RenameNfsShare: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteNfsShare: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListProvisioningQuotas: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SubmitProvisioningConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetProvisioningConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateProvisioningConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateProvisioningConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RenameNetwork: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListOSImages: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetLocation:   []gax.CallOption{},
@@ -162,6 +260,9 @@ func defaultRESTCallOptions() *CallOptions {
 		UpdateInstance: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		RenameInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ResetInstance: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -171,7 +272,22 @@ func defaultRESTCallOptions() *CallOptions {
 		StopInstance: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		EnableInteractiveSerialConsole: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DisableInteractiveSerialConsole: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DetachLun: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListSSHKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateSSHKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteSSHKey: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListVolumes: []gax.CallOption{
@@ -181,6 +297,12 @@ func defaultRESTCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		UpdateVolume: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RenameVolume: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		EvictVolume: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ResizeVolume: []gax.CallOption{
@@ -198,10 +320,28 @@ func defaultRESTCallOptions() *CallOptions {
 		UpdateNetwork: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		CreateVolumeSnapshot: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RestoreVolumeSnapshot: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteVolumeSnapshot: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetVolumeSnapshot: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListVolumeSnapshots: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLun: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListLuns: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		EvictLun: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetNfsShare: []gax.CallOption{
@@ -211,6 +351,36 @@ func defaultRESTCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		UpdateNfsShare: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateNfsShare: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RenameNfsShare: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteNfsShare: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListProvisioningQuotas: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SubmitProvisioningConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetProvisioningConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateProvisioningConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateProvisioningConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RenameNetwork: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListOSImages: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetLocation:   []gax.CallOption{},
@@ -227,18 +397,29 @@ type internalClient interface {
 	GetInstance(context.Context, *baremetalsolutionpb.GetInstanceRequest, ...gax.CallOption) (*baremetalsolutionpb.Instance, error)
 	UpdateInstance(context.Context, *baremetalsolutionpb.UpdateInstanceRequest, ...gax.CallOption) (*UpdateInstanceOperation, error)
 	UpdateInstanceOperation(name string) *UpdateInstanceOperation
+	RenameInstance(context.Context, *baremetalsolutionpb.RenameInstanceRequest, ...gax.CallOption) (*baremetalsolutionpb.Instance, error)
 	ResetInstance(context.Context, *baremetalsolutionpb.ResetInstanceRequest, ...gax.CallOption) (*ResetInstanceOperation, error)
 	ResetInstanceOperation(name string) *ResetInstanceOperation
 	StartInstance(context.Context, *baremetalsolutionpb.StartInstanceRequest, ...gax.CallOption) (*StartInstanceOperation, error)
 	StartInstanceOperation(name string) *StartInstanceOperation
 	StopInstance(context.Context, *baremetalsolutionpb.StopInstanceRequest, ...gax.CallOption) (*StopInstanceOperation, error)
 	StopInstanceOperation(name string) *StopInstanceOperation
+	EnableInteractiveSerialConsole(context.Context, *baremetalsolutionpb.EnableInteractiveSerialConsoleRequest, ...gax.CallOption) (*EnableInteractiveSerialConsoleOperation, error)
+	EnableInteractiveSerialConsoleOperation(name string) *EnableInteractiveSerialConsoleOperation
+	DisableInteractiveSerialConsole(context.Context, *baremetalsolutionpb.DisableInteractiveSerialConsoleRequest, ...gax.CallOption) (*DisableInteractiveSerialConsoleOperation, error)
+	DisableInteractiveSerialConsoleOperation(name string) *DisableInteractiveSerialConsoleOperation
 	DetachLun(context.Context, *baremetalsolutionpb.DetachLunRequest, ...gax.CallOption) (*DetachLunOperation, error)
 	DetachLunOperation(name string) *DetachLunOperation
+	ListSSHKeys(context.Context, *baremetalsolutionpb.ListSSHKeysRequest, ...gax.CallOption) *SSHKeyIterator
+	CreateSSHKey(context.Context, *baremetalsolutionpb.CreateSSHKeyRequest, ...gax.CallOption) (*baremetalsolutionpb.SSHKey, error)
+	DeleteSSHKey(context.Context, *baremetalsolutionpb.DeleteSSHKeyRequest, ...gax.CallOption) error
 	ListVolumes(context.Context, *baremetalsolutionpb.ListVolumesRequest, ...gax.CallOption) *VolumeIterator
 	GetVolume(context.Context, *baremetalsolutionpb.GetVolumeRequest, ...gax.CallOption) (*baremetalsolutionpb.Volume, error)
 	UpdateVolume(context.Context, *baremetalsolutionpb.UpdateVolumeRequest, ...gax.CallOption) (*UpdateVolumeOperation, error)
 	UpdateVolumeOperation(name string) *UpdateVolumeOperation
+	RenameVolume(context.Context, *baremetalsolutionpb.RenameVolumeRequest, ...gax.CallOption) (*baremetalsolutionpb.Volume, error)
+	EvictVolume(context.Context, *baremetalsolutionpb.EvictVolumeRequest, ...gax.CallOption) (*EvictVolumeOperation, error)
+	EvictVolumeOperation(name string) *EvictVolumeOperation
 	ResizeVolume(context.Context, *baremetalsolutionpb.ResizeVolumeRequest, ...gax.CallOption) (*ResizeVolumeOperation, error)
 	ResizeVolumeOperation(name string) *ResizeVolumeOperation
 	ListNetworks(context.Context, *baremetalsolutionpb.ListNetworksRequest, ...gax.CallOption) *NetworkIterator
@@ -246,12 +427,32 @@ type internalClient interface {
 	GetNetwork(context.Context, *baremetalsolutionpb.GetNetworkRequest, ...gax.CallOption) (*baremetalsolutionpb.Network, error)
 	UpdateNetwork(context.Context, *baremetalsolutionpb.UpdateNetworkRequest, ...gax.CallOption) (*UpdateNetworkOperation, error)
 	UpdateNetworkOperation(name string) *UpdateNetworkOperation
+	CreateVolumeSnapshot(context.Context, *baremetalsolutionpb.CreateVolumeSnapshotRequest, ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error)
+	RestoreVolumeSnapshot(context.Context, *baremetalsolutionpb.RestoreVolumeSnapshotRequest, ...gax.CallOption) (*RestoreVolumeSnapshotOperation, error)
+	RestoreVolumeSnapshotOperation(name string) *RestoreVolumeSnapshotOperation
+	DeleteVolumeSnapshot(context.Context, *baremetalsolutionpb.DeleteVolumeSnapshotRequest, ...gax.CallOption) error
+	GetVolumeSnapshot(context.Context, *baremetalsolutionpb.GetVolumeSnapshotRequest, ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error)
+	ListVolumeSnapshots(context.Context, *baremetalsolutionpb.ListVolumeSnapshotsRequest, ...gax.CallOption) *VolumeSnapshotIterator
 	GetLun(context.Context, *baremetalsolutionpb.GetLunRequest, ...gax.CallOption) (*baremetalsolutionpb.Lun, error)
 	ListLuns(context.Context, *baremetalsolutionpb.ListLunsRequest, ...gax.CallOption) *LunIterator
+	EvictLun(context.Context, *baremetalsolutionpb.EvictLunRequest, ...gax.CallOption) (*EvictLunOperation, error)
+	EvictLunOperation(name string) *EvictLunOperation
 	GetNfsShare(context.Context, *baremetalsolutionpb.GetNfsShareRequest, ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error)
 	ListNfsShares(context.Context, *baremetalsolutionpb.ListNfsSharesRequest, ...gax.CallOption) *NfsShareIterator
 	UpdateNfsShare(context.Context, *baremetalsolutionpb.UpdateNfsShareRequest, ...gax.CallOption) (*UpdateNfsShareOperation, error)
 	UpdateNfsShareOperation(name string) *UpdateNfsShareOperation
+	CreateNfsShare(context.Context, *baremetalsolutionpb.CreateNfsShareRequest, ...gax.CallOption) (*CreateNfsShareOperation, error)
+	CreateNfsShareOperation(name string) *CreateNfsShareOperation
+	RenameNfsShare(context.Context, *baremetalsolutionpb.RenameNfsShareRequest, ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error)
+	DeleteNfsShare(context.Context, *baremetalsolutionpb.DeleteNfsShareRequest, ...gax.CallOption) (*DeleteNfsShareOperation, error)
+	DeleteNfsShareOperation(name string) *DeleteNfsShareOperation
+	ListProvisioningQuotas(context.Context, *baremetalsolutionpb.ListProvisioningQuotasRequest, ...gax.CallOption) *ProvisioningQuotaIterator
+	SubmitProvisioningConfig(context.Context, *baremetalsolutionpb.SubmitProvisioningConfigRequest, ...gax.CallOption) (*baremetalsolutionpb.SubmitProvisioningConfigResponse, error)
+	GetProvisioningConfig(context.Context, *baremetalsolutionpb.GetProvisioningConfigRequest, ...gax.CallOption) (*baremetalsolutionpb.ProvisioningConfig, error)
+	CreateProvisioningConfig(context.Context, *baremetalsolutionpb.CreateProvisioningConfigRequest, ...gax.CallOption) (*baremetalsolutionpb.ProvisioningConfig, error)
+	UpdateProvisioningConfig(context.Context, *baremetalsolutionpb.UpdateProvisioningConfigRequest, ...gax.CallOption) (*baremetalsolutionpb.ProvisioningConfig, error)
+	RenameNetwork(context.Context, *baremetalsolutionpb.RenameNetworkRequest, ...gax.CallOption) (*baremetalsolutionpb.Network, error)
+	ListOSImages(context.Context, *baremetalsolutionpb.ListOSImagesRequest, ...gax.CallOption) *OSImageIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
@@ -324,6 +525,12 @@ func (c *Client) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return c.internalClient.UpdateInstanceOperation(name)
 }
 
+// RenameInstance renameInstance sets a new name for an instance.
+// Use with caution, previous names become immediately invalidated.
+func (c *Client) RenameInstance(ctx context.Context, req *baremetalsolutionpb.RenameInstanceRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Instance, error) {
+	return c.internalClient.RenameInstance(ctx, req, opts...)
+}
+
 // ResetInstance perform an ungraceful, hard reset on a server. Equivalent to shutting the
 // power off and then turning it back on.
 func (c *Client) ResetInstance(ctx context.Context, req *baremetalsolutionpb.ResetInstanceRequest, opts ...gax.CallOption) (*ResetInstanceOperation, error) {
@@ -358,6 +565,28 @@ func (c *Client) StopInstanceOperation(name string) *StopInstanceOperation {
 	return c.internalClient.StopInstanceOperation(name)
 }
 
+// EnableInteractiveSerialConsole enable the interactive serial console feature on an instance.
+func (c *Client) EnableInteractiveSerialConsole(ctx context.Context, req *baremetalsolutionpb.EnableInteractiveSerialConsoleRequest, opts ...gax.CallOption) (*EnableInteractiveSerialConsoleOperation, error) {
+	return c.internalClient.EnableInteractiveSerialConsole(ctx, req, opts...)
+}
+
+// EnableInteractiveSerialConsoleOperation returns a new EnableInteractiveSerialConsoleOperation from a given name.
+// The name must be that of a previously created EnableInteractiveSerialConsoleOperation, possibly from a different process.
+func (c *Client) EnableInteractiveSerialConsoleOperation(name string) *EnableInteractiveSerialConsoleOperation {
+	return c.internalClient.EnableInteractiveSerialConsoleOperation(name)
+}
+
+// DisableInteractiveSerialConsole disable the interactive serial console feature on an instance.
+func (c *Client) DisableInteractiveSerialConsole(ctx context.Context, req *baremetalsolutionpb.DisableInteractiveSerialConsoleRequest, opts ...gax.CallOption) (*DisableInteractiveSerialConsoleOperation, error) {
+	return c.internalClient.DisableInteractiveSerialConsole(ctx, req, opts...)
+}
+
+// DisableInteractiveSerialConsoleOperation returns a new DisableInteractiveSerialConsoleOperation from a given name.
+// The name must be that of a previously created DisableInteractiveSerialConsoleOperation, possibly from a different process.
+func (c *Client) DisableInteractiveSerialConsoleOperation(name string) *DisableInteractiveSerialConsoleOperation {
+	return c.internalClient.DisableInteractiveSerialConsoleOperation(name)
+}
+
 // DetachLun detach LUN from Instance.
 func (c *Client) DetachLun(ctx context.Context, req *baremetalsolutionpb.DetachLunRequest, opts ...gax.CallOption) (*DetachLunOperation, error) {
 	return c.internalClient.DetachLun(ctx, req, opts...)
@@ -367,6 +596,23 @@ func (c *Client) DetachLun(ctx context.Context, req *baremetalsolutionpb.DetachL
 // The name must be that of a previously created DetachLunOperation, possibly from a different process.
 func (c *Client) DetachLunOperation(name string) *DetachLunOperation {
 	return c.internalClient.DetachLunOperation(name)
+}
+
+// ListSSHKeys lists the public SSH keys registered for the specified project.
+// These SSH keys are used only for the interactive serial console feature.
+func (c *Client) ListSSHKeys(ctx context.Context, req *baremetalsolutionpb.ListSSHKeysRequest, opts ...gax.CallOption) *SSHKeyIterator {
+	return c.internalClient.ListSSHKeys(ctx, req, opts...)
+}
+
+// CreateSSHKey register a public SSH key in the specified project for use with the
+// interactive serial console feature.
+func (c *Client) CreateSSHKey(ctx context.Context, req *baremetalsolutionpb.CreateSSHKeyRequest, opts ...gax.CallOption) (*baremetalsolutionpb.SSHKey, error) {
+	return c.internalClient.CreateSSHKey(ctx, req, opts...)
+}
+
+// DeleteSSHKey deletes a public SSH key registered in the specified project.
+func (c *Client) DeleteSSHKey(ctx context.Context, req *baremetalsolutionpb.DeleteSSHKeyRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteSSHKey(ctx, req, opts...)
 }
 
 // ListVolumes list storage volumes in a given project and location.
@@ -388,6 +634,24 @@ func (c *Client) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.Upda
 // The name must be that of a previously created UpdateVolumeOperation, possibly from a different process.
 func (c *Client) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 	return c.internalClient.UpdateVolumeOperation(name)
+}
+
+// RenameVolume renameVolume sets a new name for a volume.
+// Use with caution, previous names become immediately invalidated.
+func (c *Client) RenameVolume(ctx context.Context, req *baremetalsolutionpb.RenameVolumeRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Volume, error) {
+	return c.internalClient.RenameVolume(ctx, req, opts...)
+}
+
+// EvictVolume skips volume’s cooloff and deletes it now.
+// Volume must be in cooloff state.
+func (c *Client) EvictVolume(ctx context.Context, req *baremetalsolutionpb.EvictVolumeRequest, opts ...gax.CallOption) (*EvictVolumeOperation, error) {
+	return c.internalClient.EvictVolume(ctx, req, opts...)
+}
+
+// EvictVolumeOperation returns a new EvictVolumeOperation from a given name.
+// The name must be that of a previously created EvictVolumeOperation, possibly from a different process.
+func (c *Client) EvictVolumeOperation(name string) *EvictVolumeOperation {
+	return c.internalClient.EvictVolumeOperation(name)
 }
 
 // ResizeVolume emergency Volume resize.
@@ -428,6 +692,43 @@ func (c *Client) UpdateNetworkOperation(name string) *UpdateNetworkOperation {
 	return c.internalClient.UpdateNetworkOperation(name)
 }
 
+// CreateVolumeSnapshot takes a snapshot of a boot volume.
+// Returns INVALID_ARGUMENT if called for a non-boot volume.
+func (c *Client) CreateVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.CreateVolumeSnapshotRequest, opts ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error) {
+	return c.internalClient.CreateVolumeSnapshot(ctx, req, opts...)
+}
+
+// RestoreVolumeSnapshot uses the specified snapshot to restore its parent volume.
+// Returns INVALID_ARGUMENT if called for a non-boot volume.
+func (c *Client) RestoreVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.RestoreVolumeSnapshotRequest, opts ...gax.CallOption) (*RestoreVolumeSnapshotOperation, error) {
+	return c.internalClient.RestoreVolumeSnapshot(ctx, req, opts...)
+}
+
+// RestoreVolumeSnapshotOperation returns a new RestoreVolumeSnapshotOperation from a given name.
+// The name must be that of a previously created RestoreVolumeSnapshotOperation, possibly from a different process.
+func (c *Client) RestoreVolumeSnapshotOperation(name string) *RestoreVolumeSnapshotOperation {
+	return c.internalClient.RestoreVolumeSnapshotOperation(name)
+}
+
+// DeleteVolumeSnapshot deletes a volume snapshot.
+// Returns INVALID_ARGUMENT if called for a non-boot volume.
+func (c *Client) DeleteVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.DeleteVolumeSnapshotRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteVolumeSnapshot(ctx, req, opts...)
+}
+
+// GetVolumeSnapshot returns the specified snapshot resource.
+// Returns INVALID_ARGUMENT if called for a non-boot volume.
+func (c *Client) GetVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.GetVolumeSnapshotRequest, opts ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error) {
+	return c.internalClient.GetVolumeSnapshot(ctx, req, opts...)
+}
+
+// ListVolumeSnapshots retrieves the list of snapshots for the specified volume.
+// Returns a response with an empty list of snapshots if called
+// for a non-boot volume.
+func (c *Client) ListVolumeSnapshots(ctx context.Context, req *baremetalsolutionpb.ListVolumeSnapshotsRequest, opts ...gax.CallOption) *VolumeSnapshotIterator {
+	return c.internalClient.ListVolumeSnapshots(ctx, req, opts...)
+}
+
 // GetLun get details of a single storage logical unit number(LUN).
 func (c *Client) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLunRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Lun, error) {
 	return c.internalClient.GetLun(ctx, req, opts...)
@@ -436,6 +737,18 @@ func (c *Client) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLunRequ
 // ListLuns list storage volume luns for given storage volume.
 func (c *Client) ListLuns(ctx context.Context, req *baremetalsolutionpb.ListLunsRequest, opts ...gax.CallOption) *LunIterator {
 	return c.internalClient.ListLuns(ctx, req, opts...)
+}
+
+// EvictLun skips lun’s cooloff and deletes it now.
+// Lun must be in cooloff state.
+func (c *Client) EvictLun(ctx context.Context, req *baremetalsolutionpb.EvictLunRequest, opts ...gax.CallOption) (*EvictLunOperation, error) {
+	return c.internalClient.EvictLun(ctx, req, opts...)
+}
+
+// EvictLunOperation returns a new EvictLunOperation from a given name.
+// The name must be that of a previously created EvictLunOperation, possibly from a different process.
+func (c *Client) EvictLunOperation(name string) *EvictLunOperation {
+	return c.internalClient.EvictLunOperation(name)
 }
 
 // GetNfsShare get details of a single NFS share.
@@ -457,6 +770,70 @@ func (c *Client) UpdateNfsShare(ctx context.Context, req *baremetalsolutionpb.Up
 // The name must be that of a previously created UpdateNfsShareOperation, possibly from a different process.
 func (c *Client) UpdateNfsShareOperation(name string) *UpdateNfsShareOperation {
 	return c.internalClient.UpdateNfsShareOperation(name)
+}
+
+// CreateNfsShare create an NFS share.
+func (c *Client) CreateNfsShare(ctx context.Context, req *baremetalsolutionpb.CreateNfsShareRequest, opts ...gax.CallOption) (*CreateNfsShareOperation, error) {
+	return c.internalClient.CreateNfsShare(ctx, req, opts...)
+}
+
+// CreateNfsShareOperation returns a new CreateNfsShareOperation from a given name.
+// The name must be that of a previously created CreateNfsShareOperation, possibly from a different process.
+func (c *Client) CreateNfsShareOperation(name string) *CreateNfsShareOperation {
+	return c.internalClient.CreateNfsShareOperation(name)
+}
+
+// RenameNfsShare renameNfsShare sets a new name for an nfsshare.
+// Use with caution, previous names become immediately invalidated.
+func (c *Client) RenameNfsShare(ctx context.Context, req *baremetalsolutionpb.RenameNfsShareRequest, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
+	return c.internalClient.RenameNfsShare(ctx, req, opts...)
+}
+
+// DeleteNfsShare delete an NFS share. The underlying volume is automatically deleted.
+func (c *Client) DeleteNfsShare(ctx context.Context, req *baremetalsolutionpb.DeleteNfsShareRequest, opts ...gax.CallOption) (*DeleteNfsShareOperation, error) {
+	return c.internalClient.DeleteNfsShare(ctx, req, opts...)
+}
+
+// DeleteNfsShareOperation returns a new DeleteNfsShareOperation from a given name.
+// The name must be that of a previously created DeleteNfsShareOperation, possibly from a different process.
+func (c *Client) DeleteNfsShareOperation(name string) *DeleteNfsShareOperation {
+	return c.internalClient.DeleteNfsShareOperation(name)
+}
+
+// ListProvisioningQuotas list the budget details to provision resources on a given project.
+func (c *Client) ListProvisioningQuotas(ctx context.Context, req *baremetalsolutionpb.ListProvisioningQuotasRequest, opts ...gax.CallOption) *ProvisioningQuotaIterator {
+	return c.internalClient.ListProvisioningQuotas(ctx, req, opts...)
+}
+
+// SubmitProvisioningConfig submit a provisiong configuration for a given project.
+func (c *Client) SubmitProvisioningConfig(ctx context.Context, req *baremetalsolutionpb.SubmitProvisioningConfigRequest, opts ...gax.CallOption) (*baremetalsolutionpb.SubmitProvisioningConfigResponse, error) {
+	return c.internalClient.SubmitProvisioningConfig(ctx, req, opts...)
+}
+
+// GetProvisioningConfig get ProvisioningConfig by name.
+func (c *Client) GetProvisioningConfig(ctx context.Context, req *baremetalsolutionpb.GetProvisioningConfigRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ProvisioningConfig, error) {
+	return c.internalClient.GetProvisioningConfig(ctx, req, opts...)
+}
+
+// CreateProvisioningConfig create new ProvisioningConfig.
+func (c *Client) CreateProvisioningConfig(ctx context.Context, req *baremetalsolutionpb.CreateProvisioningConfigRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ProvisioningConfig, error) {
+	return c.internalClient.CreateProvisioningConfig(ctx, req, opts...)
+}
+
+// UpdateProvisioningConfig update existing ProvisioningConfig.
+func (c *Client) UpdateProvisioningConfig(ctx context.Context, req *baremetalsolutionpb.UpdateProvisioningConfigRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ProvisioningConfig, error) {
+	return c.internalClient.UpdateProvisioningConfig(ctx, req, opts...)
+}
+
+// RenameNetwork renameNetwork sets a new name for a network.
+// Use with caution, previous names become immediately invalidated.
+func (c *Client) RenameNetwork(ctx context.Context, req *baremetalsolutionpb.RenameNetworkRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Network, error) {
+	return c.internalClient.RenameNetwork(ctx, req, opts...)
+}
+
+// ListOSImages retrieves the list of OS images which are currently approved.
+func (c *Client) ListOSImages(ctx context.Context, req *baremetalsolutionpb.ListOSImagesRequest, opts ...gax.CallOption) *OSImageIterator {
+	return c.internalClient.ListOSImages(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -490,7 +867,7 @@ type gRPCClient struct {
 	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new bare metal solution client based on gRPC.
@@ -558,7 +935,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -580,8 +959,8 @@ type restClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
@@ -628,9 +1007,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://baremetalsolution.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://baremetalsolution.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://baremetalsolution.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://baremetalsolution.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -640,7 +1022,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -658,9 +1042,10 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) ListInstances(ctx context.Context, req *baremetalsolutionpb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListInstancesRequest)
@@ -703,9 +1088,10 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *baremetalsolutionpb
 }
 
 func (c *gRPCClient) GetInstance(ctx context.Context, req *baremetalsolutionpb.GetInstanceRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Instance, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *baremetalsolutionpb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -720,9 +1106,10 @@ func (c *gRPCClient) GetInstance(ctx context.Context, req *baremetalsolutionpb.G
 }
 
 func (c *gRPCClient) UpdateInstance(ctx context.Context, req *baremetalsolutionpb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateInstance[0:len((*c.CallOptions).UpdateInstance):len((*c.CallOptions).UpdateInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -738,10 +1125,29 @@ func (c *gRPCClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 	}, nil
 }
 
-func (c *gRPCClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb.ResetInstanceRequest, opts ...gax.CallOption) (*ResetInstanceOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *gRPCClient) RenameInstance(ctx context.Context, req *baremetalsolutionpb.RenameInstanceRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Instance, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RenameInstance[0:len((*c.CallOptions).RenameInstance):len((*c.CallOptions).RenameInstance)], opts...)
+	var resp *baremetalsolutionpb.Instance
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RenameInstance(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb.ResetInstanceRequest, opts ...gax.CallOption) (*ResetInstanceOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ResetInstance[0:len((*c.CallOptions).ResetInstance):len((*c.CallOptions).ResetInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -758,9 +1164,10 @@ func (c *gRPCClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 }
 
 func (c *gRPCClient) StartInstance(ctx context.Context, req *baremetalsolutionpb.StartInstanceRequest, opts ...gax.CallOption) (*StartInstanceOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).StartInstance[0:len((*c.CallOptions).StartInstance):len((*c.CallOptions).StartInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -777,9 +1184,10 @@ func (c *gRPCClient) StartInstance(ctx context.Context, req *baremetalsolutionpb
 }
 
 func (c *gRPCClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.StopInstanceRequest, opts ...gax.CallOption) (*StopInstanceOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).StopInstance[0:len((*c.CallOptions).StopInstance):len((*c.CallOptions).StopInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -795,10 +1203,51 @@ func (c *gRPCClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 	}, nil
 }
 
-func (c *gRPCClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.DetachLunRequest, opts ...gax.CallOption) (*DetachLunOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance())))
+func (c *gRPCClient) EnableInteractiveSerialConsole(ctx context.Context, req *baremetalsolutionpb.EnableInteractiveSerialConsoleRequest, opts ...gax.CallOption) (*EnableInteractiveSerialConsoleOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).EnableInteractiveSerialConsole[0:len((*c.CallOptions).EnableInteractiveSerialConsole):len((*c.CallOptions).EnableInteractiveSerialConsole)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.EnableInteractiveSerialConsole(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &EnableInteractiveSerialConsoleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DisableInteractiveSerialConsole(ctx context.Context, req *baremetalsolutionpb.DisableInteractiveSerialConsoleRequest, opts ...gax.CallOption) (*DisableInteractiveSerialConsoleOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DisableInteractiveSerialConsole[0:len((*c.CallOptions).DisableInteractiveSerialConsole):len((*c.CallOptions).DisableInteractiveSerialConsole)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DisableInteractiveSerialConsole(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DisableInteractiveSerialConsoleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.DetachLunRequest, opts ...gax.CallOption) (*DetachLunOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DetachLun[0:len((*c.CallOptions).DetachLun):len((*c.CallOptions).DetachLun)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -814,10 +1263,89 @@ func (c *gRPCClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 	}, nil
 }
 
-func (c *gRPCClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.ListVolumesRequest, opts ...gax.CallOption) *VolumeIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+func (c *gRPCClient) ListSSHKeys(ctx context.Context, req *baremetalsolutionpb.ListSSHKeysRequest, opts ...gax.CallOption) *SSHKeyIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSSHKeys[0:len((*c.CallOptions).ListSSHKeys):len((*c.CallOptions).ListSSHKeys)], opts...)
+	it := &SSHKeyIterator{}
+	req = proto.Clone(req).(*baremetalsolutionpb.ListSSHKeysRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.SSHKey, string, error) {
+		resp := &baremetalsolutionpb.ListSSHKeysResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListSSHKeys(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSshKeys(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CreateSSHKey(ctx context.Context, req *baremetalsolutionpb.CreateSSHKeyRequest, opts ...gax.CallOption) (*baremetalsolutionpb.SSHKey, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSSHKey[0:len((*c.CallOptions).CreateSSHKey):len((*c.CallOptions).CreateSSHKey)], opts...)
+	var resp *baremetalsolutionpb.SSHKey
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateSSHKey(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteSSHKey(ctx context.Context, req *baremetalsolutionpb.DeleteSSHKeyRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteSSHKey[0:len((*c.CallOptions).DeleteSSHKey):len((*c.CallOptions).DeleteSSHKey)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteSSHKey(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.ListVolumesRequest, opts ...gax.CallOption) *VolumeIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListVolumes[0:len((*c.CallOptions).ListVolumes):len((*c.CallOptions).ListVolumes)], opts...)
 	it := &VolumeIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListVolumesRequest)
@@ -860,9 +1388,10 @@ func (c *gRPCClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.L
 }
 
 func (c *gRPCClient) GetVolume(ctx context.Context, req *baremetalsolutionpb.GetVolumeRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Volume, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetVolume[0:len((*c.CallOptions).GetVolume):len((*c.CallOptions).GetVolume)], opts...)
 	var resp *baremetalsolutionpb.Volume
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -877,9 +1406,10 @@ func (c *gRPCClient) GetVolume(ctx context.Context, req *baremetalsolutionpb.Get
 }
 
 func (c *gRPCClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.UpdateVolumeRequest, opts ...gax.CallOption) (*UpdateVolumeOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "volume.name", url.QueryEscape(req.GetVolume().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "volume.name", url.QueryEscape(req.GetVolume().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateVolume[0:len((*c.CallOptions).UpdateVolume):len((*c.CallOptions).UpdateVolume)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -895,10 +1425,49 @@ func (c *gRPCClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 	}, nil
 }
 
-func (c *gRPCClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.ResizeVolumeRequest, opts ...gax.CallOption) (*ResizeVolumeOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "volume", url.QueryEscape(req.GetVolume())))
+func (c *gRPCClient) RenameVolume(ctx context.Context, req *baremetalsolutionpb.RenameVolumeRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Volume, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RenameVolume[0:len((*c.CallOptions).RenameVolume):len((*c.CallOptions).RenameVolume)], opts...)
+	var resp *baremetalsolutionpb.Volume
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RenameVolume(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) EvictVolume(ctx context.Context, req *baremetalsolutionpb.EvictVolumeRequest, opts ...gax.CallOption) (*EvictVolumeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).EvictVolume[0:len((*c.CallOptions).EvictVolume):len((*c.CallOptions).EvictVolume)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.EvictVolume(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &EvictVolumeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.ResizeVolumeRequest, opts ...gax.CallOption) (*ResizeVolumeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "volume", url.QueryEscape(req.GetVolume()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ResizeVolume[0:len((*c.CallOptions).ResizeVolume):len((*c.CallOptions).ResizeVolume)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -915,9 +1484,10 @@ func (c *gRPCClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.
 }
 
 func (c *gRPCClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.ListNetworksRequest, opts ...gax.CallOption) *NetworkIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListNetworks[0:len((*c.CallOptions).ListNetworks):len((*c.CallOptions).ListNetworks)], opts...)
 	it := &NetworkIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListNetworksRequest)
@@ -960,9 +1530,10 @@ func (c *gRPCClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.
 }
 
 func (c *gRPCClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutionpb.ListNetworkUsageRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ListNetworkUsageResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListNetworkUsage[0:len((*c.CallOptions).ListNetworkUsage):len((*c.CallOptions).ListNetworkUsage)], opts...)
 	var resp *baremetalsolutionpb.ListNetworkUsageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -977,9 +1548,10 @@ func (c *gRPCClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutio
 }
 
 func (c *gRPCClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.GetNetworkRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Network, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetNetwork[0:len((*c.CallOptions).GetNetwork):len((*c.CallOptions).GetNetwork)], opts...)
 	var resp *baremetalsolutionpb.Network
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -994,9 +1566,10 @@ func (c *gRPCClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.Ge
 }
 
 func (c *gRPCClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb.UpdateNetworkRequest, opts ...gax.CallOption) (*UpdateNetworkOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "network.name", url.QueryEscape(req.GetNetwork().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "network.name", url.QueryEscape(req.GetNetwork().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateNetwork[0:len((*c.CallOptions).UpdateNetwork):len((*c.CallOptions).UpdateNetwork)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1012,10 +1585,127 @@ func (c *gRPCClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 	}, nil
 }
 
-func (c *gRPCClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLunRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Lun, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *gRPCClient) CreateVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.CreateVolumeSnapshotRequest, opts ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateVolumeSnapshot[0:len((*c.CallOptions).CreateVolumeSnapshot):len((*c.CallOptions).CreateVolumeSnapshot)], opts...)
+	var resp *baremetalsolutionpb.VolumeSnapshot
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateVolumeSnapshot(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) RestoreVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.RestoreVolumeSnapshotRequest, opts ...gax.CallOption) (*RestoreVolumeSnapshotOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "volume_snapshot", url.QueryEscape(req.GetVolumeSnapshot()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RestoreVolumeSnapshot[0:len((*c.CallOptions).RestoreVolumeSnapshot):len((*c.CallOptions).RestoreVolumeSnapshot)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RestoreVolumeSnapshot(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RestoreVolumeSnapshotOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.DeleteVolumeSnapshotRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteVolumeSnapshot[0:len((*c.CallOptions).DeleteVolumeSnapshot):len((*c.CallOptions).DeleteVolumeSnapshot)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteVolumeSnapshot(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.GetVolumeSnapshotRequest, opts ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetVolumeSnapshot[0:len((*c.CallOptions).GetVolumeSnapshot):len((*c.CallOptions).GetVolumeSnapshot)], opts...)
+	var resp *baremetalsolutionpb.VolumeSnapshot
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetVolumeSnapshot(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListVolumeSnapshots(ctx context.Context, req *baremetalsolutionpb.ListVolumeSnapshotsRequest, opts ...gax.CallOption) *VolumeSnapshotIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListVolumeSnapshots[0:len((*c.CallOptions).ListVolumeSnapshots):len((*c.CallOptions).ListVolumeSnapshots)], opts...)
+	it := &VolumeSnapshotIterator{}
+	req = proto.Clone(req).(*baremetalsolutionpb.ListVolumeSnapshotsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.VolumeSnapshot, string, error) {
+		resp := &baremetalsolutionpb.ListVolumeSnapshotsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListVolumeSnapshots(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetVolumeSnapshots(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLunRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Lun, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetLun[0:len((*c.CallOptions).GetLun):len((*c.CallOptions).GetLun)], opts...)
 	var resp *baremetalsolutionpb.Lun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1030,9 +1720,10 @@ func (c *gRPCClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLun
 }
 
 func (c *gRPCClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.ListLunsRequest, opts ...gax.CallOption) *LunIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListLuns[0:len((*c.CallOptions).ListLuns):len((*c.CallOptions).ListLuns)], opts...)
 	it := &LunIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListLunsRequest)
@@ -1074,10 +1765,31 @@ func (c *gRPCClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.List
 	return it
 }
 
-func (c *gRPCClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.GetNfsShareRequest, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *gRPCClient) EvictLun(ctx context.Context, req *baremetalsolutionpb.EvictLunRequest, opts ...gax.CallOption) (*EvictLunOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).EvictLun[0:len((*c.CallOptions).EvictLun):len((*c.CallOptions).EvictLun)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.EvictLun(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &EvictLunOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.GetNfsShareRequest, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetNfsShare[0:len((*c.CallOptions).GetNfsShare):len((*c.CallOptions).GetNfsShare)], opts...)
 	var resp *baremetalsolutionpb.NfsShare
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1092,9 +1804,10 @@ func (c *gRPCClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.G
 }
 
 func (c *gRPCClient) ListNfsShares(ctx context.Context, req *baremetalsolutionpb.ListNfsSharesRequest, opts ...gax.CallOption) *NfsShareIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListNfsShares[0:len((*c.CallOptions).ListNfsShares):len((*c.CallOptions).ListNfsShares)], opts...)
 	it := &NfsShareIterator{}
 	req = proto.Clone(req).(*baremetalsolutionpb.ListNfsSharesRequest)
@@ -1137,9 +1850,10 @@ func (c *gRPCClient) ListNfsShares(ctx context.Context, req *baremetalsolutionpb
 }
 
 func (c *gRPCClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionpb.UpdateNfsShareRequest, opts ...gax.CallOption) (*UpdateNfsShareOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "nfs_share.name", url.QueryEscape(req.GetNfsShare().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "nfs_share.name", url.QueryEscape(req.GetNfsShare().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateNfsShare[0:len((*c.CallOptions).UpdateNfsShare):len((*c.CallOptions).UpdateNfsShare)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1155,10 +1869,251 @@ func (c *gRPCClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 	}, nil
 }
 
-func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *gRPCClient) CreateNfsShare(ctx context.Context, req *baremetalsolutionpb.CreateNfsShareRequest, opts ...gax.CallOption) (*CreateNfsShareOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateNfsShare[0:len((*c.CallOptions).CreateNfsShare):len((*c.CallOptions).CreateNfsShare)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateNfsShare(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateNfsShareOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) RenameNfsShare(ctx context.Context, req *baremetalsolutionpb.RenameNfsShareRequest, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RenameNfsShare[0:len((*c.CallOptions).RenameNfsShare):len((*c.CallOptions).RenameNfsShare)], opts...)
+	var resp *baremetalsolutionpb.NfsShare
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RenameNfsShare(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteNfsShare(ctx context.Context, req *baremetalsolutionpb.DeleteNfsShareRequest, opts ...gax.CallOption) (*DeleteNfsShareOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteNfsShare[0:len((*c.CallOptions).DeleteNfsShare):len((*c.CallOptions).DeleteNfsShare)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeleteNfsShare(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteNfsShareOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListProvisioningQuotas(ctx context.Context, req *baremetalsolutionpb.ListProvisioningQuotasRequest, opts ...gax.CallOption) *ProvisioningQuotaIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListProvisioningQuotas[0:len((*c.CallOptions).ListProvisioningQuotas):len((*c.CallOptions).ListProvisioningQuotas)], opts...)
+	it := &ProvisioningQuotaIterator{}
+	req = proto.Clone(req).(*baremetalsolutionpb.ListProvisioningQuotasRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.ProvisioningQuota, string, error) {
+		resp := &baremetalsolutionpb.ListProvisioningQuotasResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListProvisioningQuotas(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetProvisioningQuotas(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) SubmitProvisioningConfig(ctx context.Context, req *baremetalsolutionpb.SubmitProvisioningConfigRequest, opts ...gax.CallOption) (*baremetalsolutionpb.SubmitProvisioningConfigResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SubmitProvisioningConfig[0:len((*c.CallOptions).SubmitProvisioningConfig):len((*c.CallOptions).SubmitProvisioningConfig)], opts...)
+	var resp *baremetalsolutionpb.SubmitProvisioningConfigResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.SubmitProvisioningConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetProvisioningConfig(ctx context.Context, req *baremetalsolutionpb.GetProvisioningConfigRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ProvisioningConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetProvisioningConfig[0:len((*c.CallOptions).GetProvisioningConfig):len((*c.CallOptions).GetProvisioningConfig)], opts...)
+	var resp *baremetalsolutionpb.ProvisioningConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetProvisioningConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateProvisioningConfig(ctx context.Context, req *baremetalsolutionpb.CreateProvisioningConfigRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ProvisioningConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateProvisioningConfig[0:len((*c.CallOptions).CreateProvisioningConfig):len((*c.CallOptions).CreateProvisioningConfig)], opts...)
+	var resp *baremetalsolutionpb.ProvisioningConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateProvisioningConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateProvisioningConfig(ctx context.Context, req *baremetalsolutionpb.UpdateProvisioningConfigRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ProvisioningConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "provisioning_config.name", url.QueryEscape(req.GetProvisioningConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateProvisioningConfig[0:len((*c.CallOptions).UpdateProvisioningConfig):len((*c.CallOptions).UpdateProvisioningConfig)], opts...)
+	var resp *baremetalsolutionpb.ProvisioningConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateProvisioningConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) RenameNetwork(ctx context.Context, req *baremetalsolutionpb.RenameNetworkRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Network, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RenameNetwork[0:len((*c.CallOptions).RenameNetwork):len((*c.CallOptions).RenameNetwork)], opts...)
+	var resp *baremetalsolutionpb.Network
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RenameNetwork(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListOSImages(ctx context.Context, req *baremetalsolutionpb.ListOSImagesRequest, opts ...gax.CallOption) *OSImageIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOSImages[0:len((*c.CallOptions).ListOSImages):len((*c.CallOptions).ListOSImages)], opts...)
+	it := &OSImageIterator{}
+	req = proto.Clone(req).(*baremetalsolutionpb.ListOSImagesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.OSImage, string, error) {
+		resp := &baremetalsolutionpb.ListOSImagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListOSImages(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOsImages(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1173,9 +2128,10 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -1253,7 +2209,8 @@ func (c *restClient) ListInstances(ctx context.Context, req *baremetalsolutionpb
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1322,9 +2279,11 @@ func (c *restClient) GetInstance(ctx context.Context, req *baremetalsolutionpb.G
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.Instance{}
@@ -1384,19 +2343,21 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1442,6 +2403,73 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 	}, nil
 }
 
+// RenameInstance renameInstance sets a new name for an instance.
+// Use with caution, previous names become immediately invalidated.
+func (c *restClient) RenameInstance(ctx context.Context, req *baremetalsolutionpb.RenameInstanceRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Instance, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v:rename", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RenameInstance[0:len((*c.CallOptions).RenameInstance):len((*c.CallOptions).RenameInstance)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &baremetalsolutionpb.Instance{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // ResetInstance perform an ungraceful, hard reset on a server. Equivalent to shutting the
 // power off and then turning it back on.
 func (c *restClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb.ResetInstanceRequest, opts ...gax.CallOption) (*ResetInstanceOperation, error) {
@@ -1463,9 +2491,11 @@ func (c *restClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1531,9 +2561,11 @@ func (c *restClient) StartInstance(ctx context.Context, req *baremetalsolutionpb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1599,9 +2631,11 @@ func (c *restClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1647,6 +2681,146 @@ func (c *restClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 	}, nil
 }
 
+// EnableInteractiveSerialConsole enable the interactive serial console feature on an instance.
+func (c *restClient) EnableInteractiveSerialConsole(ctx context.Context, req *baremetalsolutionpb.EnableInteractiveSerialConsoleRequest, opts ...gax.CallOption) (*EnableInteractiveSerialConsoleOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v:enableInteractiveSerialConsole", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	return &EnableInteractiveSerialConsoleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DisableInteractiveSerialConsole disable the interactive serial console feature on an instance.
+func (c *restClient) DisableInteractiveSerialConsole(ctx context.Context, req *baremetalsolutionpb.DisableInteractiveSerialConsoleRequest, opts ...gax.CallOption) (*DisableInteractiveSerialConsoleOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v:disableInteractiveSerialConsole", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	return &DisableInteractiveSerialConsoleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // DetachLun detach LUN from Instance.
 func (c *restClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.DetachLunRequest, opts ...gax.CallOption) (*DetachLunOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1667,9 +2841,11 @@ func (c *restClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1715,6 +2891,207 @@ func (c *restClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 	}, nil
 }
 
+// ListSSHKeys lists the public SSH keys registered for the specified project.
+// These SSH keys are used only for the interactive serial console feature.
+func (c *restClient) ListSSHKeys(ctx context.Context, req *baremetalsolutionpb.ListSSHKeysRequest, opts ...gax.CallOption) *SSHKeyIterator {
+	it := &SSHKeyIterator{}
+	req = proto.Clone(req).(*baremetalsolutionpb.ListSSHKeysRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.SSHKey, string, error) {
+		resp := &baremetalsolutionpb.ListSSHKeysResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2/%v/sshKeys", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSshKeys(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateSSHKey register a public SSH key in the specified project for use with the
+// interactive serial console feature.
+func (c *restClient) CreateSSHKey(ctx context.Context, req *baremetalsolutionpb.CreateSSHKeyRequest, opts ...gax.CallOption) (*baremetalsolutionpb.SSHKey, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSshKey()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v/sshKeys", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("sshKeyId", fmt.Sprintf("%v", req.GetSshKeyId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSSHKey[0:len((*c.CallOptions).CreateSSHKey):len((*c.CallOptions).CreateSSHKey)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &baremetalsolutionpb.SSHKey{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteSSHKey deletes a public SSH key registered in the specified project.
+func (c *restClient) DeleteSSHKey(ctx context.Context, req *baremetalsolutionpb.DeleteSSHKeyRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
 // ListVolumes list storage volumes in a given project and location.
 func (c *restClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.ListVolumesRequest, opts ...gax.CallOption) *VolumeIterator {
 	it := &VolumeIterator{}
@@ -1751,7 +3128,8 @@ func (c *restClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.L
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1820,9 +3198,11 @@ func (c *restClient) GetVolume(ctx context.Context, req *baremetalsolutionpb.Get
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetVolume[0:len((*c.CallOptions).GetVolume):len((*c.CallOptions).GetVolume)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.Volume{}
@@ -1882,19 +3262,21 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "volume.name", url.QueryEscape(req.GetVolume().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "volume.name", url.QueryEscape(req.GetVolume().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1940,6 +3322,144 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 	}, nil
 }
 
+// RenameVolume renameVolume sets a new name for a volume.
+// Use with caution, previous names become immediately invalidated.
+func (c *restClient) RenameVolume(ctx context.Context, req *baremetalsolutionpb.RenameVolumeRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Volume, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v:rename", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RenameVolume[0:len((*c.CallOptions).RenameVolume):len((*c.CallOptions).RenameVolume)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &baremetalsolutionpb.Volume{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// EvictVolume skips volume’s cooloff and deletes it now.
+// Volume must be in cooloff state.
+func (c *restClient) EvictVolume(ctx context.Context, req *baremetalsolutionpb.EvictVolumeRequest, opts ...gax.CallOption) (*EvictVolumeOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v:evict", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	return &EvictVolumeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // ResizeVolume emergency Volume resize.
 func (c *restClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.ResizeVolumeRequest, opts ...gax.CallOption) (*ResizeVolumeOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1960,9 +3480,11 @@ func (c *restClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "volume", url.QueryEscape(req.GetVolume())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "volume", url.QueryEscape(req.GetVolume()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2044,7 +3566,8 @@ func (c *restClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -2114,9 +3637,11 @@ func (c *restClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutio
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ListNetworkUsage[0:len((*c.CallOptions).ListNetworkUsage):len((*c.CallOptions).ListNetworkUsage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.ListNetworkUsageResponse{}
@@ -2172,9 +3697,11 @@ func (c *restClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.Ge
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetNetwork[0:len((*c.CallOptions).GetNetwork):len((*c.CallOptions).GetNetwork)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.Network{}
@@ -2234,19 +3761,21 @@ func (c *restClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "network.name", url.QueryEscape(req.GetNetwork().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "network.name", url.QueryEscape(req.GetNetwork().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2292,6 +3821,340 @@ func (c *restClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 	}, nil
 }
 
+// CreateVolumeSnapshot takes a snapshot of a boot volume.
+// Returns INVALID_ARGUMENT if called for a non-boot volume.
+func (c *restClient) CreateVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.CreateVolumeSnapshotRequest, opts ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetVolumeSnapshot()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v/snapshots", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateVolumeSnapshot[0:len((*c.CallOptions).CreateVolumeSnapshot):len((*c.CallOptions).CreateVolumeSnapshot)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &baremetalsolutionpb.VolumeSnapshot{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// RestoreVolumeSnapshot uses the specified snapshot to restore its parent volume.
+// Returns INVALID_ARGUMENT if called for a non-boot volume.
+func (c *restClient) RestoreVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.RestoreVolumeSnapshotRequest, opts ...gax.CallOption) (*RestoreVolumeSnapshotOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v:restoreVolumeSnapshot", req.GetVolumeSnapshot())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "volume_snapshot", url.QueryEscape(req.GetVolumeSnapshot()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	return &RestoreVolumeSnapshotOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteVolumeSnapshot deletes a volume snapshot.
+// Returns INVALID_ARGUMENT if called for a non-boot volume.
+func (c *restClient) DeleteVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.DeleteVolumeSnapshotRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// GetVolumeSnapshot returns the specified snapshot resource.
+// Returns INVALID_ARGUMENT if called for a non-boot volume.
+func (c *restClient) GetVolumeSnapshot(ctx context.Context, req *baremetalsolutionpb.GetVolumeSnapshotRequest, opts ...gax.CallOption) (*baremetalsolutionpb.VolumeSnapshot, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetVolumeSnapshot[0:len((*c.CallOptions).GetVolumeSnapshot):len((*c.CallOptions).GetVolumeSnapshot)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &baremetalsolutionpb.VolumeSnapshot{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListVolumeSnapshots retrieves the list of snapshots for the specified volume.
+// Returns a response with an empty list of snapshots if called
+// for a non-boot volume.
+func (c *restClient) ListVolumeSnapshots(ctx context.Context, req *baremetalsolutionpb.ListVolumeSnapshotsRequest, opts ...gax.CallOption) *VolumeSnapshotIterator {
+	it := &VolumeSnapshotIterator{}
+	req = proto.Clone(req).(*baremetalsolutionpb.ListVolumeSnapshotsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.VolumeSnapshot, string, error) {
+		resp := &baremetalsolutionpb.ListVolumeSnapshotsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2/%v/snapshots", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetVolumeSnapshots(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // GetLun get details of a single storage logical unit number(LUN).
 func (c *restClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLunRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Lun, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2306,9 +4169,11 @@ func (c *restClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLun
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetLun[0:len((*c.CallOptions).GetLun):len((*c.CallOptions).GetLun)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.Lun{}
@@ -2383,7 +4248,8 @@ func (c *restClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.List
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -2438,6 +4304,77 @@ func (c *restClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.List
 	return it
 }
 
+// EvictLun skips lun’s cooloff and deletes it now.
+// Lun must be in cooloff state.
+func (c *restClient) EvictLun(ctx context.Context, req *baremetalsolutionpb.EvictLunRequest, opts ...gax.CallOption) (*EvictLunOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v:evict", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	return &EvictLunOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetNfsShare get details of a single NFS share.
 func (c *restClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.GetNfsShareRequest, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2452,9 +4389,11 @@ func (c *restClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.G
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetNfsShare[0:len((*c.CallOptions).GetNfsShare):len((*c.CallOptions).GetNfsShare)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &baremetalsolutionpb.NfsShare{}
@@ -2532,7 +4471,8 @@ func (c *restClient) ListNfsShares(ctx context.Context, req *baremetalsolutionpb
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -2605,19 +4545,21 @@ func (c *restClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "nfs_share.name", url.QueryEscape(req.GetNfsShare().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "nfs_share.name", url.QueryEscape(req.GetNfsShare().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2663,6 +4605,726 @@ func (c *restClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 	}, nil
 }
 
+// CreateNfsShare create an NFS share.
+func (c *restClient) CreateNfsShare(ctx context.Context, req *baremetalsolutionpb.CreateNfsShareRequest, opts ...gax.CallOption) (*CreateNfsShareOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetNfsShare()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v/nfsShares", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	return &CreateNfsShareOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// RenameNfsShare renameNfsShare sets a new name for an nfsshare.
+// Use with caution, previous names become immediately invalidated.
+func (c *restClient) RenameNfsShare(ctx context.Context, req *baremetalsolutionpb.RenameNfsShareRequest, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v:rename", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RenameNfsShare[0:len((*c.CallOptions).RenameNfsShare):len((*c.CallOptions).RenameNfsShare)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &baremetalsolutionpb.NfsShare{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteNfsShare delete an NFS share. The underlying volume is automatically deleted.
+func (c *restClient) DeleteNfsShare(ctx context.Context, req *baremetalsolutionpb.DeleteNfsShareRequest, opts ...gax.CallOption) (*DeleteNfsShareOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	return &DeleteNfsShareOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListProvisioningQuotas list the budget details to provision resources on a given project.
+func (c *restClient) ListProvisioningQuotas(ctx context.Context, req *baremetalsolutionpb.ListProvisioningQuotasRequest, opts ...gax.CallOption) *ProvisioningQuotaIterator {
+	it := &ProvisioningQuotaIterator{}
+	req = proto.Clone(req).(*baremetalsolutionpb.ListProvisioningQuotasRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.ProvisioningQuota, string, error) {
+		resp := &baremetalsolutionpb.ListProvisioningQuotasResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2/%v/provisioningQuotas", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetProvisioningQuotas(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// SubmitProvisioningConfig submit a provisiong configuration for a given project.
+func (c *restClient) SubmitProvisioningConfig(ctx context.Context, req *baremetalsolutionpb.SubmitProvisioningConfigRequest, opts ...gax.CallOption) (*baremetalsolutionpb.SubmitProvisioningConfigResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v/provisioningConfigs:submit", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SubmitProvisioningConfig[0:len((*c.CallOptions).SubmitProvisioningConfig):len((*c.CallOptions).SubmitProvisioningConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &baremetalsolutionpb.SubmitProvisioningConfigResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetProvisioningConfig get ProvisioningConfig by name.
+func (c *restClient) GetProvisioningConfig(ctx context.Context, req *baremetalsolutionpb.GetProvisioningConfigRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ProvisioningConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetProvisioningConfig[0:len((*c.CallOptions).GetProvisioningConfig):len((*c.CallOptions).GetProvisioningConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &baremetalsolutionpb.ProvisioningConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateProvisioningConfig create new ProvisioningConfig.
+func (c *restClient) CreateProvisioningConfig(ctx context.Context, req *baremetalsolutionpb.CreateProvisioningConfigRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ProvisioningConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetProvisioningConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v/provisioningConfigs", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetEmail() != "" {
+		params.Add("email", fmt.Sprintf("%v", req.GetEmail()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateProvisioningConfig[0:len((*c.CallOptions).CreateProvisioningConfig):len((*c.CallOptions).CreateProvisioningConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &baremetalsolutionpb.ProvisioningConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateProvisioningConfig update existing ProvisioningConfig.
+func (c *restClient) UpdateProvisioningConfig(ctx context.Context, req *baremetalsolutionpb.UpdateProvisioningConfigRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ProvisioningConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetProvisioningConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetProvisioningConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetEmail() != "" {
+		params.Add("email", fmt.Sprintf("%v", req.GetEmail()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "provisioning_config.name", url.QueryEscape(req.GetProvisioningConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateProvisioningConfig[0:len((*c.CallOptions).UpdateProvisioningConfig):len((*c.CallOptions).UpdateProvisioningConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &baremetalsolutionpb.ProvisioningConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// RenameNetwork renameNetwork sets a new name for a network.
+// Use with caution, previous names become immediately invalidated.
+func (c *restClient) RenameNetwork(ctx context.Context, req *baremetalsolutionpb.RenameNetworkRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Network, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v:rename", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RenameNetwork[0:len((*c.CallOptions).RenameNetwork):len((*c.CallOptions).RenameNetwork)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &baremetalsolutionpb.Network{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListOSImages retrieves the list of OS images which are currently approved.
+func (c *restClient) ListOSImages(ctx context.Context, req *baremetalsolutionpb.ListOSImagesRequest, opts ...gax.CallOption) *OSImageIterator {
+	it := &OSImageIterator{}
+	req = proto.Clone(req).(*baremetalsolutionpb.ListOSImagesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.OSImage, string, error) {
+		resp := &baremetalsolutionpb.ListOSImagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2/%v/osImages", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOsImages(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2677,9 +5339,11 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -2757,7 +5421,8 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -2812,10 +5477,40 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	return it
 }
 
-// DetachLunOperation manages a long-running operation from DetachLun.
-type DetachLunOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
+// CreateNfsShareOperation returns a new CreateNfsShareOperation from a given name.
+// The name must be that of a previously created CreateNfsShareOperation, possibly from a different process.
+func (c *gRPCClient) CreateNfsShareOperation(name string) *CreateNfsShareOperation {
+	return &CreateNfsShareOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateNfsShareOperation returns a new CreateNfsShareOperation from a given name.
+// The name must be that of a previously created CreateNfsShareOperation, possibly from a different process.
+func (c *restClient) CreateNfsShareOperation(name string) *CreateNfsShareOperation {
+	override := fmt.Sprintf("/v2/%s", name)
+	return &CreateNfsShareOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteNfsShareOperation returns a new DeleteNfsShareOperation from a given name.
+// The name must be that of a previously created DeleteNfsShareOperation, possibly from a different process.
+func (c *gRPCClient) DeleteNfsShareOperation(name string) *DeleteNfsShareOperation {
+	return &DeleteNfsShareOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteNfsShareOperation returns a new DeleteNfsShareOperation from a given name.
+// The name must be that of a previously created DeleteNfsShareOperation, possibly from a different process.
+func (c *restClient) DeleteNfsShareOperation(name string) *DeleteNfsShareOperation {
+	override := fmt.Sprintf("/v2/%s", name)
+	return &DeleteNfsShareOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // DetachLunOperation returns a new DetachLunOperation from a given name.
@@ -2836,68 +5531,76 @@ func (c *restClient) DetachLunOperation(name string) *DetachLunOperation {
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DetachLunOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// DisableInteractiveSerialConsoleOperation returns a new DisableInteractiveSerialConsoleOperation from a given name.
+// The name must be that of a previously created DisableInteractiveSerialConsoleOperation, possibly from a different process.
+func (c *gRPCClient) DisableInteractiveSerialConsoleOperation(name string) *DisableInteractiveSerialConsoleOperation {
+	return &DisableInteractiveSerialConsoleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DetachLunOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.Instance
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// DisableInteractiveSerialConsoleOperation returns a new DisableInteractiveSerialConsoleOperation from a given name.
+// The name must be that of a previously created DisableInteractiveSerialConsoleOperation, possibly from a different process.
+func (c *restClient) DisableInteractiveSerialConsoleOperation(name string) *DisableInteractiveSerialConsoleOperation {
+	override := fmt.Sprintf("/v2/%s", name)
+	return &DisableInteractiveSerialConsoleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
+}
+
+// EnableInteractiveSerialConsoleOperation returns a new EnableInteractiveSerialConsoleOperation from a given name.
+// The name must be that of a previously created EnableInteractiveSerialConsoleOperation, possibly from a different process.
+func (c *gRPCClient) EnableInteractiveSerialConsoleOperation(name string) *EnableInteractiveSerialConsoleOperation {
+	return &EnableInteractiveSerialConsoleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DetachLunOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
-	var meta baremetalsolutionpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// EnableInteractiveSerialConsoleOperation returns a new EnableInteractiveSerialConsoleOperation from a given name.
+// The name must be that of a previously created EnableInteractiveSerialConsoleOperation, possibly from a different process.
+func (c *restClient) EnableInteractiveSerialConsoleOperation(name string) *EnableInteractiveSerialConsoleOperation {
+	override := fmt.Sprintf("/v2/%s", name)
+	return &EnableInteractiveSerialConsoleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &meta, nil
 }
 
-// Done reports whether the long-running operation has completed.
-func (op *DetachLunOperation) Done() bool {
-	return op.lro.Done()
+// EvictLunOperation returns a new EvictLunOperation from a given name.
+// The name must be that of a previously created EvictLunOperation, possibly from a different process.
+func (c *gRPCClient) EvictLunOperation(name string) *EvictLunOperation {
+	return &EvictLunOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }
 
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DetachLunOperation) Name() string {
-	return op.lro.Name()
+// EvictLunOperation returns a new EvictLunOperation from a given name.
+// The name must be that of a previously created EvictLunOperation, possibly from a different process.
+func (c *restClient) EvictLunOperation(name string) *EvictLunOperation {
+	override := fmt.Sprintf("/v2/%s", name)
+	return &EvictLunOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
-// ResetInstanceOperation manages a long-running operation from ResetInstance.
-type ResetInstanceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
+// EvictVolumeOperation returns a new EvictVolumeOperation from a given name.
+// The name must be that of a previously created EvictVolumeOperation, possibly from a different process.
+func (c *gRPCClient) EvictVolumeOperation(name string) *EvictVolumeOperation {
+	return &EvictVolumeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// EvictVolumeOperation returns a new EvictVolumeOperation from a given name.
+// The name must be that of a previously created EvictVolumeOperation, possibly from a different process.
+func (c *restClient) EvictVolumeOperation(name string) *EvictVolumeOperation {
+	override := fmt.Sprintf("/v2/%s", name)
+	return &EvictVolumeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // ResetInstanceOperation returns a new ResetInstanceOperation from a given name.
@@ -2918,70 +5621,6 @@ func (c *restClient) ResetInstanceOperation(name string) *ResetInstanceOperation
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ResetInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.ResetInstanceResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.ResetInstanceResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ResetInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.ResetInstanceResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.ResetInstanceResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ResetInstanceOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
-	var meta baremetalsolutionpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ResetInstanceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ResetInstanceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ResizeVolumeOperation manages a long-running operation from ResizeVolume.
-type ResizeVolumeOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ResizeVolumeOperation returns a new ResizeVolumeOperation from a given name.
 // The name must be that of a previously created ResizeVolumeOperation, possibly from a different process.
 func (c *gRPCClient) ResizeVolumeOperation(name string) *ResizeVolumeOperation {
@@ -3000,68 +5639,22 @@ func (c *restClient) ResizeVolumeOperation(name string) *ResizeVolumeOperation {
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ResizeVolumeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Volume, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.Volume
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// RestoreVolumeSnapshotOperation returns a new RestoreVolumeSnapshotOperation from a given name.
+// The name must be that of a previously created RestoreVolumeSnapshotOperation, possibly from a different process.
+func (c *gRPCClient) RestoreVolumeSnapshotOperation(name string) *RestoreVolumeSnapshotOperation {
+	return &RestoreVolumeSnapshotOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ResizeVolumeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Volume, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.Volume
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// RestoreVolumeSnapshotOperation returns a new RestoreVolumeSnapshotOperation from a given name.
+// The name must be that of a previously created RestoreVolumeSnapshotOperation, possibly from a different process.
+func (c *restClient) RestoreVolumeSnapshotOperation(name string) *RestoreVolumeSnapshotOperation {
+	override := fmt.Sprintf("/v2/%s", name)
+	return &RestoreVolumeSnapshotOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ResizeVolumeOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
-	var meta baremetalsolutionpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ResizeVolumeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ResizeVolumeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StartInstanceOperation manages a long-running operation from StartInstance.
-type StartInstanceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // StartInstanceOperation returns a new StartInstanceOperation from a given name.
@@ -3082,70 +5675,6 @@ func (c *restClient) StartInstanceOperation(name string) *StartInstanceOperation
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StartInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.StartInstanceResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.StartInstanceResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StartInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.StartInstanceResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.StartInstanceResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StartInstanceOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
-	var meta baremetalsolutionpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StartInstanceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StartInstanceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StopInstanceOperation manages a long-running operation from StopInstance.
-type StopInstanceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // StopInstanceOperation returns a new StopInstanceOperation from a given name.
 // The name must be that of a previously created StopInstanceOperation, possibly from a different process.
 func (c *gRPCClient) StopInstanceOperation(name string) *StopInstanceOperation {
@@ -3162,70 +5691,6 @@ func (c *restClient) StopInstanceOperation(name string) *StopInstanceOperation {
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StopInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.StopInstanceResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.StopInstanceResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StopInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.StopInstanceResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.StopInstanceResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StopInstanceOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
-	var meta baremetalsolutionpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StopInstanceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StopInstanceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateInstanceOperation manages a long-running operation from UpdateInstance.
-type UpdateInstanceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateInstanceOperation returns a new UpdateInstanceOperation from a given name.
@@ -3246,70 +5711,6 @@ func (c *restClient) UpdateInstanceOperation(name string) *UpdateInstanceOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.Instance
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateInstanceOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
-	var meta baremetalsolutionpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateInstanceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateInstanceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateNetworkOperation manages a long-running operation from UpdateNetwork.
-type UpdateNetworkOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateNetworkOperation returns a new UpdateNetworkOperation from a given name.
 // The name must be that of a previously created UpdateNetworkOperation, possibly from a different process.
 func (c *gRPCClient) UpdateNetworkOperation(name string) *UpdateNetworkOperation {
@@ -3326,70 +5727,6 @@ func (c *restClient) UpdateNetworkOperation(name string) *UpdateNetworkOperation
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateNetworkOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Network, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.Network
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateNetworkOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Network, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.Network
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateNetworkOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
-	var meta baremetalsolutionpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateNetworkOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateNetworkOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateNfsShareOperation manages a long-running operation from UpdateNfsShare.
-type UpdateNfsShareOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateNfsShareOperation returns a new UpdateNfsShareOperation from a given name.
@@ -3410,70 +5747,6 @@ func (c *restClient) UpdateNfsShareOperation(name string) *UpdateNfsShareOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateNfsShareOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.NfsShare
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateNfsShareOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.NfsShare
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateNfsShareOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
-	var meta baremetalsolutionpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateNfsShareOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateNfsShareOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateVolumeOperation manages a long-running operation from UpdateVolume.
-type UpdateVolumeOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateVolumeOperation returns a new UpdateVolumeOperation from a given name.
 // The name must be that of a previously created UpdateVolumeOperation, possibly from a different process.
 func (c *gRPCClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
@@ -3490,344 +5763,4 @@ func (c *restClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateVolumeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Volume, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.Volume
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateVolumeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*baremetalsolutionpb.Volume, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp baremetalsolutionpb.Volume
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateVolumeOperation) Metadata() (*baremetalsolutionpb.OperationMetadata, error) {
-	var meta baremetalsolutionpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateVolumeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateVolumeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// InstanceIterator manages a stream of *baremetalsolutionpb.Instance.
-type InstanceIterator struct {
-	items    []*baremetalsolutionpb.Instance
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.Instance, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InstanceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InstanceIterator) Next() (*baremetalsolutionpb.Instance, error) {
-	var item *baremetalsolutionpb.Instance
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InstanceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InstanceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LunIterator manages a stream of *baremetalsolutionpb.Lun.
-type LunIterator struct {
-	items    []*baremetalsolutionpb.Lun
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.Lun, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LunIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LunIterator) Next() (*baremetalsolutionpb.Lun, error) {
-	var item *baremetalsolutionpb.Lun
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LunIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LunIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// NetworkIterator manages a stream of *baremetalsolutionpb.Network.
-type NetworkIterator struct {
-	items    []*baremetalsolutionpb.Network
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.Network, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NetworkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NetworkIterator) Next() (*baremetalsolutionpb.Network, error) {
-	var item *baremetalsolutionpb.Network
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NetworkIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NetworkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// NfsShareIterator manages a stream of *baremetalsolutionpb.NfsShare.
-type NfsShareIterator struct {
-	items    []*baremetalsolutionpb.NfsShare
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.NfsShare, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NfsShareIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NfsShareIterator) Next() (*baremetalsolutionpb.NfsShare, error) {
-	var item *baremetalsolutionpb.NfsShare
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NfsShareIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NfsShareIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// VolumeIterator manages a stream of *baremetalsolutionpb.Volume.
-type VolumeIterator struct {
-	items    []*baremetalsolutionpb.Volume
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*baremetalsolutionpb.Volume, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *VolumeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *VolumeIterator) Next() (*baremetalsolutionpb.Volume, error) {
-	var item *baremetalsolutionpb.Volume
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *VolumeIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *VolumeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

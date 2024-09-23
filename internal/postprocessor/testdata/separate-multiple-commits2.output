@@ -1,5 +1,5 @@
-docs: Remove "not yet implemented" for Accelerator & Refine Volume API docs
-docs: update the job id format requirement
+docs(batch): Remove "not yet implemented" for Accelerator & Refine Volume API docs
+docs(batch): update the job id format requirement
 
 PiperOrigin-RevId: 489502315
 

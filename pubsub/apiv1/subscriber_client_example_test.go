@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,6 +60,54 @@ func ExampleNewSubscriberRESTClient() {
 	_ = c
 }
 
+func ExampleSubscriberClient_Acknowledge() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsub.NewSubscriberClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsubpb.AcknowledgeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#AcknowledgeRequest.
+	}
+	err = c.Acknowledge(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleSubscriberClient_CreateSnapshot() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsub.NewSubscriberClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsubpb.CreateSnapshotRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#CreateSnapshotRequest.
+	}
+	resp, err := c.CreateSnapshot(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleSubscriberClient_CreateSubscription() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -78,6 +126,77 @@ func ExampleSubscriberClient_CreateSubscription() {
 		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#Subscription.
 	}
 	resp, err := c.CreateSubscription(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleSubscriberClient_DeleteSnapshot() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsub.NewSubscriberClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsubpb.DeleteSnapshotRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DeleteSnapshotRequest.
+	}
+	err = c.DeleteSnapshot(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleSubscriberClient_DeleteSubscription() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsub.NewSubscriberClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsubpb.DeleteSubscriptionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DeleteSubscriptionRequest.
+	}
+	err = c.DeleteSubscription(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleSubscriberClient_GetSnapshot() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsub.NewSubscriberClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsubpb.GetSnapshotRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#GetSnapshotRequest.
+	}
+	resp, err := c.GetSnapshot(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -110,7 +229,7 @@ func ExampleSubscriberClient_GetSubscription() {
 	_ = resp
 }
 
-func ExampleSubscriberClient_UpdateSubscription() {
+func ExampleSubscriberClient_ListSnapshots() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -123,16 +242,28 @@ func ExampleSubscriberClient_UpdateSubscription() {
 	}
 	defer c.Close()
 
-	req := &pubsubpb.UpdateSubscriptionRequest{
+	req := &pubsubpb.ListSnapshotsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#UpdateSubscriptionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListSnapshotsRequest.
 	}
-	resp, err := c.UpdateSubscription(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListSnapshots(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*pubsubpb.ListSnapshotsResponse)
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleSubscriberClient_ListSubscriptions() {
@@ -163,29 +294,12 @@ func ExampleSubscriberClient_ListSubscriptions() {
 		}
 		// TODO: Use resp.
 		_ = resp
-	}
-}
 
-func ExampleSubscriberClient_DeleteSubscription() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsub.NewSubscriberClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsubpb.DeleteSubscriptionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DeleteSubscriptionRequest.
-	}
-	err = c.DeleteSubscription(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*pubsubpb.ListSubscriptionsResponse)
 	}
 }
 
@@ -212,7 +326,7 @@ func ExampleSubscriberClient_ModifyAckDeadline() {
 	}
 }
 
-func ExampleSubscriberClient_Acknowledge() {
+func ExampleSubscriberClient_ModifyPushConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -225,11 +339,11 @@ func ExampleSubscriberClient_Acknowledge() {
 	}
 	defer c.Close()
 
-	req := &pubsubpb.AcknowledgeRequest{
+	req := &pubsubpb.ModifyPushConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#AcknowledgeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ModifyPushConfigRequest.
 	}
-	err = c.Acknowledge(ctx, req)
+	err = c.ModifyPushConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -253,6 +367,31 @@ func ExampleSubscriberClient_Pull() {
 		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#PullRequest.
 	}
 	resp, err := c.Pull(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleSubscriberClient_Seek() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsub.NewSubscriberClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsubpb.SeekRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#SeekRequest.
+	}
+	resp, err := c.Seek(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -300,110 +439,6 @@ func ExampleSubscriberClient_StreamingPull() {
 	}
 }
 
-func ExampleSubscriberClient_ModifyPushConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsub.NewSubscriberClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsubpb.ModifyPushConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ModifyPushConfigRequest.
-	}
-	err = c.ModifyPushConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleSubscriberClient_GetSnapshot() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsub.NewSubscriberClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsubpb.GetSnapshotRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#GetSnapshotRequest.
-	}
-	resp, err := c.GetSnapshot(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleSubscriberClient_ListSnapshots() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsub.NewSubscriberClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsubpb.ListSnapshotsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListSnapshotsRequest.
-	}
-	it := c.ListSnapshots(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleSubscriberClient_CreateSnapshot() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsub.NewSubscriberClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsubpb.CreateSnapshotRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#CreateSnapshotRequest.
-	}
-	resp, err := c.CreateSnapshot(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleSubscriberClient_UpdateSnapshot() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -429,7 +464,7 @@ func ExampleSubscriberClient_UpdateSnapshot() {
 	_ = resp
 }
 
-func ExampleSubscriberClient_DeleteSnapshot() {
+func ExampleSubscriberClient_UpdateSubscription() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -442,34 +477,11 @@ func ExampleSubscriberClient_DeleteSnapshot() {
 	}
 	defer c.Close()
 
-	req := &pubsubpb.DeleteSnapshotRequest{
+	req := &pubsubpb.UpdateSubscriptionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DeleteSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#UpdateSubscriptionRequest.
 	}
-	err = c.DeleteSnapshot(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleSubscriberClient_Seek() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsub.NewSubscriberClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsubpb.SeekRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#SeekRequest.
-	}
-	resp, err := c.Seek(ctx, req)
+	resp, err := c.UpdateSubscription(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

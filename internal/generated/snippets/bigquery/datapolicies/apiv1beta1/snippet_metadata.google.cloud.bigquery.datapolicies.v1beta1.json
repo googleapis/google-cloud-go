@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/datapolicies/apiv1beta1",
-    "version": "1.53.0",
+    "version": "1.63.0",
     "language": "GO",
     "apis": [
       {
@@ -235,7 +235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

@@ -1,5 +1,147 @@
 # Changes
 
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/billing/v1.19.0...billing/v1.19.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **billing:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.10...billing/v1.19.0) (2024-08-20)
+
+
+### Features
+
+* **billing:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.18.10](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.9...billing/v1.18.10) (2024-08-08)
+
+
+### Bug Fixes
+
+* **billing:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [1.18.9](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.8...billing/v1.18.9) (2024-07-24)
+
+
+### Bug Fixes
+
+* **billing:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [1.18.8](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.7...billing/v1.18.8) (2024-07-10)
+
+
+### Bug Fixes
+
+* **billing:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.18.7](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.6...billing/v1.18.7) (2024-07-01)
+
+
+### Bug Fixes
+
+* **billing:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.18.6](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.5...billing/v1.18.6) (2024-06-26)
+
+
+### Bug Fixes
+
+* **billing:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+
+### Documentation
+
+* **billing:** Genereal documentation improvements ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
+## [1.18.5](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.4...billing/v1.18.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **billing:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.18.4](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.3...billing/v1.18.4) (2024-03-14)
+
+
+### Bug Fixes
+
+* **billing:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.2...billing/v1.18.3) (2024-02-21)
+
+
+### Documentation
+
+* **billing:** Clarify that the parent field in the CreateBillingAccountRequest must be a billing account ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+
+## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.1...billing/v1.18.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **billing:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.0...billing/v1.18.1) (2024-01-22)
+
+
+### Documentation
+
+* **billing:** Update comments ([00b9900](https://github.com/googleapis/google-cloud-go/commit/00b990061592a20a181e61faa6964b45205b76a7))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.4...billing/v1.18.0) (2023-12-07)
+
+
+### Features
+
+* **billing:** Added the MoveBillingAccount method, which allows changing which organization a billing account belongs to ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
+
+## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.3...billing/v1.17.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **billing:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.17.3](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.2...billing/v1.17.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **billing:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.1...billing/v1.17.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **billing:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.0...billing/v1.17.1) (2023-10-04)
+
+
+### Documentation
+
+* **billing:** Update service documentation ([#8597](https://github.com/googleapis/google-cloud-go/issues/8597)) ([e36b9c6](https://github.com/googleapis/google-cloud-go/commit/e36b9c67173f40e9c4552e5f54467fc86f63d6fd))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.16.0...billing/v1.17.0) (2023-09-11)
+
+
+### Features
+
+* **billing/budgets:** Supported project-level-budgets in Public Budget API V1 ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+* **billing/budgets:** Supported project-level-budgets in Public Budget API V1Beta ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
+
+### Bug Fixes
+
+* **billing:** Fixed resource_reference for name in GetProjectBillingInfo ([ac10224](https://github.com/googleapis/google-cloud-go/commit/ac102249403e6c1604bff7c537343645c950ae13))
+
+
+### Documentation
+
+* **billing:** Update comments ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.15.0...billing/v1.16.0) (2023-06-20)
 
 

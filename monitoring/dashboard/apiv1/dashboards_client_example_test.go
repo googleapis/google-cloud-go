@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ func ExampleDashboardsClient_CreateDashboard() {
 	_ = resp
 }
 
-func ExampleDashboardsClient_ListDashboards() {
+func ExampleDashboardsClient_DeleteDashboard() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -96,21 +96,13 @@ func ExampleDashboardsClient_ListDashboards() {
 	}
 	defer c.Close()
 
-	req := &dashboardpb.ListDashboardsRequest{
+	req := &dashboardpb.DeleteDashboardRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#ListDashboardsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#DeleteDashboardRequest.
 	}
-	it := c.ListDashboards(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	err = c.DeleteDashboard(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
 }
 
@@ -139,7 +131,7 @@ func ExampleDashboardsClient_GetDashboard() {
 	_ = resp
 }
 
-func ExampleDashboardsClient_DeleteDashboard() {
+func ExampleDashboardsClient_ListDashboards() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -152,13 +144,27 @@ func ExampleDashboardsClient_DeleteDashboard() {
 	}
 	defer c.Close()
 
-	req := &dashboardpb.DeleteDashboardRequest{
+	req := &dashboardpb.ListDashboardsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#DeleteDashboardRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#ListDashboardsRequest.
 	}
-	err = c.DeleteDashboard(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListDashboards(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dashboardpb.ListDashboardsResponse)
 	}
 }
 

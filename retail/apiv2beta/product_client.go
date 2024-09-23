@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -53,6 +52,7 @@ type ProductCallOptions struct {
 	ListProducts            []gax.CallOption
 	UpdateProduct           []gax.CallOption
 	DeleteProduct           []gax.CallOption
+	PurgeProducts           []gax.CallOption
 	ImportProducts          []gax.CallOption
 	SetInventory            []gax.CallOption
 	AddFulfillmentPlaces    []gax.CallOption
@@ -66,10 +66,13 @@ type ProductCallOptions struct {
 func defaultProductGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("retail.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -130,6 +133,19 @@ func defaultProductCallOptions() *ProductCallOptions {
 			}),
 		},
 		DeleteProduct: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		PurgeProducts: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -299,6 +315,18 @@ func defaultProductRESTCallOptions() *ProductCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		PurgeProducts: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		ImportProducts: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -387,7 +415,7 @@ func defaultProductRESTCallOptions() *ProductCallOptions {
 	}
 }
 
-// internalProductClient is an interface that defines the methods available from Retail API.
+// internalProductClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalProductClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -397,6 +425,8 @@ type internalProductClient interface {
 	ListProducts(context.Context, *retailpb.ListProductsRequest, ...gax.CallOption) *ProductIterator
 	UpdateProduct(context.Context, *retailpb.UpdateProductRequest, ...gax.CallOption) (*retailpb.Product, error)
 	DeleteProduct(context.Context, *retailpb.DeleteProductRequest, ...gax.CallOption) error
+	PurgeProducts(context.Context, *retailpb.PurgeProductsRequest, ...gax.CallOption) (*PurgeProductsOperation, error)
+	PurgeProductsOperation(name string) *PurgeProductsOperation
 	ImportProducts(context.Context, *retailpb.ImportProductsRequest, ...gax.CallOption) (*ImportProductsOperation, error)
 	ImportProductsOperation(name string) *ImportProductsOperation
 	SetInventory(context.Context, *retailpb.SetInventoryRequest, ...gax.CallOption) (*SetInventoryOperation, error)
@@ -413,7 +443,7 @@ type internalProductClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ProductClient is a client for interacting with Retail API.
+// ProductClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for ingesting Product
@@ -477,6 +507,33 @@ func (c *ProductClient) UpdateProduct(ctx context.Context, req *retailpb.UpdateP
 // DeleteProduct deletes a Product.
 func (c *ProductClient) DeleteProduct(ctx context.Context, req *retailpb.DeleteProductRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteProduct(ctx, req, opts...)
+}
+
+// PurgeProducts permanently deletes all selected
+// Products under a branch.
+//
+// This process is asynchronous. If the request is valid, the removal will be
+// enqueued and processed offline. Depending on the number of
+// Products, this operation could take
+// hours to complete. Before the operation completes, some
+// Products may still be returned by
+// ProductService.GetProduct
+// or
+// ProductService.ListProducts.
+//
+// Depending on the number of Products,
+// this operation could take hours to complete. To get a sample of
+// Products that would be deleted, set
+// PurgeProductsRequest.force
+// to false.
+func (c *ProductClient) PurgeProducts(ctx context.Context, req *retailpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
+	return c.internalClient.PurgeProducts(ctx, req, opts...)
+}
+
+// PurgeProductsOperation returns a new PurgeProductsOperation from a given name.
+// The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
+func (c *ProductClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
+	return c.internalClient.PurgeProductsOperation(name)
 }
 
 // ImportProducts bulk import of multiple Products.
@@ -555,10 +612,11 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 	return c.internalClient.SetInventoryOperation(name)
 }
 
-// AddFulfillmentPlaces it is recommended to use the
+// AddFulfillmentPlaces we recommend that you use the
 // ProductService.AddLocalInventories
-// method instead of
-// ProductService.AddFulfillmentPlaces.
+// method instead of the
+// ProductService.AddFulfillmentPlaces
+// method.
 // ProductService.AddLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -594,10 +652,11 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 	return c.internalClient.AddFulfillmentPlacesOperation(name)
 }
 
-// RemoveFulfillmentPlaces it is recommended to use the
+// RemoveFulfillmentPlaces we recommend that you use the
 // ProductService.RemoveLocalInventories
-// method instead of
-// ProductService.RemoveFulfillmentPlaces.
+// method instead of the
+// ProductService.RemoveFulfillmentPlaces
+// method.
 // ProductService.RemoveLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -717,7 +776,7 @@ func (c *ProductClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// productGRPCClient is a client for interacting with Retail API over gRPC transport.
+// productGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type productGRPCClient struct {
@@ -738,7 +797,7 @@ type productGRPCClient struct {
 	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewProductClient creates a new product service client based on gRPC.
@@ -800,7 +859,9 @@ func (c *productGRPCClient) Connection() *grpc.ClientConn {
 func (c *productGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -822,8 +883,8 @@ type productRESTClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing ProductClient
 	CallOptions **ProductCallOptions
@@ -864,9 +925,12 @@ func NewProductRESTClient(ctx context.Context, opts ...option.ClientOption) (*Pr
 func defaultProductRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://retail.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://retail.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://retail.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -876,7 +940,9 @@ func defaultProductRESTClientOptions() []option.ClientOption {
 func (c *productRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -894,9 +960,10 @@ func (c *productRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *productGRPCClient) CreateProduct(ctx context.Context, req *retailpb.CreateProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateProduct[0:len((*c.CallOptions).CreateProduct):len((*c.CallOptions).CreateProduct)], opts...)
 	var resp *retailpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -911,9 +978,10 @@ func (c *productGRPCClient) CreateProduct(ctx context.Context, req *retailpb.Cre
 }
 
 func (c *productGRPCClient) GetProduct(ctx context.Context, req *retailpb.GetProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetProduct[0:len((*c.CallOptions).GetProduct):len((*c.CallOptions).GetProduct)], opts...)
 	var resp *retailpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -928,9 +996,10 @@ func (c *productGRPCClient) GetProduct(ctx context.Context, req *retailpb.GetPro
 }
 
 func (c *productGRPCClient) ListProducts(ctx context.Context, req *retailpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListProducts[0:len((*c.CallOptions).ListProducts):len((*c.CallOptions).ListProducts)], opts...)
 	it := &ProductIterator{}
 	req = proto.Clone(req).(*retailpb.ListProductsRequest)
@@ -973,9 +1042,10 @@ func (c *productGRPCClient) ListProducts(ctx context.Context, req *retailpb.List
 }
 
 func (c *productGRPCClient) UpdateProduct(ctx context.Context, req *retailpb.UpdateProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateProduct[0:len((*c.CallOptions).UpdateProduct):len((*c.CallOptions).UpdateProduct)], opts...)
 	var resp *retailpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -990,9 +1060,10 @@ func (c *productGRPCClient) UpdateProduct(ctx context.Context, req *retailpb.Upd
 }
 
 func (c *productGRPCClient) DeleteProduct(ctx context.Context, req *retailpb.DeleteProductRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteProduct[0:len((*c.CallOptions).DeleteProduct):len((*c.CallOptions).DeleteProduct)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1002,10 +1073,31 @@ func (c *productGRPCClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 	return err
 }
 
-func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.ImportProductsRequest, opts ...gax.CallOption) (*ImportProductsOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+func (c *productGRPCClient) PurgeProducts(ctx context.Context, req *retailpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).PurgeProducts[0:len((*c.CallOptions).PurgeProducts):len((*c.CallOptions).PurgeProducts)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.productClient.PurgeProducts(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &PurgeProductsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.ImportProductsRequest, opts ...gax.CallOption) (*ImportProductsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ImportProducts[0:len((*c.CallOptions).ImportProducts):len((*c.CallOptions).ImportProducts)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1022,9 +1114,10 @@ func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.Im
 }
 
 func (c *productGRPCClient) SetInventory(ctx context.Context, req *retailpb.SetInventoryRequest, opts ...gax.CallOption) (*SetInventoryOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "inventory.name", url.QueryEscape(req.GetInventory().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "inventory.name", url.QueryEscape(req.GetInventory().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetInventory[0:len((*c.CallOptions).SetInventory):len((*c.CallOptions).SetInventory)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1041,9 +1134,10 @@ func (c *productGRPCClient) SetInventory(ctx context.Context, req *retailpb.SetI
 }
 
 func (c *productGRPCClient) AddFulfillmentPlaces(ctx context.Context, req *retailpb.AddFulfillmentPlacesRequest, opts ...gax.CallOption) (*AddFulfillmentPlacesOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).AddFulfillmentPlaces[0:len((*c.CallOptions).AddFulfillmentPlaces):len((*c.CallOptions).AddFulfillmentPlaces)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1060,9 +1154,10 @@ func (c *productGRPCClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 }
 
 func (c *productGRPCClient) RemoveFulfillmentPlaces(ctx context.Context, req *retailpb.RemoveFulfillmentPlacesRequest, opts ...gax.CallOption) (*RemoveFulfillmentPlacesOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RemoveFulfillmentPlaces[0:len((*c.CallOptions).RemoveFulfillmentPlaces):len((*c.CallOptions).RemoveFulfillmentPlaces)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1079,9 +1174,10 @@ func (c *productGRPCClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 }
 
 func (c *productGRPCClient) AddLocalInventories(ctx context.Context, req *retailpb.AddLocalInventoriesRequest, opts ...gax.CallOption) (*AddLocalInventoriesOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).AddLocalInventories[0:len((*c.CallOptions).AddLocalInventories):len((*c.CallOptions).AddLocalInventories)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1098,9 +1194,10 @@ func (c *productGRPCClient) AddLocalInventories(ctx context.Context, req *retail
 }
 
 func (c *productGRPCClient) RemoveLocalInventories(ctx context.Context, req *retailpb.RemoveLocalInventoriesRequest, opts ...gax.CallOption) (*RemoveLocalInventoriesOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RemoveLocalInventories[0:len((*c.CallOptions).RemoveLocalInventories):len((*c.CallOptions).RemoveLocalInventories)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1117,9 +1214,10 @@ func (c *productGRPCClient) RemoveLocalInventories(ctx context.Context, req *ret
 }
 
 func (c *productGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1134,9 +1232,10 @@ func (c *productGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 }
 
 func (c *productGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1200,9 +1299,11 @@ func (c *productRESTClient) CreateProduct(ctx context.Context, req *retailpb.Cre
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateProduct[0:len((*c.CallOptions).CreateProduct):len((*c.CallOptions).CreateProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.Product{}
@@ -1258,9 +1359,11 @@ func (c *productRESTClient) GetProduct(ctx context.Context, req *retailpb.GetPro
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetProduct[0:len((*c.CallOptions).GetProduct):len((*c.CallOptions).GetProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.Product{}
@@ -1335,17 +1438,18 @@ func (c *productRESTClient) ListProducts(ctx context.Context, req *retailpb.List
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetReadMask() != nil {
-			readMask, err := protojson.Marshal(req.GetReadMask())
+			field, err := protojson.Marshal(req.GetReadMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask[1:len(readMask)-1]))
+			params.Add("readMask", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1421,19 +1525,21 @@ func (c *productRESTClient) UpdateProduct(ctx context.Context, req *retailpb.Upd
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateProduct[0:len((*c.CallOptions).UpdateProduct):len((*c.CallOptions).UpdateProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.Product{}
@@ -1489,9 +1595,11 @@ func (c *productRESTClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1513,6 +1621,92 @@ func (c *productRESTClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 		// the response code and body into a non-nil error
 		return googleapi.CheckResponse(httpRsp)
 	}, opts...)
+}
+
+// PurgeProducts permanently deletes all selected
+// Products under a branch.
+//
+// This process is asynchronous. If the request is valid, the removal will be
+// enqueued and processed offline. Depending on the number of
+// Products, this operation could take
+// hours to complete. Before the operation completes, some
+// Products may still be returned by
+// ProductService.GetProduct
+// or
+// ProductService.ListProducts.
+//
+// Depending on the number of Products,
+// this operation could take hours to complete. To get a sample of
+// Products that would be deleted, set
+// PurgeProductsRequest.force
+// to false.
+func (c *productRESTClient) PurgeProducts(ctx context.Context, req *retailpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta/%v/products:purge", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	return &PurgeProductsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // ImportProducts bulk import of multiple Products.
@@ -1541,9 +1735,11 @@ func (c *productRESTClient) ImportProducts(ctx context.Context, req *retailpb.Im
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1657,9 +1853,11 @@ func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetI
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "inventory.name", url.QueryEscape(req.GetInventory().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "inventory.name", url.QueryEscape(req.GetInventory().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1705,10 +1903,11 @@ func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetI
 	}, nil
 }
 
-// AddFulfillmentPlaces it is recommended to use the
+// AddFulfillmentPlaces we recommend that you use the
 // ProductService.AddLocalInventories
-// method instead of
-// ProductService.AddFulfillmentPlaces.
+// method instead of the
+// ProductService.AddFulfillmentPlaces
+// method.
 // ProductService.AddLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -1753,9 +1952,11 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1801,10 +2002,11 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 	}, nil
 }
 
-// RemoveFulfillmentPlaces it is recommended to use the
+// RemoveFulfillmentPlaces we recommend that you use the
 // ProductService.RemoveLocalInventories
-// method instead of
-// ProductService.RemoveFulfillmentPlaces.
+// method instead of the
+// ProductService.RemoveFulfillmentPlaces
+// method.
 // ProductService.RemoveLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -1849,9 +2051,11 @@ func (c *productRESTClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1944,9 +2148,11 @@ func (c *productRESTClient) AddLocalInventories(ctx context.Context, req *retail
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2037,9 +2243,11 @@ func (c *productRESTClient) RemoveLocalInventories(ctx context.Context, req *ret
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2099,9 +2307,11 @@ func (c *productRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2179,7 +2389,8 @@ func (c *productRESTClient) ListOperations(ctx context.Context, req *longrunning
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -2234,12 +2445,6 @@ func (c *productRESTClient) ListOperations(ctx context.Context, req *longrunning
 	return it
 }
 
-// AddFulfillmentPlacesOperation manages a long-running operation from AddFulfillmentPlaces.
-type AddFulfillmentPlacesOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // AddFulfillmentPlacesOperation returns a new AddFulfillmentPlacesOperation from a given name.
 // The name must be that of a previously created AddFulfillmentPlacesOperation, possibly from a different process.
 func (c *productGRPCClient) AddFulfillmentPlacesOperation(name string) *AddFulfillmentPlacesOperation {
@@ -2256,70 +2461,6 @@ func (c *productRESTClient) AddFulfillmentPlacesOperation(name string) *AddFulfi
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *AddFulfillmentPlacesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddFulfillmentPlacesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.AddFulfillmentPlacesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *AddFulfillmentPlacesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddFulfillmentPlacesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.AddFulfillmentPlacesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *AddFulfillmentPlacesOperation) Metadata() (*retailpb.AddFulfillmentPlacesMetadata, error) {
-	var meta retailpb.AddFulfillmentPlacesMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *AddFulfillmentPlacesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *AddFulfillmentPlacesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// AddLocalInventoriesOperation manages a long-running operation from AddLocalInventories.
-type AddLocalInventoriesOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // AddLocalInventoriesOperation returns a new AddLocalInventoriesOperation from a given name.
@@ -2340,70 +2481,6 @@ func (c *productRESTClient) AddLocalInventoriesOperation(name string) *AddLocalI
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *AddLocalInventoriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddLocalInventoriesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.AddLocalInventoriesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *AddLocalInventoriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.AddLocalInventoriesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.AddLocalInventoriesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *AddLocalInventoriesOperation) Metadata() (*retailpb.AddLocalInventoriesMetadata, error) {
-	var meta retailpb.AddLocalInventoriesMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *AddLocalInventoriesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *AddLocalInventoriesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ImportProductsOperation manages a long-running operation from ImportProducts.
-type ImportProductsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ImportProductsOperation returns a new ImportProductsOperation from a given name.
 // The name must be that of a previously created ImportProductsOperation, possibly from a different process.
 func (c *productGRPCClient) ImportProductsOperation(name string) *ImportProductsOperation {
@@ -2422,68 +2499,22 @@ func (c *productRESTClient) ImportProductsOperation(name string) *ImportProducts
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportProductsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.ImportProductsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.ImportProductsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// PurgeProductsOperation returns a new PurgeProductsOperation from a given name.
+// The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
+func (c *productGRPCClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
+	return &PurgeProductsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportProductsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.ImportProductsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.ImportProductsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// PurgeProductsOperation returns a new PurgeProductsOperation from a given name.
+// The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
+func (c *productRESTClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
+	override := fmt.Sprintf("/v2beta/%s", name)
+	return &PurgeProductsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportProductsOperation) Metadata() (*retailpb.ImportMetadata, error) {
-	var meta retailpb.ImportMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportProductsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportProductsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RemoveFulfillmentPlacesOperation manages a long-running operation from RemoveFulfillmentPlaces.
-type RemoveFulfillmentPlacesOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // RemoveFulfillmentPlacesOperation returns a new RemoveFulfillmentPlacesOperation from a given name.
@@ -2504,70 +2535,6 @@ func (c *productRESTClient) RemoveFulfillmentPlacesOperation(name string) *Remov
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RemoveFulfillmentPlacesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveFulfillmentPlacesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.RemoveFulfillmentPlacesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RemoveFulfillmentPlacesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveFulfillmentPlacesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.RemoveFulfillmentPlacesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RemoveFulfillmentPlacesOperation) Metadata() (*retailpb.RemoveFulfillmentPlacesMetadata, error) {
-	var meta retailpb.RemoveFulfillmentPlacesMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RemoveFulfillmentPlacesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RemoveFulfillmentPlacesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RemoveLocalInventoriesOperation manages a long-running operation from RemoveLocalInventories.
-type RemoveLocalInventoriesOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // RemoveLocalInventoriesOperation returns a new RemoveLocalInventoriesOperation from a given name.
 // The name must be that of a previously created RemoveLocalInventoriesOperation, possibly from a different process.
 func (c *productGRPCClient) RemoveLocalInventoriesOperation(name string) *RemoveLocalInventoriesOperation {
@@ -2586,70 +2553,6 @@ func (c *productRESTClient) RemoveLocalInventoriesOperation(name string) *Remove
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RemoveLocalInventoriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveLocalInventoriesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.RemoveLocalInventoriesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RemoveLocalInventoriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.RemoveLocalInventoriesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.RemoveLocalInventoriesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RemoveLocalInventoriesOperation) Metadata() (*retailpb.RemoveLocalInventoriesMetadata, error) {
-	var meta retailpb.RemoveLocalInventoriesMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RemoveLocalInventoriesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RemoveLocalInventoriesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// SetInventoryOperation manages a long-running operation from SetInventory.
-type SetInventoryOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // SetInventoryOperation returns a new SetInventoryOperation from a given name.
 // The name must be that of a previously created SetInventoryOperation, possibly from a different process.
 func (c *productGRPCClient) SetInventoryOperation(name string) *SetInventoryOperation {
@@ -2666,109 +2569,4 @@ func (c *productRESTClient) SetInventoryOperation(name string) *SetInventoryOper
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SetInventoryOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*retailpb.SetInventoryResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.SetInventoryResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SetInventoryOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*retailpb.SetInventoryResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp retailpb.SetInventoryResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SetInventoryOperation) Metadata() (*retailpb.SetInventoryMetadata, error) {
-	var meta retailpb.SetInventoryMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SetInventoryOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SetInventoryOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ProductIterator manages a stream of *retailpb.Product.
-type ProductIterator struct {
-	items    []*retailpb.Product
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*retailpb.Product, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProductIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProductIterator) Next() (*retailpb.Product, error) {
-	var item *retailpb.Product
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ProductIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ProductIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

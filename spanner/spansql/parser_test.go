@@ -416,6 +416,15 @@ func TestParseExpr(t *testing.T) {
 		{`GENERATE_DATE_ARRAY('2022-01-01', CURRENT_DATE(), INTERVAL 1 MONTH)`, Func{Name: "GENERATE_DATE_ARRAY", Args: []Expr{StringLiteral("2022-01-01"), Func{Name: "CURRENT_DATE"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "MONTH"}}}},
 		{`TIMESTAMP_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR)`, Func{Name: "TIMESTAMP_ADD", Args: []Expr{Func{Name: "CURRENT_TIMESTAMP"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "HOUR"}}}},
 		{`TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 MINUTE)`, Func{Name: "TIMESTAMP_SUB", Args: []Expr{Func{Name: "CURRENT_TIMESTAMP"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "MINUTE"}}}},
+		{`GET_NEXT_SEQUENCE_VALUE(SEQUENCE MySequence)`, Func{Name: "GET_NEXT_SEQUENCE_VALUE", Args: []Expr{SequenceExpr{Name: ID("MySequence")}}}},
+		{`GET_INTERNAL_SEQUENCE_STATE(SEQUENCE MySequence)`, Func{Name: "GET_INTERNAL_SEQUENCE_STATE", Args: []Expr{SequenceExpr{Name: ID("MySequence")}}}},
+
+		// Aggregate Functions
+		{`COUNT(*)`, Func{Name: "COUNT", Args: []Expr{Star}}},
+		{`COUNTIF(DISTINCT cname)`, Func{Name: "COUNTIF", Args: []Expr{ID("cname")}, Distinct: true}},
+		{`ARRAY_AGG(Foo IGNORE NULLS)`, Func{Name: "ARRAY_AGG", Args: []Expr{ID("Foo")}, NullsHandling: IgnoreNulls}},
+		{`ANY_VALUE(Foo HAVING MAX Bar)`, Func{Name: "ANY_VALUE", Args: []Expr{ID("Foo")}, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}}},
+		{`STRING_AGG(DISTINCT Foo, "," IGNORE NULLS HAVING MAX Bar)`, Func{Name: "STRING_AGG", Args: []Expr{ID("Foo"), StringLiteral(",")}, Distinct: true, NullsHandling: IgnoreNulls, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}}},
 
 		// Conditional expressions
 		{
@@ -691,6 +700,47 @@ func TestParseDDL(t *testing.T) {
 		ALTER INDEX MyFirstIndex ADD STORED COLUMN UpdatedAt;
 		ALTER INDEX MyFirstIndex DROP STORED COLUMN UpdatedAt;
 
+		CREATE SEQUENCE MySequence OPTIONS (
+			sequence_kind='bit_reversed_positive',
+			skip_range_min = 1,
+			skip_range_max = 1000,
+			start_with_counter = 50
+		);
+		ALTER SEQUENCE MySequence SET OPTIONS (
+			sequence_kind='bit_reversed_positive',
+			skip_range_min = 1,
+			skip_range_max = 1000,
+			start_with_counter = 50
+		);
+		DROP SEQUENCE MySequence;
+
+		-- Table with a synonym.
+		CREATE TABLE TableWithSynonym (
+			Name STRING(MAX) NOT NULL,
+			SYNONYM(AnotherName),
+		) PRIMARY KEY (Name);
+
+		ALTER TABLE TableWithSynonym DROP SYNONYM AnotherName;
+		ALTER TABLE TableWithSynonym ADD SYNONYM YetAnotherName;
+
+		-- Table rename.
+		CREATE TABLE OldName (
+			Name STRING(MAX) NOT NULL,
+		) PRIMARY KEY (Name);
+
+		ALTER TABLE OldName RENAME TO NewName;
+		ALTER TABLE NewName RENAME TO OldName, ADD SYNONYM NewName;
+
+		-- Table rename chain.
+		CREATE TABLE Table1 (
+			Name STRING(MAX) NOT NULL,
+		) PRIMARY KEY (Name);
+		CREATE TABLE Table2 (
+			Name STRING(MAX) NOT NULL,
+		) PRIMARY KEY (Name);
+
+		RENAME TABLE Table1 TO temp, Table2 TO Table1, temp TO Table2;
+
 		-- Trailing comment at end of file.
 		`, &DDL{Filename: "filename", List: []DDLStmt{
 			&CreateTable{
@@ -881,8 +931,9 @@ func TestParseDDL(t *testing.T) {
 				Position: line(58),
 			},
 			&CreateView{
-				Name:      "SingersView",
-				OrReplace: false,
+				Name:         "SingersView",
+				OrReplace:    false,
+				SecurityType: Invoker,
 				Query: Query{
 					Select: Select{
 						List: []Expr{ID("SingerId"), ID("FullName")},
@@ -1117,6 +1168,100 @@ func TestParseDDL(t *testing.T) {
 				Alteration: DropStoredColumn{Name: "UpdatedAt"},
 				Position:   line(106),
 			},
+			&CreateSequence{
+				Name: "MySequence",
+				Options: SequenceOptions{
+					SequenceKind:     stringAddr("bit_reversed_positive"),
+					SkipRangeMin:     intAddr(1),
+					SkipRangeMax:     intAddr(1000),
+					StartWithCounter: intAddr(50),
+				},
+				Position: line(108),
+			},
+			&AlterSequence{
+				Name: "MySequence",
+				Alteration: SetSequenceOptions{
+					Options: SequenceOptions{
+						SequenceKind:     stringAddr("bit_reversed_positive"),
+						SkipRangeMin:     intAddr(1),
+						SkipRangeMax:     intAddr(1000),
+						StartWithCounter: intAddr(50),
+					},
+				},
+				Position: line(114),
+			},
+			&DropSequence{Name: "MySequence", Position: line(120)},
+
+			&CreateTable{
+				Name: "TableWithSynonym",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(124)},
+				},
+				Synonym:    "AnotherName",
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(123),
+			},
+			&AlterTable{
+				Name: "TableWithSynonym",
+				Alteration: DropSynonym{
+					Name: "AnotherName",
+				},
+				Position: line(128),
+			},
+			&AlterTable{
+				Name: "TableWithSynonym",
+				Alteration: AddSynonym{
+					Name: "YetAnotherName",
+				},
+				Position: line(129),
+			},
+			&CreateTable{
+				Name: "OldName",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(133)},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(132),
+			},
+			&AlterTable{
+				Name: "OldName",
+				Alteration: RenameTo{
+					ToName: "NewName",
+				},
+				Position: line(136),
+			},
+			&AlterTable{
+				Name: "NewName",
+				Alteration: RenameTo{
+					ToName:  "OldName",
+					Synonym: "NewName",
+				},
+				Position: line(137),
+			},
+			&CreateTable{
+				Name: "Table1",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(141)},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(140),
+			},
+			&CreateTable{
+				Name: "Table2",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(144)},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(143),
+			},
+			&RenameTable{
+				TableRenameOps: []TableRenameOp{
+					{FromName: "Table1", ToName: "temp"},
+					{FromName: "Table2", ToName: "Table1"},
+					{FromName: "temp", ToName: "Table2"},
+				},
+				Position: line(147),
+			},
 		}, Comments: []*Comment{
 			{
 				Marker: "#", Start: line(2), End: line(2),
@@ -1150,9 +1295,12 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Isolated: true, Start: line(43), End: line(43), Text: []string{"Table with generated column."}},
 			{Marker: "--", Isolated: true, Start: line(49), End: line(49), Text: []string{"Table with row deletion policy."}},
 			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Table has a column with a default value."}},
+			{Marker: "--", Isolated: true, Start: line(122), End: line(122), Text: []string{"Table with a synonym."}},
+			{Marker: "--", Isolated: true, Start: line(131), End: line(131), Text: []string{"Table rename."}},
+			{Marker: "--", Isolated: true, Start: line(139), End: line(139), Text: []string{"Table rename chain."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(108), End: line(108), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(149), End: line(149), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -1252,8 +1400,9 @@ func TestParseDDL(t *testing.T) {
 			&DDL{
 				Filename: "filename", List: []DDLStmt{
 					&CreateView{
-						Name:      "SingersView",
-						OrReplace: true,
+						Name:         "SingersView",
+						OrReplace:    true,
+						SecurityType: Invoker,
 						Query: Query{
 							Select: Select{
 								List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
@@ -1282,6 +1431,21 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 		},
+		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (JSON_QUERY(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "JSON_QUERY",
+						Args: []Expr{ID("itemDetails"), StringLiteral("$.itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
 		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (JSON_VALUE(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
 			&AlterTable{
 				Name: "products",
@@ -1292,6 +1456,203 @@ func TestParseDDL(t *testing.T) {
 					Generated: Func{
 						Name: "JSON_VALUE",
 						Args: []Expr{ID("itemDetails"), StringLiteral("$.itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (JSON_QUERY_ARRAY(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "JSON_QUERY_ARRAY",
+						Args: []Expr{ID("itemDetails"), StringLiteral("$.itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (JSON_VALUE_ARRAY(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "JSON_VALUE_ARRAY",
+						Args: []Expr{ID("itemDetails"), StringLiteral("$.itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_INCLUDES(itemDetails, 'value1')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_INCLUDES",
+						Args: []Expr{ID("itemDetails"), StringLiteral("value1")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (ARRAY_MAX(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: false, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_MAX",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (ARRAY_MIN(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: false, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_MIN",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_REVERSE(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_REVERSE",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_SLICE(itemDetails, 1, 3)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_SLICE",
+						Args: []Expr{ID("itemDetails"), IntegerLiteral(1), IntegerLiteral(3)},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_TRANSFORM(itemDetails, 'value1')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_TRANSFORM",
+						Args: []Expr{ID("itemDetails"), StringLiteral("value1")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_FIRST(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_FIRST",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_INCLUDES(itemDetails, 'value1')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_INCLUDES",
+						Args: []Expr{ID("itemDetails"), StringLiteral("value1")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_INCLUDES_ALL(itemDetails, ["1", "2"])) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_INCLUDES_ALL",
+						Args: []Expr{ID("itemDetails"), Array{StringLiteral("1"), StringLiteral("2")}},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_INCLUDES_ANY(itemDetails, ["1", "2"])) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_INCLUDES_ANY",
+						Args: []Expr{ID("itemDetails"), Array{StringLiteral("1"), StringLiteral("2")}},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_LAST(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_LAST",
+						Args: []Expr{ID("itemDetails")},
 					},
 				}},
 				Position: line(1),
@@ -1604,6 +1965,60 @@ func TestParseDDL(t *testing.T) {
 							Constraint: TableConstraint{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: NoActionOnDelete, Position: line(4)}, Position: line(4)},
 						},
 						Position: line(4),
+					},
+				},
+			},
+		},
+		{
+			`CREATE SEQUENCE IF NOT EXISTS sname OPTIONS (sequence_kind='bit_reversed_positive');
+			ALTER SEQUENCE sname SET OPTIONS (start_with_counter=1);
+			DROP SEQUENCE IF EXISTS sname;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateSequence{
+						Name:        "sname",
+						IfNotExists: true,
+						Options: SequenceOptions{
+							SequenceKind: stringAddr("bit_reversed_positive"),
+						},
+						Position: line(1),
+					},
+					&AlterSequence{
+						Name: "sname",
+						Alteration: SetSequenceOptions{
+							Options: SequenceOptions{
+								StartWithCounter: intAddr(1),
+							},
+						},
+						Position: line(2),
+					},
+					&DropSequence{
+						Name:     "sname",
+						IfExists: true,
+						Position: line(3),
+					},
+				},
+			},
+		},
+		{
+			`CREATE VIEW vname SQL SECURITY DEFINER AS SELECT cname FROM tname;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateView{
+						Name:         "vname",
+						OrReplace:    false,
+						SecurityType: Definer,
+						Query: Query{
+							Select: Select{
+								List: []Expr{ID("cname")},
+								From: []SelectFrom{SelectFromTable{
+									Table: "tname",
+								}},
+							},
+						},
+						Position: line(1),
 					},
 				},
 			},

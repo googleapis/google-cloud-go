@@ -1,5 +1,15 @@
 # Changes
 
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.8.1...pubsublite/v1.8.2) (2024-06-05)
+
+
+### Bug Fixes
+
+* **pubsublite:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+* **pubsublite:** Fix int conversion ([9221c7f](https://github.com/googleapis/google-cloud-go/commit/9221c7fa12cef9d5fb7ddc92f41f1d6204971c7b))
+* **pubsublite:** Fix regional endpoints ([#9362](https://github.com/googleapis/google-cloud-go/issues/9362)) ([14ce978](https://github.com/googleapis/google-cloud-go/commit/14ce9787f2a53ebdb25abea978367d7f8ae00188))
+* **pubsublite:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.8.0...pubsublite/v1.8.1) (2023-05-11)
 
 

@@ -607,7 +607,7 @@ func (p *parser) consumeStringContent(delim string, raw, unicode bool, name stri
 				if !(i+1 < len(p.s) && isHexDigit(p.s[i]) && isHexDigit(p.s[i+1])) {
 					return "", p.errorf("illegal escape sequence: hex escape sequence must be followed by 2 hex digits")
 				}
-				c, err := strconv.ParseUint(p.s[i:i+2], 16, 64)
+				c, err := strconv.ParseUint(p.s[i:i+2], 16, 8)
 				if err != nil {
 					return "", p.errorf("illegal escape sequence: invalid hex digits: %q: %v", p.s[i:i+2], err)
 				}
@@ -942,10 +942,7 @@ func (p *parser) sniffTokenType(want tokenType) bool {
 	orig := *p
 	defer func() { *p = orig }()
 
-	if p.next().typ == want {
-		return true
-	}
-	return false
+	return p.next().typ == want
 }
 
 // eat reports whether the next N tokens are as specified,
@@ -982,7 +979,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 
 	/*
 		statement:
-			{ create_database | create_table | create_index | alter_table | drop_table | drop_index | create_change_stream | alter_change_stream | drop_change_stream }
+			{ create_database | create_table | create_index | alter_table | drop_table | rename_table | drop_index | create_change_stream | alter_change_stream | drop_change_stream }
 	*/
 
 	// TODO: support create_database
@@ -1058,7 +1055,20 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 				return nil, err
 			}
 			return &DropChangeStream{Name: name, Position: pos}, nil
+		case tok.caseEqual("SEQUENCE"):
+			var ifExists bool
+			if p.eat("IF", "EXISTS") {
+				ifExists = true
+			}
+			name, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			return &DropSequence{Name: name, IfExists: ifExists, Position: pos}, nil
 		}
+	} else if p.sniff("RENAME", "TABLE") {
+		a, err := p.parseRenameTable()
+		return a, err
 	} else if p.sniff("ALTER", "DATABASE") {
 		a, err := p.parseAlterDatabase()
 		return a, err
@@ -1080,6 +1090,12 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	} else if p.sniff("ALTER", "INDEX") {
 		ai, err := p.parseAlterIndex()
 		return ai, err
+	} else if p.sniff("CREATE", "SEQUENCE") {
+		cs, err := p.parseCreateSequence()
+		return cs, err
+	} else if p.sniff("ALTER", "SEQUENCE") {
+		as, err := p.parseAlterSequence()
+		return as, err
 	}
 
 	return nil, p.errorf("unknown DDL statement")
@@ -1090,8 +1106,11 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 
 	/*
 		CREATE TABLE [ IF NOT EXISTS ] table_name(
-			[column_def, ...] [ table_constraint, ...] )
+			[column_def, ...] [ table_constraint, ...] [ synonym ] )
 			primary_key [, cluster]
+
+		synonym:
+			SYNONYM (name)
 
 		primary_key:
 			PRIMARY KEY ( [key_part, ...] )
@@ -1124,6 +1143,15 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 				return err
 			}
 			ct.Constraints = append(ct.Constraints, tc)
+			return nil
+		}
+
+		if p.sniffTableSynonym() {
+			ts, err := p.parseTableSynonym()
+			if err != nil {
+				return err
+			}
+			ct.Synonym = ts
 			return nil
 		}
 
@@ -1212,6 +1240,35 @@ func (p *parser) sniffTableConstraint() bool {
 	return p.sniff("FOREIGN") || p.sniff("CHECK")
 }
 
+func (p *parser) sniffTableSynonym() bool {
+	return p.sniff("SYNONYM")
+}
+
+func (p *parser) parseTableSynonym() (ID, *parseError) {
+	debugf("parseTableSynonym: %v", p)
+
+	/*
+		table_synonym:
+			SYNONYM ( name )
+	*/
+
+	if err := p.expect("SYNONYM"); err != nil {
+		return "", err
+	}
+	if err := p.expect("("); err != nil {
+		return "", err
+	}
+	name, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return "", err
+	}
+	if err := p.expect(")"); err != nil {
+		return "", err
+	}
+
+	return name, nil
+}
+
 func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	debugf("parseCreateIndex: %v", p)
 
@@ -1295,7 +1352,7 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 
 	/*
 		{ CREATE VIEW | CREATE OR REPLACE VIEW } view_name
-		SQL SECURITY INVOKER
+		SQL SECURITY {INVOKER | DEFINER}
 		AS query
 	*/
 
@@ -1312,7 +1369,26 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 		return nil, err
 	}
 	vname, err := p.parseTableOrIndexOrColumnName()
-	if err := p.expect("SQL", "SECURITY", "INVOKER", "AS"); err != nil {
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expect("SQL", "SECURITY"); err != nil {
+		return nil, err
+	}
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+	var securityType SecurityType
+	switch {
+	case tok.caseEqual("INVOKER"):
+		securityType = Invoker
+	case tok.caseEqual("DEFINER"):
+		securityType = Definer
+	default:
+		return nil, p.errorf("got %q, want INVOKER or DEFINER", tok.value)
+	}
+	if err := p.expect("AS"); err != nil {
 		return nil, err
 	}
 	query, err := p.parseQuery()
@@ -1321,9 +1397,10 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 	}
 
 	return &CreateView{
-		Name:      vname,
-		OrReplace: orReplace,
-		Query:     query,
+		Name:         vname,
+		OrReplace:    orReplace,
+		SecurityType: securityType,
+		Query:        query,
 
 		Position: pos,
 	}, nil
@@ -1547,7 +1624,10 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			| DROP [ COLUMN ] column_name
 			| ADD table_constraint
 			| DROP CONSTRAINT constraint_name
-			| SET ON DELETE { CASCADE | NO ACTION } }
+			| SET ON DELETE { CASCADE | NO ACTION }
+			| ADD SYNONYM synonym_name
+			| DROP SYNONYM synonym_name
+			| RENAME TO new_table_name }
 
 		table_column_alteration:
 			ALTER [ COLUMN ] column_name { { scalar_type | array_type } [NOT NULL] | SET options_def }
@@ -1592,6 +1672,16 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			return a, nil
 		}
 
+		// TODO: "COLUMN" is optional. A column named SYNONYM is allowed.
+		if p.eat("SYNONYM") {
+			synonym, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			a.Alteration = AddSynonym{Name: synonym}
+			return a, nil
+		}
+
 		// TODO: "COLUMN" is optional.
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
@@ -1618,6 +1708,16 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 
 		if p.eat("ROW", "DELETION", "POLICY") {
 			a.Alteration = DropRowDeletionPolicy{}
+			return a, nil
+		}
+
+		// TODO: "COLUMN" is optional. A column named SYNONYM is allowed.
+		if p.eat("SYNONYM") {
+			synonym, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			a.Alteration = DropSynonym{Name: synonym}
 			return a, nil
 		}
 
@@ -1671,8 +1771,76 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			a.Alteration = ReplaceRowDeletionPolicy{RowDeletionPolicy: rdp}
 			return a, nil
 		}
+	case tok.caseEqual("RENAME"):
+		if p.eat("TO") {
+			newName, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			rt := RenameTo{ToName: newName}
+			if p.eat(",", "ADD", "SYNONYM") {
+				synonym, err := p.parseTableOrIndexOrColumnName()
+				if err != nil {
+					return nil, err
+				}
+				rt.Synonym = synonym
+			}
+			a.Alteration = rt
+			return a, nil
+		}
 	}
 	return a, nil
+}
+
+func (p *parser) parseRenameTable() (*RenameTable, *parseError) {
+	debugf("parseRenameTable: %v", p)
+
+	/*
+		RENAME TABLE table_name TO new_name [, table_name2 TO new_name2, ...]
+	*/
+
+	if err := p.expect("RENAME"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("TABLE"); err != nil {
+		return nil, err
+	}
+	rt := &RenameTable{
+		Position: pos,
+	}
+
+	var renameOps []TableRenameOp
+	for {
+		fromName, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		if err := p.expect("TO"); err != nil {
+			return nil, err
+		}
+		toName, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		renameOps = append(renameOps, TableRenameOp{FromName: fromName, ToName: toName})
+
+		tok := p.next()
+		if tok.err != nil {
+			if tok.err == eof {
+				break
+			}
+			return nil, tok.err
+		} else if tok.value == "," {
+			continue
+		} else if tok.value == ";" {
+			break
+		} else {
+			return nil, p.errorf("unexpected token %q", tok.value)
+		}
+	}
+	rt.TableRenameOps = renameOps
+	return rt, nil
 }
 
 func (p *parser) parseAlterDatabase() (*AlterDatabase, *parseError) {
@@ -2673,6 +2841,159 @@ func (p *parser) parseAlterIndex() (*AlterIndex, *parseError) {
 	return nil, p.errorf("got %q, expected ADD or DROP", tok.value)
 }
 
+func (p *parser) parseCreateSequence() (*CreateSequence, *parseError) {
+	debugf("parseCreateSequence: %v", p)
+
+	/*
+		CREATE SEQUENCE
+		  [ IF NOT EXISTS ] sequence_name
+		  [ OPTIONS ( sequence_options ) ]
+	*/
+
+	if err := p.expect("CREATE"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("SEQUENCE"); err != nil {
+		return nil, err
+	}
+	var ifNotExists bool
+	if p.eat("IF", "NOT", "EXISTS") {
+		ifNotExists = true
+	}
+	sname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+
+	cs := &CreateSequence{Name: sname, IfNotExists: ifNotExists, Position: pos}
+
+	if p.sniff("OPTIONS") {
+		cs.Options, err = p.parseSequenceOptions()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return cs, nil
+}
+
+func (p *parser) parseAlterSequence() (*AlterSequence, *parseError) {
+	debugf("parseAlterSequence: %v", p)
+
+	/*
+		ALTER SEQUENCE sequence_name
+		SET OPTIONS sequence_options
+	*/
+
+	if err := p.expect("ALTER"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("SEQUENCE"); err != nil {
+		return nil, err
+	}
+	sname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+
+	as := &AlterSequence{Name: sname, Position: pos}
+
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+	switch {
+	default:
+		return nil, p.errorf("got %q, expected SET", tok.value)
+	case tok.caseEqual("SET"):
+		options, err := p.parseSequenceOptions()
+		if err != nil {
+			return nil, err
+		}
+		as.Alteration = SetSequenceOptions{Options: options}
+		return as, nil
+	}
+}
+
+func (p *parser) parseSequenceOptions() (SequenceOptions, *parseError) {
+	debugf("parseSequenceOptions: %v", p)
+
+	if err := p.expect("OPTIONS", "("); err != nil {
+		return SequenceOptions{}, err
+	}
+
+	// We ignore case for the key (because it is easier) but not the value.
+	var so SequenceOptions
+	for {
+		if p.eat("sequence_kind", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return SequenceOptions{}, tok.err
+			}
+			if tok.typ != stringToken {
+				return SequenceOptions{}, p.errorf("invalid sequence_kind value: %v", tok.value)
+			}
+			sequenceKind := tok.string
+			so.SequenceKind = &sequenceKind
+		} else if p.eat("skip_range_min", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return SequenceOptions{}, tok.err
+			}
+			if tok.typ != int64Token {
+				return SequenceOptions{}, p.errorf("invalid skip_range_min value: %v", tok.value)
+			}
+			value, err := strconv.Atoi(tok.value)
+			if err != nil {
+				return SequenceOptions{}, p.errorf("invalid skip_range_min value: %v", tok.value)
+			}
+			so.SkipRangeMin = &value
+		} else if p.eat("skip_range_max", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return SequenceOptions{}, tok.err
+			}
+			if tok.typ != int64Token {
+				return SequenceOptions{}, p.errorf("invalid skip_range_max value: %v", tok.value)
+			}
+			value, err := strconv.Atoi(tok.value)
+			if err != nil {
+				return SequenceOptions{}, p.errorf("invalid skip_range_max value: %v", tok.value)
+			}
+			so.SkipRangeMax = &value
+		} else if p.eat("start_with_counter", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return SequenceOptions{}, tok.err
+			}
+			if tok.typ != int64Token {
+				return SequenceOptions{}, p.errorf("invalid start_with_counter value: %v", tok.value)
+			}
+			value, err := strconv.Atoi(tok.value)
+			if err != nil {
+				return SequenceOptions{}, p.errorf("invalid start_with_counter value: %v", tok.value)
+			}
+			so.StartWithCounter = &value
+		} else {
+			tok := p.next()
+			return SequenceOptions{}, p.errorf("unknown sequence option: %v", tok.value)
+		}
+		if p.sniff(")") {
+			break
+		}
+		if !p.eat(",") {
+			return SequenceOptions{}, p.errorf("missing ',' in options list")
+		}
+	}
+	if err := p.expect(")"); err != nil {
+		return SequenceOptions{}, err
+	}
+
+	return so, nil
+}
+
 var baseTypes = map[string]TypeBase{
 	"BOOL":      Bool,
 	"INT64":     Int64,
@@ -3386,6 +3707,76 @@ var dateIntervalArgParser = intervalArgParser((*parser).parseDateIntervalDatePar
 // Special argument parser for TIMESTAMP_ADD, TIMESTAMP_SUB
 var timestampIntervalArgParser = intervalArgParser((*parser).parseTimestampIntervalDatePart)
 
+var sequenceArgParser = func(p *parser) (Expr, *parseError) {
+	if p.eat("SEQUENCE") {
+		name, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		return SequenceExpr{Name: name}, nil
+	}
+	return p.parseExpr()
+}
+
+func (p *parser) parseAggregateFunc() (Func, *parseError) {
+	tok := p.next()
+	if tok.err != nil {
+		return Func{}, tok.err
+	}
+	name := strings.ToUpper(tok.value)
+	if err := p.expect("("); err != nil {
+		return Func{}, err
+	}
+	var distinct bool
+	if p.eat("DISTINCT") {
+		distinct = true
+	}
+	args, err := p.parseExprList()
+	if err != nil {
+		return Func{}, err
+	}
+	var nullsHandling NullsHandling
+	if p.eat("IGNORE", "NULLS") {
+		nullsHandling = IgnoreNulls
+	} else if p.eat("RESPECT", "NULLS") {
+		nullsHandling = RespectNulls
+	}
+	var having *AggregateHaving
+	if p.eat("HAVING") {
+		tok := p.next()
+		if tok.err != nil {
+			return Func{}, tok.err
+		}
+		var cond AggregateHavingCondition
+		switch tok.value {
+		case "MAX":
+			cond = HavingMax
+		case "MIN":
+			cond = HavingMin
+		default:
+			return Func{}, p.errorf("got %q, want MAX or MIN", tok.value)
+		}
+		expr, err := p.parseExpr()
+		if err != nil {
+			return Func{}, err
+		}
+		having = &AggregateHaving{
+			Condition: cond,
+			Expr:      expr,
+		}
+	}
+	if err := p.expect(")"); err != nil {
+		return Func{}, err
+	}
+	return Func{
+		Name:          name,
+		Args:          args,
+		Distinct:      distinct,
+		NullsHandling: nullsHandling,
+		Having:        having,
+	}, nil
+}
+
 /*
 Expressions
 
@@ -3738,6 +4129,10 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	// this is a function invocation.
 	// The `funcs` map is keyed by upper case strings.
 	if name := strings.ToUpper(tok.value); funcs[name] && p.sniff("(") {
+		if aggregateFuncs[name] {
+			p.back()
+			return p.parseAggregateFunc()
+		}
 		var list []Expr
 		var err *parseError
 		if f, ok := funcArgParsers[name]; ok {

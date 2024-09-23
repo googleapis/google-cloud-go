@@ -1,5 +1,141 @@
 # Changes
 
+## [2.8.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.7.0...dataproc/v2.8.0) (2024-09-19)
+
+
+### Features
+
+* **dataproc:** Add resource reference for KMS keys and fix comments ([37866ce](https://github.com/googleapis/google-cloud-go/commit/37866ce67a286a3eed1b92f53bdac2ae8f1c63ed))
+
+## [2.7.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.6.0...dataproc/v2.7.0) (2024-09-12)
+
+
+### Features
+
+* **dataproc:** Add optional parameters (tarball-access) in DiagnoseClusterRequest ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **dataproc:** Add support for new Dataproc features ([9b4b2fa](https://github.com/googleapis/google-cloud-go/commit/9b4b2fa87864906aeae3a8fda460466f951bc6c9))
+* **dataproc:** Add support for new Dataproc features ([#10817](https://github.com/googleapis/google-cloud-go/issues/10817)) ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+
+
+### Bug Fixes
+
+* **dataproc/v2:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [2.6.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.5.4...dataproc/v2.6.0) (2024-08-20)
+
+
+### Features
+
+* **dataproc:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [2.5.4](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.5.3...dataproc/v2.5.4) (2024-08-08)
+
+
+### Bug Fixes
+
+* **dataproc:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+## [2.5.3](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.5.2...dataproc/v2.5.3) (2024-07-24)
+
+
+### Bug Fixes
+
+* **dataproc/v2:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
+## [2.5.2](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.5.1...dataproc/v2.5.2) (2024-07-10)
+
+
+### Bug Fixes
+
+* **dataproc/v2:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [2.5.1](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.5.0...dataproc/v2.5.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **dataproc/v2:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [2.5.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.4.2...dataproc/v2.5.0) (2024-06-26)
+
+
+### Features
+
+* **dataproc:** Add the cohort and auto tuning configuration to the batch's RuntimeConfig ([#10424](https://github.com/googleapis/google-cloud-go/issues/10424)) ([2d5a9ad](https://github.com/googleapis/google-cloud-go/commit/2d5a9adcd6ee4803dd58b925b93bc0b51ec2b720))
+
+
+### Bug Fixes
+
+* **dataproc:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [2.4.2](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.4.1...dataproc/v2.4.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **dataproc:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [2.4.1](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.4.0...dataproc/v2.4.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **dataproc:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [2.4.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.3.0...dataproc/v2.4.0) (2024-01-30)
+
+
+### Features
+
+* **dataproc:** Add session and session_template controllers ([4d56af1](https://github.com/googleapis/google-cloud-go/commit/4d56af183d42ff12862c0c35226e767ed8763118))
+
+
+### Bug Fixes
+
+* **dataproc:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [2.3.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.2.3...dataproc/v2.3.0) (2023-11-09)
+
+
+### Features
+
+* **dataproc:** Support required_registration_fraction for secondary workers ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [2.2.3](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.2.2...dataproc/v2.2.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **dataproc:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [2.2.2](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.2.1...dataproc/v2.2.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **dataproc:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [2.2.1](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.2.0...dataproc/v2.2.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **dataproc:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [2.2.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.1.0...dataproc/v2.2.0) (2023-09-20)
+
+
+### Features
+
+* **dataproc:** Add optional parameters (tarball_gcs_dir, diagnosis_interval, jobs, yarn_application_ids) in DiagnoseClusterRequest ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+
+## [2.1.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.0.2...dataproc/v2.1.0) (2023-09-11)
+
+
+### Features
+
+* **dataproc:** Support min_num_instances for primary worker and InstanceFlexibilityPolicy for secondary worker ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
 ## [2.0.2](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.0.1...dataproc/v2.0.2) (2023-08-08)
 
 

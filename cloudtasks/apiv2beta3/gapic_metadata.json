@@ -10,11 +10,6 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
-            "BufferTask": {
-              "methods": [
-                "BufferTask"
-              ]
-            },
             "CreateQueue": {
               "methods": [
                 "CreateQueue"
@@ -110,11 +105,6 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
-            "BufferTask": {
-              "methods": [
-                "BufferTask"
-              ]
-            },
             "CreateQueue": {
               "methods": [
                 "CreateQueue"

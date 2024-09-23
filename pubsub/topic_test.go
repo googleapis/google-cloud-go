@@ -108,6 +108,63 @@ func TestCreateTopicWithConfig(t *testing.T) {
 	}
 }
 
+func TestTopic_IngestionKinesis(t *testing.T) {
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	id := "test-topic-kinesis"
+	want := TopicConfig{
+		IngestionDataSourceSettings: &IngestionDataSourceSettings{
+			Source: &IngestionDataSourceAWSKinesis{
+				StreamARN:         "fake-stream-arn",
+				ConsumerARN:       "fake-consumer-arn",
+				AWSRoleARN:        "fake-aws-role-arn",
+				GCPServiceAccount: "fake-gcp-sa",
+			},
+		},
+	}
+
+	topic := mustCreateTopicWithConfig(t, c, id, &want)
+	got, err := topic.Config(context.Background())
+	if err != nil {
+		t.Fatalf("error getting topic config: %v", err)
+	}
+	want.State = TopicStateActive
+	opt := cmpopts.IgnoreUnexported(TopicConfig{})
+	if !testutil.Equal(got, want, opt) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+
+	// Update ingestion settings.
+	ctx := context.Background()
+	settings := &IngestionDataSourceSettings{
+		Source: &IngestionDataSourceAWSKinesis{
+			StreamARN:         "fake-stream-arn-2",
+			ConsumerARN:       "fake-consumer-arn-2",
+			AWSRoleARN:        "aws-role-arn-2",
+			GCPServiceAccount: "gcp-service-account-2",
+		},
+	}
+	config2, err := topic.Update(ctx, TopicConfigToUpdate{IngestionDataSourceSettings: settings})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !testutil.Equal(config2.IngestionDataSourceSettings, settings, opt) {
+		t.Errorf("\ngot  %+v\nwant %+v", config2.IngestionDataSourceSettings, settings)
+	}
+
+	// Clear schema settings.
+	settings = &IngestionDataSourceSettings{}
+	config3, err := topic.Update(ctx, TopicConfigToUpdate{IngestionDataSourceSettings: settings})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if config3.IngestionDataSourceSettings != nil {
+		t.Errorf("got: %+v, want nil", config3.IngestionDataSourceSettings)
+	}
+}
+
 func TestListTopics(t *testing.T) {
 	ctx := context.Background()
 	c, srv := newFake(t)
@@ -197,7 +254,7 @@ func TestPublishTimeout(t *testing.T) {
 	select {
 	case <-r.Ready():
 		_, err = r.Get(ctx)
-		if err != context.DeadlineExceeded {
+		if !errors.Is(err, context.DeadlineExceeded) {
 			t.Fatalf("got %v, want context.DeadlineExceeded", err)
 		}
 	case <-time.After(2 * topic.PublishSettings.Timeout):
@@ -688,5 +745,28 @@ func TestPublishOrderingNotEnabled(t *testing.T) {
 	res := publishSingleMessageWithKey(ctx, topic, "test", "non-existent-key")
 	if _, err := res.Get(ctx); !errors.Is(err, errTopicOrderingNotEnabled) {
 		t.Errorf("got %v, want errTopicOrderingNotEnabled", err)
+	}
+}
+
+func TestPublishCompression(t *testing.T) {
+	ctx := context.Background()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "topic-compression")
+	defer topic.Stop()
+
+	topic.PublishSettings.EnableCompression = true
+	topic.PublishSettings.CompressionBytesThreshold = 50
+
+	const messageSizeBytes = 1000
+
+	msg := &Message{Data: bytes.Repeat([]byte{'A'}, int(messageSizeBytes))}
+	res := topic.Publish(ctx, msg)
+
+	_, err := res.Get(ctx)
+	if err != nil {
+		t.Errorf("publish result got err: %v", err)
 	}
 }

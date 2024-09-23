@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "ExecutionsClient",
           "rpcs": {
+            "CancelExecution": {
+              "methods": [
+                "CancelExecution"
+              ]
+            },
             "DeleteExecution": {
               "methods": [
                 "DeleteExecution"
@@ -50,6 +55,11 @@
         "rest": {
           "libraryClient": "ExecutionsClient",
           "rpcs": {
+            "CancelExecution": {
+              "methods": [
+                "CancelExecution"
+              ]
+            },
             "DeleteExecution": {
               "methods": [
                 "DeleteExecution"

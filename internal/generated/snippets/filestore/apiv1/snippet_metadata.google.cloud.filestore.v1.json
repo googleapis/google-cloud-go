@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/filestore/apiv1",
-    "version": "1.7.1",
+    "version": "1.9.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,51 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "file_v1_generated_CloudFilestoreManager_CancelOperation_sync",
+      "title": "file CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudFilestoreManagerClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudFilestoreManagerClient",
+          "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "file_v1_generated_CloudFilestoreManager_CreateBackup_sync",
       "title": "file CreateBackup Sample",
@@ -242,6 +287,51 @@
       ]
     },
     {
+      "regionTag": "file_v1_generated_CloudFilestoreManager_DeleteOperation_sync",
+      "title": "file DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudFilestoreManagerClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudFilestoreManagerClient",
+          "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "file_v1_generated_CloudFilestoreManager_DeleteSnapshot_sync",
       "title": "file DeleteSnapshot Sample",
       "description": "DeleteSnapshot deletes a snapshot.",
@@ -380,6 +470,98 @@
       ]
     },
     {
+      "regionTag": "file_v1_generated_CloudFilestoreManager_GetLocation_sync",
+      "title": "file GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "CloudFilestoreManagerClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "CloudFilestoreManagerClient",
+          "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "file_v1_generated_CloudFilestoreManager_GetOperation_sync",
+      "title": "file GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudFilestoreManagerClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "CloudFilestoreManagerClient",
+          "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "file_v1_generated_CloudFilestoreManager_GetSnapshot_sync",
       "title": "file GetSnapshot Sample",
       "description": "GetSnapshot gets the details of a specific snapshot.",
@@ -466,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -512,7 +694,99 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "file_v1_generated_CloudFilestoreManager_ListLocations_sync",
+      "title": "file ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CloudFilestoreManagerClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "CloudFilestoreManagerClient",
+          "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "file_v1_generated_CloudFilestoreManager_ListOperations_sync",
+      "title": "file ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CloudFilestoreManagerClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CloudFilestoreManagerClient",
+          "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -558,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -594,6 +868,52 @@
         "method": {
           "shortName": "RestoreInstance",
           "fullName": "google.cloud.filestore.v1.CloudFilestoreManager.RestoreInstance",
+          "service": {
+            "shortName": "CloudFilestoreManager",
+            "fullName": "google.cloud.filestore.v1.CloudFilestoreManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "file_v1_generated_CloudFilestoreManager_RevertInstance_sync",
+      "title": "file RevertInstance Sample",
+      "description": "RevertInstance revert an existing instance's file system to a specified snapshot.",
+      "file": "CloudFilestoreManagerClient/RevertInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RevertInstance",
+        "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient.RevertInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "filestorepb.RevertInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RevertInstanceOperation",
+        "client": {
+          "shortName": "CloudFilestoreManagerClient",
+          "fullName": "google.cloud.filestore.v1.CloudFilestoreManagerClient"
+        },
+        "method": {
+          "shortName": "RevertInstance",
+          "fullName": "google.cloud.filestore.v1.CloudFilestoreManager.RevertInstance",
           "service": {
             "shortName": "CloudFilestoreManager",
             "fullName": "google.cloud.filestore.v1.CloudFilestoreManager"

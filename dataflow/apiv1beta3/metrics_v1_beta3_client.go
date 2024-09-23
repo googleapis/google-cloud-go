@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -51,10 +50,13 @@ type MetricsV1Beta3CallOptions struct {
 func defaultMetricsV1Beta3GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dataflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dataflow.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dataflow.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -174,7 +176,7 @@ type metricsV1Beta3GRPCClient struct {
 	metricsV1Beta3Client dataflowpb.MetricsV1Beta3Client
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewMetricsV1Beta3Client creates a new metrics v1 beta3 client based on gRPC.
@@ -224,7 +226,9 @@ func (c *metricsV1Beta3GRPCClient) Connection() *grpc.ClientConn {
 func (c *metricsV1Beta3GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -241,8 +245,8 @@ type metricsV1Beta3RESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing MetricsV1Beta3Client
 	CallOptions **MetricsV1Beta3CallOptions
@@ -273,9 +277,12 @@ func NewMetricsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultMetricsV1Beta3RESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dataflow.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dataflow.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dataflow.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -285,7 +292,9 @@ func defaultMetricsV1Beta3RESTClientOptions() []option.ClientOption {
 func (c *metricsV1Beta3RESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -303,9 +312,10 @@ func (c *metricsV1Beta3RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *metricsV1Beta3GRPCClient) GetJobMetrics(ctx context.Context, req *dataflowpb.GetJobMetricsRequest, opts ...gax.CallOption) (*dataflowpb.JobMetrics, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetJobMetrics[0:len((*c.CallOptions).GetJobMetrics):len((*c.CallOptions).GetJobMetrics)], opts...)
 	var resp *dataflowpb.JobMetrics
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -320,9 +330,10 @@ func (c *metricsV1Beta3GRPCClient) GetJobMetrics(ctx context.Context, req *dataf
 }
 
 func (c *metricsV1Beta3GRPCClient) GetJobExecutionDetails(ctx context.Context, req *dataflowpb.GetJobExecutionDetailsRequest, opts ...gax.CallOption) *StageSummaryIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetJobExecutionDetails[0:len((*c.CallOptions).GetJobExecutionDetails):len((*c.CallOptions).GetJobExecutionDetails)], opts...)
 	it := &StageSummaryIterator{}
 	req = proto.Clone(req).(*dataflowpb.GetJobExecutionDetailsRequest)
@@ -365,9 +376,10 @@ func (c *metricsV1Beta3GRPCClient) GetJobExecutionDetails(ctx context.Context, r
 }
 
 func (c *metricsV1Beta3GRPCClient) GetStageExecutionDetails(ctx context.Context, req *dataflowpb.GetStageExecutionDetailsRequest, opts ...gax.CallOption) *WorkerDetailsIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId()), "stage_id", url.QueryEscape(req.GetStageId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId()), "stage_id", url.QueryEscape(req.GetStageId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetStageExecutionDetails[0:len((*c.CallOptions).GetStageExecutionDetails):len((*c.CallOptions).GetStageExecutionDetails)], opts...)
 	it := &WorkerDetailsIterator{}
 	req = proto.Clone(req).(*dataflowpb.GetStageExecutionDetailsRequest)
@@ -426,19 +438,21 @@ func (c *metricsV1Beta3RESTClient) GetJobMetrics(ctx context.Context, req *dataf
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetStartTime() != nil {
-		startTime, err := protojson.Marshal(req.GetStartTime())
+		field, err := protojson.Marshal(req.GetStartTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("startTime", string(startTime[1:len(startTime)-1]))
+		params.Add("startTime", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetJobMetrics[0:len((*c.CallOptions).GetJobMetrics):len((*c.CallOptions).GetJobMetrics)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.JobMetrics{}
@@ -515,7 +529,8 @@ func (c *metricsV1Beta3RESTClient) GetJobExecutionDetails(ctx context.Context, r
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -597,11 +612,11 @@ func (c *metricsV1Beta3RESTClient) GetStageExecutionDetails(ctx context.Context,
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetEndTime() != nil {
-			endTime, err := protojson.Marshal(req.GetEndTime())
+			field, err := protojson.Marshal(req.GetEndTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("endTime", string(endTime[1:len(endTime)-1]))
+			params.Add("endTime", string(field[1:len(field)-1]))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -610,17 +625,18 @@ func (c *metricsV1Beta3RESTClient) GetStageExecutionDetails(ctx context.Context,
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
 		if req.GetStartTime() != nil {
-			startTime, err := protojson.Marshal(req.GetStartTime())
+			field, err := protojson.Marshal(req.GetStartTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("startTime", string(startTime[1:len(startTime)-1]))
+			params.Add("startTime", string(field[1:len(field)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -673,98 +689,4 @@ func (c *metricsV1Beta3RESTClient) GetStageExecutionDetails(ctx context.Context,
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// StageSummaryIterator manages a stream of *dataflowpb.StageSummary.
-type StageSummaryIterator struct {
-	items    []*dataflowpb.StageSummary
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataflowpb.StageSummary, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StageSummaryIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StageSummaryIterator) Next() (*dataflowpb.StageSummary, error) {
-	var item *dataflowpb.StageSummary
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StageSummaryIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StageSummaryIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// WorkerDetailsIterator manages a stream of *dataflowpb.WorkerDetails.
-type WorkerDetailsIterator struct {
-	items    []*dataflowpb.WorkerDetails
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataflowpb.WorkerDetails, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *WorkerDetailsIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *WorkerDetailsIterator) Next() (*dataflowpb.WorkerDetails, error) {
-	var item *dataflowpb.WorkerDetails
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *WorkerDetailsIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *WorkerDetailsIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

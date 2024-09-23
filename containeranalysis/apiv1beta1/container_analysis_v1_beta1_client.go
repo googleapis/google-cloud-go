@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -47,15 +46,19 @@ type ContainerAnalysisV1Beta1CallOptions struct {
 	GetIamPolicy            []gax.CallOption
 	TestIamPermissions      []gax.CallOption
 	GeneratePackagesSummary []gax.CallOption
+	ExportSBOM              []gax.CallOption
 }
 
 func defaultContainerAnalysisV1Beta1GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("containeranalysis.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("containeranalysis.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("containeranalysis.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://containeranalysis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -73,6 +76,7 @@ func defaultContainerAnalysisV1Beta1CallOptions() *ContainerAnalysisV1Beta1CallO
 			gax.WithTimeout(30000 * time.Millisecond),
 		},
 		GeneratePackagesSummary: []gax.CallOption{},
+		ExportSBOM:              []gax.CallOption{},
 	}
 }
 
@@ -88,6 +92,7 @@ func defaultContainerAnalysisV1Beta1RESTCallOptions() *ContainerAnalysisV1Beta1C
 			gax.WithTimeout(30000 * time.Millisecond),
 		},
 		GeneratePackagesSummary: []gax.CallOption{},
+		ExportSBOM:              []gax.CallOption{},
 	}
 }
 
@@ -100,6 +105,7 @@ type internalContainerAnalysisV1Beta1Client interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	GeneratePackagesSummary(context.Context, *containeranalysispb.GeneratePackagesSummaryRequest, ...gax.CallOption) (*containeranalysispb.PackagesSummaryResponse, error)
+	ExportSBOM(context.Context, *containeranalysispb.ExportSBOMRequest, ...gax.CallOption) (*containeranalysispb.ExportSBOMResponse, error)
 }
 
 // ContainerAnalysisV1Beta1Client is a client for interacting with Container Analysis API.
@@ -189,6 +195,11 @@ func (c *ContainerAnalysisV1Beta1Client) GeneratePackagesSummary(ctx context.Con
 	return c.internalClient.GeneratePackagesSummary(ctx, req, opts...)
 }
 
+// ExportSBOM generates an SBOM and other dependency information for the given resource.
+func (c *ContainerAnalysisV1Beta1Client) ExportSBOM(ctx context.Context, req *containeranalysispb.ExportSBOMRequest, opts ...gax.CallOption) (*containeranalysispb.ExportSBOMResponse, error) {
+	return c.internalClient.ExportSBOM(ctx, req, opts...)
+}
+
 // containerAnalysisV1Beta1GRPCClient is a client for interacting with Container Analysis API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -203,7 +214,7 @@ type containerAnalysisV1Beta1GRPCClient struct {
 	containerAnalysisV1Beta1Client containeranalysispb.ContainerAnalysisV1Beta1Client
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewContainerAnalysisV1Beta1Client creates a new container analysis v1 beta1 client based on gRPC.
@@ -264,7 +275,9 @@ func (c *containerAnalysisV1Beta1GRPCClient) Connection() *grpc.ClientConn {
 func (c *containerAnalysisV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -281,8 +294,8 @@ type containerAnalysisV1Beta1RESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing ContainerAnalysisV1Beta1Client
 	CallOptions **ContainerAnalysisV1Beta1CallOptions
@@ -324,9 +337,12 @@ func NewContainerAnalysisV1Beta1RESTClient(ctx context.Context, opts ...option.C
 func defaultContainerAnalysisV1Beta1RESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://containeranalysis.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://containeranalysis.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://containeranalysis.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://containeranalysis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -336,7 +352,9 @@ func defaultContainerAnalysisV1Beta1RESTClientOptions() []option.ClientOption {
 func (c *containerAnalysisV1Beta1RESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -354,9 +372,10 @@ func (c *containerAnalysisV1Beta1RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *containerAnalysisV1Beta1GRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -371,9 +390,10 @@ func (c *containerAnalysisV1Beta1GRPCClient) SetIamPolicy(ctx context.Context, r
 }
 
 func (c *containerAnalysisV1Beta1GRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -388,9 +408,10 @@ func (c *containerAnalysisV1Beta1GRPCClient) GetIamPolicy(ctx context.Context, r
 }
 
 func (c *containerAnalysisV1Beta1GRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -405,14 +426,33 @@ func (c *containerAnalysisV1Beta1GRPCClient) TestIamPermissions(ctx context.Cont
 }
 
 func (c *containerAnalysisV1Beta1GRPCClient) GeneratePackagesSummary(ctx context.Context, req *containeranalysispb.GeneratePackagesSummaryRequest, opts ...gax.CallOption) (*containeranalysispb.PackagesSummaryResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GeneratePackagesSummary[0:len((*c.CallOptions).GeneratePackagesSummary):len((*c.CallOptions).GeneratePackagesSummary)], opts...)
 	var resp *containeranalysispb.PackagesSummaryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.containerAnalysisV1Beta1Client.GeneratePackagesSummary(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *containerAnalysisV1Beta1GRPCClient) ExportSBOM(ctx context.Context, req *containeranalysispb.ExportSBOMRequest, opts ...gax.CallOption) (*containeranalysispb.ExportSBOMResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportSBOM[0:len((*c.CallOptions).ExportSBOM):len((*c.CallOptions).ExportSBOM)], opts...)
+	var resp *containeranalysispb.ExportSBOMResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.containerAnalysisV1Beta1Client.ExportSBOM(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -448,9 +488,11 @@ func (c *containerAnalysisV1Beta1RESTClient) SetIamPolicy(ctx context.Context, r
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -519,9 +561,11 @@ func (c *containerAnalysisV1Beta1RESTClient) GetIamPolicy(ctx context.Context, r
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -589,9 +633,11 @@ func (c *containerAnalysisV1Beta1RESTClient) TestIamPermissions(ctx context.Cont
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -653,12 +699,80 @@ func (c *containerAnalysisV1Beta1RESTClient) GeneratePackagesSummary(ctx context
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GeneratePackagesSummary[0:len((*c.CallOptions).GeneratePackagesSummary):len((*c.CallOptions).GeneratePackagesSummary)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containeranalysispb.PackagesSummaryResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ExportSBOM generates an SBOM and other dependency information for the given resource.
+func (c *containerAnalysisV1Beta1RESTClient) ExportSBOM(ctx context.Context, req *containeranalysispb.ExportSBOMRequest, opts ...gax.CallOption) (*containeranalysispb.ExportSBOMResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:exportSBOM", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ExportSBOM[0:len((*c.CallOptions).ExportSBOM):len((*c.CallOptions).ExportSBOM)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &containeranalysispb.ExportSBOMResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

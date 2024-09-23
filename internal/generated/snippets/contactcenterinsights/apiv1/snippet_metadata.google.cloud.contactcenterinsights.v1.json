@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/contactcenterinsights/apiv1",
-    "version": "1.10.0",
+    "version": "1.14.1",
     "language": "GO",
     "apis": [
       {
@@ -42,6 +42,52 @@
         "method": {
           "shortName": "BulkAnalyzeConversations",
           "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.BulkAnalyzeConversations",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_BulkDeleteConversations_sync",
+      "title": "contactcenterinsights BulkDeleteConversations Sample",
+      "description": "BulkDeleteConversations deletes multiple conversations in a single request.",
+      "file": "Client/BulkDeleteConversations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BulkDeleteConversations",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.BulkDeleteConversations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.BulkDeleteConversationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BulkDeleteConversationsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "BulkDeleteConversations",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.BulkDeleteConversations",
           "service": {
             "shortName": "ContactCenterInsights",
             "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
@@ -1242,7 +1288,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1288,7 +1334,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1426,7 +1472,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1472,7 +1518,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1518,7 +1564,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

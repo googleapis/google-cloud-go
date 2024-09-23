@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/alloydb/apiv1beta",
-    "version": "1.4.0",
+    "version": "1.12.1",
     "language": "GO",
     "apis": [
       {
@@ -655,7 +655,7 @@
     {
       "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_GenerateClientCertificate_sync",
       "title": "alloydb GenerateClientCertificate Sample",
-      "description": "GenerateClientCertificate generate a client certificate signed by a Cluster CA.\nThe sole purpose of this endpoint is to support the Auth Proxy client and\nthe endpoint's behavior is subject to change without notice, so do not rely\non its behavior remaining constant. Future changes will not break the Auth\nProxy client.",
+      "description": "GenerateClientCertificate generate a client certificate signed by a Cluster CA.\nThe sole purpose of this endpoint is to support AlloyDB connectors and the\nAuth Proxy client. The endpoint's behavior is subject to change without\nnotice, so do not rely on its behavior remaining constant. Future changes\nwill not break AlloyDB connectors or the Auth Proxy client.",
       "file": "AlloyDBAdminClient/GenerateClientCertificate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1107,7 +1107,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1153,7 +1153,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_ListDatabases_sync",
+      "title": "alloydb ListDatabases Sample",
+      "description": "ListDatabases lists Databases in a given project and location.",
+      "file": "AlloyDBAdminClient/ListDatabases/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDatabases",
+        "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient.ListDatabases",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.ListDatabasesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DatabaseIterator",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "ListDatabases",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin.ListDatabases",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1199,7 +1245,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1245,7 +1291,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1291,7 +1337,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1337,7 +1383,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1383,7 +1429,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

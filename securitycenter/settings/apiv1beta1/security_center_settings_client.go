@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -63,10 +62,13 @@ type SecurityCenterSettingsCallOptions struct {
 func defaultSecurityCenterSettingsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("securitycenter.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("securitycenter.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("securitycenter.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://securitycenter.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -579,7 +581,7 @@ type securityCenterSettingsGRPCClient struct {
 	securityCenterSettingsClient settingspb.SecurityCenterSettingsServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewSecurityCenterSettingsClient creates a new security center settings service client based on gRPC.
@@ -631,7 +633,9 @@ func (c *securityCenterSettingsGRPCClient) Connection() *grpc.ClientConn {
 func (c *securityCenterSettingsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -648,8 +652,8 @@ type securityCenterSettingsRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing SecurityCenterSettingsClient
 	CallOptions **SecurityCenterSettingsCallOptions
@@ -682,9 +686,12 @@ func NewSecurityCenterSettingsRESTClient(ctx context.Context, opts ...option.Cli
 func defaultSecurityCenterSettingsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://securitycenter.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://securitycenter.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://securitycenter.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://securitycenter.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -694,7 +701,9 @@ func defaultSecurityCenterSettingsRESTClientOptions() []option.ClientOption {
 func (c *securityCenterSettingsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -712,9 +721,10 @@ func (c *securityCenterSettingsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *securityCenterSettingsGRPCClient) GetServiceAccount(ctx context.Context, req *settingspb.GetServiceAccountRequest, opts ...gax.CallOption) (*settingspb.ServiceAccount, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetServiceAccount[0:len((*c.CallOptions).GetServiceAccount):len((*c.CallOptions).GetServiceAccount)], opts...)
 	var resp *settingspb.ServiceAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -729,9 +739,10 @@ func (c *securityCenterSettingsGRPCClient) GetServiceAccount(ctx context.Context
 }
 
 func (c *securityCenterSettingsGRPCClient) GetSettings(ctx context.Context, req *settingspb.GetSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
 	var resp *settingspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -746,9 +757,10 @@ func (c *securityCenterSettingsGRPCClient) GetSettings(ctx context.Context, req 
 }
 
 func (c *securityCenterSettingsGRPCClient) UpdateSettings(ctx context.Context, req *settingspb.UpdateSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "settings.name", url.QueryEscape(req.GetSettings().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "settings.name", url.QueryEscape(req.GetSettings().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
 	var resp *settingspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -763,9 +775,10 @@ func (c *securityCenterSettingsGRPCClient) UpdateSettings(ctx context.Context, r
 }
 
 func (c *securityCenterSettingsGRPCClient) ResetSettings(ctx context.Context, req *settingspb.ResetSettingsRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ResetSettings[0:len((*c.CallOptions).ResetSettings):len((*c.CallOptions).ResetSettings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -776,9 +789,10 @@ func (c *securityCenterSettingsGRPCClient) ResetSettings(ctx context.Context, re
 }
 
 func (c *securityCenterSettingsGRPCClient) BatchGetSettings(ctx context.Context, req *settingspb.BatchGetSettingsRequest, opts ...gax.CallOption) (*settingspb.BatchGetSettingsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).BatchGetSettings[0:len((*c.CallOptions).BatchGetSettings):len((*c.CallOptions).BatchGetSettings)], opts...)
 	var resp *settingspb.BatchGetSettingsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -793,9 +807,10 @@ func (c *securityCenterSettingsGRPCClient) BatchGetSettings(ctx context.Context,
 }
 
 func (c *securityCenterSettingsGRPCClient) CalculateEffectiveSettings(ctx context.Context, req *settingspb.CalculateEffectiveSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CalculateEffectiveSettings[0:len((*c.CallOptions).CalculateEffectiveSettings):len((*c.CallOptions).CalculateEffectiveSettings)], opts...)
 	var resp *settingspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -810,9 +825,10 @@ func (c *securityCenterSettingsGRPCClient) CalculateEffectiveSettings(ctx contex
 }
 
 func (c *securityCenterSettingsGRPCClient) BatchCalculateEffectiveSettings(ctx context.Context, req *settingspb.BatchCalculateEffectiveSettingsRequest, opts ...gax.CallOption) (*settingspb.BatchCalculateEffectiveSettingsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).BatchCalculateEffectiveSettings[0:len((*c.CallOptions).BatchCalculateEffectiveSettings):len((*c.CallOptions).BatchCalculateEffectiveSettings)], opts...)
 	var resp *settingspb.BatchCalculateEffectiveSettingsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -827,9 +843,10 @@ func (c *securityCenterSettingsGRPCClient) BatchCalculateEffectiveSettings(ctx c
 }
 
 func (c *securityCenterSettingsGRPCClient) GetComponentSettings(ctx context.Context, req *settingspb.GetComponentSettingsRequest, opts ...gax.CallOption) (*settingspb.ComponentSettings, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetComponentSettings[0:len((*c.CallOptions).GetComponentSettings):len((*c.CallOptions).GetComponentSettings)], opts...)
 	var resp *settingspb.ComponentSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -844,9 +861,10 @@ func (c *securityCenterSettingsGRPCClient) GetComponentSettings(ctx context.Cont
 }
 
 func (c *securityCenterSettingsGRPCClient) UpdateComponentSettings(ctx context.Context, req *settingspb.UpdateComponentSettingsRequest, opts ...gax.CallOption) (*settingspb.ComponentSettings, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "component_settings.name", url.QueryEscape(req.GetComponentSettings().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "component_settings.name", url.QueryEscape(req.GetComponentSettings().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateComponentSettings[0:len((*c.CallOptions).UpdateComponentSettings):len((*c.CallOptions).UpdateComponentSettings)], opts...)
 	var resp *settingspb.ComponentSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -861,9 +879,10 @@ func (c *securityCenterSettingsGRPCClient) UpdateComponentSettings(ctx context.C
 }
 
 func (c *securityCenterSettingsGRPCClient) ResetComponentSettings(ctx context.Context, req *settingspb.ResetComponentSettingsRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ResetComponentSettings[0:len((*c.CallOptions).ResetComponentSettings):len((*c.CallOptions).ResetComponentSettings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -874,9 +893,10 @@ func (c *securityCenterSettingsGRPCClient) ResetComponentSettings(ctx context.Co
 }
 
 func (c *securityCenterSettingsGRPCClient) CalculateEffectiveComponentSettings(ctx context.Context, req *settingspb.CalculateEffectiveComponentSettingsRequest, opts ...gax.CallOption) (*settingspb.ComponentSettings, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CalculateEffectiveComponentSettings[0:len((*c.CallOptions).CalculateEffectiveComponentSettings):len((*c.CallOptions).CalculateEffectiveComponentSettings)], opts...)
 	var resp *settingspb.ComponentSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -891,9 +911,10 @@ func (c *securityCenterSettingsGRPCClient) CalculateEffectiveComponentSettings(c
 }
 
 func (c *securityCenterSettingsGRPCClient) ListDetectors(ctx context.Context, req *settingspb.ListDetectorsRequest, opts ...gax.CallOption) *DetectorIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDetectors[0:len((*c.CallOptions).ListDetectors):len((*c.CallOptions).ListDetectors)], opts...)
 	it := &DetectorIterator{}
 	req = proto.Clone(req).(*settingspb.ListDetectorsRequest)
@@ -936,9 +957,10 @@ func (c *securityCenterSettingsGRPCClient) ListDetectors(ctx context.Context, re
 }
 
 func (c *securityCenterSettingsGRPCClient) ListComponents(ctx context.Context, req *settingspb.ListComponentsRequest, opts ...gax.CallOption) *StringIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListComponents[0:len((*c.CallOptions).ListComponents):len((*c.CallOptions).ListComponents)], opts...)
 	it := &StringIterator{}
 	req = proto.Clone(req).(*settingspb.ListComponentsRequest)
@@ -998,9 +1020,11 @@ func (c *securityCenterSettingsRESTClient) GetServiceAccount(ctx context.Context
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetServiceAccount[0:len((*c.CallOptions).GetServiceAccount):len((*c.CallOptions).GetServiceAccount)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.ServiceAccount{}
@@ -1051,9 +1075,11 @@ func (c *securityCenterSettingsRESTClient) GetSettings(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.Settings{}
@@ -1112,19 +1138,21 @@ func (c *securityCenterSettingsRESTClient) UpdateSettings(ctx context.Context, r
 
 	params := url.Values{}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "settings.name", url.QueryEscape(req.GetSettings().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "settings.name", url.QueryEscape(req.GetSettings().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.Settings{}
@@ -1190,9 +1218,11 @@ func (c *securityCenterSettingsRESTClient) ResetSettings(ctx context.Context, re
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v:reset", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1234,9 +1264,11 @@ func (c *securityCenterSettingsRESTClient) BatchGetSettings(ctx context.Context,
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).BatchGetSettings[0:len((*c.CallOptions).BatchGetSettings):len((*c.CallOptions).BatchGetSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.BatchGetSettingsResponse{}
@@ -1300,9 +1332,11 @@ func (c *securityCenterSettingsRESTClient) CalculateEffectiveSettings(ctx contex
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v:calculate", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CalculateEffectiveSettings[0:len((*c.CallOptions).CalculateEffectiveSettings):len((*c.CallOptions).CalculateEffectiveSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.Settings{}
@@ -1359,9 +1393,11 @@ func (c *securityCenterSettingsRESTClient) BatchCalculateEffectiveSettings(ctx c
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v/effectiveSettings:batchCalculate", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).BatchCalculateEffectiveSettings[0:len((*c.CallOptions).BatchCalculateEffectiveSettings):len((*c.CallOptions).BatchCalculateEffectiveSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.BatchCalculateEffectiveSettingsResponse{}
@@ -1412,9 +1448,11 @@ func (c *securityCenterSettingsRESTClient) GetComponentSettings(ctx context.Cont
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetComponentSettings[0:len((*c.CallOptions).GetComponentSettings):len((*c.CallOptions).GetComponentSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.ComponentSettings{}
@@ -1473,19 +1511,21 @@ func (c *securityCenterSettingsRESTClient) UpdateComponentSettings(ctx context.C
 
 	params := url.Values{}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "component_settings.name", url.QueryEscape(req.GetComponentSettings().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "component_settings.name", url.QueryEscape(req.GetComponentSettings().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateComponentSettings[0:len((*c.CallOptions).UpdateComponentSettings):len((*c.CallOptions).UpdateComponentSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.ComponentSettings{}
@@ -1546,9 +1586,11 @@ func (c *securityCenterSettingsRESTClient) ResetComponentSettings(ctx context.Co
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v:reset", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1581,9 +1623,11 @@ func (c *securityCenterSettingsRESTClient) CalculateEffectiveComponentSettings(c
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v:calculate", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CalculateEffectiveComponentSettings[0:len((*c.CallOptions).CalculateEffectiveComponentSettings):len((*c.CallOptions).CalculateEffectiveComponentSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &settingspb.ComponentSettings{}
@@ -1660,7 +1704,8 @@ func (c *securityCenterSettingsRESTClient) ListDetectors(ctx context.Context, re
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1747,7 +1792,8 @@ func (c *securityCenterSettingsRESTClient) ListComponents(ctx context.Context, r
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1800,98 +1846,4 @@ func (c *securityCenterSettingsRESTClient) ListComponents(ctx context.Context, r
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// DetectorIterator manages a stream of *settingspb.Detector.
-type DetectorIterator struct {
-	items    []*settingspb.Detector
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*settingspb.Detector, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DetectorIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DetectorIterator) Next() (*settingspb.Detector, error) {
-	var item *settingspb.Detector
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DetectorIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DetectorIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// StringIterator manages a stream of string.
-type StringIterator struct {
-	items    []string
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []string, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StringIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StringIterator) Next() (string, error) {
-	var item string
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StringIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StringIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

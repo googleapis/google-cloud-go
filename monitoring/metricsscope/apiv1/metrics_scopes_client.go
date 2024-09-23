@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"math"
 	"net/url"
-	"time"
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
@@ -32,7 +31,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 var newMetricsScopesClientHook clientHook
@@ -48,10 +46,13 @@ type MetricsScopesCallOptions struct {
 func defaultMetricsScopesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("monitoring.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("monitoring.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -174,7 +175,7 @@ type metricsScopesGRPCClient struct {
 	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewMetricsScopesClient creates a new metrics scopes client based on gRPC.
@@ -235,7 +236,9 @@ func (c *metricsScopesGRPCClient) Connection() *grpc.ClientConn {
 func (c *metricsScopesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -245,9 +248,10 @@ func (c *metricsScopesGRPCClient) Close() error {
 }
 
 func (c *metricsScopesGRPCClient) GetMetricsScope(ctx context.Context, req *metricsscopepb.GetMetricsScopeRequest, opts ...gax.CallOption) (*metricsscopepb.MetricsScope, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetMetricsScope[0:len((*c.CallOptions).GetMetricsScope):len((*c.CallOptions).GetMetricsScope)], opts...)
 	var resp *metricsscopepb.MetricsScope
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -262,7 +266,7 @@ func (c *metricsScopesGRPCClient) GetMetricsScope(ctx context.Context, req *metr
 }
 
 func (c *metricsScopesGRPCClient) ListMetricsScopesByMonitoredProject(ctx context.Context, req *metricsscopepb.ListMetricsScopesByMonitoredProjectRequest, opts ...gax.CallOption) (*metricsscopepb.ListMetricsScopesByMonitoredProjectResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).ListMetricsScopesByMonitoredProject[0:len((*c.CallOptions).ListMetricsScopesByMonitoredProject):len((*c.CallOptions).ListMetricsScopesByMonitoredProject)], opts...)
 	var resp *metricsscopepb.ListMetricsScopesByMonitoredProjectResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -277,9 +281,10 @@ func (c *metricsScopesGRPCClient) ListMetricsScopesByMonitoredProject(ctx contex
 }
 
 func (c *metricsScopesGRPCClient) CreateMonitoredProject(ctx context.Context, req *metricsscopepb.CreateMonitoredProjectRequest, opts ...gax.CallOption) (*CreateMonitoredProjectOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateMonitoredProject[0:len((*c.CallOptions).CreateMonitoredProject):len((*c.CallOptions).CreateMonitoredProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -296,9 +301,10 @@ func (c *metricsScopesGRPCClient) CreateMonitoredProject(ctx context.Context, re
 }
 
 func (c *metricsScopesGRPCClient) DeleteMonitoredProject(ctx context.Context, req *metricsscopepb.DeleteMonitoredProjectRequest, opts ...gax.CallOption) (*DeleteMonitoredProjectOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteMonitoredProject[0:len((*c.CallOptions).DeleteMonitoredProject):len((*c.CallOptions).DeleteMonitoredProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -314,11 +320,6 @@ func (c *metricsScopesGRPCClient) DeleteMonitoredProject(ctx context.Context, re
 	}, nil
 }
 
-// CreateMonitoredProjectOperation manages a long-running operation from CreateMonitoredProject.
-type CreateMonitoredProjectOperation struct {
-	lro *longrunning.Operation
-}
-
 // CreateMonitoredProjectOperation returns a new CreateMonitoredProjectOperation from a given name.
 // The name must be that of a previously created CreateMonitoredProjectOperation, possibly from a different process.
 func (c *metricsScopesGRPCClient) CreateMonitoredProjectOperation(name string) *CreateMonitoredProjectOperation {
@@ -327,116 +328,10 @@ func (c *metricsScopesGRPCClient) CreateMonitoredProjectOperation(name string) *
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateMonitoredProjectOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metricsscopepb.MonitoredProject, error) {
-	var resp metricsscopepb.MonitoredProject
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateMonitoredProjectOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metricsscopepb.MonitoredProject, error) {
-	var resp metricsscopepb.MonitoredProject
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateMonitoredProjectOperation) Metadata() (*metricsscopepb.OperationMetadata, error) {
-	var meta metricsscopepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateMonitoredProjectOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateMonitoredProjectOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteMonitoredProjectOperation manages a long-running operation from DeleteMonitoredProject.
-type DeleteMonitoredProjectOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteMonitoredProjectOperation returns a new DeleteMonitoredProjectOperation from a given name.
 // The name must be that of a previously created DeleteMonitoredProjectOperation, possibly from a different process.
 func (c *metricsScopesGRPCClient) DeleteMonitoredProjectOperation(name string) *DeleteMonitoredProjectOperation {
 	return &DeleteMonitoredProjectOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteMonitoredProjectOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteMonitoredProjectOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteMonitoredProjectOperation) Metadata() (*metricsscopepb.OperationMetadata, error) {
-	var meta metricsscopepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteMonitoredProjectOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteMonitoredProjectOperation) Name() string {
-	return op.lro.Name()
 }

@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -27,7 +28,6 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/firestore/internal"
 	"cloud.google.com/go/internal/trace"
-	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -43,6 +43,18 @@ import (
 // the resource being operated on.
 const resourcePrefixHeader = "google-cloud-resource-prefix"
 
+// requestParamsHeader is routing header required to access named databases
+const reqParamsHeader = "x-goog-request-params"
+
+// reqParamsHeaderVal constructs header from dbPath
+// dbPath is of the form projects/{project_id}/databases/{database_id}
+func reqParamsHeaderVal(dbPath string) string {
+	splitPath := strings.Split(dbPath, "/")
+	projectID := splitPath[1]
+	databaseID := splitPath[3]
+	return fmt.Sprintf("project_id=%s&database_id=%s", url.QueryEscape(projectID), url.QueryEscape(databaseID))
+}
+
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
 // project ID. It is given in place of the projectID argument. NewClient will
 // use the project ID from the given credentials or the default credentials
@@ -51,6 +63,9 @@ const resourcePrefixHeader = "google-cloud-resource-prefix"
 // options will allow NewClient to extract the project ID. Specifically a JWT
 // does not have the project ID encoded.
 const DetectProjectID = "*detect-project-id*"
+
+// DefaultDatabaseID is name of the default database
+const DefaultDatabaseID = "(default)"
 
 // A Client provides access to the Firestore service.
 type Client struct {
@@ -98,10 +113,26 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	c := &Client{
 		c:            vc,
 		projectID:    projectID,
-		databaseID:   "(default)", // always "(default)", for now
+		databaseID:   DefaultDatabaseID,
 		readSettings: &readSettings{},
 	}
 	return c, nil
+}
+
+// NewClientWithDatabase creates a new Firestore client that accesses the
+// specified database.
+func NewClientWithDatabase(ctx context.Context, projectID string, databaseID string, opts ...option.ClientOption) (*Client, error) {
+	if databaseID == "" {
+		return nil, fmt.Errorf("firestore: To create a client using the %s database, please use NewClient", DefaultDatabaseID)
+	}
+
+	client, err := NewClient(ctx, projectID, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	client.databaseID = databaseID
+	return client, nil
 }
 
 func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
@@ -127,9 +158,22 @@ func (c *Client) path() string {
 }
 
 func withResourceHeader(ctx context.Context, resource string) context.Context {
-	md, _ := metadata.FromOutgoingContext(ctx)
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		md = metadata.New(nil)
+	}
 	md = md.Copy()
 	md[resourcePrefixHeader] = []string{resource}
+	return metadata.NewOutgoingContext(ctx, md)
+}
+
+func withRequestParamsHeader(ctx context.Context, requestParams string) context.Context {
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		md = metadata.New(nil)
+	}
+	md = md.Copy()
+	md[reqParamsHeader] = []string{requestParams}
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
@@ -212,8 +256,8 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 	var docNames []string
 	docIndices := map[string][]int{} // doc name to positions in docRefs
 	for i, dr := range docRefs {
-		if dr == nil {
-			return nil, errNilDocRef
+		if err := dr.isValid(); err != nil {
+			return nil, err
 		}
 		docNames = append(docNames, dr.Path)
 		docIndices[dr.Path] = append(docIndices[dr.Path], i)
@@ -234,7 +278,9 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_Transaction{Transaction: tid}
 	}
 
-	streamClient, err := c.c.BatchGetDocuments(withResourceHeader(ctx, req.Database), req)
+	batchGetDocsCtx := withResourceHeader(ctx, req.Database)
+	batchGetDocsCtx = withRequestParamsHeader(batchGetDocsCtx, reqParamsHeaderVal(c.path()))
+	streamClient, err := c.c.BatchGetDocuments(batchGetDocsCtx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -371,10 +417,10 @@ type WriteResult struct {
 }
 
 func writeResultFromProto(wr *pb.WriteResult) (*WriteResult, error) {
-	t, err := ptypes.Timestamp(wr.UpdateTime)
-	if err != nil {
-		t = time.Time{}
-		// TODO(jba): Follow up if Delete is supposed to return a nil timestamp.
+	// TODO(jba): Follow up if Delete is supposed to return a nil timestamp.
+	var t time.Time
+	if err := wr.GetUpdateTime().CheckValid(); err == nil {
+		t = wr.GetUpdateTime().AsTime()
 	}
 	return &WriteResult{UpdateTime: t}, nil
 }

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -67,15 +66,19 @@ type ProductSearchCallOptions struct {
 	ListProductsInProductSet    []gax.CallOption
 	ImportProductSets           []gax.CallOption
 	PurgeProducts               []gax.CallOption
+	GetOperation                []gax.CallOption
 }
 
 func defaultProductSearchGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("vision.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("vision.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("vision.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://vision.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -315,6 +318,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 				})
 			}),
 		},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
@@ -503,6 +507,7 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 		PurgeProducts: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
@@ -532,6 +537,7 @@ type internalProductSearchClient interface {
 	ImportProductSetsOperation(name string) *ImportProductSetsOperation
 	PurgeProducts(context.Context, *visionpb.PurgeProductsRequest, ...gax.CallOption) (*PurgeProductsOperation, error)
 	PurgeProductsOperation(name string) *PurgeProductsOperation
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // ProductSearchClient is a client for interacting with Cloud Vision API.
@@ -540,16 +546,18 @@ type internalProductSearchClient interface {
 // Manages Products and ProductSets of reference images for use in product
 // search. It uses the following resource model:
 //
-//	The API has a collection of ProductSet resources, named
-//	projects/*/locations/*/productSets/*, which acts as a way to put different
-//	products into groups to limit identification.
+//	The API has a collection of ProductSet
+//	resources, named projects/*/locations/*/productSets/*, which acts as a way
+//	to put different products into groups to limit identification.
 //
 // In parallel,
 //
-//	The API has a collection of Product resources, named
+//	The API has a collection of Product
+//	resources, named
 //	projects/*/locations/*/products/*
 //
-//	Each Product has a collection of ReferenceImage resources, named
+//	Each Product has a collection of
+//	ReferenceImage resources, named
 //	projects/*/locations/*/products/*/referenceImages/*
 type ProductSearchClient struct {
 	// The internal transport-dependent client.
@@ -789,8 +797,8 @@ func (c *ProductSearchClient) ListProductsInProductSet(ctx context.Context, req 
 // ImportProductSets asynchronous API that imports a list of reference images to specified
 // product sets based on a list of image information.
 //
-// The google.longrunning.Operation API can be used to keep track of the
-// progress and results of the request.
+// The google.longrunning.Operation API can be
+// used to keep track of the progress and results of the request.
 // Operation.metadata contains BatchOperationMetadata. (progress)
 // Operation.response contains ImportProductSetsResponse. (results)
 //
@@ -828,8 +836,8 @@ func (c *ProductSearchClient) ImportProductSetsOperation(name string) *ImportPro
 // ProductSet, you must wait until the PurgeProducts operation has finished
 // for that ProductSet.
 //
-// The google.longrunning.Operation API can be used to keep track of the
-// progress and results of the request.
+// The google.longrunning.Operation API can be
+// used to keep track of the progress and results of the request.
 // Operation.metadata contains BatchOperationMetadata. (progress)
 func (c *ProductSearchClient) PurgeProducts(ctx context.Context, req *visionpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
 	return c.internalClient.PurgeProducts(ctx, req, opts...)
@@ -839,6 +847,11 @@ func (c *ProductSearchClient) PurgeProducts(ctx context.Context, req *visionpb.P
 // The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
 func (c *ProductSearchClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
 	return c.internalClient.PurgeProductsOperation(name)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *ProductSearchClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
 // productSearchGRPCClient is a client for interacting with Cloud Vision API over gRPC transport.
@@ -859,8 +872,10 @@ type productSearchGRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewProductSearchClient creates a new product search client based on gRPC.
@@ -869,16 +884,18 @@ type productSearchGRPCClient struct {
 // Manages Products and ProductSets of reference images for use in product
 // search. It uses the following resource model:
 //
-//	The API has a collection of ProductSet resources, named
-//	projects/*/locations/*/productSets/*, which acts as a way to put different
-//	products into groups to limit identification.
+//	The API has a collection of ProductSet
+//	resources, named projects/*/locations/*/productSets/*, which acts as a way
+//	to put different products into groups to limit identification.
 //
 // In parallel,
 //
-//	The API has a collection of Product resources, named
+//	The API has a collection of Product
+//	resources, named
 //	projects/*/locations/*/products/*
 //
-//	Each Product has a collection of ReferenceImage resources, named
+//	Each Product has a collection of
+//	ReferenceImage resources, named
 //	projects/*/locations/*/products/*/referenceImages/*
 func NewProductSearchClient(ctx context.Context, opts ...option.ClientOption) (*ProductSearchClient, error) {
 	clientOpts := defaultProductSearchGRPCClientOptions()
@@ -900,6 +917,7 @@ func NewProductSearchClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		productSearchClient: visionpb.NewProductSearchClient(connPool),
 		CallOptions:         &client.CallOptions,
+		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -933,7 +951,9 @@ func (c *productSearchGRPCClient) Connection() *grpc.ClientConn {
 func (c *productSearchGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -955,8 +975,8 @@ type productSearchRESTClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing ProductSearchClient
 	CallOptions **ProductSearchCallOptions
@@ -967,16 +987,18 @@ type productSearchRESTClient struct {
 // Manages Products and ProductSets of reference images for use in product
 // search. It uses the following resource model:
 //
-//	The API has a collection of ProductSet resources, named
-//	projects/*/locations/*/productSets/*, which acts as a way to put different
-//	products into groups to limit identification.
+//	The API has a collection of ProductSet
+//	resources, named projects/*/locations/*/productSets/*, which acts as a way
+//	to put different products into groups to limit identification.
 //
 // In parallel,
 //
-//	The API has a collection of Product resources, named
+//	The API has a collection of Product
+//	resources, named
 //	projects/*/locations/*/products/*
 //
-//	Each Product has a collection of ReferenceImage resources, named
+//	Each Product has a collection of
+//	ReferenceImage resources, named
 //	projects/*/locations/*/products/*/referenceImages/*
 func NewProductSearchRESTClient(ctx context.Context, opts ...option.ClientOption) (*ProductSearchClient, error) {
 	clientOpts := append(defaultProductSearchRESTClientOptions(), opts...)
@@ -1009,9 +1031,12 @@ func NewProductSearchRESTClient(ctx context.Context, opts ...option.ClientOption
 func defaultProductSearchRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://vision.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://vision.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://vision.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://vision.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1021,7 +1046,9 @@ func defaultProductSearchRESTClientOptions() []option.ClientOption {
 func (c *productSearchRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1039,9 +1066,10 @@ func (c *productSearchRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *productSearchGRPCClient) CreateProductSet(ctx context.Context, req *visionpb.CreateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateProductSet[0:len((*c.CallOptions).CreateProductSet):len((*c.CallOptions).CreateProductSet)], opts...)
 	var resp *visionpb.ProductSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1056,9 +1084,10 @@ func (c *productSearchGRPCClient) CreateProductSet(ctx context.Context, req *vis
 }
 
 func (c *productSearchGRPCClient) ListProductSets(ctx context.Context, req *visionpb.ListProductSetsRequest, opts ...gax.CallOption) *ProductSetIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListProductSets[0:len((*c.CallOptions).ListProductSets):len((*c.CallOptions).ListProductSets)], opts...)
 	it := &ProductSetIterator{}
 	req = proto.Clone(req).(*visionpb.ListProductSetsRequest)
@@ -1101,9 +1130,10 @@ func (c *productSearchGRPCClient) ListProductSets(ctx context.Context, req *visi
 }
 
 func (c *productSearchGRPCClient) GetProductSet(ctx context.Context, req *visionpb.GetProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetProductSet[0:len((*c.CallOptions).GetProductSet):len((*c.CallOptions).GetProductSet)], opts...)
 	var resp *visionpb.ProductSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1118,9 +1148,10 @@ func (c *productSearchGRPCClient) GetProductSet(ctx context.Context, req *vision
 }
 
 func (c *productSearchGRPCClient) UpdateProductSet(ctx context.Context, req *visionpb.UpdateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product_set.name", url.QueryEscape(req.GetProductSet().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product_set.name", url.QueryEscape(req.GetProductSet().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateProductSet[0:len((*c.CallOptions).UpdateProductSet):len((*c.CallOptions).UpdateProductSet)], opts...)
 	var resp *visionpb.ProductSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1135,9 +1166,10 @@ func (c *productSearchGRPCClient) UpdateProductSet(ctx context.Context, req *vis
 }
 
 func (c *productSearchGRPCClient) DeleteProductSet(ctx context.Context, req *visionpb.DeleteProductSetRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteProductSet[0:len((*c.CallOptions).DeleteProductSet):len((*c.CallOptions).DeleteProductSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1148,9 +1180,10 @@ func (c *productSearchGRPCClient) DeleteProductSet(ctx context.Context, req *vis
 }
 
 func (c *productSearchGRPCClient) CreateProduct(ctx context.Context, req *visionpb.CreateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateProduct[0:len((*c.CallOptions).CreateProduct):len((*c.CallOptions).CreateProduct)], opts...)
 	var resp *visionpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1165,9 +1198,10 @@ func (c *productSearchGRPCClient) CreateProduct(ctx context.Context, req *vision
 }
 
 func (c *productSearchGRPCClient) ListProducts(ctx context.Context, req *visionpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListProducts[0:len((*c.CallOptions).ListProducts):len((*c.CallOptions).ListProducts)], opts...)
 	it := &ProductIterator{}
 	req = proto.Clone(req).(*visionpb.ListProductsRequest)
@@ -1210,9 +1244,10 @@ func (c *productSearchGRPCClient) ListProducts(ctx context.Context, req *visionp
 }
 
 func (c *productSearchGRPCClient) GetProduct(ctx context.Context, req *visionpb.GetProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetProduct[0:len((*c.CallOptions).GetProduct):len((*c.CallOptions).GetProduct)], opts...)
 	var resp *visionpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1227,9 +1262,10 @@ func (c *productSearchGRPCClient) GetProduct(ctx context.Context, req *visionpb.
 }
 
 func (c *productSearchGRPCClient) UpdateProduct(ctx context.Context, req *visionpb.UpdateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateProduct[0:len((*c.CallOptions).UpdateProduct):len((*c.CallOptions).UpdateProduct)], opts...)
 	var resp *visionpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1244,9 +1280,10 @@ func (c *productSearchGRPCClient) UpdateProduct(ctx context.Context, req *vision
 }
 
 func (c *productSearchGRPCClient) DeleteProduct(ctx context.Context, req *visionpb.DeleteProductRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteProduct[0:len((*c.CallOptions).DeleteProduct):len((*c.CallOptions).DeleteProduct)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1257,9 +1294,10 @@ func (c *productSearchGRPCClient) DeleteProduct(ctx context.Context, req *vision
 }
 
 func (c *productSearchGRPCClient) CreateReferenceImage(ctx context.Context, req *visionpb.CreateReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateReferenceImage[0:len((*c.CallOptions).CreateReferenceImage):len((*c.CallOptions).CreateReferenceImage)], opts...)
 	var resp *visionpb.ReferenceImage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1274,9 +1312,10 @@ func (c *productSearchGRPCClient) CreateReferenceImage(ctx context.Context, req 
 }
 
 func (c *productSearchGRPCClient) DeleteReferenceImage(ctx context.Context, req *visionpb.DeleteReferenceImageRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteReferenceImage[0:len((*c.CallOptions).DeleteReferenceImage):len((*c.CallOptions).DeleteReferenceImage)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1287,9 +1326,10 @@ func (c *productSearchGRPCClient) DeleteReferenceImage(ctx context.Context, req 
 }
 
 func (c *productSearchGRPCClient) ListReferenceImages(ctx context.Context, req *visionpb.ListReferenceImagesRequest, opts ...gax.CallOption) *ReferenceImageIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListReferenceImages[0:len((*c.CallOptions).ListReferenceImages):len((*c.CallOptions).ListReferenceImages)], opts...)
 	it := &ReferenceImageIterator{}
 	req = proto.Clone(req).(*visionpb.ListReferenceImagesRequest)
@@ -1332,9 +1372,10 @@ func (c *productSearchGRPCClient) ListReferenceImages(ctx context.Context, req *
 }
 
 func (c *productSearchGRPCClient) GetReferenceImage(ctx context.Context, req *visionpb.GetReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetReferenceImage[0:len((*c.CallOptions).GetReferenceImage):len((*c.CallOptions).GetReferenceImage)], opts...)
 	var resp *visionpb.ReferenceImage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1349,9 +1390,10 @@ func (c *productSearchGRPCClient) GetReferenceImage(ctx context.Context, req *vi
 }
 
 func (c *productSearchGRPCClient) AddProductToProductSet(ctx context.Context, req *visionpb.AddProductToProductSetRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).AddProductToProductSet[0:len((*c.CallOptions).AddProductToProductSet):len((*c.CallOptions).AddProductToProductSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1362,9 +1404,10 @@ func (c *productSearchGRPCClient) AddProductToProductSet(ctx context.Context, re
 }
 
 func (c *productSearchGRPCClient) RemoveProductFromProductSet(ctx context.Context, req *visionpb.RemoveProductFromProductSetRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RemoveProductFromProductSet[0:len((*c.CallOptions).RemoveProductFromProductSet):len((*c.CallOptions).RemoveProductFromProductSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1375,9 +1418,10 @@ func (c *productSearchGRPCClient) RemoveProductFromProductSet(ctx context.Contex
 }
 
 func (c *productSearchGRPCClient) ListProductsInProductSet(ctx context.Context, req *visionpb.ListProductsInProductSetRequest, opts ...gax.CallOption) *ProductIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListProductsInProductSet[0:len((*c.CallOptions).ListProductsInProductSet):len((*c.CallOptions).ListProductsInProductSet)], opts...)
 	it := &ProductIterator{}
 	req = proto.Clone(req).(*visionpb.ListProductsInProductSetRequest)
@@ -1420,9 +1464,10 @@ func (c *productSearchGRPCClient) ListProductsInProductSet(ctx context.Context, 
 }
 
 func (c *productSearchGRPCClient) ImportProductSets(ctx context.Context, req *visionpb.ImportProductSetsRequest, opts ...gax.CallOption) (*ImportProductSetsOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ImportProductSets[0:len((*c.CallOptions).ImportProductSets):len((*c.CallOptions).ImportProductSets)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1439,9 +1484,10 @@ func (c *productSearchGRPCClient) ImportProductSets(ctx context.Context, req *vi
 }
 
 func (c *productSearchGRPCClient) PurgeProducts(ctx context.Context, req *visionpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).PurgeProducts[0:len((*c.CallOptions).PurgeProducts):len((*c.CallOptions).PurgeProducts)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1455,6 +1501,24 @@ func (c *productSearchGRPCClient) PurgeProducts(ctx context.Context, req *vision
 	return &PurgeProductsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *productSearchGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CreateProductSet creates and returns a new ProductSet resource.
@@ -1486,9 +1550,11 @@ func (c *productSearchRESTClient) CreateProductSet(ctx context.Context, req *vis
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateProductSet[0:len((*c.CallOptions).CreateProductSet):len((*c.CallOptions).CreateProductSet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.ProductSet{}
@@ -1568,7 +1634,8 @@ func (c *productSearchRESTClient) ListProductSets(ctx context.Context, req *visi
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1641,9 +1708,11 @@ func (c *productSearchRESTClient) GetProductSet(ctx context.Context, req *vision
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetProductSet[0:len((*c.CallOptions).GetProductSet):len((*c.CallOptions).GetProductSet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.ProductSet{}
@@ -1711,19 +1780,21 @@ func (c *productSearchRESTClient) UpdateProductSet(ctx context.Context, req *vis
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product_set.name", url.QueryEscape(req.GetProductSet().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product_set.name", url.QueryEscape(req.GetProductSet().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateProductSet[0:len((*c.CallOptions).UpdateProductSet):len((*c.CallOptions).UpdateProductSet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.ProductSet{}
@@ -1782,9 +1853,11 @@ func (c *productSearchRESTClient) DeleteProductSet(ctx context.Context, req *vis
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1841,9 +1914,11 @@ func (c *productSearchRESTClient) CreateProduct(ctx context.Context, req *vision
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateProduct[0:len((*c.CallOptions).CreateProduct):len((*c.CallOptions).CreateProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.Product{}
@@ -1922,7 +1997,8 @@ func (c *productSearchRESTClient) ListProducts(ctx context.Context, req *visionp
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1995,9 +2071,11 @@ func (c *productSearchRESTClient) GetProduct(ctx context.Context, req *visionpb.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetProduct[0:len((*c.CallOptions).GetProduct):len((*c.CallOptions).GetProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.Product{}
@@ -2074,19 +2152,21 @@ func (c *productSearchRESTClient) UpdateProduct(ctx context.Context, req *vision
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateProduct[0:len((*c.CallOptions).UpdateProduct):len((*c.CallOptions).UpdateProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.Product{}
@@ -2146,9 +2226,11 @@ func (c *productSearchRESTClient) DeleteProduct(ctx context.Context, req *vision
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2217,9 +2299,11 @@ func (c *productSearchRESTClient) CreateReferenceImage(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateReferenceImage[0:len((*c.CallOptions).CreateReferenceImage):len((*c.CallOptions).CreateReferenceImage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.ReferenceImage{}
@@ -2281,9 +2365,11 @@ func (c *productSearchRESTClient) DeleteReferenceImage(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2347,7 +2433,8 @@ func (c *productSearchRESTClient) ListReferenceImages(ctx context.Context, req *
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -2420,9 +2507,11 @@ func (c *productSearchRESTClient) GetReferenceImage(ctx context.Context, req *vi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetReferenceImage[0:len((*c.CallOptions).GetReferenceImage):len((*c.CallOptions).GetReferenceImage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.ReferenceImage{}
@@ -2491,9 +2580,11 @@ func (c *productSearchRESTClient) AddProductToProductSet(ctx context.Context, re
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2537,9 +2628,11 @@ func (c *productSearchRESTClient) RemoveProductFromProductSet(ctx context.Contex
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2602,7 +2695,8 @@ func (c *productSearchRESTClient) ListProductsInProductSet(ctx context.Context, 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -2660,8 +2754,8 @@ func (c *productSearchRESTClient) ListProductsInProductSet(ctx context.Context, 
 // ImportProductSets asynchronous API that imports a list of reference images to specified
 // product sets based on a list of image information.
 //
-// The google.longrunning.Operation API can be used to keep track of the
-// progress and results of the request.
+// The google.longrunning.Operation API can be
+// used to keep track of the progress and results of the request.
 // Operation.metadata contains BatchOperationMetadata. (progress)
 // Operation.response contains ImportProductSetsResponse. (results)
 //
@@ -2687,9 +2781,11 @@ func (c *productSearchRESTClient) ImportProductSets(ctx context.Context, req *vi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2756,8 +2852,8 @@ func (c *productSearchRESTClient) ImportProductSets(ctx context.Context, req *vi
 // ProductSet, you must wait until the PurgeProducts operation has finished
 // for that ProductSet.
 //
-// The google.longrunning.Operation API can be used to keep track of the
-// progress and results of the request.
+// The google.longrunning.Operation API can be
+// used to keep track of the progress and results of the request.
 // Operation.metadata contains BatchOperationMetadata. (progress)
 func (c *productSearchRESTClient) PurgeProducts(ctx context.Context, req *visionpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2778,9 +2874,11 @@ func (c *productSearchRESTClient) PurgeProducts(ctx context.Context, req *vision
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2826,10 +2924,64 @@ func (c *productSearchRESTClient) PurgeProducts(ctx context.Context, req *vision
 	}, nil
 }
 
-// ImportProductSetsOperation manages a long-running operation from ImportProductSets.
-type ImportProductSetsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *productSearchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // ImportProductSetsOperation returns a new ImportProductSetsOperation from a given name.
@@ -2850,70 +3002,6 @@ func (c *productSearchRESTClient) ImportProductSetsOperation(name string) *Impor
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportProductSetsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*visionpb.ImportProductSetsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp visionpb.ImportProductSetsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportProductSetsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*visionpb.ImportProductSetsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp visionpb.ImportProductSetsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportProductSetsOperation) Metadata() (*visionpb.BatchOperationMetadata, error) {
-	var meta visionpb.BatchOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportProductSetsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportProductSetsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PurgeProductsOperation manages a long-running operation from PurgeProducts.
-type PurgeProductsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // PurgeProductsOperation returns a new PurgeProductsOperation from a given name.
 // The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
 func (c *productSearchGRPCClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
@@ -2930,192 +3018,4 @@ func (c *productSearchRESTClient) PurgeProductsOperation(name string) *PurgeProd
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *PurgeProductsOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *PurgeProductsOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *PurgeProductsOperation) Metadata() (*visionpb.BatchOperationMetadata, error) {
-	var meta visionpb.BatchOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *PurgeProductsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *PurgeProductsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ProductIterator manages a stream of *visionpb.Product.
-type ProductIterator struct {
-	items    []*visionpb.Product
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*visionpb.Product, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProductIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProductIterator) Next() (*visionpb.Product, error) {
-	var item *visionpb.Product
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ProductIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ProductIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ProductSetIterator manages a stream of *visionpb.ProductSet.
-type ProductSetIterator struct {
-	items    []*visionpb.ProductSet
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*visionpb.ProductSet, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProductSetIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProductSetIterator) Next() (*visionpb.ProductSet, error) {
-	var item *visionpb.ProductSet
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ProductSetIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ProductSetIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ReferenceImageIterator manages a stream of *visionpb.ReferenceImage.
-type ReferenceImageIterator struct {
-	items    []*visionpb.ReferenceImage
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*visionpb.ReferenceImage, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ReferenceImageIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ReferenceImageIterator) Next() (*visionpb.ReferenceImage, error) {
-	var item *visionpb.ReferenceImage
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ReferenceImageIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ReferenceImageIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

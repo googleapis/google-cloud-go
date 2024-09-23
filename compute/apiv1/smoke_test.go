@@ -27,16 +27,16 @@ import (
 
 	"google.golang.org/api/option"
 
+	"cloud.google.com/go/compute/apiv1/computepb"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/protobuf/proto"
 )
 
 var projectId = testutil.ProjID()
 var defaultZone = "us-central1-a"
-var image = "projects/debian-cloud/global/images/family/debian-10"
+var image = "projects/debian-cloud/global/images/family/debian-12"
 
 func TestCreateGetPutPatchListInstance(t *testing.T) {
 	if testing.Short() {
@@ -148,10 +148,10 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 		t.Fatal(err)
 	}
 	if fetched.GetDescription() != "updated" {
-		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "updated", fetched.GetDescription()))
+		t.Fatalf("expected instance description: %s, got: %s", "updated", fetched.GetDescription())
 	}
 	if secureBootEnabled := fetched.GetShieldedInstanceConfig().GetEnableSecureBoot(); !secureBootEnabled {
-		t.Fatal(fmt.Sprintf("expected instance secure boot: %t, got: %t", true, secureBootEnabled))
+		t.Fatalf("expected instance secure boot: %t, got: %t", true, secureBootEnabled)
 	}
 	listRequest := &computepb.ListInstancesRequest{
 		Project: projectId,
@@ -170,7 +170,7 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 		}
 		element, err = itr.Next()
 	}
-	if err != nil && err != iterator.Done {
+	if err != iterator.Done {
 		t.Fatal(err)
 	}
 	if !found {

@@ -37,7 +37,7 @@ func TestOCTracing(t *testing.T) {
 		t.Fatalf("client.Put: %v", err)
 	}
 
-	if len(te.Spans) == 0 {
+	if len(te.Spans()) == 0 {
 		t.Fatalf("Expected some span to be created, but got %d", 0)
 	}
 }

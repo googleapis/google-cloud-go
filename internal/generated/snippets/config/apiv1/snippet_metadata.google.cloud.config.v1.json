@@ -1,0 +1,1484 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/config/apiv1",
+    "version": "1.1.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.config.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "config_v1_generated_Config_CancelOperation_sync",
+      "title": "config CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.config.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_CreateDeployment_sync",
+      "title": "config CreateDeployment Sample",
+      "description": "CreateDeployment creates a [Deployment][google.cloud.config.v1.Deployment].",
+      "file": "Client/CreateDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDeployment",
+        "fullName": "google.cloud.config.v1.Client.CreateDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.CreateDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDeploymentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateDeployment",
+          "fullName": "google.cloud.config.v1.Config.CreateDeployment",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_CreatePreview_sync",
+      "title": "config CreatePreview Sample",
+      "description": "CreatePreview creates a [Preview][google.cloud.config.v1.Preview].",
+      "file": "Client/CreatePreview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePreview",
+        "fullName": "google.cloud.config.v1.Client.CreatePreview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.CreatePreviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreatePreviewOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "CreatePreview",
+          "fullName": "google.cloud.config.v1.Config.CreatePreview",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_DeleteDeployment_sync",
+      "title": "config DeleteDeployment Sample",
+      "description": "DeleteDeployment deletes a [Deployment][google.cloud.config.v1.Deployment].",
+      "file": "Client/DeleteDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDeployment",
+        "fullName": "google.cloud.config.v1.Client.DeleteDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.DeleteDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDeploymentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteDeployment",
+          "fullName": "google.cloud.config.v1.Config.DeleteDeployment",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_DeleteOperation_sync",
+      "title": "config DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.config.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_DeletePreview_sync",
+      "title": "config DeletePreview Sample",
+      "description": "DeletePreview deletes a [Preview][google.cloud.config.v1.Preview].",
+      "file": "Client/DeletePreview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePreview",
+        "fullName": "google.cloud.config.v1.Client.DeletePreview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.DeletePreviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeletePreviewOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "DeletePreview",
+          "fullName": "google.cloud.config.v1.Config.DeletePreview",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_DeleteStatefile_sync",
+      "title": "config DeleteStatefile Sample",
+      "description": "DeleteStatefile deletes Terraform state file in a given deployment.",
+      "file": "Client/DeleteStatefile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteStatefile",
+        "fullName": "google.cloud.config.v1.Client.DeleteStatefile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.DeleteStatefileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteStatefile",
+          "fullName": "google.cloud.config.v1.Config.DeleteStatefile",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ExportDeploymentStatefile_sync",
+      "title": "config ExportDeploymentStatefile Sample",
+      "description": "ExportDeploymentStatefile exports Terraform state file from a given deployment.",
+      "file": "Client/ExportDeploymentStatefile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportDeploymentStatefile",
+        "fullName": "google.cloud.config.v1.Client.ExportDeploymentStatefile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ExportDeploymentStatefileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.Statefile",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ExportDeploymentStatefile",
+          "fullName": "google.cloud.config.v1.Config.ExportDeploymentStatefile",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ExportLockInfo_sync",
+      "title": "config ExportLockInfo Sample",
+      "description": "ExportLockInfo exports the lock info on a locked deployment.",
+      "file": "Client/ExportLockInfo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportLockInfo",
+        "fullName": "google.cloud.config.v1.Client.ExportLockInfo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ExportLockInfoRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.LockInfo",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ExportLockInfo",
+          "fullName": "google.cloud.config.v1.Config.ExportLockInfo",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ExportPreviewResult_sync",
+      "title": "config ExportPreviewResult Sample",
+      "description": "ExportPreviewResult export [Preview][google.cloud.config.v1.Preview] results.",
+      "file": "Client/ExportPreviewResult/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportPreviewResult",
+        "fullName": "google.cloud.config.v1.Client.ExportPreviewResult",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ExportPreviewResultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.ExportPreviewResultResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ExportPreviewResult",
+          "fullName": "google.cloud.config.v1.Config.ExportPreviewResult",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ExportRevisionStatefile_sync",
+      "title": "config ExportRevisionStatefile Sample",
+      "description": "ExportRevisionStatefile exports Terraform state file from a given revision.",
+      "file": "Client/ExportRevisionStatefile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportRevisionStatefile",
+        "fullName": "google.cloud.config.v1.Client.ExportRevisionStatefile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ExportRevisionStatefileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.Statefile",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ExportRevisionStatefile",
+          "fullName": "google.cloud.config.v1.Config.ExportRevisionStatefile",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_GetDeployment_sync",
+      "title": "config GetDeployment Sample",
+      "description": "GetDeployment gets details about a [Deployment][google.cloud.config.v1.Deployment].",
+      "file": "Client/GetDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDeployment",
+        "fullName": "google.cloud.config.v1.Client.GetDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.GetDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.Deployment",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDeployment",
+          "fullName": "google.cloud.config.v1.Config.GetDeployment",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_GetIamPolicy_sync",
+      "title": "config GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.config.v1.Client.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_GetLocation_sync",
+      "title": "config GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.config.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_GetOperation_sync",
+      "title": "config GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.config.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_GetPreview_sync",
+      "title": "config GetPreview Sample",
+      "description": "GetPreview gets details about a [Preview][google.cloud.config.v1.Preview].",
+      "file": "Client/GetPreview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPreview",
+        "fullName": "google.cloud.config.v1.Client.GetPreview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.GetPreviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.Preview",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPreview",
+          "fullName": "google.cloud.config.v1.Config.GetPreview",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_GetResource_sync",
+      "title": "config GetResource Sample",
+      "description": "GetResource gets details about a [Resource][google.cloud.config.v1.Resource] deployed\nby Infra Manager.",
+      "file": "Client/GetResource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetResource",
+        "fullName": "google.cloud.config.v1.Client.GetResource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.GetResourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.Resource",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "GetResource",
+          "fullName": "google.cloud.config.v1.Config.GetResource",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_GetRevision_sync",
+      "title": "config GetRevision Sample",
+      "description": "GetRevision gets details about a [Revision][google.cloud.config.v1.Revision].",
+      "file": "Client/GetRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRevision",
+        "fullName": "google.cloud.config.v1.Client.GetRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.GetRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.Revision",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "GetRevision",
+          "fullName": "google.cloud.config.v1.Config.GetRevision",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_GetTerraformVersion_sync",
+      "title": "config GetTerraformVersion Sample",
+      "description": "GetTerraformVersion gets details about a\n[TerraformVersion][google.cloud.config.v1.TerraformVersion].",
+      "file": "Client/GetTerraformVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTerraformVersion",
+        "fullName": "google.cloud.config.v1.Client.GetTerraformVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.GetTerraformVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.TerraformVersion",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "GetTerraformVersion",
+          "fullName": "google.cloud.config.v1.Config.GetTerraformVersion",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ImportStatefile_sync",
+      "title": "config ImportStatefile Sample",
+      "description": "ImportStatefile imports Terraform state file in a given deployment. The state file does not\ntake effect until the Deployment has been unlocked.",
+      "file": "Client/ImportStatefile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportStatefile",
+        "fullName": "google.cloud.config.v1.Client.ImportStatefile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ImportStatefileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.Statefile",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ImportStatefile",
+          "fullName": "google.cloud.config.v1.Config.ImportStatefile",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ListDeployments_sync",
+      "title": "config ListDeployments Sample",
+      "description": "ListDeployments lists [Deployment][google.cloud.config.v1.Deployment]s in a given project\nand location.",
+      "file": "Client/ListDeployments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDeployments",
+        "fullName": "google.cloud.config.v1.Client.ListDeployments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ListDeploymentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeploymentIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDeployments",
+          "fullName": "google.cloud.config.v1.Config.ListDeployments",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ListLocations_sync",
+      "title": "config ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.config.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ListOperations_sync",
+      "title": "config ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.config.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ListPreviews_sync",
+      "title": "config ListPreviews Sample",
+      "description": "ListPreviews lists [Preview][google.cloud.config.v1.Preview]s in a given project and\nlocation.",
+      "file": "Client/ListPreviews/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPreviews",
+        "fullName": "google.cloud.config.v1.Client.ListPreviews",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ListPreviewsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PreviewIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPreviews",
+          "fullName": "google.cloud.config.v1.Config.ListPreviews",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ListResources_sync",
+      "title": "config ListResources Sample",
+      "description": "ListResources lists [Resource][google.cloud.config.v1.Resource]s in a given revision.",
+      "file": "Client/ListResources/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListResources",
+        "fullName": "google.cloud.config.v1.Client.ListResources",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ListResourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResourceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ListResources",
+          "fullName": "google.cloud.config.v1.Config.ListResources",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ListRevisions_sync",
+      "title": "config ListRevisions Sample",
+      "description": "ListRevisions lists [Revision][google.cloud.config.v1.Revision]s of a deployment.",
+      "file": "Client/ListRevisions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRevisions",
+        "fullName": "google.cloud.config.v1.Client.ListRevisions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ListRevisionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RevisionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ListRevisions",
+          "fullName": "google.cloud.config.v1.Config.ListRevisions",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ListTerraformVersions_sync",
+      "title": "config ListTerraformVersions Sample",
+      "description": "ListTerraformVersions lists [TerraformVersion][google.cloud.config.v1.TerraformVersion]s in a\ngiven project and location.",
+      "file": "Client/ListTerraformVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTerraformVersions",
+        "fullName": "google.cloud.config.v1.Client.ListTerraformVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ListTerraformVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TerraformVersionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ListTerraformVersions",
+          "fullName": "google.cloud.config.v1.Config.ListTerraformVersions",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_LockDeployment_sync",
+      "title": "config LockDeployment Sample",
+      "description": "LockDeployment locks a deployment.",
+      "file": "Client/LockDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LockDeployment",
+        "fullName": "google.cloud.config.v1.Client.LockDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.LockDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LockDeploymentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "LockDeployment",
+          "fullName": "google.cloud.config.v1.Config.LockDeployment",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_SetIamPolicy_sync",
+      "title": "config SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.config.v1.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_TestIamPermissions_sync",
+      "title": "config TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.config.v1.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_UnlockDeployment_sync",
+      "title": "config UnlockDeployment Sample",
+      "description": "UnlockDeployment unlocks a locked deployment.",
+      "file": "Client/UnlockDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UnlockDeployment",
+        "fullName": "google.cloud.config.v1.Client.UnlockDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.UnlockDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UnlockDeploymentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "UnlockDeployment",
+          "fullName": "google.cloud.config.v1.Config.UnlockDeployment",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_UpdateDeployment_sync",
+      "title": "config UpdateDeployment Sample",
+      "description": "UpdateDeployment updates a [Deployment][google.cloud.config.v1.Deployment].",
+      "file": "Client/UpdateDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDeployment",
+        "fullName": "google.cloud.config.v1.Client.UpdateDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.UpdateDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDeploymentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateDeployment",
+          "fullName": "google.cloud.config.v1.Config.UpdateDeployment",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/recommender/apiv1",
-    "version": "1.10.1",
+    "version": "1.13.1",
     "language": "GO",
     "apis": [
       {
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -364,6 +364,52 @@
         "method": {
           "shortName": "MarkRecommendationClaimed",
           "fullName": "google.cloud.recommender.v1.Recommender.MarkRecommendationClaimed",
+          "service": {
+            "shortName": "Recommender",
+            "fullName": "google.cloud.recommender.v1.Recommender"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recommender_v1_generated_Recommender_MarkRecommendationDismissed_sync",
+      "title": "recommender MarkRecommendationDismissed Sample",
+      "description": "MarkRecommendationDismissed mark the Recommendation State as Dismissed. Users can use this method to\nindicate to the Recommender API that an ACTIVE recommendation has to\nbe marked back as DISMISSED.\n\nMarkRecommendationDismissed can be applied to recommendations in ACTIVE\nstate.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender.",
+      "file": "Client/MarkRecommendationDismissed/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "MarkRecommendationDismissed",
+        "fullName": "google.cloud.recommender.v1.Client.MarkRecommendationDismissed",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recommenderpb.MarkRecommendationDismissedRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recommenderpb.Recommendation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recommender.v1.Client"
+        },
+        "method": {
+          "shortName": "MarkRecommendationDismissed",
+          "fullName": "google.cloud.recommender.v1.Recommender.MarkRecommendationDismissed",
           "service": {
             "shortName": "Recommender",
             "fullName": "google.cloud.recommender.v1.Recommender"

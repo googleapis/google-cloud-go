@@ -158,9 +158,11 @@ func resourceExhaustedRetryer() gax.CallOption {
 }
 
 const (
-	pubsubLiteDefaultEndpoint = "-pubsublite.googleapis.com:443"
-	pubsubLiteErrorDomain     = "pubsublite.googleapis.com"
-	resetSignal               = "RESET"
+	pubsubLiteDefaultEndpoint         = "-pubsublite.googleapis.com:443"
+	pubsubLiteDefaultEndpointTemplate = "-pubsublite.UNIVERSE_DOMAIN:443"
+	defaultUniverseDomain             = "googleapis.com"
+	pubsubLiteErrorDomain             = "pubsublite.googleapis.com"
+	resetSignal                       = "RESET"
 )
 
 // Pub/Sub Lite's RESET signal is a status containing error details that
@@ -184,6 +186,8 @@ func isStreamResetSignal(err error) bool {
 func defaultClientOptions(region string) []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint(region + pubsubLiteDefaultEndpoint),
+		internaloption.WithDefaultEndpointTemplate(region + pubsubLiteDefaultEndpointTemplate),
+		internaloption.WithDefaultUniverseDomain(defaultUniverseDomain),
 		// Detect if transport is still alive if there is inactivity.
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
 			Time:                1 * time.Minute,

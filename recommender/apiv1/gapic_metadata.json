@@ -50,6 +50,11 @@
                 "MarkRecommendationClaimed"
               ]
             },
+            "MarkRecommendationDismissed": {
+              "methods": [
+                "MarkRecommendationDismissed"
+              ]
+            },
             "MarkRecommendationFailed": {
               "methods": [
                 "MarkRecommendationFailed"
@@ -113,6 +118,11 @@
             "MarkRecommendationClaimed": {
               "methods": [
                 "MarkRecommendationClaimed"
+              ]
+            },
+            "MarkRecommendationDismissed": {
+              "methods": [
+                "MarkRecommendationDismissed"
               ]
             },
             "MarkRecommendationFailed": {

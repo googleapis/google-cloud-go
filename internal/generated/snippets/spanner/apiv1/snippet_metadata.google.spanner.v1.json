@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/spanner/apiv1",
-    "version": "1.47.0",
+    "version": "1.67.0",
     "language": "GO",
     "apis": [
       {
@@ -60,7 +60,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_BeginTransaction_sync",
       "title": "spanner BeginTransaction Sample",
-      "description": "BeginTransaction begins a new transaction. This step can often be skipped: \n[Read][google.spanner.v1.Spanner.Read], [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql] and\n[Commit][google.spanner.v1.Spanner.Commit] can begin a new transaction as a\nside-effect.",
+      "description": "BeginTransaction begins a new transaction. This step can often be skipped: \n[Read][google.spanner.v1.Spanner.Read],\n[ExecuteSql][google.spanner.v1.Spanner.ExecuteSql] and\n[Commit][google.spanner.v1.Spanner.Commit] can begin a new transaction as a\nside-effect.",
       "file": "Client/BeginTransaction/main.go",
       "language": "GO",
       "clientMethod": {
@@ -243,7 +243,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_ExecuteBatchDml_sync",
       "title": "spanner ExecuteBatchDml Sample",
-      "description": "ExecuteBatchDml executes a batch of SQL DML statements. This method allows many statements\nto be run with lower latency than submitting them sequentially with\n[ExecuteSql][google.spanner.v1.Spanner.ExecuteSql].\n\nStatements are executed in sequential order. A request can succeed even if\na statement fails. The [ExecuteBatchDmlResponse.status][google.spanner.v1.ExecuteBatchDmlResponse.status] field in the\nresponse provides information about the statement that failed. Clients must\ninspect this field to determine whether an error occurred.\n\nExecution stops after the first failed statement; the remaining statements\nare not executed.",
+      "description": "ExecuteBatchDml executes a batch of SQL DML statements. This method allows many statements\nto be run with lower latency than submitting them sequentially with\n[ExecuteSql][google.spanner.v1.Spanner.ExecuteSql].\n\nStatements are executed in sequential order. A request can succeed even if\na statement fails. The\n[ExecuteBatchDmlResponse.status][google.spanner.v1.ExecuteBatchDmlResponse.status]\nfield in the response provides information about the statement that failed.\nClients must inspect this field to determine whether an error occurred.\n\nExecution stops after the first failed statement; the remaining statements\nare not executed.",
       "file": "Client/ExecuteBatchDml/main.go",
       "language": "GO",
       "clientMethod": {
@@ -289,7 +289,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_ExecuteSql_sync",
       "title": "spanner ExecuteSql Sample",
-      "description": "ExecuteSql executes an SQL statement, returning all results in a single reply. This\nmethod cannot be used to return a result set larger than 10 MiB;\nif the query yields more data than that, the query fails with\na `FAILED_PRECONDITION` error.\n\nOperations inside read-write transactions might return `ABORTED`. If\nthis occurs, the application should restart the transaction from\nthe beginning. See [Transaction][google.spanner.v1.Transaction] for more details.\n\nLarger result sets can be fetched in streaming fashion by calling\n[ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql] instead.",
+      "description": "ExecuteSql executes an SQL statement, returning all results in a single reply. This\nmethod cannot be used to return a result set larger than 10 MiB;\nif the query yields more data than that, the query fails with\na `FAILED_PRECONDITION` error.\n\nOperations inside read-write transactions might return `ABORTED`. If\nthis occurs, the application should restart the transaction from\nthe beginning. See [Transaction][google.spanner.v1.Transaction] for more\ndetails.\n\nLarger result sets can be fetched in streaming fashion by calling\n[ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql]\ninstead.",
       "file": "Client/ExecuteSql/main.go",
       "language": "GO",
       "clientMethod": {
@@ -419,7 +419,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -427,7 +427,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_PartitionQuery_sync",
       "title": "spanner PartitionQuery Sample",
-      "description": "PartitionQuery creates a set of partition tokens that can be used to execute a query\noperation in parallel.  Each of the returned partition tokens can be used\nby [ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql] to specify a subset\nof the query result to read.  The same session and read-only transaction\nmust be used by the PartitionQueryRequest used to create the\npartition tokens and the ExecuteSqlRequests that use the partition tokens.\n\nPartition tokens become invalid when the session used to create them\nis deleted, is idle for too long, begins a new transaction, or becomes too\nold.  When any of these happen, it is not possible to resume the query, and\nthe whole operation must be restarted from the beginning.",
+      "description": "PartitionQuery creates a set of partition tokens that can be used to execute a query\noperation in parallel.  Each of the returned partition tokens can be used\nby [ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql] to\nspecify a subset of the query result to read.  The same session and\nread-only transaction must be used by the PartitionQueryRequest used to\ncreate the partition tokens and the ExecuteSqlRequests that use the\npartition tokens.\n\nPartition tokens become invalid when the session used to create them\nis deleted, is idle for too long, begins a new transaction, or becomes too\nold.  When any of these happen, it is not possible to resume the query, and\nthe whole operation must be restarted from the beginning.",
       "file": "Client/PartitionQuery/main.go",
       "language": "GO",
       "clientMethod": {
@@ -473,7 +473,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_PartitionRead_sync",
       "title": "spanner PartitionRead Sample",
-      "description": "PartitionRead creates a set of partition tokens that can be used to execute a read\noperation in parallel.  Each of the returned partition tokens can be used\nby [StreamingRead][google.spanner.v1.Spanner.StreamingRead] to specify a subset of the read\nresult to read.  The same session and read-only transaction must be used by\nthe PartitionReadRequest used to create the partition tokens and the\nReadRequests that use the partition tokens.  There are no ordering\nguarantees on rows returned among the returned partition tokens, or even\nwithin each individual StreamingRead call issued with a partition_token.\n\nPartition tokens become invalid when the session used to create them\nis deleted, is idle for too long, begins a new transaction, or becomes too\nold.  When any of these happen, it is not possible to resume the read, and\nthe whole operation must be restarted from the beginning.",
+      "description": "PartitionRead creates a set of partition tokens that can be used to execute a read\noperation in parallel.  Each of the returned partition tokens can be used\nby [StreamingRead][google.spanner.v1.Spanner.StreamingRead] to specify a\nsubset of the read result to read.  The same session and read-only\ntransaction must be used by the PartitionReadRequest used to create the\npartition tokens and the ReadRequests that use the partition tokens.  There\nare no ordering guarantees on rows returned among the returned partition\ntokens, or even within each individual StreamingRead call issued with a\npartition_token.\n\nPartition tokens become invalid when the session used to create them\nis deleted, is idle for too long, begins a new transaction, or becomes too\nold.  When any of these happen, it is not possible to resume the read, and\nthe whole operation must be restarted from the beginning.",
       "file": "Client/PartitionRead/main.go",
       "language": "GO",
       "clientMethod": {
@@ -519,7 +519,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_Read_sync",
       "title": "spanner Read Sample",
-      "description": "Read reads rows from the database using key lookups and scans, as a\nsimple key/value style alternative to\n[ExecuteSql][google.spanner.v1.Spanner.ExecuteSql].  This method cannot be used to\nreturn a result set larger than 10 MiB; if the read matches more\ndata than that, the read fails with a `FAILED_PRECONDITION`\nerror.\n\nReads inside read-write transactions might return `ABORTED`. If\nthis occurs, the application should restart the transaction from\nthe beginning. See [Transaction][google.spanner.v1.Transaction] for more details.\n\nLarger result sets can be yielded in streaming fashion by calling\n[StreamingRead][google.spanner.v1.Spanner.StreamingRead] instead.",
+      "description": "Read reads rows from the database using key lookups and scans, as a\nsimple key/value style alternative to\n[ExecuteSql][google.spanner.v1.Spanner.ExecuteSql].  This method cannot be\nused to return a result set larger than 10 MiB; if the read matches more\ndata than that, the read fails with a `FAILED_PRECONDITION`\nerror.\n\nReads inside read-write transactions might return `ABORTED`. If\nthis occurs, the application should restart the transaction from\nthe beginning. See [Transaction][google.spanner.v1.Transaction] for more\ndetails.\n\nLarger result sets can be yielded in streaming fashion by calling\n[StreamingRead][google.spanner.v1.Spanner.StreamingRead] instead.",
       "file": "Client/Read/main.go",
       "language": "GO",
       "clientMethod": {
@@ -565,7 +565,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_Rollback_sync",
       "title": "spanner Rollback Sample",
-      "description": "Rollback rolls back a transaction, releasing any locks it holds. It is a good\nidea to call this for any transaction that includes one or more\n[Read][google.spanner.v1.Spanner.Read] or [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql] requests and\nultimately decides not to commit.\n\n`Rollback` returns `OK` if it successfully aborts the transaction, the\ntransaction was already aborted, or the transaction is not\nfound. `Rollback` never returns `ABORTED`.",
+      "description": "Rollback rolls back a transaction, releasing any locks it holds. It is a good\nidea to call this for any transaction that includes one or more\n[Read][google.spanner.v1.Spanner.Read] or\n[ExecuteSql][google.spanner.v1.Spanner.ExecuteSql] requests and ultimately\ndecides not to commit.\n\n`Rollback` returns `OK` if it successfully aborts the transaction, the\ntransaction was already aborted, or the transaction is not\nfound. `Rollback` never returns `ABORTED`.",
       "file": "Client/Rollback/main.go",
       "language": "GO",
       "clientMethod": {

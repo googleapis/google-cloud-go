@@ -28,15 +28,21 @@ import (
 )
 
 var (
-	dep         = flag.String("dep", "", "required, the module dependency to update")
-	version     = flag.String("version", "latest", "optional, the verison to update to, defaults to 'latest'")
-	noIndirect  = flag.Bool("no-indirect", false, "optional, ignores indirect deps, defaults to false")
-	indirectDep *regexp.Regexp
-	directDep   *regexp.Regexp
+	quiet         = flag.Bool("q", false, "optional, quiet mode, minimal logging, defaults to false")
+	dep           = flag.String("dep", "", "required, the module dependency to update")
+	version       = flag.String("version", "latest", "optional, the version for the go get command, defaults to 'latest'")
+	noIndirect    = flag.Bool("no-indirect", false, "optional, ignores indirect deps, defaults to false")
+	commitLvl     = flag.String("commit-level", "fix", "optional, nested commit conventional commits type for output, defaults to 'fix'")
+	msg           = flag.String("msg", "", "optional, nested commit message for output, defaults to 'update <dep> to <version>'")
+	indirectDep   *regexp.Regexp
+	directDep     *regexp.Regexp
+	commitLevel   string
+	commitMsg     string
+	nestedCommits strings.Builder
 )
 
 func main() {
-	flag.BoolVar(&logg.Quiet, "q", false, "quiet mode, minimal logging")
+	logg.Quiet = *quiet
 	flag.Parse()
 	if *dep == "" {
 		logg.Fatalf("Missing required option: -dep=[module]")
@@ -47,6 +53,12 @@ func main() {
 	if *noIndirect {
 		indirectDep = regexp.MustCompile(fmt.Sprintf(`%s [\-\/\.a-zA-Z0-9]+ \/\/ indirect`, *dep))
 	}
+	commitLevel = *commitLvl
+	commitMsg = *msg
+	if commitMsg == "" {
+		commitMsg = fmt.Sprintf("update %s to %s", *dep, *version)
+	}
+
 	rootDir, err := os.Getwd()
 	if err != nil {
 		logg.Fatal(err)
@@ -67,9 +79,13 @@ func main() {
 		if !depends {
 			continue
 		}
-		if err := update(m, *dep, *version); err != nil {
+		if err := update(m, *dep, *version, rootDir); err != nil {
 			logg.Printf("(non-fatal) failed to update %s: %s", m, err)
 		}
+	}
+
+	if !*quiet {
+		fmt.Println(nestedCommits.String())
 	}
 }
 
@@ -103,19 +119,30 @@ func dependson(mod, dep, version string) (bool, error) {
 	return has && eligible, nil
 }
 
-func update(mod, dep, version string) error {
+func update(modDir, dep, version, rootDir string) error {
 	c := exec.Command("go", "get", fmt.Sprintf("%s@%s", dep, version))
-	c.Dir = mod
+	c.Dir = modDir
 	_, err := c.Output()
 	if err != nil {
 		return err
 	}
 
 	c = exec.Command("go", "mod", "tidy")
-	c.Dir = mod
+	c.Dir = modDir
 	_, err = c.Output()
 	if err != nil {
 		return err
+	}
+
+	if !*quiet {
+		modDir = strings.TrimSpace(modDir)
+		scope := strings.TrimPrefix(modDir, rootDir+"/")
+		if scope == modDir || scope == "" || scope == "main" || strings.Contains(scope, "internal/") {
+			return nil
+		}
+		nestedCommits.WriteString("BEGIN_NESTED_COMMIT\n")
+		nestedCommits.WriteString(fmt.Sprintf("%s(%s): %s\n", commitLevel, scope, commitMsg))
+		nestedCommits.WriteString("END_NESTED_COMMIT\n")
 	}
 
 	return nil

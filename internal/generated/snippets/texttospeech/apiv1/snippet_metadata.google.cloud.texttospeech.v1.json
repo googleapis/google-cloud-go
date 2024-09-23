@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/texttospeech/apiv1",
-    "version": "1.7.1",
+    "version": "1.7.10",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,98 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "texttospeech_v1_generated_TextToSpeech_GetOperation_sync",
+      "title": "texttospeech GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.texttospeech.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.texttospeech.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "texttospeech_v1_generated_TextToSpeech_ListOperations_sync",
+      "title": "texttospeech ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.texttospeech.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.texttospeech.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "texttospeech_v1_generated_TextToSpeech_ListVoices_sync",
       "title": "texttospeech ListVoices Sample",
@@ -58,6 +150,48 @@
       ]
     },
     {
+      "regionTag": "texttospeech_v1_generated_TextToSpeech_StreamingSynthesize_sync",
+      "title": "texttospeech StreamingSynthesize Sample",
+      "description": "StreamingSynthesize performs bidirectional streaming speech synthesis: receive audio while\nsending text.\n\n\nThis method is not supported for the REST transport.",
+      "file": "Client/StreamingSynthesize/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamingSynthesize",
+        "fullName": "google.cloud.texttospeech.v1.Client.StreamingSynthesize",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "texttospeechpb.TextToSpeech_StreamingSynthesizeClient",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.texttospeech.v1.Client"
+        },
+        "method": {
+          "shortName": "StreamingSynthesize",
+          "fullName": "google.cloud.texttospeech.v1.TextToSpeech.StreamingSynthesize",
+          "service": {
+            "shortName": "TextToSpeech",
+            "fullName": "google.cloud.texttospeech.v1.TextToSpeech"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "texttospeech_v1_generated_TextToSpeech_SynthesizeSpeech_sync",
       "title": "texttospeech SynthesizeSpeech Sample",
       "description": "SynthesizeSpeech synthesizes speech synchronously: receive results after all text input\nhas been processed.",
@@ -99,6 +233,98 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "texttospeech_v1_generated_TextToSpeechLongAudioSynthesize_GetOperation_sync",
+      "title": "texttospeech GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "TextToSpeechLongAudioSynthesizeClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.texttospeech.v1.TextToSpeechLongAudioSynthesizeClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "TextToSpeechLongAudioSynthesizeClient",
+          "fullName": "google.cloud.texttospeech.v1.TextToSpeechLongAudioSynthesizeClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "texttospeech_v1_generated_TextToSpeechLongAudioSynthesize_ListOperations_sync",
+      "title": "texttospeech ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "TextToSpeechLongAudioSynthesizeClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.texttospeech.v1.TextToSpeechLongAudioSynthesizeClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "TextToSpeechLongAudioSynthesizeClient",
+          "fullName": "google.cloud.texttospeech.v1.TextToSpeechLongAudioSynthesizeClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]

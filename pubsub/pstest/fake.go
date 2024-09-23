@@ -36,8 +36,11 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	"go.einride.tech/aip/filtering"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -110,6 +113,13 @@ func NewServer(opts ...ServerReactorOption) *Server {
 
 // NewServerWithPort creates a new fake server running in the current process at the specified port.
 func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
+	return NewServerWithCallback(port, func(*grpc.Server) { /* empty */ }, opts...)
+}
+
+// NewServerWithCallback creates new fake server running in the current process at the specified port.
+// Before starting the server, the provided callback is called to allow caller to register additional fakes
+// into grpc server.
+func NewServerWithCallback(port int, callback func(*grpc.Server), opts ...ServerReactorOption) *Server {
 	srv, err := testutil.NewServerWithPort(port)
 	if err != nil {
 		panic(fmt.Sprintf("pstest.NewServerWithPort: %v", err))
@@ -135,6 +145,9 @@ func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
 	pb.RegisterPublisherServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSubscriberServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSchemaServiceServer(srv.Gsrv, &s.GServer)
+
+	callback(srv.Gsrv)
+
 	srv.Start()
 	return s
 }
@@ -233,6 +246,7 @@ type Message struct {
 	Acks        int      // number of acks received from clients
 	Modacks     []Modack // modacks received by server for this message
 	OrderingKey string
+	Topic       string
 
 	// protected by server mutex
 	deliveries int
@@ -316,8 +330,12 @@ func (s *GServer) CreateTopic(_ context.Context, t *pb.Topic) (*pb.Topic, error)
 	if s.topics[t.Name] != nil {
 		return nil, status.Errorf(codes.AlreadyExists, "topic %q", t.Name)
 	}
-	if err := checkMRD(t.MessageRetentionDuration); err != nil {
+	if err := checkTopicMessageRetention(t.MessageRetentionDuration); err != nil {
 		return nil, err
+	}
+	// Take any ingestion setting to mean the topic is active.
+	if t.IngestionDataSourceSettings != nil {
+		t.State = pb.Topic_ACTIVE
 	}
 	top := newTopic(t)
 	s.topics[t.Name] = top
@@ -357,7 +375,7 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 		case "message_storage_policy":
 			t.proto.MessageStoragePolicy = req.Topic.MessageStoragePolicy
 		case "message_retention_duration":
-			if err := checkMRD(req.Topic.MessageRetentionDuration); err != nil {
+			if err := checkTopicMessageRetention(req.Topic.MessageRetentionDuration); err != nil {
 				return nil, err
 			}
 			t.proto.MessageRetentionDuration = req.Topic.MessageRetentionDuration
@@ -383,6 +401,15 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 				t.proto.SchemaSettings = &pb.SchemaSettings{}
 			}
 			t.proto.SchemaSettings.LastRevisionId = req.Topic.SchemaSettings.LastRevisionId
+		case "ingestion_data_source_settings":
+			if t.proto.IngestionDataSourceSettings == nil {
+				t.proto.IngestionDataSourceSettings = &pb.IngestionDataSourceSettings{}
+			}
+			t.proto.IngestionDataSourceSettings = req.Topic.IngestionDataSourceSettings
+			// Take any ingestion setting to mean the topic is active.
+			if t.proto.IngestionDataSourceSettings != nil {
+				t.proto.State = pb.Topic_ACTIVE
+			}
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}
@@ -493,7 +520,7 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	if ps.MessageRetentionDuration == nil {
 		ps.MessageRetentionDuration = defaultMessageRetentionDuration
 	}
-	if err := checkMRD(ps.MessageRetentionDuration); err != nil {
+	if err := checkSubMessageRetention(ps.MessageRetentionDuration); err != nil {
 		return nil, err
 	}
 	if ps.PushConfig == nil {
@@ -561,18 +588,33 @@ func checkAckDeadline(ads int32) error {
 }
 
 const (
-	minMessageRetentionDuration = 10 * time.Minute
-	maxMessageRetentionDuration = 31 * 24 * time.Hour // 31 days is the maximum supported duration (https://cloud.google.com/pubsub/docs/replay-overview#configuring_message_retention)
+	minTopicMessageRetentionDuration = 10 * time.Minute
+	// 31 days is the maximum topic supported duration (https://cloud.google.com/pubsub/docs/replay-overview#configuring_message_retention)
+	maxTopicMessageRetentionDuration = 31 * 24 * time.Hour
+	minSubMessageRetentionDuration   = 10 * time.Minute
+	// 7 days is the maximum subscription supported duration (https://cloud.google.com/pubsub/docs/replay-overview#configuring_message_retention)
+	maxSubMessageRetentionDuration = 7 * 24 * time.Hour
 )
 
 var defaultMessageRetentionDuration = durpb.New(168 * time.Hour) // default is 7 days
 
-func checkMRD(pmrd *durpb.Duration) error {
+func checkTopicMessageRetention(pmrd *durpb.Duration) error {
 	if pmrd == nil {
 		return nil
 	}
 	mrd := pmrd.AsDuration()
-	if mrd < minMessageRetentionDuration || mrd > maxMessageRetentionDuration {
+	if mrd < minTopicMessageRetentionDuration || mrd > maxTopicMessageRetentionDuration {
+		return status.Errorf(codes.InvalidArgument, "bad message_retention_duration %+v", pmrd)
+	}
+	return nil
+}
+
+func checkSubMessageRetention(pmrd *durpb.Duration) error {
+	if pmrd == nil {
+		return nil
+	}
+	mrd := pmrd.AsDuration()
+	if mrd < minSubMessageRetentionDuration || mrd > maxSubMessageRetentionDuration {
 		return status.Errorf(codes.InvalidArgument, "bad message_retention_duration %+v", pmrd)
 	}
 	return nil
@@ -644,7 +686,7 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 			sub.proto.RetainAckedMessages = req.Subscription.RetainAckedMessages
 
 		case "message_retention_duration":
-			if err := checkMRD(req.Subscription.MessageRetentionDuration); err != nil {
+			if err := checkSubMessageRetention(req.Subscription.MessageRetentionDuration); err != nil {
 				return nil, err
 			}
 			sub.proto.MessageRetentionDuration = req.Subscription.MessageRetentionDuration
@@ -669,6 +711,11 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 			sub.proto.RetryPolicy = req.Subscription.RetryPolicy
 
 		case "filter":
+			filter, err := parseFilter(req.Subscription.Filter)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "bad filter: %v", err)
+			}
+			sub.filter = &filter
 			sub.proto.Filter = req.Subscription.Filter
 
 		case "enable_exactly_once_delivery":
@@ -782,6 +829,7 @@ func (s *GServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 			Attributes:  pm.Attributes,
 			PublishTime: pubTime,
 			OrderingKey: pm.OrderingKey,
+			Topic:       req.Topic,
 		}
 		top.publish(pm, m)
 		ids = append(ids, id)
@@ -838,6 +886,7 @@ type subscription struct {
 	streams         []*stream
 	done            chan struct{}
 	timeNowFunc     func() time.Time
+	filter          *filtering.Filter
 }
 
 func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, deadLetterTopic *topic, ps *pb.Subscription) *subscription {
@@ -846,7 +895,7 @@ func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, dea
 		at = 10 * time.Second
 	}
 	ps.State = pb.Subscription_ACTIVE
-	return &subscription{
+	sub := &subscription{
 		topic:           t,
 		deadLetterTopic: deadLetterTopic,
 		mu:              mu,
@@ -856,6 +905,14 @@ func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, dea
 		done:            make(chan struct{}),
 		timeNowFunc:     timeNowFunc,
 	}
+	if ps.Filter != "" {
+		filter, err := parseFilter(ps.Filter)
+		if err != nil {
+			panic(fmt.Sprintf("pstest: bad filter: %v", err))
+		}
+		sub.filter = &filter
+	}
+	return sub
 }
 
 func (s *subscription) start(wg *sync.WaitGroup) {
@@ -1053,7 +1110,8 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 	now := s.timeNowFunc()
 	s.maintainMessages(now)
 	var msgs []*pb.ReceivedMessage
-	for id, m := range filterMsgs(s.msgs, s.proto.EnableMessageOrdering) {
+	filterMsgs(s.msgs, s.filter)
+	for id, m := range orderMsgs(s.msgs, s.proto.EnableMessageOrdering) {
 		if m.outstanding() {
 			continue
 		}
@@ -1075,7 +1133,7 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 	return msgs
 }
 
-func filterMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string]*message {
+func orderMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string]*message {
 	if !enableMessageOrdering {
 		return msgs
 	}
@@ -1101,6 +1159,16 @@ func filterMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string
 	return result
 }
 
+func filterMsgs(msgs map[string]*message, filter *filtering.Filter) {
+	if filter == nil {
+		return
+	}
+
+	filterByAttrs(msgs, filter, func(m *message) messageAttrs {
+		return m.proto.Message.Attributes
+	})
+}
+
 func (s *subscription) deliver() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -1109,7 +1177,8 @@ func (s *subscription) deliver() {
 	s.maintainMessages(now)
 	// Try to deliver each remaining message.
 	curIndex := 0
-	for id, m := range filterMsgs(s.msgs, s.proto.EnableMessageOrdering) {
+	filterMsgs(s.msgs, s.filter)
+	for id, m := range orderMsgs(s.msgs, s.proto.EnableMessageOrdering) {
 		if m.outstanding() {
 			continue
 		}
@@ -1562,11 +1631,12 @@ func (s *GServer) RollbackSchema(_ context.Context, req *pb.RollbackSchemaReques
 
 	for _, sc := range s.schemas[req.Name] {
 		if sc.RevisionId == req.RevisionId {
-			newSchema := *sc
+			cloned := proto.Clone(sc)
+			newSchema := cloned.(*pb.Schema)
 			newSchema.RevisionId = genRevID()
 			newSchema.RevisionCreateTime = timestamppb.Now()
-			s.schemas[req.Name] = append(s.schemas[req.Name], &newSchema)
-			return &newSchema, nil
+			s.schemas[req.Name] = append(s.schemas[req.Name], newSchema)
+			return newSchema, nil
 		}
 	}
 	return nil, status.Errorf(codes.NotFound, "schema %q@%q not found", req.Name, req.RevisionId)

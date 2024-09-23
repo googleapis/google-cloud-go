@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,6 +58,56 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
+func ExampleClient_GetNotification() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := advisorynotifications.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &advisorynotificationspb.GetNotificationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/advisorynotifications/apiv1/advisorynotificationspb#GetNotificationRequest.
+	}
+	resp, err := c.GetNotification(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetSettings() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := advisorynotifications.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &advisorynotificationspb.GetSettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/advisorynotifications/apiv1/advisorynotificationspb#GetSettingsRequest.
+	}
+	resp, err := c.GetSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ListNotifications() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -86,10 +136,16 @@ func ExampleClient_ListNotifications() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*advisorynotificationspb.ListNotificationsResponse)
 	}
 }
 
-func ExampleClient_GetNotification() {
+func ExampleClient_UpdateSettings() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -102,11 +158,11 @@ func ExampleClient_GetNotification() {
 	}
 	defer c.Close()
 
-	req := &advisorynotificationspb.GetNotificationRequest{
+	req := &advisorynotificationspb.UpdateSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/advisorynotifications/apiv1/advisorynotificationspb#GetNotificationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/advisorynotifications/apiv1/advisorynotificationspb#UpdateSettingsRequest.
 	}
-	resp, err := c.GetNotification(ctx, req)
+	resp, err := c.UpdateSettings(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

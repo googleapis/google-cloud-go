@@ -26,7 +26,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
-	"github.com/google/go-github/v52/github"
+	"github.com/google/go-github/v59/github"
 	"golang.org/x/oauth2"
 )
 
@@ -47,9 +47,14 @@ If you have been assigned to review this PR, please:
 - Approve and submit this PR if you believe it's ready to ship. That will prompt
 genbot to assign reviewers to the google-cloud-go PR.
 `
+	noPRCommitBody   = "\n\nThere is no corresponding google-cloud-go PR.\n"
+	maxCommitBodyLen = 65536
 )
 
-var conventionalCommitScopeRe = regexp.MustCompile(`.*\((.*)\): .*`)
+var (
+	conventionalCommitScopeRe = regexp.MustCompile(`.*\((.*)\): .*`)
+	maxChangesLen             = maxCommitBodyLen - len(genprotoCommitBody) - len(noPRCommitBody)
+)
 
 // PullRequest represents a GitHub pull request.
 type PullRequest struct {
@@ -162,7 +167,7 @@ func (gc *GithubClient) CreateGenprotoPR(ctx context.Context, genprotoDir string
 	var sb strings.Builder
 	sb.WriteString(genprotoCommitBody)
 	if !hasCorrespondingPR {
-		sb.WriteString("\n\nThere is no corresponding google-cloud-go PR.\n")
+		sb.WriteString(noPRCommitBody)
 		sb.WriteString(FormatChanges(changes, false))
 	}
 	body := sb.String()

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -82,10 +81,13 @@ type ConfigCallOptions struct {
 func defaultConfigGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("logging.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("logging.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("logging.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://logging.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -628,7 +630,7 @@ type configGRPCClient struct {
 	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewConfigClient creates a new config service v2 client based on gRPC.
@@ -689,7 +691,9 @@ func (c *configGRPCClient) Connection() *grpc.ClientConn {
 func (c *configGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -699,9 +703,10 @@ func (c *configGRPCClient) Close() error {
 }
 
 func (c *configGRPCClient) ListBuckets(ctx context.Context, req *loggingpb.ListBucketsRequest, opts ...gax.CallOption) *LogBucketIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListBuckets[0:len((*c.CallOptions).ListBuckets):len((*c.CallOptions).ListBuckets)], opts...)
 	it := &LogBucketIterator{}
 	req = proto.Clone(req).(*loggingpb.ListBucketsRequest)
@@ -744,9 +749,10 @@ func (c *configGRPCClient) ListBuckets(ctx context.Context, req *loggingpb.ListB
 }
 
 func (c *configGRPCClient) GetBucket(ctx context.Context, req *loggingpb.GetBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetBucket[0:len((*c.CallOptions).GetBucket):len((*c.CallOptions).GetBucket)], opts...)
 	var resp *loggingpb.LogBucket
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -761,9 +767,10 @@ func (c *configGRPCClient) GetBucket(ctx context.Context, req *loggingpb.GetBuck
 }
 
 func (c *configGRPCClient) CreateBucketAsync(ctx context.Context, req *loggingpb.CreateBucketRequest, opts ...gax.CallOption) (*CreateBucketAsyncOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateBucketAsync[0:len((*c.CallOptions).CreateBucketAsync):len((*c.CallOptions).CreateBucketAsync)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -780,9 +787,10 @@ func (c *configGRPCClient) CreateBucketAsync(ctx context.Context, req *loggingpb
 }
 
 func (c *configGRPCClient) UpdateBucketAsync(ctx context.Context, req *loggingpb.UpdateBucketRequest, opts ...gax.CallOption) (*UpdateBucketAsyncOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateBucketAsync[0:len((*c.CallOptions).UpdateBucketAsync):len((*c.CallOptions).UpdateBucketAsync)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -799,9 +807,10 @@ func (c *configGRPCClient) UpdateBucketAsync(ctx context.Context, req *loggingpb
 }
 
 func (c *configGRPCClient) CreateBucket(ctx context.Context, req *loggingpb.CreateBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateBucket[0:len((*c.CallOptions).CreateBucket):len((*c.CallOptions).CreateBucket)], opts...)
 	var resp *loggingpb.LogBucket
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -816,9 +825,10 @@ func (c *configGRPCClient) CreateBucket(ctx context.Context, req *loggingpb.Crea
 }
 
 func (c *configGRPCClient) UpdateBucket(ctx context.Context, req *loggingpb.UpdateBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateBucket[0:len((*c.CallOptions).UpdateBucket):len((*c.CallOptions).UpdateBucket)], opts...)
 	var resp *loggingpb.LogBucket
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -833,9 +843,10 @@ func (c *configGRPCClient) UpdateBucket(ctx context.Context, req *loggingpb.Upda
 }
 
 func (c *configGRPCClient) DeleteBucket(ctx context.Context, req *loggingpb.DeleteBucketRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteBucket[0:len((*c.CallOptions).DeleteBucket):len((*c.CallOptions).DeleteBucket)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -846,9 +857,10 @@ func (c *configGRPCClient) DeleteBucket(ctx context.Context, req *loggingpb.Dele
 }
 
 func (c *configGRPCClient) UndeleteBucket(ctx context.Context, req *loggingpb.UndeleteBucketRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UndeleteBucket[0:len((*c.CallOptions).UndeleteBucket):len((*c.CallOptions).UndeleteBucket)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -859,9 +871,10 @@ func (c *configGRPCClient) UndeleteBucket(ctx context.Context, req *loggingpb.Un
 }
 
 func (c *configGRPCClient) ListViews(ctx context.Context, req *loggingpb.ListViewsRequest, opts ...gax.CallOption) *LogViewIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListViews[0:len((*c.CallOptions).ListViews):len((*c.CallOptions).ListViews)], opts...)
 	it := &LogViewIterator{}
 	req = proto.Clone(req).(*loggingpb.ListViewsRequest)
@@ -904,9 +917,10 @@ func (c *configGRPCClient) ListViews(ctx context.Context, req *loggingpb.ListVie
 }
 
 func (c *configGRPCClient) GetView(ctx context.Context, req *loggingpb.GetViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetView[0:len((*c.CallOptions).GetView):len((*c.CallOptions).GetView)], opts...)
 	var resp *loggingpb.LogView
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -921,9 +935,10 @@ func (c *configGRPCClient) GetView(ctx context.Context, req *loggingpb.GetViewRe
 }
 
 func (c *configGRPCClient) CreateView(ctx context.Context, req *loggingpb.CreateViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateView[0:len((*c.CallOptions).CreateView):len((*c.CallOptions).CreateView)], opts...)
 	var resp *loggingpb.LogView
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -938,9 +953,10 @@ func (c *configGRPCClient) CreateView(ctx context.Context, req *loggingpb.Create
 }
 
 func (c *configGRPCClient) UpdateView(ctx context.Context, req *loggingpb.UpdateViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateView[0:len((*c.CallOptions).UpdateView):len((*c.CallOptions).UpdateView)], opts...)
 	var resp *loggingpb.LogView
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -955,9 +971,10 @@ func (c *configGRPCClient) UpdateView(ctx context.Context, req *loggingpb.Update
 }
 
 func (c *configGRPCClient) DeleteView(ctx context.Context, req *loggingpb.DeleteViewRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteView[0:len((*c.CallOptions).DeleteView):len((*c.CallOptions).DeleteView)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -968,9 +985,10 @@ func (c *configGRPCClient) DeleteView(ctx context.Context, req *loggingpb.Delete
 }
 
 func (c *configGRPCClient) ListSinks(ctx context.Context, req *loggingpb.ListSinksRequest, opts ...gax.CallOption) *LogSinkIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListSinks[0:len((*c.CallOptions).ListSinks):len((*c.CallOptions).ListSinks)], opts...)
 	it := &LogSinkIterator{}
 	req = proto.Clone(req).(*loggingpb.ListSinksRequest)
@@ -1013,9 +1031,10 @@ func (c *configGRPCClient) ListSinks(ctx context.Context, req *loggingpb.ListSin
 }
 
 func (c *configGRPCClient) GetSink(ctx context.Context, req *loggingpb.GetSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetSink[0:len((*c.CallOptions).GetSink):len((*c.CallOptions).GetSink)], opts...)
 	var resp *loggingpb.LogSink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1030,9 +1049,10 @@ func (c *configGRPCClient) GetSink(ctx context.Context, req *loggingpb.GetSinkRe
 }
 
 func (c *configGRPCClient) CreateSink(ctx context.Context, req *loggingpb.CreateSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateSink[0:len((*c.CallOptions).CreateSink):len((*c.CallOptions).CreateSink)], opts...)
 	var resp *loggingpb.LogSink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1047,9 +1067,10 @@ func (c *configGRPCClient) CreateSink(ctx context.Context, req *loggingpb.Create
 }
 
 func (c *configGRPCClient) UpdateSink(ctx context.Context, req *loggingpb.UpdateSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateSink[0:len((*c.CallOptions).UpdateSink):len((*c.CallOptions).UpdateSink)], opts...)
 	var resp *loggingpb.LogSink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1064,9 +1085,10 @@ func (c *configGRPCClient) UpdateSink(ctx context.Context, req *loggingpb.Update
 }
 
 func (c *configGRPCClient) DeleteSink(ctx context.Context, req *loggingpb.DeleteSinkRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteSink[0:len((*c.CallOptions).DeleteSink):len((*c.CallOptions).DeleteSink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1077,9 +1099,10 @@ func (c *configGRPCClient) DeleteSink(ctx context.Context, req *loggingpb.Delete
 }
 
 func (c *configGRPCClient) CreateLink(ctx context.Context, req *loggingpb.CreateLinkRequest, opts ...gax.CallOption) (*CreateLinkOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateLink[0:len((*c.CallOptions).CreateLink):len((*c.CallOptions).CreateLink)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1096,9 +1119,10 @@ func (c *configGRPCClient) CreateLink(ctx context.Context, req *loggingpb.Create
 }
 
 func (c *configGRPCClient) DeleteLink(ctx context.Context, req *loggingpb.DeleteLinkRequest, opts ...gax.CallOption) (*DeleteLinkOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteLink[0:len((*c.CallOptions).DeleteLink):len((*c.CallOptions).DeleteLink)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1115,9 +1139,10 @@ func (c *configGRPCClient) DeleteLink(ctx context.Context, req *loggingpb.Delete
 }
 
 func (c *configGRPCClient) ListLinks(ctx context.Context, req *loggingpb.ListLinksRequest, opts ...gax.CallOption) *LinkIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListLinks[0:len((*c.CallOptions).ListLinks):len((*c.CallOptions).ListLinks)], opts...)
 	it := &LinkIterator{}
 	req = proto.Clone(req).(*loggingpb.ListLinksRequest)
@@ -1160,9 +1185,10 @@ func (c *configGRPCClient) ListLinks(ctx context.Context, req *loggingpb.ListLin
 }
 
 func (c *configGRPCClient) GetLink(ctx context.Context, req *loggingpb.GetLinkRequest, opts ...gax.CallOption) (*loggingpb.Link, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetLink[0:len((*c.CallOptions).GetLink):len((*c.CallOptions).GetLink)], opts...)
 	var resp *loggingpb.Link
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1177,9 +1203,10 @@ func (c *configGRPCClient) GetLink(ctx context.Context, req *loggingpb.GetLinkRe
 }
 
 func (c *configGRPCClient) ListExclusions(ctx context.Context, req *loggingpb.ListExclusionsRequest, opts ...gax.CallOption) *LogExclusionIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListExclusions[0:len((*c.CallOptions).ListExclusions):len((*c.CallOptions).ListExclusions)], opts...)
 	it := &LogExclusionIterator{}
 	req = proto.Clone(req).(*loggingpb.ListExclusionsRequest)
@@ -1222,9 +1249,10 @@ func (c *configGRPCClient) ListExclusions(ctx context.Context, req *loggingpb.Li
 }
 
 func (c *configGRPCClient) GetExclusion(ctx context.Context, req *loggingpb.GetExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetExclusion[0:len((*c.CallOptions).GetExclusion):len((*c.CallOptions).GetExclusion)], opts...)
 	var resp *loggingpb.LogExclusion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1239,9 +1267,10 @@ func (c *configGRPCClient) GetExclusion(ctx context.Context, req *loggingpb.GetE
 }
 
 func (c *configGRPCClient) CreateExclusion(ctx context.Context, req *loggingpb.CreateExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateExclusion[0:len((*c.CallOptions).CreateExclusion):len((*c.CallOptions).CreateExclusion)], opts...)
 	var resp *loggingpb.LogExclusion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1256,9 +1285,10 @@ func (c *configGRPCClient) CreateExclusion(ctx context.Context, req *loggingpb.C
 }
 
 func (c *configGRPCClient) UpdateExclusion(ctx context.Context, req *loggingpb.UpdateExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateExclusion[0:len((*c.CallOptions).UpdateExclusion):len((*c.CallOptions).UpdateExclusion)], opts...)
 	var resp *loggingpb.LogExclusion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1273,9 +1303,10 @@ func (c *configGRPCClient) UpdateExclusion(ctx context.Context, req *loggingpb.U
 }
 
 func (c *configGRPCClient) DeleteExclusion(ctx context.Context, req *loggingpb.DeleteExclusionRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteExclusion[0:len((*c.CallOptions).DeleteExclusion):len((*c.CallOptions).DeleteExclusion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1286,9 +1317,10 @@ func (c *configGRPCClient) DeleteExclusion(ctx context.Context, req *loggingpb.D
 }
 
 func (c *configGRPCClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetCmekSettings[0:len((*c.CallOptions).GetCmekSettings):len((*c.CallOptions).GetCmekSettings)], opts...)
 	var resp *loggingpb.CmekSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1303,9 +1335,10 @@ func (c *configGRPCClient) GetCmekSettings(ctx context.Context, req *loggingpb.G
 }
 
 func (c *configGRPCClient) UpdateCmekSettings(ctx context.Context, req *loggingpb.UpdateCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateCmekSettings[0:len((*c.CallOptions).UpdateCmekSettings):len((*c.CallOptions).UpdateCmekSettings)], opts...)
 	var resp *loggingpb.CmekSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1320,9 +1353,10 @@ func (c *configGRPCClient) UpdateCmekSettings(ctx context.Context, req *loggingp
 }
 
 func (c *configGRPCClient) GetSettings(ctx context.Context, req *loggingpb.GetSettingsRequest, opts ...gax.CallOption) (*loggingpb.Settings, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
 	var resp *loggingpb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1337,9 +1371,10 @@ func (c *configGRPCClient) GetSettings(ctx context.Context, req *loggingpb.GetSe
 }
 
 func (c *configGRPCClient) UpdateSettings(ctx context.Context, req *loggingpb.UpdateSettingsRequest, opts ...gax.CallOption) (*loggingpb.Settings, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
 	var resp *loggingpb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1354,7 +1389,7 @@ func (c *configGRPCClient) UpdateSettings(ctx context.Context, req *loggingpb.Up
 }
 
 func (c *configGRPCClient) CopyLogEntries(ctx context.Context, req *loggingpb.CopyLogEntriesRequest, opts ...gax.CallOption) (*CopyLogEntriesOperation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).CopyLogEntries[0:len((*c.CallOptions).CopyLogEntries):len((*c.CallOptions).CopyLogEntries)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1371,9 +1406,10 @@ func (c *configGRPCClient) CopyLogEntries(ctx context.Context, req *loggingpb.Co
 }
 
 func (c *configGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1384,9 +1420,10 @@ func (c *configGRPCClient) CancelOperation(ctx context.Context, req *longrunning
 }
 
 func (c *configGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1401,9 +1438,10 @@ func (c *configGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.
 }
 
 func (c *configGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1445,78 +1483,12 @@ func (c *configGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 	return it
 }
 
-// CopyLogEntriesOperation manages a long-running operation from CopyLogEntries.
-type CopyLogEntriesOperation struct {
-	lro *longrunning.Operation
-}
-
 // CopyLogEntriesOperation returns a new CopyLogEntriesOperation from a given name.
 // The name must be that of a previously created CopyLogEntriesOperation, possibly from a different process.
 func (c *configGRPCClient) CopyLogEntriesOperation(name string) *CopyLogEntriesOperation {
 	return &CopyLogEntriesOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CopyLogEntriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*loggingpb.CopyLogEntriesResponse, error) {
-	var resp loggingpb.CopyLogEntriesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CopyLogEntriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*loggingpb.CopyLogEntriesResponse, error) {
-	var resp loggingpb.CopyLogEntriesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CopyLogEntriesOperation) Metadata() (*loggingpb.CopyLogEntriesMetadata, error) {
-	var meta loggingpb.CopyLogEntriesMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CopyLogEntriesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CopyLogEntriesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateBucketAsyncOperation manages a long-running operation from CreateBucketAsync.
-type CreateBucketAsyncOperation struct {
-	lro *longrunning.Operation
 }
 
 // CreateBucketAsyncOperation returns a new CreateBucketAsyncOperation from a given name.
@@ -1527,134 +1499,12 @@ func (c *configGRPCClient) CreateBucketAsyncOperation(name string) *CreateBucket
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateBucketAsyncOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
-	var resp loggingpb.LogBucket
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateBucketAsyncOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
-	var resp loggingpb.LogBucket
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateBucketAsyncOperation) Metadata() (*loggingpb.BucketMetadata, error) {
-	var meta loggingpb.BucketMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateBucketAsyncOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateBucketAsyncOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateLinkOperation manages a long-running operation from CreateLink.
-type CreateLinkOperation struct {
-	lro *longrunning.Operation
-}
-
 // CreateLinkOperation returns a new CreateLinkOperation from a given name.
 // The name must be that of a previously created CreateLinkOperation, possibly from a different process.
 func (c *configGRPCClient) CreateLinkOperation(name string) *CreateLinkOperation {
 	return &CreateLinkOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateLinkOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*loggingpb.Link, error) {
-	var resp loggingpb.Link
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateLinkOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*loggingpb.Link, error) {
-	var resp loggingpb.Link
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateLinkOperation) Metadata() (*loggingpb.LinkMetadata, error) {
-	var meta loggingpb.LinkMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateLinkOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateLinkOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteLinkOperation manages a long-running operation from DeleteLink.
-type DeleteLinkOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteLinkOperation returns a new DeleteLinkOperation from a given name.
@@ -1665,351 +1515,10 @@ func (c *configGRPCClient) DeleteLinkOperation(name string) *DeleteLinkOperation
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteLinkOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteLinkOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteLinkOperation) Metadata() (*loggingpb.LinkMetadata, error) {
-	var meta loggingpb.LinkMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteLinkOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteLinkOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateBucketAsyncOperation manages a long-running operation from UpdateBucketAsync.
-type UpdateBucketAsyncOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpdateBucketAsyncOperation returns a new UpdateBucketAsyncOperation from a given name.
 // The name must be that of a previously created UpdateBucketAsyncOperation, possibly from a different process.
 func (c *configGRPCClient) UpdateBucketAsyncOperation(name string) *UpdateBucketAsyncOperation {
 	return &UpdateBucketAsyncOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateBucketAsyncOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
-	var resp loggingpb.LogBucket
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateBucketAsyncOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
-	var resp loggingpb.LogBucket
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateBucketAsyncOperation) Metadata() (*loggingpb.BucketMetadata, error) {
-	var meta loggingpb.BucketMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateBucketAsyncOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateBucketAsyncOperation) Name() string {
-	return op.lro.Name()
-}
-
-// LinkIterator manages a stream of *loggingpb.Link.
-type LinkIterator struct {
-	items    []*loggingpb.Link
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*loggingpb.Link, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LinkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LinkIterator) Next() (*loggingpb.Link, error) {
-	var item *loggingpb.Link
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LinkIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LogBucketIterator manages a stream of *loggingpb.LogBucket.
-type LogBucketIterator struct {
-	items    []*loggingpb.LogBucket
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*loggingpb.LogBucket, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LogBucketIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LogBucketIterator) Next() (*loggingpb.LogBucket, error) {
-	var item *loggingpb.LogBucket
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LogBucketIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LogBucketIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LogExclusionIterator manages a stream of *loggingpb.LogExclusion.
-type LogExclusionIterator struct {
-	items    []*loggingpb.LogExclusion
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*loggingpb.LogExclusion, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LogExclusionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LogExclusionIterator) Next() (*loggingpb.LogExclusion, error) {
-	var item *loggingpb.LogExclusion
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LogExclusionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LogExclusionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LogSinkIterator manages a stream of *loggingpb.LogSink.
-type LogSinkIterator struct {
-	items    []*loggingpb.LogSink
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*loggingpb.LogSink, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LogSinkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LogSinkIterator) Next() (*loggingpb.LogSink, error) {
-	var item *loggingpb.LogSink
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LogSinkIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LogSinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LogViewIterator manages a stream of *loggingpb.LogView.
-type LogViewIterator struct {
-	items    []*loggingpb.LogView
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*loggingpb.LogView, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LogViewIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LogViewIterator) Next() (*loggingpb.LogView, error) {
-	var item *loggingpb.LogView
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LogViewIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LogViewIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

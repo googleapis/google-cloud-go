@@ -18,6 +18,7 @@ package logging
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"testing"
@@ -25,13 +26,48 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
-	"github.com/golang/protobuf/proto"
-	durpb "github.com/golang/protobuf/ptypes/duration"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/api/support/bundler"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	durpb "google.golang.org/protobuf/types/known/durationpb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
+
+func TestLoggerRetryer_Retry(t *testing.T) {
+	for _, tst := range []struct {
+		name      string
+		err       error
+		wantRetry bool
+	}{
+		{
+			name:      "non_status_no_retry",
+			err:       fmt.Errorf("non-API error, do not retry"),
+			wantRetry: false,
+		},
+		{
+			name:      "invalid_utf_no_retry",
+			err:       status.Error(codes.Internal, utfErrorString),
+			wantRetry: false,
+		},
+		{
+			// Just testing one of the configured codes to ensure the default
+			// retryer is triggered.
+			name:      "unavailable_retry",
+			err:       status.Error(codes.Unavailable, "Unavailable"),
+			wantRetry: true,
+		},
+	} {
+		t.Run(tst.name, func(t *testing.T) {
+			_, gotRetry := newLoggerRetryer().Retry(tst.err)
+			if gotRetry != tst.wantRetry {
+				t.Errorf("Retry(%v) = shouldRetry got %v want %v", tst.err, gotRetry, tst.wantRetry)
+			}
+		})
+	}
+}
 
 func TestLoggerCreation(t *testing.T) {
 	const logID = "testing"
@@ -46,14 +82,15 @@ func TestLoggerCreation(t *testing.T) {
 		DelayThreshold:       DefaultDelayThreshold,
 		BundleCountThreshold: DefaultEntryCountThreshold,
 		BundleByteThreshold:  DefaultEntryByteThreshold,
-		BundleByteLimit:      0,
+		BundleByteLimit:      DefaultBundleByteLimit,
 		BufferedByteLimit:    DefaultBufferedByteLimit,
 	}
 	for _, test := range []struct {
-		options         []LoggerOption
-		wantLogger      *Logger
-		defaultResource bool
-		wantBundler     *bundler.Bundler
+		options              []LoggerOption
+		wantLogger           *Logger
+		defaultResource      bool
+		wantBundler          *bundler.Bundler
+		testNoDetectResource bool
 	}{
 		{
 			options:         nil,
@@ -70,12 +107,14 @@ func TestLoggerCreation(t *testing.T) {
 				commonResource: nil,
 				commonLabels:   map[string]string{"a": "1"},
 			},
-			wantBundler: defaultBundler,
+			wantBundler:          defaultBundler,
+			testNoDetectResource: true,
 		},
 		{
-			options:     []LoggerOption{CommonResource(customResource)},
-			wantLogger:  &Logger{commonResource: customResource},
-			wantBundler: defaultBundler,
+			options:              []LoggerOption{CommonResource(customResource)},
+			wantLogger:           &Logger{commonResource: customResource},
+			wantBundler:          defaultBundler,
+			testNoDetectResource: true,
 		},
 		{
 			options: []LoggerOption{
@@ -96,6 +135,16 @@ func TestLoggerCreation(t *testing.T) {
 			},
 		},
 	} {
+		detectResourceMock := func() *mrpb.MonitoredResource {
+			t.Errorf("%v: detectResource was called when it shouldn't be", test.options)
+			return nil
+		}
+		realDetectResourceInternal := detectResourceInternal
+
+		if test.testNoDetectResource {
+			SetDetectResourceInternal(detectResourceMock)
+		}
+
 		gotLogger := c.Logger(logID, test.options...)
 		if got, want := gotLogger.commonResource, test.wantLogger.commonResource; !test.defaultResource && !proto.Equal(got, want) {
 			t.Errorf("%v: resource: got %v, want %v", test.options, got, want)
@@ -117,6 +166,10 @@ func TestLoggerCreation(t *testing.T) {
 		}
 		if got, want := gotLogger.bundler.BufferedByteLimit, test.wantBundler.BufferedByteLimit; got != want {
 			t.Errorf("%v: BufferedByteLimit: got %v, want %v", test.options, got, want)
+		}
+
+		if test.testNoDetectResource {
+			SetDetectResourceInternal(realDetectResourceInternal)
 		}
 	}
 }
@@ -359,5 +412,10 @@ func SetNow(f func() time.Time) func() time.Time {
 
 func SetToLogEntryInternal(f func(Entry, *Logger, string, int) (*logpb.LogEntry, error)) func(Entry, *Logger, string, int) (*logpb.LogEntry, error) {
 	toLogEntryInternal, f = f, toLogEntryInternal
+	return f
+}
+
+func SetDetectResourceInternal(f func() *mrpb.MonitoredResource) func() *mrpb.MonitoredResource {
+	detectResourceInternal, f = f, detectResourceInternal
 	return f
 }

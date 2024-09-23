@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gkemulticloud/apiv1",
-    "version": "1.0.0",
+    "version": "1.3.1",
     "language": "GO",
     "apis": [
       {
@@ -189,6 +189,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AttachedClusters_GenerateAttachedClusterAgentToken_sync",
+      "title": "gkemulticloud GenerateAttachedClusterAgentToken Sample",
+      "description": "GenerateAttachedClusterAgentToken generates an access token for a cluster agent.",
+      "file": "AttachedClustersClient/GenerateAttachedClusterAgentToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateAttachedClusterAgentToken",
+        "fullName": "google.cloud.gkemulticloud.v1.AttachedClustersClient.GenerateAttachedClusterAgentToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GenerateAttachedClusterAgentTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.GenerateAttachedClusterAgentTokenResponse",
+        "client": {
+          "shortName": "AttachedClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AttachedClustersClient"
+        },
+        "method": {
+          "shortName": "GenerateAttachedClusterAgentToken",
+          "fullName": "google.cloud.gkemulticloud.v1.AttachedClusters.GenerateAttachedClusterAgentToken",
+          "service": {
+            "shortName": "AttachedClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AttachedClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -464,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -510,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -882,6 +928,52 @@
       ]
     },
     {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_GenerateAwsClusterAgentToken_sync",
+      "title": "gkemulticloud GenerateAwsClusterAgentToken Sample",
+      "description": "GenerateAwsClusterAgentToken generates an access token for a cluster agent.",
+      "file": "AwsClustersClient/GenerateAwsClusterAgentToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateAwsClusterAgentToken",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.GenerateAwsClusterAgentToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GenerateAwsClusterAgentTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.GenerateAwsClusterAgentTokenResponse",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "GenerateAwsClusterAgentToken",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.GenerateAwsClusterAgentToken",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsCluster_sync",
       "title": "gkemulticloud GetAwsCluster Sample",
       "description": "GetAwsCluster describes a specific [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster]\nresource.",
@@ -928,6 +1020,52 @@
       ]
     },
     {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsJsonWebKeys_sync",
+      "title": "gkemulticloud GetAwsJsonWebKeys Sample",
+      "description": "GetAwsJsonWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.",
+      "file": "AwsClustersClient/GetAwsJsonWebKeys/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAwsJsonWebKeys",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.GetAwsJsonWebKeys",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAwsJsonWebKeysRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.AwsJsonWebKeys",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "GetAwsJsonWebKeys",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.GetAwsJsonWebKeys",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsNodePool_sync",
       "title": "gkemulticloud GetAwsNodePool Sample",
       "description": "GetAwsNodePool describes a specific\n[AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool] resource.",
@@ -958,6 +1096,52 @@
         "method": {
           "shortName": "GetAwsNodePool",
           "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.GetAwsNodePool",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsOpenIdConfig_sync",
+      "title": "gkemulticloud GetAwsOpenIdConfig Sample",
+      "description": "GetAwsOpenIdConfig gets the OIDC discovery document for the cluster.\nSee the\n[OpenID Connect Discovery 1.0\nspecification](https: //openid.net/specs/openid-connect-discovery-1_0.html)\nfor details.",
+      "file": "AwsClustersClient/GetAwsOpenIdConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAwsOpenIdConfig",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.GetAwsOpenIdConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAwsOpenIdConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.AwsOpenIdConfig",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "GetAwsOpenIdConfig",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.GetAwsOpenIdConfig",
           "service": {
             "shortName": "AwsClusters",
             "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
@@ -1106,7 +1290,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1152,7 +1336,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1198,7 +1382,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_RollbackAwsNodePoolUpdate_sync",
+      "title": "gkemulticloud RollbackAwsNodePoolUpdate Sample",
+      "description": "RollbackAwsNodePoolUpdate rolls back a previously aborted or failed\n[AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool] update request.\nMakes no changes if the last update request successfully finished.\nIf an update request is in progress, you cannot rollback the update.\nYou must first cancel or let it finish unsuccessfully before you can\nrollback.",
+      "file": "AwsClustersClient/RollbackAwsNodePoolUpdate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RollbackAwsNodePoolUpdate",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.RollbackAwsNodePoolUpdate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.RollbackAwsNodePoolUpdateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RollbackAwsNodePoolUpdateOperation",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "RollbackAwsNodePoolUpdate",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.RollbackAwsNodePoolUpdate",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1708,6 +1938,52 @@
       ]
     },
     {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_GenerateAzureClusterAgentToken_sync",
+      "title": "gkemulticloud GenerateAzureClusterAgentToken Sample",
+      "description": "GenerateAzureClusterAgentToken generates an access token for a cluster agent.",
+      "file": "AzureClustersClient/GenerateAzureClusterAgentToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateAzureClusterAgentToken",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.GenerateAzureClusterAgentToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GenerateAzureClusterAgentTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.GenerateAzureClusterAgentTokenResponse",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "GenerateAzureClusterAgentToken",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GenerateAzureClusterAgentToken",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureClient_sync",
       "title": "gkemulticloud GetAzureClient Sample",
       "description": "GetAzureClient describes a specific\n[AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource.",
@@ -1800,6 +2076,52 @@
       ]
     },
     {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureJsonWebKeys_sync",
+      "title": "gkemulticloud GetAzureJsonWebKeys Sample",
+      "description": "GetAzureJsonWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.",
+      "file": "AzureClustersClient/GetAzureJsonWebKeys/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAzureJsonWebKeys",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.GetAzureJsonWebKeys",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAzureJsonWebKeysRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.AzureJsonWebKeys",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "GetAzureJsonWebKeys",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GetAzureJsonWebKeys",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureNodePool_sync",
       "title": "gkemulticloud GetAzureNodePool Sample",
       "description": "GetAzureNodePool describes a specific\n[AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.",
@@ -1830,6 +2152,52 @@
         "method": {
           "shortName": "GetAzureNodePool",
           "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GetAzureNodePool",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureOpenIdConfig_sync",
+      "title": "gkemulticloud GetAzureOpenIdConfig Sample",
+      "description": "GetAzureOpenIdConfig gets the OIDC discovery document for the cluster.\nSee the\n[OpenID Connect Discovery 1.0\nspecification](https: //openid.net/specs/openid-connect-discovery-1_0.html)\nfor details.",
+      "file": "AzureClustersClient/GetAzureOpenIdConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAzureOpenIdConfig",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.GetAzureOpenIdConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAzureOpenIdConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.AzureOpenIdConfig",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "GetAzureOpenIdConfig",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GetAzureOpenIdConfig",
           "service": {
             "shortName": "AzureClusters",
             "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
@@ -1978,7 +2346,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2024,7 +2392,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2070,7 +2438,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2116,7 +2484,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

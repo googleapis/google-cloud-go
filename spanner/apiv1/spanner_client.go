@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package spanner
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -60,15 +61,19 @@ type CallOptions struct {
 	Rollback            []gax.CallOption
 	PartitionQuery      []gax.CallOption
 	PartitionRead       []gax.CallOption
+	BatchWrite          []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("spanner.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("spanner.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("spanner.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -81,6 +86,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -93,6 +99,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -105,6 +112,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -117,6 +125,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -129,6 +138,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -141,6 +151,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -154,6 +165,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -166,6 +178,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -179,6 +192,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -191,6 +205,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -203,6 +218,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -215,6 +231,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -227,6 +244,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -234,6 +252,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		BatchWrite: []gax.CallOption{},
 	}
 }
 
@@ -247,7 +266,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		BatchCreateSessions: []gax.CallOption{
@@ -258,7 +278,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		GetSession: []gax.CallOption{
@@ -269,7 +290,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		ListSessions: []gax.CallOption{
@@ -280,7 +302,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		DeleteSession: []gax.CallOption{
@@ -291,7 +314,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		ExecuteSql: []gax.CallOption{
@@ -302,7 +326,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		ExecuteStreamingSql: []gax.CallOption{
@@ -316,7 +341,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		Read: []gax.CallOption{
@@ -327,7 +353,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		StreamingRead: []gax.CallOption{
@@ -341,7 +368,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		Commit: []gax.CallOption{
@@ -352,7 +380,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		Rollback: []gax.CallOption{
@@ -363,7 +392,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		PartitionQuery: []gax.CallOption{
@@ -374,7 +404,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		PartitionRead: []gax.CallOption{
@@ -385,8 +416,12 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
+		},
+		BatchWrite: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 		},
 	}
 }
@@ -411,6 +446,7 @@ type internalClient interface {
 	Rollback(context.Context, *spannerpb.RollbackRequest, ...gax.CallOption) error
 	PartitionQuery(context.Context, *spannerpb.PartitionQueryRequest, ...gax.CallOption) (*spannerpb.PartitionResponse, error)
 	PartitionRead(context.Context, *spannerpb.PartitionReadRequest, ...gax.CallOption) (*spannerpb.PartitionResponse, error)
+	BatchWrite(context.Context, *spannerpb.BatchWriteRequest, ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error)
 }
 
 // Client is a client for interacting with Cloud Spanner API.
@@ -508,19 +544,21 @@ func (c *Client) DeleteSession(ctx context.Context, req *spannerpb.DeleteSession
 //
 // Operations inside read-write transactions might return ABORTED. If
 // this occurs, the application should restart the transaction from
-// the beginning. See Transaction for more details.
+// the beginning. See Transaction for more
+// details.
 //
 // Larger result sets can be fetched in streaming fashion by calling
-// ExecuteStreamingSql instead.
+// ExecuteStreamingSql
+// instead.
 func (c *Client) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	return c.internalClient.ExecuteSql(ctx, req, opts...)
 }
 
-// ExecuteStreamingSql like ExecuteSql, except returns the result
-// set as a stream. Unlike ExecuteSql, there
-// is no limit on the size of the returned result set. However, no
-// individual row in the result set can exceed 100 MiB, and no
-// column value can exceed 10 MiB.
+// ExecuteStreamingSql like ExecuteSql, except returns the
+// result set as a stream. Unlike
+// ExecuteSql, there is no limit on
+// the size of the returned result set. However, no individual row in the
+// result set can exceed 100 MiB, and no column value can exceed 10 MiB.
 func (c *Client) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
 	return c.internalClient.ExecuteStreamingSql(ctx, req, opts...)
 }
@@ -530,9 +568,10 @@ func (c *Client) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Execute
 // ExecuteSql.
 //
 // Statements are executed in sequential order. A request can succeed even if
-// a statement fails. The ExecuteBatchDmlResponse.status field in the
-// response provides information about the statement that failed. Clients must
-// inspect this field to determine whether an error occurred.
+// a statement fails. The
+// ExecuteBatchDmlResponse.status
+// field in the response provides information about the statement that failed.
+// Clients must inspect this field to determine whether an error occurred.
 //
 // Execution stops after the first failed statement; the remaining statements
 // are not executed.
@@ -542,14 +581,15 @@ func (c *Client) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatc
 
 // Read reads rows from the database using key lookups and scans, as a
 // simple key/value style alternative to
-// ExecuteSql.  This method cannot be used to
-// return a result set larger than 10 MiB; if the read matches more
+// ExecuteSql.  This method cannot be
+// used to return a result set larger than 10 MiB; if the read matches more
 // data than that, the read fails with a FAILED_PRECONDITION
 // error.
 //
 // Reads inside read-write transactions might return ABORTED. If
 // this occurs, the application should restart the transaction from
-// the beginning. See Transaction for more details.
+// the beginning. See Transaction for more
+// details.
 //
 // Larger result sets can be yielded in streaming fashion by calling
 // StreamingRead instead.
@@ -557,9 +597,9 @@ func (c *Client) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...g
 	return c.internalClient.Read(ctx, req, opts...)
 }
 
-// StreamingRead like Read, except returns the result set as a
-// stream. Unlike Read, there is no limit on the
-// size of the returned result set. However, no individual row in
+// StreamingRead like Read, except returns the result set
+// as a stream. Unlike Read, there is no
+// limit on the size of the returned result set. However, no individual row in
 // the result set can exceed 100 MiB, and no column value can exceed
 // 10 MiB.
 func (c *Client) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
@@ -567,7 +607,8 @@ func (c *Client) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, 
 }
 
 // BeginTransaction begins a new transaction. This step can often be skipped:
-// Read, ExecuteSql and
+// Read,
+// ExecuteSql and
 // Commit can begin a new transaction as a
 // side-effect.
 func (c *Client) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
@@ -594,8 +635,9 @@ func (c *Client) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts 
 
 // Rollback rolls back a transaction, releasing any locks it holds. It is a good
 // idea to call this for any transaction that includes one or more
-// Read or ExecuteSql requests and
-// ultimately decides not to commit.
+// Read or
+// ExecuteSql requests and ultimately
+// decides not to commit.
 //
 // Rollback returns OK if it successfully aborts the transaction, the
 // transaction was already aborted, or the transaction is not
@@ -606,10 +648,11 @@ func (c *Client) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, o
 
 // PartitionQuery creates a set of partition tokens that can be used to execute a query
 // operation in parallel.  Each of the returned partition tokens can be used
-// by ExecuteStreamingSql to specify a subset
-// of the query result to read.  The same session and read-only transaction
-// must be used by the PartitionQueryRequest used to create the
-// partition tokens and the ExecuteSqlRequests that use the partition tokens.
+// by ExecuteStreamingSql to
+// specify a subset of the query result to read.  The same session and
+// read-only transaction must be used by the PartitionQueryRequest used to
+// create the partition tokens and the ExecuteSqlRequests that use the
+// partition tokens.
 //
 // Partition tokens become invalid when the session used to create them
 // is deleted, is idle for too long, begins a new transaction, or becomes too
@@ -621,12 +664,13 @@ func (c *Client) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQue
 
 // PartitionRead creates a set of partition tokens that can be used to execute a read
 // operation in parallel.  Each of the returned partition tokens can be used
-// by StreamingRead to specify a subset of the read
-// result to read.  The same session and read-only transaction must be used by
-// the PartitionReadRequest used to create the partition tokens and the
-// ReadRequests that use the partition tokens.  There are no ordering
-// guarantees on rows returned among the returned partition tokens, or even
-// within each individual StreamingRead call issued with a partition_token.
+// by StreamingRead to specify a
+// subset of the read result to read.  The same session and read-only
+// transaction must be used by the PartitionReadRequest used to create the
+// partition tokens and the ReadRequests that use the partition tokens.  There
+// are no ordering guarantees on rows returned among the returned partition
+// tokens, or even within each individual StreamingRead call issued with a
+// partition_token.
 //
 // Partition tokens become invalid when the session used to create them
 // is deleted, is idle for too long, begins a new transaction, or becomes too
@@ -634,6 +678,25 @@ func (c *Client) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQue
 // the whole operation must be restarted from the beginning.
 func (c *Client) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
 	return c.internalClient.PartitionRead(ctx, req, opts...)
+}
+
+// BatchWrite batches the supplied mutation groups in a collection of efficient
+// transactions. All mutations in a group are committed atomically. However,
+// mutations across groups can be committed non-atomically in an unspecified
+// order and thus, they must be independent of each other. Partial failure is
+// possible, i.e., some groups may have been committed successfully, while
+// some may have failed. The results of individual batches are streamed into
+// the response as the batches are applied.
+//
+// BatchWrite requests are not replay protected, meaning that each mutation
+// group may be applied more than once. Replays of non-idempotent mutations
+// may have undesirable effects. For example, replays of an insert mutation
+// may produce an already exists error or if you use generated or commit
+// timestamp-based keys, it may result in additional rows being added to the
+// mutation’s table. We recommend structuring your mutation groups to be
+// idempotent to avoid this issue.
+func (c *Client) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
+	return c.internalClient.BatchWrite(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Cloud Spanner API over gRPC transport.
@@ -650,7 +713,7 @@ type gRPCClient struct {
 	client spannerpb.SpannerClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new spanner client based on gRPC.
@@ -702,7 +765,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -719,8 +784,8 @@ type restClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
@@ -753,9 +818,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://spanner.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://spanner.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://spanner.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -765,7 +833,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -783,9 +853,10 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateSession[0:len((*c.CallOptions).CreateSession):len((*c.CallOptions).CreateSession)], opts...)
 	var resp *spannerpb.Session
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -800,9 +871,10 @@ func (c *gRPCClient) CreateSession(ctx context.Context, req *spannerpb.CreateSes
 }
 
 func (c *gRPCClient) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest, opts ...gax.CallOption) (*spannerpb.BatchCreateSessionsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).BatchCreateSessions[0:len((*c.CallOptions).BatchCreateSessions):len((*c.CallOptions).BatchCreateSessions)], opts...)
 	var resp *spannerpb.BatchCreateSessionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -817,9 +889,10 @@ func (c *gRPCClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 }
 
 func (c *gRPCClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetSession[0:len((*c.CallOptions).GetSession):len((*c.CallOptions).GetSession)], opts...)
 	var resp *spannerpb.Session
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -834,9 +907,10 @@ func (c *gRPCClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRe
 }
 
 func (c *gRPCClient) ListSessions(ctx context.Context, req *spannerpb.ListSessionsRequest, opts ...gax.CallOption) *SessionIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListSessions[0:len((*c.CallOptions).ListSessions):len((*c.CallOptions).ListSessions)], opts...)
 	it := &SessionIterator{}
 	req = proto.Clone(req).(*spannerpb.ListSessionsRequest)
@@ -879,9 +953,10 @@ func (c *gRPCClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 }
 
 func (c *gRPCClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSessionRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteSession[0:len((*c.CallOptions).DeleteSession):len((*c.CallOptions).DeleteSession)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -892,9 +967,10 @@ func (c *gRPCClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 }
 
 func (c *gRPCClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ExecuteSql[0:len((*c.CallOptions).ExecuteSql):len((*c.CallOptions).ExecuteSql)], opts...)
 	var resp *spannerpb.ResultSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -909,9 +985,10 @@ func (c *gRPCClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 }
 
 func (c *gRPCClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ExecuteStreamingSql[0:len((*c.CallOptions).ExecuteStreamingSql):len((*c.CallOptions).ExecuteStreamingSql)], opts...)
 	var resp spannerpb.Spanner_ExecuteStreamingSqlClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -926,9 +1003,10 @@ func (c *gRPCClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 }
 
 func (c *gRPCClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatchDmlRequest, opts ...gax.CallOption) (*spannerpb.ExecuteBatchDmlResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ExecuteBatchDml[0:len((*c.CallOptions).ExecuteBatchDml):len((*c.CallOptions).ExecuteBatchDml)], opts...)
 	var resp *spannerpb.ExecuteBatchDmlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -943,9 +1021,10 @@ func (c *gRPCClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 }
 
 func (c *gRPCClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).Read[0:len((*c.CallOptions).Read):len((*c.CallOptions).Read)], opts...)
 	var resp *spannerpb.ResultSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -960,9 +1039,10 @@ func (c *gRPCClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts 
 }
 
 func (c *gRPCClient) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).StreamingRead[0:len((*c.CallOptions).StreamingRead):len((*c.CallOptions).StreamingRead)], opts...)
 	var resp spannerpb.Spanner_StreamingReadClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -977,9 +1057,10 @@ func (c *gRPCClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 }
 
 func (c *gRPCClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).BeginTransaction[0:len((*c.CallOptions).BeginTransaction):len((*c.CallOptions).BeginTransaction)], opts...)
 	var resp *spannerpb.Transaction
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -994,9 +1075,10 @@ func (c *gRPCClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginT
 }
 
 func (c *gRPCClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts ...gax.CallOption) (*spannerpb.CommitResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).Commit[0:len((*c.CallOptions).Commit):len((*c.CallOptions).Commit)], opts...)
 	var resp *spannerpb.CommitResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1011,9 +1093,10 @@ func (c *gRPCClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 }
 
 func (c *gRPCClient) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).Rollback[0:len((*c.CallOptions).Rollback):len((*c.CallOptions).Rollback)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1024,9 +1107,10 @@ func (c *gRPCClient) Rollback(ctx context.Context, req *spannerpb.RollbackReques
 }
 
 func (c *gRPCClient) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQueryRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).PartitionQuery[0:len((*c.CallOptions).PartitionQuery):len((*c.CallOptions).PartitionQuery)], opts...)
 	var resp *spannerpb.PartitionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1041,14 +1125,33 @@ func (c *gRPCClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 }
 
 func (c *gRPCClient) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).PartitionRead[0:len((*c.CallOptions).PartitionRead):len((*c.CallOptions).PartitionRead)], opts...)
 	var resp *spannerpb.PartitionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.PartitionRead(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchWrite[0:len((*c.CallOptions).BatchWrite):len((*c.CallOptions).BatchWrite)], opts...)
+	var resp spannerpb.Spanner_BatchWriteClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.BatchWrite(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1095,9 +1198,11 @@ func (c *restClient) CreateSession(ctx context.Context, req *spannerpb.CreateSes
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateSession[0:len((*c.CallOptions).CreateSession):len((*c.CallOptions).CreateSession)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &spannerpb.Session{}
@@ -1162,9 +1267,11 @@ func (c *restClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).BatchCreateSessions[0:len((*c.CallOptions).BatchCreateSessions):len((*c.CallOptions).BatchCreateSessions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &spannerpb.BatchCreateSessionsResponse{}
@@ -1222,9 +1329,11 @@ func (c *restClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRe
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetSession[0:len((*c.CallOptions).GetSession):len((*c.CallOptions).GetSession)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &spannerpb.Session{}
@@ -1302,7 +1411,8 @@ func (c *restClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1373,9 +1483,11 @@ func (c *restClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1406,10 +1518,12 @@ func (c *restClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 //
 // Operations inside read-write transactions might return ABORTED. If
 // this occurs, the application should restart the transaction from
-// the beginning. See Transaction for more details.
+// the beginning. See Transaction for more
+// details.
 //
 // Larger result sets can be fetched in streaming fashion by calling
-// ExecuteStreamingSql instead.
+// ExecuteStreamingSql
+// instead.
 func (c *restClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1429,9 +1543,11 @@ func (c *restClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ExecuteSql[0:len((*c.CallOptions).ExecuteSql):len((*c.CallOptions).ExecuteSql)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &spannerpb.ResultSet{}
@@ -1473,11 +1589,11 @@ func (c *restClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 	return resp, nil
 }
 
-// ExecuteStreamingSql like ExecuteSql, except returns the result
-// set as a stream. Unlike ExecuteSql, there
-// is no limit on the size of the returned result set. However, no
-// individual row in the result set can exceed 100 MiB, and no
-// column value can exceed 10 MiB.
+// ExecuteStreamingSql like ExecuteSql, except returns the
+// result set as a stream. Unlike
+// ExecuteSql, there is no limit on
+// the size of the returned result set. However, no individual row in the
+// result set can exceed 100 MiB, and no column value can exceed 10 MiB.
 func (c *restClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1497,9 +1613,11 @@ func (c *restClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	var streamClient *executeStreamingSqlRESTClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
@@ -1564,7 +1682,7 @@ func (c *executeStreamingSqlRESTClient) Trailer() metadata.MD {
 
 func (c *executeStreamingSqlRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *executeStreamingSqlRESTClient) Context() context.Context {
@@ -1573,12 +1691,12 @@ func (c *executeStreamingSqlRESTClient) Context() context.Context {
 
 func (c *executeStreamingSqlRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *executeStreamingSqlRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // ExecuteBatchDml executes a batch of SQL DML statements. This method allows many statements
@@ -1586,9 +1704,10 @@ func (c *executeStreamingSqlRESTClient) RecvMsg(m interface{}) error {
 // ExecuteSql.
 //
 // Statements are executed in sequential order. A request can succeed even if
-// a statement fails. The ExecuteBatchDmlResponse.status field in the
-// response provides information about the statement that failed. Clients must
-// inspect this field to determine whether an error occurred.
+// a statement fails. The
+// ExecuteBatchDmlResponse.status
+// field in the response provides information about the statement that failed.
+// Clients must inspect this field to determine whether an error occurred.
 //
 // Execution stops after the first failed statement; the remaining statements
 // are not executed.
@@ -1611,9 +1730,11 @@ func (c *restClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ExecuteBatchDml[0:len((*c.CallOptions).ExecuteBatchDml):len((*c.CallOptions).ExecuteBatchDml)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &spannerpb.ExecuteBatchDmlResponse{}
@@ -1657,14 +1778,15 @@ func (c *restClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 
 // Read reads rows from the database using key lookups and scans, as a
 // simple key/value style alternative to
-// ExecuteSql.  This method cannot be used to
-// return a result set larger than 10 MiB; if the read matches more
+// ExecuteSql.  This method cannot be
+// used to return a result set larger than 10 MiB; if the read matches more
 // data than that, the read fails with a FAILED_PRECONDITION
 // error.
 //
 // Reads inside read-write transactions might return ABORTED. If
 // this occurs, the application should restart the transaction from
-// the beginning. See Transaction for more details.
+// the beginning. See Transaction for more
+// details.
 //
 // Larger result sets can be yielded in streaming fashion by calling
 // StreamingRead instead.
@@ -1687,9 +1809,11 @@ func (c *restClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).Read[0:len((*c.CallOptions).Read):len((*c.CallOptions).Read)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &spannerpb.ResultSet{}
@@ -1731,9 +1855,9 @@ func (c *restClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts 
 	return resp, nil
 }
 
-// StreamingRead like Read, except returns the result set as a
-// stream. Unlike Read, there is no limit on the
-// size of the returned result set. However, no individual row in
+// StreamingRead like Read, except returns the result set
+// as a stream. Unlike Read, there is no
+// limit on the size of the returned result set. However, no individual row in
 // the result set can exceed 100 MiB, and no column value can exceed
 // 10 MiB.
 func (c *restClient) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
@@ -1755,9 +1879,11 @@ func (c *restClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	var streamClient *streamingReadRESTClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
@@ -1822,7 +1948,7 @@ func (c *streamingReadRESTClient) Trailer() metadata.MD {
 
 func (c *streamingReadRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamingReadRESTClient) Context() context.Context {
@@ -1831,16 +1957,17 @@ func (c *streamingReadRESTClient) Context() context.Context {
 
 func (c *streamingReadRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamingReadRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // BeginTransaction begins a new transaction. This step can often be skipped:
-// Read, ExecuteSql and
+// Read,
+// ExecuteSql and
 // Commit can begin a new transaction as a
 // side-effect.
 func (c *restClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
@@ -1862,9 +1989,11 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginT
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).BeginTransaction[0:len((*c.CallOptions).BeginTransaction):len((*c.CallOptions).BeginTransaction)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &spannerpb.Transaction{}
@@ -1939,9 +2068,11 @@ func (c *restClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).Commit[0:len((*c.CallOptions).Commit):len((*c.CallOptions).Commit)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &spannerpb.CommitResponse{}
@@ -1985,8 +2116,9 @@ func (c *restClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 
 // Rollback rolls back a transaction, releasing any locks it holds. It is a good
 // idea to call this for any transaction that includes one or more
-// Read or ExecuteSql requests and
-// ultimately decides not to commit.
+// Read or
+// ExecuteSql requests and ultimately
+// decides not to commit.
 //
 // Rollback returns OK if it successfully aborts the transaction, the
 // transaction was already aborted, or the transaction is not
@@ -2010,9 +2142,11 @@ func (c *restClient) Rollback(ctx context.Context, req *spannerpb.RollbackReques
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2038,10 +2172,11 @@ func (c *restClient) Rollback(ctx context.Context, req *spannerpb.RollbackReques
 
 // PartitionQuery creates a set of partition tokens that can be used to execute a query
 // operation in parallel.  Each of the returned partition tokens can be used
-// by ExecuteStreamingSql to specify a subset
-// of the query result to read.  The same session and read-only transaction
-// must be used by the PartitionQueryRequest used to create the
-// partition tokens and the ExecuteSqlRequests that use the partition tokens.
+// by ExecuteStreamingSql to
+// specify a subset of the query result to read.  The same session and
+// read-only transaction must be used by the PartitionQueryRequest used to
+// create the partition tokens and the ExecuteSqlRequests that use the
+// partition tokens.
 //
 // Partition tokens become invalid when the session used to create them
 // is deleted, is idle for too long, begins a new transaction, or becomes too
@@ -2066,9 +2201,11 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).PartitionQuery[0:len((*c.CallOptions).PartitionQuery):len((*c.CallOptions).PartitionQuery)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &spannerpb.PartitionResponse{}
@@ -2112,12 +2249,13 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 
 // PartitionRead creates a set of partition tokens that can be used to execute a read
 // operation in parallel.  Each of the returned partition tokens can be used
-// by StreamingRead to specify a subset of the read
-// result to read.  The same session and read-only transaction must be used by
-// the PartitionReadRequest used to create the partition tokens and the
-// ReadRequests that use the partition tokens.  There are no ordering
-// guarantees on rows returned among the returned partition tokens, or even
-// within each individual StreamingRead call issued with a partition_token.
+// by StreamingRead to specify a
+// subset of the read result to read.  The same session and read-only
+// transaction must be used by the PartitionReadRequest used to create the
+// partition tokens and the ReadRequests that use the partition tokens.  There
+// are no ordering guarantees on rows returned among the returned partition
+// tokens, or even within each individual StreamingRead call issued with a
+// partition_token.
 //
 // Partition tokens become invalid when the session used to create them
 // is deleted, is idle for too long, begins a new transaction, or becomes too
@@ -2142,9 +2280,11 @@ func (c *restClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).PartitionRead[0:len((*c.CallOptions).PartitionRead):len((*c.CallOptions).PartitionRead)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &spannerpb.PartitionResponse{}
@@ -2186,49 +2326,122 @@ func (c *restClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 	return resp, nil
 }
 
-// SessionIterator manages a stream of *spannerpb.Session.
-type SessionIterator struct {
-	items    []*spannerpb.Session
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*spannerpb.Session, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SessionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SessionIterator) Next() (*spannerpb.Session, error) {
-	var item *spannerpb.Session
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// BatchWrite batches the supplied mutation groups in a collection of efficient
+// transactions. All mutations in a group are committed atomically. However,
+// mutations across groups can be committed non-atomically in an unspecified
+// order and thus, they must be independent of each other. Partial failure is
+// possible, i.e., some groups may have been committed successfully, while
+// some may have failed. The results of individual batches are streamed into
+// the response as the batches are applied.
+//
+// BatchWrite requests are not replay protected, meaning that each mutation
+// group may be applied more than once. Replays of non-idempotent mutations
+// may have undesirable effects. For example, replays of an insert mutation
+// may produce an already exists error or if you use generated or commit
+// timestamp-based keys, it may result in additional rows being added to the
+// mutation’s table. We recommend structuring your mutation groups to be
+// idempotent to avoid this issue.
+func (c *restClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:batchWrite", req.GetSession())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	var streamClient *batchWriteRESTClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		streamClient = &batchWriteRESTClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&spannerpb.BatchWriteResponse{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
 }
 
-func (it *SessionIterator) bufLen() int {
-	return len(it.items)
+// batchWriteRESTClient is the stream client used to consume the server stream created by
+// the REST implementation of BatchWrite.
+type batchWriteRESTClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
 }
 
-func (it *SessionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
+func (c *batchWriteRESTClient) Recv() (*spannerpb.BatchWriteResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*spannerpb.BatchWriteResponse)
+	return res, nil
+}
+
+func (c *batchWriteRESTClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *batchWriteRESTClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *batchWriteRESTClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *batchWriteRESTClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *batchWriteRESTClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *batchWriteRESTClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
 }

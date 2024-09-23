@@ -26,9 +26,13 @@ import (
 	vkit "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/grpc_gcp"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/multiendpoint"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 )
 
@@ -48,14 +52,14 @@ type testConsumer struct {
 	receivedAll chan struct{}
 }
 
-func (tc *testConsumer) sessionReady(s *session) {
+func (tc *testConsumer) sessionReady(_ context.Context, s *session) {
 	tc.mu.Lock()
 	defer tc.mu.Unlock()
 	tc.sessions = append(tc.sessions, s)
 	tc.checkReceivedAll()
 }
 
-func (tc *testConsumer) sessionCreationFailed(err error, num int32) {
+func (tc *testConsumer) sessionCreationFailed(_ context.Context, err error, num int32, _ bool) {
 	tc.mu.Lock()
 	defer tc.mu.Unlock()
 	tc.errors = append(tc.errors, &testSessionCreateError{
@@ -81,6 +85,10 @@ func newTestConsumer(numExpected int32) *testConsumer {
 
 func TestNextClient(t *testing.T) {
 	t.Parallel()
+	if useGRPCgcp {
+		// For GCPMultiEndpoint the nextClient is indirectly tested via TestBatchCreateAndCloseSession.
+		t.Skip("GCPMultiEndpoint does not provide a connection via Connection().")
+	}
 
 	n := 4
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
@@ -140,7 +148,11 @@ func TestCreateAndCloseSession(t *testing.T) {
 	if s == nil {
 		t.Fatalf("batch.next() return value mismatch\ngot: %v\nwant: any session", s)
 	}
-	if server.TestSpanner.TotalSessionsCreated() != 1 {
+	expectedCount := uint(1)
+	if isMultiplexEnabled {
+		expectedCount = 2
+	}
+	if server.TestSpanner.TotalSessionsCreated() != expectedCount {
 		t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", server.TestSpanner.TotalSessionsCreated(), 1)
 	}
 	s.delete(context.Background())
@@ -166,7 +178,11 @@ func TestCreateSessionWithDatabaseRole(t *testing.T) {
 	if s == nil {
 		t.Fatalf("batch.next() return value mismatch\ngot: %v\nwant: any session", s)
 	}
-	if g, w := server.TestSpanner.TotalSessionsCreated(), uint(1); g != w {
+	expectedCount := uint(1)
+	if isMultiplexEnabled {
+		expectedCount = 2
+	}
+	if g, w := server.TestSpanner.TotalSessionsCreated(), expectedCount; g != w {
 		t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", g, w)
 	}
 
@@ -188,20 +204,68 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 	t.Parallel()
 
 	numSessions := int32(100)
-	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+
+	// Remembering which connections were used for the calls.
+	reqConnAddr := make(chan string, 200)
+	defer close(reqConnAddr)
+	connTagger := func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
+		p, ok := peer.FromContext(ctx)
+		if ok {
+			reqConnAddr <- p.Addr.String()
+		} else {
+			reqConnAddr <- ""
+		}
+		return handler(ctx, req)
+	}
+	sopt := []grpc.ServerOption{grpc.ChainUnaryInterceptor(connTagger)}
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t, sopt...)
 	defer serverTeardown()
 	for numChannels := 1; numChannels <= 32; numChannels *= 2 {
 		prevCreated := server.TestSpanner.TotalSessionsCreated()
 		prevDeleted := server.TestSpanner.TotalSessionsDeleted()
-		client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{
+		config := ClientConfig{
 			NumChannels: numChannels,
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened: 0,
 				MaxOpened: 400,
-			}}, opts...)
+			}}
+		var client *Client
+		var err error
+		if useGRPCgcp {
+			gmeCfg := &grpcgcp.GCPMultiEndpointOptions{
+				GRPCgcpConfig: &grpc_gcp.ApiConfig{
+					ChannelPool: &grpc_gcp.ChannelPoolConfig{
+						MaxSize:          uint32(numChannels),
+						MinSize:          uint32(numChannels),
+						BindPickStrategy: grpc_gcp.ChannelPoolConfig_ROUND_ROBIN,
+					},
+				},
+				MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+					"default": {
+						Endpoints: []string{server.ServerAddress},
+					},
+				},
+				Default: "default",
+			}
+			client, _, err = NewMultiEndpointClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, gmeCfg, opts...)
+		} else {
+			client, err = NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, opts...)
+		}
 		if err != nil {
 			t.Fatal(err)
 		}
+
+		if isMultiplexEnabled {
+			waitFor(t, func() error {
+				client.idleSessions.mu.Lock()
+				defer client.idleSessions.mu.Unlock()
+				if client.idleSessions.multiplexedSession == nil {
+					return fmt.Errorf("multiplexed session not created yet")
+				}
+				return nil
+			})
+		}
+
 		consumer := newTestConsumer(numSessions)
 		client.sc.batchCreateSessions(numSessions, true, consumer)
 		<-consumer.receivedAll
@@ -209,8 +273,12 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 			t.Fatalf("returned number of sessions mismatch\ngot: %v\nwant: %v", len(consumer.sessions), numSessions)
 		}
 		created := server.TestSpanner.TotalSessionsCreated() - prevCreated
-		if created != uint(numSessions) {
-			t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", created, numSessions)
+		expectedNumSessions := numSessions
+		if isMultiplexEnabled {
+			expectedNumSessions++
+		}
+		if created != uint(expectedNumSessions) {
+			t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", created, expectedNumSessions)
 		}
 		// Check that all channels are used evenly.
 		channelCounts := make(map[*vkit.Client]int32)
@@ -225,6 +293,30 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 				t.Fatalf("channel used an unexpected number of times\ngot: %v\nwant between %v and %v", c, numSessions/int32(numChannels), numSessions/int32(numChannels)+1)
 			}
 		}
+		// Check that all connections are used evenly. Required for GCPMultiEndpoint.
+		reqConnAddr <- "ALLRECEIVED"
+		connCounts := make(map[string]int32)
+		addr := <-reqConnAddr
+		for addr != "ALLRECEIVED" {
+			connCounts[addr]++
+			addr = <-reqConnAddr
+		}
+		if len(connCounts) != numChannels {
+			t.Fatalf("number of connections used mismatch\ngot: %v\nwant: %v", len(connCounts), numChannels)
+		}
+		for a, c := range connCounts {
+			if c != 1 {
+				if isMultiplexEnabled {
+					// The multiplexed session creation will use one of the connections
+					if c != 2 {
+						t.Fatalf("connection %q used an unexpected number of times\ngot: %v\nwant %v", a, c, 2)
+					}
+				} else {
+					t.Fatalf("connection %q used an unexpected number of times\ngot: %v\nwant %v", a, c, 1)
+				}
+
+			}
+		}
 		// Delete the sessions.
 		for _, s := range consumer.sessions {
 			s.delete(context.Background())
@@ -234,6 +326,12 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 			t.Fatalf("number of sessions deleted mismatch\ngot: %v\nwant %v", deleted, numSessions)
 		}
 		client.Close()
+		// Flush addresses used while deleting sessions.
+		reqConnAddr <- "ALLDELETED"
+		addr = <-reqConnAddr
+		for addr != "ALLDELETED" {
+			addr = <-reqConnAddr
+		}
 	}
 }
 
@@ -245,6 +343,7 @@ func TestBatchCreateSessionsWithDatabaseRole(t *testing.T) {
 	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc, DatabaseRole: "test"})
 	defer teardown()
+
 	ctx := context.Background()
 
 	consumer := newTestConsumer(1)
@@ -253,7 +352,11 @@ func TestBatchCreateSessionsWithDatabaseRole(t *testing.T) {
 	if g, w := len(consumer.sessions), 1; g != w {
 		t.Fatalf("returned number of sessions mismatch\ngot: %v\nwant: %v", g, w)
 	}
-	if g, w := server.TestSpanner.TotalSessionsCreated(), uint(1); g != w {
+	expectedCount := uint(1)
+	if isMultiplexEnabled {
+		expectedCount = 2
+	}
+	if g, w := server.TestSpanner.TotalSessionsCreated(), expectedCount; g != w {
 		t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", g, w)
 	}
 	s := consumer.sessions[0]
@@ -283,12 +386,13 @@ func TestBatchCreateSessionsWithExceptions(t *testing.T) {
 	for numErrors := int32(1); numErrors <= numChannels; numErrors++ {
 		// Make sure that the error is not always the first call.
 		for firstErrorAt := numErrors - 1; firstErrorAt < numChannels-numErrors+1; firstErrorAt++ {
-			client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{
+			config := ClientConfig{
 				NumChannels: numChannels,
 				SessionPoolConfig: SessionPoolConfig{
 					MinOpened: 0,
 					MaxOpened: 400,
-				}}, opts...)
+				}}
+			client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -368,19 +472,31 @@ func TestBatchCreateSessions_ServerExhausted(t *testing.T) {
 		},
 	})
 	defer teardown()
+	if isMultiplexEnabled {
+		waitFor(t, func() error {
+			if client.idleSessions.multiplexedSession == nil {
+				return fmt.Errorf("multiplexed session not created yet")
+			}
+			return nil
+		})
+	}
 	numSessions := int32(100)
 	maxSessions := int32(50)
 	// Ensure that the server will never return more than 50 sessions in total.
-	server.TestSpanner.SetMaxSessionsReturnedByServerInTotal(maxSessions)
+	if isMultiplexEnabled {
+		server.TestSpanner.SetMaxSessionsReturnedByServerInTotal(maxSessions + 1)
+	} else {
+		server.TestSpanner.SetMaxSessionsReturnedByServerInTotal(maxSessions)
+	}
 	consumer := newTestConsumer(numSessions)
 	client.sc.batchCreateSessions(numSessions, true, consumer)
 	<-consumer.receivedAll
-	// Session creation should end with at least one RESOURCE_EXHAUSTED error.
+	// Session creation should end with at least one non-retryable error.
 	if len(consumer.errors) == 0 {
 		t.Fatalf("Error count mismatch\nGot: %d\nWant: > %d", len(consumer.errors), 0)
 	}
 	for _, e := range consumer.errors {
-		if g, w := status.Code(e.err), codes.ResourceExhausted; g != w {
+		if g, w := status.Code(e.err), codes.OutOfRange; g != w {
 			t.Fatalf("Error code mismath\nGot: %v\nWant: %v", g, w)
 		}
 	}
@@ -404,11 +520,12 @@ func TestBatchCreateSessions_WithTimeout(t *testing.T) {
 	server.TestSpanner.PutExecutionTime(MethodBatchCreateSession, SimulatedExecutionTime{
 		MinimumExecutionTime: time.Second,
 	})
-	client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{
+	config := ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 0,
 			MaxOpened: 400,
-		}}, opts...)
+		}}
+	client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
 	if err != nil {
 		t.Fatal(err)
 	}

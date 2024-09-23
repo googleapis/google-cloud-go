@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -50,10 +49,13 @@ type UptimeCheckCallOptions struct {
 func defaultUptimeCheckGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("monitoring.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("monitoring.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -223,7 +225,7 @@ type uptimeCheckGRPCClient struct {
 	uptimeCheckClient monitoringpb.UptimeCheckServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewUptimeCheckClient creates a new uptime check service client based on gRPC.
@@ -279,7 +281,9 @@ func (c *uptimeCheckGRPCClient) Connection() *grpc.ClientConn {
 func (c *uptimeCheckGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -289,9 +293,10 @@ func (c *uptimeCheckGRPCClient) Close() error {
 }
 
 func (c *uptimeCheckGRPCClient) ListUptimeCheckConfigs(ctx context.Context, req *monitoringpb.ListUptimeCheckConfigsRequest, opts ...gax.CallOption) *UptimeCheckConfigIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListUptimeCheckConfigs[0:len((*c.CallOptions).ListUptimeCheckConfigs):len((*c.CallOptions).ListUptimeCheckConfigs)], opts...)
 	it := &UptimeCheckConfigIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListUptimeCheckConfigsRequest)
@@ -334,9 +339,10 @@ func (c *uptimeCheckGRPCClient) ListUptimeCheckConfigs(ctx context.Context, req 
 }
 
 func (c *uptimeCheckGRPCClient) GetUptimeCheckConfig(ctx context.Context, req *monitoringpb.GetUptimeCheckConfigRequest, opts ...gax.CallOption) (*monitoringpb.UptimeCheckConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetUptimeCheckConfig[0:len((*c.CallOptions).GetUptimeCheckConfig):len((*c.CallOptions).GetUptimeCheckConfig)], opts...)
 	var resp *monitoringpb.UptimeCheckConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -351,9 +357,10 @@ func (c *uptimeCheckGRPCClient) GetUptimeCheckConfig(ctx context.Context, req *m
 }
 
 func (c *uptimeCheckGRPCClient) CreateUptimeCheckConfig(ctx context.Context, req *monitoringpb.CreateUptimeCheckConfigRequest, opts ...gax.CallOption) (*monitoringpb.UptimeCheckConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateUptimeCheckConfig[0:len((*c.CallOptions).CreateUptimeCheckConfig):len((*c.CallOptions).CreateUptimeCheckConfig)], opts...)
 	var resp *monitoringpb.UptimeCheckConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -368,9 +375,10 @@ func (c *uptimeCheckGRPCClient) CreateUptimeCheckConfig(ctx context.Context, req
 }
 
 func (c *uptimeCheckGRPCClient) UpdateUptimeCheckConfig(ctx context.Context, req *monitoringpb.UpdateUptimeCheckConfigRequest, opts ...gax.CallOption) (*monitoringpb.UptimeCheckConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "uptime_check_config.name", url.QueryEscape(req.GetUptimeCheckConfig().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "uptime_check_config.name", url.QueryEscape(req.GetUptimeCheckConfig().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateUptimeCheckConfig[0:len((*c.CallOptions).UpdateUptimeCheckConfig):len((*c.CallOptions).UpdateUptimeCheckConfig)], opts...)
 	var resp *monitoringpb.UptimeCheckConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -385,9 +393,10 @@ func (c *uptimeCheckGRPCClient) UpdateUptimeCheckConfig(ctx context.Context, req
 }
 
 func (c *uptimeCheckGRPCClient) DeleteUptimeCheckConfig(ctx context.Context, req *monitoringpb.DeleteUptimeCheckConfigRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteUptimeCheckConfig[0:len((*c.CallOptions).DeleteUptimeCheckConfig):len((*c.CallOptions).DeleteUptimeCheckConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -398,7 +407,7 @@ func (c *uptimeCheckGRPCClient) DeleteUptimeCheckConfig(ctx context.Context, req
 }
 
 func (c *uptimeCheckGRPCClient) ListUptimeCheckIps(ctx context.Context, req *monitoringpb.ListUptimeCheckIpsRequest, opts ...gax.CallOption) *UptimeCheckIpIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).ListUptimeCheckIps[0:len((*c.CallOptions).ListUptimeCheckIps):len((*c.CallOptions).ListUptimeCheckIps)], opts...)
 	it := &UptimeCheckIpIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListUptimeCheckIpsRequest)
@@ -438,98 +447,4 @@ func (c *uptimeCheckGRPCClient) ListUptimeCheckIps(ctx context.Context, req *mon
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// UptimeCheckConfigIterator manages a stream of *monitoringpb.UptimeCheckConfig.
-type UptimeCheckConfigIterator struct {
-	items    []*monitoringpb.UptimeCheckConfig
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*monitoringpb.UptimeCheckConfig, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *UptimeCheckConfigIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *UptimeCheckConfigIterator) Next() (*monitoringpb.UptimeCheckConfig, error) {
-	var item *monitoringpb.UptimeCheckConfig
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *UptimeCheckConfigIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *UptimeCheckConfigIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// UptimeCheckIpIterator manages a stream of *monitoringpb.UptimeCheckIp.
-type UptimeCheckIpIterator struct {
-	items    []*monitoringpb.UptimeCheckIp
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*monitoringpb.UptimeCheckIp, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *UptimeCheckIpIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *UptimeCheckIpIterator) Next() (*monitoringpb.UptimeCheckIp, error) {
-	var item *monitoringpb.UptimeCheckIp
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *UptimeCheckIpIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *UptimeCheckIpIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

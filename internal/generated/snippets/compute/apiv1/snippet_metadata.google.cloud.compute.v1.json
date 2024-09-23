@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.23.0",
+    "version": "1.28.1",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "compute_v1_generated_AcceleratorTypes_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of accelerator types.",
+      "description": "AggregatedList retrieves an aggregated list of accelerator types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "AcceleratorTypesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -152,7 +152,7 @@
     {
       "regionTag": "compute_v1_generated_Addresses_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of addresses.",
+      "description": "AggregatedList retrieves an aggregated list of addresses. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "AddressesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -374,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -474,7 +474,7 @@
     {
       "regionTag": "compute_v1_generated_Autoscalers_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of autoscalers.",
+      "description": "AggregatedList retrieves an aggregated list of autoscalers. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "AutoscalersClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -512,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -696,7 +696,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -978,6 +978,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_BackendBuckets_GetIamPolicy_sync",
+      "title": "compute GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+      "file": "BackendBucketsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.compute.v1.BackendBucketsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetIamPolicyBackendBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "BackendBucketsClient",
+          "fullName": "google.cloud.compute.v1.BackendBucketsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.compute.v1.BackendBuckets.GetIamPolicy",
+          "service": {
+            "shortName": "BackendBuckets",
+            "fullName": "google.cloud.compute.v1.BackendBuckets"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_BackendBuckets_Insert_sync",
       "title": "compute Insert Sample",
       "description": "Insert creates a BackendBucket resource in the specified project using the data included in the request.",
@@ -1064,7 +1110,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1157,6 +1203,98 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_BackendBuckets_SetIamPolicy_sync",
+      "title": "compute SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.",
+      "file": "BackendBucketsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.compute.v1.BackendBucketsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetIamPolicyBackendBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "BackendBucketsClient",
+          "fullName": "google.cloud.compute.v1.BackendBucketsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.compute.v1.BackendBuckets.SetIamPolicy",
+          "service": {
+            "shortName": "BackendBuckets",
+            "fullName": "google.cloud.compute.v1.BackendBuckets"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_BackendBuckets_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "BackendBucketsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.BackendBucketsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsBackendBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "BackendBucketsClient",
+          "fullName": "google.cloud.compute.v1.BackendBucketsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.BackendBuckets.TestIamPermissions",
+          "service": {
+            "shortName": "BackendBuckets",
+            "fullName": "google.cloud.compute.v1.BackendBuckets"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1256,7 +1394,7 @@
     {
       "regionTag": "compute_v1_generated_BackendServices_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project.",
+      "description": "AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "BackendServicesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1294,7 +1432,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1616,7 +1754,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_BackendServices_ListUsable_sync",
+      "title": "compute ListUsable Sample",
+      "description": "ListUsable retrieves an aggregated list of all usable backend services in the specified project.",
+      "file": "BackendServicesClient/ListUsable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUsable",
+        "fullName": "google.cloud.compute.v1.BackendServicesClient.ListUsable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListUsableBackendServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackendServiceIterator",
+        "client": {
+          "shortName": "BackendServicesClient",
+          "fullName": "google.cloud.compute.v1.BackendServicesClient"
+        },
+        "method": {
+          "shortName": "ListUsable",
+          "fullName": "google.cloud.compute.v1.BackendServices.ListUsable",
+          "service": {
+            "shortName": "BackendServices",
+            "fullName": "google.cloud.compute.v1.BackendServices"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1806,6 +1990,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_BackendServices_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "BackendServicesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.BackendServicesClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsBackendServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "BackendServicesClient",
+          "fullName": "google.cloud.compute.v1.BackendServicesClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.BackendServices.TestIamPermissions",
+          "service": {
+            "shortName": "BackendServices",
+            "fullName": "google.cloud.compute.v1.BackendServices"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_BackendServices_Update_sync",
       "title": "compute Update Sample",
       "description": "Update updates the specified BackendService resource with the data included in the request. For more information, see Backend services overview.",
@@ -1854,7 +2084,7 @@
     {
       "regionTag": "compute_v1_generated_DiskTypes_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of disk types.",
+      "description": "AggregatedList retrieves an aggregated list of disk types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "DiskTypesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1892,7 +2122,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1984,7 +2214,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2038,7 +2268,7 @@
     {
       "regionTag": "compute_v1_generated_Disks_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of persistent disks.",
+      "description": "AggregatedList retrieves an aggregated list of persistent disks. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "DisksClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2076,7 +2306,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2398,7 +2628,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2996,7 +3226,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3548,7 +3778,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -4100,7 +4330,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -4200,7 +4430,7 @@
     {
       "regionTag": "compute_v1_generated_ForwardingRules_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of forwarding rules.",
+      "description": "AggregatedList retrieves an aggregated list of forwarding rules. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "ForwardingRulesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4238,7 +4468,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -4422,7 +4652,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -4744,7 +4974,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -5020,7 +5250,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -5434,7 +5664,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -5480,7 +5710,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -5488,7 +5718,7 @@
     {
       "regionTag": "compute_v1_generated_GlobalOperations_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of all operations.",
+      "description": "AggregatedList retrieves an aggregated list of all operations. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "GlobalOperationsClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5526,7 +5756,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -5664,7 +5894,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -5848,7 +6078,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -6032,7 +6262,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -6086,7 +6316,7 @@
     {
       "regionTag": "compute_v1_generated_HealthChecks_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of all HealthCheck resources, regional and global, available to the specified project.",
+      "description": "AggregatedList retrieves the list of all HealthCheck resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "HealthChecksClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6124,7 +6354,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -6308,7 +6538,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -6768,7 +6998,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -6958,6 +7188,236 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_Cancel_sync",
+      "title": "compute Cancel Sample",
+      "description": "Cancel cancels the specified resize request and removes it from the queue. Cancelled resize request does no longer wait for the resources to be provisioned. Cancel is only possible for requests that are accepted in the queue.",
+      "file": "InstanceGroupManagerResizeRequestsClient/Cancel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Cancel",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.Cancel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.CancelInstanceGroupManagerResizeRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "Cancel",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.Cancel",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.",
+      "file": "InstanceGroupManagerResizeRequestsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteInstanceGroupManagerResizeRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.Delete",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns all of the details about the specified resize request.",
+      "file": "InstanceGroupManagerResizeRequestsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetInstanceGroupManagerResizeRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InstanceGroupManagerResizeRequest",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.Get",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a new resize request that starts provisioning VMs immediately or queues VM creation.",
+      "file": "InstanceGroupManagerResizeRequestsClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertInstanceGroupManagerResizeRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.Insert",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of resize requests that are contained in the managed instance group.",
+      "file": "InstanceGroupManagerResizeRequestsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListInstanceGroupManagerResizeRequestsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstanceGroupManagerResizeRequestIterator",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.List",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_InstanceGroupManagers_AbandonInstances_sync",
       "title": "compute AbandonInstances Sample",
       "description": "AbandonInstances flags the specified instances to be removed from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.",
@@ -7006,7 +7466,7 @@
     {
       "regionTag": "compute_v1_generated_InstanceGroupManagers_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of managed instance groups and groups them by zone.",
+      "description": "AggregatedList retrieves the list of managed instance groups and groups them by zone. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "InstanceGroupManagersClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7044,7 +7504,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -7412,7 +7872,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -7458,7 +7918,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -7466,7 +7926,7 @@
     {
       "regionTag": "compute_v1_generated_InstanceGroupManagers_ListManagedInstances_sync",
       "title": "compute ListManagedInstances Sample",
-      "description": "ListManagedInstances lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only in the alpha and beta API and only if the group's `listManagedInstancesResults` field is set to `PAGINATED`.",
+      "description": "ListManagedInstances lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only if the group's `listManagedInstancesResults` field is set to `PAGINATED`.",
       "file": "InstanceGroupManagersClient/ListManagedInstances/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7504,7 +7964,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -7550,7 +8010,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -7926,7 +8386,7 @@
     {
       "regionTag": "compute_v1_generated_InstanceGroups_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of instance groups and sorts them by zone.",
+      "description": "AggregatedList retrieves the list of instance groups and sorts them by zone. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "InstanceGroupsClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7964,7 +8424,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -8148,7 +8608,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -8194,7 +8654,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -8292,9 +8752,101 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InstanceSettingsService_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get get Instance settings.",
+      "file": "InstanceSettingsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.InstanceSettingsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetInstanceSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InstanceSettings",
+        "client": {
+          "shortName": "InstanceSettingsClient",
+          "fullName": "google.cloud.compute.v1.InstanceSettingsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.InstanceSettingsService.Get",
+          "service": {
+            "shortName": "InstanceSettingsService",
+            "fullName": "google.cloud.compute.v1.InstanceSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceSettingsService_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch patch Instance settings",
+      "file": "InstanceSettingsClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1.InstanceSettingsClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchInstanceSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceSettingsClient",
+          "fullName": "google.cloud.compute.v1.InstanceSettingsClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1.InstanceSettingsService.Patch",
+          "service": {
+            "shortName": "InstanceSettingsService",
+            "fullName": "google.cloud.compute.v1.InstanceSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_InstanceTemplates_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project.",
+      "description": "AggregatedList retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "InstanceTemplatesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -8332,7 +8884,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -8562,7 +9114,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -8754,7 +9306,7 @@
     {
       "regionTag": "compute_v1_generated_Instances_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances.",
+      "description": "AggregatedList retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "InstancesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -8792,7 +9344,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -9436,7 +9988,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -9482,7 +10034,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Instances_PerformMaintenance_sync",
+      "title": "compute PerformMaintenance Sample",
+      "description": "PerformMaintenance perform a manual maintenance on the instance.",
+      "file": "InstancesClient/PerformMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PerformMaintenance",
+        "fullName": "google.cloud.compute.v1.InstancesClient.PerformMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PerformMaintenanceInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstancesClient",
+          "fullName": "google.cloud.compute.v1.InstancesClient"
+        },
+        "method": {
+          "shortName": "PerformMaintenance",
+          "fullName": "google.cloud.compute.v1.Instances.PerformMaintenance",
+          "service": {
+            "shortName": "Instances",
+            "fullName": "google.cloud.compute.v1.Instances"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -10116,6 +10714,52 @@
         "method": {
           "shortName": "SetScheduling",
           "fullName": "google.cloud.compute.v1.Instances.SetScheduling",
+          "service": {
+            "shortName": "Instances",
+            "fullName": "google.cloud.compute.v1.Instances"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Instances_SetSecurityPolicy_sync",
+      "title": "compute SetSecurityPolicy Sample",
+      "description": "SetSecurityPolicy sets the Google Cloud Armor security policy for the specified instance. For more information, see Google Cloud Armor Overview",
+      "file": "InstancesClient/SetSecurityPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetSecurityPolicy",
+        "fullName": "google.cloud.compute.v1.InstancesClient.SetSecurityPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetSecurityPolicyInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstancesClient",
+          "fullName": "google.cloud.compute.v1.InstancesClient"
+        },
+        "method": {
+          "shortName": "SetSecurityPolicy",
+          "fullName": "google.cloud.compute.v1.Instances.SetSecurityPolicy",
           "service": {
             "shortName": "Instances",
             "fullName": "google.cloud.compute.v1.Instances"
@@ -10776,9 +11420,423 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InstantSnapshots_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves an aggregated list of instantSnapshots. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
+      "file": "InstantSnapshotsClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.InstantSnapshotsClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListInstantSnapshotsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstantSnapshotsScopedListPairIterator",
+        "client": {
+          "shortName": "InstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.InstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.InstantSnapshots.AggregatedList",
+          "service": {
+            "shortName": "InstantSnapshots",
+            "fullName": "google.cloud.compute.v1.InstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstantSnapshots_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots.",
+      "file": "InstantSnapshotsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.InstantSnapshotsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.InstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.InstantSnapshots.Delete",
+          "service": {
+            "shortName": "InstantSnapshots",
+            "fullName": "google.cloud.compute.v1.InstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstantSnapshots_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified InstantSnapshot resource in the specified zone.",
+      "file": "InstantSnapshotsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.InstantSnapshotsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InstantSnapshot",
+        "client": {
+          "shortName": "InstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.InstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.InstantSnapshots.Get",
+          "service": {
+            "shortName": "InstantSnapshots",
+            "fullName": "google.cloud.compute.v1.InstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstantSnapshots_GetIamPolicy_sync",
+      "title": "compute GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+      "file": "InstantSnapshotsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.compute.v1.InstantSnapshotsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetIamPolicyInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "InstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.InstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.compute.v1.InstantSnapshots.GetIamPolicy",
+          "service": {
+            "shortName": "InstantSnapshots",
+            "fullName": "google.cloud.compute.v1.InstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstantSnapshots_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates an instant snapshot in the specified zone.",
+      "file": "InstantSnapshotsClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.InstantSnapshotsClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.InstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.InstantSnapshots.Insert",
+          "service": {
+            "shortName": "InstantSnapshots",
+            "fullName": "google.cloud.compute.v1.InstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstantSnapshots_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves the list of InstantSnapshot resources contained within the specified zone.",
+      "file": "InstantSnapshotsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.InstantSnapshotsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListInstantSnapshotsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstantSnapshotIterator",
+        "client": {
+          "shortName": "InstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.InstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.InstantSnapshots.List",
+          "service": {
+            "shortName": "InstantSnapshots",
+            "fullName": "google.cloud.compute.v1.InstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstantSnapshots_SetIamPolicy_sync",
+      "title": "compute SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.",
+      "file": "InstantSnapshotsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.compute.v1.InstantSnapshotsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetIamPolicyInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "InstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.InstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.compute.v1.InstantSnapshots.SetIamPolicy",
+          "service": {
+            "shortName": "InstantSnapshots",
+            "fullName": "google.cloud.compute.v1.InstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstantSnapshots_SetLabels_sync",
+      "title": "compute SetLabels Sample",
+      "description": "SetLabels sets the labels on a instantSnapshot in the given zone. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "InstantSnapshotsClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.cloud.compute.v1.InstantSnapshotsClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetLabelsInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.InstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.cloud.compute.v1.InstantSnapshots.SetLabels",
+          "service": {
+            "shortName": "InstantSnapshots",
+            "fullName": "google.cloud.compute.v1.InstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstantSnapshots_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "InstantSnapshotsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.InstantSnapshotsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "InstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.InstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.InstantSnapshots.TestIamPermissions",
+          "service": {
+            "shortName": "InstantSnapshots",
+            "fullName": "google.cloud.compute.v1.InstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_InterconnectAttachments_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of interconnect attachments.",
+      "description": "AggregatedList retrieves an aggregated list of interconnect attachments. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "InterconnectAttachmentsClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10816,7 +11874,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -11000,7 +12058,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -11184,7 +12242,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -11276,7 +12334,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -11376,7 +12434,7 @@
     {
       "regionTag": "compute_v1_generated_Interconnects_GetDiagnostics_sync",
       "title": "compute GetDiagnostics Sample",
-      "description": "GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect.",
+      "description": "GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect. In the event of a global outage, do not use this API to make decisions about where to redirect your network traffic. Unlike a VLAN attachment, which is regional, a Cloud Interconnect connection is a global resource. A global outage can prevent this API from functioning properly.",
       "file": "InterconnectsClient/GetDiagnostics/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11404,6 +12462,52 @@
         "method": {
           "shortName": "GetDiagnostics",
           "fullName": "google.cloud.compute.v1.Interconnects.GetDiagnostics",
+          "service": {
+            "shortName": "Interconnects",
+            "fullName": "google.cloud.compute.v1.Interconnects"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Interconnects_GetMacsecConfig_sync",
+      "title": "compute GetMacsecConfig Sample",
+      "description": "GetMacsecConfig returns the interconnectMacsecConfig for the specified Interconnect.",
+      "file": "InterconnectsClient/GetMacsecConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMacsecConfig",
+        "fullName": "google.cloud.compute.v1.InterconnectsClient.GetMacsecConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetMacsecConfigInterconnectRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InterconnectsGetMacsecConfigResponse",
+        "client": {
+          "shortName": "InterconnectsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectsClient"
+        },
+        "method": {
+          "shortName": "GetMacsecConfig",
+          "fullName": "google.cloud.compute.v1.Interconnects.GetMacsecConfig",
           "service": {
             "shortName": "Interconnects",
             "fullName": "google.cloud.compute.v1.Interconnects"
@@ -11506,7 +12610,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -11920,7 +13024,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -12242,7 +13346,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -12342,7 +13446,7 @@
     {
       "regionTag": "compute_v1_generated_MachineTypes_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of machine types.",
+      "description": "AggregatedList retrieves an aggregated list of machine types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "MachineTypesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -12380,7 +13484,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -12472,7 +13576,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -12480,7 +13584,7 @@
     {
       "regionTag": "compute_v1_generated_NetworkAttachments_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project.",
+      "description": "AggregatedList retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "NetworkAttachmentsClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -12518,7 +13622,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -12748,7 +13852,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch patches the specified NetworkAttachment resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.",
+      "file": "NetworkAttachmentsClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchNetworkAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.Patch",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -12848,7 +13998,7 @@
     {
       "regionTag": "compute_v1_generated_NetworkEdgeSecurityServices_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of all NetworkEdgeSecurityService resources available to the specified project.",
+      "description": "AggregatedList retrieves the list of all NetworkEdgeSecurityService resources available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "NetworkEdgeSecurityServicesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -12886,7 +14036,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -13078,7 +14228,7 @@
     {
       "regionTag": "compute_v1_generated_NetworkEndpointGroups_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of network endpoint groups and sorts them by zone.",
+      "description": "AggregatedList retrieves the list of network endpoint groups and sorts them by zone. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "NetworkEndpointGroupsClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -13116,7 +14266,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -13392,7 +14542,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -13438,7 +14588,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -13944,7 +15094,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -14496,7 +15646,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -14542,7 +15692,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -14780,7 +15930,7 @@
     {
       "regionTag": "compute_v1_generated_NodeGroups_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group.",
+      "description": "AggregatedList retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "NodeGroupsClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -14818,7 +15968,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -15094,7 +16244,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -15140,7 +16290,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -15176,6 +16326,52 @@
         "method": {
           "shortName": "Patch",
           "fullName": "google.cloud.compute.v1.NodeGroups.Patch",
+          "service": {
+            "shortName": "NodeGroups",
+            "fullName": "google.cloud.compute.v1.NodeGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NodeGroups_PerformMaintenance_sync",
+      "title": "compute PerformMaintenance Sample",
+      "description": "PerformMaintenance perform maintenance on a subset of nodes in the node group.",
+      "file": "NodeGroupsClient/PerformMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PerformMaintenance",
+        "fullName": "google.cloud.compute.v1.NodeGroupsClient.PerformMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PerformMaintenanceNodeGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NodeGroupsClient",
+          "fullName": "google.cloud.compute.v1.NodeGroupsClient"
+        },
+        "method": {
+          "shortName": "PerformMaintenance",
+          "fullName": "google.cloud.compute.v1.NodeGroups.PerformMaintenance",
           "service": {
             "shortName": "NodeGroups",
             "fullName": "google.cloud.compute.v1.NodeGroups"
@@ -15378,7 +16574,7 @@
     {
       "regionTag": "compute_v1_generated_NodeTemplates_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of node templates.",
+      "description": "AggregatedList retrieves an aggregated list of node templates. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "NodeTemplatesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -15416,7 +16612,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -15646,7 +16842,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -15746,7 +16942,7 @@
     {
       "regionTag": "compute_v1_generated_NodeTypes_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of node types.",
+      "description": "AggregatedList retrieves an aggregated list of node types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "NodeTypesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -15784,7 +16980,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -15876,7 +17072,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -15884,7 +17080,7 @@
     {
       "regionTag": "compute_v1_generated_PacketMirrorings_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of packetMirrorings.",
+      "description": "AggregatedList retrieves an aggregated list of packetMirrorings. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "PacketMirroringsClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -15922,7 +17118,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -16106,7 +17302,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -16520,7 +17716,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -16566,7 +17762,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -16648,6 +17844,52 @@
         "method": {
           "shortName": "MoveInstance",
           "fullName": "google.cloud.compute.v1.Projects.MoveInstance",
+          "service": {
+            "shortName": "Projects",
+            "fullName": "google.cloud.compute.v1.Projects"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Projects_SetCloudArmorTier_sync",
+      "title": "compute SetCloudArmorTier Sample",
+      "description": "SetCloudArmorTier sets the Cloud Armor tier of the project. To set ENTERPRISE or above the billing account of the project must be subscribed to Cloud Armor Enterprise. See Subscribing to Cloud Armor Enterprise for more information.",
+      "file": "ProjectsClient/SetCloudArmorTier/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetCloudArmorTier",
+        "fullName": "google.cloud.compute.v1.ProjectsClient.SetCloudArmorTier",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetCloudArmorTierProjectRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ProjectsClient",
+          "fullName": "google.cloud.compute.v1.ProjectsClient"
+        },
+        "method": {
+          "shortName": "SetCloudArmorTier",
+          "fullName": "google.cloud.compute.v1.Projects.SetCloudArmorTier",
           "service": {
             "shortName": "Projects",
             "fullName": "google.cloud.compute.v1.Projects"
@@ -16789,6 +18031,52 @@
           "service": {
             "shortName": "Projects",
             "fullName": "google.cloud.compute.v1.Projects"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_PublicAdvertisedPrefixes_Announce_sync",
+      "title": "compute Announce Sample",
+      "description": "Announce announces the specified PublicAdvertisedPrefix",
+      "file": "PublicAdvertisedPrefixesClient/Announce/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Announce",
+        "fullName": "google.cloud.compute.v1.PublicAdvertisedPrefixesClient.Announce",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AnnouncePublicAdvertisedPrefixeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "PublicAdvertisedPrefixesClient",
+          "fullName": "google.cloud.compute.v1.PublicAdvertisedPrefixesClient"
+        },
+        "method": {
+          "shortName": "Announce",
+          "fullName": "google.cloud.compute.v1.PublicAdvertisedPrefixes.Announce",
+          "service": {
+            "shortName": "PublicAdvertisedPrefixes",
+            "fullName": "google.cloud.compute.v1.PublicAdvertisedPrefixes"
           }
         }
       },
@@ -16980,7 +18268,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -17032,9 +18320,55 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_PublicAdvertisedPrefixes_Withdraw_sync",
+      "title": "compute Withdraw Sample",
+      "description": "Withdraw withdraws the specified PublicAdvertisedPrefix",
+      "file": "PublicAdvertisedPrefixesClient/Withdraw/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Withdraw",
+        "fullName": "google.cloud.compute.v1.PublicAdvertisedPrefixesClient.Withdraw",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.WithdrawPublicAdvertisedPrefixeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "PublicAdvertisedPrefixesClient",
+          "fullName": "google.cloud.compute.v1.PublicAdvertisedPrefixesClient"
+        },
+        "method": {
+          "shortName": "Withdraw",
+          "fullName": "google.cloud.compute.v1.PublicAdvertisedPrefixes.Withdraw",
+          "service": {
+            "shortName": "PublicAdvertisedPrefixes",
+            "fullName": "google.cloud.compute.v1.PublicAdvertisedPrefixes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_PublicDelegatedPrefixes_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project across all scopes.",
+      "description": "AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project across all scopes. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "PublicDelegatedPrefixesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -17072,7 +18406,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_PublicDelegatedPrefixes_Announce_sync",
+      "title": "compute Announce Sample",
+      "description": "Announce announces the specified PublicDelegatedPrefix in the given region.",
+      "file": "PublicDelegatedPrefixesClient/Announce/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Announce",
+        "fullName": "google.cloud.compute.v1.PublicDelegatedPrefixesClient.Announce",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AnnouncePublicDelegatedPrefixeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "PublicDelegatedPrefixesClient",
+          "fullName": "google.cloud.compute.v1.PublicDelegatedPrefixesClient"
+        },
+        "method": {
+          "shortName": "Announce",
+          "fullName": "google.cloud.compute.v1.PublicDelegatedPrefixes.Announce",
+          "service": {
+            "shortName": "PublicDelegatedPrefixes",
+            "fullName": "google.cloud.compute.v1.PublicDelegatedPrefixes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -17256,7 +18636,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -17292,6 +18672,52 @@
         "method": {
           "shortName": "Patch",
           "fullName": "google.cloud.compute.v1.PublicDelegatedPrefixes.Patch",
+          "service": {
+            "shortName": "PublicDelegatedPrefixes",
+            "fullName": "google.cloud.compute.v1.PublicDelegatedPrefixes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_PublicDelegatedPrefixes_Withdraw_sync",
+      "title": "compute Withdraw Sample",
+      "description": "Withdraw withdraws the specified PublicDelegatedPrefix in the given region.",
+      "file": "PublicDelegatedPrefixesClient/Withdraw/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Withdraw",
+        "fullName": "google.cloud.compute.v1.PublicDelegatedPrefixesClient.Withdraw",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.WithdrawPublicDelegatedPrefixeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "PublicDelegatedPrefixesClient",
+          "fullName": "google.cloud.compute.v1.PublicDelegatedPrefixesClient"
+        },
+        "method": {
+          "shortName": "Withdraw",
+          "fullName": "google.cloud.compute.v1.PublicDelegatedPrefixes.Withdraw",
           "service": {
             "shortName": "PublicDelegatedPrefixes",
             "fullName": "google.cloud.compute.v1.PublicDelegatedPrefixes"
@@ -17486,7 +18912,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -17854,7 +19280,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionBackendServices_ListUsable_sync",
+      "title": "compute ListUsable Sample",
+      "description": "ListUsable retrieves an aggregated list of all usable backend services in the specified project in the given region.",
+      "file": "RegionBackendServicesClient/ListUsable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUsable",
+        "fullName": "google.cloud.compute.v1.RegionBackendServicesClient.ListUsable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListUsableRegionBackendServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackendServiceIterator",
+        "client": {
+          "shortName": "RegionBackendServicesClient",
+          "fullName": "google.cloud.compute.v1.RegionBackendServicesClient"
+        },
+        "method": {
+          "shortName": "ListUsable",
+          "fullName": "google.cloud.compute.v1.RegionBackendServices.ListUsable",
+          "service": {
+            "shortName": "RegionBackendServices",
+            "fullName": "google.cloud.compute.v1.RegionBackendServices"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -17952,6 +19424,98 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionBackendServices_SetSecurityPolicy_sync",
+      "title": "compute SetSecurityPolicy Sample",
+      "description": "SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview",
+      "file": "RegionBackendServicesClient/SetSecurityPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetSecurityPolicy",
+        "fullName": "google.cloud.compute.v1.RegionBackendServicesClient.SetSecurityPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetSecurityPolicyRegionBackendServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionBackendServicesClient",
+          "fullName": "google.cloud.compute.v1.RegionBackendServicesClient"
+        },
+        "method": {
+          "shortName": "SetSecurityPolicy",
+          "fullName": "google.cloud.compute.v1.RegionBackendServices.SetSecurityPolicy",
+          "service": {
+            "shortName": "RegionBackendServices",
+            "fullName": "google.cloud.compute.v1.RegionBackendServices"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionBackendServices_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "RegionBackendServicesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.RegionBackendServicesClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsRegionBackendServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "RegionBackendServicesClient",
+          "fullName": "google.cloud.compute.v1.RegionBackendServicesClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.RegionBackendServices.TestIamPermissions",
+          "service": {
+            "shortName": "RegionBackendServices",
+            "fullName": "google.cloud.compute.v1.RegionBackendServices"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionBackendServices_Update_sync",
       "title": "compute Update Sample",
       "description": "Update updates the specified regional BackendService resource with the data included in the request. For more information, see Backend services overview .",
@@ -18000,7 +19564,7 @@
     {
       "regionTag": "compute_v1_generated_RegionCommitments_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of commitments by region.",
+      "description": "AggregatedList retrieves an aggregated list of commitments by region. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "RegionCommitmentsClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -18038,7 +19602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -18176,7 +19740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -18314,7 +19878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -18682,7 +20246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -19280,7 +20844,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -19510,7 +21074,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -20016,7 +21580,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -20062,7 +21626,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -20070,7 +21634,7 @@
     {
       "regionTag": "compute_v1_generated_RegionInstanceGroupManagers_ListManagedInstances_sync",
       "title": "compute ListManagedInstances Sample",
-      "description": "ListManagedInstances lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only in the alpha and beta API and only if the group's `listManagedInstancesResults` field is set to `PAGINATED`.",
+      "description": "ListManagedInstances lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported. The `pageToken` query parameter is supported only if the group's `listManagedInstancesResults` field is set to `PAGINATED`.",
       "file": "RegionInstanceGroupManagersClient/ListManagedInstances/main.go",
       "language": "GO",
       "clientMethod": {
@@ -20108,7 +21672,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -20154,7 +21718,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -20568,7 +22132,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -20614,7 +22178,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -20844,7 +22408,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -20896,6 +22460,420 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionInstantSnapshots_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots.",
+      "file": "RegionInstantSnapshotsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteRegionInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionInstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshots.Delete",
+          "service": {
+            "shortName": "RegionInstantSnapshots",
+            "fullName": "google.cloud.compute.v1.RegionInstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstantSnapshots_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified InstantSnapshot resource in the specified region.",
+      "file": "RegionInstantSnapshotsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRegionInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InstantSnapshot",
+        "client": {
+          "shortName": "RegionInstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshots.Get",
+          "service": {
+            "shortName": "RegionInstantSnapshots",
+            "fullName": "google.cloud.compute.v1.RegionInstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstantSnapshots_GetIamPolicy_sync",
+      "title": "compute GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+      "file": "RegionInstantSnapshotsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetIamPolicyRegionInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "RegionInstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshots.GetIamPolicy",
+          "service": {
+            "shortName": "RegionInstantSnapshots",
+            "fullName": "google.cloud.compute.v1.RegionInstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstantSnapshots_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates an instant snapshot in the specified region.",
+      "file": "RegionInstantSnapshotsClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertRegionInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionInstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshots.Insert",
+          "service": {
+            "shortName": "RegionInstantSnapshots",
+            "fullName": "google.cloud.compute.v1.RegionInstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstantSnapshots_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves the list of InstantSnapshot resources contained within the specified region.",
+      "file": "RegionInstantSnapshotsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRegionInstantSnapshotsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstantSnapshotIterator",
+        "client": {
+          "shortName": "RegionInstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshots.List",
+          "service": {
+            "shortName": "RegionInstantSnapshots",
+            "fullName": "google.cloud.compute.v1.RegionInstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstantSnapshots_SetIamPolicy_sync",
+      "title": "compute SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.",
+      "file": "RegionInstantSnapshotsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetIamPolicyRegionInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "RegionInstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshots.SetIamPolicy",
+          "service": {
+            "shortName": "RegionInstantSnapshots",
+            "fullName": "google.cloud.compute.v1.RegionInstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstantSnapshots_SetLabels_sync",
+      "title": "compute SetLabels Sample",
+      "description": "SetLabels sets the labels on a instantSnapshot in the given region. To learn more about labels, read the Labeling Resources documentation.",
+      "file": "RegionInstantSnapshotsClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetLabelsRegionInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionInstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshots.SetLabels",
+          "service": {
+            "shortName": "RegionInstantSnapshots",
+            "fullName": "google.cloud.compute.v1.RegionInstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstantSnapshots_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "RegionInstantSnapshotsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsRegionInstantSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "RegionInstantSnapshotsClient",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshotsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.RegionInstantSnapshots.TestIamPermissions",
+          "service": {
+            "shortName": "RegionInstantSnapshots",
+            "fullName": "google.cloud.compute.v1.RegionInstantSnapshots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionNetworkEndpointGroups_AttachNetworkEndpoints_sync",
+      "title": "compute AttachNetworkEndpoints Sample",
+      "description": "AttachNetworkEndpoints attach a list of network endpoints to the specified network endpoint group.",
+      "file": "RegionNetworkEndpointGroupsClient/AttachNetworkEndpoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AttachNetworkEndpoints",
+        "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroupsClient.AttachNetworkEndpoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AttachNetworkEndpointsRegionNetworkEndpointGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionNetworkEndpointGroupsClient",
+          "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroupsClient"
+        },
+        "method": {
+          "shortName": "AttachNetworkEndpoints",
+          "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroups.AttachNetworkEndpoints",
+          "service": {
+            "shortName": "RegionNetworkEndpointGroups",
+            "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionNetworkEndpointGroups_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified network endpoint group. Note that the NEG cannot be deleted if it is configured as a backend of a backend service.",
@@ -20926,6 +22904,52 @@
         "method": {
           "shortName": "Delete",
           "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroups.Delete",
+          "service": {
+            "shortName": "RegionNetworkEndpointGroups",
+            "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionNetworkEndpointGroups_DetachNetworkEndpoints_sync",
+      "title": "compute DetachNetworkEndpoints Sample",
+      "description": "DetachNetworkEndpoints detach the network endpoint from the specified network endpoint group.",
+      "file": "RegionNetworkEndpointGroupsClient/DetachNetworkEndpoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DetachNetworkEndpoints",
+        "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroupsClient.DetachNetworkEndpoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DetachNetworkEndpointsRegionNetworkEndpointGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionNetworkEndpointGroupsClient",
+          "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroupsClient"
+        },
+        "method": {
+          "shortName": "DetachNetworkEndpoints",
+          "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroups.DetachNetworkEndpoints",
           "service": {
             "shortName": "RegionNetworkEndpointGroups",
             "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroups"
@@ -21074,7 +23098,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionNetworkEndpointGroups_ListNetworkEndpoints_sync",
+      "title": "compute ListNetworkEndpoints Sample",
+      "description": "ListNetworkEndpoints lists the network endpoints in the specified network endpoint group.",
+      "file": "RegionNetworkEndpointGroupsClient/ListNetworkEndpoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNetworkEndpoints",
+        "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroupsClient.ListNetworkEndpoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListNetworkEndpointsRegionNetworkEndpointGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NetworkEndpointWithHealthStatusIterator",
+        "client": {
+          "shortName": "RegionNetworkEndpointGroupsClient",
+          "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroupsClient"
+        },
+        "method": {
+          "shortName": "ListNetworkEndpoints",
+          "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroups.ListNetworkEndpoints",
+          "service": {
+            "shortName": "RegionNetworkEndpointGroups",
+            "fullName": "google.cloud.compute.v1.RegionNetworkEndpointGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -21580,7 +23650,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -22040,7 +24110,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -22178,7 +24248,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -22225,6 +24295,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionSecurityPolicies_AddRule_sync",
+      "title": "compute AddRule Sample",
+      "description": "AddRule inserts a rule into a security policy.",
+      "file": "RegionSecurityPoliciesClient/AddRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AddRule",
+        "fullName": "google.cloud.compute.v1.RegionSecurityPoliciesClient.AddRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AddRuleRegionSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "AddRule",
+          "fullName": "google.cloud.compute.v1.RegionSecurityPolicies.AddRule",
+          "service": {
+            "shortName": "RegionSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.RegionSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -22306,6 +24422,52 @@
         "method": {
           "shortName": "Get",
           "fullName": "google.cloud.compute.v1.RegionSecurityPolicies.Get",
+          "service": {
+            "shortName": "RegionSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.RegionSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionSecurityPolicies_GetRule_sync",
+      "title": "compute GetRule Sample",
+      "description": "GetRule gets a rule at the specified priority.",
+      "file": "RegionSecurityPoliciesClient/GetRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRule",
+        "fullName": "google.cloud.compute.v1.RegionSecurityPoliciesClient.GetRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRuleRegionSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.SecurityPolicyRule",
+        "client": {
+          "shortName": "RegionSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "GetRule",
+          "fullName": "google.cloud.compute.v1.RegionSecurityPolicies.GetRule",
           "service": {
             "shortName": "RegionSecurityPolicies",
             "fullName": "google.cloud.compute.v1.RegionSecurityPolicies"
@@ -22408,7 +24570,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -22444,6 +24606,98 @@
         "method": {
           "shortName": "Patch",
           "fullName": "google.cloud.compute.v1.RegionSecurityPolicies.Patch",
+          "service": {
+            "shortName": "RegionSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.RegionSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionSecurityPolicies_PatchRule_sync",
+      "title": "compute PatchRule Sample",
+      "description": "PatchRule patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.",
+      "file": "RegionSecurityPoliciesClient/PatchRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchRule",
+        "fullName": "google.cloud.compute.v1.RegionSecurityPoliciesClient.PatchRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchRuleRegionSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "PatchRule",
+          "fullName": "google.cloud.compute.v1.RegionSecurityPolicies.PatchRule",
+          "service": {
+            "shortName": "RegionSecurityPolicies",
+            "fullName": "google.cloud.compute.v1.RegionSecurityPolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionSecurityPolicies_RemoveRule_sync",
+      "title": "compute RemoveRule Sample",
+      "description": "RemoveRule deletes a rule at the specified priority.",
+      "file": "RegionSecurityPoliciesClient/RemoveRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveRule",
+        "fullName": "google.cloud.compute.v1.RegionSecurityPoliciesClient.RemoveRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.RemoveRuleRegionSecurityPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionSecurityPoliciesClient",
+          "fullName": "google.cloud.compute.v1.RegionSecurityPoliciesClient"
+        },
+        "method": {
+          "shortName": "RemoveRule",
+          "fullName": "google.cloud.compute.v1.RegionSecurityPolicies.RemoveRule",
           "service": {
             "shortName": "RegionSecurityPolicies",
             "fullName": "google.cloud.compute.v1.RegionSecurityPolicies"
@@ -22638,7 +24892,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -22822,7 +25076,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -23098,7 +25352,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -23328,7 +25582,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -23650,7 +25904,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -23834,7 +26088,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -23978,6 +26232,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionZones_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves the list of Zone resources under the specific region available to the specified project.",
+      "file": "RegionZonesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.RegionZonesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRegionZonesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ZoneIterator",
+        "client": {
+          "shortName": "RegionZonesClient",
+          "fullName": "google.cloud.compute.v1.RegionZonesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.RegionZones.List",
+          "service": {
+            "shortName": "RegionZones",
+            "fullName": "google.cloud.compute.v1.RegionZones"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Regions_Get_sync",
       "title": "compute Get Sample",
       "description": "Get returns the specified Region resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request.",
@@ -24064,7 +26364,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -24072,7 +26372,7 @@
     {
       "regionTag": "compute_v1_generated_Reservations_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of reservations.",
+      "description": "AggregatedList retrieves an aggregated list of reservations. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "ReservationsClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -24110,7 +26410,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -24340,7 +26640,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -24532,7 +26832,7 @@
     {
       "regionTag": "compute_v1_generated_ResourcePolicies_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of resource policies.",
+      "description": "AggregatedList retrieves an aggregated list of resource policies. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "ResourcePoliciesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -24570,7 +26870,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -24800,7 +27100,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -24946,7 +27246,7 @@
     {
       "regionTag": "compute_v1_generated_Routers_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of routers.",
+      "description": "AggregatedList retrieves an aggregated list of routers. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "RoutersClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -24984,7 +27284,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -25082,6 +27382,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Routers_GetNatIpInfo_sync",
+      "title": "compute GetNatIpInfo Sample",
+      "description": "GetNatIpInfo retrieves runtime NAT IP information.",
+      "file": "RoutersClient/GetNatIpInfo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNatIpInfo",
+        "fullName": "google.cloud.compute.v1.RoutersClient.GetNatIpInfo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetNatIpInfoRouterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.NatIpInfoResponse",
+        "client": {
+          "shortName": "RoutersClient",
+          "fullName": "google.cloud.compute.v1.RoutersClient"
+        },
+        "method": {
+          "shortName": "GetNatIpInfo",
+          "fullName": "google.cloud.compute.v1.Routers.GetNatIpInfo",
+          "service": {
+            "shortName": "Routers",
+            "fullName": "google.cloud.compute.v1.Routers"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Routers_GetNatMappingInfo_sync",
       "title": "compute GetNatMappingInfo Sample",
       "description": "GetNatMappingInfo retrieves runtime Nat mapping information of VM endpoints.",
@@ -25122,7 +27468,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -25260,7 +27606,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -25582,7 +27928,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -25636,7 +27982,7 @@
     {
       "regionTag": "compute_v1_generated_SecurityPolicies_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project.",
+      "description": "AggregatedList retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "SecurityPoliciesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -25674,7 +28020,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -25904,7 +28250,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -26142,7 +28488,7 @@
     {
       "regionTag": "compute_v1_generated_ServiceAttachments_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project.",
+      "description": "AggregatedList retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "ServiceAttachmentsClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -26180,7 +28526,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -26410,7 +28756,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -26549,6 +28895,98 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_SnapshotSettingsService_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get get snapshot settings.",
+      "file": "SnapshotSettingsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.SnapshotSettingsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetSnapshotSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.SnapshotSettings",
+        "client": {
+          "shortName": "SnapshotSettingsClient",
+          "fullName": "google.cloud.compute.v1.SnapshotSettingsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.SnapshotSettingsService.Get",
+          "service": {
+            "shortName": "SnapshotSettingsService",
+            "fullName": "google.cloud.compute.v1.SnapshotSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_SnapshotSettingsService_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch patch snapshot settings.",
+      "file": "SnapshotSettingsClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1.SnapshotSettingsClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchSnapshotSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "SnapshotSettingsClient",
+          "fullName": "google.cloud.compute.v1.SnapshotSettingsClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1.SnapshotSettingsService.Patch",
+          "service": {
+            "shortName": "SnapshotSettingsService",
+            "fullName": "google.cloud.compute.v1.SnapshotSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -26778,7 +29216,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -26924,7 +29362,7 @@
     {
       "regionTag": "compute_v1_generated_SslCertificates_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of all SslCertificate resources, regional and global, available to the specified project.",
+      "description": "AggregatedList retrieves the list of all SslCertificate resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "SslCertificatesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -26962,7 +29400,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -27146,7 +29584,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -27154,7 +29592,7 @@
     {
       "regionTag": "compute_v1_generated_SslPolicies_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of all SslPolicy resources, regional and global, available to the specified project.",
+      "description": "AggregatedList retrieves the list of all SslPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "SslPoliciesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -27192,7 +29630,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -27376,7 +29814,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -27474,9 +29912,607 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_StoragePoolTypes_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves an aggregated list of storage pool types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
+      "file": "StoragePoolTypesClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.StoragePoolTypesClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListStoragePoolTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolTypesScopedListPairIterator",
+        "client": {
+          "shortName": "StoragePoolTypesClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypesClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypes.AggregatedList",
+          "service": {
+            "shortName": "StoragePoolTypes",
+            "fullName": "google.cloud.compute.v1.StoragePoolTypes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePoolTypes_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified storage pool type.",
+      "file": "StoragePoolTypesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.StoragePoolTypesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetStoragePoolTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.StoragePoolType",
+        "client": {
+          "shortName": "StoragePoolTypesClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypes.Get",
+          "service": {
+            "shortName": "StoragePoolTypes",
+            "fullName": "google.cloud.compute.v1.StoragePoolTypes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePoolTypes_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of storage pool types available to the specified project.",
+      "file": "StoragePoolTypesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.StoragePoolTypesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListStoragePoolTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolTypeIterator",
+        "client": {
+          "shortName": "StoragePoolTypesClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypes.List",
+          "service": {
+            "shortName": "StoragePoolTypes",
+            "fullName": "google.cloud.compute.v1.StoragePoolTypes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves an aggregated list of storage pools. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
+      "file": "StoragePoolsClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListStoragePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolsScopedListPairIterator",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.StoragePools.AggregatedList",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified storage pool. Deleting a storagePool removes its data permanently and is irreversible. However, deleting a storagePool does not delete any snapshots previously made from the storagePool. You must separately delete snapshots.",
+      "file": "StoragePoolsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.StoragePools.Delete",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns a specified storage pool. Gets a list of available storage pools by making a list() request.",
+      "file": "StoragePoolsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.StoragePool",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.StoragePools.Get",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_GetIamPolicy_sync",
+      "title": "compute GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+      "file": "StoragePoolsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetIamPolicyStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.compute.v1.StoragePools.GetIamPolicy",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a storage pool in the specified project using the data in the request.",
+      "file": "StoragePoolsClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.StoragePools.Insert",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of storage pools contained within the specified zone.",
+      "file": "StoragePoolsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListStoragePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolIterator",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.StoragePools.List",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_ListDisks_sync",
+      "title": "compute ListDisks Sample",
+      "description": "ListDisks lists the disks in a specified storage pool.",
+      "file": "StoragePoolsClient/ListDisks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDisks",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.ListDisks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListDisksStoragePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolDiskIterator",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "ListDisks",
+          "fullName": "google.cloud.compute.v1.StoragePools.ListDisks",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_SetIamPolicy_sync",
+      "title": "compute SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.",
+      "file": "StoragePoolsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetIamPolicyStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.compute.v1.StoragePools.SetIamPolicy",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "StoragePoolsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.StoragePools.TestIamPermissions",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_Update_sync",
+      "title": "compute Update Sample",
+      "description": "Update updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: size_tb and provisioned_iops.",
+      "file": "StoragePoolsClient/Update/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Update",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.Update",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.UpdateStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "Update",
+          "fullName": "google.cloud.compute.v1.StoragePools.Update",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Subnetworks_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of subnetworks.",
+      "description": "AggregatedList retrieves an aggregated list of subnetworks. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "SubnetworksClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -27514,7 +30550,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -27790,7 +30826,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -27836,7 +30872,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -28204,7 +31240,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -28258,7 +31294,7 @@
     {
       "regionTag": "compute_v1_generated_TargetHttpProxies_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of all TargetHttpProxy resources, regional and global, available to the specified project.",
+      "description": "AggregatedList retrieves the list of all TargetHttpProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "TargetHttpProxiesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -28296,7 +31332,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -28480,7 +31516,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -28580,7 +31616,7 @@
     {
       "regionTag": "compute_v1_generated_TargetHttpsProxies_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project.",
+      "description": "AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "TargetHttpsProxiesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -28618,7 +31654,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -28802,7 +31838,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -29086,7 +32122,7 @@
     {
       "regionTag": "compute_v1_generated_TargetInstances_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of target instances.",
+      "description": "AggregatedList retrieves an aggregated list of target instances. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "TargetInstancesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -29124,7 +32160,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -29308,7 +32344,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_TargetInstances_SetSecurityPolicy_sync",
+      "title": "compute SetSecurityPolicy Sample",
+      "description": "SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target instance. For more information, see Google Cloud Armor Overview",
+      "file": "TargetInstancesClient/SetSecurityPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetSecurityPolicy",
+        "fullName": "google.cloud.compute.v1.TargetInstancesClient.SetSecurityPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetSecurityPolicyTargetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "TargetInstancesClient",
+          "fullName": "google.cloud.compute.v1.TargetInstancesClient"
+        },
+        "method": {
+          "shortName": "SetSecurityPolicy",
+          "fullName": "google.cloud.compute.v1.TargetInstances.SetSecurityPolicy",
+          "service": {
+            "shortName": "TargetInstances",
+            "fullName": "google.cloud.compute.v1.TargetInstances"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -29408,7 +32490,7 @@
     {
       "regionTag": "compute_v1_generated_TargetPools_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of target pools.",
+      "description": "AggregatedList retrieves an aggregated list of target pools. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "TargetPoolsClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -29446,7 +32528,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -29676,7 +32758,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -29804,6 +32886,52 @@
         "method": {
           "shortName": "SetBackup",
           "fullName": "google.cloud.compute.v1.TargetPools.SetBackup",
+          "service": {
+            "shortName": "TargetPools",
+            "fullName": "google.cloud.compute.v1.TargetPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_TargetPools_SetSecurityPolicy_sync",
+      "title": "compute SetSecurityPolicy Sample",
+      "description": "SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target pool. For more information, see Google Cloud Armor Overview",
+      "file": "TargetPoolsClient/SetSecurityPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetSecurityPolicy",
+        "fullName": "google.cloud.compute.v1.TargetPoolsClient.SetSecurityPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetSecurityPolicyTargetPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "TargetPoolsClient",
+          "fullName": "google.cloud.compute.v1.TargetPoolsClient"
+        },
+        "method": {
+          "shortName": "SetSecurityPolicy",
+          "fullName": "google.cloud.compute.v1.TargetPools.SetSecurityPolicy",
           "service": {
             "shortName": "TargetPools",
             "fullName": "google.cloud.compute.v1.TargetPools"
@@ -29998,7 +33126,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -30190,7 +33318,7 @@
     {
       "regionTag": "compute_v1_generated_TargetSslProxies_SetSslPolicy_sync",
       "title": "compute SetSslPolicy Sample",
-      "description": "SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the SSL proxy load balancer. They do not affect the connection between the load balancer and the backends.",
+      "description": "SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the load balancer. They do not affect the connection between the load balancer and the backends.",
       "file": "TargetSslProxiesClient/SetSslPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -30236,7 +33364,7 @@
     {
       "regionTag": "compute_v1_generated_TargetTcpProxies_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project.",
+      "description": "AggregatedList retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "TargetTcpProxiesClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -30274,7 +33402,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -30458,7 +33586,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -30558,7 +33686,7 @@
     {
       "regionTag": "compute_v1_generated_TargetVpnGateways_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of target VPN gateways.",
+      "description": "AggregatedList retrieves an aggregated list of target VPN gateways. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "TargetVpnGatewaysClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -30596,7 +33724,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -30780,7 +33908,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -30834,7 +33962,7 @@
     {
       "regionTag": "compute_v1_generated_UrlMaps_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project.",
+      "description": "AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "UrlMapsClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -30872,7 +34000,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -31102,7 +34230,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -31248,7 +34376,7 @@
     {
       "regionTag": "compute_v1_generated_VpnGateways_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of VPN gateways.",
+      "description": "AggregatedList retrieves an aggregated list of VPN gateways. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "VpnGatewaysClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -31286,7 +34414,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -31516,7 +34644,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -31616,7 +34744,7 @@
     {
       "regionTag": "compute_v1_generated_VpnTunnels_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
-      "description": "AggregatedList retrieves an aggregated list of VPN tunnels.",
+      "description": "AggregatedList retrieves an aggregated list of VPN tunnels. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
       "file": "VpnTunnelsClient/AggregatedList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -31654,7 +34782,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -31838,7 +34966,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -32022,7 +35150,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -32160,7 +35288,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

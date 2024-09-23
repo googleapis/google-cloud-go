@@ -1,4 +1,6 @@
-go 1.18
+go 1.21.13
+
+toolchain go1.23.0
 
 use (
 	.
@@ -12,13 +14,19 @@ use (
 	./apigateway
 	./apigeeconnect
 	./apigeeregistry
+	./apihub
 	./apikeys
 	./appengine
+	./apphub
+	./apps
 	./area120
 	./artifactregistry
 	./asset
 	./assuredworkloads
+	./auth
+	./auth/oauth2adapt
 	./automl
+	./backupdr
 	./baremetalsolution
 	./batch
 	./beyondcorp
@@ -28,13 +36,18 @@ use (
 	./binaryauthorization
 	./certificatemanager
 	./channel
+	./chat
 	./cloudbuild
+	./cloudcontrolspartner
 	./clouddms
+	./cloudprofiler
+	./cloudquotas
 	./cloudtasks
 	./commerce
 	./compute
 	./compute/metadata
 	./confidentialcomputing
+	./config
 	./contactcenterinsights
 	./container
 	./containeranalysis
@@ -49,12 +62,14 @@ use (
 	./datastore
 	./datastream
 	./deploy
+	./developerconnect
 	./dialogflow
 	./discoveryengine
 	./dlp
 	./documentai
 	./domains
 	./edgecontainer
+	./edgenetwork
 	./errorreporting
 	./essentialcontacts
 	./eventarc
@@ -69,6 +84,7 @@ use (
 	./gsuiteaddons
 	./iam
 	./iap
+	./identitytoolkit
 	./ids
 	./internal/actions
 	./internal/aliasfix
@@ -80,6 +96,7 @@ use (
 	./internal/generated/snippets
 	./internal/godocfx
 	./internal/postprocessor
+	./internal/protoveneer
 	./iot
 	./kms
 	./language
@@ -87,6 +104,7 @@ use (
 	./logging
 	./longrunning
 	./managedidentities
+	./managedkafka
 	./maps
 	./mediatranslation
 	./memcache
@@ -97,16 +115,19 @@ use (
 	./networkconnectivity
 	./networkmanagement
 	./networksecurity
+	./networkservices
 	./notebooks
 	./optimization
 	./orchestration
 	./orgpolicy
 	./osconfig
 	./oslogin
+	./parallelstore
 	./phishingprotection
 	./policysimulator
 	./policytroubleshooter
 	./privatecatalog
+	./privilegedaccessmanager
 	./profiler
 	./pubsub
 	./pubsublite
@@ -121,28 +142,38 @@ use (
 	./run
 	./scheduler
 	./secretmanager
+	./securesourcemanager
 	./security
 	./securitycenter
+	./securitycentermanagement
+	./securityposture
 	./servicecontrol
 	./servicedirectory
+	./servicehealth
 	./servicemanagement
 	./serviceusage
 	./shell
+	./shopping
 	./spanner
+	./spanner/test/opentelemetry/test
 	./speech
 	./storage
 	./storage/internal/benchmarks
 	./storageinsights
 	./storagetransfer
+	./streetview
 	./support
 	./talent
+	./telcoautomation
 	./texttospeech
 	./tpu
 	./trace
 	./translate
+	./vertexai
 	./video
 	./videointelligence
 	./vision
+	./visionai
 	./vmmigration
 	./vmwareengine
 	./vpcaccess

@@ -17,6 +17,8 @@ package bttest
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
+	"encoding/binary"
 	"fmt"
 	"math"
 	"math/rand"
@@ -29,16 +31,18 @@ import (
 
 	"google.golang.org/grpc/metadata"
 
-	"cloud.google.com/go/bigtable/internal/option"
+	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/go-cmp/cmp"
-	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestConcurrentMutationsReadModifyAndGC(t *testing.T) {
@@ -270,11 +274,25 @@ func TestSampleRowKeys(t *testing.T) {
 	if len(mock.responses) == 0 {
 		t.Fatal("Response count: got 0, want > 0")
 	}
-	// Make sure the offset of the final response is the offset of the final row
-	got := mock.responses[len(mock.responses)-1].OffsetBytes
+	// Make sure the offset of the penultimate response is the offset of the final row
+	got := mock.responses[len(mock.responses)-2].OffsetBytes
 	want := int64((rowCount - 1) * len(val))
 	if got != want {
-		t.Errorf("Invalid offset: got %d, want %d", got, want)
+		t.Errorf("Invalid penultimate offset: got %d, want %d", got, want)
+	}
+
+	// Make sure the offset of the final response is the offset of all the rows
+	got = mock.responses[len(mock.responses)-1].OffsetBytes
+	want = int64(rowCount * len(val))
+	if got != want {
+		t.Errorf("Invalid final offset: got %d, want %d", got, want)
+	}
+
+	// Make sure the key of the final response is empty
+	gotLastKey := mock.responses[len(mock.responses)-1].RowKey
+	wantLastKey := ""
+	if got != want {
+		t.Errorf("Invalid final RowKey: got %s, want %s", gotLastKey, wantLastKey)
 	}
 }
 
@@ -468,6 +486,72 @@ func TestModifyColumnFamilies(t *testing.T) {
 	}
 
 	readRows(18, 6, 2)
+}
+
+func TestGC(t *testing.T) {
+	// Create server
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	ctx := context.Background()
+
+	colFamilyID := "colFam"
+	colName := "colName"
+	rowKey := "rowKey"
+
+	// Create table with max age gc rule
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{},
+	}
+	newTbl.ColumnFamilies[colFamilyID] = &btapb.ColumnFamily{GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxAge{MaxAge: durationpb.New(time.Millisecond)}}}
+
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Populate the table
+	for i := 0; i < 2; i++ {
+		req := &btpb.MutateRowRequest{
+			TableName: tblInfo.Name,
+			RowKey:    []byte(rowKey),
+			Mutations: []*btpb.Mutation{{
+				Mutation: &btpb.Mutation_SetCell_{
+					SetCell: &btpb.Mutation_SetCell{
+						FamilyName:      colFamilyID,
+						ColumnQualifier: []byte(colName),
+						TimestampMicros: 1000, // MaxAge is 1ms
+						Value:           []byte{},
+					}},
+			}},
+		}
+		if _, err := s.MutateRow(ctx, req); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Sleep till maxAge passes
+	time.Sleep(2 * time.Millisecond)
+
+	// Trigger gc
+	tbl := s.tables[tblInfo.Name]
+	tbl.gc()
+
+	// Verify that the row was deleted after garbage collection
+	readRowsReq := &btpb.ReadRowsRequest{
+		TableName: tblInfo.Name,
+		Rows:      &btpb.RowSet{RowKeys: [][]byte{[]byte(rowKey)}},
+	}
+	mock := &MockReadRowsServer{}
+	if err = s.ReadRows(readRowsReq, mock); err != nil {
+		t.Errorf("ReadRows error: %v", err)
+	}
+	if got, want := len(mock.responses), 0; got != want {
+		t.Errorf("response count: got %d, want %d", got, want)
+	}
 }
 
 func TestDropRowRange(t *testing.T) {
@@ -717,6 +801,22 @@ func TestReadRows(t *testing.T) {
 	}
 }
 
+// withFeatureFlags set the feature flags the client supports in the
+// `bigtable-features` header sent on each request.
+func withFeatureFlags() metadata.MD {
+	ffStr := ""
+	ff := btpb.FeatureFlags{
+		ReverseScans:             true,
+		LastScannedRowResponses:  true,
+		ClientSideMetricsEnabled: false, // Not suppported in emulator
+	}
+	b, err := proto.Marshal(&ff)
+	if err == nil {
+		ffStr = base64.URLEncoding.EncodeToString(b)
+	}
+	return metadata.Pairs("bigtable-features", ffStr)
+}
+
 func TestReadRowsLastScannedRow(t *testing.T) {
 	ctx := context.Background()
 	s := &server{
@@ -756,7 +856,7 @@ func TestReadRowsLastScannedRow(t *testing.T) {
 			EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("s")},
 		}}},
 	} {
-		featureFlags := option.WithFeatureFlags()
+		featureFlags := withFeatureFlags()
 		ctx := metadata.NewIncomingContext(context.Background(), featureFlags)
 
 		mock := &MockReadRowsServer{ctx: ctx}
@@ -1162,7 +1262,7 @@ func TestReadRowsReversed(t *testing.T) {
 		}
 	}
 
-	serverCtx := metadata.NewIncomingContext(context.Background(), option.WithFeatureFlags())
+	serverCtx := metadata.NewIncomingContext(context.Background(), withFeatureFlags())
 	rrss := &MockReadRowsServer{ctx: serverCtx}
 	rreq := &btpb.ReadRowsRequest{TableName: tbl.Name, Reversed: true}
 	if err := srv.ReadRows(rreq, rrss); err != nil {
@@ -1177,8 +1277,8 @@ func TestReadRowsReversed(t *testing.T) {
 	wantChunks := []*btpb.ReadRowsResponse_CellChunk{
 		{
 			RowKey:          []byte("row2"),
-			FamilyName:      &wrappers.StringValue{Value: "cf"},
-			Qualifier:       &wrappers.BytesValue{Value: []byte("cq")},
+			FamilyName:      &wrapperspb.StringValue{Value: "cf"},
+			Qualifier:       &wrapperspb.BytesValue{Value: []byte("cq")},
 			TimestampMicros: 1000,
 			Value:           []byte("b"),
 			RowStatus: &btpb.ReadRowsResponse_CellChunk_CommitRow{
@@ -1187,8 +1287,8 @@ func TestReadRowsReversed(t *testing.T) {
 		},
 		{
 			RowKey:          []byte("row1"),
-			FamilyName:      &wrappers.StringValue{Value: "cf"},
-			Qualifier:       &wrappers.BytesValue{Value: []byte("cq")},
+			FamilyName:      &wrapperspb.StringValue{Value: "cf"},
+			Qualifier:       &wrapperspb.BytesValue{Value: []byte("cq")},
 			TimestampMicros: 1000,
 			Value:           []byte("a"),
 			RowStatus: &btpb.ReadRowsResponse_CellChunk_CommitRow{
@@ -1196,7 +1296,7 @@ func TestReadRowsReversed(t *testing.T) {
 			},
 		},
 	}
-	if diff := cmp.Diff(gotChunks, wantChunks, cmp.Comparer(proto.Equal)); diff != "" {
+	if diff := cmp.Diff(gotChunks, wantChunks, protocmp.Transform()); diff != "" {
 		t.Fatalf("Response chunks mismatch: got: + want -\n%s", diff)
 	}
 }
@@ -1394,10 +1494,10 @@ func TestCheckAndMutateRowWithPredicate(t *testing.T) {
 			wantState: []*btpb.ReadRowsResponse_CellChunk{
 				{
 					RowKey: []byte("row1"),
-					FamilyName: &wrappers.StringValue{
+					FamilyName: &wrapperspb.StringValue{
 						Value: "cf",
 					},
-					Qualifier: &wrappers.BytesValue{
+					Qualifier: &wrapperspb.BytesValue{
 						Value: []byte("cq"),
 					},
 					TimestampMicros: 1000,
@@ -1405,10 +1505,10 @@ func TestCheckAndMutateRowWithPredicate(t *testing.T) {
 				},
 				{
 					RowKey: []byte("row1"),
-					FamilyName: &wrappers.StringValue{
+					FamilyName: &wrapperspb.StringValue{
 						Value: "zf",
 					},
-					Qualifier: &wrappers.BytesValue{
+					Qualifier: &wrapperspb.BytesValue{
 						Value: []byte("et"),
 					},
 					TimestampMicros: 2000,
@@ -1419,10 +1519,10 @@ func TestCheckAndMutateRowWithPredicate(t *testing.T) {
 				},
 				{
 					RowKey: []byte("row2"),
-					FamilyName: &wrappers.StringValue{
+					FamilyName: &wrapperspb.StringValue{
 						Value: "df",
 					},
-					Qualifier: &wrappers.BytesValue{
+					Qualifier: &wrapperspb.BytesValue{
 						Value: []byte("dq"),
 					},
 					TimestampMicros: 1000,
@@ -1433,10 +1533,10 @@ func TestCheckAndMutateRowWithPredicate(t *testing.T) {
 				},
 				{
 					RowKey: []byte("row3"),
-					FamilyName: &wrappers.StringValue{
+					FamilyName: &wrapperspb.StringValue{
 						Value: "ef",
 					},
-					Qualifier: &wrappers.BytesValue{
+					Qualifier: &wrapperspb.BytesValue{
 						Value: []byte("eq"),
 					},
 					TimestampMicros: 1000,
@@ -1447,10 +1547,10 @@ func TestCheckAndMutateRowWithPredicate(t *testing.T) {
 				},
 				{
 					RowKey: []byte("row4"),
-					FamilyName: &wrappers.StringValue{
+					FamilyName: &wrapperspb.StringValue{
 						Value: "ff",
 					},
-					Qualifier: &wrappers.BytesValue{
+					Qualifier: &wrapperspb.BytesValue{
 						Value: []byte("fq"),
 					},
 					TimestampMicros: 1000,
@@ -1621,7 +1721,7 @@ func TestServer_ReadModifyWriteRow(t *testing.T) {
 func populateTable(ctx context.Context, s *server) (*btapb.Table, error) {
 	newTbl := btapb.Table{
 		ColumnFamilies: map[string]*btapb.ColumnFamily{
-			"cf0": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{1}}},
+			"cf0": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 1}}},
 		},
 	}
 	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
@@ -1634,7 +1734,7 @@ func populateTable(ctx context.Context, s *server) (*btapb.Table, error) {
 			Name: tblInfo.Name,
 			Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
 				Id:  "cf" + strconv.Itoa(i),
-				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{&btapb.ColumnFamily{}},
+				Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{Create: &btapb.ColumnFamily{}},
 			}},
 		}
 	}
@@ -1652,12 +1752,13 @@ func populateTable(ctx context.Context, s *server) (*btapb.Table, error) {
 					TableName: tblInfo.Name,
 					RowKey:    []byte("row"),
 					Mutations: []*btpb.Mutation{{
-						Mutation: &btpb.Mutation_SetCell_{&btpb.Mutation_SetCell{
-							FamilyName:      "cf" + strconv.Itoa(fc),
-							ColumnQualifier: []byte("col" + strconv.Itoa(cc)),
-							TimestampMicros: int64((tc + 1) * 1000),
-							Value:           []byte{},
-						}},
+						Mutation: &btpb.Mutation_SetCell_{
+							SetCell: &btpb.Mutation_SetCell{
+								FamilyName:      "cf" + strconv.Itoa(fc),
+								ColumnQualifier: []byte("col" + strconv.Itoa(cc)),
+								TimestampMicros: int64((tc + 1) * 1000),
+								Value:           []byte{},
+							}},
 					}},
 				}
 				if _, err := s.MutateRow(ctx, req); err != nil {
@@ -1676,10 +1777,10 @@ func TestFilters(t *testing.T) {
 		code codes.Code
 		out  int
 	}{
-		{in: &btpb.RowFilter{Filter: &btpb.RowFilter_BlockAllFilter{true}}, out: 0},
-		{in: &btpb.RowFilter{Filter: &btpb.RowFilter_BlockAllFilter{false}}, code: codes.InvalidArgument},
-		{in: &btpb.RowFilter{Filter: &btpb.RowFilter_PassAllFilter{true}}, out: 1},
-		{in: &btpb.RowFilter{Filter: &btpb.RowFilter_PassAllFilter{false}}, code: codes.InvalidArgument},
+		{in: &btpb.RowFilter{Filter: &btpb.RowFilter_BlockAllFilter{BlockAllFilter: true}}, out: 0},
+		{in: &btpb.RowFilter{Filter: &btpb.RowFilter_BlockAllFilter{BlockAllFilter: false}}, code: codes.InvalidArgument},
+		{in: &btpb.RowFilter{Filter: &btpb.RowFilter_PassAllFilter{PassAllFilter: true}}, out: 1},
+		{in: &btpb.RowFilter{Filter: &btpb.RowFilter_PassAllFilter{PassAllFilter: false}}, code: codes.InvalidArgument},
 	}
 
 	ctx := context.Background()
@@ -1720,6 +1821,186 @@ func TestFilters(t *testing.T) {
 			t.Errorf("Response count: got %d, want %d", len(mock.responses), tc.out)
 			continue
 		}
+	}
+}
+
+func TestMutateRowsAggregate_AddToCell(t *testing.T) {
+	ctx := context.Background()
+
+	s := &server{
+		tables: make(map[string]*table),
+	}
+
+	tblInfo, err := populateTable(ctx, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.ModifyColumnFamilies(ctx, &btapb.ModifyColumnFamiliesRequest{
+		Name: tblInfo.Name,
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id: "sum",
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{
+				Create: &btapb.ColumnFamily{
+					ValueType: &btapb.Type{
+						Kind: &btapb.Type_AggregateType{
+							AggregateType: &btapb.Type_Aggregate{
+								InputType: &btapb.Type{
+									Kind: &btapb.Type_Int64Type{},
+								},
+								Aggregator: &btapb.Type_Aggregate_Sum_{
+									Sum: &btapb.Type_Aggregate_Sum{},
+								},
+							},
+						},
+					},
+				},
+			}},
+		}})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.MutateRow(ctx, &btpb.MutateRowRequest{
+		TableName: tblInfo.GetName(),
+		RowKey:    []byte("row1"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_AddToCell_{AddToCell: &btpb.Mutation_AddToCell{
+				FamilyName:      "sum",
+				ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte("col1")}},
+				Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: 0}},
+				Input:           &btpb.Value{Kind: &btpb.Value_IntValue{IntValue: 1}},
+			}},
+		}},
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.MutateRow(ctx, &btpb.MutateRowRequest{
+		TableName: tblInfo.GetName(),
+		RowKey:    []byte("row1"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_AddToCell_{AddToCell: &btpb.Mutation_AddToCell{
+				FamilyName:      "sum",
+				ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte("col1")}},
+				Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: 0}},
+				Input:           &btpb.Value{Kind: &btpb.Value_IntValue{IntValue: 2}},
+			}},
+		}},
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	mock := &MockReadRowsServer{}
+	err = s.ReadRows(&btpb.ReadRowsRequest{
+		TableName: tblInfo.GetName(),
+		Rows: &btpb.RowSet{
+			RowKeys: [][]byte{
+				[]byte("row1"),
+			},
+		}}, mock)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := mock.responses[0]
+
+	if !bytes.Equal(got.Chunks[0].Value, binary.BigEndian.AppendUint64([]byte{}, 3)) {
+		t.Error()
+	}
+}
+
+func TestMutateRowsAggregate_MergeToCell(t *testing.T) {
+	ctx := context.Background()
+
+	s := &server{
+		tables: make(map[string]*table),
+	}
+
+	tblInfo, err := populateTable(ctx, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.ModifyColumnFamilies(ctx, &btapb.ModifyColumnFamiliesRequest{
+		Name: tblInfo.Name,
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id: "sum",
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{
+				Create: &btapb.ColumnFamily{
+					ValueType: &btapb.Type{
+						Kind: &btapb.Type_AggregateType{
+							AggregateType: &btapb.Type_Aggregate{
+								InputType: &btapb.Type{
+									Kind: &btapb.Type_Int64Type{},
+								},
+								Aggregator: &btapb.Type_Aggregate_Sum_{
+									Sum: &btapb.Type_Aggregate_Sum{},
+								},
+							},
+						},
+					},
+				},
+			}},
+		}})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.MutateRow(ctx, &btpb.MutateRowRequest{
+		TableName: tblInfo.GetName(),
+		RowKey:    []byte("row1"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_MergeToCell_{MergeToCell: &btpb.Mutation_MergeToCell{
+				FamilyName:      "sum",
+				ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte("col1")}},
+				Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: 0}},
+				Input:           &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: binary.BigEndian.AppendUint64([]byte{}, 1)}},
+			}},
+		}},
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.MutateRow(ctx, &btpb.MutateRowRequest{
+		TableName: tblInfo.GetName(),
+		RowKey:    []byte("row1"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_MergeToCell_{MergeToCell: &btpb.Mutation_MergeToCell{
+				FamilyName:      "sum",
+				ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte("col1")}},
+				Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: 0}},
+				Input:           &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: binary.BigEndian.AppendUint64([]byte{}, 2)}},
+			}},
+		}},
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	mock := &MockReadRowsServer{}
+	err = s.ReadRows(&btpb.ReadRowsRequest{
+		TableName: tblInfo.GetName(),
+		Rows: &btpb.RowSet{
+			RowKeys: [][]byte{
+				[]byte("row1"),
+			},
+		}}, mock)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := mock.responses[0]
+
+	if !bytes.Equal(got.Chunks[0].Value, binary.BigEndian.AppendUint64([]byte{}, 3)) {
+		t.Error()
 	}
 }
 
@@ -1838,37 +2119,37 @@ func TestFilterRow(t *testing.T) {
 		want   bool
 	}{
 		// The regexp-based filters perform whole-string, case-sensitive matches.
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{[]byte("row")}}, true},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{[]byte("ro")}}, false},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{[]byte("ROW")}}, false},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{[]byte("moo")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{RowKeyRegexFilter: []byte("row")}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{RowKeyRegexFilter: []byte("ro")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{RowKeyRegexFilter: []byte("ROW")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{RowKeyRegexFilter: []byte("moo")}}, false},
 
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"fam"}}, true},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"f.*"}}, true},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"[fam]+"}}, true},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"fa"}}, false},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"FAM"}}, false},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"moo"}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{FamilyNameRegexFilter: "fam"}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{FamilyNameRegexFilter: "f.*"}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{FamilyNameRegexFilter: "[fam]+"}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{FamilyNameRegexFilter: "fa"}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{FamilyNameRegexFilter: "FAM"}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{FamilyNameRegexFilter: "moo"}}, false},
 
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte("col")}}, true},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte("co")}}, false},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte("COL")}}, false},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte("moo")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{ColumnQualifierRegexFilter: []byte("col")}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{ColumnQualifierRegexFilter: []byte("co")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{ColumnQualifierRegexFilter: []byte("COL")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{ColumnQualifierRegexFilter: []byte("moo")}}, false},
 
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("val")}}, true},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("va")}}, false},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("VAL")}}, false},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("moo")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{ValueRegexFilter: []byte("val")}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{ValueRegexFilter: []byte("va")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{ValueRegexFilter: []byte("VAL")}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{ValueRegexFilter: []byte("moo")}}, false},
 
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{StartTimestampMicros: int64(0), EndTimestampMicros: int64(1000)}}}, false},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{StartTimestampMicros: int64(1000), EndTimestampMicros: int64(2000)}}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{TimestampRangeFilter: &btpb.TimestampRange{StartTimestampMicros: int64(0), EndTimestampMicros: int64(1000)}}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{TimestampRangeFilter: &btpb.TimestampRange{StartTimestampMicros: int64(1000), EndTimestampMicros: int64(2001)}}}, true},
 	} {
 		got, err := filterRow(test.filter, row.copy())
 		if err != nil {
-			t.Errorf("%s: got unexpected error: %v", proto.CompactTextString(test.filter), err)
+			t.Errorf("%s: got unexpected error: %v", prototext.Format(test.filter), err)
 		}
 		if got != test.want {
-			t.Errorf("%s: got %t, want %t", proto.CompactTextString(test.filter), got, test.want)
+			t.Errorf("%s: got %t, want %t", prototext.Format(test.filter), got, test.want)
 		}
 	}
 }
@@ -1888,34 +2169,32 @@ func TestFilterRowWithErrors(t *testing.T) {
 	for _, test := range []struct {
 		badRegex *btpb.RowFilter
 	}{
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{[]byte("[")}}},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{"["}}},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte("[")}}},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("[")}}},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowKeyRegexFilter{RowKeyRegexFilter: []byte("[")}}},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_FamilyNameRegexFilter{FamilyNameRegexFilter: "["}}},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{ColumnQualifierRegexFilter: []byte("[")}}},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{ValueRegexFilter: []byte("[")}}},
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_Chain_{
 			Chain: &btpb.RowFilter_Chain{
 				Filters: []*btpb.RowFilter{
-					{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("[")}},
+					{Filter: &btpb.RowFilter_ValueRegexFilter{ValueRegexFilter: []byte("[")}},
 				},
 			},
 		}}},
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_Condition_{
 			Condition: &btpb.RowFilter_Condition{
-				PredicateFilter: &btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("[")}},
+				PredicateFilter: &btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{ValueRegexFilter: []byte("[")}},
 			},
 		}}},
 
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{0.0}}},                                                                                        // 0.0 is invalid.
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{1.0}}},                                                                                        // 1.0 is invalid.
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{StartTimestampMicros: int64(1), EndTimestampMicros: int64(1000)}}}}, // Server only supports millisecond precision.
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{StartTimestampMicros: int64(1000), EndTimestampMicros: int64(1)}}}}, // Server only supports millisecond precision.
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{RowSampleFilter: 0.0}}}, // 0.0 is invalid.
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{RowSampleFilter: 1.0}}}, // 1.0 is invalid.
 	} {
 		got, err := filterRow(test.badRegex, row.copy())
 		if got != false {
-			t.Errorf("%s: got true, want false", proto.CompactTextString(test.badRegex))
+			t.Errorf("%s: got true, want false", prototext.Format(test.badRegex))
 		}
 		if err == nil {
-			t.Errorf("%s: got no error, want error", proto.CompactTextString(test.badRegex))
+			t.Errorf("%s: got no error, want error", prototext.Format(test.badRegex))
 		}
 	}
 }
@@ -1932,7 +2211,7 @@ func TestFilterRowWithRowSampleFilter(t *testing.T) {
 		{0.5, false}, // Equal to random float. Return no rows.
 		{0.9, true},  // Greater than random float. Return all rows.
 	} {
-		got, err := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{test.p}}, &row{})
+		got, err := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{RowSampleFilter: test.p}}, &row{})
 		if err != nil {
 			t.Fatalf("%f: %v", test.p, err)
 		}
@@ -1966,7 +2245,7 @@ func TestFilterRowWithBinaryColumnQualifier(t *testing.T) {
 		{`[\x7f\x80]{2}`, true}, // succeeds: exactly two of either 127 or 128
 		{`\C{2}`, true},         // succeeds: two bytes
 	} {
-		got, _ := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte(test.filter)}}, row.copy())
+		got, _ := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{ColumnQualifierRegexFilter: []byte(test.filter)}}, row.copy())
 		if got != test.want {
 			t.Errorf("%v: got %t, want %t", test.filter, got, test.want)
 		}
@@ -2005,7 +2284,7 @@ func TestFilterRowWithUnicodeColumnQualifier(t *testing.T) {
 		{`a\C{2}b`, true},    // succeeds: § is two bytes
 		{`\C{4}`, true},      // succeeds: four bytes
 	} {
-		got, _ := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte(test.filter)}}, row.copy())
+		got, _ := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{ColumnQualifierRegexFilter: []byte(test.filter)}}, row.copy())
 		if got != test.want {
 			t.Errorf("%v: got %t, want %t", test.filter, got, test.want)
 		}
@@ -2111,8 +2390,8 @@ func TestFilterRowWithSingleColumnQualifier(t *testing.T) {
 		Chunks: []*btpb.ReadRowsResponse_CellChunk{
 			{
 				RowKey:          []byte("row3"),
-				FamilyName:      &wrappers.StringValue{Value: "cf"},
-				Qualifier:       &wrappers.BytesValue{Value: []byte("cq")},
+				FamilyName:      &wrapperspb.StringValue{Value: "cf"},
+				Qualifier:       &wrapperspb.BytesValue{Value: []byte("cq")},
 				TimestampMicros: 1000,
 				Value:           []byte("a"),
 				RowStatus: &btpb.ReadRowsResponse_CellChunk_CommitRow{
@@ -2199,8 +2478,8 @@ func TestValueFilterRowWithAlternationInRegex(t *testing.T) {
 	wantChunks := []*btpb.ReadRowsResponse_CellChunk{
 		{
 			RowKey:          []byte("row1"),
-			FamilyName:      &wrappers.StringValue{Value: "cf"},
-			Qualifier:       &wrappers.BytesValue{Value: []byte("cq")},
+			FamilyName:      &wrapperspb.StringValue{Value: "cf"},
+			Qualifier:       &wrapperspb.BytesValue{Value: []byte("cq")},
 			TimestampMicros: 1000,
 			Value:           []byte(""),
 			RowStatus: &btpb.ReadRowsResponse_CellChunk_CommitRow{
@@ -2209,8 +2488,8 @@ func TestValueFilterRowWithAlternationInRegex(t *testing.T) {
 		},
 		{
 			RowKey:          []byte("row3"),
-			FamilyName:      &wrappers.StringValue{Value: "cf"},
-			Qualifier:       &wrappers.BytesValue{Value: []byte("cq")},
+			FamilyName:      &wrapperspb.StringValue{Value: "cf"},
+			Qualifier:       &wrapperspb.BytesValue{Value: []byte("cq")},
 			TimestampMicros: 1000,
 			Value:           []byte("a"),
 			RowStatus: &btpb.ReadRowsResponse_CellChunk_CommitRow{
@@ -2267,6 +2546,48 @@ func TestMutateRowsEmptyMutationErrors(t *testing.T) {
 	}
 }
 
+func TestMutateRowEmptyRowKeyErrors(t *testing.T) {
+	srv := &server{tables: make(map[string]*table)}
+	ctx := context.Background()
+
+	const tableID = "mytable"
+	tblReq := &btapb.CreateTableRequest{
+		Parent:  "cluster",
+		TableId: tableID,
+		Table: &btapb.Table{
+			ColumnFamilies: map[string]*btapb.ColumnFamily{"cf": {}},
+		},
+	}
+	if _, err := srv.CreateTable(ctx, tblReq); err != nil {
+		t.Fatalf("Failed to create the table: %v", err)
+	}
+
+	const name = "cluster/tables/" + tableID
+	req := &btpb.MutateRowRequest{
+		TableName: name,
+		RowKey:    []byte(""),
+		Mutations: []*btpb.Mutation{
+			{
+				Mutation: &btpb.Mutation_SetCell_{
+					SetCell: &btpb.Mutation_SetCell{
+						FamilyName:      "cf",
+						ColumnQualifier: []byte("col"),
+						TimestampMicros: 1000,
+						Value:           []byte("hello, world!"),
+					},
+				},
+			},
+		},
+	}
+
+	resp, err := srv.MutateRow(ctx, req)
+	if resp != nil || err == nil || err.Error() !=
+		"rpc error: code = InvalidArgument"+
+			" desc = Row keys must be non-empty" {
+		t.Fatalf("Failed to produce the expected error: %s", err)
+	}
+}
+
 func TestFilterRowCellsPerRowLimitFilterTruthiness(t *testing.T) {
 	row := &row{
 		key: "row",
@@ -2289,17 +2610,58 @@ func TestFilterRowCellsPerRowLimitFilterTruthiness(t *testing.T) {
 		want   bool
 	}{
 		// The regexp-based filters perform whole-string, case-sensitive matches.
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{1}}, true},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{2}}, true},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{3}}, false},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{4}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{CellsPerRowOffsetFilter: 1}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{CellsPerRowOffsetFilter: 2}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{CellsPerRowOffsetFilter: 3}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{CellsPerRowOffsetFilter: 4}}, false},
 	} {
 		got, err := filterRow(test.filter, row.copy())
 		if err != nil {
-			t.Errorf("%s: got unexpected error: %v", proto.CompactTextString(test.filter), err)
+			t.Errorf("%s: got unexpected error: %v", prototext.Format(test.filter), err)
 		}
 		if got != test.want {
-			t.Errorf("%s: got %t, want %t", proto.CompactTextString(test.filter), got, test.want)
+			t.Errorf("%s: got %t, want %t", prototext.Format(test.filter), got, test.want)
 		}
+	}
+}
+
+func TestAuthorizedViewApis(t *testing.T) {
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	ctx := context.Background()
+	_, err := populateTable(ctx, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.CreateAuthorizedView(ctx, &btapb.CreateAuthorizedViewRequest{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
+	}
+
+	_, err = s.GetAuthorizedView(ctx, &btapb.GetAuthorizedViewRequest{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
+	}
+
+	_, err = s.ListAuthorizedViews(ctx, &btapb.ListAuthorizedViewsRequest{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
+	}
+
+	_, err = s.UpdateAuthorizedView(ctx, &btapb.UpdateAuthorizedViewRequest{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
+	}
+
+	_, err = s.DeleteAuthorizedView(ctx, &btapb.DeleteAuthorizedViewRequest{Name: "av_name"})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
 	}
 }

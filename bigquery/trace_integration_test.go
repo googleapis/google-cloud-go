@@ -20,6 +20,7 @@ import (
 	"testing"
 	"time"
 
+	traceinternal "cloud.google.com/go/internal/trace"
 	"go.opencensus.io/trace"
 )
 
@@ -49,9 +50,18 @@ func (te *testExporter) hasSpans(names []string) []string {
 	return unmatched
 }
 
-func TestIntegration_Tracing(t *testing.T) {
+func TestIntegration_OpenCensusTracing(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
+	}
+
+	if !traceinternal.IsOpenCensusTracingEnabled() {
+		t.Logf("enabling opencensus tracing")
+		traceinternal.SetOpenTelemetryTracingEnabledField(false)
+		defer func() {
+			t.Logf("enabling otel tracing")
+			traceinternal.SetOpenTelemetryTracingEnabledField(true)
+		}()
 	}
 
 	ctx := context.Background()
@@ -85,15 +95,17 @@ func TestIntegration_Tracing(t *testing.T) {
 			wantSpans: []string{"bigquery.tables.get", "cloud.google.com/go/bigquery.Table.Metadata"},
 		},
 	} {
-		exporter := &testExporter{}
-		trace.RegisterExporter(exporter)
-		traceCtx, span := trace.StartSpan(ctx, "testspan", trace.WithSampler(trace.AlwaysSample()))
-		tc.callF(traceCtx)
-		span.End()
-		trace.UnregisterExporter(exporter)
+		t.Run(tc.description, func(t *testing.T) {
+			exporter := &testExporter{}
+			trace.RegisterExporter(exporter)
+			traceCtx, span := trace.StartSpan(ctx, "testspan", trace.WithSampler(trace.AlwaysSample()))
+			tc.callF(traceCtx)
+			span.End()
+			trace.UnregisterExporter(exporter)
 
-		if unmatched := exporter.hasSpans(tc.wantSpans); len(unmatched) > 0 {
-			t.Errorf("case (%s): unmatched spans: %s", tc.description, strings.Join(unmatched, ","))
-		}
+			if unmatched := exporter.hasSpans(tc.wantSpans); len(unmatched) > 0 {
+				t.Errorf("case (%s): unmatched spans: %s", tc.description, strings.Join(unmatched, ","))
+			}
+		})
 	}
 }

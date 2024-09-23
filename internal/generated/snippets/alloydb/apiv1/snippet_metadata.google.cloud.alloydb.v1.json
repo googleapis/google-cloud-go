@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/alloydb/apiv1",
-    "version": "1.4.0",
+    "version": "1.12.1",
     "language": "GO",
     "apis": [
       {
@@ -653,6 +653,52 @@
       ]
     },
     {
+      "regionTag": "alloydb_v1_generated_AlloyDBAdmin_GenerateClientCertificate_sync",
+      "title": "alloydb GenerateClientCertificate Sample",
+      "description": "GenerateClientCertificate generate a client certificate signed by a Cluster CA.\nThe sole purpose of this endpoint is to support AlloyDB connectors and the\nAuth Proxy client. The endpoint's behavior is subject to change without\nnotice, so do not rely on its behavior remaining constant. Future changes\nwill not break AlloyDB connectors or the Auth Proxy client.",
+      "file": "AlloyDBAdminClient/GenerateClientCertificate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateClientCertificate",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient.GenerateClientCertificate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.GenerateClientCertificateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*alloydbpb.GenerateClientCertificateResponse",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "GenerateClientCertificate",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.GenerateClientCertificate",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "alloydb_v1_generated_AlloyDBAdmin_GetBackup_sync",
       "title": "alloydb GetBackup Sample",
       "description": "GetBackup gets details of a single Backup.",
@@ -729,6 +775,52 @@
         "method": {
           "shortName": "GetCluster",
           "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.GetCluster",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1_generated_AlloyDBAdmin_GetConnectionInfo_sync",
+      "title": "alloydb GetConnectionInfo Sample",
+      "description": "GetConnectionInfo get instance metadata used for a connection.",
+      "file": "AlloyDBAdminClient/GetConnectionInfo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConnectionInfo",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient.GetConnectionInfo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.GetConnectionInfoRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*alloydbpb.ConnectionInfo",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "GetConnectionInfo",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.GetConnectionInfo",
           "service": {
             "shortName": "AlloyDBAdmin",
             "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
@@ -1015,7 +1107,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1061,7 +1153,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1107,7 +1199,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1153,7 +1245,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1199,7 +1291,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1245,7 +1337,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1291,7 +1383,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

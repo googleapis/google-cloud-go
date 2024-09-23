@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -57,10 +56,13 @@ type BinauthzManagementCallOptions struct {
 func defaultBinauthzManagementGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("binaryauthorization.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("binaryauthorization.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("binaryauthorization.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://binaryauthorization.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -354,7 +356,7 @@ type binauthzManagementGRPCClient struct {
 	binauthzManagementClient binaryauthorizationpb.BinauthzManagementServiceV1Client
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewBinauthzManagementClient creates a new binauthz management service v1 client based on gRPC.
@@ -410,7 +412,9 @@ func (c *binauthzManagementGRPCClient) Connection() *grpc.ClientConn {
 func (c *binauthzManagementGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -427,8 +431,8 @@ type binauthzManagementRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing BinauthzManagementClient
 	CallOptions **BinauthzManagementCallOptions
@@ -465,9 +469,12 @@ func NewBinauthzManagementRESTClient(ctx context.Context, opts ...option.ClientO
 func defaultBinauthzManagementRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://binaryauthorization.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://binaryauthorization.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://binaryauthorization.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://binaryauthorization.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -477,7 +484,9 @@ func defaultBinauthzManagementRESTClientOptions() []option.ClientOption {
 func (c *binauthzManagementRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -495,9 +504,10 @@ func (c *binauthzManagementRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *binauthzManagementGRPCClient) GetPolicy(ctx context.Context, req *binaryauthorizationpb.GetPolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetPolicy[0:len((*c.CallOptions).GetPolicy):len((*c.CallOptions).GetPolicy)], opts...)
 	var resp *binaryauthorizationpb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -512,9 +522,10 @@ func (c *binauthzManagementGRPCClient) GetPolicy(ctx context.Context, req *binar
 }
 
 func (c *binauthzManagementGRPCClient) UpdatePolicy(ctx context.Context, req *binaryauthorizationpb.UpdatePolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdatePolicy[0:len((*c.CallOptions).UpdatePolicy):len((*c.CallOptions).UpdatePolicy)], opts...)
 	var resp *binaryauthorizationpb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -529,9 +540,10 @@ func (c *binauthzManagementGRPCClient) UpdatePolicy(ctx context.Context, req *bi
 }
 
 func (c *binauthzManagementGRPCClient) CreateAttestor(ctx context.Context, req *binaryauthorizationpb.CreateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateAttestor[0:len((*c.CallOptions).CreateAttestor):len((*c.CallOptions).CreateAttestor)], opts...)
 	var resp *binaryauthorizationpb.Attestor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -546,9 +558,10 @@ func (c *binauthzManagementGRPCClient) CreateAttestor(ctx context.Context, req *
 }
 
 func (c *binauthzManagementGRPCClient) GetAttestor(ctx context.Context, req *binaryauthorizationpb.GetAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetAttestor[0:len((*c.CallOptions).GetAttestor):len((*c.CallOptions).GetAttestor)], opts...)
 	var resp *binaryauthorizationpb.Attestor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -563,9 +576,10 @@ func (c *binauthzManagementGRPCClient) GetAttestor(ctx context.Context, req *bin
 }
 
 func (c *binauthzManagementGRPCClient) UpdateAttestor(ctx context.Context, req *binaryauthorizationpb.UpdateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attestor.name", url.QueryEscape(req.GetAttestor().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attestor.name", url.QueryEscape(req.GetAttestor().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateAttestor[0:len((*c.CallOptions).UpdateAttestor):len((*c.CallOptions).UpdateAttestor)], opts...)
 	var resp *binaryauthorizationpb.Attestor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -580,9 +594,10 @@ func (c *binauthzManagementGRPCClient) UpdateAttestor(ctx context.Context, req *
 }
 
 func (c *binauthzManagementGRPCClient) ListAttestors(ctx context.Context, req *binaryauthorizationpb.ListAttestorsRequest, opts ...gax.CallOption) *AttestorIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListAttestors[0:len((*c.CallOptions).ListAttestors):len((*c.CallOptions).ListAttestors)], opts...)
 	it := &AttestorIterator{}
 	req = proto.Clone(req).(*binaryauthorizationpb.ListAttestorsRequest)
@@ -625,9 +640,10 @@ func (c *binauthzManagementGRPCClient) ListAttestors(ctx context.Context, req *b
 }
 
 func (c *binauthzManagementGRPCClient) DeleteAttestor(ctx context.Context, req *binaryauthorizationpb.DeleteAttestorRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteAttestor[0:len((*c.CallOptions).DeleteAttestor):len((*c.CallOptions).DeleteAttestor)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -657,9 +673,11 @@ func (c *binauthzManagementRESTClient) GetPolicy(ctx context.Context, req *binar
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetPolicy[0:len((*c.CallOptions).GetPolicy):len((*c.CallOptions).GetPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &binaryauthorizationpb.Policy{}
@@ -726,9 +744,11 @@ func (c *binauthzManagementRESTClient) UpdatePolicy(ctx context.Context, req *bi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdatePolicy[0:len((*c.CallOptions).UpdatePolicy):len((*c.CallOptions).UpdatePolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &binaryauthorizationpb.Policy{}
@@ -795,9 +815,11 @@ func (c *binauthzManagementRESTClient) CreateAttestor(ctx context.Context, req *
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateAttestor[0:len((*c.CallOptions).CreateAttestor):len((*c.CallOptions).CreateAttestor)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &binaryauthorizationpb.Attestor{}
@@ -854,9 +876,11 @@ func (c *binauthzManagementRESTClient) GetAttestor(ctx context.Context, req *bin
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetAttestor[0:len((*c.CallOptions).GetAttestor):len((*c.CallOptions).GetAttestor)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &binaryauthorizationpb.Attestor{}
@@ -920,9 +944,11 @@ func (c *binauthzManagementRESTClient) UpdateAttestor(ctx context.Context, req *
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attestor.name", url.QueryEscape(req.GetAttestor().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attestor.name", url.QueryEscape(req.GetAttestor().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateAttestor[0:len((*c.CallOptions).UpdateAttestor):len((*c.CallOptions).UpdateAttestor)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &binaryauthorizationpb.Attestor{}
@@ -998,7 +1024,8 @@ func (c *binauthzManagementRESTClient) ListAttestors(ctx context.Context, req *b
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1068,9 +1095,11 @@ func (c *binauthzManagementRESTClient) DeleteAttestor(ctx context.Context, req *
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1092,51 +1121,4 @@ func (c *binauthzManagementRESTClient) DeleteAttestor(ctx context.Context, req *
 		// the response code and body into a non-nil error
 		return googleapi.CheckResponse(httpRsp)
 	}, opts...)
-}
-
-// AttestorIterator manages a stream of *binaryauthorizationpb.Attestor.
-type AttestorIterator struct {
-	items    []*binaryauthorizationpb.Attestor
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*binaryauthorizationpb.Attestor, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AttestorIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AttestorIterator) Next() (*binaryauthorizationpb.Attestor, error) {
-	var item *binaryauthorizationpb.Attestor
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AttestorIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AttestorIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

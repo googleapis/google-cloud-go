@@ -206,6 +206,11 @@ type RoutineMetadata struct {
 	// For JAVASCRIPT function, it is the evaluated string in the AS clause of
 	// a CREATE FUNCTION statement.
 	Body string
+
+	// For data governance use cases.  If set to "DATA_MASKING", the function
+	// is validated and made available as a masking function. For more information,
+	// see: https://cloud.google.com/bigquery/docs/user-defined-functions#custom-mask
+	DataGovernanceType string
 }
 
 // RemoteFunctionOptions contains information for a remote user-defined function.
@@ -278,6 +283,7 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 	r.Language = rm.Language
 	r.RoutineType = rm.Type
 	r.DefinitionBody = rm.Body
+	r.DataGovernanceType = rm.DataGovernanceType
 	rt, err := rm.ReturnType.toBQ()
 	if err != nil {
 		return nil, err
@@ -405,15 +411,16 @@ func routineArgumentsToBQ(in []*RoutineArgument) ([]*bq.Argument, error) {
 
 // RoutineMetadataToUpdate governs updating a routine.
 type RoutineMetadataToUpdate struct {
-	Arguments         []*RoutineArgument
-	Description       optional.String
-	DeterminismLevel  optional.String
-	Type              optional.String
-	Language          optional.String
-	Body              optional.String
-	ImportedLibraries []string
-	ReturnType        *StandardSQLDataType
-	ReturnTableType   *StandardSQLTableType
+	Arguments          []*RoutineArgument
+	Description        optional.String
+	DeterminismLevel   optional.String
+	Type               optional.String
+	Language           optional.String
+	Body               optional.String
+	ImportedLibraries  []string
+	ReturnType         *StandardSQLDataType
+	ReturnTableType    *StandardSQLTableType
+	DataGovernanceType optional.String
 }
 
 func (rm *RoutineMetadataToUpdate) toBQ() (*bq.Routine, error) {
@@ -491,20 +498,25 @@ func (rm *RoutineMetadataToUpdate) toBQ() (*bq.Routine, error) {
 		r.ReturnTableType = tt
 		forceSend("ReturnTableType")
 	}
+	if rm.DataGovernanceType != nil {
+		r.DataGovernanceType = optional.ToString(rm.DataGovernanceType)
+		forceSend("DataGovernanceType")
+	}
 	return r, nil
 }
 
 func bqToRoutineMetadata(r *bq.Routine) (*RoutineMetadata, error) {
 	meta := &RoutineMetadata{
-		ETag:              r.Etag,
-		Type:              r.RoutineType,
-		CreationTime:      unixMillisToTime(r.CreationTime),
-		Description:       r.Description,
-		DeterminismLevel:  RoutineDeterminism(r.DeterminismLevel),
-		LastModifiedTime:  unixMillisToTime(r.LastModifiedTime),
-		Language:          r.Language,
-		ImportedLibraries: r.ImportedLibraries,
-		Body:              r.DefinitionBody,
+		ETag:               r.Etag,
+		Type:               r.RoutineType,
+		CreationTime:       unixMillisToTime(r.CreationTime),
+		Description:        r.Description,
+		DeterminismLevel:   RoutineDeterminism(r.DeterminismLevel),
+		LastModifiedTime:   unixMillisToTime(r.LastModifiedTime),
+		Language:           r.Language,
+		ImportedLibraries:  r.ImportedLibraries,
+		Body:               r.DefinitionBody,
+		DataGovernanceType: r.DataGovernanceType,
 	}
 	args, err := bqToArgs(r.Arguments)
 	if err != nil {

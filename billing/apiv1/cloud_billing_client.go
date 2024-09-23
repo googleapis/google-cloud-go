@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -56,15 +55,19 @@ type CloudBillingCallOptions struct {
 	GetIamPolicy             []gax.CallOption
 	SetIamPolicy             []gax.CallOption
 	TestIamPermissions       []gax.CallOption
+	MoveBillingAccount       []gax.CallOption
 }
 
 func defaultCloudBillingGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudbilling.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudbilling.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudbilling.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudbilling.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -192,6 +195,7 @@ func defaultCloudBillingCallOptions() *CloudBillingCallOptions {
 				})
 			}),
 		},
+		MoveBillingAccount: []gax.CallOption{},
 	}
 }
 
@@ -308,6 +312,7 @@ func defaultCloudBillingRESTCallOptions() *CloudBillingCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		MoveBillingAccount: []gax.CallOption{},
 	}
 }
 
@@ -326,6 +331,7 @@ type internalCloudBillingClient interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	MoveBillingAccount(context.Context, *billingpb.MoveBillingAccountRequest, ...gax.CallOption) (*billingpb.BillingAccount, error)
 }
 
 // CloudBillingClient is a client for interacting with Cloud Billing API.
@@ -402,7 +408,7 @@ func (c *CloudBillingClient) UpdateBillingAccount(ctx context.Context, req *bill
 // typically given to billing account
 // administrators (at https://cloud.google.com/billing/docs/how-to/billing-access).
 // This method will return an error if the parent account has not been
-// provisioned as a reseller account.
+// provisioned for subaccounts.
 func (c *CloudBillingClient) CreateBillingAccount(ctx context.Context, req *billingpb.CreateBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
 	return c.internalClient.CreateBillingAccount(ctx, req, opts...)
 }
@@ -437,7 +443,8 @@ func (c *CloudBillingClient) GetProjectBillingInfo(ctx context.Context, req *bil
 // account, even if the charge occurred before the new billing account was
 // assigned to the project.
 //
-// The current authenticated user must have ownership privileges for both the
+// The current authenticated user must have ownership privileges for both
+// the
 // project (at https://cloud.google.com/docs/permissions-overview#h.bgs0oxofvnoo) and the billing
 // account (at https://cloud.google.com/billing/docs/how-to/billing-access).
 //
@@ -482,6 +489,11 @@ func (c *CloudBillingClient) TestIamPermissions(ctx context.Context, req *iampb.
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// MoveBillingAccount changes which parent organization a billing account belongs to.
+func (c *CloudBillingClient) MoveBillingAccount(ctx context.Context, req *billingpb.MoveBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
+	return c.internalClient.MoveBillingAccount(ctx, req, opts...)
+}
+
 // cloudBillingGRPCClient is a client for interacting with Cloud Billing API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -496,7 +508,7 @@ type cloudBillingGRPCClient struct {
 	cloudBillingClient billingpb.CloudBillingClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewCloudBillingClient creates a new cloud billing client based on gRPC.
@@ -546,7 +558,9 @@ func (c *cloudBillingGRPCClient) Connection() *grpc.ClientConn {
 func (c *cloudBillingGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -563,8 +577,8 @@ type cloudBillingRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing CloudBillingClient
 	CallOptions **CloudBillingCallOptions
@@ -595,9 +609,12 @@ func NewCloudBillingRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultCloudBillingRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudbilling.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudbilling.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudbilling.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudbilling.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -607,7 +624,9 @@ func defaultCloudBillingRESTClientOptions() []option.ClientOption {
 func (c *cloudBillingRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -625,9 +644,10 @@ func (c *cloudBillingRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *cloudBillingGRPCClient) GetBillingAccount(ctx context.Context, req *billingpb.GetBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetBillingAccount[0:len((*c.CallOptions).GetBillingAccount):len((*c.CallOptions).GetBillingAccount)], opts...)
 	var resp *billingpb.BillingAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -642,7 +662,10 @@ func (c *cloudBillingGRPCClient) GetBillingAccount(ctx context.Context, req *bil
 }
 
 func (c *cloudBillingGRPCClient) ListBillingAccounts(ctx context.Context, req *billingpb.ListBillingAccountsRequest, opts ...gax.CallOption) *BillingAccountIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListBillingAccounts[0:len((*c.CallOptions).ListBillingAccounts):len((*c.CallOptions).ListBillingAccounts)], opts...)
 	it := &BillingAccountIterator{}
 	req = proto.Clone(req).(*billingpb.ListBillingAccountsRequest)
@@ -685,9 +708,10 @@ func (c *cloudBillingGRPCClient) ListBillingAccounts(ctx context.Context, req *b
 }
 
 func (c *cloudBillingGRPCClient) UpdateBillingAccount(ctx context.Context, req *billingpb.UpdateBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateBillingAccount[0:len((*c.CallOptions).UpdateBillingAccount):len((*c.CallOptions).UpdateBillingAccount)], opts...)
 	var resp *billingpb.BillingAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -702,7 +726,10 @@ func (c *cloudBillingGRPCClient) UpdateBillingAccount(ctx context.Context, req *
 }
 
 func (c *cloudBillingGRPCClient) CreateBillingAccount(ctx context.Context, req *billingpb.CreateBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateBillingAccount[0:len((*c.CallOptions).CreateBillingAccount):len((*c.CallOptions).CreateBillingAccount)], opts...)
 	var resp *billingpb.BillingAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -717,9 +744,10 @@ func (c *cloudBillingGRPCClient) CreateBillingAccount(ctx context.Context, req *
 }
 
 func (c *cloudBillingGRPCClient) ListProjectBillingInfo(ctx context.Context, req *billingpb.ListProjectBillingInfoRequest, opts ...gax.CallOption) *ProjectBillingInfoIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListProjectBillingInfo[0:len((*c.CallOptions).ListProjectBillingInfo):len((*c.CallOptions).ListProjectBillingInfo)], opts...)
 	it := &ProjectBillingInfoIterator{}
 	req = proto.Clone(req).(*billingpb.ListProjectBillingInfoRequest)
@@ -762,9 +790,10 @@ func (c *cloudBillingGRPCClient) ListProjectBillingInfo(ctx context.Context, req
 }
 
 func (c *cloudBillingGRPCClient) GetProjectBillingInfo(ctx context.Context, req *billingpb.GetProjectBillingInfoRequest, opts ...gax.CallOption) (*billingpb.ProjectBillingInfo, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetProjectBillingInfo[0:len((*c.CallOptions).GetProjectBillingInfo):len((*c.CallOptions).GetProjectBillingInfo)], opts...)
 	var resp *billingpb.ProjectBillingInfo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -779,9 +808,10 @@ func (c *cloudBillingGRPCClient) GetProjectBillingInfo(ctx context.Context, req 
 }
 
 func (c *cloudBillingGRPCClient) UpdateProjectBillingInfo(ctx context.Context, req *billingpb.UpdateProjectBillingInfoRequest, opts ...gax.CallOption) (*billingpb.ProjectBillingInfo, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateProjectBillingInfo[0:len((*c.CallOptions).UpdateProjectBillingInfo):len((*c.CallOptions).UpdateProjectBillingInfo)], opts...)
 	var resp *billingpb.ProjectBillingInfo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -796,9 +826,10 @@ func (c *cloudBillingGRPCClient) UpdateProjectBillingInfo(ctx context.Context, r
 }
 
 func (c *cloudBillingGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -813,9 +844,10 @@ func (c *cloudBillingGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 }
 
 func (c *cloudBillingGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -830,14 +862,33 @@ func (c *cloudBillingGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 }
 
 func (c *cloudBillingGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.cloudBillingClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudBillingGRPCClient) MoveBillingAccount(ctx context.Context, req *billingpb.MoveBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "destination_parent", url.QueryEscape(req.GetDestinationParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).MoveBillingAccount[0:len((*c.CallOptions).MoveBillingAccount):len((*c.CallOptions).MoveBillingAccount)], opts...)
+	var resp *billingpb.BillingAccount
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudBillingClient.MoveBillingAccount(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -862,9 +913,11 @@ func (c *cloudBillingRESTClient) GetBillingAccount(ctx context.Context, req *bil
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetBillingAccount[0:len((*c.CallOptions).GetBillingAccount):len((*c.CallOptions).GetBillingAccount)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &billingpb.BillingAccount{}
@@ -940,11 +993,15 @@ func (c *cloudBillingRESTClient) ListBillingAccounts(ctx context.Context, req *b
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
+		if req.GetParent() != "" {
+			params.Add("parent", fmt.Sprintf("%v", req.GetParent()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1022,19 +1079,21 @@ func (c *cloudBillingRESTClient) UpdateBillingAccount(ctx context.Context, req *
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateBillingAccount[0:len((*c.CallOptions).UpdateBillingAccount):len((*c.CallOptions).UpdateBillingAccount)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &billingpb.BillingAccount{}
@@ -1090,7 +1149,7 @@ func (c *cloudBillingRESTClient) UpdateBillingAccount(ctx context.Context, req *
 // typically given to billing account
 // administrators (at https://cloud.google.com/billing/docs/how-to/billing-access).
 // This method will return an error if the parent account has not been
-// provisioned as a reseller account.
+// provisioned for subaccounts.
 func (c *cloudBillingRESTClient) CreateBillingAccount(ctx context.Context, req *billingpb.CreateBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetBillingAccount()
@@ -1107,11 +1166,18 @@ func (c *cloudBillingRESTClient) CreateBillingAccount(ctx context.Context, req *
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetParent() != "" {
+		params.Add("parent", fmt.Sprintf("%v", req.GetParent()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateBillingAccount[0:len((*c.CallOptions).CreateBillingAccount):len((*c.CallOptions).CreateBillingAccount)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &billingpb.BillingAccount{}
@@ -1189,7 +1255,8 @@ func (c *cloudBillingRESTClient) ListProjectBillingInfo(ctx context.Context, req
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1262,9 +1329,11 @@ func (c *cloudBillingRESTClient) GetProjectBillingInfo(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetProjectBillingInfo[0:len((*c.CallOptions).GetProjectBillingInfo):len((*c.CallOptions).GetProjectBillingInfo)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &billingpb.ProjectBillingInfo{}
@@ -1319,7 +1388,8 @@ func (c *cloudBillingRESTClient) GetProjectBillingInfo(ctx context.Context, req 
 // account, even if the charge occurred before the new billing account was
 // assigned to the project.
 //
-// The current authenticated user must have ownership privileges for both the
+// The current authenticated user must have ownership privileges for both
+// the
 // project (at https://cloud.google.com/docs/permissions-overview#h.bgs0oxofvnoo) and the billing
 // account (at https://cloud.google.com/billing/docs/how-to/billing-access).
 //
@@ -1356,9 +1426,11 @@ func (c *cloudBillingRESTClient) UpdateProjectBillingInfo(ctx context.Context, r
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateProjectBillingInfo[0:len((*c.CallOptions).UpdateProjectBillingInfo):len((*c.CallOptions).UpdateProjectBillingInfo)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &billingpb.ProjectBillingInfo{}
@@ -1420,9 +1492,11 @@ func (c *cloudBillingRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1488,9 +1562,11 @@ func (c *cloudBillingRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1554,9 +1630,11 @@ func (c *cloudBillingRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -1598,96 +1676,68 @@ func (c *cloudBillingRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	return resp, nil
 }
 
-// BillingAccountIterator manages a stream of *billingpb.BillingAccount.
-type BillingAccountIterator struct {
-	items    []*billingpb.BillingAccount
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*billingpb.BillingAccount, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BillingAccountIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BillingAccountIterator) Next() (*billingpb.BillingAccount, error) {
-	var item *billingpb.BillingAccount
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// MoveBillingAccount changes which parent organization a billing account belongs to.
+func (c *cloudBillingRESTClient) MoveBillingAccount(ctx context.Context, req *billingpb.MoveBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
 
-func (it *BillingAccountIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BillingAccountIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ProjectBillingInfoIterator manages a stream of *billingpb.ProjectBillingInfo.
-type ProjectBillingInfoIterator struct {
-	items    []*billingpb.ProjectBillingInfo
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*billingpb.ProjectBillingInfo, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProjectBillingInfoIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProjectBillingInfoIterator) Next() (*billingpb.ProjectBillingInfo, error) {
-	var item *billingpb.ProjectBillingInfo
-	if err := it.nextFunc(); err != nil {
-		return item, err
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:move", req.GetName())
 
-func (it *ProjectBillingInfoIterator) bufLen() int {
-	return len(it.items)
-}
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-func (it *ProjectBillingInfoIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "destination_parent", url.QueryEscape(req.GetDestinationParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).MoveBillingAccount[0:len((*c.CallOptions).MoveBillingAccount):len((*c.CallOptions).MoveBillingAccount)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &billingpb.BillingAccount{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

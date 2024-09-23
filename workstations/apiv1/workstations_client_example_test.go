@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
-func ExampleClient_GetWorkstationCluster() {
+func ExampleClient_CreateWorkstation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -73,47 +73,21 @@ func ExampleClient_GetWorkstationCluster() {
 	}
 	defer c.Close()
 
-	req := &workstationspb.GetWorkstationClusterRequest{
+	req := &workstationspb.CreateWorkstationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#GetWorkstationClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#CreateWorkstationRequest.
 	}
-	resp, err := c.GetWorkstationCluster(ctx, req)
+	op, err := c.CreateWorkstation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleClient_ListWorkstationClusters() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := workstations.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &workstationspb.ListWorkstationClustersRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#ListWorkstationClustersRequest.
-	}
-	it := c.ListWorkstationClusters(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
 }
 
 func ExampleClient_CreateWorkstationCluster() {
@@ -146,7 +120,7 @@ func ExampleClient_CreateWorkstationCluster() {
 	_ = resp
 }
 
-func ExampleClient_UpdateWorkstationCluster() {
+func ExampleClient_CreateWorkstationConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -159,11 +133,41 @@ func ExampleClient_UpdateWorkstationCluster() {
 	}
 	defer c.Close()
 
-	req := &workstationspb.UpdateWorkstationClusterRequest{
+	req := &workstationspb.CreateWorkstationConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#UpdateWorkstationClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#CreateWorkstationConfigRequest.
 	}
-	op, err := c.UpdateWorkstationCluster(ctx, req)
+	op, err := c.CreateWorkstationConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteWorkstation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := workstations.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &workstationspb.DeleteWorkstationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#DeleteWorkstationRequest.
+	}
+	op, err := c.DeleteWorkstation(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -206,153 +210,6 @@ func ExampleClient_DeleteWorkstationCluster() {
 	_ = resp
 }
 
-func ExampleClient_GetWorkstationConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := workstations.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &workstationspb.GetWorkstationConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#GetWorkstationConfigRequest.
-	}
-	resp, err := c.GetWorkstationConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ListWorkstationConfigs() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := workstations.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &workstationspb.ListWorkstationConfigsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#ListWorkstationConfigsRequest.
-	}
-	it := c.ListWorkstationConfigs(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_ListUsableWorkstationConfigs() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := workstations.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &workstationspb.ListUsableWorkstationConfigsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#ListUsableWorkstationConfigsRequest.
-	}
-	it := c.ListUsableWorkstationConfigs(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_CreateWorkstationConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := workstations.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &workstationspb.CreateWorkstationConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#CreateWorkstationConfigRequest.
-	}
-	op, err := c.CreateWorkstationConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateWorkstationConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := workstations.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &workstationspb.UpdateWorkstationConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#UpdateWorkstationConfigRequest.
-	}
-	op, err := c.UpdateWorkstationConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleClient_DeleteWorkstationConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -376,6 +233,31 @@ func ExampleClient_DeleteWorkstationConfig() {
 	}
 
 	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GenerateAccessToken() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := workstations.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &workstationspb.GenerateAccessTokenRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#GenerateAccessTokenRequest.
+	}
+	resp, err := c.GenerateAccessToken(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -408,7 +290,7 @@ func ExampleClient_GetWorkstation() {
 	_ = resp
 }
 
-func ExampleClient_ListWorkstations() {
+func ExampleClient_GetWorkstationCluster() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -421,11 +303,61 @@ func ExampleClient_ListWorkstations() {
 	}
 	defer c.Close()
 
-	req := &workstationspb.ListWorkstationsRequest{
+	req := &workstationspb.GetWorkstationClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#ListWorkstationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#GetWorkstationClusterRequest.
 	}
-	it := c.ListWorkstations(ctx, req)
+	resp, err := c.GetWorkstationCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetWorkstationConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := workstations.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &workstationspb.GetWorkstationConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#GetWorkstationConfigRequest.
+	}
+	resp, err := c.GetWorkstationConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListUsableWorkstationConfigs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := workstations.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &workstationspb.ListUsableWorkstationConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#ListUsableWorkstationConfigsRequest.
+	}
+	it := c.ListUsableWorkstationConfigs(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -436,6 +368,12 @@ func ExampleClient_ListWorkstations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*workstationspb.ListUsableWorkstationConfigsResponse)
 	}
 }
 
@@ -467,10 +405,16 @@ func ExampleClient_ListUsableWorkstations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*workstationspb.ListUsableWorkstationsResponse)
 	}
 }
 
-func ExampleClient_CreateWorkstation() {
+func ExampleClient_ListWorkstationClusters() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -483,24 +427,31 @@ func ExampleClient_CreateWorkstation() {
 	}
 	defer c.Close()
 
-	req := &workstationspb.CreateWorkstationRequest{
+	req := &workstationspb.ListWorkstationClustersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#CreateWorkstationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#ListWorkstationClustersRequest.
 	}
-	op, err := c.CreateWorkstation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
+	it := c.ListWorkstationClusters(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*workstationspb.ListWorkstationClustersResponse)
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
-func ExampleClient_UpdateWorkstation() {
+func ExampleClient_ListWorkstationConfigs() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -513,24 +464,31 @@ func ExampleClient_UpdateWorkstation() {
 	}
 	defer c.Close()
 
-	req := &workstationspb.UpdateWorkstationRequest{
+	req := &workstationspb.ListWorkstationConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#UpdateWorkstationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#ListWorkstationConfigsRequest.
 	}
-	op, err := c.UpdateWorkstation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
+	it := c.ListWorkstationConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*workstationspb.ListWorkstationConfigsResponse)
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
-func ExampleClient_DeleteWorkstation() {
+func ExampleClient_ListWorkstations() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -543,21 +501,28 @@ func ExampleClient_DeleteWorkstation() {
 	}
 	defer c.Close()
 
-	req := &workstationspb.DeleteWorkstationRequest{
+	req := &workstationspb.ListWorkstationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#DeleteWorkstationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#ListWorkstationsRequest.
 	}
-	op, err := c.DeleteWorkstation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
+	it := c.ListWorkstations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*workstationspb.ListWorkstationsResponse)
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleClient_StartWorkstation() {
@@ -620,7 +585,7 @@ func ExampleClient_StopWorkstation() {
 	_ = resp
 }
 
-func ExampleClient_GenerateAccessToken() {
+func ExampleClient_UpdateWorkstation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -633,11 +598,76 @@ func ExampleClient_GenerateAccessToken() {
 	}
 	defer c.Close()
 
-	req := &workstationspb.GenerateAccessTokenRequest{
+	req := &workstationspb.UpdateWorkstationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#GenerateAccessTokenRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#UpdateWorkstationRequest.
 	}
-	resp, err := c.GenerateAccessToken(ctx, req)
+	op, err := c.UpdateWorkstation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateWorkstationCluster() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := workstations.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &workstationspb.UpdateWorkstationClusterRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#UpdateWorkstationClusterRequest.
+	}
+	op, err := c.UpdateWorkstationCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateWorkstationConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := workstations.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &workstationspb.UpdateWorkstationConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#UpdateWorkstationConfigRequest.
+	}
+	op, err := c.UpdateWorkstationConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -819,5 +849,11 @@ func ExampleClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

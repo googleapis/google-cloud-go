@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 var newSpeechTranslationClientHook clientHook
@@ -39,10 +38,13 @@ type SpeechTranslationCallOptions struct {
 func defaultSpeechTranslationGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("mediatranslation.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("mediatranslation.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("mediatranslation.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://mediatranslation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -117,7 +119,7 @@ type speechTranslationGRPCClient struct {
 	speechTranslationClient mediatranslationpb.SpeechTranslationServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewSpeechTranslationClient creates a new speech translation service client based on gRPC.
@@ -166,7 +168,9 @@ func (c *speechTranslationGRPCClient) Connection() *grpc.ClientConn {
 func (c *speechTranslationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -176,7 +180,7 @@ func (c *speechTranslationGRPCClient) Close() error {
 }
 
 func (c *speechTranslationGRPCClient) StreamingTranslateSpeech(ctx context.Context, opts ...gax.CallOption) (mediatranslationpb.SpeechTranslationService_StreamingTranslateSpeechClient, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	var resp mediatranslationpb.SpeechTranslationService_StreamingTranslateSpeechClient
 	opts = append((*c.CallOptions).StreamingTranslateSpeech[0:len((*c.CallOptions).StreamingTranslateSpeech):len((*c.CallOptions).StreamingTranslateSpeech)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

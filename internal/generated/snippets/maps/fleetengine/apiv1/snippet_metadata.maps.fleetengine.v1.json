@@ -1,0 +1,520 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/maps/fleetengine/apiv1",
+    "version": "1.12.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "maps.fleetengine.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "fleetengine_v1_generated_TripService_CreateTrip_sync",
+      "title": "fleetengine CreateTrip Sample",
+      "description": "CreateTrip creates a trip in the Fleet Engine and returns the new trip.",
+      "file": "TripClient/CreateTrip/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTrip",
+        "fullName": "maps.fleetengine.v1.TripClient.CreateTrip",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "fleetenginepb.CreateTripRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*fleetenginepb.Trip",
+        "client": {
+          "shortName": "TripClient",
+          "fullName": "maps.fleetengine.v1.TripClient"
+        },
+        "method": {
+          "shortName": "CreateTrip",
+          "fullName": "maps.fleetengine.v1.TripService.CreateTrip",
+          "service": {
+            "shortName": "TripService",
+            "fullName": "maps.fleetengine.v1.TripService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_TripService_GetTrip_sync",
+      "title": "fleetengine GetTrip Sample",
+      "description": "GetTrip get information about a single trip.",
+      "file": "TripClient/GetTrip/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTrip",
+        "fullName": "maps.fleetengine.v1.TripClient.GetTrip",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "fleetenginepb.GetTripRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*fleetenginepb.Trip",
+        "client": {
+          "shortName": "TripClient",
+          "fullName": "maps.fleetengine.v1.TripClient"
+        },
+        "method": {
+          "shortName": "GetTrip",
+          "fullName": "maps.fleetengine.v1.TripService.GetTrip",
+          "service": {
+            "shortName": "TripService",
+            "fullName": "maps.fleetengine.v1.TripService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_TripService_ReportBillableTrip_sync",
+      "title": "fleetengine ReportBillableTrip Sample",
+      "description": "ReportBillableTrip report billable trip usage.",
+      "file": "TripClient/ReportBillableTrip/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReportBillableTrip",
+        "fullName": "maps.fleetengine.v1.TripClient.ReportBillableTrip",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "fleetenginepb.ReportBillableTripRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "TripClient",
+          "fullName": "maps.fleetengine.v1.TripClient"
+        },
+        "method": {
+          "shortName": "ReportBillableTrip",
+          "fullName": "maps.fleetengine.v1.TripService.ReportBillableTrip",
+          "service": {
+            "shortName": "TripService",
+            "fullName": "maps.fleetengine.v1.TripService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_TripService_SearchTrips_sync",
+      "title": "fleetengine SearchTrips Sample",
+      "description": "SearchTrips get all the trips for a specific vehicle.",
+      "file": "TripClient/SearchTrips/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchTrips",
+        "fullName": "maps.fleetengine.v1.TripClient.SearchTrips",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "fleetenginepb.SearchTripsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TripIterator",
+        "client": {
+          "shortName": "TripClient",
+          "fullName": "maps.fleetengine.v1.TripClient"
+        },
+        "method": {
+          "shortName": "SearchTrips",
+          "fullName": "maps.fleetengine.v1.TripService.SearchTrips",
+          "service": {
+            "shortName": "TripService",
+            "fullName": "maps.fleetengine.v1.TripService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_TripService_UpdateTrip_sync",
+      "title": "fleetengine UpdateTrip Sample",
+      "description": "UpdateTrip updates trip data.",
+      "file": "TripClient/UpdateTrip/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTrip",
+        "fullName": "maps.fleetengine.v1.TripClient.UpdateTrip",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "fleetenginepb.UpdateTripRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*fleetenginepb.Trip",
+        "client": {
+          "shortName": "TripClient",
+          "fullName": "maps.fleetengine.v1.TripClient"
+        },
+        "method": {
+          "shortName": "UpdateTrip",
+          "fullName": "maps.fleetengine.v1.TripService.UpdateTrip",
+          "service": {
+            "shortName": "TripService",
+            "fullName": "maps.fleetengine.v1.TripService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_VehicleService_CreateVehicle_sync",
+      "title": "fleetengine CreateVehicle Sample",
+      "description": "CreateVehicle instantiates a new vehicle associated with an on-demand rideshare or\ndeliveries provider. Each `Vehicle` must have a unique vehicle ID.\n\nThe following `Vehicle` fields are required when creating a `Vehicle`: \n\n* `vehicleState`\n* `supportedTripTypes`\n* `maximumCapacity`\n* `vehicleType`\n\nThe following `Vehicle` fields are ignored when creating a `Vehicle`: \n\n* `name`\n* `currentTrips`\n* `availableCapacity`\n* `current_route_segment`\n* `current_route_segment_end_point`\n* `current_route_segment_version`\n* `current_route_segment_traffic`\n* `route`\n* `waypoints`\n* `waypoints_version`\n* `remaining_distance_meters`\n* `remaining_time_seconds`\n* `eta_to_next_waypoint`\n* `navigation_status`\n\nAll other fields are optional and used if provided.",
+      "file": "VehicleClient/CreateVehicle/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateVehicle",
+        "fullName": "maps.fleetengine.v1.VehicleClient.CreateVehicle",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "fleetenginepb.CreateVehicleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*fleetenginepb.Vehicle",
+        "client": {
+          "shortName": "VehicleClient",
+          "fullName": "maps.fleetengine.v1.VehicleClient"
+        },
+        "method": {
+          "shortName": "CreateVehicle",
+          "fullName": "maps.fleetengine.v1.VehicleService.CreateVehicle",
+          "service": {
+            "shortName": "VehicleService",
+            "fullName": "maps.fleetengine.v1.VehicleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_VehicleService_GetVehicle_sync",
+      "title": "fleetengine GetVehicle Sample",
+      "description": "GetVehicle returns a vehicle from the Fleet Engine.",
+      "file": "VehicleClient/GetVehicle/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVehicle",
+        "fullName": "maps.fleetengine.v1.VehicleClient.GetVehicle",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "fleetenginepb.GetVehicleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*fleetenginepb.Vehicle",
+        "client": {
+          "shortName": "VehicleClient",
+          "fullName": "maps.fleetengine.v1.VehicleClient"
+        },
+        "method": {
+          "shortName": "GetVehicle",
+          "fullName": "maps.fleetengine.v1.VehicleService.GetVehicle",
+          "service": {
+            "shortName": "VehicleService",
+            "fullName": "maps.fleetengine.v1.VehicleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_VehicleService_ListVehicles_sync",
+      "title": "fleetengine ListVehicles Sample",
+      "description": "ListVehicles returns a paginated list of vehicles associated with\na provider that match the request options.",
+      "file": "VehicleClient/ListVehicles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListVehicles",
+        "fullName": "maps.fleetengine.v1.VehicleClient.ListVehicles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "fleetenginepb.ListVehiclesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "VehicleIterator",
+        "client": {
+          "shortName": "VehicleClient",
+          "fullName": "maps.fleetengine.v1.VehicleClient"
+        },
+        "method": {
+          "shortName": "ListVehicles",
+          "fullName": "maps.fleetengine.v1.VehicleService.ListVehicles",
+          "service": {
+            "shortName": "VehicleService",
+            "fullName": "maps.fleetengine.v1.VehicleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_VehicleService_SearchVehicles_sync",
+      "title": "fleetengine SearchVehicles Sample",
+      "description": "SearchVehicles returns a list of vehicles that match the request options.",
+      "file": "VehicleClient/SearchVehicles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchVehicles",
+        "fullName": "maps.fleetengine.v1.VehicleClient.SearchVehicles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "fleetenginepb.SearchVehiclesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*fleetenginepb.SearchVehiclesResponse",
+        "client": {
+          "shortName": "VehicleClient",
+          "fullName": "maps.fleetengine.v1.VehicleClient"
+        },
+        "method": {
+          "shortName": "SearchVehicles",
+          "fullName": "maps.fleetengine.v1.VehicleService.SearchVehicles",
+          "service": {
+            "shortName": "VehicleService",
+            "fullName": "maps.fleetengine.v1.VehicleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_VehicleService_UpdateVehicle_sync",
+      "title": "fleetengine UpdateVehicle Sample",
+      "description": "UpdateVehicle writes updated vehicle data to the Fleet Engine.\n\nWhen updating a `Vehicle`, the following fields cannot be updated since\nthey are managed by the server: \n\n* `currentTrips`\n* `availableCapacity`\n* `current_route_segment_version`\n* `waypoints_version`\n\nThe vehicle `name` also cannot be updated.\n\nIf the `attributes` field is updated, **all** the vehicle's attributes are\nreplaced with the attributes provided in the request. If you want to update\nonly some attributes, see the `UpdateVehicleAttributes` method. Likewise,\nthe `waypoints` field can be updated, but must contain all the waypoints\ncurrently on the vehicle, and no other waypoints.",
+      "file": "VehicleClient/UpdateVehicle/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateVehicle",
+        "fullName": "maps.fleetengine.v1.VehicleClient.UpdateVehicle",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "fleetenginepb.UpdateVehicleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*fleetenginepb.Vehicle",
+        "client": {
+          "shortName": "VehicleClient",
+          "fullName": "maps.fleetengine.v1.VehicleClient"
+        },
+        "method": {
+          "shortName": "UpdateVehicle",
+          "fullName": "maps.fleetengine.v1.VehicleService.UpdateVehicle",
+          "service": {
+            "shortName": "VehicleService",
+            "fullName": "maps.fleetengine.v1.VehicleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "fleetengine_v1_generated_VehicleService_UpdateVehicleAttributes_sync",
+      "title": "fleetengine UpdateVehicleAttributes Sample",
+      "description": "UpdateVehicleAttributes partially updates a vehicle's attributes.\nOnly the attributes mentioned in the request will be updated, other\nattributes will NOT be altered. Note: this is different in `UpdateVehicle`,\nwhere the whole `attributes` field will be replaced by the one in\n`UpdateVehicleRequest`, attributes not in the request would be removed.",
+      "file": "VehicleClient/UpdateVehicleAttributes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateVehicleAttributes",
+        "fullName": "maps.fleetengine.v1.VehicleClient.UpdateVehicleAttributes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "fleetenginepb.UpdateVehicleAttributesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*fleetenginepb.UpdateVehicleAttributesResponse",
+        "client": {
+          "shortName": "VehicleClient",
+          "fullName": "maps.fleetengine.v1.VehicleClient"
+        },
+        "method": {
+          "shortName": "UpdateVehicleAttributes",
+          "fullName": "maps.fleetengine.v1.VehicleService.UpdateVehicleAttributes",
+          "service": {
+            "shortName": "VehicleService",
+            "fullName": "maps.fleetengine.v1.VehicleService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

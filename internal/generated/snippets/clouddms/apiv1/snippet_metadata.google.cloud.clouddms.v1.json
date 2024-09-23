@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/clouddms/apiv1",
-    "version": "1.6.1",
+    "version": "1.7.10",
     "language": "GO",
     "apis": [
       {
@@ -287,6 +287,52 @@
       ]
     },
     {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_CreateMappingRule_sync",
+      "title": "datamigration CreateMappingRule Sample",
+      "description": "CreateMappingRule creates a new mapping rule for a given conversion workspace.",
+      "file": "DataMigrationClient/CreateMappingRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMappingRule",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.CreateMappingRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.CreateMappingRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*clouddmspb.MappingRule",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "CreateMappingRule",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.CreateMappingRule",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datamigration_v1_generated_DataMigrationService_CreateMigrationJob_sync",
       "title": "datamigration CreateMigrationJob Sample",
       "description": "CreateMigrationJob creates a new migration job in a given project and location.",
@@ -466,6 +512,51 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_DeleteMappingRule_sync",
+      "title": "datamigration DeleteMappingRule Sample",
+      "description": "DeleteMappingRule deletes a single mapping rule.",
+      "file": "DataMigrationClient/DeleteMappingRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMappingRule",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.DeleteMappingRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.DeleteMappingRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "DeleteMappingRule",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.DeleteMappingRule",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -694,7 +785,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -740,7 +831,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -776,6 +867,52 @@
         "method": {
           "shortName": "GenerateSshScript",
           "fullName": "google.cloud.clouddms.v1.DataMigrationService.GenerateSshScript",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_GenerateTcpProxyScript_sync",
+      "title": "datamigration GenerateTcpProxyScript Sample",
+      "description": "GenerateTcpProxyScript generate a TCP Proxy configuration script to configure a cloud-hosted VM\nrunning a TCP Proxy.",
+      "file": "DataMigrationClient/GenerateTcpProxyScript/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateTcpProxyScript",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.GenerateTcpProxyScript",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.GenerateTcpProxyScriptRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*clouddmspb.TcpProxyScript",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "GenerateTcpProxyScript",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.GenerateTcpProxyScript",
           "service": {
             "shortName": "DataMigrationService",
             "fullName": "google.cloud.clouddms.v1.DataMigrationService"
@@ -963,6 +1100,52 @@
           "service": {
             "shortName": "Locations",
             "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_GetMappingRule_sync",
+      "title": "datamigration GetMappingRule Sample",
+      "description": "GetMappingRule gets the details of a mapping rule.",
+      "file": "DataMigrationClient/GetMappingRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMappingRule",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.GetMappingRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.GetMappingRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*clouddmspb.MappingRule",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "GetMappingRule",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.GetMappingRule",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
           }
         }
       },
@@ -1200,7 +1383,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1246,7 +1429,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1292,7 +1475,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datamigration_v1_generated_DataMigrationService_ListMappingRules_sync",
+      "title": "datamigration ListMappingRules Sample",
+      "description": "ListMappingRules lists the mapping rules for a specific conversion workspace.",
+      "file": "DataMigrationClient/ListMappingRules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMappingRules",
+        "fullName": "google.cloud.clouddms.v1.DataMigrationClient.ListMappingRules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddmspb.ListMappingRulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MappingRuleIterator",
+        "client": {
+          "shortName": "DataMigrationClient",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
+        },
+        "method": {
+          "shortName": "ListMappingRules",
+          "fullName": "google.cloud.clouddms.v1.DataMigrationService.ListMappingRules",
+          "service": {
+            "shortName": "DataMigrationService",
+            "fullName": "google.cloud.clouddms.v1.DataMigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1338,7 +1567,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1384,7 +1613,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1430,7 +1659,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

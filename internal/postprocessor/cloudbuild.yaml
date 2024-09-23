@@ -22,14 +22,22 @@ steps:
       [
         "build",
         "-t",
-        "gcr.io/cloud-devrel-public-resources/owlbot-go",
+        "gcr.io/cloud-devrel-public-resources/owlbot-go:infrastructure-public-image-$COMMIT_SHA",
         "-f",
         "Dockerfile",
         ".",
       ]
     dir: internal/postprocessor
+  - name:  gcr.io/cloud-builders/docker
+    args: 
+      [
+        "tag",
+        "gcr.io/cloud-devrel-public-resources/owlbot-go:infrastructure-public-image-$COMMIT_SHA",
+        "gcr.io/cloud-devrel-public-resources/owlbot-go:infrastructure-public-image-latest",
+      ]
 options:
   logging: CLOUD_LOGGING_ONLY
 
 images:
-  - gcr.io/cloud-devrel-public-resources/owlbot-go:latest
+  - gcr.io/cloud-devrel-public-resources/owlbot-go:infrastructure-public-image-$COMMIT_SHA
+  - gcr.io/cloud-devrel-public-resources/owlbot-go:infrastructure-public-image-latest

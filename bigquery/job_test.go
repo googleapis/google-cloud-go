@@ -60,13 +60,19 @@ func TestCreateJobRef(t *testing.T) {
 			client: cLoc,
 			want:   &bq.JobReference{JobId: "foo", Location: "loc"},
 		},
+		{
+			in:   JobIDConfig{JobID: "foo", ProjectID: "anotherProj"},
+			want: &bq.JobReference{JobId: "foo", ProjectId: "anotherProj"},
+		},
 	} {
 		client := test.client
 		if client == nil {
 			client = cNoLoc
 		}
 		got := test.in.createJobRef(client)
-		test.want.ProjectId = "projectID"
+		if test.want.ProjectId == "" {
+			test.want.ProjectId = "projectID"
+		}
 		if !testutil.Equal(got, test.want) {
 			t.Errorf("%+v: got %+v, want %+v", test.in, got, test.want)
 		}

@@ -1,0 +1,53 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.maps.solar.v1",
+  "libraryPackage": "cloud.google.com/go/maps/solar/apiv1",
+  "services": {
+    "Solar": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "FindClosestBuildingInsights": {
+              "methods": [
+                "FindClosestBuildingInsights"
+              ]
+            },
+            "GetDataLayers": {
+              "methods": [
+                "GetDataLayers"
+              ]
+            },
+            "GetGeoTiff": {
+              "methods": [
+                "GetGeoTiff"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "FindClosestBuildingInsights": {
+              "methods": [
+                "FindClosestBuildingInsights"
+              ]
+            },
+            "GetDataLayers": {
+              "methods": [
+                "GetDataLayers"
+              ]
+            },
+            "GetGeoTiff": {
+              "methods": [
+                "GetGeoTiff"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

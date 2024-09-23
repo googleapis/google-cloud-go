@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/security/privateca/apiv1",
-    "version": "1.15.1",
+    "version": "1.18.1",
     "language": "GO",
     "apis": [
       {
@@ -564,7 +564,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_FetchCaCerts_sync",
       "title": "privateca FetchCaCerts Sample",
-      "description": "FetchCaCerts fetchCaCerts returns the current trust anchor for the\n[CaPool][google.cloud.security.privateca.v1.CaPool]. This will include CA\ncertificate chains for all ACTIVE\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]\nresources in the [CaPool][google.cloud.security.privateca.v1.CaPool].",
+      "description": "FetchCaCerts fetchCaCerts returns the current trust anchor for the\n[CaPool][google.cloud.security.privateca.v1.CaPool]. This will include CA\ncertificate chains for all certificate authorities in the ENABLED,\nDISABLED, or STAGED states.",
       "file": "CertificateAuthorityClient/FetchCaCerts/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1062,7 +1062,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1108,7 +1108,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1154,7 +1154,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1200,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1246,7 +1246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1292,7 +1292,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1338,7 +1338,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

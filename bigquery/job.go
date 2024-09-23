@@ -56,7 +56,7 @@ func (c *Client) JobFromIDLocation(ctx context.Context, id, location string) (j 
 	return c.JobFromProject(ctx, c.projectID, id, location)
 }
 
-// JobFromProject creates a Job which refers to an existing BigQuery job.  The job
+// JobFromProject creates a Job which refers to an existing BigQuery job. The job
 // need not have been created by this package, nor does it need to reside within the same
 // project or location as the instantiated client.
 func (c *Client) JobFromProject(ctx context.Context, projectID, jobID, location string) (j *Job, err error) {
@@ -170,17 +170,22 @@ type JobIDConfig struct {
 
 	// Location is the location for the job.
 	Location string
+
+	// ProjectID is the Google Cloud project associated with the job.
+	ProjectID string
 }
 
 // createJobRef creates a JobReference.
 func (j *JobIDConfig) createJobRef(c *Client) *bq.JobReference {
-	// We don't check whether projectID is empty; the server will return an
-	// error when it encounters the resulting JobReference.
+	projectID := j.ProjectID
+	if projectID == "" { // Use Client.ProjectID as a default.
+		projectID = c.projectID
+	}
 	loc := j.Location
 	if loc == "" { // Use Client.Location as a default.
 		loc = c.Location
 	}
-	jr := &bq.JobReference{ProjectId: c.projectID, Location: loc}
+	jr := &bq.JobReference{ProjectId: projectID, Location: loc}
 	if j.JobID == "" {
 		jr.JobId = randomIDFn()
 	} else if j.AddJobIDSuffix {
@@ -348,10 +353,11 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, uint64, error) {
 	// Use GetQueryResults only to wait for completion, not to read results.
 	call := j.c.bqs.Jobs.GetQueryResults(projectID, j.jobID).Location(j.location).Context(ctx).MaxResults(0)
+	call = call.FormatOptionsUseInt64Timestamp(true)
 	setClientHeader(call.Header())
 	backoff := gax.Backoff{
-		Initial:    1 * time.Second,
-		Multiplier: 2,
+		Initial:    50 * time.Millisecond,
+		Multiplier: 1.3,
 		Max:        60 * time.Second,
 	}
 	var res *bq.GetQueryResultsResponse
@@ -500,6 +506,30 @@ type QueryStatistics struct {
 
 	// The DDL target table, present only for CREATE/DROP FUNCTION/PROCEDURE queries.
 	DDLTargetRoutine *Routine
+
+	// Statistics for the EXPORT DATA statement as part of Query Job.
+	ExportDataStatistics *ExportDataStatistics
+}
+
+// ExportDataStatistics represents statistics for
+// a EXPORT DATA statement as part of Query Job.
+type ExportDataStatistics struct {
+	// Number of destination files generated.
+	FileCount int64
+
+	// Number of destination rows generated.
+	RowCount int64
+}
+
+func bqToExportDataStatistics(in *bq.ExportDataStatistics) *ExportDataStatistics {
+	if in == nil {
+		return nil
+	}
+	stats := &ExportDataStatistics{
+		FileCount: in.FileCount,
+		RowCount:  in.RowCount,
+	}
+	return stats
 }
 
 // BIEngineStatistics contains query statistics specific to the use of BI Engine.
@@ -1023,6 +1053,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			DDLTargetTable:                bqToTable(s.Query.DdlTargetTable, c),
 			DDLOperationPerformed:         s.Query.DdlOperationPerformed,
 			DDLTargetRoutine:              bqToRoutine(s.Query.DdlTargetRoutine, c),
+			ExportDataStatistics:          bqToExportDataStatistics(s.Query.ExportDataStatistics),
 			StatementType:                 s.Query.StatementType,
 			TotalBytesBilled:              s.Query.TotalBytesBilled,
 			TotalBytesProcessed:           s.Query.TotalBytesProcessed,

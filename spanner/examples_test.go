@@ -506,7 +506,7 @@ func ExampleNewStatement_structLiteral() {
 	_ = stmt // TODO: Use stmt in Query.
 }
 
-func ExampleStructParam() {
+func ExampleStatement_structParam() {
 	stmt := spanner.Statement{
 		SQL: "SELECT * FROM SINGERS WHERE (FirstName, LastName) = @singerinfo",
 		Params: map[string]interface{}{
@@ -519,7 +519,7 @@ func ExampleStructParam() {
 	_ = stmt // TODO: Use stmt in Query.
 }
 
-func ExampleArrayOfStructParam() {
+func ExampleStatement_arrayOfStructParam() {
 	stmt := spanner.Statement{
 		SQL: "SELECT * FROM SINGERS WHERE (FirstName, LastName) IN UNNEST(@singerinfo)",
 		Params: map[string]interface{}{
@@ -672,7 +672,7 @@ func ExampleCommitTimestamp() {
 		Creation spanner.NullTime // time.Time can also be used if column isNOT NULL
 	}
 
-	a := account{User: "Joe", Creation: spanner.NullTime{spanner.CommitTimestamp, true}}
+	a := account{User: "Joe", Creation: spanner.NullTime{Time: spanner.CommitTimestamp, Valid: true}}
 	m, err := spanner.InsertStruct("Accounts", a)
 	if err != nil {
 		// TODO: Handle error.

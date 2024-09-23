@@ -28,8 +28,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"os"
 	"reflect"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -37,10 +39,13 @@ import (
 	"cloud.google.com/go/spanner"
 	dbadmin "cloud.google.com/go/spanner/admin/database/apiv1"
 	v1 "cloud.google.com/go/spanner/apiv1"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/multiendpoint"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 
 	dbadminpb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
@@ -49,6 +54,8 @@ import (
 )
 
 var testDBFlag = flag.String("test_db", "", "Fully-qualified database name to test against; empty means use an in-memory fake.")
+
+var useGRPCgcp = strings.ToLower(os.Getenv("GCLOUD_TESTS_GOLANG_USE_GRPC_GCP")) == "true"
 
 func dbName() string {
 	if *testDBFlag != "" {
@@ -61,11 +68,25 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, *v
 	// Despite the docs, this context is also used for auth,
 	// so it needs to be long-lived.
 	ctx := context.Background()
-
+	serverAddress := "spanner.googleapis.com:443"
 	if *testDBFlag != "" {
 		t.Logf("Using real Spanner DB %s", *testDBFlag)
 		dialOpt := option.WithGRPCDialOption(grpc.WithTimeout(5 * time.Second))
-		client, err := spanner.NewClient(ctx, *testDBFlag, dialOpt)
+		var client *spanner.Client
+		var err error
+		if useGRPCgcp {
+			gmeCfg := &grpcgcp.GCPMultiEndpointOptions{
+				MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+					"default": {
+						Endpoints: []string{serverAddress},
+					},
+				},
+				Default: "default",
+			}
+			client, _, err = spanner.NewMultiEndpointClient(ctx, *testDBFlag, gmeCfg, dialOpt)
+		} else {
+			client, err = spanner.NewClient(ctx, *testDBFlag, dialOpt)
+		}
 		if err != nil {
 			t.Fatalf("Connecting to %s: %v", *testDBFlag, err)
 		}
@@ -86,7 +107,7 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, *v
 	// Don't use SPANNER_EMULATOR_HOST because we need the raw connection for
 	// the database admin client anyway.
 
-	t.Logf("Using in-memory fake Spanner DB")
+	t.Log("Using in-memory fake Spanner DB")
 	srv, err := NewServer("localhost:0")
 	if err != nil {
 		t.Fatalf("Starting in-memory fake: %v", err)
@@ -94,12 +115,36 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, *v
 	srv.SetLogger(t.Logf)
 	dialCtx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
-	conn, err := grpc.DialContext(dialCtx, srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.DialContext(dialCtx, srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		srv.Close()
 		t.Fatalf("Dialing in-memory fake: %v", err)
 	}
-	client, err := spanner.NewClient(ctx, dbName(), option.WithGRPCConn(conn))
+	opts := []option.ClientOption{}
+	var client *spanner.Client
+	if useGRPCgcp {
+		// We cannot provide connection to srv.Addr to GCPMultiEndpoint because it does not use WithGRPCConn option.
+		// We temporarily unset SPANNER_EMULATOR_HOST so that GCPMultiEndpoint don't override srv.Addr when connecting.
+		opts = append(opts,
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			option.WithoutAuthentication(),
+		)
+		old := os.Getenv("SPANNER_EMULATOR_HOST")
+		gmeCfg := &grpcgcp.GCPMultiEndpointOptions{
+			MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+				"default": {
+					Endpoints: []string{srv.Addr},
+				},
+			},
+			Default: "default",
+		}
+		os.Setenv("SPANNER_EMULATOR_HOST", "")
+		client, _, err = spanner.NewMultiEndpointClient(ctx, dbName(), gmeCfg, opts...)
+		os.Setenv("SPANNER_EMULATOR_HOST", old)
+	} else {
+		opts = append(opts, option.WithGRPCConn(conn))
+		client, err = spanner.NewClient(ctx, dbName(), opts...)
+	}
 	if err != nil {
 		srv.Close()
 		t.Fatalf("Connecting to in-memory fake: %v", err)
@@ -708,13 +753,81 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{1, "abar"}),
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{2, nil}),
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{3, "bbar"}),
-
-		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{0, "joe", nil}),
-		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{1, "doe", "joan"}),
-		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{2, "wong", "wong"}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting sample data: %v", err)
+	}
+
+	// Perform INSERT DML; the results are checked later on.
+	n = 0
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
+		for _, u := range []string{
+			`INSERT INTO Updateable (id, first, last) VALUES (0, "joe", nil)`,
+			`INSERT INTO Updateable (id, first, last) VALUES (1, "doe", "joan")`,
+			`INSERT INTO Updateable (id, first, last) VALUES (2, "wong", "wong")`,
+		} {
+			nr, err := tx.Update(ctx, spanner.NewStatement(u))
+			if err != nil {
+				return err
+			}
+			n += nr
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Inserting with DML: %v", err)
+	}
+	if n != 3 {
+		t.Errorf("Inserting with DML affected %d rows, want 3", n)
+	}
+
+	// Perform INSERT DML with statement.Params; the results are checked later on.
+	n = 0
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
+		stmt := spanner.Statement{
+			SQL: "INSERT INTO Updateable (id, first, last) VALUES (@id, @first, @last)",
+			Params: map[string]interface{}{
+				"id":    3,
+				"first": "tom",
+				"last":  "jerry",
+			},
+		}
+		nr, err := tx.Update(ctx, stmt)
+		if err != nil {
+			return err
+		}
+		n += nr
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Inserting with DML: %v", err)
+	}
+	if n != 1 {
+		t.Errorf("Inserting with DML affected %d rows, want 1", n)
+	}
+
+	// Perform INSERT DML with statement.Params and inline parameter; the results are checked later on.
+	n = 0
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
+		stmt := spanner.Statement{
+			SQL: `INSERT INTO Updateable (id, first, last) VALUES (@id, "jim", @last)`,
+			Params: map[string]interface{}{
+				"id":   4,
+				"last": nil,
+			},
+		}
+		nr, err := tx.Update(ctx, stmt)
+		if err != nil {
+			return err
+		}
+		n += nr
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Inserting with DML: %v", err)
+	}
+	if n != 1 {
+		t.Errorf("Inserting with DML affected %d rows, want 1", n)
 	}
 
 	// Perform UPDATE DML; the results are checked later on.
@@ -724,7 +837,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			`UPDATE Updateable SET last = "bloggs" WHERE id = 0`,
 			`UPDATE Updateable SET first = last, last = first WHERE id = 1`,
 			`UPDATE Updateable SET last = DEFAULT WHERE id = 2`,
-			`UPDATE Updateable SET first = "noname" WHERE id = 3`, // no id=3
+			`UPDATE Updateable SET first = "noname" WHERE id = 5`, // no id=5
 		} {
 			nr, err := tx.Update(ctx, spanner.NewStatement(u))
 			if err != nil {
@@ -1156,6 +1269,8 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{int64(0), "joe", "bloggs"},
 				{int64(1), "joan", "doe"},
 				{int64(2), "wong", nil},
+				{int64(3), "tom", "jerry"},
+				{int64(4), "jim", nil},
 			},
 		},
 		// Regression test for aggregating no rows; it used to return an empty row.

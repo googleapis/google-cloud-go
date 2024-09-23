@@ -596,7 +596,7 @@ func TestRoutingPublisherUnloadIdlePublisher(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	unloadDelay := time.Millisecond * 10
+	unloadDelay := time.Millisecond * 20
 	pub := newTestRoutingPublisher(t, clientID, topic, testPublishSettings(), unloadDelay, 0)
 	if gotErr := pub.WaitStarted(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
@@ -608,9 +608,9 @@ func TestRoutingPublisherUnloadIdlePublisher(t *testing.T) {
 	for i, msg := range msgs {
 		result := pub.Publish(msg)
 		result.ValidateResult(0, 10+int64(i))
-		time.Sleep(unloadDelay / 2)
 	}
 
+	time.Sleep(unloadDelay * 2)
 	result2 := pub.Publish(msg2)
 	result2.ValidateResult(1, 22)
 

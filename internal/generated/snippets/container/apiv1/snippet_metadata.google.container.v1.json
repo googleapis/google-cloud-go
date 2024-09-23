@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/container/apiv1",
-    "version": "1.24.0",
+    "version": "1.40.0",
     "language": "GO",
     "apis": [
       {
@@ -426,7 +426,7 @@
     {
       "regionTag": "container_v1_generated_ClusterManager_GetJSONWebKeys_sync",
       "title": "container GetJSONWebKeys Sample",
-      "description": "GetJSONWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.\nThis API is not yet intended for general use, and is not available for all\nclusters.",
+      "description": "GetJSONWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.",
       "file": "ClusterManagerClient/GetJSONWebKeys/main.go",
       "language": "GO",
       "clientMethod": {
@@ -786,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

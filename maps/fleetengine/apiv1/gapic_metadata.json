@@ -1,0 +1,82 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "maps.fleetengine.v1",
+  "libraryPackage": "cloud.google.com/go/maps/fleetengine/apiv1",
+  "services": {
+    "TripService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TripClient",
+          "rpcs": {
+            "CreateTrip": {
+              "methods": [
+                "CreateTrip"
+              ]
+            },
+            "GetTrip": {
+              "methods": [
+                "GetTrip"
+              ]
+            },
+            "ReportBillableTrip": {
+              "methods": [
+                "ReportBillableTrip"
+              ]
+            },
+            "SearchTrips": {
+              "methods": [
+                "SearchTrips"
+              ]
+            },
+            "UpdateTrip": {
+              "methods": [
+                "UpdateTrip"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "VehicleService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "VehicleClient",
+          "rpcs": {
+            "CreateVehicle": {
+              "methods": [
+                "CreateVehicle"
+              ]
+            },
+            "GetVehicle": {
+              "methods": [
+                "GetVehicle"
+              ]
+            },
+            "ListVehicles": {
+              "methods": [
+                "ListVehicles"
+              ]
+            },
+            "SearchVehicles": {
+              "methods": [
+                "SearchVehicles"
+              ]
+            },
+            "UpdateVehicle": {
+              "methods": [
+                "UpdateVehicle"
+              ]
+            },
+            "UpdateVehicleAttributes": {
+              "methods": [
+                "UpdateVehicleAttributes"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

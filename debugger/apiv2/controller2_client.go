@@ -51,6 +51,7 @@ type Controller2CallOptions struct {
 func defaultController2GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("clouddebugger.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("clouddebugger.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("clouddebugger.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://clouddebugger.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
@@ -383,6 +384,7 @@ func NewController2RESTClient(ctx context.Context, opts ...option.ClientOption) 
 func defaultController2RESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://clouddebugger.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://clouddebugger.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://clouddebugger.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouddebugger.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),

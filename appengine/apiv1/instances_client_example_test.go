@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ func ExampleNewInstancesRESTClient() {
 	_ = c
 }
 
-func ExampleInstancesClient_ListInstances() {
+func ExampleInstancesClient_DebugInstance() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -71,42 +71,16 @@ func ExampleInstancesClient_ListInstances() {
 	}
 	defer c.Close()
 
-	req := &appenginepb.ListInstancesRequest{
+	req := &appenginepb.DebugInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#ListInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#DebugInstanceRequest.
 	}
-	it := c.ListInstances(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleInstancesClient_GetInstance() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := appengine.NewInstancesClient(ctx)
+	op, err := c.DebugInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	defer c.Close()
 
-	req := &appenginepb.GetInstanceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#GetInstanceRequest.
-	}
-	resp, err := c.GetInstance(ctx, req)
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -142,7 +116,7 @@ func ExampleInstancesClient_DeleteInstance() {
 	}
 }
 
-func ExampleInstancesClient_DebugInstance() {
+func ExampleInstancesClient_GetInstance() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -155,19 +129,51 @@ func ExampleInstancesClient_DebugInstance() {
 	}
 	defer c.Close()
 
-	req := &appenginepb.DebugInstanceRequest{
+	req := &appenginepb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#DebugInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#GetInstanceRequest.
 	}
-	op, err := c.DebugInstance(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
+	resp, err := c.GetInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleInstancesClient_ListInstances() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := appengine.NewInstancesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &appenginepb.ListInstancesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#ListInstancesRequest.
+	}
+	it := c.ListInstances(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*appenginepb.ListInstancesResponse)
+	}
 }

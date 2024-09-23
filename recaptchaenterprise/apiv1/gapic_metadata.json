@@ -1,0 +1,118 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.recaptchaenterprise.v1",
+  "libraryPackage": "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
+  "services": {
+    "RecaptchaEnterpriseService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AddIpOverride": {
+              "methods": [
+                "AddIpOverride"
+              ]
+            },
+            "AnnotateAssessment": {
+              "methods": [
+                "AnnotateAssessment"
+              ]
+            },
+            "CreateAssessment": {
+              "methods": [
+                "CreateAssessment"
+              ]
+            },
+            "CreateFirewallPolicy": {
+              "methods": [
+                "CreateFirewallPolicy"
+              ]
+            },
+            "CreateKey": {
+              "methods": [
+                "CreateKey"
+              ]
+            },
+            "DeleteFirewallPolicy": {
+              "methods": [
+                "DeleteFirewallPolicy"
+              ]
+            },
+            "DeleteKey": {
+              "methods": [
+                "DeleteKey"
+              ]
+            },
+            "GetFirewallPolicy": {
+              "methods": [
+                "GetFirewallPolicy"
+              ]
+            },
+            "GetKey": {
+              "methods": [
+                "GetKey"
+              ]
+            },
+            "GetMetrics": {
+              "methods": [
+                "GetMetrics"
+              ]
+            },
+            "ListFirewallPolicies": {
+              "methods": [
+                "ListFirewallPolicies"
+              ]
+            },
+            "ListKeys": {
+              "methods": [
+                "ListKeys"
+              ]
+            },
+            "ListRelatedAccountGroupMemberships": {
+              "methods": [
+                "ListRelatedAccountGroupMemberships"
+              ]
+            },
+            "ListRelatedAccountGroups": {
+              "methods": [
+                "ListRelatedAccountGroups"
+              ]
+            },
+            "MigrateKey": {
+              "methods": [
+                "MigrateKey"
+              ]
+            },
+            "ReorderFirewallPolicies": {
+              "methods": [
+                "ReorderFirewallPolicies"
+              ]
+            },
+            "RetrieveLegacySecretKey": {
+              "methods": [
+                "RetrieveLegacySecretKey"
+              ]
+            },
+            "SearchRelatedAccountGroupMemberships": {
+              "methods": [
+                "SearchRelatedAccountGroupMemberships"
+              ]
+            },
+            "UpdateFirewallPolicy": {
+              "methods": [
+                "UpdateFirewallPolicy"
+              ]
+            },
+            "UpdateKey": {
+              "methods": [
+                "UpdateKey"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -21,6 +21,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -59,6 +60,9 @@ type Client struct {
 	projectID string
 	bqs       *bq.Service
 	rc        *readClient
+
+	// governs use of preview query features.
+	enableQueryPreview bool
 }
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
@@ -75,6 +79,12 @@ const DetectProjectID = "*detect-project-id*"
 //
 // If the project ID is set to DetectProjectID, NewClient will attempt to detect
 // the project ID from credentials.
+//
+// This client supports enabling query-related preview features via environmental
+// variables.  By setting the environment variable QUERY_PREVIEW_ENABLED to the string
+// "TRUE", the client will enable preview features, though behavior may still be
+// controlled via the bigquery service as well.  Currently, the feature(s) in scope
+// include: short mode queries (query execution without corresponding job metadata).
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	o := []option.ClientOption{
 		option.WithScopes(Scope),
@@ -92,15 +102,25 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		return nil, err
 	}
 
+	var preview bool
+	if v, ok := os.LookupEnv("QUERY_PREVIEW_ENABLED"); ok {
+		if strings.ToUpper(v) == "TRUE" {
+			preview = true
+		}
+	}
+
 	c := &Client{
-		projectID: projectID,
-		bqs:       bqs,
+		projectID:          projectID,
+		bqs:                bqs,
+		enableQueryPreview: preview,
 	}
 	return c, nil
 }
 
 // EnableStorageReadClient sets up Storage API connection to be used when fetching
 // large datasets from tables, jobs or queries.
+// Currently out of pagination methods like PageInfo().Token and RowIterator.StartIndex
+// are not supported when the Storage API is enabled.
 // Calling this method twice will return an error.
 func (c *Client) EnableStorageReadClient(ctx context.Context, opts ...option.ClientOption) error {
 	if c.isStorageReadAvailable() {
@@ -138,11 +158,11 @@ func (c *Client) Close() error {
 }
 
 // Calls the Jobs.Insert RPC and returns a Job.
-func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*Job, error) {
+func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader, mediaOpts ...googleapi.MediaOption) (*Job, error) {
 	call := c.bqs.Jobs.Insert(c.projectID, job).Context(ctx)
 	setClientHeader(call.Header())
 	if media != nil {
-		call.Media(media)
+		call.Media(media, mediaOpts...)
 	}
 	var res *bq.Job
 	var err error
@@ -229,8 +249,12 @@ func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons
 
 var (
 	defaultRetryReasons = []string{"backendError", "rateLimitExceeded"}
-	jobRetryReasons     = []string{"backendError", "rateLimitExceeded", "internalError"}
-	retry5xxCodes       = []int{
+
+	// These reasons are used exclusively for enqueuing jobs (jobs.insert and jobs.query).
+	// Using them for polling may cause unwanted retries until context deadline/cancellation/etc.
+	jobRetryReasons = []string{"backendError", "rateLimitExceeded", "jobRateLimitExceeded", "internalError"}
+
+	retry5xxCodes = []int{
 		http.StatusInternalServerError,
 		http.StatusBadGateway,
 		http.StatusServiceUnavailable,

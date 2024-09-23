@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,6 +60,36 @@ func ExampleNewRepositoryManagerRESTClient() {
 	_ = c
 }
 
+func ExampleRepositoryManagerClient_BatchCreateRepositories() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.BatchCreateRepositoriesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#BatchCreateRepositoriesRequest.
+	}
+	op, err := c.BatchCreateRepositories(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleRepositoryManagerClient_CreateConnection() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -90,7 +120,7 @@ func ExampleRepositoryManagerClient_CreateConnection() {
 	_ = resp
 }
 
-func ExampleRepositoryManagerClient_GetConnection() {
+func ExampleRepositoryManagerClient_CreateRepository() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -103,67 +133,11 @@ func ExampleRepositoryManagerClient_GetConnection() {
 	}
 	defer c.Close()
 
-	req := &cloudbuildpb.GetConnectionRequest{
+	req := &cloudbuildpb.CreateRepositoryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#GetConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#CreateRepositoryRequest.
 	}
-	resp, err := c.GetConnection(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRepositoryManagerClient_ListConnections() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.ListConnectionsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#ListConnectionsRequest.
-	}
-	it := c.ListConnections(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleRepositoryManagerClient_UpdateConnection() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.UpdateConnectionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#UpdateConnectionRequest.
-	}
-	op, err := c.UpdateConnection(ctx, req)
+	op, err := c.CreateRepository(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -204,122 +178,6 @@ func ExampleRepositoryManagerClient_DeleteConnection() {
 	}
 }
 
-func ExampleRepositoryManagerClient_CreateRepository() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.CreateRepositoryRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#CreateRepositoryRequest.
-	}
-	op, err := c.CreateRepository(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRepositoryManagerClient_BatchCreateRepositories() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.BatchCreateRepositoriesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#BatchCreateRepositoriesRequest.
-	}
-	op, err := c.BatchCreateRepositories(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRepositoryManagerClient_GetRepository() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.GetRepositoryRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#GetRepositoryRequest.
-	}
-	resp, err := c.GetRepository(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRepositoryManagerClient_ListRepositories() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.ListRepositoriesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#ListRepositoriesRequest.
-	}
-	it := c.ListRepositories(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
 func ExampleRepositoryManagerClient_DeleteRepository() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -348,7 +206,7 @@ func ExampleRepositoryManagerClient_DeleteRepository() {
 	}
 }
 
-func ExampleRepositoryManagerClient_FetchReadWriteToken() {
+func ExampleRepositoryManagerClient_FetchGitRefs() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -361,36 +219,11 @@ func ExampleRepositoryManagerClient_FetchReadWriteToken() {
 	}
 	defer c.Close()
 
-	req := &cloudbuildpb.FetchReadWriteTokenRequest{
+	req := &cloudbuildpb.FetchGitRefsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#FetchReadWriteTokenRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#FetchGitRefsRequest.
 	}
-	resp, err := c.FetchReadWriteToken(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRepositoryManagerClient_FetchReadToken() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.FetchReadTokenRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#FetchReadTokenRequest.
-	}
-	resp, err := c.FetchReadToken(ctx, req)
+	resp, err := c.FetchGitRefs(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -426,10 +259,16 @@ func ExampleRepositoryManagerClient_FetchLinkableRepositories() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*cloudbuildpb.FetchLinkableRepositoriesResponse)
 	}
 }
 
-func ExampleRepositoryManagerClient_FetchGitRefs() {
+func ExampleRepositoryManagerClient_FetchReadToken() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -442,11 +281,190 @@ func ExampleRepositoryManagerClient_FetchGitRefs() {
 	}
 	defer c.Close()
 
-	req := &cloudbuildpb.FetchGitRefsRequest{
+	req := &cloudbuildpb.FetchReadTokenRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#FetchGitRefsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#FetchReadTokenRequest.
 	}
-	resp, err := c.FetchGitRefs(ctx, req)
+	resp, err := c.FetchReadToken(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRepositoryManagerClient_FetchReadWriteToken() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.FetchReadWriteTokenRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#FetchReadWriteTokenRequest.
+	}
+	resp, err := c.FetchReadWriteToken(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRepositoryManagerClient_GetConnection() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.GetConnectionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#GetConnectionRequest.
+	}
+	resp, err := c.GetConnection(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRepositoryManagerClient_GetRepository() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.GetRepositoryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#GetRepositoryRequest.
+	}
+	resp, err := c.GetRepository(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRepositoryManagerClient_ListConnections() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.ListConnectionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#ListConnectionsRequest.
+	}
+	it := c.ListConnections(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*cloudbuildpb.ListConnectionsResponse)
+	}
+}
+
+func ExampleRepositoryManagerClient_ListRepositories() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.ListRepositoriesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#ListRepositoriesRequest.
+	}
+	it := c.ListRepositories(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*cloudbuildpb.ListRepositoriesResponse)
+	}
+}
+
+func ExampleRepositoryManagerClient_UpdateConnection() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewRepositoryManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.UpdateConnectionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#UpdateConnectionRequest.
+	}
+	op, err := c.UpdateConnection(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

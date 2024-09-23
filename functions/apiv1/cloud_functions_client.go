@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,7 +41,6 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -69,10 +68,13 @@ type CloudFunctionsCallOptions struct {
 func defaultCloudFunctionsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudfunctions.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudfunctions.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudfunctions.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudfunctions.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -291,7 +293,7 @@ func (c *CloudFunctionsClient) GetFunction(ctx context.Context, req *functionspb
 }
 
 // CreateFunction creates a new function. If a function with the given name already exists in
-// the specified project, the long running operation returns an
+// the specified project, the long running operation will return
 // ALREADY_EXISTS error.
 func (c *CloudFunctionsClient) CreateFunction(ctx context.Context, req *functionspb.CreateFunctionRequest, opts ...gax.CallOption) (*CreateFunctionOperation, error) {
 	return c.internalClient.CreateFunction(ctx, req, opts...)
@@ -315,7 +317,7 @@ func (c *CloudFunctionsClient) UpdateFunctionOperation(name string) *UpdateFunct
 }
 
 // DeleteFunction deletes a function with the given name from the specified project. If the
-// given function is used by some trigger, the trigger is updated to
+// given function is used by some trigger, the trigger will be updated to
 // remove this function.
 func (c *CloudFunctionsClient) DeleteFunction(ctx context.Context, req *functionspb.DeleteFunctionRequest, opts ...gax.CallOption) (*DeleteFunctionOperation, error) {
 	return c.internalClient.DeleteFunction(ctx, req, opts...)
@@ -354,13 +356,13 @@ func (c *CloudFunctionsClient) CallFunction(ctx context.Context, req *functionsp
 //	attached, the identity from the credentials would be used, but that
 //	identity does not have permissions to upload files to the URL.
 //
-// When making an HTTP PUT request, these two headers must be specified:
+// When making a HTTP PUT request, these two headers need to be specified:
 //
 //	content-type: application/zip
 //
 //	x-goog-content-length-range: 0,104857600
 //
-// And this header must NOT be specified:
+// And this header SHOULD NOT be specified:
 //
 //	Authorization: Bearer YOUR_TOKEN
 func (c *CloudFunctionsClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
@@ -368,9 +370,9 @@ func (c *CloudFunctionsClient) GenerateUploadUrl(ctx context.Context, req *funct
 }
 
 // GenerateDownloadUrl returns a signed URL for downloading deployed function source code.
-// The URL is only valid for a limited period and must be used within
+// The URL is only valid for a limited period and should be used within
 // minutes after generation.
-// For more information about the signed URL usage, see:
+// For more information about the signed URL usage see:
 // https://cloud.google.com/storage/docs/access-control/signed-urls (at https://cloud.google.com/storage/docs/access-control/signed-urls)
 func (c *CloudFunctionsClient) GenerateDownloadUrl(ctx context.Context, req *functionspb.GenerateDownloadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateDownloadUrlResponse, error) {
 	return c.internalClient.GenerateDownloadUrl(ctx, req, opts...)
@@ -391,7 +393,7 @@ func (c *CloudFunctionsClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 
 // TestIamPermissions tests the specified permissions against the IAM access control policy
 // for a function.
-// If the function does not exist, this returns an empty set of
+// If the function does not exist, this will return an empty set of
 // permissions, not a NOT_FOUND error.
 func (c *CloudFunctionsClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
@@ -435,7 +437,7 @@ type cloudFunctionsGRPCClient struct {
 	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewCloudFunctionsClient creates a new cloud functions service client based on gRPC.
@@ -497,7 +499,9 @@ func (c *cloudFunctionsGRPCClient) Connection() *grpc.ClientConn {
 func (c *cloudFunctionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -519,8 +523,8 @@ type cloudFunctionsRESTClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing CloudFunctionsClient
 	CallOptions **CloudFunctionsCallOptions
@@ -560,9 +564,12 @@ func NewCloudFunctionsRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultCloudFunctionsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudfunctions.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudfunctions.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudfunctions.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudfunctions.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -572,7 +579,9 @@ func defaultCloudFunctionsRESTClientOptions() []option.ClientOption {
 func (c *cloudFunctionsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -590,9 +599,10 @@ func (c *cloudFunctionsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *cloudFunctionsGRPCClient) ListFunctions(ctx context.Context, req *functionspb.ListFunctionsRequest, opts ...gax.CallOption) *CloudFunctionIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListFunctions[0:len((*c.CallOptions).ListFunctions):len((*c.CallOptions).ListFunctions)], opts...)
 	it := &CloudFunctionIterator{}
 	req = proto.Clone(req).(*functionspb.ListFunctionsRequest)
@@ -635,9 +645,10 @@ func (c *cloudFunctionsGRPCClient) ListFunctions(ctx context.Context, req *funct
 }
 
 func (c *cloudFunctionsGRPCClient) GetFunction(ctx context.Context, req *functionspb.GetFunctionRequest, opts ...gax.CallOption) (*functionspb.CloudFunction, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetFunction[0:len((*c.CallOptions).GetFunction):len((*c.CallOptions).GetFunction)], opts...)
 	var resp *functionspb.CloudFunction
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -652,9 +663,10 @@ func (c *cloudFunctionsGRPCClient) GetFunction(ctx context.Context, req *functio
 }
 
 func (c *cloudFunctionsGRPCClient) CreateFunction(ctx context.Context, req *functionspb.CreateFunctionRequest, opts ...gax.CallOption) (*CreateFunctionOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateFunction[0:len((*c.CallOptions).CreateFunction):len((*c.CallOptions).CreateFunction)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -671,9 +683,10 @@ func (c *cloudFunctionsGRPCClient) CreateFunction(ctx context.Context, req *func
 }
 
 func (c *cloudFunctionsGRPCClient) UpdateFunction(ctx context.Context, req *functionspb.UpdateFunctionRequest, opts ...gax.CallOption) (*UpdateFunctionOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "function.name", url.QueryEscape(req.GetFunction().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "function.name", url.QueryEscape(req.GetFunction().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateFunction[0:len((*c.CallOptions).UpdateFunction):len((*c.CallOptions).UpdateFunction)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -690,9 +703,10 @@ func (c *cloudFunctionsGRPCClient) UpdateFunction(ctx context.Context, req *func
 }
 
 func (c *cloudFunctionsGRPCClient) DeleteFunction(ctx context.Context, req *functionspb.DeleteFunctionRequest, opts ...gax.CallOption) (*DeleteFunctionOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteFunction[0:len((*c.CallOptions).DeleteFunction):len((*c.CallOptions).DeleteFunction)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -709,9 +723,10 @@ func (c *cloudFunctionsGRPCClient) DeleteFunction(ctx context.Context, req *func
 }
 
 func (c *cloudFunctionsGRPCClient) CallFunction(ctx context.Context, req *functionspb.CallFunctionRequest, opts ...gax.CallOption) (*functionspb.CallFunctionResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CallFunction[0:len((*c.CallOptions).CallFunction):len((*c.CallOptions).CallFunction)], opts...)
 	var resp *functionspb.CallFunctionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -726,9 +741,10 @@ func (c *cloudFunctionsGRPCClient) CallFunction(ctx context.Context, req *functi
 }
 
 func (c *cloudFunctionsGRPCClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GenerateUploadUrl[0:len((*c.CallOptions).GenerateUploadUrl):len((*c.CallOptions).GenerateUploadUrl)], opts...)
 	var resp *functionspb.GenerateUploadUrlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -743,9 +759,10 @@ func (c *cloudFunctionsGRPCClient) GenerateUploadUrl(ctx context.Context, req *f
 }
 
 func (c *cloudFunctionsGRPCClient) GenerateDownloadUrl(ctx context.Context, req *functionspb.GenerateDownloadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateDownloadUrlResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GenerateDownloadUrl[0:len((*c.CallOptions).GenerateDownloadUrl):len((*c.CallOptions).GenerateDownloadUrl)], opts...)
 	var resp *functionspb.GenerateDownloadUrlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -760,9 +777,10 @@ func (c *cloudFunctionsGRPCClient) GenerateDownloadUrl(ctx context.Context, req 
 }
 
 func (c *cloudFunctionsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -777,9 +795,10 @@ func (c *cloudFunctionsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.
 }
 
 func (c *cloudFunctionsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -794,9 +813,10 @@ func (c *cloudFunctionsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.
 }
 
 func (c *cloudFunctionsGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -811,9 +831,10 @@ func (c *cloudFunctionsGRPCClient) TestIamPermissions(ctx context.Context, req *
 }
 
 func (c *cloudFunctionsGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -856,9 +877,10 @@ func (c *cloudFunctionsGRPCClient) ListLocations(ctx context.Context, req *locat
 }
 
 func (c *cloudFunctionsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -873,7 +895,7 @@ func (c *cloudFunctionsGRPCClient) GetOperation(ctx context.Context, req *longru
 }
 
 func (c *cloudFunctionsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -948,7 +970,8 @@ func (c *cloudFunctionsRESTClient) ListFunctions(ctx context.Context, req *funct
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1013,13 +1036,18 @@ func (c *cloudFunctionsRESTClient) GetFunction(ctx context.Context, req *functio
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetVersionId() != 0 {
+		params.Add("versionId", fmt.Sprintf("%v", req.GetVersionId()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetFunction[0:len((*c.CallOptions).GetFunction):len((*c.CallOptions).GetFunction)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &functionspb.CloudFunction{}
@@ -1062,7 +1090,7 @@ func (c *cloudFunctionsRESTClient) GetFunction(ctx context.Context, req *functio
 }
 
 // CreateFunction creates a new function. If a function with the given name already exists in
-// the specified project, the long running operation returns an
+// the specified project, the long running operation will return
 // ALREADY_EXISTS error.
 func (c *cloudFunctionsRESTClient) CreateFunction(ctx context.Context, req *functionspb.CreateFunctionRequest, opts ...gax.CallOption) (*CreateFunctionOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1084,9 +1112,11 @@ func (c *cloudFunctionsRESTClient) CreateFunction(ctx context.Context, req *func
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1150,19 +1180,21 @@ func (c *cloudFunctionsRESTClient) UpdateFunction(ctx context.Context, req *func
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "function.name", url.QueryEscape(req.GetFunction().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "function.name", url.QueryEscape(req.GetFunction().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1209,7 +1241,7 @@ func (c *cloudFunctionsRESTClient) UpdateFunction(ctx context.Context, req *func
 }
 
 // DeleteFunction deletes a function with the given name from the specified project. If the
-// given function is used by some trigger, the trigger is updated to
+// given function is used by some trigger, the trigger will be updated to
 // remove this function.
 func (c *cloudFunctionsRESTClient) DeleteFunction(ctx context.Context, req *functionspb.DeleteFunctionRequest, opts ...gax.CallOption) (*DeleteFunctionOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1224,9 +1256,11 @@ func (c *cloudFunctionsRESTClient) DeleteFunction(ctx context.Context, req *func
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1295,9 +1329,11 @@ func (c *cloudFunctionsRESTClient) CallFunction(ctx context.Context, req *functi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CallFunction[0:len((*c.CallOptions).CallFunction):len((*c.CallOptions).CallFunction)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &functionspb.CallFunctionResponse{}
@@ -1358,13 +1394,13 @@ func (c *cloudFunctionsRESTClient) CallFunction(ctx context.Context, req *functi
 //	attached, the identity from the credentials would be used, but that
 //	identity does not have permissions to upload files to the URL.
 //
-// When making an HTTP PUT request, these two headers must be specified:
+// When making a HTTP PUT request, these two headers need to be specified:
 //
 //	content-type: application/zip
 //
 //	x-goog-content-length-range: 0,104857600
 //
-// And this header must NOT be specified:
+// And this header SHOULD NOT be specified:
 //
 //	Authorization: Bearer YOUR_TOKEN
 func (c *cloudFunctionsRESTClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
@@ -1386,9 +1422,11 @@ func (c *cloudFunctionsRESTClient) GenerateUploadUrl(ctx context.Context, req *f
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GenerateUploadUrl[0:len((*c.CallOptions).GenerateUploadUrl):len((*c.CallOptions).GenerateUploadUrl)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &functionspb.GenerateUploadUrlResponse{}
@@ -1431,9 +1469,9 @@ func (c *cloudFunctionsRESTClient) GenerateUploadUrl(ctx context.Context, req *f
 }
 
 // GenerateDownloadUrl returns a signed URL for downloading deployed function source code.
-// The URL is only valid for a limited period and must be used within
+// The URL is only valid for a limited period and should be used within
 // minutes after generation.
-// For more information about the signed URL usage, see:
+// For more information about the signed URL usage see:
 // https://cloud.google.com/storage/docs/access-control/signed-urls (at https://cloud.google.com/storage/docs/access-control/signed-urls)
 func (c *cloudFunctionsRESTClient) GenerateDownloadUrl(ctx context.Context, req *functionspb.GenerateDownloadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateDownloadUrlResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1454,9 +1492,11 @@ func (c *cloudFunctionsRESTClient) GenerateDownloadUrl(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GenerateDownloadUrl[0:len((*c.CallOptions).GenerateDownloadUrl):len((*c.CallOptions).GenerateDownloadUrl)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &functionspb.GenerateDownloadUrlResponse{}
@@ -1519,9 +1559,11 @@ func (c *cloudFunctionsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1582,9 +1624,11 @@ func (c *cloudFunctionsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1628,7 +1672,7 @@ func (c *cloudFunctionsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.
 
 // TestIamPermissions tests the specified permissions against the IAM access control policy
 // for a function.
-// If the function does not exist, this returns an empty set of
+// If the function does not exist, this will return an empty set of
 // permissions, not a NOT_FOUND error.
 func (c *cloudFunctionsRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1649,9 +1693,11 @@ func (c *cloudFunctionsRESTClient) TestIamPermissions(ctx context.Context, req *
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -1729,7 +1775,8 @@ func (c *cloudFunctionsRESTClient) ListLocations(ctx context.Context, req *locat
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1798,9 +1845,11 @@ func (c *cloudFunctionsRESTClient) GetOperation(ctx context.Context, req *longru
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1881,7 +1930,8 @@ func (c *cloudFunctionsRESTClient) ListOperations(ctx context.Context, req *long
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1936,12 +1986,6 @@ func (c *cloudFunctionsRESTClient) ListOperations(ctx context.Context, req *long
 	return it
 }
 
-// CreateFunctionOperation manages a long-running operation from CreateFunction.
-type CreateFunctionOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateFunctionOperation returns a new CreateFunctionOperation from a given name.
 // The name must be that of a previously created CreateFunctionOperation, possibly from a different process.
 func (c *cloudFunctionsGRPCClient) CreateFunctionOperation(name string) *CreateFunctionOperation {
@@ -1958,70 +2002,6 @@ func (c *cloudFunctionsRESTClient) CreateFunctionOperation(name string) *CreateF
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateFunctionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*functionspb.CloudFunction, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp functionspb.CloudFunction
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateFunctionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*functionspb.CloudFunction, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp functionspb.CloudFunction
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateFunctionOperation) Metadata() (*functionspb.OperationMetadataV1, error) {
-	var meta functionspb.OperationMetadataV1
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateFunctionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateFunctionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteFunctionOperation manages a long-running operation from DeleteFunction.
-type DeleteFunctionOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteFunctionOperation returns a new DeleteFunctionOperation from a given name.
@@ -2042,59 +2022,6 @@ func (c *cloudFunctionsRESTClient) DeleteFunctionOperation(name string) *DeleteF
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteFunctionOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteFunctionOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteFunctionOperation) Metadata() (*functionspb.OperationMetadataV1, error) {
-	var meta functionspb.OperationMetadataV1
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteFunctionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteFunctionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateFunctionOperation manages a long-running operation from UpdateFunction.
-type UpdateFunctionOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateFunctionOperation returns a new UpdateFunctionOperation from a given name.
 // The name must be that of a previously created UpdateFunctionOperation, possibly from a different process.
 func (c *cloudFunctionsGRPCClient) UpdateFunctionOperation(name string) *UpdateFunctionOperation {
@@ -2111,203 +2038,4 @@ func (c *cloudFunctionsRESTClient) UpdateFunctionOperation(name string) *UpdateF
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateFunctionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*functionspb.CloudFunction, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp functionspb.CloudFunction
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateFunctionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*functionspb.CloudFunction, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp functionspb.CloudFunction
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateFunctionOperation) Metadata() (*functionspb.OperationMetadataV1, error) {
-	var meta functionspb.OperationMetadataV1
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateFunctionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateFunctionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CloudFunctionIterator manages a stream of *functionspb.CloudFunction.
-type CloudFunctionIterator struct {
-	items    []*functionspb.CloudFunction
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*functionspb.CloudFunction, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CloudFunctionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CloudFunctionIterator) Next() (*functionspb.CloudFunction, error) {
-	var item *functionspb.CloudFunction
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CloudFunctionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CloudFunctionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }
