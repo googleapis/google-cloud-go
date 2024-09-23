@@ -1073,7 +1073,7 @@ type CryptoKey struct {
 	// [DESTROY_SCHEDULED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.DESTROY_SCHEDULED]
 	// state before transitioning to
 	// [DESTROYED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.DESTROYED].
-	// If not specified at creation time, the default duration is 24 hours.
+	// If not specified at creation time, the default duration is 30 days.
 	DestroyScheduledDuration *durationpb.Duration `protobuf:"bytes,14,opt,name=destroy_scheduled_duration,json=destroyScheduledDuration,proto3" json:"destroy_scheduled_duration,omitempty"`
 	// Immutable. The resource name of the backend environment where the key
 	// material for all [CryptoKeyVersions][google.cloud.kms.v1.CryptoKeyVersion]

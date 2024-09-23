@@ -333,10 +333,13 @@ to add a [custom audit logging] header:
 
 # gRPC API
 
+
 This package includes support for the Cloud Storage gRPC API. The
 implementation uses gRPC rather than the Default
 JSON & XML APIs to make requests to Cloud Storage.
 The Go Storage gRPC client is generally available.
+The Notifications, Serivce Account HMAC
+and GetServiceAccount RPCs are not supported through the gRPC client.
 
 To create a client which will use gRPC, use the alternate constructor:
 

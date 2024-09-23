@@ -1,5 +1,12 @@
 # Changes
 
+## [2.8.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.7.0...dataproc/v2.8.0) (2024-09-19)
+
+
+### Features
+
+* **dataproc:** Add resource reference for KMS keys and fix comments ([37866ce](https://github.com/googleapis/google-cloud-go/commit/37866ce67a286a3eed1b92f53bdac2ae8f1c63ed))
+
 ## [2.7.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.6.0...dataproc/v2.7.0) (2024-09-12)
 
 
