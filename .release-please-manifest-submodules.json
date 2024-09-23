@@ -34,7 +34,7 @@
     "cloudtasks": "1.13.1",
     "commerce": "1.1.1",
     "compute": "1.28.1",
-    "compute/metadata": "0.5.1",
+    "compute/metadata": "0.5.2",
     "confidentialcomputing": "1.7.1",
     "config": "1.1.1",
     "contactcenterinsights": "1.14.1",
