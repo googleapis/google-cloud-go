@@ -18,6 +18,7 @@ package bigtable // import "cloud.google.com/go/bigtable"
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -49,6 +50,7 @@ import (
 
 const prodAddr = "bigtable.googleapis.com:443"
 const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
+const featureFlagsHeaderKey = "bigtable-features"
 
 // Client is a client for reading and writing data to tables in an instance.
 //
@@ -122,7 +124,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	}
 
 	// Create a OpenTelemetry metrics configuration
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, project, instance, config.AppProfile, metricsProvider)
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -266,6 +268,25 @@ type Table struct {
 	authorizedView string
 }
 
+// newFeatureFlags creates the feature flags `bigtable-features` header
+// to be sent on each request. This includes all features supported and
+// and enabled on the client
+func (c *Client) newFeatureFlags() metadata.MD {
+	ff := btpb.FeatureFlags{
+		ReverseScans:             true,
+		LastScannedRowResponses:  true,
+		ClientSideMetricsEnabled: c.metricsTracerFactory.enabled,
+	}
+
+	val := ""
+	b, err := proto.Marshal(&ff)
+	if err == nil {
+		val = base64.URLEncoding.EncodeToString(b)
+	}
+
+	return metadata.Pairs(featureFlagsHeaderKey, val)
+}
+
 // Open opens a table.
 func (c *Client) Open(table string) *Table {
 	return &Table{
@@ -274,7 +295,7 @@ func (c *Client) Open(table string) *Table {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-		), btopt.WithFeatureFlags()),
+		), c.newFeatureFlags()),
 	}
 }
 
@@ -286,7 +307,7 @@ func (c *Client) OpenTable(table string) TableAPI {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-		), btopt.WithFeatureFlags()),
+		), c.newFeatureFlags()),
 	}}
 }
 
@@ -298,7 +319,7 @@ func (c *Client) OpenAuthorizedView(table, authorizedView string) TableAPI {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullAuthorizedViewName(table, authorizedView),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-		), btopt.WithFeatureFlags()),
+		), c.newFeatureFlags()),
 		authorizedView: authorizedView,
 	}}
 }
@@ -395,8 +416,10 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 		// Ignore error since header is only being used to record builtin metrics
 		// Failure to record metrics should not fail the operation
 		*headerMD, _ = stream.Header()
+		res := new(btpb.ReadRowsResponse)
 		for {
-			res, err := stream.Recv()
+			proto.Reset(res)
+			err := stream.RecvMsg(res)
 			if err == io.EOF {
 				*trailerMD = stream.Trailer()
 				break
@@ -437,7 +460,8 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 					// Cancel and drain stream.
 					cancel()
 					for {
-						if _, err := stream.Recv(); err != nil {
+						proto.Reset(res)
+						if err := stream.RecvMsg(res); err != nil {
 							*trailerMD = stream.Trailer()
 							// The stream has ended. We don't return an error
 							// because the caller has intentionally interrupted the scan.
@@ -1531,28 +1555,25 @@ func (t *Table) newBuiltinMetricsTracer(ctx context.Context, isStreaming bool) *
 }
 
 // recordOperationCompletion records as many operation specific metrics as it can
+// Ignores error seen while creating metric attributes since metric can still
+// be recorded with rest of the attributes
 func recordOperationCompletion(mt *builtinMetricsTracer) {
 	if !mt.builtInEnabled {
 		return
 	}
 
 	// Calculate elapsed time
-	elapsedTimeMs := float64(time.Since(mt.currOp.startTime).Nanoseconds()) / 1000000
+	elapsedTimeMs := convertToMs(time.Since(mt.currOp.startTime))
 
-	// Attributes for operation_latencies
-	// Ignore error seen while creating metric attributes since metric can still
-	// be recorded with rest of the attributes
+	// Record operation_latencies
 	opLatAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationLatencies)
 	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributes(opLatAttrs...))
 
-	// Attributes for retry_count
-	// Ignore error seen while creating metric attributes since metric can still
-	// be recorded with rest of the attributes
+	// Record retry_count
 	retryCntAttrs, _ := mt.toOtelMetricAttrs(metricNameRetryCount)
-
-	// Only record when retry count is greater than 0 so the retry
-	// graph will be less confusing
 	if mt.currOp.attemptCount > 1 {
+		// Only record when retry count is greater than 0 so the retry
+		// graph will be less confusing
 		mt.instrumentRetryCount.Add(mt.ctx, mt.currOp.attemptCount-1, metric.WithAttributes(retryCntAttrs...))
 	}
 }
@@ -1565,62 +1586,68 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 // - then, calls gax.Invoke with 'callWrapper' as an argument
 func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method string,
 	f func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error, opts ...gax.CallOption) error {
-
+	attemptHeaderMD := metadata.New(nil)
+	attempTrailerMD := metadata.New(nil)
 	mt.method = method
-	callWrapper := func(ctx context.Context, callSettings gax.CallSettings) error {
-		// Increment number of attempts
-		mt.currOp.incrementAttemptCount()
 
-		attemptHeaderMD := metadata.New(nil)
-		attempTrailerMD := metadata.New(nil)
-		mt.currOp.currAttempt = attemptTracer{}
+	var callWrapper func(context.Context, gax.CallSettings) error
+	if !mt.builtInEnabled {
+		callWrapper = func(ctx context.Context, callSettings gax.CallSettings) error {
+			// f makes calls to CBT service
+			return f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
+		}
+	} else {
+		callWrapper = func(ctx context.Context, callSettings gax.CallSettings) error {
+			// Increment number of attempts
+			mt.currOp.incrementAttemptCount()
 
-		// record start time
-		mt.currOp.currAttempt.setStartTime(time.Now())
+			mt.currOp.currAttempt = attemptTracer{}
 
-		// f makes calls to CBT service
-		err := f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
+			// record start time
+			mt.currOp.currAttempt.setStartTime(time.Now())
 
-		// Set attempt status
-		statusCode, _ := convertToGrpcStatusErr(err)
-		mt.currOp.currAttempt.setStatus(statusCode.String())
+			// f makes calls to CBT service
+			err := f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
 
-		// Get location attributes from metadata and set it in tracer
-		// Ignore get location error since the metric can still be recorded with rest of the attributes
-		clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
-		mt.currOp.currAttempt.setClusterID(clusterID)
-		mt.currOp.currAttempt.setZoneID(zoneID)
+			// Set attempt status
+			statusCode, _ := convertToGrpcStatusErr(err)
+			mt.currOp.currAttempt.setStatus(statusCode.String())
 
-		// Set server latency in tracer
-		serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
-		mt.currOp.currAttempt.setServerLatencyErr(serverLatencyErr)
-		mt.currOp.currAttempt.setServerLatency(serverLatency)
+			// Get location attributes from metadata and set it in tracer
+			// Ignore get location error since the metric can still be recorded with rest of the attributes
+			clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
+			mt.currOp.currAttempt.setClusterID(clusterID)
+			mt.currOp.currAttempt.setZoneID(zoneID)
 
-		// Record attempt specific metrics
-		recordAttemptCompletion(mt)
-		return err
+			// Set server latency in tracer
+			serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
+			mt.currOp.currAttempt.setServerLatencyErr(serverLatencyErr)
+			mt.currOp.currAttempt.setServerLatency(serverLatency)
+
+			// Record attempt specific metrics
+			recordAttemptCompletion(mt)
+			return err
+		}
 	}
 	return gax.Invoke(ctx, callWrapper, opts...)
 }
 
 // recordAttemptCompletion records as many attempt specific metrics as it can
+// Ignore errors seen while creating metric attributes since metric can still
+// be recorded with rest of the attributes
 func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	if !mt.builtInEnabled {
 		return
 	}
 
 	// Calculate elapsed time
-	elapsedTime := float64(time.Since(mt.currOp.currAttempt.startTime).Nanoseconds()) / 1000000
+	elapsedTime := convertToMs(time.Since(mt.currOp.currAttempt.startTime))
 
-	// Attributes for attempt_latencies
-	// Ignore error seen while creating metric attributes since metric can still
-	// be recorded with rest of the attributes
+	// Record attempt_latencies
 	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
 	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributes(attemptLatAttrs...))
 
-	// Attributes for server_latencies
-	// Ignore error seen while creating metric attributes since metric can still
-	// be recorded with rest of the attributes
+	// Record server_latencies
 	serverLatAttrs, _ := mt.toOtelMetricAttrs(metricNameServerLatencies)
 	if mt.currOp.currAttempt.serverLatencyErr == nil {
 		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributes(serverLatAttrs...))

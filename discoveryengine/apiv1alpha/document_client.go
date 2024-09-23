@@ -47,17 +47,18 @@ var newDocumentClientHook clientHook
 
 // DocumentCallOptions contains the retry settings for each method of DocumentClient.
 type DocumentCallOptions struct {
-	GetDocument          []gax.CallOption
-	ListDocuments        []gax.CallOption
-	CreateDocument       []gax.CallOption
-	UpdateDocument       []gax.CallOption
-	DeleteDocument       []gax.CallOption
-	ImportDocuments      []gax.CallOption
-	PurgeDocuments       []gax.CallOption
-	GetProcessedDocument []gax.CallOption
-	CancelOperation      []gax.CallOption
-	GetOperation         []gax.CallOption
-	ListOperations       []gax.CallOption
+	GetDocument               []gax.CallOption
+	ListDocuments             []gax.CallOption
+	CreateDocument            []gax.CallOption
+	UpdateDocument            []gax.CallOption
+	DeleteDocument            []gax.CallOption
+	ImportDocuments           []gax.CallOption
+	PurgeDocuments            []gax.CallOption
+	GetProcessedDocument      []gax.CallOption
+	BatchGetDocumentsMetadata []gax.CallOption
+	CancelOperation           []gax.CallOption
+	GetOperation              []gax.CallOption
+	ListOperations            []gax.CallOption
 }
 
 func defaultDocumentGRPCClientOptions() []option.ClientOption {
@@ -162,6 +163,18 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 			}),
 		},
 		GetProcessedDocument: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchGetDocumentsMetadata: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -302,6 +315,17 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		BatchGetDocumentsMetadata: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		CancelOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -353,6 +377,7 @@ type internalDocumentClient interface {
 	PurgeDocuments(context.Context, *discoveryenginepb.PurgeDocumentsRequest, ...gax.CallOption) (*PurgeDocumentsOperation, error)
 	PurgeDocumentsOperation(name string) *PurgeDocumentsOperation
 	GetProcessedDocument(context.Context, *discoveryenginepb.GetProcessedDocumentRequest, ...gax.CallOption) (*discoveryenginepb.ProcessedDocument, error)
+	BatchGetDocumentsMetadata(context.Context, *discoveryenginepb.BatchGetDocumentsMetadataRequest, ...gax.CallOption) (*discoveryenginepb.BatchGetDocumentsMetadataResponse, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
@@ -473,6 +498,13 @@ func (c *DocumentClient) PurgeDocumentsOperation(name string) *PurgeDocumentsOpe
 // Document.
 func (c *DocumentClient) GetProcessedDocument(ctx context.Context, req *discoveryenginepb.GetProcessedDocumentRequest, opts ...gax.CallOption) (*discoveryenginepb.ProcessedDocument, error) {
 	return c.internalClient.GetProcessedDocument(ctx, req, opts...)
+}
+
+// BatchGetDocumentsMetadata gets index freshness metadata for
+// Documents. Supported for
+// website search only.
+func (c *DocumentClient) BatchGetDocumentsMetadata(ctx context.Context, req *discoveryenginepb.BatchGetDocumentsMetadataRequest, opts ...gax.CallOption) (*discoveryenginepb.BatchGetDocumentsMetadataResponse, error) {
+	return c.internalClient.BatchGetDocumentsMetadata(ctx, req, opts...)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -847,6 +879,24 @@ func (c *documentGRPCClient) GetProcessedDocument(ctx context.Context, req *disc
 	return resp, nil
 }
 
+func (c *documentGRPCClient) BatchGetDocumentsMetadata(ctx context.Context, req *discoveryenginepb.BatchGetDocumentsMetadataRequest, opts ...gax.CallOption) (*discoveryenginepb.BatchGetDocumentsMetadataResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchGetDocumentsMetadata[0:len((*c.CallOptions).BatchGetDocumentsMetadata):len((*c.CallOptions).BatchGetDocumentsMetadata)], opts...)
+	var resp *discoveryenginepb.BatchGetDocumentsMetadataResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.documentClient.BatchGetDocumentsMetadata(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *documentGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1163,11 +1213,11 @@ func (c *documentRESTClient) UpdateDocument(ctx context.Context, req *discoverye
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1450,6 +1500,73 @@ func (c *documentRESTClient) GetProcessedDocument(ctx context.Context, req *disc
 	opts = append((*c.CallOptions).GetProcessedDocument[0:len((*c.CallOptions).GetProcessedDocument):len((*c.CallOptions).GetProcessedDocument)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.ProcessedDocument{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// BatchGetDocumentsMetadata gets index freshness metadata for
+// Documents. Supported for
+// website search only.
+func (c *documentRESTClient) BatchGetDocumentsMetadata(ctx context.Context, req *discoveryenginepb.BatchGetDocumentsMetadataRequest, opts ...gax.CallOption) (*discoveryenginepb.BatchGetDocumentsMetadataResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/batchGetDocumentsMetadata", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetMatcher().GetUrisMatcher().GetUris(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("matcher.urisMatcher.uris", fmt.Sprintf("%v", item))
+		}
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).BatchGetDocumentsMetadata[0:len((*c.CallOptions).BatchGetDocumentsMetadata):len((*c.CallOptions).BatchGetDocumentsMetadata)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.BatchGetDocumentsMetadataResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

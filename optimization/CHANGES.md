@@ -1,6 +1,27 @@
 # Changes
 
 
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.7.0...optimization/v1.7.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **optimization:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.10...optimization/v1.7.0) (2024-08-20)
+
+
+### Features
+
+* **optimization:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.6.10](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.9...optimization/v1.6.10) (2024-08-08)
+
+
+### Bug Fixes
+
+* **optimization:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.6.9](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.8...optimization/v1.6.9) (2024-07-24)
 
 

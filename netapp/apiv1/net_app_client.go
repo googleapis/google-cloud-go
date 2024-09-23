@@ -53,6 +53,7 @@ type CallOptions struct {
 	GetStoragePool              []gax.CallOption
 	UpdateStoragePool           []gax.CallOption
 	DeleteStoragePool           []gax.CallOption
+	SwitchActiveReplicaZone     []gax.CallOption
 	ListVolumes                 []gax.CallOption
 	GetVolume                   []gax.CallOption
 	CreateVolume                []gax.CallOption
@@ -157,6 +158,7 @@ func defaultCallOptions() *CallOptions {
 		DeleteStoragePool: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		SwitchActiveReplicaZone: []gax.CallOption{},
 		ListVolumes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -481,6 +483,7 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteStoragePool: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		SwitchActiveReplicaZone: []gax.CallOption{},
 		ListVolumes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -769,6 +772,8 @@ type internalClient interface {
 	UpdateStoragePoolOperation(name string) *UpdateStoragePoolOperation
 	DeleteStoragePool(context.Context, *netapppb.DeleteStoragePoolRequest, ...gax.CallOption) (*DeleteStoragePoolOperation, error)
 	DeleteStoragePoolOperation(name string) *DeleteStoragePoolOperation
+	SwitchActiveReplicaZone(context.Context, *netapppb.SwitchActiveReplicaZoneRequest, ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error)
+	SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation
 	ListVolumes(context.Context, *netapppb.ListVolumesRequest, ...gax.CallOption) *VolumeIterator
 	GetVolume(context.Context, *netapppb.GetVolumeRequest, ...gax.CallOption) (*netapppb.Volume, error)
 	CreateVolume(context.Context, *netapppb.CreateVolumeRequest, ...gax.CallOption) (*CreateVolumeOperation, error)
@@ -933,6 +938,18 @@ func (c *Client) DeleteStoragePool(ctx context.Context, req *netapppb.DeleteStor
 // The name must be that of a previously created DeleteStoragePoolOperation, possibly from a different process.
 func (c *Client) DeleteStoragePoolOperation(name string) *DeleteStoragePoolOperation {
 	return c.internalClient.DeleteStoragePoolOperation(name)
+}
+
+// SwitchActiveReplicaZone this operation will switch the active/replica zone for a regional
+// storagePool.
+func (c *Client) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.SwitchActiveReplicaZoneRequest, opts ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error) {
+	return c.internalClient.SwitchActiveReplicaZone(ctx, req, opts...)
+}
+
+// SwitchActiveReplicaZoneOperation returns a new SwitchActiveReplicaZoneOperation from a given name.
+// The name must be that of a previously created SwitchActiveReplicaZoneOperation, possibly from a different process.
+func (c *Client) SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation {
+	return c.internalClient.SwitchActiveReplicaZoneOperation(name)
 }
 
 // ListVolumes lists Volumes in a given project.
@@ -1681,6 +1698,26 @@ func (c *gRPCClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 		return nil, err
 	}
 	return &DeleteStoragePoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.SwitchActiveReplicaZoneRequest, opts ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SwitchActiveReplicaZone[0:len((*c.CallOptions).SwitchActiveReplicaZone):len((*c.CallOptions).SwitchActiveReplicaZone)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.SwitchActiveReplicaZone(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SwitchActiveReplicaZoneOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -3196,11 +3233,11 @@ func (c *restClient) UpdateStoragePool(ctx context.Context, req *netapppb.Update
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3315,6 +3352,77 @@ func (c *restClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteStoragePoolOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// SwitchActiveReplicaZone this operation will switch the active/replica zone for a regional
+// storagePool.
+func (c *restClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.SwitchActiveReplicaZoneRequest, opts ...gax.CallOption) (*SwitchActiveReplicaZoneOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:switch", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &SwitchActiveReplicaZoneOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -3565,11 +3673,11 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *netapppb.UpdateVolum
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4073,11 +4181,11 @@ func (c *restClient) UpdateSnapshot(ctx context.Context, req *netapppb.UpdateSna
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4379,11 +4487,11 @@ func (c *restClient) UpdateActiveDirectory(ctx context.Context, req *netapppb.Up
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4748,11 +4856,11 @@ func (c *restClient) UpdateKmsConfig(ctx context.Context, req *netapppb.UpdateKm
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5318,11 +5426,11 @@ func (c *restClient) UpdateReplication(ctx context.Context, req *netapppb.Update
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5834,11 +5942,11 @@ func (c *restClient) UpdateBackupVault(ctx context.Context, req *netapppb.Update
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -6270,11 +6378,11 @@ func (c *restClient) UpdateBackup(ctx context.Context, req *netapppb.UpdateBacku
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -6575,11 +6683,11 @@ func (c *restClient) UpdateBackupPolicy(ctx context.Context, req *netapppb.Updat
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -7502,6 +7610,24 @@ func (c *gRPCClient) StopReplicationOperation(name string) *StopReplicationOpera
 func (c *restClient) StopReplicationOperation(name string) *StopReplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopReplicationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// SwitchActiveReplicaZoneOperation returns a new SwitchActiveReplicaZoneOperation from a given name.
+// The name must be that of a previously created SwitchActiveReplicaZoneOperation, possibly from a different process.
+func (c *gRPCClient) SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation {
+	return &SwitchActiveReplicaZoneOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// SwitchActiveReplicaZoneOperation returns a new SwitchActiveReplicaZoneOperation from a given name.
+// The name must be that of a previously created SwitchActiveReplicaZoneOperation, possibly from a different process.
+func (c *restClient) SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &SwitchActiveReplicaZoneOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

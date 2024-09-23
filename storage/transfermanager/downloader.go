@@ -35,9 +35,9 @@ import (
 
 // maxChecksumZeroArraySize is the maximum amount of memory to allocate for
 // updating the checksum. A larger size will occupy more memory but will require
-// fewer updates when computing the crc32c of a full object.
-// TODO: test the performance of smaller values for this.
-const maxChecksumZeroArraySize = 4 * 1024 * 1024
+// fewer updates when computing the crc32c of a full object (but is not necessarily
+// more performant). 100kib is around the smallest size with the highest performance.
+const maxChecksumZeroArraySize = 100 * 1024
 
 // Downloader manages a set of parallelized downloads.
 type Downloader struct {

@@ -54,6 +54,7 @@ type EnvironmentsCallOptions struct {
 	StopAirflowCommand           []gax.CallOption
 	PollAirflowCommand           []gax.CallOption
 	ListWorkloads                []gax.CallOption
+	CheckUpgrade                 []gax.CallOption
 	CreateUserWorkloadsSecret    []gax.CallOption
 	GetUserWorkloadsSecret       []gax.CallOption
 	ListUserWorkloadsSecrets     []gax.CallOption
@@ -99,6 +100,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 		StopAirflowCommand:           []gax.CallOption{},
 		PollAirflowCommand:           []gax.CallOption{},
 		ListWorkloads:                []gax.CallOption{},
+		CheckUpgrade:                 []gax.CallOption{},
 		CreateUserWorkloadsSecret:    []gax.CallOption{},
 		GetUserWorkloadsSecret:       []gax.CallOption{},
 		ListUserWorkloadsSecrets:     []gax.CallOption{},
@@ -130,6 +132,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 		StopAirflowCommand:           []gax.CallOption{},
 		PollAirflowCommand:           []gax.CallOption{},
 		ListWorkloads:                []gax.CallOption{},
+		CheckUpgrade:                 []gax.CallOption{},
 		CreateUserWorkloadsSecret:    []gax.CallOption{},
 		GetUserWorkloadsSecret:       []gax.CallOption{},
 		ListUserWorkloadsSecrets:     []gax.CallOption{},
@@ -167,6 +170,8 @@ type internalEnvironmentsClient interface {
 	StopAirflowCommand(context.Context, *servicepb.StopAirflowCommandRequest, ...gax.CallOption) (*servicepb.StopAirflowCommandResponse, error)
 	PollAirflowCommand(context.Context, *servicepb.PollAirflowCommandRequest, ...gax.CallOption) (*servicepb.PollAirflowCommandResponse, error)
 	ListWorkloads(context.Context, *servicepb.ListWorkloadsRequest, ...gax.CallOption) *ListWorkloadsResponse_ComposerWorkloadIterator
+	CheckUpgrade(context.Context, *servicepb.CheckUpgradeRequest, ...gax.CallOption) (*CheckUpgradeOperation, error)
+	CheckUpgradeOperation(name string) *CheckUpgradeOperation
 	CreateUserWorkloadsSecret(context.Context, *servicepb.CreateUserWorkloadsSecretRequest, ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error)
 	GetUserWorkloadsSecret(context.Context, *servicepb.GetUserWorkloadsSecretRequest, ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error)
 	ListUserWorkloadsSecrets(context.Context, *servicepb.ListUserWorkloadsSecretsRequest, ...gax.CallOption) *UserWorkloadsSecretIterator
@@ -294,6 +299,19 @@ func (c *EnvironmentsClient) PollAirflowCommand(ctx context.Context, req *servic
 // composer-3..-airflow-..* and newer.
 func (c *EnvironmentsClient) ListWorkloads(ctx context.Context, req *servicepb.ListWorkloadsRequest, opts ...gax.CallOption) *ListWorkloadsResponse_ComposerWorkloadIterator {
 	return c.internalClient.ListWorkloads(ctx, req, opts...)
+}
+
+// CheckUpgrade check if an upgrade operation on the environment will succeed.
+//
+// In case of problems detailed info can be found in the returned Operation.
+func (c *EnvironmentsClient) CheckUpgrade(ctx context.Context, req *servicepb.CheckUpgradeRequest, opts ...gax.CallOption) (*CheckUpgradeOperation, error) {
+	return c.internalClient.CheckUpgrade(ctx, req, opts...)
+}
+
+// CheckUpgradeOperation returns a new CheckUpgradeOperation from a given name.
+// The name must be that of a previously created CheckUpgradeOperation, possibly from a different process.
+func (c *EnvironmentsClient) CheckUpgradeOperation(name string) *CheckUpgradeOperation {
+	return c.internalClient.CheckUpgradeOperation(name)
 }
 
 // CreateUserWorkloadsSecret creates a user workloads Secret.
@@ -839,6 +857,26 @@ func (c *environmentsGRPCClient) ListWorkloads(ctx context.Context, req *service
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *environmentsGRPCClient) CheckUpgrade(ctx context.Context, req *servicepb.CheckUpgradeRequest, opts ...gax.CallOption) (*CheckUpgradeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CheckUpgrade[0:len((*c.CallOptions).CheckUpgrade):len((*c.CallOptions).CheckUpgrade)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.CheckUpgrade(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CheckUpgradeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *environmentsGRPCClient) CreateUserWorkloadsSecret(ctx context.Context, req *servicepb.CreateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
@@ -1463,11 +1501,11 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *ser
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		field, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", string(field[1:len(field)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1879,6 +1917,78 @@ func (c *environmentsRESTClient) ListWorkloads(ctx context.Context, req *service
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CheckUpgrade check if an upgrade operation on the environment will succeed.
+//
+// In case of problems detailed info can be found in the returned Operation.
+func (c *environmentsRESTClient) CheckUpgrade(ctx context.Context, req *servicepb.CheckUpgradeRequest, opts ...gax.CallOption) (*CheckUpgradeOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:checkUpgrade", req.GetEnvironment())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CheckUpgradeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // CreateUserWorkloadsSecret creates a user workloads Secret.
@@ -3030,6 +3140,24 @@ func (c *environmentsRESTClient) ListOperations(ctx context.Context, req *longru
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CheckUpgradeOperation returns a new CheckUpgradeOperation from a given name.
+// The name must be that of a previously created CheckUpgradeOperation, possibly from a different process.
+func (c *environmentsGRPCClient) CheckUpgradeOperation(name string) *CheckUpgradeOperation {
+	return &CheckUpgradeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CheckUpgradeOperation returns a new CheckUpgradeOperation from a given name.
+// The name must be that of a previously created CheckUpgradeOperation, possibly from a different process.
+func (c *environmentsRESTClient) CheckUpgradeOperation(name string) *CheckUpgradeOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CheckUpgradeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.

@@ -1,6 +1,45 @@
 # Changes
 
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.19.1...kms/v1.20.0) (2024-09-19)
+
+
+### Features
+
+* **kms:** Adding a state field for AutokeyConfig ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+
+
+### Bug Fixes
+
+* **kms:** Pagination feature is introduced for method `ListKeyHandles` in service `Autokey` ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+
+
+### Documentation
+
+* **kms:** A comment for field `destroy_scheduled_duration` in message `.google.cloud.kms.v1.CryptoKey` is updated for the default duration ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+* **kms:** Field service_resolvers in message .google.cloud.kms.v1.EkmConnection is Explicitly is marked as to have field behavior of Optional ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.19.0...kms/v1.19.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **kms:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.18.5...kms/v1.19.0) (2024-08-20)
+
+
+### Features
+
+* **kms:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.18.5](https://github.com/googleapis/google-cloud-go/compare/kms/v1.18.4...kms/v1.18.5) (2024-08-08)
+
+
+### Bug Fixes
+
+* **kms:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.18.4](https://github.com/googleapis/google-cloud-go/compare/kms/v1.18.3...kms/v1.18.4) (2024-07-24)
 
 

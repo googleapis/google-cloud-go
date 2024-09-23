@@ -1,5 +1,33 @@
 # Changes
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.8.0...texttospeech/v1.8.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **texttospeech:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.7.12...texttospeech/v1.8.0) (2024-08-20)
+
+
+### Features
+
+* **texttospeech:** A new method `StreamingSynthesize` is added to service `TextToSpeech` ([#10687](https://github.com/googleapis/google-cloud-go/issues/10687)) ([b32cb37](https://github.com/googleapis/google-cloud-go/commit/b32cb378ab03f34c0670a8a204bd0ef3f71d48d4))
+* **texttospeech:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+
+### Documentation
+
+* **texttospeech:** A comment for field `name` in message `.google.cloud.texttospeech.v1.VoiceSelectionParams` is changed ([b32cb37](https://github.com/googleapis/google-cloud-go/commit/b32cb378ab03f34c0670a8a204bd0ef3f71d48d4))
+* **texttospeech:** Update Long Audio capabilities to include SSML ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.7.12](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.7.11...texttospeech/v1.7.12) (2024-08-08)
+
+
+### Bug Fixes
+
+* **texttospeech:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.7.11](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.7.10...texttospeech/v1.7.11) (2024-07-24)
 
 

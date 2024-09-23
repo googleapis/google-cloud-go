@@ -2,6 +2,27 @@
 
 
 
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.0...secretmanager/v1.14.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **secretmanager:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.13.6...secretmanager/v1.14.0) (2024-08-20)
+
+
+### Features
+
+* **secretmanager:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.13.6](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.13.5...secretmanager/v1.13.6) (2024-08-08)
+
+
+### Bug Fixes
+
+* **secretmanager:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.13.5](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.13.4...secretmanager/v1.13.5) (2024-07-24)
 
 

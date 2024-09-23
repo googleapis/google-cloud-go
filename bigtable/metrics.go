@@ -20,7 +20,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -60,12 +59,18 @@ const (
 	metricNameAttemptLatencies   = "attempt_latencies"
 	metricNameServerLatencies    = "server_latencies"
 	metricNameRetryCount         = "retry_count"
+
+	// Metric units
+	metricUnitMS    = "ms"
+	metricUnitCount = "1"
 )
 
-// These are effectively const, but for testing purposes they are mutable
+// These are effectively constant, but for testing purposes they are mutable
 var (
 	// duration between two metric exports
 	defaultSamplePeriod = 5 * time.Minute
+
+	metricsErrorPrefix = "bigtable-metrics: "
 
 	clientName = fmt.Sprintf("go-bigtable/%v", internal.Version)
 
@@ -116,7 +121,12 @@ var (
 		return "go-" + uuid.NewString() + "@" + hostname, nil
 	}
 
-	exporterOpts = []option.ClientOption{}
+	// GCM exporter should use the same options as Bigtable client
+	// createExporterOptions takes Bigtable client options and returns exporter options
+	// Overwritten in tests
+	createExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
+		return btOpts
+	}
 )
 
 type metricInfo struct {
@@ -140,10 +150,10 @@ type builtinMetricsTracerFactory struct {
 	retryCount         metric.Int64Counter
 }
 
-func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider) (*builtinMetricsTracerFactory, error) {
+func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
-		log.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric atteribute", err, metricLabelKeyClientUID)
+		return nil, err
 	}
 
 	tracerFactory := &builtinMetricsTracerFactory{
@@ -161,7 +171,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	var meterProvider *sdkmetric.MeterProvider
 	if metricsProvider == nil {
 		// Create default meter provider
-		mpOptions, err := builtInMeterProviderOptions(project)
+		mpOptions, err := builtInMeterProviderOptions(project, opts...)
 		if err != nil {
 			return tracerFactory, err
 		}
@@ -186,8 +196,9 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	return tracerFactory, err
 }
 
-func builtInMeterProviderOptions(project string) ([]sdkmetric.Option, error) {
-	defaultExporter, err := newMonitoringExporter(context.Background(), project, exporterOpts...)
+func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
+	allOpts := createExporterOptions(opts...)
+	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +218,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 	tf.operationLatencies, err = meter.Float64Histogram(
 		metricNameOperationLatencies,
 		metric.WithDescription("Total time until final operation success or failure, including retries and backoff."),
-		metric.WithUnit("ms"),
+		metric.WithUnit(metricUnitMS),
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
@@ -218,7 +229,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 	tf.attemptLatencies, err = meter.Float64Histogram(
 		metricNameAttemptLatencies,
 		metric.WithDescription("Client observed latency per RPC attempt."),
-		metric.WithUnit("ms"),
+		metric.WithUnit(metricUnitMS),
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
@@ -229,7 +240,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 	tf.serverLatencies, err = meter.Float64Histogram(
 		metricNameServerLatencies,
 		metric.WithDescription("The latency measured from the moment that the RPC entered the Google data center until the RPC was completed."),
-		metric.WithUnit("ms"),
+		metric.WithUnit(metricUnitMS),
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
@@ -240,6 +251,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 	tf.retryCount, err = meter.Int64Counter(
 		metricNameRetryCount,
 		metric.WithDescription("The number of additional RPCs sent after the initial attempt."),
+		metric.WithUnit(metricUnitCount),
 	)
 	return err
 }
@@ -268,6 +280,8 @@ type builtinMetricsTracer struct {
 }
 
 // opTracer is used to record metrics for the entire operation, including retries.
+// Operation is a logical unit that represents a single method invocation on client.
+// The method might require multiple attempts/rpcs and backoff logic to complete
 type opTracer struct {
 	attemptCount int64
 
@@ -281,7 +295,6 @@ type opTracer struct {
 
 func (o *opTracer) setStartTime(t time.Time) {
 	o.startTime = t
-
 }
 
 func (o *opTracer) setStatus(status string) {
@@ -293,6 +306,7 @@ func (o *opTracer) incrementAttemptCount() {
 }
 
 // attemptTracer is used to record metrics for each individual attempt of the operation.
+// Attempt corresponds to an attempt of an RPC.
 type attemptTracer struct {
 	startTime time.Time
 	clusterID string

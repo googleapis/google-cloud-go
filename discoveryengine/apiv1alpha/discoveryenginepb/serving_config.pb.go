@@ -107,28 +107,36 @@ type ServingConfig struct {
 	//
 	// The ranking expression is a single function or multiple functions that are
 	// joined by "+".
+	//
 	//   - ranking_expression = function, { " + ", function };
 	//
 	// Supported functions:
+	//
 	//   - double * relevance_score
 	//   - double * dotProduct(embedding_field_path)
 	//
 	// Function variables:
 	//
-	//	 relevance_score: pre-defined keywords, used for measure relevance between
-	//	 query and document.
-	//	 embedding_field_path: the document embedding field
-	//	 used with query embedding vector.
-	//	 dotProduct: embedding function between embedding_field_path and query
-	//	 embedding vector.
+	//   - `relevance_score`: pre-defined keywords, used for measure relevance
+	//     between query and document.
 	//
-	//	Example ranking expression:
-	//	  If document has an embedding field doc_embedding, the ranking expression
-	//	  could be 0.5 * relevance_score + 0.3 * dotProduct(doc_embedding).
+	//   - `embedding_field_path`: the document embedding field
+	//     used with query embedding vector.
+	//
+	//   - `dotProduct`: embedding function between embedding_field_path and query
+	//     embedding vector.
+	//
+	//     Example ranking expression:
+	//
+	//     If document has an embedding field doc_embedding, the ranking expression
+	//     could be `0.5 * relevance_score + 0.3 * dotProduct(doc_embedding)`.
 	RankingExpression string `protobuf:"bytes,21,opt,name=ranking_expression,json=rankingExpression,proto3" json:"ranking_expression,omitempty"`
 	// Guided search configs.
 	GuidedSearchSpec *GuidedSearchSpec `protobuf:"bytes,22,opt,name=guided_search_spec,json=guidedSearchSpec,proto3" json:"guided_search_spec,omitempty"`
 	// Custom fine tuning configs.
+	// If
+	// [SearchRequest.custom_fine_tuning_spec][google.cloud.discoveryengine.v1alpha.SearchRequest.custom_fine_tuning_spec]
+	// is set, it has higher priority than the configs set here.
 	CustomFineTuningSpec *CustomFineTuningSpec `protobuf:"bytes,24,opt,name=custom_fine_tuning_spec,json=customFineTuningSpec,proto3" json:"custom_fine_tuning_spec,omitempty"`
 	// Output only. ServingConfig created timestamp.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`

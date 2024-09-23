@@ -1191,7 +1191,7 @@ func (x *SyncFeatureViewRequest) GetFeatureView() string {
 	return ""
 }
 
-// Respose message for
+// Response message for
 // [FeatureOnlineStoreAdminService.SyncFeatureView][google.cloud.aiplatform.v1.FeatureOnlineStoreAdminService.SyncFeatureView].
 type SyncFeatureViewResponse struct {
 	state         protoimpl.MessageState

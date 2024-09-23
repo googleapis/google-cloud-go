@@ -1,5 +1,33 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.13.1...orgpolicy/v1.14.0) (2024-09-19)
+
+
+### Features
+
+* **orgpolicy:** Support adding constraints to new method types REMOVE_GRANTS and GOVERN_TAGS ([0b3c268](https://github.com/googleapis/google-cloud-go/commit/0b3c268c564ffe0d87b0efc716f08afaf064b4cc))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.13.0...orgpolicy/v1.13.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **orgpolicy:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.12.8...orgpolicy/v1.13.0) (2024-08-20)
+
+
+### Features
+
+* **orgpolicy:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+
+## [1.12.8](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.12.7...orgpolicy/v1.12.8) (2024-08-08)
+
+
+### Bug Fixes
+
+* **orgpolicy:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
 ## [1.12.7](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.12.6...orgpolicy/v1.12.7) (2024-07-24)
 
 

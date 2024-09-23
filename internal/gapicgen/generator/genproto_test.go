@@ -25,9 +25,8 @@ func TestFilterPackages(t *testing.T) {
 		"google.golang.org/genproto/do/not/generate/me": {"foo.proto"},
 	}
 	want := map[string][]string{
-		"google.golang.org/genproto/googleapis/api/distribution":  {"foo.proto"},
-		"google.golang.org/genproto/googleapis/type/date_range":   {"foo.proto"},
-		"google.golang.org/genproto/googleapis/bigtable/admin/v2": {"foo.proto"},
+		"google.golang.org/genproto/googleapis/api/distribution": {"foo.proto"},
+		"google.golang.org/genproto/googleapis/type/date_range":  {"foo.proto"},
 	}
 	out, err := filterPackages(in)
 	if err != nil {

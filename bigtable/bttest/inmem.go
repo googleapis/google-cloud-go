@@ -333,10 +333,18 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 				return true
 			})
 		} else if modify := mod.GetUpdate(); modify != nil {
-			if _, ok := tbl.families[mod.Id]; !ok {
+			newcf := newColumnFamily(req.Name+"/columnFamilies/"+mod.Id, 0, modify)
+			cf, ok := tbl.families[mod.Id]
+			if !ok {
 				return nil, fmt.Errorf("no such family %q", mod.Id)
 			}
-			newcf := newColumnFamily(req.Name+"/columnFamilies/"+mod.Id, 0, modify)
+			if cf.valueType != nil {
+				_, isOldAggregateType := cf.valueType.Kind.(*btapb.Type_AggregateType)
+				if isOldAggregateType && cf.valueType != newcf.valueType {
+					return nil, status.Errorf(codes.InvalidArgument, "Immutable fields 'value_type.aggregate_type' cannot be updated")
+				}
+			}
+
 			// assume that we ALWAYS want to replace by the new setting
 			// we may need partial update through
 			tbl.families[mod.Id] = newcf
@@ -1400,6 +1408,13 @@ func (s *server) SampleRowKeys(req *btpb.SampleRowKeysRequest, stream btpb.Bigta
 		i++
 		return true
 	})
+	if err == nil {
+		// The last response should be an empty string, indicating the end of the table
+		stream.Send(&btpb.SampleRowKeysResponse{
+			RowKey:      []byte{},
+			OffsetBytes: offset,
+		})
+	}
 	return err
 }
 

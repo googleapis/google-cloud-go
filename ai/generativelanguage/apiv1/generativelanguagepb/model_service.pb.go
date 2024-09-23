@@ -101,8 +101,7 @@ type ListModelsRequest struct {
 
 	// The maximum number of `Models` to return (per page).
 	//
-	// The service may return fewer models.
-	// If unspecified, at most 50 models will be returned per page.
+	// If unspecified, 50 models will be returned per page.
 	// This method returns at most 1000 models per page, even if you pass a larger
 	// page_size.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -402,9 +401,15 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ModelServiceClient interface {
-	// Gets information about a specific Model.
+	// Gets information about a specific `Model` such as its version number, token
+	// limits,
+	// [parameters](https://ai.google.dev/gemini-api/docs/models/generative-models#model-parameters)
+	// and other metadata. Refer to the [Gemini models
+	// guide](https://ai.google.dev/gemini-api/docs/models/gemini) for detailed
+	// model information.
 	GetModel(ctx context.Context, in *GetModelRequest, opts ...grpc.CallOption) (*Model, error)
-	// Lists models available through the API.
+	// Lists the [`Model`s](https://ai.google.dev/gemini-api/docs/models/gemini)
+	// available through the Gemini API.
 	ListModels(ctx context.Context, in *ListModelsRequest, opts ...grpc.CallOption) (*ListModelsResponse, error)
 }
 
@@ -436,9 +441,15 @@ func (c *modelServiceClient) ListModels(ctx context.Context, in *ListModelsReque
 
 // ModelServiceServer is the server API for ModelService service.
 type ModelServiceServer interface {
-	// Gets information about a specific Model.
+	// Gets information about a specific `Model` such as its version number, token
+	// limits,
+	// [parameters](https://ai.google.dev/gemini-api/docs/models/generative-models#model-parameters)
+	// and other metadata. Refer to the [Gemini models
+	// guide](https://ai.google.dev/gemini-api/docs/models/gemini) for detailed
+	// model information.
 	GetModel(context.Context, *GetModelRequest) (*Model, error)
-	// Lists models available through the API.
+	// Lists the [`Model`s](https://ai.google.dev/gemini-api/docs/models/gemini)
+	// available through the Gemini API.
 	ListModels(context.Context, *ListModelsRequest) (*ListModelsResponse, error)
 }
 

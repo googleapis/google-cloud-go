@@ -18,7 +18,7 @@ jobs:
         fetch-depth: 1
     - uses: actions/setup-go@v5
       with:
-        go-version: 1.22.x
+        go-version: 1.23.x
     - run: |
         git clone -b master --single-branch --depth=1 https://github.com/googleapis/googleapis.git 
         go run ./internal/postprocessor validate -googleapis-dir=./googleapis

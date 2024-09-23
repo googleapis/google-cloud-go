@@ -128,7 +128,7 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 	if cfg.GRPCgcpConfig == nil {
 		cfg.GRPCgcpConfig = &grpcgcppb.ApiConfig{}
 	}
-	if cfg.GRPCgcpConfig.Method == nil || len(cfg.GRPCgcpConfig.Method) == 0 {
+	if len(cfg.GRPCgcpConfig.Method) == 0 {
 		cfg.GRPCgcpConfig.Method = []*grpcgcppb.MethodConfig{
 			{
 				Name: []string{"/google.spanner.v1.Spanner/CreateSession"},
@@ -334,18 +334,20 @@ type ClientConfig struct {
 }
 
 type openTelemetryConfig struct {
-	meterProvider           metric.MeterProvider
-	attributeMap            []attribute.KeyValue
-	otMetricRegistration    metric.Registration
-	openSessionCount        metric.Int64ObservableGauge
-	maxAllowedSessionsCount metric.Int64ObservableGauge
-	sessionsCount           metric.Int64ObservableGauge
-	maxInUseSessionsCount   metric.Int64ObservableGauge
-	getSessionTimeoutsCount metric.Int64Counter
-	acquiredSessionsCount   metric.Int64Counter
-	releasedSessionsCount   metric.Int64Counter
-	gfeLatency              metric.Int64Histogram
-	gfeHeaderMissingCount   metric.Int64Counter
+	meterProvider                  metric.MeterProvider
+	attributeMap                   []attribute.KeyValue
+	attributeMapWithMultiplexed    []attribute.KeyValue
+	attributeMapWithoutMultiplexed []attribute.KeyValue
+	otMetricRegistration           metric.Registration
+	openSessionCount               metric.Int64ObservableGauge
+	maxAllowedSessionsCount        metric.Int64ObservableGauge
+	sessionsCount                  metric.Int64ObservableGauge
+	maxInUseSessionsCount          metric.Int64ObservableGauge
+	getSessionTimeoutsCount        metric.Int64Counter
+	acquiredSessionsCount          metric.Int64Counter
+	releasedSessionsCount          metric.Int64Counter
+	gfeLatency                     metric.Int64Histogram
+	gfeHeaderMissingCount          metric.Int64Counter
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
@@ -385,7 +387,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
 		emulatorOpts := []option.ClientOption{
 			option.WithEndpoint(emulatorAddr),
-			option.WithGRPCDialOption(grpc.WithInsecure()),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 			option.WithoutAuthentication(),
 			internaloption.SkipDialSettingsValidation(),
 		}
@@ -874,6 +876,8 @@ type applyOption struct {
 	// will not be recorded in allowed tracking change streams with DDL option
 	// allow_txn_exclusion=true.
 	excludeTxnFromChangeStreams bool
+	// commitOptions is the commit options to use for the commit operation.
+	commitOptions CommitOptions
 }
 
 // An ApplyOption is an optional argument to Apply.
@@ -919,6 +923,13 @@ func ExcludeTxnFromChangeStreams() ApplyOption {
 	}
 }
 
+// ApplyCommitOptions returns an ApplyOption that sets the commit options to use for the commit operation.
+func ApplyCommitOptions(co CommitOptions) ApplyOption {
+	return func(ao *applyOption) {
+		ao.commitOptions = co
+	}
+}
+
 // Apply applies a list of mutations atomically to the database.
 func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption) (commitTimestamp time.Time, err error) {
 	ao := &applyOption{}
@@ -937,10 +948,10 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	if !ao.atLeastOnce {
 		resp, err := c.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
 			return t.BufferWrite(ms)
-		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams})
+		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, CommitOptions: ao.commitOptions})
 		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams}
+	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, commitOptions: ao.commitOptions}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 
