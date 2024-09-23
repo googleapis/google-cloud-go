@@ -1111,7 +1111,8 @@ func TestBucketRetryer(t *testing.T) {
 					}),
 					WithPolicy(RetryAlways),
 					WithMaxAttempts(5),
-					WithErrorFunc(func(err error) bool { return false }))
+					WithErrorFunc(func(err error) bool { return false }),
+					WithMinReadThroughput(1024, time.Second))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1122,6 +1123,10 @@ func TestBucketRetryer(t *testing.T) {
 				policy:      RetryAlways,
 				maxAttempts: expectedAttempts(5),
 				shouldRetry: func(err error) bool { return false },
+				minReadThroughput: &readThroughput{
+					bytes:  1024,
+					period: time.Second,
+				},
 			},
 		},
 		{
@@ -1165,6 +1170,18 @@ func TestBucketRetryer(t *testing.T) {
 				shouldRetry: func(err error) bool { return false },
 			},
 		},
+		{
+			name: "set MinReadThroughput only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(WithMinReadThroughput(1024, time.Second))
+			},
+			want: &retryConfig{
+				minReadThroughput: &readThroughput{
+					bytes:  1024,
+					period: time.Second,
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
@@ -1172,7 +1189,7 @@ func TestBucketRetryer(t *testing.T) {
 			if diff := cmp.Diff(
 				b.retry,
 				tc.want,
-				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
+				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}, readThroughput{}),
 				// ErrorFunc cannot be compared directly, but we check if both are
 				// either nil or non-nil.
 				cmp.Comparer(func(a, b func(err error) bool) bool {
