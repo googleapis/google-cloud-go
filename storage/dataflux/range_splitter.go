@@ -24,7 +24,7 @@ import (
 // rangeSplitter specifies the a list and a map of sorted alphabets.
 type rangeSplitter struct {
 	mu             sync.Mutex
-	sortedAlphabet *[]rune
+	sortedAlphabet []rune
 	alphabetMap    map[rune]int
 }
 
@@ -52,6 +52,15 @@ type generateSplitsOpts struct {
 }
 
 // newRangeSplitter creates a new RangeSplitter with the given alphabets.
+// RangeSplitter determines split points within a given range based on the given
+// alphabets. This process involves translating the start and end range strings
+// into base-10 integers, performing a split within the integer domain, and then
+// converting the splits back into strings. In essence, this operation resembles
+// a base-N to base-10 conversion, followed by a split in base 10, and finally
+// another base-10 to base-N conversion. In this scenario, N represents the size
+// of the alphabet, with the character's position in the alphabet indicating the
+// digit's value. As of now, the range splitter exclusively supports only the
+// provided alphabets.
 func newRangeSplitter(alphabet string) (*rangeSplitter, error) {
 
 	// Validate that we do not have empty alphabet passed in.
@@ -60,7 +69,8 @@ func newRangeSplitter(alphabet string) (*rangeSplitter, error) {
 	}
 	// Sort the alphabet lexicographically and store a mapping of each alphabet
 	// to its index. We need a mapping for efficient index lookup in later operations.
-	sortedAlphabet := sortAlphabet([]rune(alphabet))
+	sortedAlphabet := []rune(alphabet)
+	sortAlphabet(sortedAlphabet)
 	alphabetMap := constructAlphabetMap(sortedAlphabet)
 
 	return &rangeSplitter{
@@ -69,7 +79,14 @@ func newRangeSplitter(alphabet string) (*rangeSplitter, error) {
 	}, nil
 }
 
-// splitRange creates a given number of splits based on a provided start and end range.
+// splitRange divides the provided start and end range into approximately equal
+// subranges, returning the split points. An empty slice is returned if suitable
+// splits cannot be determined. Please note that this method provides a rough
+// estimate of split points, without ensuring precise even partitioning of the range.
+// Additionally, the number of found splits might be fewer than requested if the
+// algorithm struggles to find sufficient split points. However, if both the start
+// and end ranges are empty strings (indicating the entire namespace), the algorithm
+// guarantees the requested number of split points is returned.
 func (rs *rangeSplitter) splitRange(startRange, endRange string, numSplits int) ([]string, error) {
 	// Number of splits has to be at least one, otherwise it is not splittable.
 	if numSplits < 1 {
@@ -79,7 +96,7 @@ func (rs *rangeSplitter) splitRange(startRange, endRange string, numSplits int) 
 	// End range (if specified) has to be lexicographically greater than the start range
 	// for the range to be valid.
 	if len(endRange) != 0 && startRange >= endRange {
-		return nil, fmt.Errorf("start range %q cannot be lexicographically greater end range %q", startRange, endRange)
+		return nil, fmt.Errorf("start range %q cannot be lexicographically greater than end range %q", startRange, endRange)
 	}
 
 	rs.addCharsToAlphabet([]rune(startRange))
@@ -159,20 +176,18 @@ func (rs *rangeSplitter) generateSplits(opts generateSplitsOpts) []string {
 	return splitPoints
 }
 
-// sortAlphabet sorts the alphabets string lexicographically and returns a pointer to the sorted string.
-func sortAlphabet(unsortedAlphabet []rune) *[]rune {
-	sortedAlphabet := unsortedAlphabet
-	sort.Slice(sortedAlphabet, func(i, j int) bool {
-		return sortedAlphabet[i] < sortedAlphabet[j]
+// sortAlphabet sorts the alphabets string lexicographically.
+func sortAlphabet(unsortedAlphabet []rune) {
+	sort.Slice(unsortedAlphabet, func(i, j int) bool {
+		return unsortedAlphabet[i] < unsortedAlphabet[j]
 	})
-	return &sortedAlphabet
 }
 
 // constructAlphabetMap constructs a mapping from each character in the
 // alphabets to its index in the alphabet array.
-func constructAlphabetMap(alphabet *[]rune) map[rune]int {
+func constructAlphabetMap(alphabet []rune) map[rune]int {
 	alphabetMap := make(map[rune]int)
-	for i, char := range *alphabet {
+	for i, char := range alphabet {
 		alphabetMap[char] = i
 	}
 	return alphabetMap
@@ -182,7 +197,7 @@ func constructAlphabetMap(alphabet *[]rune) map[rune]int {
 func (rs *rangeSplitter) addCharsToAlphabet(characters []rune) {
 	rs.mu.Lock()         // Acquire the lock
 	defer rs.mu.Unlock() // Release the lock when the function exits
-	allAlphabet := *rs.sortedAlphabet
+	allAlphabet := rs.sortedAlphabet
 	newChars := false
 	for _, char := range characters {
 		if _, exists := rs.alphabetMap[char]; exists {
@@ -190,33 +205,30 @@ func (rs *rangeSplitter) addCharsToAlphabet(characters []rune) {
 		}
 		allAlphabet = append(allAlphabet, char)
 		newChars = true
-		rs.alphabetMap[char] = 0
 	}
 	if newChars {
-		rs.sortedAlphabet = sortAlphabet(allAlphabet)
+		sortAlphabet(allAlphabet)
+		rs.sortedAlphabet = allAlphabet
 		rs.alphabetMap = constructAlphabetMap(rs.sortedAlphabet)
 	}
 }
 
 // isRangeEqualWithPadding checks if two range strings are identical. Equality
 // encompasses any padding using the smallest alphabet character from the set.
-func (rs *rangeSplitter) isRangeEqualWithPadding(startRange, endRange *[]rune) bool {
+func (rs *rangeSplitter) isRangeEqualWithPadding(startRange, endRange []rune) bool {
 
 	sortedAlphabet := rs.sortedAlphabet
 
 	// When the end range is unspecified, it's interpreted as a sequence of the
 	// highest possible characters. Consequently, they are not deemed equal.
-	if len(*endRange) == 0 {
+	if len(endRange) == 0 {
 		return false
 	}
 
 	// Get the longer length of the two range strings.
-	maxLength := len(*startRange)
-	if len(*endRange) > maxLength {
-		maxLength = len(*endRange)
-	}
+	maxLength := max(len(startRange), len(endRange))
 
-	smallestChar := (*sortedAlphabet)[0]
+	smallestChar := sortedAlphabet[0]
 
 	// Loop through the string range.
 	for i := 0; i < maxLength; i++ {
@@ -237,28 +249,28 @@ func (rs *rangeSplitter) isRangeEqualWithPadding(startRange, endRange *[]rune) b
 
 // charAtOrDefault returns the character at the specified position, or the default character if
 // the position is out of bounds.
-func charAtOrDefault(charArray *[]rune, position int, defaultChar rune) rune {
-	if position < 0 || position >= len(*charArray) {
+func charAtOrDefault(charArray []rune, position int, defaultChar rune) rune {
+	if position < 0 || position >= len(charArray) {
 		return defaultChar
 	}
-	return (*charArray)[position]
+	return (charArray)[position]
 }
 
 // convertStringRangeToMinimalIntRange gradually extends the start and end string
 // range in base-10 representation, until the difference reaches a threshold
 // suitable for splitting.
 func (rs *rangeSplitter) convertStringRangeToMinimalIntRange(
-	startRange, endRange *[]rune, numSplits int) (*minimalIntRange, error) {
+	startRange, endRange []rune, numSplits int) (*minimalIntRange, error) {
 
 	startInteger := big.NewInt(0)
 	endInteger := big.NewInt(0)
 
-	alphabetLength := len(*rs.sortedAlphabet)
-	startChar := (*rs.sortedAlphabet)[0]
-	endChar := (*rs.sortedAlphabet)[alphabetLength-1]
+	alphabetLength := len(rs.sortedAlphabet)
+	startChar := (rs.sortedAlphabet)[0]
+	endChar := (rs.sortedAlphabet)[alphabetLength-1]
 
 	endDefaultChar := startChar
-	if len(*endRange) == 0 {
+	if len(endRange) == 0 {
 		endDefaultChar = endChar
 	}
 
@@ -307,14 +319,14 @@ func (rs *rangeSplitter) charPosition(ch rune) (int, error) {
 
 // convertRangeStringToArray transforms the range string into a rune slice while
 // verifying the presence of each character in the alphabets.
-func (rs *rangeSplitter) convertRangeStringToArray(rangeString string) (*[]rune, error) {
+func (rs *rangeSplitter) convertRangeStringToArray(rangeString string) ([]rune, error) {
 	for _, char := range rangeString {
 		if _, exists := rs.alphabetMap[char]; !exists {
 			return nil, fmt.Errorf("character %c in range string %q is not found in the alphabet array", char, rangeString)
 		}
 	}
 	characterArray := []rune(rangeString)
-	return &characterArray, nil
+	return characterArray, nil
 }
 
 // convertIntToString converts the split point from base-10 to base-N.
@@ -323,13 +335,13 @@ func (rs *rangeSplitter) convertIntToString(splitPoint *big.Int, stringLength in
 	remainder := new(big.Int)
 
 	var splitChar []rune
-	alphabetSize := big.NewInt(int64(len(*rs.sortedAlphabet)))
+	alphabetSize := big.NewInt(int64(len(rs.sortedAlphabet)))
 
 	// Iterate through the split point and convert alphabet by alphabet.
 	for i := 0; i < stringLength; i++ {
 		remainder.Mod(splitPoint, alphabetSize)
 		splitPoint.Div(splitPoint, alphabetSize)
-		splitChar = append(splitChar, (*rs.sortedAlphabet)[(int)(remainder.Int64())])
+		splitChar = append(splitChar, (rs.sortedAlphabet)[(int)(remainder.Int64())])
 	}
 
 	// Reverse the converted alphabet order because we originally processed from right to left.
