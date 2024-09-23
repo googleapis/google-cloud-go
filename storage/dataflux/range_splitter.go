@@ -200,11 +200,10 @@ func (rs *rangeSplitter) addCharsToAlphabet(characters []rune) {
 	allAlphabet := rs.sortedAlphabet
 	newChars := false
 	for _, char := range characters {
-		if _, exists := rs.alphabetMap[char]; exists {
-			continue
+		if _, exists := rs.alphabetMap[char]; !exists {
+			allAlphabet = append(allAlphabet, char)
+			newChars = true
 		}
-		allAlphabet = append(allAlphabet, char)
-		newChars = true
 	}
 	if newChars {
 		sortAlphabet(allAlphabet)
