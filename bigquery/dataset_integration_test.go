@@ -171,6 +171,7 @@ func TestIntegration_DatasetUpdateDefaultExpirationAndMaxTimeTravel(t *testing.T
 	if err != nil {
 		t.Fatalf("Create: %v", err)
 	}
+	defer ds.Delete(ctx)
 
 	wantExpiration := time.Hour
 	wantTimeTravel := 48 * time.Hour
