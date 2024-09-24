@@ -213,6 +213,14 @@ func TestSplitRange(t *testing.T) {
 			wantErr:         false,
 			wantSplitPoints: []string{"b", "c"},
 		},
+		{
+			desc:            "start range is sequence of highest characters",
+			startRange:      "zzz",
+			endRange:        "",
+			numSplits:       2,
+			wantErr:         false,
+			wantSplitPoints: []string{"zzz5", "zzza"},
+		},
 	}
 
 	for _, tc := range testCases {

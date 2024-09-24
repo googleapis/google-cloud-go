@@ -53,14 +53,7 @@ type generateSplitsOpts struct {
 
 // newRangeSplitter creates a new RangeSplitter with the given alphabets.
 // RangeSplitter determines split points within a given range based on the given
-// alphabets. This process involves translating the start and end range strings
-// into base-10 integers, performing a split within the integer domain, and then
-// converting the splits back into strings. In essence, this operation resembles
-// a base-N to base-10 conversion, followed by a split in base 10, and finally
-// another base-10 to base-N conversion. In this scenario, N represents the size
-// of the alphabet, with the character's position in the alphabet indicating the
-// digit's value. As of now, the range splitter exclusively supports only the
-// provided alphabets.
+// alphabets.
 func newRangeSplitter(alphabet string) (*rangeSplitter, error) {
 
 	// Validate that we do not have empty alphabet passed in.
@@ -84,9 +77,9 @@ func newRangeSplitter(alphabet string) (*rangeSplitter, error) {
 // splits cannot be determined. Please note that this method provides a rough
 // estimate of split points, without ensuring precise even partitioning of the range.
 // Additionally, the number of found splits might be fewer than requested if the
-// algorithm struggles to find sufficient split points. However, if both the start
-// and end ranges are empty strings (indicating the entire namespace), the algorithm
-// guarantees the requested number of split points is returned.
+// algorithm struggles to find sufficient split points. If the start range is empty
+// the algorithm assumes it to be sequence of smallest possible character and empty
+// end range as sequence of highest possible characters.
 func (rs *rangeSplitter) splitRange(startRange, endRange string, numSplits int) ([]string, error) {
 	// Number of splits has to be at least one, otherwise it is not splittable.
 	if numSplits < 1 {
@@ -142,7 +135,13 @@ func (rs *rangeSplitter) splitRange(startRange, endRange string, numSplits int) 
 	return splitPoints, nil
 }
 
-// generateSplits generates the split points using the specified options.
+// generateSplits generates the split points by translating the start and end
+// range strings into base-10 integers, performing a split within the integer
+// domain, and then  converting the splits back into strings. In essence, this
+// operation resembles a base-N to base-10 conversion, followed by a split in
+// base 10, and finally another base-10 to base-N conversion. In this scenario,
+// N represents the size of the alphabet, with the character's position in the
+// alphabet indicating the digit's value.
 func (rs *rangeSplitter) generateSplits(opts generateSplitsOpts) []string {
 
 	startInteger := opts.minimalIntRange.startInteger
@@ -220,6 +219,8 @@ func (rs *rangeSplitter) isRangeEqualWithPadding(startRange, endRange []rune) bo
 
 	// When the end range is unspecified, it's interpreted as a sequence of the
 	// highest possible characters. Consequently, they are not deemed equal.
+	// If start range has highest possible characters, then smaller characters
+	// are appended to start range to find split points.
 	if len(endRange) == 0 {
 		return false
 	}
