@@ -80,6 +80,19 @@ func newRangeSplitter(alphabet string) (*rangeSplitter, error) {
 // algorithm struggles to find sufficient split points. If the start range is empty
 // the algorithm assumes it to be sequence of smallest possible character and empty
 // end range as sequence of highest possible characters.
+// For example, sorted alphabet {"a","b","c","d"}
+//	Input: startRange= "d", endRange= "", numSplits=2
+//
+//  This will be converted from base-N to base-10 integers.
+//  While calculating base-10 integer, "a" will be appended to startRange
+//  and "d" will be appended to endRange until the difference between integers it
+//  more than number of splits.
+//  startInteger for "da" = 12, endInteger for "dd" = 15
+//
+//  To splits points will be 13 and 14 in base-10. This will be converted back to
+//	base-N value to
+//  {"db","dc"}
+
 func (rs *rangeSplitter) splitRange(startRange, endRange string, numSplits int) ([]string, error) {
 	// Number of splits has to be at least one, otherwise it is not splittable.
 	if numSplits < 1 {
