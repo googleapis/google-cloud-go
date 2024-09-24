@@ -81,12 +81,12 @@ func newRangeSplitter(alphabet string) (*rangeSplitter, error) {
 // the algorithm assumes it to be sequence of smallest possible character and empty
 // end range as sequence of highest possible characters.
 //
-// For example, sorted alphabet {"a","b","c","d"}
+//  For example, sorted alphabet = {"a","b","c","d"}
 //	Input: startRange= "d", endRange= "", numSplits=2
 //
 //  This will be converted from base-N to base-10 integers.
 //  While calculating base-10 integer, "a" will be appended to startRange
-//  and "d" will be appended to endRange until the difference between integers it
+//  and "d" will be appended to endRange until the difference between integers is
 //  more than number of splits.
 //  startInteger for "da" = 12, endInteger for "dd" = 15
 //
