@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/speech/apiv1p1beta1",
-    "version": "$VERSION",
+    "version": "1.25.1",
     "language": "GO",
     "apis": [
       {
