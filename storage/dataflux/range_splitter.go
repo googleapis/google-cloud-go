@@ -80,6 +80,7 @@ func newRangeSplitter(alphabet string) (*rangeSplitter, error) {
 // algorithm struggles to find sufficient split points. If the start range is empty
 // the algorithm assumes it to be sequence of smallest possible character and empty
 // end range as sequence of highest possible characters.
+//
 // For example, sorted alphabet {"a","b","c","d"}
 //	Input: startRange= "d", endRange= "", numSplits=2
 //
