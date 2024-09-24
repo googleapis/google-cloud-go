@@ -161,15 +161,22 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		}
 
 		// Check if the file exists.
-		// TODO: add skip option.
+		fileExists := false
+
 		filePath := filepath.Join(input.LocalDirectory, attrs.Name)
 		if _, err := os.Stat(filePath); err == nil {
-			return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, os.ErrExist)
+			fileExists = true
+			if !d.config.skipIfExists {
+				return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, os.ErrExist)
+			}
 		} else if !errors.Is(err, os.ErrNotExist) {
+			// Encountered an error other than file does not exist.
 			return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, err)
 		}
 
-		objectsToQueue = append(objectsToQueue, attrs.Name)
+		if !(d.config.skipIfExists && fileExists) {
+			objectsToQueue = append(objectsToQueue, attrs.Name)
+		}
 	}
 
 	outs := make(chan DownloadOutput, len(objectsToQueue))
