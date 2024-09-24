@@ -90,8 +90,8 @@ func newRangeSplitter(alphabet string) (*rangeSplitter, error) {
 //  more than number of splits.
 //  startInteger for "da" = 12, endInteger for "dd" = 15
 //
-//  To splits points will be 13 and 14 in base-10. This will be converted back to
-//	base-N value to
+//  The splits points will be 13 and 14 in base-10. This will be converted back to
+//	base-N value and returned as split points:
 //  {"db","dc"}
 
 func (rs *rangeSplitter) splitRange(startRange, endRange string, numSplits int) ([]string, error) {
