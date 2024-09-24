@@ -61,10 +61,9 @@ export GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER="gc-bt-it-cluster-02"
 export GCLOUD_TESTS_BIGTABLE_INSTANCE="gc-bt-it-instance"
 
 # Universe domain variables. Tests will be skipped if TEST_UNIVERSE_DOMAIN is removed.
-export TEST_UNIVERSE_DOMAIN="foobar"
-#$(gcloud secrets versions access latest --project cloud-devrel-kokoro-resources --secret=client-library-test-universe-domain)
-export TEST_UNIVERSE_PROJECT_ID=$(gcloud secrets versions access latest --project cloud-devrel-kokoro-resources --secret=client-library-test-universe-project-id)
-export TEST_UNIVERSE_LOCATION=$(gcloud secrets versions access latest --project cloud-devrel-kokoro-resources --secret=client-library-test-universe-storage-location)
+export TEST_UNIVERSE_DOMAIN=$(cat ${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-domain)
+export TEST_UNIVERSE_PROJECT_ID=$(cat ${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-project-id)
+export TEST_UNIVERSE_LOCATION=$(cat ${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-storage-location)
 export TEST_UNIVERSE_DOMAIN_CREDENTIAL=$(realpath ${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-domain-credential)
 
 # TODO: Remove this env after OMG/43748 is fixed
