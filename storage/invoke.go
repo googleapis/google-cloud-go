@@ -132,6 +132,10 @@ func ShouldRetry(err error) bool {
 				return true
 			}
 		}
+	case *net.DNSError:
+		if e.IsTemporary {
+			return true
+		}
 	case interface{ Temporary() bool }:
 		if e.Temporary() {
 			return true
