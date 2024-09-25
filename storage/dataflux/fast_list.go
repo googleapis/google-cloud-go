@@ -18,6 +18,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"runtime"
+	"strings"
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/sync/errgroup"
@@ -62,17 +64,23 @@ type Lister struct {
 	// method indicates the listing method(open, sequential, worksteal) to be used for listing.
 	method listingMethod
 
-	// pageToken is the token to use for sequential listing.
-	pageToken string
-
 	// bucket is the bucket handle to list objects from.
 	bucket *storage.BucketHandle
 
 	// batchSize is the number of objects to list.
 	batchSize int
 
+	// parallelism is number of parallel workers to use for listing.
+	parallelism int
+
 	// query is the query to filter objects for listing.
 	query storage.Query
+
+	// pageToken is the token to use for sequential listing.
+	pageToken string
+
+	// ranges is the channel to store the start and end ranges to be listed by the workers in worksteal listing.
+	ranges chan *listRange
 
 	// skipDirectoryObjects is to indicate whether to list directory objects.
 	skipDirectoryObjects bool
@@ -81,13 +89,26 @@ type Lister struct {
 // NewLister creates a new dataflux Lister to list objects in the give bucket.
 func NewLister(c *storage.Client, in *ListerInput) *Lister {
 	bucket := c.Bucket(in.BucketName)
+
+	// If parallelism is not given, set default value to 10x the number of available CPU.
+	if in.Parallelism == 0 {
+		in.Parallelism = runtime.NumCPU() * 10
+	}
+	// Initialize range channel with entire namespace of object for given prefix, startoffset and endoffset.
+	// Default range is the entire namespace (start= "", end ="")
+	rangeChannel := make(chan *listRange, in.Parallelism*2)
+	start, end := updateStartEndOffset(in.Query.StartOffset, in.Query.EndOffset, in.Query.Prefix)
+	rangeChannel <- &listRange{startRange: start, endRange: end}
+
 	lister := &Lister{
 		method:               open,
+		parallelism:          in.Parallelism,
 		pageToken:            "",
 		bucket:               bucket,
 		batchSize:            in.BatchSize,
 		query:                in.Query,
 		skipDirectoryObjects: in.SkipDirectoryObjects,
+		ranges:               rangeChannel,
 	}
 	return lister
 }
@@ -108,7 +129,9 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 
 	// To start listing method is Open and runs both worksteal and sequential listing in parallel.
 	// The method which completes first is used for all subsequent runs.
+
 	// TODO: Run worksteal listing when method is Open or WorkSteal.
+
 	// Run sequential listing when method is Open or Sequential.
 	if c.method != worksteal {
 
@@ -150,6 +173,39 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 
 // Close closes the range channel of the Lister.
 func (c *Lister) Close() {
+	if c.ranges != nil {
+		close(c.ranges)
+	}
+}
 
-	// TODO: Close range channel for worksteal lister.
+// updateStartEndOffset updates start and end offset based on prefix.
+// If a prefix is given, start and end should contain the value after prefix.
+// For example, if start is "prefix_a", then start should be "_a".
+func updateStartEndOffset(start, end, prefix string) (string, string) {
+	if prefix == "" {
+		return start, end
+	}
+	if start != "" && end != "" && start >= end {
+		return start, start
+	}
+	if start != "" {
+		if start <= prefix {
+			start = ""
+		} else if strings.HasPrefix(start, prefix) {
+			start = start[len(prefix):]
+		} else {
+			return start, start
+		}
+	}
+
+	if end != "" {
+		if len(end) > len(prefix) && strings.HasPrefix(end, prefix) {
+			end = end[len(prefix):]
+		} else if end > prefix {
+			end = ""
+		} else {
+			return end, end
+		}
+	}
+	return start, end
 }
