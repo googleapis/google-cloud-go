@@ -4387,75 +4387,75 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 }
 
-func TestClient_WithServerSideTracingHeader(t *testing.T) {
+func TestClient_WithSpannerTracingHeader(t *testing.T) {
 	t.Parallel()
 
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	defer serverTeardown()
 
-	wantServerSideTracing := true
-	config := ClientConfig{EnableServerSideTracing: wantServerSideTracing}
+	wantSpannerTracing := true
+	config := ClientConfig{EnableSpannerTracing: wantSpannerTracing}
 	client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
 	if err != nil {
 		t.Fatalf("failed to get a client: %v", err)
 	}
-	gotServerSideTracing := false
-	for _, val := range client.sc.md.Get(serverSideTracingHeader) {
+	gotSpannerTracing := false
+	for _, val := range client.sc.md.Get(spannerTracingHeader) {
 		if val == "true" {
-			gotServerSideTracing = true
+			gotSpannerTracing = true
 		}
 	}
-	if gotServerSideTracing != wantServerSideTracing {
-		t.Fatalf("mismatch in client configuration for property EnableServerSideTracing: got %v, want %v", gotServerSideTracing, wantServerSideTracing)
+	if gotSpannerTracing != wantSpannerTracing {
+		t.Fatalf("mismatch in client configuration for property EnableSpannerTracing: got %v, want %v", gotSpannerTracing, wantSpannerTracing)
 	}
 }
 
-func TestClient_WithoutServerSideTracingHeader(t *testing.T) {
+func TestClient_WithoutSpannerTracingHeader(t *testing.T) {
 	t.Parallel()
 
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	defer serverTeardown()
 
-	wantServerSideTracing := false
-	config := ClientConfig{EnableServerSideTracing: wantServerSideTracing}
+	wantSpannerTracing := false
+	config := ClientConfig{EnableSpannerTracing: wantSpannerTracing}
 	client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
 	if err != nil {
 		t.Fatalf("failed to get a client: %v", err)
 	}
-	gotServerSideTracing := false
-	for _, val := range client.sc.md.Get(serverSideTracingHeader) {
+	gotSpannerTracing := false
+	for _, val := range client.sc.md.Get(spannerTracingHeader) {
 		if val == "true" {
-			gotServerSideTracing = true
+			gotSpannerTracing = true
 		}
 	}
-	if gotServerSideTracing != wantServerSideTracing {
-		t.Fatalf("mismatch in client configuration for property EnableServerSideTracing: got %v, want %v", gotServerSideTracing, wantServerSideTracing)
+	if gotSpannerTracing != wantSpannerTracing {
+		t.Fatalf("mismatch in client configuration for property EnableSpannerTracing: got %v, want %v", gotSpannerTracing, wantSpannerTracing)
 	}
 }
 
-func TestClient_WithServerSideTracingHeaderUsingEnvironmentVariable(t *testing.T) {
+func TestClient_WithSpannerTracingHeaderUsingEnvironmentVariable(t *testing.T) {
 	// Set the env variable to opt-in for server side tracing.
-	old := os.Getenv("SPANNER_ENABLE_SERVER_SIDE_TRACING")
-	defer os.Setenv("SPANNER_ENABLE_SERVER_SIDE_TRACING", old)
-	os.Setenv("SPANNER_ENABLE_SERVER_SIDE_TRACING", "true")
+	old := os.Getenv("SPANNER_ENABLE_SPANNER_TRACING")
+	defer os.Setenv("SPANNER_ENABLE_SPANNER_TRACING", old)
+	os.Setenv("SPANNER_ENABLE_SPANNER_TRACING", "true")
 
 	t.Parallel()
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	defer serverTeardown()
 
-	wantServerSideTracing := true
+	wantSpannerTracing := true
 	client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{}, server.ServerAddress, opts...)
 	if err != nil {
 		t.Fatalf("failed to get a client: %v", err)
 	}
-	gotServerSideTracing := false
-	for _, val := range client.sc.md.Get(serverSideTracingHeader) {
+	gotSpannerTracing := false
+	for _, val := range client.sc.md.Get(spannerTracingHeader) {
 		if val == "true" {
-			gotServerSideTracing = true
+			gotSpannerTracing = true
 		}
 	}
-	if gotServerSideTracing != wantServerSideTracing {
-		t.Fatalf("mismatch in client configuration for property EnableServerSideTracing: got %v, want %v", gotServerSideTracing, wantServerSideTracing)
+	if gotSpannerTracing != wantSpannerTracing {
+		t.Fatalf("mismatch in client configuration for property EnableSpannerTracing: got %v, want %v", gotSpannerTracing, wantSpannerTracing)
 	}
 }
 

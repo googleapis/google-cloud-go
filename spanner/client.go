@@ -68,9 +68,9 @@ const (
 
 	requestsCompressionHeader = "x-response-encoding"
 
-	// serverSideTracingHeader is the name of the metadata header if client
+	// spannerTracingHeader is the name of the metadata header if client
 	// has opted-in for the creation of trace spans on the Spanner layer.
-	serverSideTracingHeader = "x-goog-spanner-end-to-end-tracing"
+	spannerTracingHeader = "x-goog-spanner-end-to-end-tracing"
 
 	// numChannels is the default value for NumChannels of client.
 	numChannels = 4
@@ -342,13 +342,13 @@ type ClientConfig struct {
 
 	OpenTelemetryMeterProvider metric.MeterProvider
 
-	// EnableServerSideTracing indicates whether server side tracing is enabled or not.
-	// If it is enabled, trace spans will be created at Spanner layer. Enabling server
-	// side tracing requires OpenTelemetry to be set up properly. Simply enabling this
-	// option won't generate server side traces.
+	// EnableSpannerTracing indicates whether spanner tracing is enabled or not. If it
+	// is enabled, trace spans will be created at Spanner layer. Enabling spanner tracing
+	// requires OpenTelemetry to be set up properly. Simply enabling this option won't
+	// generate spanner traces.
 	//
 	// Default: false
-	EnableServerSideTracing bool
+	EnableSpannerTracing bool
 }
 
 type openTelemetryConfig struct {
@@ -464,18 +464,12 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.Compression == gzip.Name {
 		md.Append(requestsCompressionHeader, gzip.Name)
 	}
-	// Append server side tracing header if SPANNER_ENABLE_SERVER_SIDE_TRACING
-	// environment variable has been set or client has passed the opt-in option
-	// in ClientConfig.
-	appendServerSideTracingHeader := false
-	if config.EnableServerSideTracing {
-		appendServerSideTracingHeader = true
-	}
-	if serverSideTracingEnvironmentVariable := os.Getenv("SPANNER_ENABLE_SERVER_SIDE_TRACING"); serverSideTracingEnvironmentVariable == "true" {
-		appendServerSideTracingHeader = true
-	}
-	if appendServerSideTracingHeader {
-		md.Append(serverSideTracingHeader, "true")
+	// Append spanner tracing header if SPANNER_ENABLE_SPANNER_TRACING
+	// environment variable has been set or client has passed the opt-in
+	// option in ClientConfig.
+	spannerTracingEnvironmentVariable := os.Getenv("SPANNER_ENABLE_SPANNER_TRACING")
+	if config.EnableSpannerTracing || spannerTracingEnvironmentVariable == "true" {
+		md.Append(spannerTracingHeader, "true")
 	}
 
 	// Create a session client.
