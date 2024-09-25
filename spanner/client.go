@@ -95,7 +95,7 @@ func validDatabaseName(db string) error {
 func parseDatabaseName(db string) (project, instance, database string, err error) {
 	matches := validDBPattern.FindStringSubmatch(db)
 	if len(matches) == 0 {
-		return "", "", "", fmt.Errorf("Failed to parse database name from %q according to pattern %q",
+		return "", "", "", fmt.Errorf("failed to parse database name from %q according to pattern %q",
 			db, validDBPattern.String())
 	}
 	return matches[1], matches[2], matches[3], nil

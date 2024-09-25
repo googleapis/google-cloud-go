@@ -119,6 +119,8 @@ var (
 
 	protoMsgReflectType  = reflect.TypeOf((*proto.Message)(nil)).Elem()
 	protoEnumReflectType = reflect.TypeOf((*protoreflect.Enum)(nil)).Elem()
+
+	errPayloadNil = errors.New("payload should not be nil")
 )
 
 // UseNumberWithJSONDecoderEncoder specifies whether Cloud Spanner JSON numbers are decoded
@@ -222,7 +224,7 @@ func (n NullInt64) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullInt64.
 func (n *NullInt64) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
-		return fmt.Errorf("payload should not be nil")
+		return errPayloadNil
 	}
 	if jsonIsNull(payload) {
 		n.Int64 = int64(0)
@@ -302,7 +304,7 @@ func (n NullString) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullString.
 func (n *NullString) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
-		return fmt.Errorf("payload should not be nil")
+		return errPayloadNil
 	}
 	if jsonIsNull(payload) {
 		n.StringVal = ""
@@ -387,7 +389,7 @@ func (n NullFloat64) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullFloat64.
 func (n *NullFloat64) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
-		return fmt.Errorf("payload should not be nil")
+		return errPayloadNil
 	}
 	if jsonIsNull(payload) {
 		n.Float64 = float64(0)
@@ -467,7 +469,7 @@ func (n NullFloat32) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullFloat32.
 func (n *NullFloat32) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
-		return fmt.Errorf("payload should not be nil")
+		return errPayloadNil
 	}
 	if jsonIsNull(payload) {
 		n.Float32 = float32(0)
@@ -547,7 +549,7 @@ func (n NullBool) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullBool.
 func (n *NullBool) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
-		return fmt.Errorf("payload should not be nil")
+		return errPayloadNil
 	}
 	if jsonIsNull(payload) {
 		n.Bool = false
@@ -627,7 +629,7 @@ func (n NullTime) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullTime.
 func (n *NullTime) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
-		return fmt.Errorf("payload should not be nil")
+		return errPayloadNil
 	}
 	if jsonIsNull(payload) {
 		n.Time = time.Time{}
@@ -712,7 +714,7 @@ func (n NullDate) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullDate.
 func (n *NullDate) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
-		return fmt.Errorf("payload should not be nil")
+		return errPayloadNil
 	}
 	if jsonIsNull(payload) {
 		n.Date = civil.Date{}
@@ -797,7 +799,7 @@ func (n NullNumeric) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullNumeric.
 func (n *NullNumeric) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
-		return fmt.Errorf("payload should not be nil")
+		return errPayloadNil
 	}
 	if jsonIsNull(payload) {
 		n.Numeric = big.Rat{}
@@ -894,7 +896,7 @@ func (n NullJSON) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullJSON.
 func (n *NullJSON) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
-		return fmt.Errorf("payload should not be nil")
+		return errPayloadNil
 	}
 	if jsonIsNull(payload) {
 		n.Valid = false
@@ -942,7 +944,7 @@ func (n PGNumeric) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for PGNumeric.
 func (n *PGNumeric) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
-		return fmt.Errorf("payload should not be nil")
+		return errPayloadNil
 	}
 	if jsonIsNull(payload) {
 		n.Numeric = ""
@@ -989,7 +991,7 @@ func (n NullProtoMessage) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullProtoMessage.
 func (n *NullProtoMessage) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
-		return fmt.Errorf("payload should not be nil")
+		return errPayloadNil
 	}
 	if jsonIsNull(payload) {
 		n.ProtoMessageVal = nil
@@ -1035,7 +1037,7 @@ func (n NullProtoEnum) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullProtoEnum.
 func (n *NullProtoEnum) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
-		return fmt.Errorf("payload should not be nil")
+		return errPayloadNil
 	}
 	if jsonIsNull(payload) {
 		n.ProtoEnumVal = nil
@@ -1096,7 +1098,7 @@ func (n PGJsonB) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for PGJsonB.
 func (n *PGJsonB) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
-		return fmt.Errorf("payload should not be nil")
+		return errPayloadNil
 	}
 	if jsonIsNull(payload) {
 		n.Valid = false
@@ -4550,7 +4552,7 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 	var destination reflect.Value
 	switch sourceType {
 	case spannerTypeInvalid:
-		return nil, fmt.Errorf("cannot encode a value to type spannerTypeInvalid")
+		return nil, errors.New("cannot encode a value to type spannerTypeInvalid")
 	case spannerTypeNonNullString:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf("")))
 	case spannerTypeNullString:

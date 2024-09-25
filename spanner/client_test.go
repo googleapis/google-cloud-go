@@ -1930,7 +1930,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeSqlStatementWithError(t 
 			// We ignore the error and proceed to commit the transaction.
 			_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
 			if err == nil {
-				return fmt.Errorf("missing expected InvalidArgument error")
+				return errors.New("missing expected InvalidArgument error")
 			}
 			return nil
 		})

@@ -2840,7 +2840,7 @@ func TestIntegration_StructTypes(t *testing.T) {
 					return fmt.Errorf("len(rows) = %d; want 1", len(rows))
 				}
 				if !rows[0].Valid {
-					return fmt.Errorf("rows[0] is NULL")
+					return errors.New("rows[0] is NULL")
 				}
 				var i, j int64
 				if err := rows[0].Row.Columns(&i, &j); err != nil {
