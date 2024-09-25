@@ -1977,7 +1977,8 @@ func (c *WarehouseClient) IngestAsset(ctx context.Context, opts ...gax.CallOptio
 	return c.internalClient.IngestAsset(ctx, opts...)
 }
 
-// ClipAsset generates clips for downloading. The api takes in a time range, and
+// ClipAsset supported by STREAM_VIDEO corpus type.
+// Generates clips for downloading. The api takes in a time range, and
 // generates a clip of the first content available after start_time and
 // before end_time, which may overflow beyond these bounds.
 // Returned clips are truncated if the total size of the clips are larger
@@ -6298,7 +6299,8 @@ func (c *warehouseRESTClient) IngestAsset(ctx context.Context, opts ...gax.CallO
 	return nil, errors.New("IngestAsset not yet supported for REST clients")
 }
 
-// ClipAsset generates clips for downloading. The api takes in a time range, and
+// ClipAsset supported by STREAM_VIDEO corpus type.
+// Generates clips for downloading. The api takes in a time range, and
 // generates a clip of the first content available after start_time and
 // before end_time, which may overflow beyond these bounds.
 // Returned clips are truncated if the total size of the clips are larger

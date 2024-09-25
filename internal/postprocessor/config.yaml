@@ -443,6 +443,9 @@ service-configs:
   - input-directory: google/cloud/bigquery/storage/v1
     service-config: bigquerystorage_v1.yaml
     import-path: cloud.google.com/go/bigquery/storage/apiv1
+  - input-directory: google/cloud/bigquery/storage/v1alpha
+    service-config: bigquerystorage_v1alpha.yaml
+    import-path: cloud.google.com/go/bigquery/storage/apiv1alpha
   - input-directory: google/cloud/bigquery/storage/v1beta1
     service-config: bigquerystorage_v1beta1.yaml
     import-path: cloud.google.com/go/bigquery/storage/apiv1beta1
@@ -614,6 +617,9 @@ service-configs:
   - input-directory: google/cloud/gkeconnect/gateway/v1beta1
     service-config: connectgateway_v1beta1.yaml
     import-path: cloud.google.com/go/gkeconnect/gateway/apiv1beta1
+  - input-directory: google/cloud/gkeconnect/gateway/v1
+    service-config: connectgateway_v1.yaml
+    import-path: cloud.google.com/go/gkeconnect/gateway/apiv1
   - input-directory: google/cloud/gkehub/v1beta1
     service-config: gkehub_v1beta1.yaml
     import-path: cloud.google.com/go/gkehub/apiv1beta1
@@ -1096,6 +1102,9 @@ service-configs:
   - input-directory: google/maps/addressvalidation/v1
     service-config: addressvalidation_v1.yaml
     import-path: cloud.google.com/go/maps/addressvalidation/apiv1
+  - input-directory: google/maps/areainsights/v1
+    service-config: areainsights_v1.yaml
+    import-path: cloud.google.com/go/maps/areainsights/apiv1
   - input-directory: google/maps/fleetengine/v1
     service-config: fleetengine_v1.yaml
     import-path: cloud.google.com/go/maps/fleetengine/apiv1
