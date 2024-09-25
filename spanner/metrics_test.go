@@ -1,0 +1,237 @@
+/*
+Copyright 2024 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+package spanner
+
+import (
+	"context"
+	"os"
+	"sort"
+	"testing"
+
+	"time"
+
+	"github.com/google/go-cmp/cmp/cmpopts"
+	"go.opentelemetry.io/otel/attribute"
+	"google.golang.org/api/option"
+	"google.golang.org/genproto/googleapis/api/metric"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
+
+	"cloud.google.com/go/internal/testutil"
+	. "cloud.google.com/go/spanner/internal/testutil"
+)
+
+func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
+	os.Setenv("SPANNER_ENABLE_BUILTIN_METRICS", "true")
+	defer os.Unsetenv("SPANNER_ENABLE_BUILTIN_METRICS")
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+	clientUID := "test-uid"
+	createSessionRPC := "Spanner.BatchCreateSessions"
+	if isMultiplexEnabled {
+		createSessionRPC = "Spanner.CreateSession"
+	}
+
+	wantClientAttributes := []attribute.KeyValue{
+		attribute.String(monitoredResLabelKeyProject, project),
+		attribute.String(monitoredResLabelKeyInstance, instance),
+		attribute.String(metricLabelKeyDatabase, "[DATABASE]"),
+		attribute.String(metricLabelKeyClientUID, clientUID),
+		attribute.String(metricLabelKeyClientName, clientName),
+		attribute.String(monitoredResLabelKeyClientHash, "cloud_spanner_client_raw_metrics"),
+		attribute.String(monitoredResLabelKeyInstanceConfig, "unknown"),
+		attribute.String(monitoredResLabelKeyLocation, "global"),
+	}
+	wantMetricNamesStdout := []string{metricNameAttemptCount, metricNameAttemptLatencies, metricNameOperationCount, metricNameOperationLatencies}
+	wantMetricTypesGCM := []string{}
+	for _, wantMetricName := range wantMetricNamesStdout {
+		wantMetricTypesGCM = append(wantMetricTypesGCM, nativeMetricsPrefix+wantMetricName)
+	}
+
+	// Reduce sampling period to reduce test run time
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 5 * time.Second
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+
+	// return constant client UID instead of random, so that attributes can be compared
+	origGenerateClientUID := generateClientUID
+	generateClientUID = func() (string, error) {
+		return clientUID, nil
+	}
+	defer func() {
+		generateClientUID = origGenerateClientUID
+	}()
+
+	// Setup mock monitoring server
+	monitoringServer, err := NewMetricTestServer()
+	if err != nil {
+		t.Fatalf("Error setting up metrics test server")
+	}
+	go monitoringServer.Serve()
+	defer monitoringServer.Shutdown()
+	origExporterOpts := exporterOpts
+	exporterOpts = []option.ClientOption{
+		option.WithEndpoint(monitoringServer.Endpoint),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+	}
+	defer func() {
+		exporterOpts = origExporterOpts
+	}()
+
+	tests := []struct {
+		desc                   string
+		config                 ClientConfig
+		wantBuiltinEnabled     bool
+		setEmulator            bool
+		wantCreateTSCallsCount int // No. of CreateTimeSeries calls
+		wantMethods            []string
+		wantOTELValue          map[string]map[string]int64
+		wantOTELMetrics        map[string][]string
+	}{
+		{
+			desc:                   "should create a new tracer factory with default meter provider",
+			config:                 ClientConfig{},
+			wantBuiltinEnabled:     true,
+			wantCreateTSCallsCount: 2,
+			wantMethods:            []string{createSessionRPC, "Spanner.StreamingRead"},
+			wantOTELValue: map[string]map[string]int64{
+				createSessionRPC: {
+					nativeMetricsPrefix + metricNameAttemptCount:   1,
+					nativeMetricsPrefix + metricNameOperationCount: 1,
+				},
+				"Spanner.StreamingRead": {
+					nativeMetricsPrefix + metricNameAttemptCount:   2,
+					nativeMetricsPrefix + metricNameOperationCount: 1,
+				},
+			},
+			wantOTELMetrics: map[string][]string{
+				createSessionRPC: wantMetricTypesGCM,
+				// since operation will be retries once we will have extra attempt latency for this operation
+				"Spanner.StreamingRead": append(wantMetricTypesGCM, nativeMetricsPrefix+metricNameAttemptLatencies),
+			},
+		},
+		{
+			desc:        "should not create instruments when SPANNER_EMULATOR_HOST is set",
+			config:      ClientConfig{},
+			setEmulator: true,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			if test.setEmulator {
+				// Set environment variable
+				t.Setenv("SPANNER_EMULATOR_HOST", "localhost:9010")
+			}
+			server, client, teardown := setupMockedTestServerWithConfig(t, test.config)
+			defer teardown()
+			server.TestSpanner.PutExecutionTime(MethodStreamingRead,
+				SimulatedExecutionTime{
+					Errors: []error{status.Error(codes.Unavailable, "Temporary unavailable")},
+				})
+
+			if client.metricsTracerFactory.enabled != test.wantBuiltinEnabled {
+				t.Errorf("builtinEnabled: got: %v, want: %v", client.metricsTracerFactory.enabled, test.wantBuiltinEnabled)
+			}
+
+			if diff := testutil.Diff(client.metricsTracerFactory.clientAttributes, wantClientAttributes,
+				cmpopts.IgnoreUnexported(attribute.KeyValue{}, attribute.Value{})); diff != "" {
+				t.Errorf("clientAttributes: got=-, want=+ \n%v", diff)
+			}
+
+			// Check instruments
+			gotNonNilInstruments := client.metricsTracerFactory.operationLatencies != nil &&
+				client.metricsTracerFactory.operationCount != nil &&
+				client.metricsTracerFactory.attemptLatencies != nil &&
+				client.metricsTracerFactory.attemptCount != nil
+			if test.wantBuiltinEnabled != gotNonNilInstruments {
+				t.Errorf("NonNilInstruments: got: %v, want: %v", gotNonNilInstruments, test.wantBuiltinEnabled)
+			}
+
+			// pop out all old requests
+			// record start time
+			testStartTime := time.Now()
+
+			// pop out all old requests
+			monitoringServer.CreateServiceTimeSeriesRequests()
+
+			// Perform single use read-only transaction
+			_, err = client.Single().ReadRow(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
+			if err != nil {
+				t.Fatalf("ReadRows failed: %v", err)
+			}
+
+			// Calculate elapsed time
+			elapsedTime := time.Since(testStartTime)
+			if elapsedTime < 3*defaultSamplePeriod {
+				// Ensure at least 2 datapoints are recorded
+				time.Sleep(3*defaultSamplePeriod - elapsedTime)
+			}
+
+			// Get new CreateServiceTimeSeriesRequests
+			gotCreateTSCalls := monitoringServer.CreateServiceTimeSeriesRequests()
+			var gotExpectedMethods []string
+			gotOTELValues := make(map[string]map[string]int64)
+			for _, gotCreateTSCall := range gotCreateTSCalls {
+				gotMetricTypesPerMethod := make(map[string][]string)
+				for _, ts := range gotCreateTSCall.TimeSeries {
+					gotMetricTypesPerMethod[ts.Metric.GetLabels()["method"]] = append(gotMetricTypesPerMethod[ts.Metric.GetLabels()["method"]], ts.Metric.Type)
+					if _, ok := gotOTELValues[ts.Metric.GetLabels()["method"]]; !ok {
+						gotOTELValues[ts.Metric.GetLabels()["method"]] = make(map[string]int64)
+						gotExpectedMethods = append(gotExpectedMethods, ts.Metric.GetLabels()["method"])
+					}
+					if ts.MetricKind == metric.MetricDescriptor_CUMULATIVE && ts.GetValueType() == metric.MetricDescriptor_INT64 {
+						gotOTELValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type] = ts.Points[0].Value.GetInt64Value()
+					} else {
+						for _, p := range ts.Points {
+							if p.Value.GetInt64Value() > int64(elapsedTime) {
+								t.Errorf("Value %v is greater than elapsed time %v", p.Value.GetInt64Value(), elapsedTime)
+							}
+						}
+					}
+				}
+				for method, gotMetricTypes := range gotMetricTypesPerMethod {
+					sort.Strings(gotMetricTypes)
+					sort.Strings(test.wantOTELMetrics[method])
+					if !testutil.Equal(gotMetricTypes, test.wantOTELMetrics[method]) {
+						t.Errorf("Metric types missing in req. %s got: %v, want: %v", method, gotMetricTypes, wantMetricTypesGCM)
+					}
+				}
+			}
+			sort.Strings(gotExpectedMethods)
+			if !testutil.Equal(gotExpectedMethods, test.wantMethods) {
+				t.Errorf("Expected methods missing in req. got: %v, want: %v", gotExpectedMethods, test.wantMethods)
+			}
+			for method, wantOTELValues := range test.wantOTELValue {
+				for metricName, wantValue := range wantOTELValues {
+					if gotOTELValues[method][metricName] != wantValue {
+						t.Errorf("OTEL value for %s, %s: got: %v, want: %v", method, metricName, gotOTELValues[method][metricName], wantValue)
+					}
+				}
+			}
+			gotCreateTSCallsCount := len(gotCreateTSCalls)
+			if gotCreateTSCallsCount < test.wantCreateTSCallsCount {
+				t.Errorf("No. of CreateServiceTimeSeriesRequests: got: %v,  want: %v", gotCreateTSCalls, test.wantCreateTSCallsCount)
+			}
+		})
+	}
+}
