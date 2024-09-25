@@ -37,7 +37,7 @@ const (
 // ProjID returns the project ID to use in integration tests, or the empty
 // string if none is configured.
 func ProjID() string {
-	return os.Getenv(envProjID)
+	return "zimbruplayground"
 }
 
 // Credentials returns the credentials to use in integration tests, or nil if
