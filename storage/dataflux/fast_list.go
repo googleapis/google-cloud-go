@@ -43,18 +43,22 @@ type ListerInput struct {
 	// BucketName is the name of the bucket to list objects from. Required.
 	BucketName string
 
-	// Parallelism is number of parallel workers to use for listing. Default value is 10x number of available CPU. Optional.
+	// Parallelism is number of parallel workers to use for listing.
+	// Default value is 10x number of available CPU. Optional.
 	Parallelism int
 
-	// BatchSize is the number of objects to list. Default value returns all objects at once. Optional.
-	// The number of objects returned will be rounded up to a multiple of gcs page size.
+	// BatchSize is the number of objects to list. Default value returns all
+	// objects at once. Optional. The number of objects returned will be
+	// rounded up to a multiple of gcs page size.
 	BatchSize int
 
-	// Query is the query to filter objects for listing. Default value is nil. Optional.
-	// Use ProjectionNoACL for faster listing. Including ACLs increases latency while fetching objects.
+	// Query is the query to filter objects for listing. Default value is nil.
+	// Optional. Use ProjectionNoACL for faster listing. Including ACLs increases
+	// latency while fetching objects.
 	Query storage.Query
 
-	// SkipDirectoryObjects is to indicate whether to list directory objects. Default value is false. Optional.
+	// SkipDirectoryObjects is to indicate whether to list directory objects.
+	// Default value is false. Optional.
 	SkipDirectoryObjects bool
 }
 
@@ -79,7 +83,8 @@ type Lister struct {
 	// pageToken is the token to use for sequential listing.
 	pageToken string
 
-	// ranges is the channel to store the start and end ranges to be listed by the workers in worksteal listing.
+	// ranges is the channel to store the start and end ranges to be listed
+	// by the workers in worksteal listing.
 	ranges chan *listRange
 
 	// skipDirectoryObjects is to indicate whether to list directory objects.
@@ -94,8 +99,9 @@ func NewLister(c *storage.Client, in *ListerInput) *Lister {
 	if in.Parallelism == 0 {
 		in.Parallelism = runtime.NumCPU() * 10
 	}
-	// Initialize range channel with entire namespace of object for given prefix, startoffset and endoffset.
-	// Default range is the entire namespace (start= "", end ="")
+	// Initialize range channel with entire namespace of object for given prefix,
+	// startoffset and endoffset. For the default range to list is entire namespace,
+	// start and end will be empty.
 	rangeChannel := make(chan *listRange, in.Parallelism*2)
 	start, end := updateStartEndOffset(in.Query.StartOffset, in.Query.EndOffset, in.Query.Prefix)
 	rangeChannel <- &listRange{startRange: start, endRange: end}
