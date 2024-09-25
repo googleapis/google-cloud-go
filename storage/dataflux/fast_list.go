@@ -49,8 +49,7 @@ type ListerInput struct {
 	BatchSize int
 
 	// Query is the query to filter objects for listing. Default value is nil. Optional.
-	//Use ProjectionNoACL For faster listing. ACL is expensive and this results in fewer objects
-	// to be returned from GCS in each API call.
+	// Use ProjectionNoACL for faster listing. Including ACLs increases latency while fetching objects.
 	Query storage.Query
 
 	// SkipDirectoryObjects is to indicate whether to list directory objects. Default value is false. Optional.
