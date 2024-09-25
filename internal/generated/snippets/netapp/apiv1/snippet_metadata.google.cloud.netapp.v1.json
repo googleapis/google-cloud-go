@@ -2172,6 +2172,52 @@
       ]
     },
     {
+      "regionTag": "netapp_v1_generated_NetApp_SwitchActiveReplicaZone_sync",
+      "title": "netapp SwitchActiveReplicaZone Sample",
+      "description": "SwitchActiveReplicaZone this operation will switch the active/replica zone for a regional\nstoragePool.",
+      "file": "Client/SwitchActiveReplicaZone/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SwitchActiveReplicaZone",
+        "fullName": "google.cloud.netapp.v1.Client.SwitchActiveReplicaZone",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.SwitchActiveReplicaZoneRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SwitchActiveReplicaZoneOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "SwitchActiveReplicaZone",
+          "fullName": "google.cloud.netapp.v1.NetApp.SwitchActiveReplicaZone",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "netapp_v1_generated_NetApp_UpdateActiveDirectory_sync",
       "title": "netapp UpdateActiveDirectory Sample",
       "description": "UpdateActiveDirectory update the parameters of an active directories.",

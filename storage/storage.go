@@ -2349,6 +2349,7 @@ func toProtoChecksums(sendCRC32C bool, attrs *ObjectAttrs) *storagepb.ObjectChec
 }
 
 // ServiceAccount fetches the email address of the given project's Google Cloud Storage service account.
+// Note: gRPC is not supported.
 func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, error) {
 	o := makeStorageOpts(true, c.retry, "")
 	return c.tc.GetServiceAccount(ctx, projectID, o...)
