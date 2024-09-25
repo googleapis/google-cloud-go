@@ -168,7 +168,7 @@ func (h *ExecutePartition) ExecuteAction(ctx context.Context) error {
 	}
 
 	partitionBinary := h.Action.GetPartition().GetPartition()
-	if partitionBinary == nil || len(partitionBinary) == 0 {
+	if len(partitionBinary) == 0 {
 		return h.OutcomeSender.FinishWithError(spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "Invalid batchPartition %s", h.Action)))
 	}
 	if h.Action.GetPartition().Table != nil {

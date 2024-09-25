@@ -281,6 +281,49 @@ func TestIntegration_ReadRowList(t *testing.T) {
 	}
 }
 
+func TestIntegration_UpdateFamilyValueType(t *testing.T) {
+	ctx := context.Background()
+	_, _, adminClient, _, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(cleanup)
+	familyName := "new_family"
+	// Create a new column family
+	if err = adminClient.CreateColumnFamily(ctx, tableName, familyName); err != nil {
+		t.Fatalf("Failed to create column family: %v", err)
+	}
+	// the type of the family is not aggregate
+	table, err := adminClient.getTable(ctx, tableName, btapb.Table_SCHEMA_VIEW)
+	if err != nil {
+		t.Fatalf("Failed to get table: %v", err)
+	}
+	family := table.GetColumnFamilies()[familyName]
+	if family.ValueType.GetAggregateType() != nil {
+		t.Fatalf("New column family cannot be aggregate type")
+	}
+
+	// Update column family type to string type should be successful
+	update := Family{
+		ValueType: StringType{
+			Encoding: StringUtf8BytesEncoding{},
+		},
+	}
+	err = adminClient.UpdateFamily(ctx, tableName, familyName, update)
+	if err != nil {
+		t.Fatalf("Failed to update value type of family %s with current type %v: %v", familyName, family.ValueType, err)
+	}
+	// Get FamilyInfo to check if the type is updated
+	table, err = adminClient.getTable(ctx, tableName, btapb.Table_SCHEMA_VIEW)
+	if err != nil {
+		t.Fatalf("Failed to get table info: %v", err)
+	}
+	family = table.GetColumnFamilies()[familyName]
+	if !testutil.Equal(family.ValueType, update.ValueType.proto()) {
+		t.Fatalf("got %v, want %v", family.ValueType, update.ValueType.proto())
+	}
+}
+
 func TestIntegration_Aggregates(t *testing.T) {
 	ctx := context.Background()
 	_, _, ac, table, tableName, cleanup, err := setupIntegration(ctx, t)

@@ -105,8 +105,8 @@ type StorageDescriptor struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Optional. The physical location of the metastore partition
-	// (e.g. 'gs://spark-dataproc-data/pangea-data/case_sensitive/' or
-	// 'gs://spark-dataproc-data/pangea-data/*').
+	// (e.g. `gs://spark-dataproc-data/pangea-data/case_sensitive/` or
+	// `gs://spark-dataproc-data/pangea-data/*`).
 	LocationUri string `protobuf:"bytes,1,opt,name=location_uri,json=locationUri,proto3" json:"location_uri,omitempty"`
 	// Optional. Specifies the fully qualified class name of the InputFormat
 	// (e.g. "org.apache.hadoop.hive.ql.io.orc.OrcInputFormat").

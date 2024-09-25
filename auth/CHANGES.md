@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.9.4](https://github.com/googleapis/google-cloud-go/compare/auth/v0.9.3...auth/v0.9.4) (2024-09-11)
+
+
+### Bug Fixes
+
+* **auth:** Enable self-signed JWT for non-GDU universe domain ([#10831](https://github.com/googleapis/google-cloud-go/issues/10831)) ([f9869f7](https://github.com/googleapis/google-cloud-go/commit/f9869f7903cfd34d1b97c25d0dc5669d2c5138e6))
+
+## [0.9.3](https://github.com/googleapis/google-cloud-go/compare/auth/v0.9.2...auth/v0.9.3) (2024-09-03)
+
+
+### Bug Fixes
+
+* **auth:** Choose quota project envvar over file when both present ([#10807](https://github.com/googleapis/google-cloud-go/issues/10807)) ([2d8dd77](https://github.com/googleapis/google-cloud-go/commit/2d8dd7700eff92d4b95027be55e26e1e7aa79181)), refs [#10804](https://github.com/googleapis/google-cloud-go/issues/10804)
+
 ## [0.9.2](https://github.com/googleapis/google-cloud-go/compare/auth/v0.9.1...auth/v0.9.2) (2024-08-30)
 
 

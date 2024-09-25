@@ -50,7 +50,7 @@ func TestOCStats(t *testing.T) {
 }
 
 func TestOCStats_SessionPool(t *testing.T) {
-	skipForPGTest(t)
+	skipUnsupportedPGTest(t)
 	DisableGfeLatencyAndHeaderMissingCountViews()
 	// expectedValues is a map of expected values for different configurations of
 	// multiplexed session env="GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS".

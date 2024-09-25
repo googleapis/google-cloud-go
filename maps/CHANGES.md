@@ -2,6 +2,43 @@
 
 
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.12.1...maps/v1.13.0) (2024-09-19)
+
+
+### Features
+
+* **maps/places:** Add `routing_parameters` to SearchNearbyRequest and SearchTextRequest ([0b3c268](https://github.com/googleapis/google-cloud-go/commit/0b3c268c564ffe0d87b0efc716f08afaf064b4cc))
+* **maps/routeoptimization:** A new field `cost_per_kilometer_below_soft_max` is added to message `.google.maps.routeoptimization.v1.DistanceLimit` ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A new field `route_modifiers` is added to message `.google.maps.routeoptimization.v1.Vehicle` ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A new message `RouteModifiers` is added ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** Minor fields and documentation update ([#10861](https://github.com/googleapis/google-cloud-go/issues/10861)) ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps:** New clients ([#10867](https://github.com/googleapis/google-cloud-go/issues/10867)) ([338ca6e](https://github.com/googleapis/google-cloud-go/commit/338ca6e9a104c4cb9dff57d015ecb5b4dbd01bc5))
+
+
+### Documentation
+
+* **maps/routeoptimization:** A comment for enum value `CODE_UNSPECIFIED` in enum `Code` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for enum value `DEFAULT_SOLVE` in enum `SolvingMode` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for enum value `RELAX_VISIT_TIMES_AND_SEQUENCE_AFTER_THRESHOLD` in enum `Level` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for field `code` in message `.google.maps.routeoptimization.v1.OptimizeToursValidationError` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for field `reasons` in message `.google.maps.routeoptimization.v1.SkippedShipment` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for field `validation_errors` in message `.google.maps.routeoptimization.v1.OptimizeToursResponse` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for message `OptimizeToursValidationError` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for message `TimeWindow` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+* **maps/routeoptimization:** A comment for method `BatchOptimizeTours` in service `RouteOptimization` is changed ([ba22f7b](https://github.com/googleapis/google-cloud-go/commit/ba22f7b5b8f21a39685017d2d8522456ce528c4c))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.12.0...maps/v1.12.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **maps:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Update comment link for ListTasks filter ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.7...maps/v1.12.0) (2024-08-20)
 
 
