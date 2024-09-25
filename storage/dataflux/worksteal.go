@@ -29,7 +29,7 @@ const (
 	defaultAlphabet = "ab"
 	// sleepDurationWhenIdle is the milliseconds we want each worker to sleep before checking
 	// the next update if it is idle.
-	sleepDurationWhenIdle = 200
+	sleepDurationWhenIdle = time.Duration(200)
 )
 
 // workerStatus indicates the status of a worker.
@@ -138,7 +138,7 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 		// Worker is active when it finds work in range channel.
 		if w.status == idle {
 			if len(w.lister.ranges) == 0 {
-				time.Sleep(time.Millisecond * time.Duration(sleepDurationWhenIdle))
+				time.Sleep(time.Millisecond * sleepDurationWhenIdle)
 				continue
 			} else {
 				newRange := <-w.lister.ranges

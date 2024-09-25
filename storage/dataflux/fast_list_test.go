@@ -40,7 +40,7 @@ func TestUpdateStartEndOffset(t *testing.T) {
 			wantEnd:   "",
 		},
 		{
-			desc:      "start is longer than prefix",
+			desc:      "start is longer and lexicographically before prefix",
 			start:     "abcqre",
 			end:       "",
 			prefix:    "pre",
@@ -63,7 +63,7 @@ func TestUpdateStartEndOffset(t *testing.T) {
 			wantStart: "",
 			wantEnd:   "",
 		},
-		// List objects within the given prefix.
+		// List bounded objects within the given prefix.
 		{
 			desc:      "start value contains prefix",
 			start:     "pre_a",
