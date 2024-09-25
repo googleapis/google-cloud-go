@@ -55,6 +55,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		attribute.String(metricLabelKeyDatabase, "[DATABASE]"),
 		attribute.String(metricLabelKeyClientUID, clientUID),
 		attribute.String(metricLabelKeyClientName, clientName),
+		attribute.String(monitoredResLabelKeyClientHash, "cloud_spanner_client_raw_metrics"),
 		attribute.String(monitoredResLabelKeyInstanceConfig, "unknown"),
 		attribute.String(monitoredResLabelKeyLocation, "global"),
 	}
