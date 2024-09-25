@@ -19,6 +19,7 @@ package spanner
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"math/big"
@@ -211,7 +212,7 @@ func (c *customArray) DecodeSpanner(val interface{}) error {
 	}
 	asSlice := listVal.AsSlice()
 	if len(asSlice) != 4 {
-		return fmt.Errorf("failed to decode customArray: expected array of length 4")
+		return errors.New("failed to decode customArray: expected array of length 4")
 	}
 	for i, vI := range asSlice {
 		vStr, ok := vI.(string)
