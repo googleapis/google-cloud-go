@@ -1265,6 +1265,15 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 		acode = t.ArrayElementType.Code
 		atypeAnnotation = t.ArrayElementType.TypeAnnotation
 	}
+
+	if code == sppb.TypeCode_PROTO && reflect.TypeOf(ptr).Elem().Kind() == reflect.Ptr {
+		pve := reflect.ValueOf(ptr).Elem()
+		if pve.IsNil() {
+			pve.Set(reflect.New(pve.Type().Elem()))
+		}
+		ptr = pve.Interface()
+	}
+
 	_, isNull := v.Kind.(*proto3.Value_NullValue)
 
 	// Do the decoding based on the type of ptr.
