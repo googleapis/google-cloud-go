@@ -178,7 +178,7 @@ func (bw *BulkWriter) Create(doc *DocumentRef, datum interface{}) (*BulkWriterJo
 
 	w, err := doc.newCreateWrites(datum)
 	if err != nil {
-		return nil, fmt.Errorf("firestore: cannot create %v with %v", doc.ID, datum)
+		return nil, fmt.Errorf("firestore: cannot create %v with %v. %w", doc.ID, datum, err)
 	}
 
 	if len(w) > 1 {
@@ -201,7 +201,7 @@ func (bw *BulkWriter) Delete(doc *DocumentRef, preconds ...Precondition) (*BulkW
 
 	w, err := doc.newDeleteWrites(preconds)
 	if err != nil {
-		return nil, fmt.Errorf("firestore: cannot delete doc %v", doc.ID)
+		return nil, fmt.Errorf("firestore: cannot delete doc %v. %w", doc.ID, err)
 	}
 
 	if len(w) > 1 {
@@ -224,7 +224,7 @@ func (bw *BulkWriter) Set(doc *DocumentRef, datum interface{}, opts ...SetOption
 
 	w, err := doc.newSetWrites(datum, opts)
 	if err != nil {
-		return nil, fmt.Errorf("firestore: cannot set %v on doc %v", datum, doc.ID)
+		return nil, fmt.Errorf("firestore: cannot set %v on doc %v. %w", datum, doc.ID, err)
 	}
 
 	if len(w) > 1 {
@@ -247,7 +247,7 @@ func (bw *BulkWriter) Update(doc *DocumentRef, updates []Update, preconds ...Pre
 
 	w, err := doc.newUpdatePathWrites(updates, preconds)
 	if err != nil {
-		return nil, fmt.Errorf("firestore: cannot update doc %v", doc.ID)
+		return nil, fmt.Errorf("firestore: cannot update doc %v. %w", doc.ID, err)
 	}
 
 	if len(w) > 1 {
