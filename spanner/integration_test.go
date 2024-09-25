@@ -63,9 +63,6 @@ import (
 )
 
 const (
-	directPathIPV6Prefix = "[2001:4860:8040"
-	directPathIPV4Prefix = "34.126"
-
 	singerDDLStatements               = "SINGER_DDL_STATEMENTS"
 	simpleDDLStatements               = "SIMPLE_DDL_STATEMENTS"
 	readDDLStatements                 = "READ_DDL_STATEMENTS"
@@ -2843,7 +2840,7 @@ func TestIntegration_StructTypes(t *testing.T) {
 					return fmt.Errorf("len(rows) = %d; want 1", len(rows))
 				}
 				if !rows[0].Valid {
-					return fmt.Errorf("rows[0] is NULL")
+					return errors.New("rows[0] is NULL")
 				}
 				var i, j int64
 				if err := rows[0].Row.Columns(&i, &j); err != nil {

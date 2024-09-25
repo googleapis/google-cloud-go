@@ -49,7 +49,6 @@ var (
 
 func TestMain(m *testing.M) {
 	flag.Parse()
-	fmt.Println("creating bucket")
 	if err := httpTestBucket.Create(testPrefix); err != nil {
 		log.Fatalf("test bucket creation failed: %v", err)
 	}
