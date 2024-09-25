@@ -51,6 +51,7 @@ const (
 	monitoredResLabelKeyInstance       = "instance_id"
 	monitoredResLabelKeyInstanceConfig = "instance_config"
 	monitoredResLabelKeyLocation       = "location"
+	monitoredResLabelKeyClientHash     = "client_hash"
 
 	// Metric labels
 	metricLabelKeyClientUID         = "client_uid"
@@ -75,7 +76,7 @@ const (
 // These are effectively const, but for testing purposes they are mutable
 var (
 	// duration between two metric exports
-	defaultSamplePeriod = 5 * time.Minute
+	defaultSamplePeriod = 1 * time.Minute
 
 	clientName = fmt.Sprintf("spanner-go/%v", internal.Version)
 
@@ -182,6 +183,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 			attribute.String(metricLabelKeyDatabase, database),
 			attribute.String(metricLabelKeyClientUID, clientUID),
 			attribute.String(metricLabelKeyClientName, clientName),
+			attribute.String(monitoredResLabelKeyClientHash, "cloud_spanner_client_raw_metrics"),
 			// Skipping instance config until we have a way to get it
 			attribute.String(monitoredResLabelKeyInstanceConfig, "unknown"),
 			attribute.String(monitoredResLabelKeyLocation, detectClientLocation(ctx)),

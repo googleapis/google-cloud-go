@@ -54,6 +54,7 @@ var (
 		monitoredResLabelKeyInstance:       true,
 		monitoredResLabelKeyInstanceConfig: true,
 		monitoredResLabelKeyLocation:       true,
+		monitoredResLabelKeyClientHash:     true,
 	}
 
 	errShutdown = fmt.Errorf("exporter is shutdown")
