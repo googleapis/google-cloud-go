@@ -19,8 +19,8 @@ package bigtable
 import (
 	"bytes"
 	"context"
-	"errors"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"sort"
