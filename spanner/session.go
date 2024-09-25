@@ -761,7 +761,6 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 			// wait for the session to be created
 			case <-pool.mayGetMultiplexedSession:
 			}
-			return
 		}()
 	}
 	pool.recordStat(context.Background(), MaxAllowedSessionsCount, int64(config.MaxOpened))
