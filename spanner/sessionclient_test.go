@@ -281,7 +281,7 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 			t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", created, expectedNumSessions)
 		}
 		// Check that all channels are used evenly.
-		channelCounts := make(map[*vkit.Client]int32)
+		channelCounts := make(map[spannerClient]int32)
 		for _, s := range consumer.sessions {
 			channelCounts[s.client]++
 		}

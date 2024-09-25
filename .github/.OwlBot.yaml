@@ -288,6 +288,7 @@ deep-remove-regex:
   - /internal/generated/snippets/managedidentities/apiv1/
   - /internal/generated/snippets/managedkafka/apiv1/
   - /internal/generated/snippets/maps/addressvalidation/apiv1/
+  - /internal/generated/snippets/maps/areainsights/apiv1/
   - /internal/generated/snippets/maps/fleetengine/apiv1/
   - /internal/generated/snippets/maps/fleetengine/delivery/apiv1/
   - /internal/generated/snippets/maps/places/apiv1/
@@ -434,6 +435,7 @@ deep-remove-regex:
   - /managedidentities/apiv1/
   - /managedkafka/apiv1/
   - /maps/addressvalidation/apiv1/
+  - /maps/areainsights/apiv1/
   - /maps/fleetengine/apiv1/
   - /maps/fleetengine/delivery/apiv1/
   - /maps/places/apiv1/
@@ -919,6 +921,8 @@ deep-copy-regex:
   - source: /google/cloud/managedkafka/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/addressvalidation/v1/cloud.google.com/go
+    dest: /
+  - source: /google/maps/areainsights/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/fleetengine/v1/cloud.google.com/go
     dest: /

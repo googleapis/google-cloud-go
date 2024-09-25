@@ -501,9 +501,8 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
-					switch s.(type) {
+					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						req, _ := s.(*sppb.ReadRequest)
 						// Validate the session is multiplexed
 						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
@@ -542,15 +541,13 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
-					switch s.(type) {
+					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						req, _ := s.(*sppb.ReadRequest)
 						// Validate the session is multiplexed
 						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
 						}
 					case *sppb.ExecuteSqlRequest:
-						req, _ := s.(*sppb.ExecuteSqlRequest)
 						// Validate the session is multiplexed
 						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
@@ -584,9 +581,8 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
-					switch s.(type) {
+					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						req, _ := s.(*sppb.ReadRequest)
 						// Validate the session is not multiplexed
 						if !testEqual(false, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
@@ -621,9 +617,8 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
-					switch s.(type) {
+					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						req, _ := s.(*sppb.ReadRequest)
 						// Verify that a multiplexed session is used when that is enabled.
 						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
@@ -4452,13 +4447,13 @@ func TestClient_CallOptions(t *testing.T) {
 
 	cs := &gax.CallSettings{}
 	// This is the default retry setting.
-	c.CallOptions.CreateSession[1].Resolve(cs)
+	c.CallOptions().CreateSession[1].Resolve(cs)
 	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{250000000 32000000000 1.3 0} [14 8]}"; got != want {
 		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
 	}
 
 	// This is the custom retry setting.
-	c.CallOptions.CreateSession[2].Resolve(cs)
+	c.CallOptions().CreateSession[2].Resolve(cs)
 	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{200000000 30000000000 1.25 0} [14 4]}"; got != want {
 		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
 	}

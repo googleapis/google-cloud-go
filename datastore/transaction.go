@@ -403,6 +403,11 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 			return nil, err
 		}
 
+		// If this is the last attempt, exit without delaying.
+		if n+1 == settings.attempts {
+			return nil, err
+		}
+
 		// Check if error should be retried
 		code, errConvert := grpcStatusCode(retryErr)
 		if errConvert != nil && code == codes.ResourceExhausted {

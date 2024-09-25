@@ -207,6 +207,18 @@ func (c *Client) OptimizeTours(ctx context.Context, req *routeoptimizationpb.Opt
 // contains a ShipmentModel and returns an OptimizeToursResponse
 // containing ShipmentRoutes, which are a set of routes to be performed by
 // vehicles minimizing the overall cost.
+//
+// The user can poll operations.get to check the status of the LRO:
+//
+// If the LRO’s done field is false, then at least one request is still
+// being processed. Other requests may have completed successfully and their
+// results are available in GCS.
+//
+// If the LRO’s done field is true, then all requests have been processed.
+// Any successfully processed requests will have their results available in
+// GCS. Any requests that failed will not have their results available in
+// GCS. If the LRO’s error field is set, then it contains the error from
+// one of the failed requests.
 func (c *Client) BatchOptimizeTours(ctx context.Context, req *routeoptimizationpb.BatchOptimizeToursRequest, opts ...gax.CallOption) (*BatchOptimizeToursOperation, error) {
 	return c.internalClient.BatchOptimizeTours(ctx, req, opts...)
 }
@@ -600,6 +612,18 @@ func (c *restClient) OptimizeTours(ctx context.Context, req *routeoptimizationpb
 // contains a ShipmentModel and returns an OptimizeToursResponse
 // containing ShipmentRoutes, which are a set of routes to be performed by
 // vehicles minimizing the overall cost.
+//
+// The user can poll operations.get to check the status of the LRO:
+//
+// If the LRO’s done field is false, then at least one request is still
+// being processed. Other requests may have completed successfully and their
+// results are available in GCS.
+//
+// If the LRO’s done field is true, then all requests have been processed.
+// Any successfully processed requests will have their results available in
+// GCS. Any requests that failed will not have their results available in
+// GCS. If the LRO’s error field is set, then it contains the error from
+// one of the failed requests.
 func (c *restClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizationpb.BatchOptimizeToursRequest, opts ...gax.CallOption) (*BatchOptimizeToursOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

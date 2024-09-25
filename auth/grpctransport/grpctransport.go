@@ -40,7 +40,7 @@ const (
 	// Check env to decide if using google-c2p resolver for DirectPath traffic.
 	enableDirectPathXdsEnvVar = "GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS"
 
-	quotaProjectHeaderKey = "X-Goog-User-Project"
+	quotaProjectHeaderKey = "X-goog-user-project"
 )
 
 var (
@@ -273,7 +273,10 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			if metadata == nil {
 				metadata = make(map[string]string, 1)
 			}
-			metadata[quotaProjectHeaderKey] = qp
+			// Don't overwrite user specified quota
+			if _, ok := metadata[quotaProjectHeaderKey]; !ok {
+				metadata[quotaProjectHeaderKey] = qp
+			}
 		}
 		grpcOpts = append(grpcOpts,
 			grpc.WithPerRPCCredentials(&grpcCredentialsProvider{

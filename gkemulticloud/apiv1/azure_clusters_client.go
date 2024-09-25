@@ -246,7 +246,7 @@ func defaultAzureClustersCallOptions() *AzureClustersCallOptions {
 	}
 }
 
-// internalAzureClustersClient is an interface that defines the methods available from Anthos Multi-Cloud API.
+// internalAzureClustersClient is an interface that defines the methods available from GKE Multi-Cloud API.
 type internalAzureClustersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -284,7 +284,7 @@ type internalAzureClustersClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// AzureClustersClient is a client for interacting with Anthos Multi-Cloud API.
+// AzureClustersClient is a client for interacting with GKE Multi-Cloud API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The AzureClusters API provides a single centrally managed service
@@ -543,7 +543,7 @@ func (c *AzureClustersClient) ListOperations(ctx context.Context, req *longrunni
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// azureClustersGRPCClient is a client for interacting with Anthos Multi-Cloud API over gRPC transport.
+// azureClustersGRPCClient is a client for interacting with GKE Multi-Cloud API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type azureClustersGRPCClient struct {
