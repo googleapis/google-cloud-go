@@ -189,8 +189,18 @@ func (c *Lister) Close() {
 }
 
 // updateStartEndOffset updates start and end offset based on prefix.
-// If a prefix is given, start and end should contain the value after prefix.
-// For example, if start is "prefix_a", then start should be "_a".
+// If a prefix is given, adjust start and end value such that it lists
+// objects with the given prefix. updateStartEndOffset assumes prefix will
+// be added to the object name while listing objects in worksteal algorithm.
+//
+//	For example:
+//	start = "abc",  end = "prefix_a", prefix = "prefix",
+//
+//	end will change to "_a", prefix will be added in worksteal algorithm.
+//	"abc" is lexicographically smaller than "prefix". So start will be the first
+//	object with the given prefix.
+//
+//	Therefore start will change to ""(empty string) and end to "_a" .
 func updateStartEndOffset(start, end, prefix string) (string, string) {
 	if prefix == "" {
 		return start, end

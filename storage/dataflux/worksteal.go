@@ -67,7 +67,7 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 	var workerErr []error
 	// Idle channel is used to track number of idle workers.
 	idleChannel := make(chan int, c.parallelism)
-	// Result channel is used to track the results from each worker.
+	// Result is used to store results from each worker.
 	result := &listerResult{
 		objects: []*storage.ObjectAttrs{},
 	}
