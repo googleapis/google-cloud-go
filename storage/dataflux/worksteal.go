@@ -147,36 +147,19 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 			}
 		}
 		// Active worker to list next page of objects within the range.
-		nextPageResult, err := objectLister(ctx, nextPageOpts{
-			startRange:           w.startRange,
-			endRange:             w.endRange,
-			bucketHandle:         w.lister.bucket,
-			query:                w.lister.query,
-			skipDirectoryObjects: w.lister.skipDirectoryObjects,
-			generation:           w.generation,
-		})
+		doneListing, err := w.objectLister(ctx)
 		if err != nil {
-			return fmt.Errorf("listing next page for worker ID %v,  err: %w", w.goroutineID, err)
+			return fmt.Errorf("objectLister failed: %w", err)
 		}
 
-		// Append objects listed by objectLister to result.
-		w.result.mu.Lock()
-		w.result.objects = append(w.result.objects, nextPageResult.items...)
-		w.result.mu.Unlock()
-
-		// Listing completed for default page size for the given range.
-		// Update current worker start range to new range and generation
-		// of the last objects listed if versions is true.
-		w.startRange = nextPageResult.nextStartRange
-		w.generation = nextPageResult.generation
-
 		// If listing is complete for the range, make worker idle and continue.
-		if nextPageResult.doneListing {
+		if doneListing {
 			w.status = idle
 			w.idleChannel <- 1
 			w.generation = int64(0)
 			continue
 		}
+
 		// If listing not complete and idle workers are available, split the range and give half of work to idle worker.
 		if len(w.idleChannel)-len(w.lister.ranges) > 0 && ctx.Err() == nil {
 			// Split range and upload half of work for idle worker.
@@ -200,15 +183,15 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 // shutDownSignal returns true if all the workers are idle and the or number of objects listed is equal to page size.
 func (w *worker) shutDownSignal() bool {
 	// If all the workers are idle and range channel is empty, no more objects to list.
+	noMoreObjects := len(w.idleChannel) == w.lister.parallelism && len(w.lister.ranges) == 0
+	// If number of objects listed is equal to the given batchSize, then shutdown.
+	// If batch size is not given i.e. 0, then list until all objects have been listed.
+	alreadyListedBatchSizeObjects := len(w.idleChannel) == w.lister.parallelism && len(w.lister.ranges) == 0
 	if len(w.idleChannel) == w.lister.parallelism && len(w.lister.ranges) == 0 {
 		return true
 	}
-	// If number of objects listed is equal to the given batchSize, then shutdown.
-	// If batch size is not given i.e. 0, then list until all objects have been listed.
-	if w.lister.batchSize > 0 && len(w.result.objects) >= w.lister.batchSize {
-		return true
-	}
-	return false
+
+	return noMoreObjects || alreadyListedBatchSizeObjects
 }
 
 // updateWorker updates the worker's start range, end range and status.
@@ -217,6 +200,33 @@ func (w *worker) updateWorker(startRange, endRange string, status workerStatus) 
 	w.endRange = endRange
 	w.status = status
 	w.generation = int64(0)
+}
+
+func (w *worker) objectLister(ctx context.Context) (bool, error) {
+	// Active worker to list next page of objects within the range.
+	nextPageResult, err := nextPage(ctx, nextPageOpts{
+		startRange:           w.startRange,
+		endRange:             w.endRange,
+		bucketHandle:         w.lister.bucket,
+		query:                w.lister.query,
+		skipDirectoryObjects: w.lister.skipDirectoryObjects,
+		generation:           w.generation,
+	})
+	if err != nil {
+		return false, fmt.Errorf("listing next page for worker ID %v,  err: %w", w.goroutineID, err)
+	}
+
+	// Append objects listed by objectLister to result.
+	w.result.mu.Lock()
+	w.result.objects = append(w.result.objects, nextPageResult.items...)
+	w.result.mu.Unlock()
+
+	// Listing completed for default page size for the given range.
+	// Update current worker start range to new range and generation
+	// of the last objects listed if versions is true.
+	w.startRange = nextPageResult.nextStartRange
+	w.generation = nextPageResult.generation
+	return nextPageResult.doneListing, nil
 }
 
 // nextPageOpts specifies options for next page of listing result .
@@ -248,8 +258,8 @@ type nextPageResult struct {
 	generation int64
 }
 
-// objectLister lists objects using the given lister options.
-func objectLister(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
+// nextPage lists objects using the given lister options.
+func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 
 	// TODO: Implement objectLister.
 
