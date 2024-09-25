@@ -44,7 +44,7 @@ func (o *Operation) Name() string {
 }
 
 // Wait blocks until the operation is complete, polling regularly
-// after an intial period of backing off between attempts.
+// after an initial period of backing off between attempts.
 func (o *Operation) Wait(ctx context.Context, opts ...gax.CallOption) error {
 	bo := gax.Backoff{
 		Initial: time.Second,

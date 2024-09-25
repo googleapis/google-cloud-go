@@ -688,6 +688,9 @@ func (c *dataStoreRESTClient) CreateDataStore(ctx context.Context, req *discover
 		params.Add("createAdvancedSiteSearch", fmt.Sprintf("%v", req.GetCreateAdvancedSiteSearch()))
 	}
 	params.Add("dataStoreId", fmt.Sprintf("%v", req.GetDataStoreId()))
+	if req.GetSkipDefaultSchemaCreation() {
+		params.Add("skipDefaultSchemaCreation", fmt.Sprintf("%v", req.GetSkipDefaultSchemaCreation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

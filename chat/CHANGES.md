@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.5.0...chat/v0.6.0) (2024-09-19)
+
+
+### Features
+
+* **chat:** If you're a domain administrator or a delegated administrator, you can now include the `useAdminAccess` parameter when you call the Chat API with your administrator privileges with the following methods to manage Chat spaces and memberships... ([#10858](https://github.com/googleapis/google-cloud-go/issues/10858)) ([b45d2ee](https://github.com/googleapis/google-cloud-go/commit/b45d2ee9488b74505c045d009835875e3e2291fe))
+
+
+### Documentation
+
+* **chat:** A comment for field `filter` in message `.google.chat.v1.ListMembershipsRequest` is updated to support `!=` operator ([b45d2ee](https://github.com/googleapis/google-cloud-go/commit/b45d2ee9488b74505c045d009835875e3e2291fe))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.4.0...chat/v0.5.0) (2024-09-12)
+
+
+### Features
+
+* **chat:** Add CHAT_SPACE link type support for GA launch ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+
+
+### Bug Fixes
+
+* **chat:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.3.1...chat/v0.4.0) (2024-08-20)
 
 

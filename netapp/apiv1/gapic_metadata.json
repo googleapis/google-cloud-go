@@ -245,6 +245,11 @@
                 "StopReplication"
               ]
             },
+            "SwitchActiveReplicaZone": {
+              "methods": [
+                "SwitchActiveReplicaZone"
+              ]
+            },
             "UpdateActiveDirectory": {
               "methods": [
                 "UpdateActiveDirectory"
@@ -533,6 +538,11 @@
             "StopReplication": {
               "methods": [
                 "StopReplication"
+              ]
+            },
+            "SwitchActiveReplicaZone": {
+              "methods": [
+                "SwitchActiveReplicaZone"
               ]
             },
             "UpdateActiveDirectory": {

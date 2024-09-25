@@ -17,7 +17,7 @@ package datastore
 import (
 	"fmt"
 
-	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 )
 
 // A Mutation represents a change to a Datastore entity.
@@ -122,7 +122,7 @@ func mutationProtos(muts []*Mutation) ([]*pb.Mutation, error) {
 	seen := map[string]bool{}
 	for _, m := range muts {
 		if m.isDelete() {
-			ks := m.key.String()
+			ks := m.key.stringInternal()
 			if seen[ks] {
 				continue
 			}
