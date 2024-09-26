@@ -1006,7 +1006,6 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	s := callSettings(c.settings, opts...)
 
 	s.gax = append(s.gax, gax.WithGRPCOptions(
-		// grpc.ForceCodec(bytesCodec{}),
 		grpc.ForceCodecV2(bytesCodecV2{}),
 	))
 
@@ -1525,19 +1524,17 @@ type readStreamResponse struct {
 }
 
 type gRPCReader struct {
-	seen, size  int64
-	zeroRange   bool
-	stream      storagepb.Storage_ReadObjectClient
-	reopen      func(seen int64) (*readStreamResponse, context.CancelFunc, error)
-	leftovers   []byte
-	databuf     *mem.BufferSlice
-	dataOffsets *bufferSliceOffsets
-	currMsg     *readResponseDecoder
-	cancel      context.CancelFunc
-	settings    *settings
-	checkCRC    bool   // should we check the CRC?
-	wantCRC     uint32 // the CRC32c value the server sent in the header
-	gotCRC      uint32 // running crc
+	seen, size int64
+	zeroRange  bool
+	stream     storagepb.Storage_ReadObjectClient
+	reopen     func(seen int64) (*readStreamResponse, context.CancelFunc, error)
+	leftovers  []byte
+	currMsg    *readResponseDecoder // decoder for the current message
+	cancel     context.CancelFunc
+	settings   *settings
+	checkCRC   bool   // should we check the CRC?
+	wantCRC    uint32 // the CRC32c value the server sent in the header
+	gotCRC     uint32 // running crc
 }
 
 // Update the running CRC with the data in the slice, if CRC checking was enabled.
