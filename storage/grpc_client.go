@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"log"
 	"net/url"
 	"os"
 
@@ -957,40 +958,6 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	return r, nil
 }
 
-// bytesCodec is a grpc codec which permits receiving messages as either
-// protobuf messages, or as raw []bytes.
-type bytesCodec struct {
-	encoding.Codec
-}
-
-func (bytesCodec) Marshal(v any) ([]byte, error) {
-	vv, ok := v.(proto.Message)
-	if !ok {
-		return nil, fmt.Errorf("failed to marshal, message is %T, want proto.Message", v)
-	}
-	return proto.Marshal(vv)
-}
-
-func (bytesCodec) Unmarshal(data []byte, v any) error {
-	switch v := v.(type) {
-	case *[]byte:
-		// If gRPC could recycle the data []byte after unmarshaling (through
-		// buffer pools), we would need to make a copy here.
-		*v = data
-		return nil
-	case proto.Message:
-		return proto.Unmarshal(data, v)
-	default:
-		return fmt.Errorf("can not unmarshal type %T", v)
-	}
-}
-
-func (bytesCodec) Name() string {
-	// If this isn't "", then gRPC sets the content-subtype of the call to this
-	// value and we get errors.
-	return ""
-}
-
 type bytesCodecV2 struct {
 	encoding.CodecV2
 }
@@ -1058,8 +1025,6 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		req.Generation = params.gen
 	}
 
-	// var databuf []byte
-
 	// Define a function that initiates a Read with offset and length, assuming
 	// we have already read seen bytes.
 	reopen := func(seen int64) (*readStreamResponse, context.CancelFunc, error) {
@@ -1085,10 +1050,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		}
 
 		var stream storagepb.Storage_ReadObjectClient
-		var msg *storagepb.ReadObjectResponse
-		// var offsets *bufferSliceOffsets
-		var databuf *mem.BufferSlice
 		var err error
+		var decoder *readResponseDecoder
 
 		err = run(cc, func(ctx context.Context) error {
 			stream, err = c.raw.ReadObject(ctx, req, s.gax...)
@@ -1098,6 +1061,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 			// Receive the message into databuf as a wire-encoded message so we can
 			// use a custom decoder to avoid an extra copy at the protobuf layer.
+			databuf := &mem.BufferSlice{}
 			err := stream.RecvMsg(databuf)
 			// These types of errors show up on the Recv call, rather than the
 			// initialization of the stream via ReadObject above.
@@ -1108,14 +1072,12 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 				return err
 			}
 			// Use a custom decoder that uses protobuf unmarshalling for all
-			// fields except the checksummed data.
-			// Subsequent receives in Read calls will skip all protobuf
-			// unmarshalling and directly read the content from the gRPC []byte
-			// response, since only the first call will contain other fields.
-			decoder := &readResponseDecoder{
+			// fields except the object data. Object data is handled separately
+			// to avoid a copy.
+			decoder = &readResponseDecoder{
 				databufs: databuf,
 			}
-			msg, _, err = decoder.readFullObjectResponse()
+			err = decoder.readFullObjectResponse()
 
 			return err
 		}, s.retry, s.idempotent)
@@ -1126,7 +1088,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			return nil, nil, err
 		}
 
-		return &readStreamResponse{stream, msg}, cancel, nil
+		return &readStreamResponse{stream, decoder}, cancel, nil
 	}
 
 	res, cancel, err := reopen(0)
@@ -1136,7 +1098,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 	// The first message was Recv'd on stream open, use it to populate the
 	// object metadata.
-	msg := res.response
+	msg := res.decoder.msg
 	obj := msg.GetMetadata()
 	// This is the size of the entire object, even if only a range was requested.
 	size := obj.GetSize()
@@ -1169,14 +1131,12 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			reopen: reopen,
 			cancel: cancel,
 			size:   size,
-			// Store the content from the first Recv in the
-			// client buffer for reading later.
-			leftovers: msg.GetChecksummedData().GetContent(),
+			// Preserve the decoder to read out object data when Read/WriteTo is called.
+			currMsg:   res.decoder,
 			settings:  s,
 			zeroRange: params.length == 0,
-			// databuf:   databuf,
-			wantCRC:  wantCRC,
-			checkCRC: checkCRC,
+			wantCRC:   wantCRC,
+			checkCRC:  checkCRC,
 		},
 		checkCRC: checkCRC,
 	}
@@ -1560,8 +1520,8 @@ func setUserProjectMetadata(ctx context.Context, project string) context.Context
 }
 
 type readStreamResponse struct {
-	stream   storagepb.Storage_ReadObjectClient
-	response *storagepb.ReadObjectResponse
+	stream  storagepb.Storage_ReadObjectClient
+	decoder *readResponseDecoder
 }
 
 type gRPCReader struct {
@@ -1572,6 +1532,7 @@ type gRPCReader struct {
 	leftovers   []byte
 	databuf     *mem.BufferSlice
 	dataOffsets *bufferSliceOffsets
+	currMsg     *readResponseDecoder
 	cancel      context.CancelFunc
 	settings    *settings
 	checkCRC    bool   // should we check the CRC?
@@ -1614,27 +1575,24 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 	}
 
 	var n int
-	// Read leftovers and return what was available to conform to the Reader
+
+	// If there is data remaining in the current message, return what was
+	// available to conform to the Reader
 	// interface: https://pkg.go.dev/io#Reader.
-	if len(r.leftovers) > 0 {
-		n = copy(p, r.leftovers)
+	if !r.currMsg.done {
+		n = r.currMsg.readAndUpdateCRC(p, func(b []byte) {
+			r.updateCRC(b)
+		})
 		r.seen += int64(n)
-		r.updateCRC(p[:n])
-		r.leftovers = r.leftovers[n:]
 		return n, nil
 	}
 
 	// Attempt to Recv the next message on the stream.
-	// This will return a mem.BufferSlice containing encoded data.
-	// databufs, err := r.recv()
-	var err error
+	// This will update r.currMsg with the decoder for the new message.
+	err := r.recv()
 	if err != nil {
 		return 0, err
 	}
-	// startBuf, startOff, endBuf, endOff, err := findFieldOffsets(databufs, checksummedDataField)
-	// if err != nil {
-	// 	return 0, err
-	// }
 
 	// TODO: Determine if we need to capture incremental CRC32C for this
 	// chunk. The Object CRC32C checksum is captured when directed to read
@@ -1644,44 +1602,12 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 	// TODO: Figure out if we need to support decompressive transcoding
 	// https://cloud.google.com/storage/docs/transcoding.
 
-	var content []byte
-	n = copy(p[n:], content)
-	leftover := len(content) - n
-	if leftover > 0 {
-		// Wasn't able to copy all of the data in the message, store for
-		// future Read calls.
-		r.leftovers = content[n:]
-	}
+	n = r.currMsg.readAndUpdateCRC(p, func(b []byte) {
+		r.updateCRC(b)
+	})
 	r.seen += int64(n)
-	r.updateCRC(p[:n])
-
 	return n, nil
 }
-
-// func findFieldOffsets(databuf *mem.BufferSlice, num protowire.Number) (startBuf, startOff, endBuf, endOff int64, err error) {
-// 	off := 0
-// 	d.currBuf := 0
-// 	for off < databufs.Len() {
-// 		b := (*databufs)[d.currBuf].ReadOnlyData()
-// 		gotNum, gotTyp, n := protowire.ConsumeTag(b[off:])
-// 		if n < 0 {
-// 			return 0, protowire.ParseError(n)
-// 		}
-// 		off += n
-// 		if gotNum == num && gotTyp == protowire.BytesType {
-// 			b, n := protowire.ConsumeBytes(b[off:])
-// 			if n < 0 {
-// 				return nil, protowire.ParseError(n)
-// 			}
-// 			return b, nil
-// 		}
-// 		n = protowire.ConsumeFieldValue(gotNum, gotTyp, b[off:])
-// 		if n < 0 {
-// 			return nil, protowire.ParseError(n)
-// 		}
-// 		off += n
-// 	}
-// }
 
 // WriteTo writes all the data requested by the Reader into w, implementing
 // io.WriterTo.
@@ -1706,14 +1632,14 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 	// Track bytes written during before call.
 	var alreadySeen = r.seen
 
-	// Write any leftovers to the stream. There will be some leftovers from the
+	// Write any already received message to the stream. There will be some leftovers from the
 	// original NewRangeReader call.
-	if len(r.leftovers) > 0 {
-		// Write() will write the entire leftovers slice unless there is an error.
-		written, err := w.Write(r.leftovers)
+	if r.currMsg != nil && !r.currMsg.done {
+		written, err := r.currMsg.writeToAndUpdateCRC(w, func(b []byte) {
+			r.updateCRC(b)
+		})
 		r.seen += int64(written)
-		r.updateCRC(r.leftovers)
-		r.leftovers = nil
+		r.currMsg = nil
 		if err != nil {
 			return r.seen - alreadySeen, err
 		}
@@ -1725,7 +1651,6 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 		// Will terminate with io.EOF once data has all come through.
 		// recv() handles stream reopening and retry logic so no need for retries here.
 		err := r.recv()
-		var msg []byte
 		if err != nil {
 			if err == io.EOF {
 				// We are done; check the checksum if necessary and return.
@@ -1741,9 +1666,10 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 		// present in the response here.
 		// TODO: Figure out if we need to support decompressive transcoding
 		// https://cloud.google.com/storage/docs/transcoding.
-		written, err := w.Write(msg)
+		written, err := r.currMsg.writeToAndUpdateCRC(w, func(b []byte) {
+			r.updateCRC(b)
+		})
 		r.seen += int64(written)
-		r.updateCRC(msg)
 		if err != nil {
 			return r.seen - alreadySeen, err
 		}
@@ -1773,8 +1699,8 @@ func (r *gRPCReader) Close() error {
 // The last error received is the one that is returned, which could be from
 // an attempt to reopen the stream.
 func (r *gRPCReader) recv() error {
-	var databuf *mem.BufferSlice
-	err := r.stream.RecvMsg(databuf)
+	r.currMsg = &readResponseDecoder{}
+	err := r.stream.RecvMsg(r.currMsg.databufs)
 
 	var shouldRetry = ShouldRetry
 	if r.settings.retry != nil && r.settings.retry.shouldRetry != nil {
@@ -1784,10 +1710,8 @@ func (r *gRPCReader) recv() error {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is
-		// successful, the next logical chunk will be returned.
-		_, err := r.reopenStream()
-		return err // fix this later
-		// return msg.GetChecksummedData().GetContent(), err
+		// successful, r.currMsg will be updated to include the new data.
+		return r.reopenStream()
 	}
 
 	if err != nil {
@@ -1807,16 +1731,26 @@ const (
 	metadataField               = protowire.Number(4)
 )
 
-type bufferSliceOffsets struct {
-	startBuf, endBuf int
-	startOff, endOff uint64
-}
-
+// readResponseDecoder is a wrapper on the raw message, used to decode one message
+// without copying object data. It also has methods to write out the resulting object
+// data to the user application.
 type readResponseDecoder struct {
 	databufs *mem.BufferSlice // raw bytes of the message being processed
-	off      uint64           // overall offset in the message data
-	currBuf  int              // index of the current buffer being processed
-	currOff  uint64           // offset in the current buffer
+	// Decoding offsets
+	off     uint64 // offset in the messsage relative to the data as a whole
+	currBuf int    // index of the current buffer being processed
+	currOff uint64 // offset in the current buffer
+	// Processed data
+	msg         *storagepb.ReadObjectResponse // processed response message with all fields other than object data populated
+	dataOffsets *bufferSliceOffsets           // offsets of the object data in the message.
+	done        bool                          // true if the data has been completely read.
+}
+
+type bufferSliceOffsets struct {
+	startBuf, endBuf int    // inidices of start and end buffers of object data in the msg
+	startOff, endOff uint64 // offsets within these buffers where the data starts and ends.
+	currBuf          int    // index of current buffer being read out to the user application.
+	currOff          uint64 // offset of read in current buffer.
 }
 
 // peek ahead 10 bytes from the current offset in the databufs. This will return a
@@ -1833,11 +1767,62 @@ func (d *readResponseDecoder) peek() []byte {
 	// without it being divided between buffers.
 	tagBuf := b[d.currOff:]
 	remainingInBuf := len(tagBuf)
-	fmt.Printf("tagbuf: %v, b: %v, d.off: %v\n", len(tagBuf), len(b), d.off)
+	log.Printf("calling tag at offset %v", d.off)
+	log.Printf("tagbuf: %v, b: %v, d.off: %v\n", len(tagBuf), len(b), d.off)
 	if remainingInBuf < binary.MaxVarintLen64 {
+		log.Print("copying buf")
 		tagBuf = append(b[d.currOff:], ((*d.databufs)[d.currBuf+1].ReadOnlyData()[:binary.MaxVarintLen64-remainingInBuf])...)
 	}
 	return tagBuf
+}
+
+// This copies object data from the message into the buffer and returns the number of
+// bytes copied. The data offsets are incremented in the message. The updateCRC
+// function is called on the copied bytes.
+func (d *readResponseDecoder) readAndUpdateCRC(p []byte, updateCRC func([]byte)) int {
+	databuf := (*d.databufs)[d.dataOffsets.currBuf]
+	b := databuf.ReadOnlyData()
+	off := d.dataOffsets.currOff
+	n := copy(p, b[off:])
+	updateCRC(b[off:(off + uint64(n))])
+	d.dataOffsets.currOff += uint64(n)
+	// We are at the end of the current buffer
+	if d.dataOffsets.currOff == uint64(databuf.Len()) {
+		d.dataOffsets.currOff = 0
+		// We've read all the data from this message. Free the underlying buffers.
+		if d.dataOffsets.currBuf == d.dataOffsets.endBuf {
+			d.done = true
+			d.databufs.Free()
+		} else {
+			d.dataOffsets.currBuf++
+		}
+	}
+	return n
+}
+
+func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, updateCRC func([]byte)) (int64, error) {
+	var written int64
+	for !d.done {
+		databuf := (*d.databufs)[d.dataOffsets.currBuf]
+		b := databuf.ReadOnlyData()
+		off := d.dataOffsets.currOff
+		// Write all remaining data from the current buffer.
+		n, err := w.Write(b[off:])
+		written += int64(n)
+		updateCRC(b[off:])
+		if err != nil {
+			return written, err
+		}
+		d.dataOffsets.currOff = 0
+		// We've read all the data from this message.
+		if d.dataOffsets.currBuf == d.dataOffsets.endBuf {
+			d.done = true
+			d.databufs.Free()
+		} else {
+			d.dataOffsets.currBuf++
+		}
+	}
+	return written, nil
 }
 
 // Consume the next available tag in the input data and return the field number and type.
@@ -2072,7 +2057,7 @@ func (d *readResponseDecoder) consumeBytesCopy() ([]byte, error) {
 // This function is essentially identical to proto.Unmarshal, except it aliases
 // the data in the input []byte. If the proto library adds a feature to
 // Unmarshal that does that, this function can be dropped.
-func (d *readResponseDecoder) readFullObjectResponse() (*storagepb.ReadObjectResponse, *bufferSliceOffsets, error) {
+func (d *readResponseDecoder) readFullObjectResponse() error {
 	msg := &storagepb.ReadObjectResponse{}
 	var dataOffsets *bufferSliceOffsets
 
@@ -2082,7 +2067,7 @@ func (d *readResponseDecoder) readFullObjectResponse() (*storagepb.ReadObjectRes
 	for d.off < uint64(d.databufs.Len()) {
 		fieldNum, fieldType, err := d.consumeTag()
 		if err != nil {
-			return nil, nil, fmt.Errorf("consuming next tag: %w", err)
+			return fmt.Errorf("consuming next tag: %w", err)
 		}
 
 		// Unmarshal the field according to its type. Only fields that are not
@@ -2095,14 +2080,14 @@ func (d *readResponseDecoder) readFullObjectResponse() (*storagepb.ReadObjectRes
 			// offsets, err := d.consumeBytes()
 			bytesFieldLen, err := d.consumeVarint()
 			if err != nil {
-				return nil, nil, fmt.Errorf("consuming bytes: %v", err)
+				return fmt.Errorf("consuming bytes: %v", err)
 			}
 
 			var contentEndOff = d.off + bytesFieldLen
 			for d.off < contentEndOff {
 				gotNum, gotTyp, err := d.consumeTag()
 				if err != nil {
-					return nil, nil, fmt.Errorf("consuming checksummedData tag: %w", err)
+					return fmt.Errorf("consuming checksummedData tag: %w", err)
 				}
 
 				switch {
@@ -2110,12 +2095,12 @@ func (d *readResponseDecoder) readFullObjectResponse() (*storagepb.ReadObjectRes
 					// Get the offsets of the content bytes.
 					dataOffsets, err = d.consumeBytes()
 					if err != nil {
-						return nil, nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Content: %w", err)
+						return fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Content: %w", err)
 					}
 				case gotNum == checksummedDataCRC32CField && gotTyp == protowire.Fixed32Type:
 					v, err := d.consumeFixed32()
 					if err != nil {
-						return nil, nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Crc32C: %w", err)
+						return fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Crc32C: %w", err)
 					}
 					msg.ChecksummedData.Crc32C = &v
 				default:
@@ -2124,7 +2109,7 @@ func (d *readResponseDecoder) readFullObjectResponse() (*storagepb.ReadObjectRes
 					// TODO: check about this...
 					err := d.consumeFieldValue(gotNum, gotTyp)
 					if err != nil {
-						return nil, nil, fmt.Errorf("invalid field in ReadObjectResponse.ChecksummedData: %w", err)
+						return fmt.Errorf("invalid field in ReadObjectResponse.ChecksummedData: %w", err)
 					}
 				}
 			}
@@ -2134,56 +2119,58 @@ func (d *readResponseDecoder) readFullObjectResponse() (*storagepb.ReadObjectRes
 			// Consume the bytes and copy them into a single buffer if they are split across buffers.
 			buf, err := d.consumeBytesCopy()
 			if err != nil {
-				return nil, nil, fmt.Errorf("invalid ReadObjectResponse.ObjectChecksums: %v", err)
+				return fmt.Errorf("invalid ReadObjectResponse.ObjectChecksums: %v", err)
 			}
 			// Unmarshal.
 			if err := proto.Unmarshal(buf, msg.ObjectChecksums); err != nil {
-				return nil, nil, err
+				return err
 			}
 		case fieldNum == contentRangeField && fieldType == protowire.BytesType:
 			msg.ContentRange = &storagepb.ContentRange{}
 			buf, err := d.consumeBytesCopy()
 			if err != nil {
-				return nil, nil, fmt.Errorf("invalid ReadObjectResponse.ContentRange: %v", err)
+				return fmt.Errorf("invalid ReadObjectResponse.ContentRange: %v", err)
 			}
 			if err := proto.Unmarshal(buf, msg.ContentRange); err != nil {
-				return nil, nil, err
+				return err
 			}
 		case fieldNum == metadataField && fieldType == protowire.BytesType:
 			msg.Metadata = &storagepb.Object{}
 
 			buf, err := d.consumeBytesCopy()
 			if err != nil {
-				return nil, nil, fmt.Errorf("invalid ReadObjectResponse.Metadata: %v", err)
+				return fmt.Errorf("invalid ReadObjectResponse.Metadata: %v", err)
 			}
 
 			if err := proto.Unmarshal(buf, msg.Metadata); err != nil {
-				return nil, nil, err
+				return err
 			}
 		default:
 			err := d.consumeFieldValue(fieldNum, fieldType)
 			if err != nil {
-				return nil, nil, fmt.Errorf("invalid field in ReadObjectResponse: %w", err)
+				return fmt.Errorf("invalid field in ReadObjectResponse: %w", err)
 			}
 		}
 	}
-
-	return msg, dataOffsets, nil
+	d.msg = msg
+	d.dataOffsets = dataOffsets
+	return nil
 }
 
 // reopenStream "closes" the existing stream and attempts to reopen a stream and
 // sets the Reader's stream and cancelStream properties in the process.
-func (r *gRPCReader) reopenStream() (*storagepb.ReadObjectResponse, error) {
+func (r *gRPCReader) reopenStream() error {
 	// Close existing stream and initialize new stream with updated offset.
 	r.Close()
 
 	res, cancel, err := r.reopen(r.seen)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	r.stream = res.stream
+	r.currMsg = res.decoder
 	r.cancel = cancel
-	return res.response, nil
+	return nil
 }
 
 func newGRPCWriter(c *grpcStorageClient, params *openWriterParams, r io.Reader) *gRPCWriter {

@@ -173,18 +173,18 @@ func TestBytesCodecV2(t *testing.T) {
 						databufs: encodedBytes,
 					}
 
-					msg, offsets, err := decoder.readFullObjectResponse()
+					err = decoder.readFullObjectResponse()
 					if err != nil {
 						t.Fatalf("readFullObjectResponse: %v", err)
 					}
 
 					// Compare the result with the original ReadObjectResponse, without the content
-					if diff := cmp.Diff(msg, test.resp, protocmp.Transform(), protocmp.IgnoreMessages(&storagepb.ChecksummedData{})); diff != "" {
+					if diff := cmp.Diff(decoder.msg, test.resp, protocmp.Transform(), protocmp.IgnoreMessages(&storagepb.ChecksummedData{})); diff != "" {
 						t.Errorf("cmp.Diff message: got(-),want(+):\n%s", diff)
 					}
 
 					// Compare offsets
-					if diff := cmp.Diff(offsets, test.offsets, cmp.AllowUnexported(bufferSliceOffsets{})); diff != "" {
+					if diff := cmp.Diff(decoder.dataOffsets, test.offsets, cmp.AllowUnexported(bufferSliceOffsets{})); diff != "" {
 						t.Errorf("cmp.Diff offsets: got(-),want(+):\n%s", diff)
 					}
 				})
