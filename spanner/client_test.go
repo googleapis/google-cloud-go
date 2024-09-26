@@ -4387,75 +4387,75 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 }
 
-func TestClient_WithSpannerTracingHeader(t *testing.T) {
+func TestClient_WithEndToEndTracingHeader(t *testing.T) {
 	t.Parallel()
 
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	defer serverTeardown()
 
-	wantSpannerTracing := true
-	config := ClientConfig{EnableSpannerTracing: wantSpannerTracing}
+	wantEndToEndTracing := true
+	config := ClientConfig{EnableEndToEndTracing: wantEndToEndTracing}
 	client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
 	if err != nil {
 		t.Fatalf("failed to get a client: %v", err)
 	}
-	gotSpannerTracing := false
-	for _, val := range client.sc.md.Get(spannerTracingHeader) {
+	gotEndToEndTracing := false
+	for _, val := range client.sc.md.Get(endToEndTracingHeader) {
 		if val == "true" {
-			gotSpannerTracing = true
+			gotEndToEndTracing = true
 		}
 	}
-	if gotSpannerTracing != wantSpannerTracing {
-		t.Fatalf("mismatch in client configuration for property EnableSpannerTracing: got %v, want %v", gotSpannerTracing, wantSpannerTracing)
+	if gotEndToEndTracing != wantEndToEndTracing {
+		t.Fatalf("mismatch in client configuration for property EnableEndToEndTracing: got %v, want %v", gotEndToEndTracing, wantEndToEndTracing)
 	}
 }
 
-func TestClient_WithoutSpannerTracingHeader(t *testing.T) {
+func TestClient_WithoutEndToEndTracingHeader(t *testing.T) {
 	t.Parallel()
 
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	defer serverTeardown()
 
-	wantSpannerTracing := false
-	config := ClientConfig{EnableSpannerTracing: wantSpannerTracing}
+	wantEndToEndTracing := false
+	config := ClientConfig{EnableEndToEndTracing: wantEndToEndTracing}
 	client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
 	if err != nil {
 		t.Fatalf("failed to get a client: %v", err)
 	}
-	gotSpannerTracing := false
-	for _, val := range client.sc.md.Get(spannerTracingHeader) {
+	gotEndToEndTracing := false
+	for _, val := range client.sc.md.Get(endToEndTracingHeader) {
 		if val == "true" {
-			gotSpannerTracing = true
+			gotEndToEndTracing = true
 		}
 	}
-	if gotSpannerTracing != wantSpannerTracing {
-		t.Fatalf("mismatch in client configuration for property EnableSpannerTracing: got %v, want %v", gotSpannerTracing, wantSpannerTracing)
+	if gotEndToEndTracing != wantEndToEndTracing {
+		t.Fatalf("mismatch in client configuration for property EnableEndToEndTracing: got %v, want %v", gotEndToEndTracing, wantEndToEndTracing)
 	}
 }
 
-func TestClient_WithSpannerTracingHeaderUsingEnvironmentVariable(t *testing.T) {
-	// Set the env variable to opt-in for server side tracing.
-	old := os.Getenv("SPANNER_ENABLE_SPANNER_TRACING")
-	defer os.Setenv("SPANNER_ENABLE_SPANNER_TRACING", old)
-	os.Setenv("SPANNER_ENABLE_SPANNER_TRACING", "true")
+func TestClient_WithEndToEndTracingHeaderUsingEnvironmentVariable(t *testing.T) {
+	// Set the env variable to opt-in for end to end tracing.
+	old := os.Getenv("SPANNER_ENABLE_END_TO_END_TRACING")
+	defer os.Setenv("SPANNER_ENABLE_END_TO_END_TRACING", old)
+	os.Setenv("SPANNER_ENABLE_END_TO_END_TRACING", "true")
 
 	t.Parallel()
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	defer serverTeardown()
 
-	wantSpannerTracing := true
+	wantEndToEndTracing := true
 	client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{}, server.ServerAddress, opts...)
 	if err != nil {
 		t.Fatalf("failed to get a client: %v", err)
 	}
-	gotSpannerTracing := false
-	for _, val := range client.sc.md.Get(spannerTracingHeader) {
+	gotEndToEndTracing := false
+	for _, val := range client.sc.md.Get(endToEndTracingHeader) {
 		if val == "true" {
-			gotSpannerTracing = true
+			gotEndToEndTracing = true
 		}
 	}
-	if gotSpannerTracing != wantSpannerTracing {
-		t.Fatalf("mismatch in client configuration for property EnableSpannerTracing: got %v, want %v", gotSpannerTracing, wantSpannerTracing)
+	if gotEndToEndTracing != wantEndToEndTracing {
+		t.Fatalf("mismatch in client configuration for property EnableEndToEndTracing: got %v, want %v", gotEndToEndTracing, wantEndToEndTracing)
 	}
 }
 

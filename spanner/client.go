@@ -68,9 +68,9 @@ const (
 
 	requestsCompressionHeader = "x-response-encoding"
 
-	// spannerTracingHeader is the name of the metadata header if client
+	// endToEndTracingHeader is the name of the metadata header if client
 	// has opted-in for the creation of trace spans on the Spanner layer.
-	spannerTracingHeader = "x-goog-spanner-end-to-end-tracing"
+	endToEndTracingHeader = "x-goog-spanner-end-to-end-tracing"
 
 	// numChannels is the default value for NumChannels of client.
 	numChannels = 4
@@ -342,13 +342,13 @@ type ClientConfig struct {
 
 	OpenTelemetryMeterProvider metric.MeterProvider
 
-	// EnableSpannerTracing indicates whether spanner tracing is enabled or not. If it
-	// is enabled, trace spans will be created at Spanner layer. Enabling spanner tracing
+	// EnableEndToEndTracing indicates whether end to end tracing is enabled or not. If it
+	// is enabled, trace spans will be created at Spanner layer. Enabling end to end tracing
 	// requires OpenTelemetry to be set up properly. Simply enabling this option won't
-	// generate spanner traces.
+	// generate traces at Spanner layer.
 	//
 	// Default: false
-	EnableSpannerTracing bool
+	EnableEndToEndTracing bool
 }
 
 type openTelemetryConfig struct {
@@ -464,12 +464,12 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.Compression == gzip.Name {
 		md.Append(requestsCompressionHeader, gzip.Name)
 	}
-	// Append spanner tracing header if SPANNER_ENABLE_SPANNER_TRACING
+	// Append end to end tracing header if SPANNER_ENABLE_END_TO_END_TRACING
 	// environment variable has been set or client has passed the opt-in
 	// option in ClientConfig.
-	spannerTracingEnvironmentVariable := os.Getenv("SPANNER_ENABLE_SPANNER_TRACING")
-	if config.EnableSpannerTracing || spannerTracingEnvironmentVariable == "true" {
-		md.Append(spannerTracingHeader, "true")
+	endToEndTracingEnvironmentVariable := os.Getenv("SPANNER_ENABLE_END_TO_END_TRACING")
+	if config.EnableEndToEndTracing || endToEndTracingEnvironmentVariable == "true" {
+		md.Append(endToEndTracingHeader, "true")
 	}
 
 	// Create a session client.
