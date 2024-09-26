@@ -1,5 +1,17 @@
 # Changes
 
+## [2.9.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.8.0...dataproc/v2.9.0) (2024-09-25)
+
+
+### Features
+
+* **dataproc:** Add support for Spark Connect sessions in Dataproc Serverless for Spark ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
+
+### Documentation
+
+* **dataproc:** Update docs for `filter` field in `ListSessionsRequest` ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
 ## [2.8.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.7.0...dataproc/v2.8.0) (2024-09-19)
 
 

@@ -1,5 +1,17 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.17.1...cloudbuild/v1.18.0) (2024-09-25)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add LEGACY_BUCKET option to DefaultLogsBucketBehavior ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
+
+### Documentation
+
+* **cloudbuild/apiv1:** Sanitize docs ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.17.0...cloudbuild/v1.17.1) (2024-09-12)
 
 
