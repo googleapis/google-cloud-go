@@ -967,14 +967,34 @@ func (t *Table) Delete(ctx context.Context) (err error) {
 	})
 }
 
+type tableReadOption struct {
+	useClientProject bool
+}
+
+// TableReadOption allows requests to alter the behavior of reading from a table.
+type TableReadOption func(*tableReadOption)
+
+// WithClientProject allows the read session to be created from the client project
+// when reading from the table, instead of the table's project.
+func WithClientProject(b bool) TableReadOption {
+	return func(tro *tableReadOption) {
+		tro.useClientProject = true
+	}
+}
+
 // Read fetches the contents of the table.
-func (t *Table) Read(ctx context.Context) *RowIterator {
+func (t *Table) Read(ctx context.Context, opts ...TableReadOption) *RowIterator {
 	return t.read(ctx, fetchPage)
 }
 
-func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
+func (t *Table) read(ctx context.Context, pf pageFetcher, opts ...TableReadOption) *RowIterator {
+	var tro *tableReadOption
+	for _, o := range opts {
+		o(tro)
+	}
+
 	if t.c.isStorageReadAvailable() {
-		it, err := newStorageRowIteratorFromTable(ctx, t, t.c.projectID, false)
+		it, err := newStorageRowIteratorFromTable(ctx, t, false, tro.useClientProject)
 		if err == nil {
 			return it
 		}

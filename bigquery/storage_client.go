@@ -107,9 +107,15 @@ func (c *readClient) sessionForTable(ctx context.Context, table *Table, rsProjec
 		settings.maxStreamCount = 1
 	}
 
+	// configure where the read session is created
+	readSessionProjectID := table.ProjectID
+	if useClientProject {
+		readSessionProjectID = c.projectID
+	}
+
 	rs := &readSession{
 		ctx:                   ctx,
-		projectID:             c.projectID,
+		readSessionProjectID:  readSessionProjectID,
 		table:                 table,
 		tableID:               tableID,
 		projectID:             rsProjectID,
@@ -144,7 +150,6 @@ func (rs *readSession) start() error {
 		preferredMinStreamCount = int32(rs.settings.maxWorkerCount)
 	}
 
-	// Create a read session on the table in the underlying readClient project.
 	createReadSessionRequest := &storagepb.CreateReadSessionRequest{
 		Parent: fmt.Sprintf("projects/%s", rs.projectID),
 		ReadSession: &storagepb.ReadSession{
