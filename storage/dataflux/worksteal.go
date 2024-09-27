@@ -119,19 +119,9 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 // idle workers. It continues to do this until shutdown signal is true.
 // An idle worker waits till it finds work in rangeChannel. Once it finds work, it acts like an active worker.
 func (w *worker) doWorkstealListing(ctx context.Context) error {
-	for {
+	for !w.shutDownSignal() {
 		if ctx.Err() != nil {
 			return ctx.Err()
-		}
-		// If shutdown signal is true, safely terminate the worker.
-		if w.shutDownSignal() {
-			// If the worker is active, update range channel to store the remaining work.
-			if w.status == active {
-				w.lister.ranges <- &listRange{startRange: w.startRange, endRange: w.endRange}
-				// Worker is now idle.
-				w.status = idle
-			}
-			break
 		}
 
 		// If a worker is idle, sleep for a while before checking the next update.
@@ -176,6 +166,12 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 			// Update current worker range.
 			w.endRange = splitPoint[0]
 		}
+	}
+	// If the worker is active, update range channel to store the remaining work.
+	if w.status == active {
+		w.lister.ranges <- &listRange{startRange: w.startRange, endRange: w.endRange}
+		// Worker is now idle.
+		w.status = idle
 	}
 	return nil
 }
