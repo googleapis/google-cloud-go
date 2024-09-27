@@ -55,6 +55,7 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/iamcredentials/v1"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
@@ -5797,8 +5798,8 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 	if universeDomain == "" {
 		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseDomain)
 	}
-	creds := os.Getenv(testUniverseCreds)
-	if creds == "" {
+	credFile := os.Getenv(testUniverseCreds)
+	if credFile == "" {
 		t.Skipf("%s must be set. See CONTRIBUTING.md for details", testUniverseCreds)
 	}
 	project := os.Getenv(testUniverseProject)
@@ -5808,6 +5809,15 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 	location := os.Getenv(testUniverseLocation)
 	if location == "" {
 		t.Fatalf("%s must be set. See CONTRIBUTING.md for details", testUniverseLocation)
+	}
+
+	credBytes, err := os.ReadFile(credFile)
+	if err != nil {
+		log.Fatalf("error reading key file: %v", err)
+	}
+	tokenSource, err := google.JWTAccessTokenSourceWithScope(credBytes, iamcredentials.CloudPlatformScope, ScopeFullControl)
+	if err != nil {
+		log.Fatalf("JWTAccessTokenSourceWithScope: %v", err)
 	}
 
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
@@ -5828,7 +5838,7 @@ func TestIntegration_UniverseDomains(t *testing.T) {
 			t.Errorf("object contents mismatch\ngot:  %q\nwant: %q", got, contents)
 		}
 
-	}, option.WithUniverseDomain(universeDomain), option.WithCredentialsFile(creds))
+	}, option.WithUniverseDomain(universeDomain), option.WithTokenSource(tokenSource))
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
