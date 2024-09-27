@@ -342,9 +342,9 @@ type ClientConfig struct {
 
 	OpenTelemetryMeterProvider metric.MeterProvider
 
-	// EnableEndToEndTracing indicates whether end to end tracing is enabled or not. If it
-	// is enabled, trace spans will be created at Spanner layer. Enabling end to end tracing
-	// requires OpenTelemetry to be set up properly. Simply enabling this option won't
+	// EnableEndToEndTracing indicates whether end to end tracing is enabled or not. If
+	// it is enabled, trace spans will be created at Spanner layer. Enabling end to end
+	// tracing requires OpenTelemetry to be set up. Simply enabling this option won't
 	// generate traces at Spanner layer.
 	//
 	// Default: false
