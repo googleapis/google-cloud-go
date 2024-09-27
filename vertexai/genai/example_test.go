@@ -82,6 +82,42 @@ func ExampleGenerativeModel_GenerateContent_config() {
 	printResponse(resp)
 }
 
+// This example shows how to send multiple requests concurrently using goroutines.
+func ExampleGenerativeModel_GenerateContent_goroutine() {
+	ctx := context.Background()
+	const projectID = "YOUR PROJECT ID"
+	const location = "GCP LOCATION"
+	client, err := genai.NewClient(ctx, projectID, location)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	model := client.GenerativeModel("gemini-1.0-pro")
+
+	queries := []string{"Hello, World!", "What's the weather today?"}
+	resultChan := make(chan *genai.GenerateContentResponse, len(queries))
+
+	worker := func(query string) {
+		result, err := model.GenerateContent(ctx, genai.Text(query))
+		if err != nil {
+			log.Fatal(err)
+		}
+		resultChan <- result
+	}
+	// Send two requests concurrently
+	for _, query := range queries {
+		go worker(query)
+	}
+
+	// Wait for the responses
+	for a := 0; a < len(queries); a++ {
+		result := <-resultChan
+		printResponse(result)
+	}
+	close(resultChan)
+}
+
 func ExampleGenerativeModel_GenerateContentStream() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, projectID, location)
