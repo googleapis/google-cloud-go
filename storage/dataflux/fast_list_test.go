@@ -137,11 +137,6 @@ func TestUpdateStartEndOffset(t *testing.T) {
 func TestNewLister(t *testing.T) {
 	gcs := &storage.Client{}
 	bucketName := "test-bucket"
-	in := ListerInput{
-		BucketName:  bucketName,
-		Parallelism: 1,
-		BatchSize:   0,
-	}
 	testcase := []struct {
 		desc            string
 		query           storage.Query
@@ -178,8 +173,12 @@ func TestNewLister(t *testing.T) {
 
 	for _, tc := range testcase {
 		t.Run(tc.desc, func(t *testing.T) {
-			in.Query = tc.query
-			in.Parallelism = tc.parallelism
+			in := ListerInput{
+				BucketName:  bucketName,
+				BatchSize:   0,
+				Query:       tc.query,
+				Parallelism: tc.parallelism,
+			}
 			df := NewLister(gcs, &in)
 			defer df.Close()
 			if len(df.ranges) != 1 {
