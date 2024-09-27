@@ -29,7 +29,7 @@ const (
 	defaultAlphabet = "ab"
 	// sleepDurationWhenIdle is the milliseconds we want each worker to sleep before checking
 	// the next update if it is idle.
-	sleepDurationWhenIdle = time.Duration(200)
+	sleepDurationWhenIdle = time.Millisecond * time.Duration(200)
 )
 
 // workerStatus indicates the status of a worker.
@@ -138,7 +138,7 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 		// Worker is active when it finds work in range channel.
 		if w.status == idle {
 			if len(w.lister.ranges) == 0 {
-				time.Sleep(time.Millisecond * sleepDurationWhenIdle)
+				time.Sleep(sleepDurationWhenIdle)
 				continue
 			} else {
 				newRange := <-w.lister.ranges
@@ -184,12 +184,10 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 func (w *worker) shutDownSignal() bool {
 	// If all the workers are idle and range channel is empty, no more objects to list.
 	noMoreObjects := len(w.idleChannel) == w.lister.parallelism && len(w.lister.ranges) == 0
+
 	// If number of objects listed is equal to the given batchSize, then shutdown.
 	// If batch size is not given i.e. 0, then list until all objects have been listed.
 	alreadyListedBatchSizeObjects := len(w.idleChannel) == w.lister.parallelism && len(w.lister.ranges) == 0
-	if len(w.idleChannel) == w.lister.parallelism && len(w.lister.ranges) == 0 {
-		return true
-	}
 
 	return noMoreObjects || alreadyListedBatchSizeObjects
 }
