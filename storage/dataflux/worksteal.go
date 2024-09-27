@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	// defaultAlphabet used to initiliaze rangesplitter.
+	// defaultAlphabet used to initiliaze rangesplitter. It must contain at least two unique characters.
 	defaultAlphabet = "ab"
 	// sleepDurationWhenIdle is the milliseconds we want each worker to sleep before checking
 	// the next update if it is idle.
@@ -114,10 +114,12 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 }
 
 // doWorkstealListing implements the listing logic for each worker.
-// An active worker lists next page of objects to be listed within the given range and then splits
-// range into two half if there are idle workers. Worker keeps the first of splitted range and passes second half of the work in range channel  for
-// idle workers. It continues to do this until shutdown signal is true.
-// An idle worker waits till it finds work in rangeChannel. Once it finds work, it acts like an active worker.
+// An active worker lists next page of objects to be listed within the given range
+// and then splits range into two half if there are idle workers. Worker keeps
+// the first of splitted range and passes second half of the work in range channel
+// for idle workers. It continues to do this until shutdown signal is true.
+// An idle worker waits till it finds work in rangeChannel. Once it finds work,
+// it acts like an active worker.
 func (w *worker) doWorkstealListing(ctx context.Context) error {
 	for !w.shutDownSignal() {
 		if ctx.Err() != nil {
@@ -150,7 +152,8 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 			continue
 		}
 
-		// If listing not complete and idle workers are available, split the range and give half of work to idle worker.
+		// If listing not complete and idle workers are available, split the range
+		// and give half of work to idle worker.
 		if len(w.idleChannel)-len(w.lister.ranges) > 0 && ctx.Err() == nil {
 			// Split range and upload half of work for idle worker.
 			splitPoint, err := w.rangesplitter.splitRange(w.startRange, w.endRange, 1)
@@ -176,7 +179,8 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 	return nil
 }
 
-// shutDownSignal returns true if all the workers are idle and the or number of objects listed is equal to page size.
+// shutDownSignal returns true if all the workers are idle and the
+// or number of objects listed is equal to page size.
 func (w *worker) shutDownSignal() bool {
 	// If all the workers are idle and range channel is empty, no more objects to list.
 	noMoreObjects := len(w.idleChannel) == w.lister.parallelism && len(w.lister.ranges) == 0
