@@ -17,12 +17,14 @@ package firestore
 import (
 	"context"
 	"errors"
+	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Transaction represents a Firestore transaction.
@@ -58,9 +60,23 @@ const DefaultTransactionMaxAttempts = 5
 // transactions cannot issue write operations, but are more efficient.
 var ReadOnly = ro{}
 
-type ro struct{}
+type ro struct {
+	readTime time.Time
+}
 
-func (ro) config(t *Transaction) { t.readOnly = true }
+func (ro ro) config(t *Transaction) {
+	t.readOnly = true
+	if !ro.readTime.IsZero() {
+		t.readSettings = &readSettings{readTime: ro.readTime}
+	}
+}
+
+// ReadOnlyReadTime is a TransactionOption that makes the transaction read-only with specified read time. Read-only
+// transactions cannot issue write operations, but are more efficient.
+func ReadOnlyReadTime(readTime time.Time) ro {
+	readTime = readTime.Truncate(time.Microsecond)
+	return ro{readTime: readTime}
+}
 
 var (
 	// Defined here for testing.
@@ -110,10 +126,17 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 	}
 	var txOpts *pb.TransactionOptions
 	if t.readOnly {
+		txOptReadOnly := &pb.TransactionOptions_ReadOnly{}
+		if t.readSettings != nil && !t.readSettings.readTime.IsZero() {
+			txOptReadOnly.ConsistencySelector = &pb.TransactionOptions_ReadOnly_ReadTime{
+				ReadTime: timestamppb.New(t.readSettings.readTime),
+			}
+		}
 		txOpts = &pb.TransactionOptions{
-			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{}},
+			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: txOptReadOnly},
 		}
 	}
+
 	var backoff gax.Backoff
 	// TODO(jba): use other than the standard backoff parameters?
 	// TODO(jba): get backoff time from gRPC trailer metadata? See

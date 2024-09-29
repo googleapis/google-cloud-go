@@ -1652,6 +1652,172 @@ func TestIntegration_TransactionGetAll(t *testing.T) {
 	})
 }
 
+func TestIntegration_TransactionReadTime(t *testing.T) {
+	timeBeforeCreate := time.Now().Add(-59 * time.Minute).Truncate(time.Microsecond)
+
+	client := integrationClient(t)
+	ctx := context.Background()
+	coll := integrationColl(t)
+	h := testHelper{t}
+	nowTime := time.Now()
+	yesterdayTime := nowTime.AddDate(0, 0, -1).Unix()
+	docs := []map[string]interface{}{
+		// To support running this test in parallel with the others, use a field name
+		// that we don't use anywhere else.
+		{"height": 1, "weight": 99, "updatedAt": yesterdayTime},
+		{"height": 2, "weight": 98, "updatedAt": yesterdayTime},
+		{"height": 3, "weight": 97, "updatedAt": yesterdayTime},
+	}
+	var wants []map[string]interface{}
+	var createdDocRefs []*DocumentRef
+	for _, doc := range docs {
+		newDoc := coll.NewDoc()
+		createdDocRefs = append(createdDocRefs, newDoc)
+		wants = append(wants, map[string]interface{}{
+			"height":    int64(doc["height"].(int)),
+			"weight":    int64(doc["weight"].(int)),
+			"updatedAt": doc["updatedAt"].(int64),
+		})
+		h.mustCreate(newDoc, doc)
+	}
+	defer t.Cleanup(func() {
+		deleteDocuments(createdDocRefs)
+	})
+
+	// query := coll.Where("height", ">=", 5)
+	testCases := []struct {
+		desc         string
+		wantDocSnaps []map[string]interface{}
+		readTime     time.Time
+	}{
+		{
+			desc:         "Check values before creating entities",
+			wantDocSnaps: []map[string]interface{}{},
+			readTime:     timeBeforeCreate,
+		},
+		{
+			desc:         "Check values after creating entities",
+			wantDocSnaps: wants,
+		},
+	}
+
+	for _, testCase := range testCases {
+
+		t.Run(testCase.desc, func(t *testing.T) {
+			testutil.Retry(t, 10, 10*time.Second, func(r *testutil.R) {
+				readTime := testCase.readTime
+				if readTime.IsZero() {
+					// Use current time as read time if read time is not specified in test case
+					readTime = time.Now().Truncate(time.Microsecond)
+				}
+				client.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+					gotDocSnapsGetAll, err := tx.GetAll(createdDocRefs)
+					if err != nil {
+						r.Errorf("GetAll %v", err)
+					}
+					compareDocSnaps(t, "GetAll ", gotDocSnapsGetAll, testCase.wantDocSnaps)
+
+					return nil
+				}, []TransactionOption{ReadOnlyReadTime(readTime)}...)
+			})
+		})
+
+	}
+}
+
+func TestIntegration_AggregationInTransaction(t *testing.T) {
+	timeBeforeCreate := time.Now().Add(-59 * time.Minute).Truncate(time.Microsecond)
+
+	client := integrationClient(t)
+	ctx := context.Background()
+	coll := integrationColl(t)
+	h := testHelper{t}
+	nowTime := time.Now()
+	yesterdayTime := nowTime.AddDate(0, 0, -1).Unix()
+	docs := []map[string]interface{}{
+		// To support running this test in parallel with the others, use a field name
+		// that we don't use anywhere else.
+		{"height": 1, "weight": 99, "updatedAt": yesterdayTime},
+		{"height": 2, "weight": 98, "updatedAt": yesterdayTime},
+		{"height": 3, "weight": 97, "updatedAt": yesterdayTime},
+	}
+	var wants []map[string]interface{}
+	var createdDocRefs []*DocumentRef
+	for _, doc := range docs {
+		newDoc := coll.NewDoc()
+		createdDocRefs = append(createdDocRefs, newDoc)
+		wants = append(wants, map[string]interface{}{
+			"height":    int64(doc["height"].(int)),
+			"weight":    int64(doc["weight"].(int)),
+			"updatedAt": doc["updatedAt"].(int64),
+		})
+		h.mustCreate(newDoc, doc)
+	}
+	defer t.Cleanup(func() {
+		deleteDocuments(createdDocRefs)
+	})
+
+	timeAfterCreate := time.Now().Truncate(time.Microsecond)
+
+	query := coll.Where("height", ">=", 5)
+	testCases := []struct {
+		desc          string
+		aggQuery      *AggregationQuery
+		wantAggResult AggregationResult
+		txnOptions    []TransactionOption
+	}{
+		{
+			desc:       "Check values before creating entities",
+			aggQuery:   query.NewAggregationQuery().WithCount("count"),
+			txnOptions: []TransactionOption{ReadOnlyReadTime(timeBeforeCreate)},
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
+			},
+		},
+		{
+			desc:       "Check values after creating entities",
+			aggQuery:   query.NewAggregationQuery().WithCount("count"),
+			txnOptions: []TransactionOption{ReadOnlyReadTime(timeAfterCreate)},
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+
+		t.Run(testCase.desc, func(t *testing.T) {
+			testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+				client.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+
+					gotAggResult, gotErr := testCase.aggQuery.Transaction(tx).Get(ctx)
+					if gotErr != nil {
+						r.Errorf("Get %v", gotErr)
+					}
+					if !reflect.DeepEqual(gotAggResult, testCase.wantAggResult) {
+						r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testCase.desc, gotAggResult, testCase.wantAggResult)
+					}
+
+					return nil
+				}, testCase.txnOptions...)
+			})
+		})
+	}
+}
+
+func compareDocSnaps(t *testing.T, desc string, gotSnaps []*DocumentSnapshot, wantSnaps []map[string]interface{}) {
+	if len(gotSnaps) != len(wantSnaps) {
+		t.Errorf("%q: got %d, want %d", desc, len(gotSnaps), len(wantSnaps))
+		return
+	}
+
+	for i, gotSnap := range gotSnaps {
+		if got, want := gotSnap.Data(), wantSnaps[i]; !testEqual(got, want) {
+			t.Errorf("%q #%d: got %+v, want %+v", desc, i, got, want)
+		}
+	}
+}
+
 func TestIntegration_WatchDocument(t *testing.T) {
 	coll := integrationColl(t)
 	ctx := context.Background()
