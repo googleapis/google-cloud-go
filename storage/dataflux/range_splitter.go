@@ -261,8 +261,8 @@ func (rs *rangeSplitter) isRangeEqualWithPadding(startRange, endRange []rune) bo
 	return true
 }
 
-// charAtOrDefault returns the character at the specified position, or the default character if
-// the position is out of bounds.
+// charAtOrDefault returns the character at the specified position, or the default
+// character if the position is out of bounds.
 func charAtOrDefault(charArray []rune, position int, defaultChar rune) rune {
 	if position < 0 || position >= len(charArray) {
 		return defaultChar
