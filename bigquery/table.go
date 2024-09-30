@@ -984,7 +984,7 @@ func WithClientProject() TableReadOption {
 
 // Read fetches the contents of the table.
 func (t *Table) Read(ctx context.Context, opts ...TableReadOption) *RowIterator {
-	return t.read(ctx, fetchPage)
+	return t.read(ctx, fetchPage, opts...)
 }
 
 func (t *Table) read(ctx context.Context, pf pageFetcher, opts ...TableReadOption) *RowIterator {
