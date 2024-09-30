@@ -756,6 +756,75 @@ func TestAWSCredential_BasicRequestWithDefaultEnv(t *testing.T) {
 	}
 }
 
+func TestAWSCredential_GeneratesNewAwsSecurityCredential(t *testing.T) {
+	server := createDefaultAwsTestServer()
+	ts := httptest.NewServer(server)
+
+	opts := cloneTestOpts()
+	opts.CredentialSource = server.getCredentialSource(ts.URL)
+
+	oldGetenv := getenv
+	oldNow := Now
+	defer func() {
+		getenv = oldGetenv
+		Now = oldNow
+	}()
+	getenv = setEnvironment(map[string]string{
+		"AWS_ACCESS_KEY_ID":     "AKIDEXAMPLE",
+		"AWS_SECRET_ACCESS_KEY": "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
+		"AWS_REGION":            "us-west-1",
+	})
+	Now = setTime(defaultTime)
+
+	base, err := newSubjectTokenProvider(opts)
+	if err != nil {
+		t.Fatalf("parse() failed %v", err)
+	}
+
+	got, err := base.subjectToken(context.Background())
+	if err != nil {
+		t.Fatalf("retrieveSubjectToken() failed: %v", err)
+	}
+	want := getExpectedSubjectToken(
+		"https://sts.us-west-1.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15",
+		"us-west-1",
+		"AKIDEXAMPLE",
+		"wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
+		"",
+	)
+
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+
+	getenv = setEnvironment(map[string]string{
+		"AWS_ACCESS_KEY_ID":     "DIFFERENT_KEY",
+		"AWS_SECRET_ACCESS_KEY": "wJalrXUtnFEMI/K7MDENG+bPxRfiCYDIFFERENTKEY",
+		"AWS_REGION":            "us-east-1",
+	})
+
+	base, err = newSubjectTokenProvider(opts)
+	if err != nil {
+		t.Fatalf("parse() failed %v", err)
+	}
+
+	got, err = base.subjectToken(context.Background())
+	if err != nil {
+		t.Fatalf("retrieveSubjectToken() failed: %v", err)
+	}
+	want = getExpectedSubjectToken(
+		"https://sts.us-east-1.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15",
+		"us-east-1",
+		"DIFFERENT_KEY",
+		"wJalrXUtnFEMI/K7MDENG+bPxRfiCYDIFFERENTKEY",
+		"",
+	)
+
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
 func TestAWSCredential_BasicRequestWithTwoRegions(t *testing.T) {
 	server := createDefaultAwsTestServer()
 	ts := httptest.NewServer(server)
