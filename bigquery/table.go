@@ -976,7 +976,7 @@ type TableReadOption func(*tableReadOption)
 
 // WithClientProject allows the read session to be created from the client project
 // when reading from the table, instead of the table's project.
-func WithClientProject(b bool) TableReadOption {
+func WithClientProject() TableReadOption {
 	return func(tro *tableReadOption) {
 		tro.useClientProject = true
 	}
@@ -988,7 +988,7 @@ func (t *Table) Read(ctx context.Context, opts ...TableReadOption) *RowIterator 
 }
 
 func (t *Table) read(ctx context.Context, pf pageFetcher, opts ...TableReadOption) *RowIterator {
-	var tro *tableReadOption
+	tro := &tableReadOption{useClientProject: false}
 	for _, o := range opts {
 		o(tro)
 	}
