@@ -112,6 +112,15 @@ func TestIntegration_StorageReadClientProject(t *testing.T) {
 	if !strings.HasPrefix(session.bqSession.Name, expectedPrefix) {
 		t.Fatalf("expected read session to have prefix %q: but found %s:", expectedPrefix, session.bqSession.Name)
 	}
+
+	it = table.Read(ctx, WithReadSessionProject("bigquery-public-data"))
+	_, err = countIteratorRows(it)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if it.IsAccelerated() {
+		t.Fatal("expected storage api to not be used")
+	}
 }
 
 func TestIntegration_StorageReadFromSources(t *testing.T) {

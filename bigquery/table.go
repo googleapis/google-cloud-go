@@ -968,17 +968,16 @@ func (t *Table) Delete(ctx context.Context) (err error) {
 }
 
 type tableReadOption struct {
-	useClientProject bool
+	readSessionProject string
 }
 
 // TableReadOption allows requests to alter the behavior of reading from a table.
 type TableReadOption func(*tableReadOption)
 
-// WithClientProject allows the read session to be created from the client project
-// when reading from the table, instead of the table's project.
-func WithClientProject() TableReadOption {
+// WithReadSessionProject allows to create the read session with the specified project that has the necessary permissions to do so.
+func WithReadSessionProject(project string) TableReadOption {
 	return func(tro *tableReadOption) {
-		tro.useClientProject = true
+		tro.readSessionProject = project
 	}
 }
 
@@ -988,13 +987,17 @@ func (t *Table) Read(ctx context.Context, opts ...TableReadOption) *RowIterator 
 }
 
 func (t *Table) read(ctx context.Context, pf pageFetcher, opts ...TableReadOption) *RowIterator {
-	tro := &tableReadOption{useClientProject: false}
+	tro := &tableReadOption{}
 	for _, o := range opts {
 		o(tro)
 	}
 
+	if tro.readSessionProject == "" {
+		tro.readSessionProject = t.c.projectID
+	}
+
 	if t.c.isStorageReadAvailable() {
-		it, err := newStorageRowIteratorFromTable(ctx, t, false, tro.useClientProject)
+		it, err := newStorageRowIteratorFromTable(ctx, t, tro.readSessionProject, false)
 		if err == nil {
 			return it
 		}

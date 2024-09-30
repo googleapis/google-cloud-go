@@ -107,15 +107,8 @@ func (c *readClient) sessionForTable(ctx context.Context, table *Table, rsProjec
 		settings.maxStreamCount = 1
 	}
 
-	// configure where the read session is created
-	readSessionProjectID := table.ProjectID
-	if useClientProject {
-		readSessionProjectID = c.projectID
-	}
-
 	rs := &readSession{
 		ctx:                   ctx,
-		readSessionProjectID:  readSessionProjectID,
 		table:                 table,
 		tableID:               tableID,
 		projectID:             rsProjectID,
