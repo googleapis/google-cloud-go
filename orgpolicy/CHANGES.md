@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.13.1...orgpolicy/v1.14.0) (2024-09-19)
+
+
+### Features
+
+* **orgpolicy:** Support adding constraints to new method types REMOVE_GRANTS and GOVERN_TAGS ([0b3c268](https://github.com/googleapis/google-cloud-go/commit/0b3c268c564ffe0d87b0efc716f08afaf064b4cc))
+
 ## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.13.0...orgpolicy/v1.13.1) (2024-09-12)
 
 

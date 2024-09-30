@@ -1,5 +1,12 @@
 # Changes
 
+## [0.5.2](https://github.com/googleapis/google-cloud-go/compare/compute/metadata/v0.5.1...compute/metadata/v0.5.2) (2024-09-20)
+
+
+### Bug Fixes
+
+* **compute/metadata:** Close Response Body for failed request ([#10891](https://github.com/googleapis/google-cloud-go/issues/10891)) ([e91d45e](https://github.com/googleapis/google-cloud-go/commit/e91d45e4757a9e354114509ba9800085d9e0ff1f))
+
 ## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/compute/metadata/v0.5.0...compute/metadata/v0.5.1) (2024-09-12)
 
 

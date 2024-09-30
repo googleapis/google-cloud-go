@@ -1011,6 +1011,11 @@
                 "ListTuningJobs"
               ]
             },
+            "RebaseTunedModel": {
+              "methods": [
+                "RebaseTunedModel"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
