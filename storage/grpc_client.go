@@ -1825,22 +1825,31 @@ func (d *readResponseDecoder) advanceOffset(n uint64) error {
 // bytes copied. The data offsets are incremented in the message. The updateCRC
 // function is called on the copied bytes.
 func (d *readResponseDecoder) readAndUpdateCRC(p []byte, updateCRC func([]byte)) int {
+	// For a completely empty message, just return 0
+	if len(*d.databufs) == 0 {
+		return 0
+	}
 	databuf := (*d.databufs)[d.dataOffsets.currBuf]
-	b := databuf.ReadOnlyData()
-	off := d.dataOffsets.currOff
-	n := copy(p, b[off:])
-	updateCRC(b[off:(off + uint64(n))])
+	startOff := d.dataOffsets.currOff
+	var b []byte
+	if d.dataOffsets.currBuf == d.dataOffsets.endBuf {
+		b = databuf.ReadOnlyData()[startOff:d.dataOffsets.endOff]
+	} else {
+		b = databuf.ReadOnlyData()[startOff:]
+	}
+	n := copy(p, b)
+	updateCRC(b[:n])
 	d.dataOffsets.currOff += uint64(n)
+
+	// We've read all the data from this message. Free the underlying buffers.
+	if d.dataOffsets.currBuf == d.dataOffsets.endBuf && d.dataOffsets.currOff == d.dataOffsets.endOff {
+		d.done = true
+		d.databufs.Free()
+	}
 	// We are at the end of the current buffer
-	if d.dataOffsets.currOff == uint64(databuf.Len()) {
+	if d.dataOffsets.currBuf != d.dataOffsets.endBuf && d.dataOffsets.currOff == uint64(databuf.Len()) {
 		d.dataOffsets.currOff = 0
-		// We've read all the data from this message. Free the underlying buffers.
-		if d.dataOffsets.currBuf == d.dataOffsets.endBuf {
-			d.done = true
-			d.databufs.Free()
-		} else {
-			d.dataOffsets.currBuf++
-		}
+		d.dataOffsets.currBuf++
 	}
 	return n
 }
