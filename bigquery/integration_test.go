@@ -3581,6 +3581,9 @@ func compareRead(it *RowIterator, want [][]Value, compareTotalRows bool) (msg st
 	if err != nil {
 		return err.Error(), false
 	}
+	if want != nil && len(it.Schema) == 0 {
+		return "missing schema", false
+	}
 	if len(got) != len(want) {
 		return fmt.Sprintf("%s got %d rows, want %d", jobStr, len(got), len(want)), false
 	}
