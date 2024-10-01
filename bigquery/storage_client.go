@@ -142,7 +142,6 @@ func (rs *readSession) start() error {
 	if maxStreamCount == 0 {
 		preferredMinStreamCount = int32(rs.settings.maxWorkerCount)
 	}
-
 	createReadSessionRequest := &storagepb.CreateReadSessionRequest{
 		Parent: fmt.Sprintf("projects/%s", rs.projectID),
 		ReadSession: &storagepb.ReadSession{

@@ -113,7 +113,7 @@ func TestIntegration_StorageReadClientProject(t *testing.T) {
 		t.Fatalf("expected read session to have prefix %q: but found %s:", expectedPrefix, session.bqSession.Name)
 	}
 
-	it = table.Read(ctx, WithReadSessionProject("bigquery-public-data"))
+	it = table.Read(ctx, WithReadSessionProjectID("bigquery-public-data"))
 	_, err = countIteratorRows(it)
 	if err != nil {
 		t.Fatal(err)
