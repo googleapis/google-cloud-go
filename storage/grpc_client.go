@@ -984,10 +984,11 @@ func (bytesCodecV2) Unmarshal(data mem.BufferSlice, v any) error {
 	switch v := v.(type) {
 	case *mem.BufferSlice:
 		*v = data
+		// Pick up a reference to the data so that it is not freed while decoding.
+		data.Ref()
 		return nil
 	case proto.Message:
 		buf := data.MaterializeToBuffer(mem.DefaultBufferPool())
-		defer buf.Free()
 		return proto.Unmarshal(buf.ReadOnlyData(), v)
 	default:
 		return fmt.Errorf("cannot unmarshal type %T, want proto.Message or mem.BufferSlice", v)
@@ -1076,13 +1077,16 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 				databufs: databuf,
 			}
 			err = decoder.readFullObjectResponse()
-
 			return err
 		}, s.retry, s.idempotent)
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak
 			// resources.
 			cancel()
+			// Free any buffers.
+			if decoder != nil && decoder.databufs != nil {
+				decoder.databufs.Free()
+			}
 			return nil, nil, err
 		}
 
@@ -1674,12 +1678,18 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 }
 
 // Close cancels the read stream's context in order for it to be closed and
-// collected.
+// collected, and frees any currently in use buffers.
 func (r *gRPCReader) Close() error {
 	if r.cancel != nil {
 		r.cancel()
 	}
 	r.stream = nil
+	if r.currMsg != nil {
+		if r.currMsg.databufs != nil {
+			r.currMsg.databufs.Free()
+		}
+		r.currMsg = nil
+	}
 	return nil
 }
 
