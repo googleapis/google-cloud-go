@@ -3,7 +3,7 @@
   "aiplatform": "1.68.0",
   "auth": "0.9.7",
   "auth/oauth2adapt": "0.2.4",
-  "bigquery": "1.63.0",
+  "bigquery": "1.63.1",
   "bigtable": "1.33.0",
   "datastore": "1.19.0",
   "errorreporting": "0.3.1",
