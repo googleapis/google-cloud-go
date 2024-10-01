@@ -526,6 +526,10 @@ type Type struct {
 	Array bool
 	Base  TypeBase // Bool, Int64, Float64, Numeric, String, Bytes, Date, Timestamp
 	Len   int64    // if Base is String or Bytes; may be MaxLen
+	// fully-qualified Protocol Buffer Message or Enum type-name (including
+	// leading dot-separated namespace)
+	// non-empty if Base is ProtoMessage or ProtoEnum
+	ProtoRef string
 }
 
 // MaxLen is a sentinel for Type's Len field, representing the MAX value.
@@ -543,6 +547,8 @@ const (
 	Date
 	Timestamp
 	JSON
+	Proto
+	Enum // Enum used in CAST expressions
 )
 
 type PrivilegeType int

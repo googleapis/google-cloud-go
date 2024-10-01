@@ -94,6 +94,7 @@ func TestSQL(t *testing.T) {
 					{Name: "Cm", Type: Type{Base: Int64}, Generated: Func{Name: "CHAR_LENGTH", Args: []Expr{ID("Ce")}}, Position: line(14)},
 					{Name: "Cn", Type: Type{Base: JSON}, Position: line(15)},
 					{Name: "Co", Type: Type{Base: Int64}, Default: IntegerLiteral(1), Position: line(16)},
+					{Name: "Cp", Type: Type{Base: Proto, ProtoRef: "a.b.c"}, Position: line(17)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
@@ -117,6 +118,7 @@ func TestSQL(t *testing.T) {
   Cm INT64 AS (CHAR_LENGTH(Ce)) STORED,
   Cn JSON,
   Co INT64 DEFAULT (1),
+  Cp ` + "`a.b.c`" + `,
 ) PRIMARY KEY(Ca, Cb DESC)`,
 			reparseDDL,
 		},
@@ -1037,6 +1039,18 @@ func TestSQL(t *testing.T) {
 				},
 			},
 			`SELECT CAST(7 AS STRING)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{Func{
+						Name: "CAST",
+						Args: []Expr{TypedExpr{Expr: IntegerLiteral(7), Type: Type{Base: Enum}}},
+					}},
+				},
+			},
+			`SELECT CAST(7 AS ENUM)`,
 			reparseQuery,
 		},
 		{

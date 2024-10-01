@@ -46,6 +46,7 @@ This file is structured as follows:
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -3004,6 +3005,8 @@ var baseTypes = map[string]TypeBase{
 	"DATE":      Date,
 	"TIMESTAMP": Timestamp,
 	"JSON":      JSON,
+	"PROTO":     Proto, // for use in CAST
+	"ENUM":      Enum,  // for use in CAST
 }
 
 func (p *parser) parseBaseType() (Type, *parseError) {
@@ -3035,6 +3038,46 @@ func (p *parser) parseExtractType() (Type, string, *parseError) {
 	return t, strings.ToUpper(tok.value), nil
 }
 
+// protobuf identifiers allow one letter-class character followed by any number of alphanumeric characters or an
+// underscore (which matches the [:word:] class in RE2/go regexp).
+// Fully qualified protobuf type names (enums or messages) include a dot-separated namespace, where each component is
+// also an identifier.
+// https://github.com/protocolbuffers/protobuf/blob/eeb7dc88f286df558d933214fff829205ffa5506/src/google/protobuf/io/tokenizer.cc#L653-L655
+// https://github.com/protocolbuffers/protobuf/blob/eeb7dc88f286df558d933214fff829205ffa5506/src/google/protobuf/io/tokenizer.cc#L115-L120
+var fqProtoMsgName = regexp.MustCompile(`^(?:[[:alpha:]][[:word:]]*)(?:\.(?:[[:alpha:]][[:word:]]*))*$`)
+
+func (p *parser) parseProtobufTypeName(consumed string) (string, *parseError) {
+	// Whether it's quoted or not, we might have multiple namespace components (with `.` separation)
+	possibleProtoTypeName := strings.Builder{}
+	possibleProtoTypeName.WriteString(consumed)
+	ntok := p.next()
+PROTO_TOK_CONSUME:
+	for ; ntok.err == nil; ntok = p.next() {
+		appendVal := ntok.value
+		switch ntok.typ {
+		case unquotedID:
+		case quotedID:
+			if !fqProtoMsgName.MatchString(ntok.string) {
+				return "", p.errorf("got %q, want fully qualified protobuf type", ntok.string)
+			}
+			appendVal = ntok.string
+		case unknownToken:
+			if ntok.value != "." {
+				p.back()
+				break PROTO_TOK_CONSUME
+			}
+		default:
+			p.back()
+			break PROTO_TOK_CONSUME
+		}
+		possibleProtoTypeName.WriteString(appendVal)
+	}
+	if ntok.err != nil {
+		return "", ntok.err
+	}
+	return possibleProtoTypeName.String(), nil
+}
+
 func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError) {
 	debugf("parseBaseOrParameterizedType: %v", p)
 
@@ -3064,12 +3107,38 @@ func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError
 			return Type{}, tok.err
 		}
 	}
-	base, ok := baseTypes[strings.ToUpper(tok.value)] // baseTypes is keyed by upper case strings.
-	if !ok {
-		return Type{}, p.errorf("got %q, want scalar type", tok.value)
-	}
-	t.Base = base
+	switch tok.typ {
+	case unquotedID:
+		base, ok := baseTypes[strings.ToUpper(tok.value)] // baseTypes is keyed by upper case strings.
+		if ok {
+			t.Base = base
+			break
+		}
 
+		// Likely a protobuf type; make sure its value matches the regexp
+		// protobuf types can be either quoted or unquoted, so we need to handle both.
+		// Fortunately, the identifier tokenization rules match between protobuf and SQL, so we only need to
+		// verify quoted identifiers.
+		pbTypeName, pbParseErr := p.parseProtobufTypeName(tok.value)
+		if pbParseErr != nil {
+			return Type{}, pbParseErr
+		}
+		t.ProtoRef = pbTypeName
+		t.Base = Proto
+		return t, nil
+	case quotedID:
+		if !fqProtoMsgName.MatchString(tok.string) {
+			return Type{}, p.errorf("got %q, want fully qualified protobuf type", tok.value)
+		}
+		pbTypeName, pbParseErr := p.parseProtobufTypeName(tok.string)
+		if pbParseErr != nil {
+			return Type{}, pbParseErr
+		}
+		t.ProtoRef = pbTypeName
+		t.Base = Proto
+		return t, nil
+	default:
+	}
 	if withParam && (t.Base == String || t.Base == Bytes) {
 		if err := p.expect("("); err != nil {
 			return Type{}, err
