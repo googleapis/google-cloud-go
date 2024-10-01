@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
-	"log"
 	"net/url"
 	"os"
 
@@ -1764,13 +1763,62 @@ func (d *readResponseDecoder) peek() []byte {
 	// without it being divided between buffers.
 	tagBuf := b[d.currOff:]
 	remainingInBuf := len(tagBuf)
-	log.Printf("calling tag at offset %v", d.off)
-	log.Printf("tagbuf: %v, b: %v, d.off: %v\n", len(tagBuf), len(b), d.off)
-	if remainingInBuf < binary.MaxVarintLen64 {
-		log.Print("copying buf")
-		tagBuf = append(b[d.currOff:], ((*d.databufs)[d.currBuf+1].ReadOnlyData()[:binary.MaxVarintLen64-remainingInBuf])...)
+	// If we have less than 10 bytes remaining and are not in the final buffer, copy up to 10 bytes ahead.
+	if remainingInBuf < binary.MaxVarintLen64 && d.currBuf != len(*d.databufs)-1 {
+		tagBuf = d.copyNextBytes(10)
 	}
+
 	return tagBuf
+}
+
+// Copies up to next n bytes into a new buffer, or fewer if fewer bytes remain in the
+// buffers overall. Does not advance offsets.
+func (d *readResponseDecoder) copyNextBytes(n int) []byte {
+	remaining := n
+	if r := (*d.databufs).Len() - int(d.off); r < remaining {
+		remaining = r
+	}
+	currBuf := d.currBuf
+	currOff := d.currOff
+	var buf []byte
+	for remaining > 0 {
+		b := (*d.databufs)[currBuf].ReadOnlyData()
+		remainingInCurr := len(b[currOff:])
+		if remainingInCurr < remaining {
+			buf = append(buf, b[currOff:]...)
+			remaining -= remainingInCurr
+			currBuf++
+			currOff = 0
+		} else {
+			buf = append(buf, b[currOff:currOff+uint64(remaining)]...)
+			remaining = 0
+		}
+	}
+	return buf
+}
+
+// Advance current buffer & byte offset in the decoding by n bytes. Returns an error if we
+// go past the end of the data.
+func (d *readResponseDecoder) advanceOffset(n uint64) error {
+	remaining := n
+	for remaining > 0 {
+		remainingInCurr := uint64((*d.databufs)[d.currBuf].Len()) - d.currOff
+		if remainingInCurr <= remaining {
+			remaining -= remainingInCurr
+			d.currBuf++
+			d.currOff = 0
+		} else {
+			d.currOff += remaining
+			remaining = 0
+		}
+	}
+	// If we have advanced past the end of the buffers, something went wrong.
+	if (d.currBuf == len(*d.databufs) && d.currOff > 0) || d.currBuf > len(*d.databufs) {
+		return errors.New("decoding: truncated message, cannot advance offset")
+	}
+	d.off += n
+	return nil
+
 }
 
 // This copies object data from the message into the buffer and returns the number of
@@ -1798,15 +1846,25 @@ func (d *readResponseDecoder) readAndUpdateCRC(p []byte, updateCRC func([]byte))
 }
 
 func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, updateCRC func([]byte)) (int64, error) {
+	// For a completely empty message, just return 0
+	if len(*d.databufs) == 0 {
+		return 0, nil
+	}
 	var written int64
 	for !d.done {
 		databuf := (*d.databufs)[d.dataOffsets.currBuf]
-		b := databuf.ReadOnlyData()
-		off := d.dataOffsets.currOff
-		// Write all remaining data from the current buffer.
-		n, err := w.Write(b[off:])
+		startOff := d.dataOffsets.currOff
+		var b []byte
+		if d.dataOffsets.currBuf == d.dataOffsets.endBuf {
+			b = databuf.ReadOnlyData()[startOff:d.dataOffsets.endOff]
+		} else {
+			b = databuf.ReadOnlyData()[startOff:]
+		}
+		var n int
+		// Write all remaining data from the current buffer
+		n, err := w.Write(b)
 		written += int64(n)
-		updateCRC(b[off:])
+		updateCRC(b)
 		if err != nil {
 			return written, err
 		}
@@ -1825,7 +1883,6 @@ func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, updateCRC func([]
 // Consume the next available tag in the input data and return the field number and type.
 // Advances the relevant offsets in the data.
 func (d *readResponseDecoder) consumeTag() (protowire.Number, protowire.Type, error) {
-	b := (*d.databufs)[d.currBuf].ReadOnlyData()
 	tagBuf := d.peek()
 
 	// Consume the next tag. This will tell us which field is next in the
@@ -1834,24 +1891,16 @@ func (d *readResponseDecoder) consumeTag() (protowire.Number, protowire.Type, er
 	if tagLength < 0 {
 		return 0, 0, protowire.ParseError(tagLength)
 	}
-
-	remainingInBuf := len(b[d.currOff:])
 	// Update the offsets and current buffer depending on the tag length.
-	if tagLength >= remainingInBuf {
-		d.currBuf += 1
-		d.currOff = uint64(remainingInBuf) - uint64(tagLength)
-	} else {
-		d.currOff += uint64(tagLength)
+	if err := d.advanceOffset(uint64(tagLength)); err != nil {
+		return 0, 0, fmt.Errorf("consuming tag: %w", err)
 	}
-
-	d.off += uint64(tagLength)
 	return fieldNum, fieldType, nil
 }
 
 // Consume a varint that represents the length of a bytes field. Return the length of
 // the data, and advance the offsets by the length of the varint.
 func (d *readResponseDecoder) consumeVarint() (uint64, error) {
-	b := (*d.databufs)[d.currBuf].ReadOnlyData()
 	tagBuf := d.peek()
 
 	// Consume the next tag. This will tell us which field is next in the
@@ -1862,20 +1911,11 @@ func (d *readResponseDecoder) consumeVarint() (uint64, error) {
 	}
 
 	// Update the offsets and current buffer depending on the tag length.
-	remainingInBuf := len(b[d.currOff:])
-	if tagLength >= remainingInBuf {
-		d.currBuf += 1
-		d.currOff = uint64(remainingInBuf) - uint64(tagLength)
-	} else {
-		d.currOff += uint64(tagLength)
-	}
-
-	d.off += uint64(tagLength)
+	d.advanceOffset(uint64(tagLength))
 	return dataLength, nil
 }
 
 func (d *readResponseDecoder) consumeFixed32() (uint32, error) {
-	b := (*d.databufs)[d.currBuf].ReadOnlyData()
 	valueBuf := d.peek()
 
 	// Consume the next tag. This will tell us which field is next in the
@@ -1886,20 +1926,11 @@ func (d *readResponseDecoder) consumeFixed32() (uint32, error) {
 	}
 
 	// Update the offsets and current buffer depending on the tag length.
-	remainingInBuf := len(b[d.currOff:])
-	if tagLength >= remainingInBuf {
-		d.currBuf += 1
-		d.currOff = uint64(remainingInBuf) - uint64(tagLength)
-	} else {
-		d.currOff += uint64(tagLength)
-	}
-
-	d.off += uint64(tagLength)
+	d.advanceOffset(uint64(tagLength))
 	return value, nil
 }
 
 func (d *readResponseDecoder) consumeFixed64() (uint64, error) {
-	b := (*d.databufs)[d.currBuf].ReadOnlyData()
 	valueBuf := d.peek()
 
 	// Consume the next tag. This will tell us which field is next in the
@@ -1910,15 +1941,7 @@ func (d *readResponseDecoder) consumeFixed64() (uint64, error) {
 	}
 
 	// Update the offsets and current buffer depending on the tag length.
-	remainingInBuf := len(b[d.currOff:])
-	if tagLength >= remainingInBuf {
-		d.currBuf += 1
-		d.currOff = uint64(remainingInBuf) - uint64(tagLength)
-	} else {
-		d.currOff += uint64(tagLength)
-	}
-
-	d.off += uint64(tagLength)
+	d.advanceOffset(uint64(tagLength))
 	return value, nil
 }
 
@@ -1951,9 +1974,7 @@ func (d *readResponseDecoder) consumeFieldValue(fieldNum protowire.Number, field
 // Consume a bytes field from the input. Returns offsets for the data in the buffer slices
 // and an error.
 func (d *readResponseDecoder) consumeBytes() (*bufferSliceOffsets, error) {
-	b := (*d.databufs)[d.currBuf].ReadOnlyData()
-	// n is the length of the tag, and m is the length of the data
-	// past the tag.
+	// m is the length of the data past the tag.
 	m, err := d.consumeVarint()
 	if err != nil {
 		return nil, fmt.Errorf("consuming bytes field: %w", err)
@@ -1961,38 +1982,14 @@ func (d *readResponseDecoder) consumeBytes() (*bufferSliceOffsets, error) {
 	offsets := &bufferSliceOffsets{
 		startBuf: d.currBuf,
 		startOff: d.currOff,
+		currBuf:  d.currBuf,
+		currOff:  d.currOff,
 	}
 
-	// Data is longer than current buffer
-	// Iterate through buffers to find end offset.
-	remainingInCurr := uint64(len(b[d.currOff:]))
-	if m > remainingInCurr {
-		d.off += remainingInCurr
-		remainingBytes := m - remainingInCurr
-		for remainingBytes > 0 {
-			d.currOff = 0
-			d.currBuf += 1
-			if d.currBuf >= len(*d.databufs) {
-				// Should not happen if message is formed correctly.
-				return nil, errors.New("invalid proto message: truncated data")
-			}
-			b = (*d.databufs)[d.currBuf].ReadOnlyData()
-			currLen := uint64(len(b))
-			if remainingBytes < currLen {
-				d.currOff = remainingBytes
-				offsets.endOff = remainingBytes
-				offsets.endBuf = d.currBuf
-			}
-			remainingBytes -= currLen
-		}
-	} else {
-		// Data is entirely in current
-		offsets.endBuf = offsets.startBuf
-		d.currOff += m
-		d.off += m
-		offsets.endOff = d.currOff
-	}
-
+	// Advance offsets to lengths of bytes field and capture where we end.
+	d.advanceOffset(m)
+	offsets.endBuf = d.currBuf
+	offsets.endOff = d.currOff
 	return offsets, nil
 }
 
@@ -2001,50 +1998,19 @@ func (d *readResponseDecoder) consumeBytes() (*bufferSliceOffsets, error) {
 // used to leverage proto.Unmarshal for small bytes fields (i.e. anything
 // except object data).
 func (d *readResponseDecoder) consumeBytesCopy() ([]byte, error) {
-	b := (*d.databufs)[d.currBuf].ReadOnlyData()
+	// b := (*d.databufs)[d.currBuf].ReadOnlyData()
 
 	// m is the length of the bytes data.
 	m, err := d.consumeVarint()
 	if err != nil {
-		return nil, fmt.Errorf("consuming bytes field: %w", err)
+		return nil, fmt.Errorf("consuming varint: %w", err)
 	}
-
-	buf := b[d.currOff:]
-	remainingInCurr := uint64(len(b[d.currOff:]))
-
-	// Data is longer than current buffer
-	// Iterate through buffers to find end offset.
-	if m > remainingInCurr {
-		d.off += remainingInCurr
-		remainingBytes := m - remainingInCurr
-		for remainingBytes > 0 {
-			d.currOff = 0
-			d.currBuf += 1
-			if d.currBuf >= len(*d.databufs) {
-				// Should not happen if message is formed correctly.
-				return nil, errors.New("invalid proto message: truncated data")
-			}
-			b = (*d.databufs)[d.currBuf].ReadOnlyData()
-			currLen := uint64(len(b))
-			// If full buffer is in this field, copy it all in. Otherwise copy up to the
-			// correct end offset.
-			if remainingBytes >= currLen {
-				buf = append(buf, b...)
-			} else {
-				buf = append(buf, b[:remainingBytes]...)
-				d.currOff = remainingBytes
-			}
-			remainingBytes -= currLen
-		}
-	} else {
-		// Data is entirely in current buffer.
-		buf = buf[:m]
-		d.currOff += m
-		d.off += m
+	// Copy the data into a buffer and advance the offset
+	b := d.copyNextBytes(int(m))
+	if err := d.advanceOffset(m); err != nil {
+		return nil, fmt.Errorf("advancing offset: %w", err)
 	}
-	d.off += m
-
-	return buf, nil
+	return b, nil
 }
 
 // readFullObjectResponse returns the ReadObjectResponse that is encoded in the
@@ -2056,7 +2022,7 @@ func (d *readResponseDecoder) consumeBytesCopy() ([]byte, error) {
 // Unmarshal that does that, this function can be dropped.
 func (d *readResponseDecoder) readFullObjectResponse() error {
 	msg := &storagepb.ReadObjectResponse{}
-	var dataOffsets *bufferSliceOffsets
+	dataOffsets := &bufferSliceOffsets{}
 
 	// Loop over the entire message, extracting fields as we go. This does not
 	// handle field concatenation, in which the contents of a single field
@@ -2074,7 +2040,6 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 			// The ChecksummedData field was found. Initialize the struct.
 			msg.ChecksummedData = &storagepb.ChecksummedData{}
 
-			// offsets, err := d.consumeBytes()
 			bytesFieldLen, err := d.consumeVarint()
 			if err != nil {
 				return fmt.Errorf("consuming bytes: %v", err)
@@ -2101,9 +2066,6 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 					}
 					msg.ChecksummedData.Crc32C = &v
 				default:
-					// assumption: checksummedDataContent field comes first and anything remaining here is
-					// not that large, so we can copy remaining bytes in a buffer to discard these fields.
-					// TODO: check about this...
 					err := d.consumeFieldValue(gotNum, gotTyp)
 					if err != nil {
 						return fmt.Errorf("invalid field in ReadObjectResponse.ChecksummedData: %w", err)

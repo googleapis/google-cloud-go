@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"bytes"
 	"crypto/md5"
 	"hash/crc32"
 	"math/rand"
@@ -86,9 +87,9 @@ func TestBytesCodecV2(t *testing.T) {
 	}
 
 	for _, test := range []struct {
-		desc    string
-		resp    *storagepb.ReadObjectResponse
-		offsets *bufferSliceOffsets
+		desc        string
+		resp        *storagepb.ReadObjectResponse
+		wantContent []byte
 	}{
 		{
 			desc: "filled object response",
@@ -108,16 +109,12 @@ func TestBytesCodecV2(t *testing.T) {
 				},
 				Metadata: metadata,
 			},
-			offsets: &bufferSliceOffsets{
-				startBuf: 0,
-				startOff: 6,
-				endBuf:   0,
-				endOff:   1031,
-			},
+			wantContent: content,
 		},
 		{
-			desc: "empty object response",
-			resp: &storagepb.ReadObjectResponse{},
+			desc:        "empty object response",
+			resp:        &storagepb.ReadObjectResponse{},
+			wantContent: []byte{},
 		},
 		{
 			desc: "partially empty",
@@ -125,24 +122,53 @@ func TestBytesCodecV2(t *testing.T) {
 				ChecksummedData: &storagepb.ChecksummedData{},
 				ObjectChecksums: &storagepb.ObjectChecksums{Md5Hash: md5},
 			},
+			wantContent: []byte{},
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			for _, subtest := range []struct {
 				desc        string
-				splitPoints []int
+				splitBuffer func([]byte) [][]byte // call this to split the message into multiple buffers.
 			}{
 				{
-					desc:        "single buffer",
-					splitPoints: []int{},
+					desc: "single buffer",
+					splitBuffer: func(b []byte) [][]byte {
+						return [][]byte{b}
+					},
 				},
 				{
-					desc:        "random split buffer",
-					splitPoints: []int{100, 500, 700},
+					desc: "split every 100 bytes",
+					splitBuffer: func(b []byte) [][]byte {
+						var bufs [][]byte
+						var i int
+						for i = 0; i < len(b)-100; i += 100 {
+							bufs = append(bufs, b[i:i+100])
+						}
+						bufs = append(bufs, b[i:])
+						return bufs
+					},
 				},
 				{
-					desc:        "mid-tag split buffer",
-					splitPoints: []int{3, 1032},
+					desc: "split every 8 bytes",
+					splitBuffer: func(b []byte) [][]byte {
+						var bufs [][]byte
+						var i int
+						for i = 0; i < len(b)-8; i += 8 {
+							bufs = append(bufs, b[i:i+8])
+						}
+						bufs = append(bufs, b[i:])
+						return bufs
+					},
+				},
+				{
+					desc: "split every byte",
+					splitBuffer: func(b []byte) [][]byte {
+						var bufs [][]byte
+						for i := 0; i < len(b); i += 1 {
+							bufs = append(bufs, b[i:i+1])
+						}
+						return bufs
+					},
 				},
 			} {
 				t.Run(subtest.desc, func(t *testing.T) {
@@ -151,18 +177,12 @@ func TestBytesCodecV2(t *testing.T) {
 					if err != nil {
 						t.Fatalf("proto.Marshal: %v", err)
 					}
+					// Convert response data into mem.BufferSlice, potentially split across multiple buffers.
 					var respData mem.BufferSlice
-					off := 0
-					// Split response into multiple buffers if needed.
-					for _, split := range subtest.splitPoints {
-						// Only split if offset is within buffer
-						if split > len(encodedResp) {
-							break
-						}
-						respData = append(respData, mem.SliceBuffer(encodedResp[off:split]))
-						off = split
+					slices := subtest.splitBuffer(encodedResp)
+					for _, s := range slices {
+						respData = append(respData, mem.SliceBuffer(s))
 					}
-					respData = append(respData, mem.SliceBuffer(encodedResp[off:]))
 					// Unmarshal and decode response using custom decoding.
 					var encodedBytes *mem.BufferSlice = &mem.BufferSlice{}
 					if err := bytesCodecV2.Unmarshal(bytesCodecV2{}, respData, encodedBytes); err != nil {
@@ -183,10 +203,16 @@ func TestBytesCodecV2(t *testing.T) {
 						t.Errorf("cmp.Diff message: got(-),want(+):\n%s", diff)
 					}
 
-					// Compare offsets
-					if diff := cmp.Diff(decoder.dataOffsets, test.offsets, cmp.AllowUnexported(bufferSliceOffsets{})); diff != "" {
-						t.Errorf("cmp.Diff offsets: got(-),want(+):\n%s", diff)
+					// Read out the data and compare length and content.
+					buf := &bytes.Buffer{}
+					n, err := decoder.writeToAndUpdateCRC(buf, func([]byte) {})
+					if n != int64(len(test.wantContent)) {
+						t.Errorf("mismatched content length: got %d, want %d, offsets %+v", n, len(content), decoder.dataOffsets)
 					}
+					if !bytes.Equal(buf.Bytes(), test.wantContent) {
+						t.Errorf("returned message content did not match")
+					}
+
 				})
 			}
 		})
