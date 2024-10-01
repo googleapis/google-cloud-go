@@ -1684,12 +1684,7 @@ func (r *gRPCReader) Close() error {
 		r.cancel()
 	}
 	r.stream = nil
-	if r.currMsg != nil {
-		if r.currMsg.databufs != nil {
-			r.currMsg.databufs.Free()
-		}
-		r.currMsg = nil
-	}
+	r.currMsg = nil
 	return nil
 }
 
@@ -1705,8 +1700,8 @@ func (r *gRPCReader) Close() error {
 // The last error received is the one that is returned, which could be from
 // an attempt to reopen the stream.
 func (r *gRPCReader) recv() error {
-	r.currMsg = &readResponseDecoder{}
-	err := r.stream.RecvMsg(r.currMsg.databufs)
+	databufs := &mem.BufferSlice{}
+	err := r.stream.RecvMsg(databufs)
 
 	var shouldRetry = ShouldRetry
 	if r.settings.retry != nil && r.settings.retry.shouldRetry != nil {
@@ -1724,7 +1719,8 @@ func (r *gRPCReader) recv() error {
 		return err
 	}
 
-	return nil
+	r.currMsg = &readResponseDecoder{databufs: databufs}
+	return r.currMsg.readFullObjectResponse()
 }
 
 // ReadObjectResponse field and subfield numbers.
