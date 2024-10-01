@@ -98,6 +98,11 @@ func (ci CreateIndex) SQL() string {
 	return str
 }
 
+func (cp CreateProtoBundle) SQL() string {
+	// Backtick-quote all the types so we don't need to check for SQL keywords
+	return "CREATE PROTO BUNDLE (`" + strings.Join(cp.Types, "`, `") + "`)"
+}
+
 func (cv CreateView) SQL() string {
 	str := "CREATE"
 	if cv.OrReplace {
@@ -556,6 +561,23 @@ func (do DropSequence) SQL() string {
 
 func (d *Delete) SQL() string {
 	return "DELETE FROM " + d.Table.SQL() + " WHERE " + d.Where.SQL()
+}
+
+func (do DropProtoBundle) SQL() string {
+	return "DROP PROTO BUNDLE"
+}
+func (ap AlterProtoBundle) SQL() string {
+	str := "ALTER PROTO BUNDLE"
+	if len(ap.AddTypes) > 0 {
+		str += " INSERT (`" + strings.Join(ap.AddTypes, "`, `") + "`)"
+	}
+	if len(ap.UpdateTypes) > 0 {
+		str += " UPDATE (`" + strings.Join(ap.UpdateTypes, "`, `") + "`)"
+	}
+	if len(ap.DeleteTypes) > 0 {
+		str += " DELETE (`" + strings.Join(ap.DeleteTypes, "`, `") + "`)"
+	}
+	return str
 }
 
 func (u *Update) SQL() string {

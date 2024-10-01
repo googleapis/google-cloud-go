@@ -2101,6 +2101,71 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 		},
+		{
+			`CREATE PROTO BUNDLE (foo.bar.baz.Fiddle, ` + "`foo.bar.baz.Foozle`" + `);
+			ALTER PROTO BUNDLE INSERT (a.b.c, b.d.e, k) UPDATE (foo.bar.baz.Fiddle) DELETE (foo.bar.baz.Foozle);
+			DROP PROTO BUNDLE;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateProtoBundle{
+						Types:    []string{"foo.bar.baz.Fiddle", "foo.bar.baz.Foozle"},
+						Position: line(1),
+					},
+					&AlterProtoBundle{
+						AddTypes:    []string{"a.b.c", "b.d.e", "k"},
+						UpdateTypes: []string{"foo.bar.baz.Fiddle"},
+						DeleteTypes: []string{"foo.bar.baz.Foozle"},
+						Position:    line(2),
+					},
+					&DropProtoBundle{
+						Position: line(3),
+					},
+				},
+			},
+		},
+		{
+			`ALTER PROTO BUNDLE UPDATE (foo.bar.baz.Fiddle) INSERT (a.b.c, b.d.e, k) DELETE (foo.bar.baz.Foozle);`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterProtoBundle{
+						AddTypes:    []string{"a.b.c", "b.d.e", "k"},
+						UpdateTypes: []string{"foo.bar.baz.Fiddle"},
+						DeleteTypes: []string{"foo.bar.baz.Foozle"},
+						Position:    line(1),
+					},
+				},
+			},
+		},
+		{
+			`ALTER PROTO BUNDLE DELETE (foo.bar.baz.Foozle) UPDATE (foo.bar.baz.Fiddle) INSERT (a.b.c, b.d.e, k)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterProtoBundle{
+						AddTypes:    []string{"a.b.c", "b.d.e", "k"},
+						UpdateTypes: []string{"foo.bar.baz.Fiddle"},
+						DeleteTypes: []string{"foo.bar.baz.Foozle"},
+						Position:    line(1),
+					},
+				},
+			},
+		},
+		{
+			`ALTER PROTO BUNDLE INSERT (a.b.c, b.d.e, k) DELETE (foo.bar.baz.Foozle);`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterProtoBundle{
+						AddTypes:    []string{"a.b.c", "b.d.e", "k"},
+						UpdateTypes: nil,
+						DeleteTypes: []string{"foo.bar.baz.Foozle"},
+						Position:    line(1),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)
