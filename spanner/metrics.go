@@ -264,6 +264,9 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("The count of database operations."),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
 
 	// Create attempt_count
 	tf.attemptCount, err = meter.Int64Counter(
