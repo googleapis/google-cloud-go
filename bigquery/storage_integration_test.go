@@ -99,7 +99,7 @@ func TestIntegration_StorageReadClientProject(t *testing.T) {
 	table.ProjectID = "bigquery-public-data"
 
 	it := table.Read(ctx)
-	_, err := countIteratorRows(it)
+	total, err := countIteratorRows(it)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -113,13 +113,17 @@ func TestIntegration_StorageReadClientProject(t *testing.T) {
 		t.Fatalf("expected read session to have prefix %q: but found %s:", expectedPrefix, session.bqSession.Name)
 	}
 
+	// create session with different project
 	it = table.Read(ctx, WithReadSessionProjectID("bigquery-public-data"))
-	_, err = countIteratorRows(it)
+	if it.IsAccelerated() {
+		t.Fatal("storage api should not be used due to lack of permissions")
+	}
+	newTotal, err := countIteratorRows(it)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if it.IsAccelerated() {
-		t.Fatal("expected storage api to not be used")
+	if total != newTotal {
+		t.Fatalf("expected total to be %d, but got %d", total, newTotal)
 	}
 }
 
