@@ -1590,7 +1590,7 @@ type readResponseDecoder struct {
 }
 
 type bufferSliceOffsets struct {
-	startBuf, endBuf int    // inidices of start and end buffers of object data in the msg
+	startBuf, endBuf int    // indices of start and end buffers of object data in the msg
 	startOff, endOff uint64 // offsets within these buffers where the data starts and ends.
 	currBuf          int    // index of current buffer being read out to the user application.
 	currOff          uint64 // offset of read in current buffer.
