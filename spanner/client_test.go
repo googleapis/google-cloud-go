@@ -501,9 +501,8 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
-					switch s.(type) {
+					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						req, _ := s.(*sppb.ReadRequest)
 						// Validate the session is multiplexed
 						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
@@ -542,15 +541,13 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
-					switch s.(type) {
+					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						req, _ := s.(*sppb.ReadRequest)
 						// Validate the session is multiplexed
 						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
 						}
 					case *sppb.ExecuteSqlRequest:
-						req, _ := s.(*sppb.ExecuteSqlRequest)
 						// Validate the session is multiplexed
 						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
@@ -584,9 +581,8 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
-					switch s.(type) {
+					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						req, _ := s.(*sppb.ReadRequest)
 						// Validate the session is not multiplexed
 						if !testEqual(false, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
@@ -621,9 +617,8 @@ func TestClient_MultiplexedSession(t *testing.T) {
 				}
 				reqs := drainRequestsFromServer(server)
 				for _, s := range reqs {
-					switch s.(type) {
+					switch req := s.(type) {
 					case *sppb.ReadRequest:
-						req, _ := s.(*sppb.ReadRequest)
 						// Verify that a multiplexed session is used when that is enabled.
 						if !testEqual(isMultiplexEnabled, strings.Contains(req.Session, "multiplexed")) {
 							t.Errorf("TestClient_MultiplexedSession expected multiplexed session to be used, got: %v", req.Session)
@@ -1935,7 +1930,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeSqlStatementWithError(t 
 			// We ignore the error and proceed to commit the transaction.
 			_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
 			if err == nil {
-				return fmt.Errorf("missing expected InvalidArgument error")
+				return errors.New("missing expected InvalidArgument error")
 			}
 			return nil
 		})
@@ -3149,7 +3144,6 @@ func TestClient_ReadWriteTransactionConcurrentQueries(t *testing.T) {
 				}
 				rowCount++
 			}
-			return
 		}
 		wg.Add(2)
 		go query(&firstTransactionID)
@@ -4393,6 +4387,63 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 }
 
+func TestClient_EndToEndTracingHeader(t *testing.T) {
+	tests := []struct {
+		name                  string
+		endToEndTracingEnv    string
+		enableEndToEndTracing bool
+		wantEndToEndTracing   bool
+	}{
+		{
+			name:                  "when end-to-end tracing is enabled via config",
+			enableEndToEndTracing: true,
+			wantEndToEndTracing:   true,
+			endToEndTracingEnv:    "false",
+		},
+		{
+			name:                  "when end-to-end tracing is enabled via env",
+			enableEndToEndTracing: false,
+			wantEndToEndTracing:   true,
+			endToEndTracingEnv:    "true",
+		},
+		{
+			name:                  "when end-to-end tracing is disabled",
+			enableEndToEndTracing: false,
+			wantEndToEndTracing:   false,
+			endToEndTracingEnv:    "false",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Setenv("SPANNER_ENABLE_END_TO_END_TRACING", tt.endToEndTracingEnv)
+
+			server, opts, teardown := NewMockedSpannerInMemTestServer(t)
+			defer teardown()
+			config := ClientConfig{}
+			if tt.enableEndToEndTracing {
+				config.EnableEndToEndTracing = true
+			}
+
+			client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
+			if err != nil {
+				t.Fatalf("failed to get a client: %v", err)
+			}
+
+			gotEndToEndTracing := false
+			for _, val := range client.sc.md.Get(endToEndTracingHeader) {
+				if val == "true" {
+					gotEndToEndTracing = true
+				}
+			}
+
+			if gotEndToEndTracing != tt.wantEndToEndTracing {
+				t.Fatalf("mismatch in client configuration for property EnableEndToEndTracing: got %v, want %v", gotEndToEndTracing, tt.wantEndToEndTracing)
+			}
+		})
+	}
+}
+
 func TestClient_WithCustomBatchTimeout(t *testing.T) {
 	t.Parallel()
 
@@ -4452,13 +4503,13 @@ func TestClient_CallOptions(t *testing.T) {
 
 	cs := &gax.CallSettings{}
 	// This is the default retry setting.
-	c.CallOptions.CreateSession[1].Resolve(cs)
+	c.CallOptions().CreateSession[1].Resolve(cs)
 	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{250000000 32000000000 1.3 0} [14 8]}"; got != want {
 		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
 	}
 
 	// This is the custom retry setting.
-	c.CallOptions.CreateSession[2].Resolve(cs)
+	c.CallOptions().CreateSession[2].Resolve(cs)
 	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{200000000 30000000000 1.25 0} [14 4]}"; got != want {
 		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
 	}
@@ -4725,10 +4776,10 @@ func TestClient_EmulatorWithCredentialsFile(t *testing.T) {
 		"localhost:1234",
 		opts...,
 	)
-	defer client.Close()
 	if err != nil {
 		t.Fatalf("Failed to create a client with credentials file when running against an emulator: %v", err)
 	}
+	defer client.Close()
 }
 
 func TestBatchReadOnlyTransaction_QueryOptions(t *testing.T) {

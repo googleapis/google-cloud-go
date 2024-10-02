@@ -1,5 +1,38 @@
 # Changes
 
+## [2.9.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.8.0...dataproc/v2.9.0) (2024-09-25)
+
+
+### Features
+
+* **dataproc:** Add support for Spark Connect sessions in Dataproc Serverless for Spark ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
+
+### Documentation
+
+* **dataproc:** Update docs for `filter` field in `ListSessionsRequest` ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
+## [2.8.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.7.0...dataproc/v2.8.0) (2024-09-19)
+
+
+### Features
+
+* **dataproc:** Add resource reference for KMS keys and fix comments ([37866ce](https://github.com/googleapis/google-cloud-go/commit/37866ce67a286a3eed1b92f53bdac2ae8f1c63ed))
+
+## [2.7.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.6.0...dataproc/v2.7.0) (2024-09-12)
+
+
+### Features
+
+* **dataproc:** Add optional parameters (tarball-access) in DiagnoseClusterRequest ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **dataproc:** Add support for new Dataproc features ([9b4b2fa](https://github.com/googleapis/google-cloud-go/commit/9b4b2fa87864906aeae3a8fda460466f951bc6c9))
+* **dataproc:** Add support for new Dataproc features ([#10817](https://github.com/googleapis/google-cloud-go/issues/10817)) ([2d5a9f9](https://github.com/googleapis/google-cloud-go/commit/2d5a9f9ea9a31e341f9a380ae50a650d48c29e99))
+
+
+### Bug Fixes
+
+* **dataproc/v2:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [2.6.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.5.4...dataproc/v2.6.0) (2024-08-20)
 
 

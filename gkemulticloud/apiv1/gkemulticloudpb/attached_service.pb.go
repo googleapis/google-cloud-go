@@ -315,7 +315,7 @@ type ImportAttachedClusterRequest struct {
 	PlatformVersion string `protobuf:"bytes,4,opt,name=platform_version,json=platformVersion,proto3" json:"platform_version,omitempty"`
 	// Required. The Kubernetes distribution of the underlying attached cluster.
 	//
-	// Supported values: ["eks", "aks"].
+	// Supported values: ["eks", "aks", "generic"].
 	Distribution string `protobuf:"bytes,5,opt,name=distribution,proto3" json:"distribution,omitempty"`
 	// Optional. Proxy configuration for outbound HTTP(S) traffic.
 	ProxyConfig *AttachedProxyConfig `protobuf:"bytes,6,opt,name=proxy_config,json=proxyConfig,proto3" json:"proxy_config,omitempty"`
@@ -422,6 +422,7 @@ type UpdateAttachedClusterRequest struct {
 	//   - `platform_version`.
 	//   - `proxy_config.kubernetes_secret.name`.
 	//   - `proxy_config.kubernetes_secret.namespace`.
+	//   - `security_posture_config.vulnerability_mode`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 

@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"container/heap"
 	"context"
+	"errors"
 	"fmt"
 	"math/rand"
 	"reflect"
@@ -279,7 +280,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 		numOpened := uint64(sp.idleList.Len())
 		sp.mu.Unlock()
 		if numOpened < sp.SessionPoolConfig.incStep-1 {
-			return fmt.Errorf("creation not yet finished")
+			return errors.New("creation not yet finished")
 		}
 		return nil
 	})
@@ -371,7 +372,7 @@ func TestSessionLeak(t *testing.T) {
 	if single.sh.stack == nil && !isMultiplexEnabled {
 		t.Fatalf("Missing stacktrace from session handle")
 	}
-	stack := fmt.Sprintf("%s", single.sh.stack)
+	stack := string(single.sh.stack)
 	testMethod := "TestSessionLeak"
 	if !strings.Contains(stack, testMethod) && !isMultiplexEnabled {
 		t.Fatalf("Stacktrace does not contain '%s'\nGot: %s", testMethod, stack)
@@ -1900,7 +1901,7 @@ func TestMaintainer_DeletesSessions(t *testing.T) {
 		sp.mu.Lock()
 		defer sp.mu.Unlock()
 		if sp.numOpened > 0 {
-			return fmt.Errorf("session pool still contains more than 0 sessions")
+			return errors.New("session pool still contains more than 0 sessions")
 		}
 		return nil
 	})
@@ -2023,7 +2024,7 @@ func TestSessionCreationIsDistributedOverChannels(t *testing.T) {
 		numOpened := uint64(sp.idleList.Len())
 		sp.mu.Unlock()
 		if numOpened < spc.MinOpened {
-			return fmt.Errorf("not yet initialized")
+			return errors.New("not yet initialized")
 		}
 		return nil
 	})
@@ -2074,7 +2075,8 @@ func getSessionsPerChannel(sp *sessionPool) map[string]int {
 		// Get the pointer to the actual underlying gRPC ClientConn and use
 		// that as the key in the map.
 		val := reflect.ValueOf(s.client).Elem()
-		internalClient := val.FieldByName("internalClient").Elem().Elem()
+		rawClient := val.FieldByName("raw").Elem()
+		internalClient := rawClient.FieldByName("internalClient").Elem().Elem()
 		connPool := internalClient.FieldByName("connPool").Elem().Elem()
 		conn := connPool.Field(0).Pointer()
 		key := fmt.Sprintf("%v", conn)

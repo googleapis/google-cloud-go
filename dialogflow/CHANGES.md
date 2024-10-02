@@ -1,5 +1,21 @@
 # Changes
 
+## [1.58.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.57.1...dialogflow/v1.58.0) (2024-09-25)
+
+
+### Features
+
+* **dialogflow:** Add ALAW encoding value to Audio encoding enum ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **dialogflow:** Created new boolean fields in conversation dataset for zone isolation and zone separation compliance status ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **dialogflow:** Created new boolean fields in conversation model for zone isolation and zone separation compliance status ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
+## [1.57.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.57.0...dialogflow/v1.57.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **dialogflow:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.57.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.56.0...dialogflow/v1.57.0) (2024-08-20)
 
 

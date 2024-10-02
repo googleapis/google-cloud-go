@@ -1,6 +1,23 @@
 # Changelog
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.3.1...netapp/v1.4.0) (2024-09-19)
+
+
+### Features
+
+* **netapp:** A new field 'allow_auto_tiering' in message 'google.cloud.netapp.v1.StoragePool' is added ([37866ce](https://github.com/googleapis/google-cloud-go/commit/37866ce67a286a3eed1b92f53bdac2ae8f1c63ed))
+* **netapp:** A new field 'cold_tier_size_gib' in message 'google.cloud.netapp.v1.Volume' is added ([37866ce](https://github.com/googleapis/google-cloud-go/commit/37866ce67a286a3eed1b92f53bdac2ae8f1c63ed))
+* **netapp:** A new message 'google.cloud.netapp.v1.SwitchActiveReplicaZoneRequest' is added ([37866ce](https://github.com/googleapis/google-cloud-go/commit/37866ce67a286a3eed1b92f53bdac2ae8f1c63ed))
+* **netapp:** A new rpc 'SwitchActiveReplicaZone' is added to service 'google.cloud.netapp.v1.NetApp' ([37866ce](https://github.com/googleapis/google-cloud-go/commit/37866ce67a286a3eed1b92f53bdac2ae8f1c63ed))
+
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.3.0...netapp/v1.3.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **netapp:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.2.1...netapp/v1.3.0) (2024-08-20)
 
 

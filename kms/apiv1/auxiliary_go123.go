@@ -52,6 +52,12 @@ func (it *ImportJobIterator) All() iter.Seq2[*kmspb.ImportJob, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *KeyHandleIterator) All() iter.Seq2[*kmspb.KeyHandle, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *KeyRingIterator) All() iter.Seq2[*kmspb.KeyRing, error] {
 	return iterator.RangeAdapter(it.Next)
 }

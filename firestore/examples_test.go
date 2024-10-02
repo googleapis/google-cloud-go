@@ -502,7 +502,10 @@ func ExampleQuery_FindNearest() {
 
 	//
 	q := client.Collection("descriptions").
-		FindNearest("Embedding", []float32{1, 2, 3}, 5, firestore.DistanceMeasureDotProduct, nil)
+		FindNearest("Embedding", []float32{1, 2, 3}, 5, firestore.DistanceMeasureDotProduct, &firestore.FindNearestOptions{
+			DistanceThreshold:   firestore.Ptr(20.0),
+			DistanceResultField: "vector_distance",
+		})
 	iter1 := q.Documents(ctx)
 	_ = iter1 // TODO: Use iter1.
 }
@@ -561,6 +564,9 @@ func ExampleClient_RunTransaction() {
 	}
 	defer client.Close()
 
+	// write the CommitResponse here, via firestore.WithCommitResponse (below)
+	var cr firestore.CommitResponse
+
 	nm := client.Doc("States/NewMexico")
 	err = client.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
 		doc, err := tx.Get(nm) // tx.Get, NOT nm.Get!
@@ -572,10 +578,11 @@ func ExampleClient_RunTransaction() {
 			return err
 		}
 		return tx.Update(nm, []firestore.Update{{Path: "pop", Value: pop.(float64) + 0.2}})
-	})
+	}, firestore.WithCommitResponseTo(&cr))
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// CommitResponse can be accessed here
 }
 
 func ExampleArrayUnion_create() {
