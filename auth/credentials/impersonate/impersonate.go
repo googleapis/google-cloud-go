@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/auth"
@@ -30,11 +31,13 @@ import (
 )
 
 var (
-	iamCredentialsEndpoint                      = "https://iamcredentials.googleapis.com"
+	universeDomainPlaceholder                   = "UNIVERSE_DOMAIN"
+	iamCredentialsEndpoint                      = "https://iamcredentials.UNIVERSE_DOMAIN"
 	oauth2Endpoint                              = "https://oauth2.googleapis.com"
 	errMissingTargetPrincipal                   = errors.New("impersonate: target service account must be provided")
 	errMissingScopes                            = errors.New("impersonate: scopes must be provided")
 	errLifetimeOverMax                          = errors.New("impersonate: max lifetime is 12 hours")
+	errClientAndCredentials                     = errors.New("impersonate: client and credentials must not both be provided")
 	errUniverseNotSupportedDomainWideDelegation = errors.New("impersonate: service account user is configured for the credential. " +
 		"Domain-wide delegation is not supported in universes other than googleapis.com")
 )
@@ -87,30 +90,32 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 		client = opts.Client
 	}
 
+	universeDomainProvider := resolveUniverseDomainProvider(opts, creds)
 	// If a subject is specified a domain-wide delegation auth-flow is initiated
 	// to impersonate as the provided subject (user).
 	if opts.Subject != "" {
-		if !opts.isUniverseDomainGDU() {
+		gdu, err := isUniverseDomainGDU(universeDomainProvider)
+		if err != nil {
+			return nil, err
+		}
+		if !gdu {
 			return nil, errUniverseNotSupportedDomainWideDelegation
 		}
 		tp, err := user(opts, client, lifetime, isStaticToken)
 		if err != nil {
 			return nil, err
 		}
-		var udp auth.CredentialsPropertyProvider
-		if creds != nil {
-			udp = auth.CredentialsPropertyFunc(creds.UniverseDomain)
-		}
 		return auth.NewCredentials(&auth.CredentialsOptions{
 			TokenProvider:          tp,
-			UniverseDomainProvider: udp,
+			UniverseDomainProvider: universeDomainProvider,
 		}), nil
 	}
 
 	its := impersonatedTokenProvider{
-		client:          client,
-		targetPrincipal: opts.TargetPrincipal,
-		lifetime:        fmt.Sprintf("%.fs", lifetime.Seconds()),
+		client:                 client,
+		targetPrincipal:        opts.TargetPrincipal,
+		lifetime:               fmt.Sprintf("%.fs", lifetime.Seconds()),
+		universeDomainProvider: universeDomainProvider,
 	}
 	for _, v := range opts.Delegates {
 		its.delegates = append(its.delegates, formatIAMServiceAccountName(v))
@@ -125,14 +130,41 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 		}
 	}
 
-	var udp auth.CredentialsPropertyProvider
-	if creds != nil {
-		udp = auth.CredentialsPropertyFunc(creds.UniverseDomain)
-	}
 	return auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider:          auth.NewCachedTokenProvider(its, tpo),
-		UniverseDomainProvider: udp,
+		UniverseDomainProvider: universeDomainProvider,
 	}), nil
+}
+
+// resolveUniverseDomainProvider returns the default service domain for a given Cloud
+// universe, with the following precedence:
+//
+// 1. A non-empty CredentialsOptions.UniverseDomain.
+// 2. If non-nil creds, then creds.UniverseDomain.
+// 3. The default value "googleapis.com".
+//
+// This is the universe domain configured for the credentials, which will be
+// used in endpoint(s), and compared to the universe domain that is separately
+// configured for the client.
+func resolveUniverseDomainProvider(opts *CredentialsOptions, creds *auth.Credentials) auth.CredentialsPropertyProvider {
+	if opts.UniverseDomain != "" {
+		return internal.StaticCredentialsProperty(opts.UniverseDomain)
+	}
+	if creds != nil {
+		return auth.CredentialsPropertyFunc(creds.UniverseDomain)
+	}
+	return internal.StaticCredentialsProperty(internal.DefaultUniverseDomain)
+}
+
+// isUniverseDomainGDU returns true if the universe domain is the default Google
+// universe or if it is empty.
+func isUniverseDomainGDU(universeDomainProvider auth.CredentialsPropertyProvider) (bool, error) {
+	universeDomain, err := universeDomainProvider.GetProperty(context.Background())
+	if err != nil {
+		return false, err
+	}
+	gdu := universeDomain == internal.DefaultUniverseDomain || universeDomain == ""
+	return gdu, nil
 }
 
 // CredentialsOptions for generating an impersonated credential token.
@@ -163,7 +195,7 @@ type CredentialsOptions struct {
 	// will try to be detected from the environment. Optional.
 	Credentials *auth.Credentials
 	// Client configures the underlying client used to make network requests
-	// when fetching tokens. If provided the client should provide it's own
+	// when fetching tokens. If provided the client should provide its own
 	// credentials at call time. Optional.
 	Client *http.Client
 	// UniverseDomain is the default service domain for a given Cloud universe.
@@ -184,22 +216,10 @@ func (o *CredentialsOptions) validate() error {
 	if o.Lifetime.Hours() > 12 {
 		return errLifetimeOverMax
 	}
-	return nil
-}
-
-// getUniverseDomain is the default service domain for a given Cloud universe.
-// The default value is "googleapis.com".
-func (o *CredentialsOptions) getUniverseDomain() string {
-	if o.UniverseDomain == "" {
-		return internal.DefaultUniverseDomain
+	if o.Client != nil && o.Credentials != nil {
+		return errClientAndCredentials
 	}
-	return o.UniverseDomain
-}
-
-// isUniverseDomainGDU returns true if the universe domain is the default Google
-// universe.
-func (o *CredentialsOptions) isUniverseDomainGDU() bool {
-	return o.getUniverseDomain() == internal.DefaultUniverseDomain
+	return nil
 }
 
 func formatIAMServiceAccountName(name string) string {
@@ -218,7 +238,8 @@ type generateAccessTokenResponse struct {
 }
 
 type impersonatedTokenProvider struct {
-	client *http.Client
+	client                 *http.Client
+	universeDomainProvider auth.CredentialsPropertyProvider
 
 	targetPrincipal string
 	lifetime        string
@@ -237,7 +258,12 @@ func (i impersonatedTokenProvider) Token(ctx context.Context) (*auth.Token, erro
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to marshal request: %w", err)
 	}
-	url := fmt.Sprintf("%s/v1/%s:generateAccessToken", iamCredentialsEndpoint, formatIAMServiceAccountName(i.targetPrincipal))
+	universeDomain, err := i.universeDomainProvider.GetProperty(ctx)
+	if err != nil {
+		return nil, err
+	}
+	endpoint := strings.Replace(iamCredentialsEndpoint, universeDomainPlaceholder, universeDomain, 1)
+	url := fmt.Sprintf("%s/v1/%s:generateAccessToken", endpoint, formatIAMServiceAccountName(i.targetPrincipal))
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(b))
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
