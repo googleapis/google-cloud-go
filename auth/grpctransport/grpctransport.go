@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
@@ -183,10 +184,15 @@ type InternalOptions struct {
 	SkipValidation bool
 }
 
+func prefixTime(msg string) {
+	fmt.Printf("%v: "+msg, time.Now().Format("2006/01/02 15:04:05"))
+}
+
 // Dial returns a GRPCClientConnPool that can be used to communicate with a
 // Google cloud service, configured with the provided [Options]. It
 // automatically appends Authorization metadata to all outgoing requests.
 func Dial(ctx context.Context, secure bool, opts *Options) (GRPCClientConnPool, error) {
+	prefixTime(fmt.Sprintf("\t\tIn grpctransport Dial\n"))
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
@@ -199,6 +205,7 @@ func Dial(ctx context.Context, secure bool, opts *Options) (GRPCClientConnPool, 
 	}
 	pool := &roundRobinConnPool{}
 	for i := 0; i < opts.PoolSize; i++ {
+		prefixTime(fmt.Sprintf("\t\tCalling grpctransport dial\n"))
 		conn, err := dial(ctx, secure, opts)
 		if err != nil {
 			// ignore close error, if any
@@ -212,6 +219,7 @@ func Dial(ctx context.Context, secure bool, opts *Options) (GRPCClientConnPool, 
 
 // return a GRPCClientConnPool if pool == 1 or else a pool of of them if >1
 func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, error) {
+	prefixTime(fmt.Sprintf("\t\t\tIn grpctransport dial\n"))
 	tOpts := &transport.Options{
 		Endpoint:           opts.Endpoint,
 		ClientCertProvider: opts.ClientCertProvider,
@@ -260,6 +268,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			creds = opts.Credentials
 		} else {
 			var err error
+			prefixTime(fmt.Sprintf("\t\t\tCalling DetectDefault from grpctransport dial\n"))
 			creds, err = credentials.DetectDefault(opts.resolveDetectOptions())
 			if err != nil {
 				return nil, err
@@ -351,6 +360,7 @@ func (c *grpcCredentialsProvider) getClientUniverseDomain() string {
 }
 
 func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	fmt.Println("google-cloud-go grpctransport.go. In GetRequestMetadata. Calling Token()")
 	token, err := c.creds.Token(ctx)
 	if err != nil {
 		return nil, err

@@ -2,6 +2,16 @@ module cloud.google.com/go/bigtable
 
 go 1.21
 
+replace google.golang.org/grpc => /mnt/disks/nvme0n2/work/grpc-go
+
+replace google.golang.org/api => /mnt/disks/nvme0n2/work/google-api-go-client
+
+replace cloud.google.com/go => /mnt/disks/nvme0n2/work/google-cloud-go
+
+replace cloud.google.com/go/auth => /mnt/disks/nvme0n2/work/google-cloud-go/auth
+
+replace cloud.google.com/go/auth/oauth2adapt => /mnt/disks/nvme0n2/work/google-cloud-go/auth/oauth2adapt
+
 require (
 	cloud.google.com/go v0.115.1
 	cloud.google.com/go/iam v1.2.1
@@ -17,7 +27,7 @@ require (
 	google.golang.org/api v0.197.0
 	google.golang.org/genproto v0.0.0-20240903143218-8af14fe29dc1
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1
-	google.golang.org/grpc v1.66.2
+	google.golang.org/grpc v1.67.0
 	google.golang.org/protobuf v1.34.2
 	rsc.io/binaryregexp v0.2.0
 )
@@ -30,9 +40,9 @@ require (
 
 require (
 	cel.dev/expr v0.16.0 // indirect
-	cloud.google.com/go/auth v0.9.3 // indirect
+	cloud.google.com/go/auth v0.9.5 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
-	cloud.google.com/go/compute/metadata v0.5.0 // indirect
+	cloud.google.com/go/compute/metadata v0.5.2 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.4.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cncf/xds/go v0.0.0-20240822171458-6449f94b4d59 // indirect

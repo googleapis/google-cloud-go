@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"cloud.google.com/go/auth"
 	"golang.org/x/oauth2"
@@ -39,6 +40,7 @@ type tokenProviderAdapter struct {
 // Token fulfills the [cloud.google.com/go/auth.TokenProvider] interface. It
 // is a light wrapper around the underlying TokenSource.
 func (tp *tokenProviderAdapter) Token(context.Context) (*auth.Token, error) {
+	fmt.Println("tokenProviderAdapter Token")
 	tok, err := tp.ts.Token()
 	if err != nil {
 		var err2 *oauth2.RetrieveError
@@ -68,6 +70,7 @@ type tokenSourceAdapter struct {
 // Token fulfills the [golang.org/x/oauth2.TokenSource] interface. It
 // is a light wrapper around the underlying TokenProvider.
 func (ts *tokenSourceAdapter) Token() (*oauth2.Token, error) {
+	fmt.Println("tokenSourceAdapter Token")
 	tok, err := ts.tp.Token(context.Background())
 	if err != nil {
 		var err2 *auth.Error

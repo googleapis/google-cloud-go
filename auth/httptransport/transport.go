@@ -17,6 +17,7 @@ package httptransport
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -211,6 +212,7 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 			}
 		}()
 	}
+	fmt.Println("authTransport Token")
 	token, err := t.creds.Token(req.Context())
 	if err != nil {
 		return nil, err

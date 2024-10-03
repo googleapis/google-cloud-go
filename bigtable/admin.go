@@ -81,6 +81,7 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...optio
 	// Need to add scopes for long running operations (for create table & snapshots)
 	o = append(o, option.WithScopes(cloudresourcemanager.CloudPlatformScope))
 	o = append(o, opts...)
+	fmt.Println("Calling gtransport.DialPool from NewAdminClient")
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
@@ -1101,6 +1102,7 @@ func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.
 	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
 	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
 	o = append(o, opts...)
+	fmt.Println("Calling gtransport.DialPool from NewInstanceAdminClient\n")
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)

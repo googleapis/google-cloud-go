@@ -55,6 +55,10 @@ func OnGCE() bool {
 	return allowOnGCECheck && metadata.OnGCE()
 }
 
+func prefixTime(msg string) {
+	fmt.Printf("%v: "+msg, time.Now().Format("2006/01/02 15:04:05"))
+}
+
 // DetectDefault searches for "Application Default Credentials" and returns
 // a credential based on the [DetectOptions] provided.
 //
@@ -73,6 +77,8 @@ func OnGCE() bool {
 //     runtimes, and Google App Engine flexible environment, it fetches
 //     credentials from the metadata server.
 func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
+	prefixTime(fmt.Sprintf("\t\t\t\tIn DetectDefault\n"))
+
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
@@ -96,6 +102,7 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 	}
 
 	if OnGCE() {
+		prefixTime(fmt.Sprintf("\t\t\t\tOnGCE is true\n"))
 		return auth.NewCredentials(&auth.CredentialsOptions{
 			TokenProvider: computeTokenProvider(opts),
 			ProjectIDProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
