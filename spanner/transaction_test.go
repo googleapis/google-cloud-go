@@ -565,12 +565,19 @@ func TestReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
 			client,
 			TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}},
 		)
+		if err != nil {
+			t.Fatalf("failed to create transaction: %v", err)
+		}
+
 		_, err = f(tx)
 		if err != nil && status.Code(err) != codes.Aborted {
 			tx.Rollback(ctx)
 			break
 		} else if err == nil {
 			resp, err = tx.CommitWithReturnResp(ctx)
+			if err != nil {
+				t.Fatalf("failed to CommitWithReturnResp: %v", err)
+			}
 			break
 		}
 		// Set a default sleep time if the server delay is absent.
@@ -592,6 +599,10 @@ func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {
 	defer teardown()
 
 	tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatalf("failed to create transaction: %v", err)
+	}
+
 	if _, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
 		tx.Rollback(ctx)
 		t.Fatal(err)
@@ -653,6 +664,10 @@ func TestPriorityInQueryOptions(t *testing.T) {
 	defer teardown()
 
 	tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatalf("failed to create transaction: %v", err)
+	}
+
 	var iter *RowIterator
 	iter = tx.txReadOnly.Query(ctx, NewStatement("SELECT 1"))
 	err = iter.Do(func(r *Row) error { return nil })

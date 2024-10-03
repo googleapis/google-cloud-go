@@ -12,7 +12,7 @@ assign_issues_by:
 - labels:
   - 'api: bigquery'
   to:
-  - shollyman
+  - alvarowolfx
 - labels:
   - 'api: pubsub'
   to:
