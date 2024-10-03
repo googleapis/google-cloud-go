@@ -958,9 +958,12 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	return r, nil
 }
 
+// Custom codec to be used for unmarshaling ReadObjectResponse messages.
+// This is used to avoid a copy of object data in proto.Unmarshal.
 type bytesCodecV2 struct {
-	encoding.CodecV2
 }
+
+var _ encoding.CodecV2 = bytesCodecV2{}
 
 // Marshal is used to encode messages to send for bytesCodecV2. Since we are only
 // using this to send ReadObjectRequest messages we don't need to recycle buffers
