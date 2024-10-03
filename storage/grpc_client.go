@@ -1064,8 +1064,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 			// Receive the message into databuf as a wire-encoded message so we can
 			// use a custom decoder to avoid an extra copy at the protobuf layer.
-			databuf := &mem.BufferSlice{}
-			err := stream.RecvMsg(databuf)
+			databuf := mem.BufferSlice{}
+			err := stream.RecvMsg(&databuf)
 			// These types of errors show up on the Recv call, rather than the
 			// initialization of the stream via ReadObject above.
 			if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
@@ -1544,8 +1544,8 @@ func (r *gRPCReader) Close() error {
 // The last error received is the one that is returned, which could be from
 // an attempt to reopen the stream.
 func (r *gRPCReader) recv() error {
-	databufs := &mem.BufferSlice{}
-	err := r.stream.RecvMsg(databufs)
+	databufs := mem.BufferSlice{}
+	err := r.stream.RecvMsg(&databufs)
 
 	var shouldRetry = ShouldRetry
 	if r.settings.retry != nil && r.settings.retry.shouldRetry != nil {
@@ -1581,7 +1581,7 @@ const (
 // without copying object data. It also has methods to write out the resulting object
 // data to the user application.
 type readResponseDecoder struct {
-	databufs *mem.BufferSlice // raw bytes of the message being processed
+	databufs mem.BufferSlice // raw bytes of the message being processed
 	// Decoding offsets
 	off     uint64 // offset in the messsage relative to the data as a whole
 	currBuf int    // index of the current buffer being processed
@@ -1607,14 +1607,14 @@ type bufferSliceOffsets struct {
 // https://protobuf.dev/programming-guides/encoding/#varints . Other int types
 // are shorter.
 func (d *readResponseDecoder) peek() []byte {
-	b := (*d.databufs)[d.currBuf].ReadOnlyData()
+	b := d.databufs[d.currBuf].ReadOnlyData()
 	// Check if the tag will fit in the current buffer. If not, copy the next 10
 	// bytes into a new buffer to ensure that we can read the tag correctly
 	// without it being divided between buffers.
 	tagBuf := b[d.currOff:]
 	remainingInBuf := len(tagBuf)
 	// If we have less than 10 bytes remaining and are not in the final buffer, copy up to 10 bytes ahead.
-	if remainingInBuf < binary.MaxVarintLen64 && d.currBuf != len(*d.databufs)-1 {
+	if remainingInBuf < binary.MaxVarintLen64 && d.currBuf != len(d.databufs)-1 {
 		tagBuf = d.copyNextBytes(10)
 	}
 
@@ -1625,14 +1625,14 @@ func (d *readResponseDecoder) peek() []byte {
 // buffers overall. Does not advance offsets.
 func (d *readResponseDecoder) copyNextBytes(n int) []byte {
 	remaining := n
-	if r := (*d.databufs).Len() - int(d.off); r < remaining {
+	if r := d.databufs.Len() - int(d.off); r < remaining {
 		remaining = r
 	}
 	currBuf := d.currBuf
 	currOff := d.currOff
 	var buf []byte
 	for remaining > 0 {
-		b := (*d.databufs)[currBuf].ReadOnlyData()
+		b := d.databufs[currBuf].ReadOnlyData()
 		remainingInCurr := len(b[currOff:])
 		if remainingInCurr < remaining {
 			buf = append(buf, b[currOff:]...)
@@ -1652,7 +1652,7 @@ func (d *readResponseDecoder) copyNextBytes(n int) []byte {
 func (d *readResponseDecoder) advanceOffset(n uint64) error {
 	remaining := n
 	for remaining > 0 {
-		remainingInCurr := uint64((*d.databufs)[d.currBuf].Len()) - d.currOff
+		remainingInCurr := uint64(d.databufs[d.currBuf].Len()) - d.currOff
 		if remainingInCurr <= remaining {
 			remaining -= remainingInCurr
 			d.currBuf++
@@ -1663,7 +1663,7 @@ func (d *readResponseDecoder) advanceOffset(n uint64) error {
 		}
 	}
 	// If we have advanced past the end of the buffers, something went wrong.
-	if (d.currBuf == len(*d.databufs) && d.currOff > 0) || d.currBuf > len(*d.databufs) {
+	if (d.currBuf == len(d.databufs) && d.currOff > 0) || d.currBuf > len(d.databufs) {
 		return errors.New("decoding: truncated message, cannot advance offset")
 	}
 	d.off += n
@@ -1676,10 +1676,10 @@ func (d *readResponseDecoder) advanceOffset(n uint64) error {
 // function is called on the copied bytes.
 func (d *readResponseDecoder) readAndUpdateCRC(p []byte, updateCRC func([]byte)) int {
 	// For a completely empty message, just return 0
-	if len(*d.databufs) == 0 {
+	if len(d.databufs) == 0 {
 		return 0
 	}
-	databuf := (*d.databufs)[d.dataOffsets.currBuf]
+	databuf := d.databufs[d.dataOffsets.currBuf]
 	startOff := d.dataOffsets.currOff
 	var b []byte
 	if d.dataOffsets.currBuf == d.dataOffsets.endBuf {
@@ -1706,12 +1706,12 @@ func (d *readResponseDecoder) readAndUpdateCRC(p []byte, updateCRC func([]byte))
 
 func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, updateCRC func([]byte)) (int64, error) {
 	// For a completely empty message, just return 0
-	if len(*d.databufs) == 0 {
+	if len(d.databufs) == 0 {
 		return 0, nil
 	}
 	var written int64
 	for !d.done {
-		databuf := (*d.databufs)[d.dataOffsets.currBuf]
+		databuf := d.databufs[d.dataOffsets.currBuf]
 		startOff := d.dataOffsets.currOff
 		var b []byte
 		if d.dataOffsets.currBuf == d.dataOffsets.endBuf {
@@ -1857,8 +1857,6 @@ func (d *readResponseDecoder) consumeBytes() (*bufferSliceOffsets, error) {
 // used to leverage proto.Unmarshal for small bytes fields (i.e. anything
 // except object data).
 func (d *readResponseDecoder) consumeBytesCopy() ([]byte, error) {
-	// b := (*d.databufs)[d.currBuf].ReadOnlyData()
-
 	// m is the length of the bytes data.
 	m, err := d.consumeVarint()
 	if err != nil {

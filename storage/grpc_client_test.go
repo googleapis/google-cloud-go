@@ -184,8 +184,8 @@ func TestBytesCodecV2(t *testing.T) {
 						respData = append(respData, mem.SliceBuffer(s))
 					}
 					// Unmarshal and decode response using custom decoding.
-					var encodedBytes *mem.BufferSlice = &mem.BufferSlice{}
-					if err := bytesCodecV2.Unmarshal(bytesCodecV2{}, respData, encodedBytes); err != nil {
+					var encodedBytes mem.BufferSlice = mem.BufferSlice{}
+					if err := bytesCodecV2.Unmarshal(bytesCodecV2{}, respData, &encodedBytes); err != nil {
 						t.Fatalf("unmarshal: %v", err)
 					}
 
