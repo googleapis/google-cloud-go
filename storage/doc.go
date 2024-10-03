@@ -331,16 +331,14 @@ to add a [custom audit logging] header:
 	// Use client as usual with the context and the additional headers will be sent.
 	client.Bucket("my-bucket").Attrs(ctx)
 
-# Experimental gRPC API
+# gRPC API
 
-This package includes support for the Cloud Storage gRPC API, which is currently
-in preview. This implementation uses gRPC rather than the current JSON & XML
-APIs to make requests to Cloud Storage. The Notifications, Serivce Account HMAC
+This package includes support for the Cloud Storage gRPC API. The
+implementation uses gRPC rather than the Default
+JSON & XML APIs to make requests to Cloud Storage.
+The Go Storage gRPC client is generally available.
+The Notifications, Serivce Account HMAC
 and GetServiceAccount RPCs are not supported through the gRPC client.
-Kindly contact the Google Cloud Storage gRPC
-team at gcs-grpc-contact@google.com with a list of GCS buckets you would like to
-allowlist to access this API. The Go Storage gRPC library is not yet generally
-available, so it may be subject to breaking changes.
 
 To create a client which will use gRPC, use the alternate constructor:
 
@@ -352,9 +350,9 @@ To create a client which will use gRPC, use the alternate constructor:
 	// Use client as usual.
 
 Using the gRPC API inside GCP with a bucket in the same region can allow for
-Direct Google Access (enabling requests to skip some proxy steps and reducing
+[Direct Connectivity] (enabling requests to skip some proxy steps and reducing
 response latency). A warning is emmitted if gRPC is not used within GCP to
-warn that Direct Google Access could not be initialized. Direct Google Access
+warn that Direct Connectivity could not be initialized. Direct Connectivity
 is not required to access the gRPC API.
 
 Dependencies for the gRPC API may slightly increase the size of binaries for
@@ -411,5 +409,6 @@ client, which is available as a subpackage in this module. See package docs at
 [custom audit logging]: https://cloud.google.com/storage/docs/audit-logging#add-custom-metadata
 [Storage Control API]: https://cloud.google.com/storage/docs/reference/rpc/google.storage.control.v2
 [metric explorer]: https://console.cloud.google.com/projectselector/monitoring/metrics-explorer
+[Direct Connectivity]: https://cloud.google.com/vpc-service-controls/docs/set-up-private-connectivity#direct-connectivity
 */
 package storage // import "cloud.google.com/go/storage"
