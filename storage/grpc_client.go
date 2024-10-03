@@ -1064,8 +1064,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 			// Receive the message into databuf as a wire-encoded message so we can
 			// use a custom decoder to avoid an extra copy at the protobuf layer.
-			databuf := mem.BufferSlice{}
-			err := stream.RecvMsg(&databuf)
+			databufs := mem.BufferSlice{}
+			err := stream.RecvMsg(&databufs)
 			// These types of errors show up on the Recv call, rather than the
 			// initialization of the stream via ReadObject above.
 			if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
@@ -1078,7 +1078,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			// fields except the object data. Object data is handled separately
 			// to avoid a copy.
 			decoder = &readResponseDecoder{
-				databufs: databuf,
+				databufs: databufs,
 			}
 			err = decoder.readFullObjectResponse()
 			return err
@@ -1588,7 +1588,7 @@ type readResponseDecoder struct {
 	currOff uint64 // offset in the current buffer
 	// Processed data
 	msg         *storagepb.ReadObjectResponse // processed response message with all fields other than object data populated
-	dataOffsets *bufferSliceOffsets           // offsets of the object data in the message.
+	dataOffsets bufferSliceOffsets            // offsets of the object data in the message.
 	done        bool                          // true if the data has been completely read.
 }
 
@@ -1613,11 +1613,11 @@ func (d *readResponseDecoder) peek() []byte {
 	// without it being divided between buffers.
 	tagBuf := b[d.currOff:]
 	remainingInBuf := len(tagBuf)
-	// If we have less than 10 bytes remaining and are not in the final buffer, copy up to 10 bytes ahead.
+	// If we have less than 10 bytes remaining and are not in the final buffer,
+	// copy up to 10 bytes ahead from the next buffer.
 	if remainingInBuf < binary.MaxVarintLen64 && d.currBuf != len(d.databufs)-1 {
 		tagBuf = d.copyNextBytes(10)
 	}
-
 	return tagBuf
 }
 
@@ -1832,13 +1832,13 @@ func (d *readResponseDecoder) consumeFieldValue(fieldNum protowire.Number, field
 
 // Consume a bytes field from the input. Returns offsets for the data in the buffer slices
 // and an error.
-func (d *readResponseDecoder) consumeBytes() (*bufferSliceOffsets, error) {
+func (d *readResponseDecoder) consumeBytes() (bufferSliceOffsets, error) {
 	// m is the length of the data past the tag.
 	m, err := d.consumeVarint()
 	if err != nil {
-		return nil, fmt.Errorf("consuming bytes field: %w", err)
+		return bufferSliceOffsets{}, fmt.Errorf("consuming bytes field: %w", err)
 	}
-	offsets := &bufferSliceOffsets{
+	offsets := bufferSliceOffsets{
 		startBuf: d.currBuf,
 		startOff: d.currOff,
 		currBuf:  d.currBuf,
@@ -1879,7 +1879,6 @@ func (d *readResponseDecoder) consumeBytesCopy() ([]byte, error) {
 // Unmarshal that does that, this function can be dropped.
 func (d *readResponseDecoder) readFullObjectResponse() error {
 	msg := &storagepb.ReadObjectResponse{}
-	dataOffsets := &bufferSliceOffsets{}
 
 	// Loop over the entire message, extracting fields as we go. This does not
 	// handle field concatenation, in which the contents of a single field
@@ -1912,7 +1911,7 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 				switch {
 				case gotNum == checksummedDataContentField && gotTyp == protowire.BytesType:
 					// Get the offsets of the content bytes.
-					dataOffsets, err = d.consumeBytes()
+					d.dataOffsets, err = d.consumeBytes()
 					if err != nil {
 						return fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Content: %w", err)
 					}
@@ -1969,7 +1968,6 @@ func (d *readResponseDecoder) readFullObjectResponse() error {
 		}
 	}
 	d.msg = msg
-	d.dataOffsets = dataOffsets
 	return nil
 }
 
