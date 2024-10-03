@@ -2964,6 +2964,9 @@ func (p *parser) parseAlterProtoBundle() (*AlterProtoBundle, *parseError) {
 				return &alter, nil
 			} else if tok.err != nil {
 				return nil, tok.err
+			} else if tok.typ == unknownToken && tok.value == ";" {
+				p.back()
+				return &alter, nil
 			}
 			return nil, p.errorf("invalid clause in ALTER PROTO BUNDLE %q", tok.value)
 		}
