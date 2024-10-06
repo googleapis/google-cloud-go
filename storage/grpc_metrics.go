@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -162,7 +163,7 @@ func newGRPCMetricContext(ctx context.Context, project string) (*metricsContext,
 	// Implementation requires a project, if one is not determined possibly user
 	// credentials. Then we will fail stating gRPC Metrics require a project-id.
 	if project == "" && preparedResource.projectToUse != "" {
-		return nil, fmt.Errorf("google cloud project is required to start client-side metrics")
+		return nil, errors.New("google cloud project is required to start client-side metrics")
 	}
 	// If projectTouse isn't the same as project provided to Storage client, then
 	// emit a log stating which project is being used to emit metrics to.

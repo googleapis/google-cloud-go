@@ -56,7 +56,7 @@ var (
 		monitoredResLabelKeyZone:     true,
 	}
 
-	errShutdown = fmt.Errorf("exporter is shutdown")
+	errShutdown = errors.New("exporter is shutdown")
 )
 
 type errUnexpectedAggregationKind struct {

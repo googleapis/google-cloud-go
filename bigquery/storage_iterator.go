@@ -86,7 +86,7 @@ func newStorageRowIteratorFromJob(ctx context.Context, j *Job) (*RowIterator, er
 	qcfg := cfg.(*QueryConfig)
 	if qcfg.Dst == nil {
 		if !job.isScript() {
-			return nil, fmt.Errorf("job has no destination table to read")
+			return nil, errors.New("job has no destination table to read")
 		}
 		lastJob, err := resolveLastChildSelectJob(ctx, job)
 		if err != nil {
@@ -115,7 +115,7 @@ func resolveLastChildSelectJob(ctx context.Context, job *Job) (*Job, error) {
 		childJobs = append(childJobs, job)
 	}
 	if len(childJobs) == 0 {
-		return nil, fmt.Errorf("failed to resolve table for script job: no child jobs found")
+		return nil, errors.New("failed to resolve table for script job: no child jobs found")
 	}
 	return childJobs[0], nil
 }

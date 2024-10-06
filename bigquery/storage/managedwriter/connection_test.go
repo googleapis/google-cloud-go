@@ -17,7 +17,6 @@ package managedwriter
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"testing"
 	"time"
@@ -218,7 +217,7 @@ func TestConnectionPool_OpenCallOptionPropagation(t *testing.T) {
 			if len(opts) == 0 {
 				t.Fatalf("no options were propagated")
 			}
-			return nil, fmt.Errorf("no real client")
+			return nil, errors.New("no real client")
 		}, ""),
 		callOptions: []gax.CallOption{
 			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
@@ -231,7 +230,7 @@ func TestConnectionPool_OpenCallOptionPropagation(t *testing.T) {
 // This test evaluates how the receiver deals with a pending write.
 func TestConnection_Receiver(t *testing.T) {
 
-	var customErr = fmt.Errorf("foo")
+	var customErr = errors.New("foo")
 
 	testCases := []struct {
 		description       string

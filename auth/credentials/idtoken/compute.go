@@ -16,7 +16,7 @@ package idtoken
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"net/url"
 	"time"
 
@@ -32,7 +32,7 @@ const identitySuffix = "instance/service-accounts/default/identity"
 // tokens.
 func computeCredentials(opts *Options) (*auth.Credentials, error) {
 	if opts.CustomClaims != nil {
-		return nil, fmt.Errorf("idtoken: Options.CustomClaims can't be used with the metadata service, please provide a service account if you would like to use this feature")
+		return nil, errors.New("idtoken: Options.CustomClaims can't be used with the metadata service, please provide a service account if you would like to use this feature")
 	}
 	tp := computeIDTokenProvider{
 		audience: opts.Audience,
@@ -71,7 +71,7 @@ func (c computeIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) 
 		return nil, err
 	}
 	if res == "" {
-		return nil, fmt.Errorf("idtoken: invalid empty response from metadata service")
+		return nil, errors.New("idtoken: invalid empty response from metadata service")
 	}
 	return &auth.Token{
 		Value: res,

@@ -19,7 +19,6 @@ package httptransport
 import (
 	"crypto/tls"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"cloud.google.com/go/auth"
@@ -157,7 +156,7 @@ type InternalOptions struct {
 // if client or creds is nil.
 func AddAuthorizationMiddleware(client *http.Client, creds *auth.Credentials) error {
 	if client == nil || creds == nil {
-		return fmt.Errorf("httptransport: client and tp must not be nil")
+		return errors.New("httptransport: client and tp must not be nil")
 	}
 	base := client.Transport
 	if base == nil {

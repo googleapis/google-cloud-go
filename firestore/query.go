@@ -1436,7 +1436,7 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 
 func (it *queryDocumentIterator) getExplainMetrics() (*ExplainMetrics, error) {
 	if it == nil {
-		return nil, fmt.Errorf("firestore: iterator is nil")
+		return nil, errors.New("firestore: iterator is nil")
 	}
 	return it.explainMetrics, nil
 }

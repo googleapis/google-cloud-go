@@ -17,7 +17,6 @@ package bigquery
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
@@ -439,7 +438,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 // faster query path, this method returns a QueryRequest suitable for execution.
 func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 	if q.forceStorageAPI && q.client.isStorageReadAvailable() {
-		return nil, fmt.Errorf("force Storage API usage")
+		return nil, errors.New("force Storage API usage")
 	}
 	// This is a denylist of settings which prevent us from composing an equivalent
 	// bq.QueryRequest due to differences between configuration parameters accepted
@@ -459,7 +458,7 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		q.QueryConfig.JobTimeout != 0 ||
 		// User has defined the jobID generation behavior
 		q.JobIDConfig.JobID != "" {
-		return nil, fmt.Errorf("QueryConfig incompatible with fastPath")
+		return nil, errors.New("QueryConfig incompatible with fastPath")
 	}
 	pfalse := false
 	qRequest := &bq.QueryRequest{

@@ -16,6 +16,7 @@ package adapt
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -169,7 +170,7 @@ func (dm *dependencyCache) getFileDescriptorProtos() []*descriptorpb.FileDescrip
 
 func (dm *dependencyCache) add(schema *storagepb.TableSchema, descriptor protoreflect.MessageDescriptor) error {
 	if dm == nil {
-		return fmt.Errorf("cache is nil")
+		return errors.New("cache is nil")
 	}
 	b, err := proto.Marshal(schema)
 	if err != nil {
@@ -247,7 +248,7 @@ func StorageSchemaToProto3Descriptor(inSchema *storagepb.TableSchema, scope stri
 // Internal implementation of the conversion code.
 func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache, useProto3 bool) (protoreflect.MessageDescriptor, error) {
 	if inSchema == nil {
-		return nil, newConversionError(scope, fmt.Errorf("no input schema was provided"))
+		return nil, newConversionError(scope, errors.New("no input schema was provided"))
 	}
 
 	var fields []*descriptorpb.FieldDescriptorProto
@@ -504,7 +505,7 @@ func NormalizeDescriptor(in protoreflect.MessageDescriptor) (*descriptorpb.Descr
 
 func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes, enumTypes, structTypes *stringSet, root *descriptorpb.DescriptorProto) (*descriptorpb.DescriptorProto, error) {
 	if in == nil {
-		return nil, fmt.Errorf("no messagedescriptor provided")
+		return nil, errors.New("no messagedescriptor provided")
 	}
 	resultDP := &descriptorpb.DescriptorProto{}
 	if root == nil {

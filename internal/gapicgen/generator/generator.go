@@ -20,6 +20,7 @@ package generator
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -50,7 +51,7 @@ func Generate(ctx context.Context, conf *Config) ([]*git.ChangeInfo, error) {
 		var err error
 		changes, err = gatherChanges(conf.GoogleapisDir, conf.GenprotoDir)
 		if err != nil {
-			return nil, fmt.Errorf("error gathering commit info")
+			return nil, errors.New("error gathering commit info")
 		}
 		if err := recordGoogleapisHash(conf.GoogleapisDir, conf.GenprotoDir); err != nil {
 			return nil, err

@@ -16,6 +16,7 @@ package managedwriter
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"runtime"
 	"strings"
@@ -204,7 +205,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 // for constructing a new managed stream.
 func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 	if ms == nil {
-		return fmt.Errorf("no managed stream definition")
+		return errors.New("no managed stream definition")
 	}
 	if ms.streamSettings.streamID != "" {
 		// User supplied a stream, we need to verify it exists.
@@ -217,11 +218,11 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 		ms.streamSettings.destinationTable = TableParentFromStreamName(ms.streamSettings.streamID)
 	}
 	if ms.streamSettings.destinationTable == "" {
-		return fmt.Errorf("no destination table specified")
+		return errors.New("no destination table specified")
 	}
 	// we could auto-select DEFAULT here, but let's force users to be specific for now.
 	if ms.StreamType() == "" {
-		return fmt.Errorf("stream type wasn't specified")
+		return errors.New("stream type wasn't specified")
 	}
 	return nil
 }
@@ -254,7 +255,7 @@ func (c *Client) createPool(location string, streamFunc streamClientFunc) (*conn
 
 	if c.cfg == nil {
 		cancel()
-		return nil, fmt.Errorf("missing client config")
+		return nil, errors.New("missing client config")
 	}
 
 	var routingHeader string
