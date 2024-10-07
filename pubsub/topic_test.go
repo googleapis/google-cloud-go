@@ -165,6 +165,65 @@ func TestTopic_IngestionKinesis(t *testing.T) {
 	}
 }
 
+func TestTopic_IngestionCloudStorage(t *testing.T) {
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	id := "test-topic-storage-ingestion"
+	want := TopicConfig{
+		IngestionDataSourceSettings: &IngestionDataSourceSettings{
+			Source: &IngestionDataSourceCloudStorage{
+				Bucket: "fake-bucket",
+				InputFormat: &IngestionDataSourceCloudStorageTextFormat{
+					Delimiter: ",",
+				},
+				MinimumObjectCreateTime: time.Now().Add(-time.Hour),
+				MatchGlob:               "**.txt",
+			},
+		},
+	}
+
+	topic := mustCreateTopicWithConfig(t, c, id, &want)
+	got, err := topic.Config(context.Background())
+	if err != nil {
+		t.Fatalf("error getting topic config: %v", err)
+	}
+	want.State = TopicStateActive
+	opt := cmpopts.IgnoreUnexported(TopicConfig{})
+	if !testutil.Equal(got, want, opt) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+
+	// Update ingestion settings.
+	ctx := context.Background()
+	settings := &IngestionDataSourceSettings{
+		Source: &IngestionDataSourceCloudStorage{
+			Bucket:                  "fake-bucket-2",
+			InputFormat:             &IngestionDataSourceCloudStoragePubSubAvroFormat{},
+			MinimumObjectCreateTime: time.Now().Add(-2 * time.Hour),
+			MatchGlob:               "**.txt",
+		},
+	}
+	config2, err := topic.Update(ctx, TopicConfigToUpdate{IngestionDataSourceSettings: settings})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !testutil.Equal(config2.IngestionDataSourceSettings, settings, opt) {
+		t.Errorf("\ngot  %+v\nwant %+v", config2.IngestionDataSourceSettings, settings)
+	}
+
+	// Clear schema settings.
+	settings = &IngestionDataSourceSettings{}
+	config3, err := topic.Update(ctx, TopicConfigToUpdate{IngestionDataSourceSettings: settings})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if config3.IngestionDataSourceSettings != nil {
+		t.Errorf("got: %+v, want nil", config3.IngestionDataSourceSettings)
+	}
+}
+
 func TestListTopics(t *testing.T) {
 	ctx := context.Background()
 	c, srv := newFake(t)
