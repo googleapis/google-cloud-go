@@ -984,7 +984,7 @@ func TestObjectRetryer(t *testing.T) {
 					WithMaxAttempts(5),
 					WithPolicy(RetryAlways),
 					WithErrorFunc(func(err error) bool { return false }),
-					WithReadStallTimeout(time.Second))
+					WithDynamicReadReqStallTimeout(0.99, 15, time.Second, time.Second, 2*time.Second))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -992,10 +992,16 @@ func TestObjectRetryer(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				maxAttempts:      expectedAttempts(5),
-				policy:           RetryAlways,
-				shouldRetry:      func(err error) bool { return false },
-				readStallTimeout: time.Second,
+				maxAttempts: expectedAttempts(5),
+				policy:      RetryAlways,
+				shouldRetry: func(err error) bool { return false },
+				dynamicReadReqStallTimeout: &dynamicReadReqStallTimeout{
+					targetPercentile: 0.99,
+					increaseRate:     15,
+					initial:          time.Second,
+					min:              time.Second,
+					max:              time.Second,
+				},
 			},
 		},
 		{
@@ -1042,10 +1048,16 @@ func TestObjectRetryer(t *testing.T) {
 		{
 			name: "set read stall timeout only",
 			call: func(o *ObjectHandle) *ObjectHandle {
-				return o.Retryer(WithReadStallTimeout(time.Second))
+				return o.Retryer(WithDynamicReadReqStallTimeout(0.99, 15, time.Second, time.Second, 2*time.Second))
 			},
 			want: &retryConfig{
-				readStallTimeout: time.Second,
+				dynamicReadReqStallTimeout: &dynamicReadReqStallTimeout{
+					targetPercentile: 0.99,
+					increaseRate:     15,
+					initial:          time.Second,
+					min:              time.Second,
+					max:              time.Second,
+				},
 			},
 		},
 	}
@@ -1092,7 +1104,7 @@ func TestClientSetRetry(t *testing.T) {
 				WithMaxAttempts(5),
 				WithPolicy(RetryAlways),
 				WithErrorFunc(func(err error) bool { return false }),
-				WithReadStallTimeout(time.Second),
+				WithDynamicReadReqStallTimeout(0.99, 15, time.Second, time.Second, 2*time.Second),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1100,10 +1112,16 @@ func TestClientSetRetry(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				maxAttempts:      expectedAttempts(5),
-				policy:           RetryAlways,
-				shouldRetry:      func(err error) bool { return false },
-				readStallTimeout: time.Second,
+				maxAttempts: expectedAttempts(5),
+				policy:      RetryAlways,
+				shouldRetry: func(err error) bool { return false },
+				dynamicReadReqStallTimeout: &dynamicReadReqStallTimeout{
+					targetPercentile: 0.99,
+					increaseRate:     15,
+					initial:          time.Second,
+					min:              time.Second,
+					max:              time.Second,
+				},
 			},
 		},
 		{
@@ -1148,10 +1166,16 @@ func TestClientSetRetry(t *testing.T) {
 		{
 			name: "set read stall timeout only",
 			clientOptions: []RetryOption{
-				WithReadStallTimeout(time.Second),
+				WithDynamicReadReqStallTimeout(0.99, 15, time.Second, time.Second, 2*time.Second),
 			},
 			want: &retryConfig{
-				readStallTimeout: time.Second,
+				dynamicReadReqStallTimeout: &dynamicReadReqStallTimeout{
+					targetPercentile: 0.99,
+					increaseRate:     15,
+					initial:          time.Second,
+					min:              time.Second,
+					max:              time.Second,
+				},
 			},
 		},
 	}

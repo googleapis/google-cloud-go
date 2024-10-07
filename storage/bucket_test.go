@@ -1108,7 +1108,7 @@ func TestBucketRetryer(t *testing.T) {
 					WithPolicy(RetryAlways),
 					WithMaxAttempts(5),
 					WithErrorFunc(func(err error) bool { return false }),
-					WithReadStallTimeout(time.Second))
+					WithDynamicReadReqStallTimeout(0.99, 15, time.Second, time.Second, 2*time.Second))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1116,10 +1116,16 @@ func TestBucketRetryer(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				policy:           RetryAlways,
-				maxAttempts:      expectedAttempts(5),
-				shouldRetry:      func(err error) bool { return false },
-				readStallTimeout: time.Second,
+				policy:      RetryAlways,
+				maxAttempts: expectedAttempts(5),
+				shouldRetry: func(err error) bool { return false },
+				dynamicReadReqStallTimeout: &dynamicReadReqStallTimeout{
+					targetPercentile: 0.99,
+					increaseRate:     15,
+					initial:          time.Second,
+					min:              time.Second,
+					max:              time.Second,
+				},
 			},
 		},
 		{
@@ -1167,10 +1173,16 @@ func TestBucketRetryer(t *testing.T) {
 			name: "set read stall timeout only",
 			call: func(b *BucketHandle) *BucketHandle {
 				return b.Retryer(
-					WithReadStallTimeout(10 * time.Second))
+					WithDynamicReadReqStallTimeout(0.99, 15, time.Second, time.Second, 2*time.Second))
 			},
 			want: &retryConfig{
-				readStallTimeout: 10 * time.Second,
+				dynamicReadReqStallTimeout: &dynamicReadReqStallTimeout{
+					targetPercentile: 0.99,
+					increaseRate:     15,
+					initial:          time.Second,
+					min:              time.Second,
+					max:              time.Second,
+				},
 			},
 		},
 	}

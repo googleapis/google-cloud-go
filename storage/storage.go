@@ -2250,30 +2250,46 @@ func (wef *withErrorFunc) apply(config *retryConfig) {
 	config.shouldRetry = wef.shouldRetry
 }
 
-// WithReadStallTimeout returns a retry option that proactively terminates the
-// connection and retries if a download using storage.Reader hangs for longer
-// than the provided timeout. The default value is no timeout. This only is
-// applied for HTTP requests currently (not gRPC).
-func WithReadStallTimeout(timeout time.Duration) RetryOption {
-	return &withReadStallTimeout{
-		readStallTimeout: timeout,
+// WithDynamicReadReqStallTimeout returns a retry option that proactively terminates
+// the connection and retries if a read-request as part of creation of storage.Reader
+// takes more than dynamicTimeout.
+// TODO() to add documentation for all these parameters.
+func WithDynamicReadReqStallTimeout(targetPercentile float64, increaseRate float64, initialTimeout time.Duration, minTimeout time.Duration, maxTimeout time.Duration) RetryOption {
+	return &withDynamicReadReqStallTimeout{
+		dynamicReadReqStallTimeout: &dynamicReadReqStallTimeout{
+			targetPercentile: targetPercentile,
+			increaseRate:     increaseRate,
+			initial:          initialTimeout,
+			min:              minTimeout,
+			max:              maxTimeout,
+		},
 	}
 }
 
-type withReadStallTimeout struct {
-	readStallTimeout time.Duration
+type dynamicReadReqStallTimeout struct {
+	min     time.Duration
+	max     time.Duration
+	initial time.Duration
+
+	targetPercentile float64
+	increaseRate     float64
 }
 
-func (wrst *withReadStallTimeout) apply(config *retryConfig) {
-	config.readStallTimeout = wrst.readStallTimeout
+type withDynamicReadReqStallTimeout struct {
+	dynamicReadReqStallTimeout *dynamicReadReqStallTimeout
+}
+
+func (wdrrst *withDynamicReadReqStallTimeout) apply(config *retryConfig) {
+	config.dynamicReadReqStallTimeout = wdrrst.dynamicReadReqStallTimeout
 }
 
 type retryConfig struct {
-	backoff          *gax.Backoff
-	policy           RetryPolicy
-	shouldRetry      func(err error) bool
-	maxAttempts      *int
-	readStallTimeout time.Duration
+	backoff     *gax.Backoff
+	policy      RetryPolicy
+	shouldRetry func(err error) bool
+	maxAttempts *int
+
+	dynamicReadReqStallTimeout *dynamicReadReqStallTimeout
 }
 
 func (r *retryConfig) clone() *retryConfig {
@@ -2291,11 +2307,11 @@ func (r *retryConfig) clone() *retryConfig {
 	}
 
 	return &retryConfig{
-		backoff:          bo,
-		policy:           r.policy,
-		shouldRetry:      r.shouldRetry,
-		maxAttempts:      r.maxAttempts,
-		readStallTimeout: r.readStallTimeout,
+		backoff:                    bo,
+		policy:                     r.policy,
+		shouldRetry:                r.shouldRetry,
+		maxAttempts:                r.maxAttempts,
+		dynamicReadReqStallTimeout: r.dynamicReadReqStallTimeout,
 	}
 }
 
