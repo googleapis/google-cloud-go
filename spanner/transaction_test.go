@@ -575,6 +575,9 @@ func TestReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
 			break
 		} else if err == nil {
 			resp, err = tx.CommitWithReturnResp(ctx)
+			if err != nil {
+				t.Fatalf("failed to CommitWithReturnResp: %v", err)
+			}
 			break
 		}
 		// Set a default sleep time if the server delay is absent.

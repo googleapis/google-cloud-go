@@ -564,6 +564,9 @@ func ExampleClient_RunTransaction() {
 	}
 	defer client.Close()
 
+	// write the CommitResponse here, via firestore.WithCommitResponse (below)
+	var cr firestore.CommitResponse
+
 	nm := client.Doc("States/NewMexico")
 	err = client.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
 		doc, err := tx.Get(nm) // tx.Get, NOT nm.Get!
@@ -575,10 +578,11 @@ func ExampleClient_RunTransaction() {
 			return err
 		}
 		return tx.Update(nm, []firestore.Update{{Path: "pop", Value: pop.(float64) + 0.2}})
-	})
+	}, firestore.WithCommitResponseTo(&cr))
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// CommitResponse can be accessed here
 }
 
 func ExampleArrayUnion_create() {
