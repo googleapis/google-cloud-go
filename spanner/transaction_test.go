@@ -470,8 +470,31 @@ func TestReadWriteStmtBasedTransaction_CommitAborted(t *testing.T) {
 	}
 }
 
+func TestReadWriteStmtBasedTransaction_QueryAborted(t *testing.T) {
+	t.Parallel()
+	rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, map[string]SimulatedExecutionTime{
+		MethodExecuteStreamingSql: {Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
+	})
+	if err != nil {
+		t.Fatalf("transaction failed to commit: %v", err)
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+}
+
 func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime) (rowCount int64, attempts int, err error) {
-	server, client, teardown := setupMockedTestServer(t)
+	// server, client, teardown := setupMockedTestServer(t)
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			// Use a session pool with size 1 to ensure that there are no session leaks.
+			MinOpened: 1,
+			MaxOpened: 1,
+		},
+	})
 	defer teardown()
 	for method, exec := range executionTimes {
 		server.TestSpanner.PutExecutionTime(method, exec)
@@ -500,9 +523,14 @@ func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]S
 		return rowCount, nil
 	}
 
+	var tx *ReadWriteStmtBasedTransaction
 	for {
 		attempts++
-		tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+		if attempts > 1 {
+			tx, err = tx.ResetForRetry(ctx)
+		} else {
+			tx, err = NewReadWriteStmtBasedTransaction(ctx, client)
+		}
 		if err != nil {
 			return 0, attempts, fmt.Errorf("failed to begin a transaction: %v", err)
 		}
