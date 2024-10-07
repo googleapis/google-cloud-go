@@ -138,7 +138,24 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 	// To start listing method is Open and runs both worksteal and sequential listing
 	// in parallel. The method which completes first is used for all subsequent runs.
 
-	// TODO: Run worksteal listing when method is Open or WorkSteal.
+	// Run worksteal listing when method is Open or WorkSteal.
+	if c.method != sequential {
+
+		g.Go(func() error {
+			objects, err := c.workstealListing(childCtx)
+			if err != nil {
+				countError++
+				return fmt.Errorf("error in running worksteal_lister: %w", err)
+			}
+			// If worksteal listing completes first, set method to worksteal listing and nextToken to "".
+			// The c.ranges channel will be used to continue worksteal listing.
+			results = objects
+			c.pageToken = ""
+			c.method = worksteal
+			cancel()
+			return nil
+		})
+	}
 
 	// Run sequential listing when method is Open or Sequential.
 	if c.method != worksteal {
@@ -175,7 +192,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 
 	// If ranges for worksteal and pageToken for sequential listing is empty, then
 	// listing is complete.
-	if c.pageToken == "" {
+	if c.pageToken == "" && len(c.ranges) == 0 {
 		return results, iterator.Done
 	}
 	return results, nil
