@@ -22,6 +22,7 @@ import (
 	"hash/crc32"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -47,13 +48,14 @@ import (
 // httpStorageClient is the HTTP-JSON API implementation of the transport-agnostic
 // storageClient interface.
 type httpStorageClient struct {
-	creds    *google.Credentials
-	hc       *http.Client
-	xmlHost  string
-	raw      *raw.Service
-	scheme   string
-	settings *settings
-	config   *storageConfig
+	creds                      *google.Credentials
+	hc                         *http.Client
+	xmlHost                    string
+	raw                        *raw.Service
+	scheme                     string
+	settings                   *settings
+	config                     *storageConfig
+	dynamicReadReqStallTimeout *dynamicDelay
 }
 
 // newHTTPStorageClient initializes a new storageClient that uses the HTTP-JSON
@@ -128,14 +130,25 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
 	}
 
+	// If stall timeout is set then create a dynamic delay calculater.
+	var dd *dynamicDelay
+	if s.retry != nil && s.retry.dynamicReadReqStallTimeout != nil {
+		rdt := s.retry.dynamicReadReqStallTimeout
+		dd, err = newDynamicDelay(rdt.targetPercentile, rdt.increaseRate, rdt.initial, rdt.min, rdt.max)
+		if err != nil {
+			return nil, fmt.Errorf("creating dynamice delay obj: %w", err)
+		}
+	}
+
 	return &httpStorageClient{
-		creds:    creds,
-		hc:       hc,
-		xmlHost:  u.Host,
-		raw:      rawService,
-		scheme:   u.Scheme,
-		settings: s,
-		config:   &config,
+		creds:                      creds,
+		hc:                         hc,
+		xmlHost:                    u.Host,
+		raw:                        rawService,
+		scheme:                     u.Scheme,
+		settings:                   s,
+		config:                     &config,
+		dynamicReadReqStallTimeout: dd,
 	}, nil
 }
 
@@ -858,7 +871,47 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 	reopen := readerReopen(ctx, req.Header, params, s,
 		func(ctx context.Context) (*http.Response, error) {
 			setHeadersFromCtx(ctx, req.Header)
-			return c.hc.Do(req.WithContext(ctx))
+			if c.dynamicReadReqStallTimeout == nil {
+				return c.hc.Do(req.WithContext(ctx))
+			} else {
+				cancelCtx, cancel := context.WithCancel(ctx)
+
+				var (
+					res *http.Response
+					err error
+				)
+
+				done := make(chan bool)
+				go func() {
+					reqStartTime := time.Now()
+					res, err = c.hc.Do(req.WithContext(cancelCtx))
+
+					// Update the dynamic delay in case of success.
+					if err == nil {
+						reqLatency := time.Since(reqStartTime)
+						c.dynamicReadReqStallTimeout.update(reqLatency)
+					} else if errors.Is(err, context.Canceled) {
+						// Avoid the corner case if current dynamic timeout is less than min latency.
+						c.dynamicReadReqStallTimeout.increase()
+					}
+					done <- true
+				}()
+
+				// Wait until timeout for read to complete.
+				select {
+				case <-time.After(c.dynamicReadReqStallTimeout.getValue()):
+					log.Printf("stalled read req of %s is cancelled after %fs", params.object, c.dynamicReadReqStallTimeout.getValue().Seconds())
+					cancel()
+					err = context.DeadlineExceeded
+					if res != nil && res.Body != nil {
+						res.Body.Close()
+					}
+				case <-done:
+					cancel = nil
+				}
+
+				return res, err
+			}
 		},
 		func() error { return setConditionsHeaders(req.Header, params.conds) },
 		func() { req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen) })
