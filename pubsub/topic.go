@@ -582,7 +582,7 @@ func (i *IngestionDataSourceCloudStorageAvroFormat) isCloudStorageIngestionInput
 	return true
 }
 
-// IngestionDataSourceCloudStorageAvroFormat is used assuming the data was written using Cloud
+// IngestionDataSourceCloudStoragePubSubAvroFormat is used assuming the data was written using Cloud
 // Storage subscriptions https://cloud.google.com/pubsub/docs/cloudstorage.
 type IngestionDataSourceCloudStoragePubSubAvroFormat struct{}
 
