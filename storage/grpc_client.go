@@ -27,6 +27,7 @@ import (
 
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/trace"
+	"cloud.google.com/go/storage/experimental"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -128,8 +129,9 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	}
 
 	if !config.disableClientMetrics {
+		exp := experimental.NewStorageExperimentalConfig(s.clientOption...)
 		// Do not fail client creation if enabling metrics fails.
-		if metricsContext, err := enableClientMetrics(ctx, s); err == nil {
+		if metricsContext, err := enableClientMetrics(ctx, s, exp); err == nil {
 			s.metricsContext = metricsContext
 			s.clientOption = append(s.clientOption, metricsContext.clientOpts...)
 		} else {
