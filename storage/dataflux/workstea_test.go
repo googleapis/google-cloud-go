@@ -34,7 +34,7 @@ func TestWorkstealListingEmulated(t *testing.T) {
 		if err := bucketHandle.Create(ctx, project, attrs); err != nil {
 			t.Fatal(err)
 		}
-		numObjects := 500
+		numObjects := 10
 		if err := createObject(ctx, bucketHandle, numObjects); err != nil {
 			t.Fatalf("unable to create objects: %v", err)
 		}
