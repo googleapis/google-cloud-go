@@ -52,7 +52,7 @@ func TestMain(m *testing.M) {
 	if err := httpTestBucket.Create(testPrefix); err != nil {
 		log.Fatalf("test bucket creation failed: %v", err)
 	}
-
+	cleanupEmulatorClients := initEmulatorClients()
 	m.Run()
 
 	if err := httpTestBucket.Cleanup(); err != nil {
@@ -61,6 +61,10 @@ func TestMain(m *testing.M) {
 
 	if err := deleteExpiredBuckets(testPrefix); err != nil {
 		log.Printf("expired http bucket cleanup failed: %v", err)
+	}
+	if err := cleanupEmulatorClients(); err != nil {
+		// Don't fail the test if cleanup fails.
+		log.Printf("Post-test cleanup failed for emulator clients: %v", err)
 	}
 }
 

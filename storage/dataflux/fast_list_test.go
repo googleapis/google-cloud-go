@@ -15,8 +15,13 @@
 package dataflux
 
 import (
+	"context"
+	"fmt"
+	"log"
+	"os"
 	"runtime"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/storage"
 )
@@ -191,4 +196,96 @@ func TestNewLister(t *testing.T) {
 
 		})
 	}
+}
+
+var emulatorClients map[string]*storage.Client
+
+type skipTransportTestKey string
+
+func initEmulatorClients() func() error {
+	noopCloser := func() error { return nil }
+
+	// part of initEmulator.
+	os.Setenv("STORAGE_EMULATOR_HOST", "http://localhost:9000")
+	os.Setenv("STORAGE_EMULATOR_HOST_GRPC", "localhost:8888")
+
+	if !isEmulatorEnvironmentSet() {
+		return noopCloser
+	}
+	ctx := context.Background()
+
+	grpcClient, err := storage.NewGRPCClient(ctx)
+	if err != nil {
+		log.Fatalf("Error setting up gRPC client for emulator tests: %v", err)
+		return noopCloser
+	}
+	httpClient, err := storage.NewClient(ctx)
+	if err != nil {
+		log.Fatalf("Error setting up HTTP client for emulator tests: %v", err)
+		return noopCloser
+	}
+
+	emulatorClients = map[string]*storage.Client{
+		"http": httpClient,
+		"grpc": grpcClient,
+	}
+
+	return func() error {
+		gerr := grpcClient.Close()
+		herr := httpClient.Close()
+
+		if gerr != nil {
+			return gerr
+		}
+		return herr
+	}
+}
+
+// transportClienttest executes the given function with a sub-test, a project name
+// based on the transport, a unique bucket name also based on the transport, and
+// the transport-specific client to run the test with. It also checks the environment
+// to ensure it is suitable for emulator-based tests, or skips.
+func transportClientTest(ctx context.Context, t *testing.T, test func(*testing.T, context.Context, string, string, *storage.Client)) {
+	checkEmulatorEnvironment(t)
+	for transport, client := range emulatorClients {
+		if reason := ctx.Value(skipTransportTestKey(transport)); reason != nil {
+			t.Skip("transport", fmt.Sprintf("%q", transport), "explicitly skipped:", reason)
+		}
+		t.Run(transport, func(t *testing.T) {
+			project := fmt.Sprintf("%s-project", transport)
+			bucket := fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond())
+			test(t, ctx, project, bucket, client)
+		})
+	}
+}
+
+// checkEmulatorEnvironment skips the test if the emulator environment variables
+// are not set.
+func checkEmulatorEnvironment(t *testing.T) {
+	if !isEmulatorEnvironmentSet() {
+		t.Skip("Emulator tests skipped without emulator environment variables set")
+	}
+}
+
+// isEmulatorEnvironmentSet checks if the emulator environment variables are set.
+func isEmulatorEnvironmentSet() bool {
+	return os.Getenv("STORAGE_EMULATOR_HOST_GRPC") != "" && os.Getenv("STORAGE_EMULATOR_HOST") != ""
+}
+
+// createObject creates an object in the emulator and returns its name, generation, and
+// metageneration.
+func createObject(t *testing.T, ctx context.Context, bucket *storage.BucketHandle, numObjects int) error {
+
+	for i := 0; i < numObjects; i++ {
+		// Generate a unique object name using UUIDs
+		objectName := fmt.Sprintf("object%d", i)
+		// Create a writer for the object
+		wc := bucket.Object(objectName).NewWriter(ctx)
+
+		// Close the writer to finalize the upload
+		if err := wc.Close(); err != nil {
+			return fmt.Errorf("failed to close writer for object %q: %v", objectName, err)
+		}
+	}
+	return nil
 }

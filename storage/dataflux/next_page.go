@@ -115,12 +115,12 @@ func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 
 		// If the "startoffset" value matches the name of the last object,
 		// list another page to ensure the next NextStartRange is distinct from the current one.
-		if opts.query.Versions && attrs.Generation != int64(0) && i == defaultPageSize-1 && opts.query.StartOffset == attrs.Name {
+		if opts.query.Versions && i == defaultPageSize-1 && attrs.Generation != int64(0) && opts.query.StartOffset == attrs.Name {
 			i = -1
 		}
 
 		// When generation value is not set, list next page if the last item is a version of previous item to prevent duplicate listing.
-		if opts.query.Versions && attrs.Generation == int64(0) && i == defaultPageSize-1 && indexLexLast > 0 && items[indexLexLast-1].Name == items[indexLexLast].Name {
+		if opts.query.Versions && i == defaultPageSize-1 && attrs.Generation == int64(0) && indexLexLast > 0 && items[indexLexLast-1].Name == items[indexLexLast].Name {
 			i = -1
 		}
 	}
@@ -160,8 +160,6 @@ func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 		nextStartRange: nextStartRange,
 		generation:     generation,
 	}, nil
-
-	return nil, nil
 }
 
 func addPrefix(name, prefix string) string {
