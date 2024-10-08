@@ -112,11 +112,33 @@ func (w *withDisabledClientMetrics) ApplyStorageOpt(c *storageConfig) {
 	c.disableClientMetrics = w.disabledClientMetrics
 }
 
-// WithDynamicReadReqStallTimeout returns a storageClient option that proactively terminates
-// the connection and retries if a read-request as part of creation of storage.Reader
-// takes more than dynamicTimeout.
-// TODO() to add documentation for all these parameters.
-func WithDynamicReadReqStallTimeout(targetPercentile float64, increaseRate float64, initialTimeout time.Duration, minTimeout time.Duration, maxTimeout time.Duration) option.ClientOption {
+// WithDynamicReadReqStallTimeout is an option that may be passed to [NewClient].
+// It enables the client to retry the stalled read request, happens as part of
+// storage.Reader creation. As the name suggest, timeout is adjusted dynamically
+// based on past observed read-req latencies.
+//
+// This is only supported for the read operation and that too for http(XML) client.
+// Grpc read-operation will be supported soon.
+//
+// Here, the input parameter decides the value of dynamic-timeout.
+// targetPercentile is the desired percentile of the observed latencies.
+// increaseRate determines the rate, timeout is adjusted. High means slow increase in
+// timeout and low means rapid increase.
+// initialTimeout decides the initial timeout.
+// minTimeout, maxTimeout is the lower & upper bound of the timeout.
+//
+// TODO (raj-prince): To keep separate dynamicDelay instance for different BucketHandle.
+// Currently, dynamicTimeout is kept at the client and hence shared across all the
+// BucketHandle, which is not not the ideal state. As latency depends on location of VM
+// and Bucket, and read latency of different buckets may lie in different range.
+// Hence hence having a separate dynamicTimeout instance at BucketHandle level will
+// be better
+func WithDynamicReadReqStallTimeout(
+	targetPercentile float64,
+	increaseRate float64,
+	initialTimeout time.Duration,
+	minTimeout time.Duration,
+	maxTimeout time.Duration) option.ClientOption {
 	return &withDynamicReadReqStallTimeout{
 		dynamicReadReqStallTimeout: &dynamicReadReqStallTimeout{
 			targetPercentile: targetPercentile,

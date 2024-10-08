@@ -1437,18 +1437,17 @@ func TestRetryDeadlineExceedeEmulated(t *testing.T) {
 	})
 }
 
-// Test that a stall during a read request is retried when ReadStallTimeout is set.
+// Test validates the retry for stalled read-request, when client is created with
+// WithDynamicReadReqStallTimeout.
 func TestRetryReadReqStallEmulated(t *testing.T) {
-	ctx := skipHTTP("no reads in test")
-	ctx = skipGRPCWithCtx(ctx, "not supported")
+	multiTransportTest(skipJSONReads(skipGRPC("not supported"), "not supported"), t, func(t *testing.T, ctx context.Context, project, _ string, client *Client) {
+		// Setup bucket and upload object.
+		bucket := fmt.Sprintf("http-bucket-%d", time.Now().Nanosecond())
+		if _, err := client.tc.CreateBucket(context.Background(), project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
 
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, project, bucket string, client *Client) {
-		//Setup bucket and upload object.
-		//if _, err := client.tc.CreateBucket(context.Background(), project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
-		//	t.Fatalf("client.CreateBucket: %v", err)
-		//}
-
-		name, _, _, err := createObject(ctx, bucket)
+		name, _, _, err := createObjectWithContent(ctx, bucket, randomBytes3MiB)
 		if err != nil {
 			t.Fatalf("createObject: %v", err)
 		}
@@ -1481,7 +1480,7 @@ func TestRetryReadReqStallEmulated(t *testing.T) {
 			t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
 		}
 
-	})
+	}, WithDynamicReadReqStallTimeout(0.99, 15, time.Second, time.Second, 2*time.Second))
 }
 
 // createRetryTest creates a bucket in the emulator and sets up a test using the
@@ -1522,14 +1521,20 @@ func plantRetryInstructions(t *testing.T, client storageClient, instructions map
 	return et.id
 }
 
-// createObject creates an object in the emulator and returns its name, generation, and
-// metageneration.
+// createObject creates an object in the emulator with content randomBytesToWrite and
+// returns its name, generation, and metageneration.
 func createObject(ctx context.Context, bucket string) (string, int64, int64, error) {
+	return createObjectWithContent(ctx, bucket, randomBytesToWrite)
+}
+
+// createObject creates an object in the emulator with the provided []byte contents,
+// and returns its name, generation, and metageneration.
+func createObjectWithContent(ctx context.Context, bucket string, bytes []byte) (string, int64, int64, error) {
 	prefix := time.Now().Nanosecond()
 	objName := fmt.Sprintf("%d-object", prefix)
 
 	w := veneerClient.Bucket(bucket).Object(objName).NewWriter(ctx)
-	if _, err := w.Write(randomBytes3MiB); err != nil {
+	if _, err := w.Write(bytes); err != nil {
 		return "", 0, 0, fmt.Errorf("failed to populate test data: %w", err)
 	}
 	if err := w.Close(); err != nil {

@@ -142,8 +142,6 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		if err != nil {
 			return nil, fmt.Errorf("creating dynamic-delay: %w", err)
 		}
-
-		log.Println("Creating dynamic Delay")
 	}
 
 	return &httpStorageClient{
@@ -877,47 +875,46 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 	reopen := readerReopen(ctx, req.Header, params, s,
 		func(ctx context.Context) (*http.Response, error) {
 			setHeadersFromCtx(ctx, req.Header)
+
 			if c.dynamicReadReqStallTimeout == nil {
 				return c.hc.Do(req.WithContext(ctx))
-			} else {
-				cancelCtx, cancel := context.WithCancel(ctx)
-
-				var (
-					res *http.Response
-					err error
-				)
-
-				done := make(chan bool)
-				go func() {
-					reqStartTime := time.Now()
-					res, err = c.hc.Do(req.WithContext(cancelCtx))
-
-					// Update the dynamic delay in case of success.
-					if err == nil {
-						reqLatency := time.Since(reqStartTime)
-						c.dynamicReadReqStallTimeout.update(reqLatency)
-					} else if errors.Is(err, context.Canceled) {
-						// Avoid the corner case if current dynamic timeout is less than min latency.
-						c.dynamicReadReqStallTimeout.increase()
-					}
-					done <- true
-				}()
-
-				// Wait until timeout for read to complete.
-				select {
-				case <-time.After(c.dynamicReadReqStallTimeout.getValue()):
-					log.Printf("stalled read req of %s is cancelled after %fs", params.object, c.dynamicReadReqStallTimeout.getValue().Seconds())
-					cancel()
-					err = context.DeadlineExceeded
-					if res != nil && res.Body != nil {
-						res.Body.Close()
-					}
-				case <-done:
-					cancel = nil
-				}
-
-				return res, err
 			}
+
+			cancelCtx, cancel := context.WithCancel(ctx)
+			var (
+				res *http.Response
+				err error
+			)
+
+			done := make(chan bool)
+			go func() {
+				reqStartTime := time.Now()
+				res, err = c.hc.Do(req.WithContext(cancelCtx))
+				if err == nil {
+					reqLatency := time.Since(reqStartTime)
+					c.dynamicReadReqStallTimeout.update(reqLatency)
+				} else if errors.Is(err, context.Canceled) {
+					// context.Canceled means operation took more than current dynamicTimeout,
+					// hence should be increased.
+					c.dynamicReadReqStallTimeout.increase()
+				}
+				done <- true
+			}()
+
+			// Wait until timeout or request is successful.
+			timer := time.After(c.dynamicReadReqStallTimeout.getValue())
+			select {
+			case <-timer:
+				log.Printf("stalled read-req cancelled after %fs", c.dynamicReadReqStallTimeout.getValue().Seconds())
+				cancel()
+				err = context.DeadlineExceeded
+				if res != nil && res.Body != nil {
+					res.Body.Close()
+				}
+			case <-done:
+				cancel = nil
+			}
+			return res, err
 		},
 		func() error { return setConditionsHeaders(req.Header, params.conds) },
 		func() { req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen) })

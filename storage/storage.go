@@ -117,10 +117,6 @@ type Client struct {
 
 	// tc is the transport-agnostic client implemented with either gRPC or HTTP.
 	tc storageClient
-
-	// dynamicReadReqStallTimeout observes the latency and predicts a given
-	// percentile heuristically.
-	dynamicReadReqStallTimeout *dynamicDelay
 }
 
 // NewClient creates a new Google Cloud Storage client using the HTTP transport.
@@ -2253,46 +2249,11 @@ func (wef *withErrorFunc) apply(config *retryConfig) {
 	config.shouldRetry = wef.shouldRetry
 }
 
-//// WithDynamicReadReqStallTimeout returns a retry option that proactively terminates
-//// the connection and retries if a read-request as part of creation of storage.Reader
-//// takes more than dynamicTimeout.
-//// TODO() to add documentation for all these parameters.
-//func WithDynamicReadReqStallTimeout(targetPercentile float64, increaseRate float64, initialTimeout time.Duration, minTimeout time.Duration, maxTimeout time.Duration) RetryOption {
-//	return &withDynamicReadReqStallTimeout{
-//		dynamicReadReqStallTimeout: &dynamicReadReqStallTimeout{
-//			targetPercentile: targetPercentile,
-//			increaseRate:     increaseRate,
-//			initial:          initialTimeout,
-//			min:              minTimeout,
-//			max:              maxTimeout,
-//		},
-//	}
-//}
-//
-//type dynamicReadReqStallTimeout struct {
-//	min     time.Duration
-//	max     time.Duration
-//	initial time.Duration
-//
-//	targetPercentile float64
-//	increaseRate     float64
-//}
-//
-//type withDynamicReadReqStallTimeout struct {
-//	dynamicReadReqStallTimeout *dynamicReadReqStallTimeout
-//}
-//
-//func (wdrrst *withDynamicReadReqStallTimeout) apply(config *retryConfig) {
-//	config.dynamicReadReqStallTimeout = wdrrst.dynamicReadReqStallTimeout
-//}
-
 type retryConfig struct {
 	backoff     *gax.Backoff
 	policy      RetryPolicy
 	shouldRetry func(err error) bool
 	maxAttempts *int
-
-	//dynamicReadReqStallTimeout *dynamicReadReqStallTimeout
 }
 
 func (r *retryConfig) clone() *retryConfig {
@@ -2314,7 +2275,6 @@ func (r *retryConfig) clone() *retryConfig {
 		policy:      r.policy,
 		shouldRetry: r.shouldRetry,
 		maxAttempts: r.maxAttempts,
-		//dynamicReadReqStallTimeout: r.dynamicReadReqStallTimeout,
 	}
 }
 

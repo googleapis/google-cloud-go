@@ -262,8 +262,7 @@ func initTransportClients(ctx context.Context, t *testing.T, opts ...option.Clie
 		"http": testConfig(ctx, t, opts...),
 		"grpc": testConfigGRPC(ctx, t, opts...),
 		// TODO: remove jsonReads when support for XML reads is dropped
-		"jsonReads":         testConfig(ctx, t, withJSON...),
-		"stallReadReqRetry": testConfig(ctx, t, WithDynamicReadReqStallTimeout(0.99, 15, time.Second, time.Second, 2*time.Second)),
+		"jsonReads": testConfig(ctx, t, withJSON...),
 	}
 }
 
@@ -6336,10 +6335,6 @@ func skipGRPC(reason string) context.Context {
 	return context.WithValue(context.Background(), skipTransportTestKey("grpc"), reason)
 }
 
-func skipGRPCWithCtx(ctx context.Context, reason string) context.Context {
-	return context.WithValue(ctx, skipTransportTestKey("grpc"), reason)
-}
-
 func skipHTTP(reason string) context.Context {
 	ctx := context.WithValue(context.Background(), skipTransportTestKey("http"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
@@ -6351,10 +6346,6 @@ func skipJSONReads(ctx context.Context, reason string) context.Context {
 
 func skipXMLReads(ctx context.Context, reason string) context.Context {
 	return context.WithValue(ctx, skipTransportTestKey("http"), reason)
-}
-
-func skipStallReadReqRetry(ctx context.Context, reason string) context.Context {
-	return context.WithValue(ctx, skipTransportTestKey("stallReadReqRetry"), reason)
 }
 
 // Extract the error code if it's a googleapi.Error
