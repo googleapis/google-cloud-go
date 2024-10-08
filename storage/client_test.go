@@ -1452,7 +1452,7 @@ func TestRetryReadReqStallEmulated(t *testing.T) {
 			t.Fatalf("createObject: %v", err)
 		}
 
-		// Plant stall for 2s.
+		// Plant stall at start for 2s.
 		instructions := map[string][]string{"storage.objects.get": {"stall-for-2s-after-0K"}}
 		testID := plantRetryInstructions(t, client.tc, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)

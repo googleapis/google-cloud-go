@@ -88,7 +88,7 @@ func TestApplyStorageOpt(t *testing.T) {
 			want: storageConfig{
 				useJSONforReads:      false,
 				readAPIWasSet:        false,
-				disableClientMetrics: true,
+				disableClientMetrics: false,
 				dynamicReadReqStallTimeout: &dynamicReadReqStallTimeout{
 					targetPercentile: 0.99,
 					increaseRate:     15,
