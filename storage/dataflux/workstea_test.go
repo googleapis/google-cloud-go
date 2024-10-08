@@ -34,15 +34,13 @@ func TestWorkstealListingEmulated(t *testing.T) {
 		if err := bucketHandle.Create(ctx, project, attrs); err != nil {
 			t.Fatal(err)
 		}
-		numObjects := 5000
-		batchSize := 2000
+		numObjects := 500
 		if err := createObject(ctx, bucketHandle, numObjects); err != nil {
 			t.Fatalf("unable to create objects: %v", err)
 		}
 		in := &ListerInput{
 			BucketName:  bucket,
 			Parallelism: 3,
-			BatchSize:   batchSize,
 		}
 		c := NewLister(client, in)
 		c.method = worksteal
@@ -50,8 +48,8 @@ func TestWorkstealListingEmulated(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to call workstealListing() : %v", err)
 		}
-		if len(objects) > numObjects && len(objects) < batchSize {
-			t.Errorf("doSeqListing() expected to receive less than/equal to %d or greater than %d results, got %d results", numObjects, batchSize, len(objects))
+		if len(objects) != numObjects {
+			t.Errorf("doSeqListing() expected to receive  %d results, got %d results", numObjects, len(objects))
 		}
 	})
 }

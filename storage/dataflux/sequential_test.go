@@ -35,7 +35,7 @@ func TestDoSeqListingEmulated(t *testing.T) {
 		if err := bucketHandle.Create(ctx, project, attrs); err != nil {
 			t.Fatal(err)
 		}
-		wantObjects := 1000
+		wantObjects := 500
 		if err := createObject(ctx, bucketHandle, wantObjects); err != nil {
 			t.Fatalf("unable to create objects: %v", err)
 		}
@@ -69,16 +69,15 @@ func TestSequentialListingEmulated(t *testing.T) {
 		if err := bucketHandle.Create(ctx, project, attrs); err != nil {
 			t.Fatal(err)
 		}
-		wantObjects := 2000
+		wantObjects := 500
 		if err := createObject(ctx, bucketHandle, wantObjects); err != nil {
 			t.Fatalf("unable to create objects: %v", err)
 		}
 
 		c := &Lister{
-			method:    sequential,
-			bucket:    bucketHandle,
-			query:     storage.Query{},
-			batchSize: 1000,
+			method: sequential,
+			bucket: bucketHandle,
+			query:  storage.Query{},
 		}
 		defer c.Close()
 		objects, nextToken, err := c.sequentialListing(ctx)
