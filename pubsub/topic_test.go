@@ -213,7 +213,7 @@ func TestTopic_IngestionCloudStorage(t *testing.T) {
 		t.Errorf("\ngot  %+v\nwant %+v", config2.IngestionDataSourceSettings, settings)
 	}
 
-	// Clear schema settings.
+	// Clear ingestion settings.
 	settings = &IngestionDataSourceSettings{}
 	config3, err := topic.Update(ctx, TopicConfigToUpdate{IngestionDataSourceSettings: settings})
 	if err != nil {

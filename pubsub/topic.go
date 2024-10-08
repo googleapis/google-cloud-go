@@ -613,11 +613,11 @@ func protoToIngestionDataSourceSettings(pbs *pb.IngestionDataSourceSettings) *In
 			format = &IngestionDataSourceCloudStoragePubSubAvroFormat{}
 		}
 		s.Source = &IngestionDataSourceCloudStorage{
-			State:                   CloudStorageIngestionState(cs.State),
-			Bucket:                  cs.Bucket,
+			State:                   CloudStorageIngestionState(cs.GetState()),
+			Bucket:                  cs.GetBucket(),
 			InputFormat:             format,
-			MinimumObjectCreateTime: cs.MinimumObjectCreateTime.AsTime(),
-			MatchGlob:               cs.MatchGlob,
+			MinimumObjectCreateTime: cs.GetMinimumObjectCreateTime().AsTime(),
+			MatchGlob:               cs.GetMatchGlob(),
 		}
 	}
 	return s
