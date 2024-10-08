@@ -950,7 +950,6 @@ func initEmulatorClients() func() error {
 		log.Fatalf("Error setting up HTTP client for emulator tests: %v", err)
 		return noopCloser
 	}
-
 	emulatorClients = map[string]storageClient{
 		"http": httpClient,
 		"grpc": grpcClient,
@@ -1440,11 +1439,14 @@ func TestRetryDeadlineExceedeEmulated(t *testing.T) {
 
 // Test that a stall during a read request is retried when ReadStallTimeout is set.
 func TestRetryReadReqStallEmulated(t *testing.T) {
-	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+	ctx := skipHTTP("no reads in test")
+	ctx = skipGRPCWithCtx(ctx, "not supported")
+
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, project, bucket string, client *Client) {
 		//Setup bucket and upload object.
-		if _, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
-			t.Fatalf("client.CreateBucket: %v", err)
-		}
+		//if _, err := client.tc.CreateBucket(context.Background(), project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
+		//	t.Fatalf("client.CreateBucket: %v", err)
+		//}
 
 		name, _, _, err := createObject(ctx, bucket)
 		if err != nil {
@@ -1453,29 +1455,19 @@ func TestRetryReadReqStallEmulated(t *testing.T) {
 
 		// Plant stall for 2s.
 		instructions := map[string][]string{"storage.objects.get": {"stall-for-2s-after-0K"}}
-		testID := plantRetryInstructions(t, client, instructions)
+		testID := plantRetryInstructions(t, client.tc, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
 
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		config := &retryConfig{
-			maxAttempts: expectedAttempts(4),
-			backoff:     &gax.Backoff{Initial: 200 * time.Millisecond},
-			dynamicReadReqStallTimeout: &dynamicReadReqStallTimeout{
-				targetPercentile: 0.99,
-				increaseRate:     15,
-				min:              1 * time.Second,
-				max:              1 * time.Hour,
-			},
-		}
-		r, err := client.NewRangeReader(ctx, &newRangeReaderParams{
+		r, err := client.tc.NewRangeReader(ctx, &newRangeReaderParams{
 			bucket: bucket,
 			object: name,
 			gen:    defaultGen,
 			offset: 0,
 			length: -1,
-		}, withRetryConfig(config), idempotent(true))
+		}, idempotent(true))
 		if err != nil {
 			t.Fatalf("NewRangeReader: %v", err)
 		}
@@ -1537,7 +1529,7 @@ func createObject(ctx context.Context, bucket string) (string, int64, int64, err
 	objName := fmt.Sprintf("%d-object", prefix)
 
 	w := veneerClient.Bucket(bucket).Object(objName).NewWriter(ctx)
-	if _, err := w.Write(randomBytesToWrite); err != nil {
+	if _, err := w.Write(randomBytes3MiB); err != nil {
 		return "", 0, 0, fmt.Errorf("failed to populate test data: %w", err)
 	}
 	if err := w.Close(); err != nil {

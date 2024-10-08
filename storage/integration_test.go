@@ -59,7 +59,6 @@ import (
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -93,7 +92,6 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	grpc.EnableTracing = true
 	cleanup := initIntegrationTest()
 	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
@@ -264,7 +262,8 @@ func initTransportClients(ctx context.Context, t *testing.T, opts ...option.Clie
 		"http": testConfig(ctx, t, opts...),
 		"grpc": testConfigGRPC(ctx, t, opts...),
 		// TODO: remove jsonReads when support for XML reads is dropped
-		"jsonReads": testConfig(ctx, t, withJSON...),
+		"jsonReads":         testConfig(ctx, t, withJSON...),
+		"stallReadReqRetry": testConfig(ctx, t, WithDynamicReadReqStallTimeout(0.99, 15, time.Second, time.Second, 2*time.Second)),
 	}
 }
 
@@ -6337,6 +6336,10 @@ func skipGRPC(reason string) context.Context {
 	return context.WithValue(context.Background(), skipTransportTestKey("grpc"), reason)
 }
 
+func skipGRPCWithCtx(ctx context.Context, reason string) context.Context {
+	return context.WithValue(ctx, skipTransportTestKey("grpc"), reason)
+}
+
 func skipHTTP(reason string) context.Context {
 	ctx := context.WithValue(context.Background(), skipTransportTestKey("http"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
@@ -6348,6 +6351,10 @@ func skipJSONReads(ctx context.Context, reason string) context.Context {
 
 func skipXMLReads(ctx context.Context, reason string) context.Context {
 	return context.WithValue(ctx, skipTransportTestKey("http"), reason)
+}
+
+func skipStallReadReqRetry(ctx context.Context, reason string) context.Context {
+	return context.WithValue(ctx, skipTransportTestKey("stallReadReqRetry"), reason)
 }
 
 // Extract the error code if it's a googleapi.Error

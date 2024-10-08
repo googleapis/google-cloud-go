@@ -16,6 +16,7 @@ package storage
 
 import (
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
@@ -79,6 +80,22 @@ func TestApplyStorageOpt(t *testing.T) {
 				useJSONforReads:      false,
 				readAPIWasSet:        false,
 				disableClientMetrics: true,
+			},
+		},
+		{
+			desc: "set dynamic read req stall timeout option",
+			opts: []option.ClientOption{WithDynamicReadReqStallTimeout(0.99, 15, time.Second, time.Second, 2*time.Second)},
+			want: storageConfig{
+				useJSONforReads:      false,
+				readAPIWasSet:        false,
+				disableClientMetrics: true,
+				dynamicReadReqStallTimeout: &dynamicReadReqStallTimeout{
+					targetPercentile: 0.99,
+					increaseRate:     15,
+					initial:          time.Second,
+					min:              time.Second,
+					max:              time.Second,
+				},
 			},
 		},
 	} {

@@ -130,14 +130,20 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
 	}
 
-	// If stall timeout is set then create a dynamic delay calculater.
 	var dd *dynamicDelay
-	if s.retry != nil && s.retry.dynamicReadReqStallTimeout != nil {
-		rdt := s.retry.dynamicReadReqStallTimeout
-		dd, err = newDynamicDelay(rdt.targetPercentile, rdt.increaseRate, rdt.initial, rdt.min, rdt.max)
+	if config.dynamicReadReqStallTimeout != nil {
+		drrstConfig := config.dynamicReadReqStallTimeout
+		dd, err = newDynamicDelay(
+			drrstConfig.targetPercentile,
+			drrstConfig.increaseRate,
+			drrstConfig.initial,
+			drrstConfig.min,
+			drrstConfig.max)
 		if err != nil {
-			return nil, fmt.Errorf("creating dynamice delay obj: %w", err)
+			return nil, fmt.Errorf("creating dynamic-delay: %w", err)
 		}
+
+		log.Println("Creating dynamic Delay")
 	}
 
 	return &httpStorageClient{

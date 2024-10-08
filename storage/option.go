@@ -15,6 +15,8 @@
 package storage
 
 import (
+	"time"
+
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 )
@@ -22,9 +24,10 @@ import (
 // storageConfig contains the Storage client option configuration that can be
 // set through storageClientOptions.
 type storageConfig struct {
-	useJSONforReads      bool
-	readAPIWasSet        bool
-	disableClientMetrics bool
+	useJSONforReads            bool
+	readAPIWasSet              bool
+	disableClientMetrics       bool
+	dynamicReadReqStallTimeout *dynamicReadReqStallTimeout
 }
 
 // newStorageConfig generates a new storageConfig with all the given
@@ -107,4 +110,38 @@ func WithDisabledClientMetrics() option.ClientOption {
 
 func (w *withDisabledClientMetrics) ApplyStorageOpt(c *storageConfig) {
 	c.disableClientMetrics = w.disabledClientMetrics
+}
+
+// WithDynamicReadReqStallTimeout returns a storageClient option that proactively terminates
+// the connection and retries if a read-request as part of creation of storage.Reader
+// takes more than dynamicTimeout.
+// TODO() to add documentation for all these parameters.
+func WithDynamicReadReqStallTimeout(targetPercentile float64, increaseRate float64, initialTimeout time.Duration, minTimeout time.Duration, maxTimeout time.Duration) option.ClientOption {
+	return &withDynamicReadReqStallTimeout{
+		dynamicReadReqStallTimeout: &dynamicReadReqStallTimeout{
+			targetPercentile: targetPercentile,
+			increaseRate:     increaseRate,
+			initial:          initialTimeout,
+			min:              minTimeout,
+			max:              maxTimeout,
+		},
+	}
+}
+
+type dynamicReadReqStallTimeout struct {
+	min     time.Duration
+	max     time.Duration
+	initial time.Duration
+
+	targetPercentile float64
+	increaseRate     float64
+}
+
+type withDynamicReadReqStallTimeout struct {
+	internaloption.EmbeddableAdapter
+	dynamicReadReqStallTimeout *dynamicReadReqStallTimeout
+}
+
+func (wdrrst *withDynamicReadReqStallTimeout) ApplyStorageOpt(config *storageConfig) {
+	config.dynamicReadReqStallTimeout = wdrrst.dynamicReadReqStallTimeout
 }
