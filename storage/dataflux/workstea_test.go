@@ -36,7 +36,7 @@ func TestWorkstealListingEmulated(t *testing.T) {
 		}
 		numObjects := 5000
 		batchSize := 2000
-		if err := createObject(t, ctx, bucketHandle, numObjects); err != nil {
+		if err := createObject(ctx, bucketHandle, numObjects); err != nil {
 			t.Fatalf("unable to create objects: %v", err)
 		}
 		in := &ListerInput{

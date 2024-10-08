@@ -36,7 +36,7 @@ func TestDoSeqListingEmulated(t *testing.T) {
 			t.Fatal(err)
 		}
 		wantObjects := 1000
-		if err := createObject(t, ctx, bucketHandle, wantObjects); err != nil {
+		if err := createObject(ctx, bucketHandle, wantObjects); err != nil {
 			t.Fatalf("unable to create objects: %v", err)
 		}
 		objectIterator := bucketHandle.Objects(ctx, nil)
@@ -70,7 +70,7 @@ func TestSequentialListingEmulated(t *testing.T) {
 			t.Fatal(err)
 		}
 		wantObjects := 2000
-		if err := createObject(t, ctx, bucketHandle, wantObjects); err != nil {
+		if err := createObject(ctx, bucketHandle, wantObjects); err != nil {
 			t.Fatalf("unable to create objects: %v", err)
 		}
 

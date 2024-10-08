@@ -274,7 +274,7 @@ func isEmulatorEnvironmentSet() bool {
 
 // createObject creates an object in the emulator and returns its name, generation, and
 // metageneration.
-func createObject(t *testing.T, ctx context.Context, bucket *storage.BucketHandle, numObjects int) error {
+func createObject(ctx context.Context, bucket *storage.BucketHandle, numObjects int) error {
 
 	for i := 0; i < numObjects; i++ {
 		// Generate a unique object name using UUIDs
