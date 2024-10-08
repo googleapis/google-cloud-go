@@ -514,7 +514,7 @@ const (
 	// [appropriate permissions](https://cloud.google.com/storage/docs/access-control/iam-permissions):
 	// - storage.objects.list: to list the objects in a bucket.
 	// - storage.objects.get: to read the objects in a bucket.
-	// - storage.buckets.get: to verify the bucket exists.	CloudStorageIngestionPermissionDenied
+	// - storage.buckets.get: to verify the bucket exists.
 	CloudStorageIngestionPermissionDenied
 
 	// CloudStorageIngestionPublishPermissionDenied means encountering an error when publishing to the topic.
@@ -540,7 +540,7 @@ type IngestionDataSourceCloudStorage struct {
 
 	// InputFormat is the format of objects in Cloud Storage.
 	// Defaults to TextFormat.
-	InputFormat IngestionDataSourceCloudStorageInputFormat
+	InputFormat ingestionDataSourceCloudStorageInputFormat
 
 	// MinimumObjectCreateTime means objects with a larger or equal creation timestamp will be
 	// ingested.
@@ -558,14 +558,15 @@ func (i *IngestionDataSourceCloudStorage) isIngestionDataSource() bool {
 	return true
 }
 
-type IngestionDataSourceCloudStorageInputFormat interface {
+type ingestionDataSourceCloudStorageInputFormat interface {
 	isCloudStorageIngestionInputFormat() bool
 }
 
-var _ IngestionDataSourceCloudStorageInputFormat = (*IngestionDataSourceCloudStorageTextFormat)(nil)
-var _ IngestionDataSourceCloudStorageInputFormat = (*IngestionDataSourceCloudStorageAvroFormat)(nil)
-var _ IngestionDataSourceCloudStorageInputFormat = (*IngestionDataSourceCloudStoragePubSubAvroFormat)(nil)
+var _ ingestionDataSourceCloudStorageInputFormat = (*IngestionDataSourceCloudStorageTextFormat)(nil)
+var _ ingestionDataSourceCloudStorageInputFormat = (*IngestionDataSourceCloudStorageAvroFormat)(nil)
+var _ ingestionDataSourceCloudStorageInputFormat = (*IngestionDataSourceCloudStoragePubSubAvroFormat)(nil)
 
+// IngestionDataSourceCloudStorageTextFormat means Cloud Storage data will be interpreted as text.
 type IngestionDataSourceCloudStorageTextFormat struct {
 	Delimiter string
 }
@@ -574,12 +575,15 @@ func (i *IngestionDataSourceCloudStorageTextFormat) isCloudStorageIngestionInput
 	return true
 }
 
+// IngestionDataSourceCloudStorageAvroFormat means Cloud Storage data will be interpreted in Avro format.
 type IngestionDataSourceCloudStorageAvroFormat struct{}
 
 func (i *IngestionDataSourceCloudStorageAvroFormat) isCloudStorageIngestionInputFormat() bool {
 	return true
 }
 
+// IngestionDataSourceCloudStorageAvroFormat is used assuming the data was written using Cloud
+// Storage subscriptions https://cloud.google.com/pubsub/docs/cloudstorage.
 type IngestionDataSourceCloudStoragePubSubAvroFormat struct{}
 
 func (i *IngestionDataSourceCloudStoragePubSubAvroFormat) isCloudStorageIngestionInputFormat() bool {
@@ -601,7 +605,7 @@ func protoToIngestionDataSourceSettings(pbs *pb.IngestionDataSourceSettings) *In
 			GCPServiceAccount: k.GetGcpServiceAccount(),
 		}
 	} else if cs := pbs.GetCloudStorage(); cs != nil {
-		var format IngestionDataSourceCloudStorageInputFormat
+		var format ingestionDataSourceCloudStorageInputFormat
 		switch t := cs.InputFormat.(type) {
 		case *pb.IngestionDataSourceSettings_CloudStorage_TextFormat_:
 			format = &IngestionDataSourceCloudStorageTextFormat{
