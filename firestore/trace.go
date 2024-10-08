@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 
+	cloudOtelTrace "cloud.google.com/go/otel/trace"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
@@ -32,14 +33,25 @@ const (
 	attributeServicePrefix = "gcp.firestore."
 )
 
-func (c *Client) StartSpan(ctx context.Context, name string) context.Context {
+func (c *Client) getTracerProvider() trace.TracerProvider {
+	if c.config.tracerProvider != nil {
+		return cloudOtelTrace.OtelTracerProviderFromTracerProvider(c.config.tracerProvider)
+	}
+	return otel.GetTracerProvider()
+}
+
+func (c *Client) startSpan(ctx context.Context, name string) context.Context {
 	if c.config.enableTracing {
-		ctx, _ = otel.GetTracerProvider().Tracer(OpenTelemetryTracerName).Start(ctx, name, trace.WithAttributes())
+		ctx, _ = c.getTracerProvider().Tracer(OpenTelemetryTracerName).Start(ctx, name,
+			trace.WithAttributes(
+				attribute.Key("gcp.firestore.settings.project_id").String(c.projectID),
+				attribute.Key("gcp.firestore.settings.database_id").String(c.databaseID),
+			))
 	}
 	return ctx
 }
 
-func (c *Client) EndSpan(ctx context.Context, err error) {
+func (c *Client) endSpan(ctx context.Context, err error) {
 	if c.config.enableTracing {
 		span := trace.SpanFromContext(ctx)
 		if err != nil {

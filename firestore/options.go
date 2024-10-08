@@ -20,6 +20,9 @@ import (
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
+	cloudOtelTrace "cloud.google.com/go/otel/trace"
+	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -218,4 +221,42 @@ func (e ExplainOptions) apply(s *runQuerySettings) error {
 	pbExplainOptions := pb.ExplainOptions{Analyze: e.Analyze}
 	s.explainOptions = &pbExplainOptions
 	return nil
+}
+
+// A firestoreClientOption is an option for a Google Firestore client.
+type firestoreClientOption interface {
+	option.ClientOption
+	applyFirestoreOpt(*clientConfig)
+}
+
+// WithTracingEnabled enables tracing
+func WithTracingEnabled() option.ClientOption {
+	return &withTracingEnabledOption{enableTracing: true}
+}
+
+type withTracingEnabledOption struct {
+	internaloption.EmbeddableAdapter
+
+	enableTracing bool
+}
+
+func (w *withTracingEnabledOption) applyFirestoreOpt(c *clientConfig) {
+	c.enableTracing = w.enableTracing
+}
+
+// WithTracerProvider sets the tracer provider to use with the Firestore client.
+// If tracing is enabled but a TracerProvider is not provided, the Firestore SDK
+// will attempt to use the registered global trace provider.
+func WithTracerProvider(tracerProvider cloudOtelTrace.TracerProvider) option.ClientOption {
+	return &withTracerProviderOption{tracerProvider: tracerProvider}
+}
+
+type withTracerProviderOption struct {
+	internaloption.EmbeddableAdapter
+
+	tracerProvider cloudOtelTrace.TracerProvider
+}
+
+func (w *withTracerProviderOption) applyFirestoreOpt(c *clientConfig) {
+	c.tracerProvider = w.tracerProvider
 }

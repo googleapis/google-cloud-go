@@ -15,17 +15,39 @@
 package trace
 
 import (
-	"go.opentelemetry.io/otel/trace"
+	ottrace "go.opentelemetry.io/otel/trace"
+	ottraceembedded "go.opentelemetry.io/otel/trace/embedded"
 )
 
 type TracerProvider interface {
-	Tracer(name string, options ...trace.TracerOption) trace.Tracer
+	Tracer(name string, options ...ottrace.TracerOption) ottrace.Tracer
+}
+
+// TracerProviderFromOtelTracerProvider converts any [go.opentelemetry.io/otel/trace.TracerProvider]
+// into a [cloud.google.com/go/otel/trace.TracerProvider].
+func TracerProviderFromOtelTracerProvider(tp ottrace.TracerProvider) TracerProvider {
+	return &tracerProviderAdapter{otelTP: tp}
+}
+
+type tracerProviderAdapter struct {
+	otelTP ottrace.TracerProvider
+}
+
+func (a tracerProviderAdapter) Tracer(name string, opts ...ottrace.TracerOption) ottrace.Tracer {
+	return a.otelTP.Tracer(name, opts...)
+}
+
+// OtelTracerProviderFromTracerProvider converts any [cloud.google.com/go/otel/trace.TracerProvider]
+// into a [go.opentelemetry.io/otel/trace.TracerProvider].
+func OtelTracerProviderFromTracerProvider(tp TracerProvider) ottrace.TracerProvider {
+	return &otelTracerProviderAdapter{tp: tp}
 }
 
 type otelTracerProviderAdapter struct {
-	otelTP trace.TracerProvider
+	tp TracerProvider
+	ottraceembedded.TracerProvider
 }
 
-func (a *otelTracerProviderAdapter) Tracer(name string, opts ...trace.TracerOption) trace.Tracer {
-	return a.otelTP.Tracer(name, opts...)
+func (a otelTracerProviderAdapter) Tracer(name string, opts ...ottrace.TracerOption) ottrace.Tracer {
+	return a.tp.Tracer(name, opts...)
 }
