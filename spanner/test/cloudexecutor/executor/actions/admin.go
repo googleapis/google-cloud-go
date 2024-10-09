@@ -261,7 +261,6 @@ func executeListCloudInstances(ctx context.Context, action *executorpb.ListCloud
 // execute action that lists cloud instance configs.
 func executeListInstanceConfigs(ctx context.Context, action *executorpb.ListCloudInstanceConfigsAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("listing instance configs:  %v", action)
-	log.Printf("executeListInstanceConfigs options: %v", opts)
 	projectID := action.GetProjectId()
 	instanceAdminClient, err := instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
