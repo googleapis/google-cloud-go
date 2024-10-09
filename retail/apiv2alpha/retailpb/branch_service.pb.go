@@ -22,15 +22,14 @@ package retailpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -422,8 +421,8 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type BranchServiceClient interface {
-	// Lists all [Branch][google.cloud.retail.v2alpha.Branch]s under the specified
-	// parent [Catalog][google.cloud.retail.v2alpha.Catalog].
+	// Lists all instances of [Branch][google.cloud.retail.v2alpha.Branch] under
+	// the specified parent [Catalog][google.cloud.retail.v2alpha.Catalog].
 	ListBranches(ctx context.Context, in *ListBranchesRequest, opts ...grpc.CallOption) (*ListBranchesResponse, error)
 	// Retrieves a [Branch][google.cloud.retail.v2alpha.Branch].
 	GetBranch(ctx context.Context, in *GetBranchRequest, opts ...grpc.CallOption) (*Branch, error)
@@ -457,8 +456,8 @@ func (c *branchServiceClient) GetBranch(ctx context.Context, in *GetBranchReques
 
 // BranchServiceServer is the server API for BranchService service.
 type BranchServiceServer interface {
-	// Lists all [Branch][google.cloud.retail.v2alpha.Branch]s under the specified
-	// parent [Catalog][google.cloud.retail.v2alpha.Catalog].
+	// Lists all instances of [Branch][google.cloud.retail.v2alpha.Branch] under
+	// the specified parent [Catalog][google.cloud.retail.v2alpha.Catalog].
 	ListBranches(context.Context, *ListBranchesRequest) (*ListBranchesResponse, error)
 	// Retrieves a [Branch][google.cloud.retail.v2alpha.Branch].
 	GetBranch(context.Context, *GetBranchRequest) (*Branch, error)

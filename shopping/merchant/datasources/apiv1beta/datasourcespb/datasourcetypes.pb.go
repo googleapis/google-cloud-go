@@ -21,12 +21,11 @@
 package datasourcespb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -209,7 +208,12 @@ func (x *PrimaryProductDataSource) GetDefaultRule() *PrimaryProductDataSource_De
 	return nil
 }
 
-// The supplemental data source for local and online products.
+// The supplemental data source for local and online products. Supplemental API
+// data sources must not have `feedLabel` and `contentLanguage` fields set. You
+// can only use supplemental data sources to update existing products. For
+// information about creating a supplemental data source, see [Create a
+// supplemental data source and link it to the primary data
+// source](/merchant/api/guides/data-sources/overview#create-supplemental-data-source).
 type SupplementalProductDataSource struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -618,8 +622,10 @@ type PrimaryProductDataSource_DefaultRule struct {
 	// To link the data source to the default rule, you need to add a
 	// new reference to this list (in sequential order).
 	//
-	// To unlink the data source from the default rule, you need to
-	// remove the given reference from this list.
+	// To unlink the data source from the default rule, you need to remove the
+	// given reference from this list. To create attribute rules that are
+	// different from the default rule, see [Set up your attribute
+	// rules](//support.google.com/merchants/answer/14994083).
 	//
 	// Changing the order of this list will result in changing the priority of
 	// data sources in the default rule.

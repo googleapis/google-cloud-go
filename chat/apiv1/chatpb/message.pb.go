@@ -21,15 +21,14 @@
 package chatpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	v1 "google.golang.org/genproto/googleapis/apps/card/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -224,8 +223,8 @@ type Message struct {
 	// user](https://developers.google.com/workspace/chat/format-messages#messages-@mention),
 	// or everyone in the space.
 	//
-	// To learn about creating text messages, see [Send a text
-	// message](https://developers.google.com/workspace/chat/create-messages#create-text-messages).
+	// To learn about creating text messages, see [Send a
+	// message](https://developers.google.com/workspace/chat/create-messages).
 	Text string `protobuf:"bytes,4,opt,name=text,proto3" json:"text,omitempty"`
 	// Output only. Contains the message `text` with markups added to communicate
 	// formatting. This field might not capture all formatting visible in the UI,
@@ -267,8 +266,8 @@ type Message struct {
 	// user](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user),
 	// the messages can't contain cards.
 	//
-	// To learn about cards and how to create them, see [Send card
-	// messages](https://developers.google.com/workspace/chat/create-messages#create).
+	// To learn how to create a message that contains cards, see [Send a
+	// message](https://developers.google.com/workspace/chat/create-messages).
 	//
 	// [Card builder](https://addons.gsuite.google.com/uikit/builder)
 	CardsV2 []*CardWithId `protobuf:"bytes,22,rep,name=cards_v2,json=cardsV2,proto3" json:"cards_v2,omitempty"`
@@ -319,16 +318,17 @@ type Message struct {
 	EmojiReactionSummaries []*EmojiReactionSummary `protobuf:"bytes,33,rep,name=emoji_reaction_summaries,json=emojiReactionSummaries,proto3" json:"emoji_reaction_summaries,omitempty"`
 	// Immutable. Input for creating a message, otherwise output only. The user
 	// that can view the message. When set, the message is private and only
-	// visible to the specified user and the Chat app. Link previews and
-	// attachments aren't supported for private messages.
+	// visible to the specified user and the Chat app. To include this field in
+	// your request, you must call the Chat API using [app
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app)
+	// and omit the following:
 	//
-	// Only Chat apps can send private messages. If your Chat app [authenticates
-	// as a
-	// user](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
-	// to send a message, the message can't be private and must omit this field.
+	// * [Attachments](https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces.messages.attachments)
+	// * [Accessory
+	// widgets](https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces.messages#Message.AccessoryWidget)
 	//
-	// For details, see [Send private messages to Google Chat
-	// users](https://developers.google.com/workspace/chat/private-messages).
+	// For details, see [Send a message
+	// privately](https://developers.google.com/workspace/chat/create-messages#private).
 	PrivateMessageViewer *User `protobuf:"bytes,36,opt,name=private_message_viewer,json=privateMessageViewer,proto3" json:"private_message_viewer,omitempty"`
 	// Output only. Information about a deleted message. A message is deleted when
 	// `delete_time` is set.
@@ -687,7 +687,7 @@ type Thread struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. Resource name of the thread.
+	// Resource name of the thread.
 	//
 	// Example: `spaces/{space}/threads/{thread}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`

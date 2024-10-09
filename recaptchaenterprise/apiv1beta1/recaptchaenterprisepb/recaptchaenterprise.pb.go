@@ -22,9 +22,6 @@ package recaptchaenterprisepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -667,7 +666,7 @@ type CreateAssessmentRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the project in which the assessment will be created,
+	// Required. The name of the project in which the assessment is created,
 	// in the format `projects/{project_number}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The assessment details.
@@ -810,8 +809,8 @@ type AnnotateAssessmentRequest struct {
 	// Required. The resource name of the Assessment, in the format
 	// `projects/{project_number}/assessments/{assessment_id}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. The annotation that will be assigned to the Event. This field can
-	// be left empty to provide reasons that apply to an event without concluding
+	// Optional. The annotation that is assigned to the Event. This field can be
+	// left empty to provide reasons that apply to an event without concluding
 	// whether the event is legitimate or fraudulent.
 	Annotation AnnotateAssessmentRequest_Annotation `protobuf:"varint,2,opt,name=annotation,proto3,enum=google.cloud.recaptchaenterprise.v1beta1.AnnotateAssessmentRequest_Annotation" json:"annotation,omitempty"`
 	// Optional. Reasons for the annotation that are assigned to the event.
@@ -1128,11 +1127,11 @@ type Event struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. The user response token provided by the reCAPTCHA Enterprise
-	// client-side integration on your site.
+	// Optional. The user response token provided by the reCAPTCHA client-side
+	// integration on your site.
 	Token string `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	// Optional. The site key that was used to invoke reCAPTCHA Enterprise on your
-	// site and generate the token.
+	// Optional. The site key that was used to invoke reCAPTCHA on your site and
+	// generate the token.
 	SiteKey string `protobuf:"bytes,2,opt,name=site_key,json=siteKey,proto3" json:"site_key,omitempty"`
 	// Optional. The user agent present in the request from the user's device
 	// related to this event.
@@ -1142,13 +1141,13 @@ type Event struct {
 	UserIpAddress string `protobuf:"bytes,4,opt,name=user_ip_address,json=userIpAddress,proto3" json:"user_ip_address,omitempty"`
 	// Optional. The expected action for this type of event. This should be the
 	// same action provided at token generation time on client-side platforms
-	// already integrated with recaptcha enterprise.
+	// already integrated with reCAPTCHA.
 	ExpectedAction string `protobuf:"bytes,5,opt,name=expected_action,json=expectedAction,proto3" json:"expected_action,omitempty"`
 	// Optional. Unique stable hashed user identifier for the request. The
 	// identifier must be hashed using hmac-sha256 with stable secret.
 	HashedAccountId []byte `protobuf:"bytes,6,opt,name=hashed_account_id,json=hashedAccountId,proto3" json:"hashed_account_id,omitempty"`
 	// Optional. Data describing a payment transaction to be assessed. Sending
-	// this data enables reCAPTCHA Enterprise Fraud Prevention and the
+	// this data enables reCAPTCHA Fraud Prevention and the
 	// FraudPreventionAssessment component in the response.
 	TransactionData *TransactionData `protobuf:"bytes,13,opt,name=transaction_data,json=transactionData,proto3" json:"transaction_data,omitempty"`
 	// Optional. The Fraud Prevention setting for this Assessment.
@@ -1243,7 +1242,7 @@ func (x *Event) GetFraudPrevention() Event_FraudPrevention {
 	return Event_FRAUD_PREVENTION_UNSPECIFIED
 }
 
-// Transaction data associated with a payment protected by reCAPTCHA Enterprise.
+// Transaction data associated with a payment protected by reCAPTCHA.
 type TransactionData struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1910,10 +1909,10 @@ type TransactionData_GatewayInfo struct {
 	// Gateway response code describing the state of the transaction.
 	GatewayResponseCode string `protobuf:"bytes,2,opt,name=gateway_response_code,json=gatewayResponseCode,proto3" json:"gateway_response_code,omitempty"`
 	// AVS response code from the gateway
-	// (available only when reCAPTCHA Enterprise is called after authorization).
+	// (available only when reCAPTCHA is called after authorization).
 	AvsResponseCode string `protobuf:"bytes,3,opt,name=avs_response_code,json=avsResponseCode,proto3" json:"avs_response_code,omitempty"`
 	// CVV response code from the gateway
-	// (available only when reCAPTCHA Enterprise is called after authorization).
+	// (available only when reCAPTCHA is called after authorization).
 	CvvResponseCode string `protobuf:"bytes,4,opt,name=cvv_response_code,json=cvvResponseCode,proto3" json:"cvv_response_code,omitempty"`
 }
 

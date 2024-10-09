@@ -21,17 +21,16 @@
 package retailpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -112,9 +111,9 @@ type CompleteQueryRequest struct {
 	// The maximum allowed max suggestions is 20. If it is set higher, it will be
 	// capped by 20.
 	MaxSuggestions int32 `protobuf:"varint,5,opt,name=max_suggestions,json=maxSuggestions,proto3" json:"max_suggestions,omitempty"`
-	// If true, attribute suggestions are enabled and provided in response.
+	// If true, attribute suggestions are enabled and provided in the response.
 	//
-	// This field is only available for "cloud-retail" dataset.
+	// This field is only available for the "cloud-retail" dataset.
 	EnableAttributeSuggestions bool `protobuf:"varint,9,opt,name=enable_attribute_suggestions,json=enableAttributeSuggestions,proto3" json:"enable_attribute_suggestions,omitempty"`
 	// The entity for customers who run multiple entities, domains, sites, or
 	// regions, for example, `Google US`, `Google Ads`, `Waymo`,
@@ -474,12 +473,12 @@ func (x *CompleteQueryResponse_RecentSearchResult) GetRecentSearch() string {
 }
 
 // Resource that represents attribute results.
+// The list of suggestions for the attribute.
 type CompleteQueryResponse_AttributeResult struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The list of suggestions for the attribute.
 	Suggestions []string `protobuf:"bytes,1,rep,name=suggestions,proto3" json:"suggestions,omitempty"`
 }
 

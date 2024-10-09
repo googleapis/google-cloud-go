@@ -21,13 +21,12 @@
 package retailpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -147,7 +146,8 @@ func (Branch_ProductCountStatistic_ProductCountScope) EnumDescriptor() ([]byte, 
 	return file_google_cloud_retail_v2alpha_branch_proto_rawDescGZIP(), []int{0, 0, 0}
 }
 
-// A data branch that stores [Product][google.cloud.retail.v2alpha.Product]s.
+// A data branch that stores all instances of
+// [Product][google.cloud.retail.v2alpha.Product]s.
 type Branch struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
