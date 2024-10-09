@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/chat/apiv1",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "language": "GO",
     "apis": [
       {
@@ -60,7 +60,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_CreateMembership_sync",
       "title": "chat CreateMembership Sample",
-      "description": "CreateMembership creates a human membership or app membership for the calling app. Creating\nmemberships for other apps isn't supported. For an example, see\n[Invite or add a user or a Google Chat app to a\nspace](https: //developers.google.com/workspace/chat/create-members).\nWhen creating a membership, if the specified member has their auto-accept\npolicy turned off, then they're invited, and must accept the space\ninvitation before joining. Otherwise, creating a membership adds the member\ndirectly to the specified space. Requires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\n\nTo specify the member to add, set the `membership.member.name` for the\nhuman or app member, or set the `membership.group_member.name` for the\ngroup member.\n\n- To add the calling app to a space or a direct message between two human\nusers, use `users/app`. Unable to add other\napps to the space.\n\n- To add a human user, use `users/{user}`, where `{user}` can be the email\naddress for the user. For users in the same Workspace organization `{user}`\ncan also be the `id` for the person from the People API, or the `id` for\nthe user in the Directory API. For example, if the People API Person\nprofile ID for `user@example.com` is `123456789`, you can add the user to\nthe space by setting the `membership.member.name` to\n`users/user@example.com` or `users/123456789`.\n\n- To add or invite a Google group in a named space, use\n`groups/{group}`, where `{group}` is the `id` for the group from the Cloud\nIdentity Groups API. For example, you can use [Cloud Identity Groups lookup\nAPI](https: //cloud.google.com/identity/docs/reference/rest/v1/groups/lookup)\nto retrieve the ID `123456789` for group email `group@example.com`, then\nyou can add or invite the group to a named space by setting the\n`membership.group_member.name` to `groups/123456789`. Group email is not\nsupported, and Google groups can only be added as members in named spaces.",
+      "description": "CreateMembership creates a membership for the calling Chat app, a user, or a Google Group.\nCreating memberships for other Chat apps isn't supported.\nWhen creating a membership, if the specified member has their auto-accept\npolicy turned off, then they're invited, and must accept the space\ninvitation before joining. Otherwise, creating a membership adds the member\ndirectly to the specified space.\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\n\nFor example usage, see: \n\n- [Invite or add a user to a\nspace](https: //developers.google.com/workspace/chat/create-members#create-user-membership).\n\n- [Invite or add a Google Group to a\nspace](https: //developers.google.com/workspace/chat/create-members#create-group-membership).\n\n- [Add the Chat app to a\nspace](https: //developers.google.com/workspace/chat/create-members#create-membership-calling-api).",
       "file": "Client/CreateMembership/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_CreateMessage_sync",
       "title": "chat CreateMessage Sample",
-      "description": "CreateMessage creates a message in a Google Chat space. The maximum message size,\nincluding text and cards, is 32,000 bytes. For an example, see [Send a\nmessage](https: //developers.google.com/workspace/chat/create-messages).\n\nCalling this method requires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize)\nand supports the following authentication types: \n\n- For text messages, user authentication or app authentication are\nsupported.\n- For card messages, only app authentication is supported. (Only Chat apps\ncan create card messages.)",
+      "description": "CreateMessage creates a message in a Google Chat space. For an example, see [Send a\nmessage](https: //developers.google.com/workspace/chat/create-messages).\n\nThe `create()` method requires either user or app authentication. Chat\nattributes the message sender differently depending on the type of\nauthentication that you use in your request.\n\nThe following image shows how Chat attributes a message when you use app\nauthentication. Chat displays the Chat app as the message\nsender. The content of the message can contain text (`text`), cards\n(`cardsV2`), and accessory widgets (`accessoryWidgets`).\n\n![Message sent with app\nauthentication](https: //developers.google.com/workspace/chat/images/message-app-auth.svg)\n\nThe following image shows how Chat attributes a message when you use user\nauthentication. Chat displays the user as the message sender and attributes\nthe Chat app to the message by displaying its name. The content of message\ncan only contain text (`text`).\n\n![Message sent with user\nauthentication](https: //developers.google.com/workspace/chat/images/message-user-auth.svg)\n\nThe maximum message size, including the message contents, is 32,000 bytes.",
       "file": "Client/CreateMessage/main.go",
       "language": "GO",
       "clientMethod": {
@@ -198,7 +198,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_CreateSpace_sync",
       "title": "chat CreateSpace Sample",
-      "description": "CreateSpace creates a named space. Spaces grouped by topics aren't supported. For an\nexample, see [Create a\nspace](https: //developers.google.com/workspace/chat/create-spaces).\n\nIf you receive the error message `ALREADY_EXISTS` when creating\na space, try a different `displayName`. An existing space within\nthe Google Workspace organization might already use this display name.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "CreateSpace creates a space with no members. Can be used to create a named space.\nSpaces grouped by topics aren't supported. For an example, see\n[Create a\nspace](https: //developers.google.com/workspace/chat/create-spaces).\n\nIf you receive the error message `ALREADY_EXISTS` when creating\na space, try a different `displayName`. An existing space within\nthe Google Workspace organization might already use this display name.\n\nIf you're a member of the [Developer Preview\nprogram](https: //developers.google.com/workspace/preview), you can create a\ngroup chat in import mode using `spaceType.GROUP_CHAT`.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
       "file": "Client/CreateSpace/main.go",
       "language": "GO",
       "clientMethod": {
@@ -655,7 +655,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_GetSpaceEvent_sync",
       "title": "chat GetSpaceEvent Sample",
-      "description": "GetSpaceEvent returns an event from a Google Chat space. The [event\npayload](https: //developers.google.com/workspace/chat/api/reference/rest/v1/spaces.spaceEvents#SpaceEvent.FIELDS.oneof_payload)\ncontains the most recent version of the resource that changed. For example,\nif you request an event about a new message but the message was later\nupdated, the server returns the updated `Message` resource in the event\npayload.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\nTo get an event, the authenticated user must be a member of the space.\n\nFor an example, see [Get details about an\nevent from a Google Chat\nspace](https: //developers.google.com/workspace/chat/get-space-event).",
+      "description": "GetSpaceEvent returns an event from a Google Chat space. The [event\npayload](https: //developers.google.com/workspace/chat/api/reference/rest/v1/spaces.spaceEvents#SpaceEvent.FIELDS.oneof_payload)\ncontains the most recent version of the resource that changed. For example,\nif you request an event about a new message but the message was later\nupdated, the server returns the updated `Message` resource in the event\npayload.\n\nNote: The `permissionSettings` field is not returned in the Space\nobject of the Space event data for this request.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\nTo get an event, the authenticated user must be a member of the space.\n\nFor an example, see [Get details about an\nevent from a Google Chat\nspace](https: //developers.google.com/workspace/chat/get-space-event).",
       "file": "Client/GetSpaceEvent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -839,7 +839,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_ListMessages_sync",
       "title": "chat ListMessages Sample",
-      "description": "ListMessages lists messages in a space that the caller is a member of, including\nmessages from blocked members and spaces. For an example, see\n[List messages](/chat/api/guides/v1/messages/list).\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "ListMessages lists messages in a space that the caller is a member of, including\nmessages from blocked members and spaces. If you list messages from a\nspace with no messages, the response is an empty object. When using a\nREST/HTTP interface, the response contains an empty JSON object, `{}`.\nFor an example, see\n[List\nmessages](https: //developers.google.com/workspace/chat/api/guides/v1/messages/list).\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
       "file": "Client/ListMessages/main.go",
       "language": "GO",
       "clientMethod": {

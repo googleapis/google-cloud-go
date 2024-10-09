@@ -92,6 +92,7 @@
     "networkservices": "0.2.1",
     "notebooks": "1.12.1",
     "optimization": "1.7.1",
+    "oracledatabase": "0.0.0",
     "orchestration": "1.11.0",
     "orgpolicy": "1.14.0",
     "osconfig": "1.14.1",

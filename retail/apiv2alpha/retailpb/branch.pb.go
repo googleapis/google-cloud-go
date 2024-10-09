@@ -147,7 +147,8 @@ func (Branch_ProductCountStatistic_ProductCountScope) EnumDescriptor() ([]byte, 
 	return file_google_cloud_retail_v2alpha_branch_proto_rawDescGZIP(), []int{0, 0, 0}
 }
 
-// A data branch that stores [Product][google.cloud.retail.v2alpha.Product]s.
+// A data branch that stores all instances of
+// [Product][google.cloud.retail.v2alpha.Product]s.
 type Branch struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
