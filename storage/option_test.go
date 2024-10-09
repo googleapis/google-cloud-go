@@ -94,7 +94,7 @@ func TestApplyStorageOpt(t *testing.T) {
 					increaseRate:     15,
 					initial:          time.Second,
 					min:              time.Second,
-					max:              time.Second,
+					max:              2 * time.Second,
 				},
 			},
 		},
@@ -106,8 +106,8 @@ func TestApplyStorageOpt(t *testing.T) {
 					storageOpt.ApplyStorageOpt(&got)
 				}
 			}
-			if !cmp.Equal(got, test.want, cmp.AllowUnexported(storageConfig{})) {
-				t.Errorf(cmp.Diff(got, test.want, cmp.AllowUnexported(storageConfig{})))
+			if !cmp.Equal(got, test.want, cmp.AllowUnexported(storageConfig{}, dynamicReadReqStallTimeout{})) {
+				t.Errorf(cmp.Diff(got, test.want, cmp.AllowUnexported(storageConfig{}, dynamicReadReqStallTimeout{})))
 			}
 		})
 	}
