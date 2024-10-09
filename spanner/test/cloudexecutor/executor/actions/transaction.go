@@ -54,7 +54,7 @@ func (h *StartTxnHandler) ExecuteAction(ctx context.Context) error {
 	h.FlowContext.tableMetadata = metadata
 
 	// TODO(harsha) where do I close the client? defer client.Close()
-	client, err := spanner.NewClientWithConfig(ctx, h.FlowContext.Database, spanner.ClientConfig{SessionPoolConfig: spanner.DefaultSessionPoolConfig, DisableRouteToLeader: false, EnableServerSideTracing: true}, h.Options...)
+	client, err := spanner.NewClientWithConfig(ctx, h.FlowContext.Database, spanner.ClientConfig{SessionPoolConfig: spanner.DefaultSessionPoolConfig, DisableRouteToLeader: false, EnableEndToEndTracing: true}, h.Options...)
 	if err != nil {
 		return h.OutcomeSender.FinishWithError(err)
 	}

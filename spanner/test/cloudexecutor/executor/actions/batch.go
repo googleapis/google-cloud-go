@@ -50,7 +50,7 @@ func (h *StartBatchTxnHandler) ExecuteAction(ctx context.Context) error {
 		return h.OutcomeSender.FinishWithError(spanner.ToSpannerError(status.Error(codes.InvalidArgument, "database path must be set for this action")))
 	}
 
-	client, err := spanner.NewClientWithConfig(ctx, h.FlowContext.Database, spanner.ClientConfig{SessionPoolConfig: spanner.DefaultSessionPoolConfig, DisableRouteToLeader: false, EnableServerSideTracing: true}, h.Options...)
+	client, err := spanner.NewClientWithConfig(ctx, h.FlowContext.Database, spanner.ClientConfig{SessionPoolConfig: spanner.DefaultSessionPoolConfig, DisableRouteToLeader: false, EnableEndToEndTracing: true}, h.Options...)
 	if err != nil {
 		return h.OutcomeSender.FinishWithError(err)
 	}
