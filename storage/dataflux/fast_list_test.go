@@ -205,10 +205,6 @@ type skipTransportTestKey string
 func initEmulatorClients() func() error {
 	noopCloser := func() error { return nil }
 
-	// part of initEmulator.
-	os.Setenv("STORAGE_EMULATOR_HOST", "http://localhost:9000")
-	os.Setenv("STORAGE_EMULATOR_HOST_GRPC", "localhost:8888")
-
 	if !isEmulatorEnvironmentSet() {
 		return noopCloser
 	}
