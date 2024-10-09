@@ -63,6 +63,20 @@ var (
 		return string(configStr), nil
 	}
 
+	validConfigRespDualS2A = func() (string, error) {
+		validConfig := mtlsConfig{
+			S2A: &s2aAddresses{
+				PlaintextAddress: testS2AAddr,
+				MTLSAddress:      testMTLSS2AAddr,
+			},
+		}
+		configStr, err := json.Marshal(validConfig)
+		if err != nil {
+			return "", err
+		}
+		return string(configStr), nil
+	}
+
 	errorConfigResp = func() (string, error) {
 		return "", fmt.Errorf("error getting config")
 	}
@@ -346,6 +360,15 @@ func TestGetGRPCTransportConfigAndEndpoint_S2A(t *testing.T) {
 			validConfigRespMTLSS2A,
 			testRegularEndpoint,
 		},
+		{
+			"no client cert, dual S2A addresses, no MTLS MDS cert",
+			&Options{
+				DefaultMTLSEndpoint:     testMTLSEndpoint,
+				DefaultEndpointTemplate: testEndpointTemplate,
+			},
+			validConfigRespDualS2A,
+			testMTLSEndpoint,
+		},
 	}
 	defer setupTest(t)()
 	for _, tc := range testCases {
@@ -444,6 +467,16 @@ func TestGetHTTPTransportConfig_S2A(t *testing.T) {
 			s2ARespFn:   validConfigRespMTLSS2A,
 			want:        testRegularEndpoint,
 			isDialFnNil: true,
+		},
+		{
+			name: "no client cert, dual S2A addresses, no MTLS MDS cert",
+			opts: &Options{
+				DefaultMTLSEndpoint:     testMTLSEndpoint,
+				DefaultEndpointTemplate: testEndpointTemplate,
+			},
+			s2ARespFn:   validConfigRespDualS2A,
+			want:        testMTLSEndpoint,
+			isDialFnNil: false,
 		},
 	}
 	defer setupTest(t)()
