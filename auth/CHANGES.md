@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.9.8](https://github.com/googleapis/google-cloud-go/compare/auth/v0.9.7...auth/v0.9.8) (2024-10-09)
+
+
+### Bug Fixes
+
+* **auth:** Restore OpenTelemetry handling in transports ([#10968](https://github.com/googleapis/google-cloud-go/issues/10968)) ([08c6d04](https://github.com/googleapis/google-cloud-go/commit/08c6d04901c1a20e219b2d86df41dbaa6d7d7b55)), refs [#10962](https://github.com/googleapis/google-cloud-go/issues/10962)
+* **auth:** Try talk to plaintext S2A if credentials can not be found for mTLS-S2A ([#10941](https://github.com/googleapis/google-cloud-go/issues/10941)) ([0f0bf2d](https://github.com/googleapis/google-cloud-go/commit/0f0bf2d18c97dd8b65bcf0099f0802b5631c6287))
+
+## [0.9.7](https://github.com/googleapis/google-cloud-go/compare/auth/v0.9.6...auth/v0.9.7) (2024-10-01)
+
+
+### Bug Fixes
+
+* **auth:** Restore support for non-default service accounts for DirectPath ([#10937](https://github.com/googleapis/google-cloud-go/issues/10937)) ([a38650e](https://github.com/googleapis/google-cloud-go/commit/a38650edbf420223077498cafa537aec74b37aad)), refs [#10907](https://github.com/googleapis/google-cloud-go/issues/10907)
+
+## [0.9.6](https://github.com/googleapis/google-cloud-go/compare/auth/v0.9.5...auth/v0.9.6) (2024-09-30)
+
+
+### Bug Fixes
+
+* **auth:** Make aws credentials provider retrieve fresh credentials ([#10920](https://github.com/googleapis/google-cloud-go/issues/10920)) ([250fbf8](https://github.com/googleapis/google-cloud-go/commit/250fbf87d858d865e399a241b7e537c4ff0c3dd8))
+
 ## [0.9.5](https://github.com/googleapis/google-cloud-go/compare/auth/v0.9.4...auth/v0.9.5) (2024-09-25)
 
 
