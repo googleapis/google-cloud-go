@@ -77,11 +77,11 @@
 // Follow the detailed instructions on how to configure Workload Identity Federation
 // in various platforms:
 //
-//   - [Amazon Web Services (AWS)](https://cloud.google.com/iam/docs/workload-identity-federation-with-other-clouds#aws)
-//   - [Azure AD](https://cloud.google.com/iam/docs/workforce-sign-in-azure-ad)
-//   - [Okta](https://cloud.google.com/iam/docs/workforce-sign-in-okta)
-//   - [OIDC identity provider](https://cloud.google.com/iam/docs/configuring-workforce-identity-federation#oidc)
-//   - [SAML 2.0 identity provider](https://cloud.google.com/iam/docs/configuring-workforce-identity-federation#saml)
+//   - [Amazon Web Services (AWS)]
+//   - [Azure AD]
+//   - [Okta]
+//   - [OIDC identity provider]
+//   - [SAML 2.0 identity provider]
 //
 // For workforce identity federation, the library can retrieve tokens in three ways:
 // from a local file location (file-sourced credentials), from a server
@@ -107,4 +107,10 @@
 // configuration. It is not recommended to use a credential configuration that
 // you did not generate with the gcloud CLI unless you verify that the URL
 // fields point to a googleapis.com domain.
+//
+// [Amazon Web Services (AWS)]: https://cloud.google.com/iam/docs/workload-identity-federation-with-other-clouds#aws
+// [Azure AD]: https://cloud.google.com/iam/docs/workforce-sign-in-azure-ad
+// [Okta]: https://cloud.google.com/iam/docs/workforce-sign-in-okta
+// [OIDC identity provider]: https://cloud.google.com/iam/docs/configuring-workforce-identity-federation#oidc
+// [SAML 2.0 identity provider]: https://cloud.google.com/iam/docs/configuring-workforce-identity-federation#saml
 package externalaccount
