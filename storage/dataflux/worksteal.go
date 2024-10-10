@@ -74,7 +74,7 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 
 	rs, err := newRangeSplitter(defaultAlphabet)
 	if err != nil {
-		return nil, fmt.Errorf("creating new range splitter: %w", err)
+		return nil, fmt.Errorf("creating new range splitter: %v", err)
 	}
 
 	g, ctx := errgroup.WithContext(ctx)
@@ -95,14 +95,14 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 		g.Go(func() error {
 			if err := idleWorker.doWorkstealListing(ctx); err != nil {
 				workerErr = append(workerErr, err)
-				return fmt.Errorf("listing worker ID %q: %w", i, err)
+				return fmt.Errorf("listing worker ID %d: %v", idleWorker.goroutineID, err)
 			}
 			return nil
 		})
 	}
 
 	if err := g.Wait(); err != nil {
-		return nil, fmt.Errorf("failed waiting for multiple workers : %w", err)
+		return nil, fmt.Errorf("failed waiting for multiple workers : %v", err)
 	}
 	if len(workerErr) > 0 {
 		return nil, fmt.Errorf("failure in workers : %v", workerErr)
@@ -141,7 +141,7 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 		// Active worker to list next page of objects within the range.
 		doneListing, err := w.objectLister(ctx)
 		if err != nil {
-			return fmt.Errorf("objectLister failed: %w", err)
+			return fmt.Errorf("objectLister failed: %v", err)
 		}
 
 		// If listing is complete for the range, make worker idle and continue.
@@ -158,7 +158,7 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 			// Split range and upload half of work for idle worker.
 			splitPoint, err := w.rangesplitter.splitRange(w.startRange, w.endRange, 1)
 			if err != nil {
-				return fmt.Errorf("splitting range for worker ID:%v, err: %w", w.goroutineID, err)
+				return fmt.Errorf("splitting range for worker ID:%v, err: %v", w.goroutineID, err)
 			}
 			// If split point is empty, skip splitting the work.
 			if len(splitPoint) < 1 {
@@ -211,7 +211,7 @@ func (w *worker) objectLister(ctx context.Context) (bool, error) {
 		generation:           w.generation,
 	})
 	if err != nil {
-		return false, fmt.Errorf("listing next page for worker ID %v,  err: %w", w.goroutineID, err)
+		return false, fmt.Errorf("listing next page for worker ID %v,  err: %v", w.goroutineID, err)
 	}
 
 	// Append objects listed by objectLister to result.
@@ -225,48 +225,4 @@ func (w *worker) objectLister(ctx context.Context) (bool, error) {
 	w.startRange = nextPageResult.nextStartRange
 	w.generation = nextPageResult.generation
 	return nextPageResult.doneListing, nil
-}
-
-// nextPageOpts specifies options for next page of listing result .
-type nextPageOpts struct {
-	// startRange is the start offset of the objects to be listed.
-	startRange string
-	// endRange is the end offset of the objects to be listed.
-	endRange string
-	// bucketHandle is the bucket handle of the bucket to be listed.
-	bucketHandle *storage.BucketHandle
-	// query is the storage.Query to filter objects for listing.
-	query storage.Query
-	// skipDirectoryObjects is to indicate whether to list directory objects.
-	skipDirectoryObjects bool
-	// generation is the generation number of the last object in the page.
-	generation int64
-}
-
-// nextPageResult holds the next page of object names, start of the next page
-// and indicates whether the lister has completed listing (no more objects to retrieve).
-type nextPageResult struct {
-	// items is the list of objects listed.
-	items []*storage.ObjectAttrs
-	// doneListing indicates whether the lister has completed listing.
-	doneListing bool
-	// nextStartRange is the start offset of the next page of objects to be listed.
-	nextStartRange string
-	// generation is the generation number of the last object in the page.
-	generation int64
-}
-
-// nextPage lists objects using the given lister options.
-func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
-
-	// TODO: Implement objectLister.
-
-	return nil, nil
-}
-
-func addPrefix(name, prefix string) string {
-	if name != "" {
-		return prefix + name
-	}
-	return name
 }
