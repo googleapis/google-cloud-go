@@ -21,14 +21,13 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -46,7 +45,7 @@ type PurgeUserEventsRequest struct {
 
 	// Required. The resource name of the catalog under which the events are
 	// created. The format is
-	// `projects/{project}/locations/global/collections/{collection}/dataStores/{dataStore}`
+	// `projects/{project}/locations/global/collections/{collection}/dataStores/{dataStore}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The filter string to specify the events to be deleted with a
 	// length limit of 5,000 characters. The eligible fields for filtering are:
