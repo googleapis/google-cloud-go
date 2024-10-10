@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -1749,6 +1750,7 @@ type ReadWriteStmtBasedTransaction struct {
 	// ReadWriteTransaction contains methods for performing transactional reads.
 	ReadWriteTransaction
 
+	client  *Client
 	options TransactionOptions
 }
 
@@ -1774,23 +1776,35 @@ func NewReadWriteStmtBasedTransaction(ctx context.Context, c *Client) (*ReadWrit
 // used by the transaction will not be returned to the pool and cause a session
 // leak.
 //
+// ResetForRetry resets the transaction before a retry attempt. This function
+// returns a new transaction that should be used for the retry attempt. The
+// transaction that is returned by this function is assigned a higher priority
+// than the previous transaction, making it less probable to be aborted by
+// Spanner again during the retry.
+//
 // NewReadWriteStmtBasedTransactionWithOptions is a configurable version of
 // NewReadWriteStmtBasedTransaction.
 func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client, options TransactionOptions) (*ReadWriteStmtBasedTransaction, error) {
+	return newReadWriteStmtBasedTransactionWithSessionHandle(ctx, c, options, nil)
+}
+
+func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *Client, options TransactionOptions, sh *sessionHandle) (*ReadWriteStmtBasedTransaction, error) {
 	var (
-		sh  *sessionHandle
 		err error
 		t   *ReadWriteStmtBasedTransaction
 	)
-	sh, err = c.idleSessions.take(ctx)
-	if err != nil {
-		// If session retrieval fails, just fail the transaction.
-		return nil, err
+	if sh == nil {
+		sh, err = c.idleSessions.take(ctx)
+		if err != nil {
+			// If session retrieval fails, just fail the transaction.
+			return nil, err
+		}
 	}
 	t = &ReadWriteStmtBasedTransaction{
 		ReadWriteTransaction: ReadWriteTransaction{
 			txReadyOrClosed: make(chan struct{}),
 		},
+		client: c,
 	}
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.sh = sh
@@ -1829,6 +1843,7 @@ func (t *ReadWriteStmtBasedTransaction) CommitWithReturnResp(ctx context.Context
 	}
 	if t.sh != nil {
 		t.sh.recycle()
+		t.sh = nil
 	}
 	return resp, err
 }
@@ -1839,7 +1854,22 @@ func (t *ReadWriteStmtBasedTransaction) Rollback(ctx context.Context) {
 	t.rollback(ctx)
 	if t.sh != nil {
 		t.sh.recycle()
+		t.sh = nil
 	}
+}
+
+// ResetForRetry resets the transaction before a retry. This should be
+// called if the transaction was aborted by Spanner and the application
+// wants to retry the transaction.
+// It is recommended to use this method above creating a new transaction,
+// as this method will give the transaction a higher priority and thus a
+// smaller probability of being aborted again by Spanner.
+func (t *ReadWriteStmtBasedTransaction) ResetForRetry(ctx context.Context) (*ReadWriteStmtBasedTransaction, error) {
+	if t.state == txNew || t.state == txInit {
+		return nil, fmt.Errorf("ResetForRetry should only be called on an active transaction that was aborted by Spanner")
+	}
+	// Create a new transaction that re-uses the current session if it is available.
+	return newReadWriteStmtBasedTransactionWithSessionHandle(ctx, t.client, t.options, t.sh)
 }
 
 // writeOnlyTransaction provides the most efficient way of doing write-only
