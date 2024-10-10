@@ -122,6 +122,9 @@ func TestTopic_IngestionKinesis(t *testing.T) {
 				AWSRoleARN:        "fake-aws-role-arn",
 				GCPServiceAccount: "fake-gcp-sa",
 			},
+			PlatformLogsSettings: &PlatformLogsSettings{
+				Severity: PlatformLogsSeverityWarning,
+			},
 		},
 	}
 
@@ -144,6 +147,9 @@ func TestTopic_IngestionKinesis(t *testing.T) {
 			ConsumerARN:       "fake-consumer-arn-2",
 			AWSRoleARN:        "aws-role-arn-2",
 			GCPServiceAccount: "gcp-service-account-2",
+		},
+		PlatformLogsSettings: &PlatformLogsSettings{
+			Severity: PlatformLogsSeverityInfo,
 		},
 	}
 	config2, err := topic.Update(ctx, TopicConfigToUpdate{IngestionDataSourceSettings: settings})
@@ -181,6 +187,9 @@ func TestTopic_IngestionCloudStorage(t *testing.T) {
 				MinimumObjectCreateTime: time.Now().Add(-time.Hour),
 				MatchGlob:               "**.txt",
 			},
+			PlatformLogsSettings: &PlatformLogsSettings{
+				Severity: PlatformLogsSeverityDisabled,
+			},
 		},
 	}
 
@@ -203,6 +212,9 @@ func TestTopic_IngestionCloudStorage(t *testing.T) {
 			InputFormat:             &IngestionDataSourceCloudStoragePubSubAvroFormat{},
 			MinimumObjectCreateTime: time.Now().Add(-2 * time.Hour),
 			MatchGlob:               "**.txt",
+		},
+		PlatformLogsSettings: &PlatformLogsSettings{
+			Severity: PlatformLogsSeverityError,
 		},
 	}
 	config2, err := topic.Update(ctx, TopicConfigToUpdate{IngestionDataSourceSettings: settings})

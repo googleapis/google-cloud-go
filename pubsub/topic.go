@@ -352,7 +352,7 @@ type TopicConfigToUpdate struct {
 	// data source into this topic.
 	//
 	// When changing this value, the entire data source settings object must be applied,
-	// rather than just the differences.
+	// rather than just the differences. This includes the source and logging settings.
 	//
 	// Use the zero value &IngestionDataSourceSettings{} to remove the ingestion settings from the topic.
 	IngestionDataSourceSettings *IngestionDataSourceSettings
@@ -429,6 +429,8 @@ func messageStoragePolicyToProto(msp *MessageStoragePolicy) *pb.MessageStoragePo
 // IngestionDataSourceSettings enables ingestion from a data source into this topic.
 type IngestionDataSourceSettings struct {
 	Source IngestionDataSource
+
+	PlatformLogsSettings *PlatformLogsSettings
 }
 
 // IngestionDataSource is the kind of ingestion source to be used.
@@ -624,6 +626,13 @@ func protoToIngestionDataSourceSettings(pbs *pb.IngestionDataSourceSettings) *In
 			MatchGlob:               cs.GetMatchGlob(),
 		}
 	}
+
+	if pbs.PlatformLogsSettings != nil {
+		s.PlatformLogsSettings = &PlatformLogsSettings{
+			Severity: PlatformLogsSeverity(pbs.PlatformLogsSettings.Severity),
+		}
+	}
+
 	return s
 }
 
@@ -636,6 +645,11 @@ func (i *IngestionDataSourceSettings) toProto() *pb.IngestionDataSourceSettings 
 		return nil
 	}
 	pbs := &pb.IngestionDataSourceSettings{}
+	if i.PlatformLogsSettings != nil {
+		pbs.PlatformLogsSettings = &pb.PlatformLogsSettings{
+			Severity: pb.PlatformLogsSettings_Severity(i.PlatformLogsSettings.Severity),
+		}
+	}
 	if out := i.Source; out != nil {
 		if k, ok := out.(*IngestionDataSourceAWSKinesis); ok {
 			pbs.Source = &pb.IngestionDataSourceSettings_AwsKinesis_{
@@ -693,6 +707,29 @@ func (i *IngestionDataSourceSettings) toProto() *pb.IngestionDataSourceSettings 
 	}
 	return pbs
 }
+
+// PlatformLogsSettings configures logging produced by Pub/Sub.
+type PlatformLogsSettings struct {
+	Severity PlatformLogsSeverity
+}
+
+// PlatformLogsSeverity are the severity levels of Platform Logs.
+type PlatformLogsSeverity int32
+
+const (
+	// PlatformLogsSeverityUnspecified is the default value. Logs level is unspecified. Logs will be disabled.
+	PlatformLogsSeverityUnspecified PlatformLogsSeverity = iota
+	// PlatformLogsSeverityDisabled means logs will be disabled.
+	PlatformLogsSeverityDisabled
+	// PlatformLogsSeverityDebug means debug logs and higher-severity logs will be written.
+	PlatformLogsSeverityDebug
+	// PlatformLogsSeverityInfo means info logs and higher-severity logs will be written.
+	PlatformLogsSeverityInfo
+	// PlatformLogsSeverityWarning means warning logs and higher-severity logs will be written.
+	PlatformLogsSeverityWarning
+	// PlatformLogsSeverityError means only error logs will be written.
+	PlatformLogsSeverityError
+)
 
 // Config returns the TopicConfig for the topic.
 func (t *Topic) Config(ctx context.Context) (TopicConfig, error) {
