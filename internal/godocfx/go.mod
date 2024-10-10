@@ -3,8 +3,8 @@ module cloud.google.com/go/internal/godocfx
 go 1.21
 
 require (
-	cloud.google.com/go v0.115.1
-	cloud.google.com/go/bigquery v1.63.0
+	cloud.google.com/go v0.116.0
+	cloud.google.com/go/bigquery v1.63.1
 	cloud.google.com/go/datastore v1.19.0
 	github.com/google/go-cmp v0.6.0
 	golang.org/x/tools v0.24.0

@@ -4,11 +4,11 @@ go 1.21
 
 require (
 	github.com/googleapis/gax-go/v2 v2.13.0
-	google.golang.org/api v0.197.0
+	google.golang.org/api v0.200.0
 	google.golang.org/genproto v0.0.0-20240903143218-8af14fe29dc1
-	google.golang.org/genproto/googleapis/api v0.0.0-20240903143218-8af14fe29dc1
-	google.golang.org/grpc v1.66.2
-	google.golang.org/protobuf v1.34.2
+	google.golang.org/genproto/googleapis/api 5fefd90f89a9
+	google.golang.org/grpc v1.67.1
+	google.golang.org/protobuf v1.35.1
 )
 
 require (

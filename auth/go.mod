@@ -3,16 +3,16 @@ module cloud.google.com/go/auth
 go 1.21
 
 require (
-	cloud.google.com/go/compute/metadata v0.5.1
+	cloud.google.com/go/compute/metadata v0.5.2
 	github.com/google/go-cmp v0.6.0
 	github.com/google/s2a-go v0.1.8
 	github.com/googleapis/enterprise-certificate-proxy v0.3.4
 	go.opencensus.io v0.24.0
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.49.0
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.54.0
-	golang.org/x/net v0.29.0
-	google.golang.org/grpc v1.66.2
-	google.golang.org/protobuf v1.34.2
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.55.0
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.55.0
+	golang.org/x/net v0.30.0
+	google.golang.org/grpc v1.67.1
+	google.golang.org/protobuf v1.35.1
 )
 
 require (

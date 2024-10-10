@@ -5,7 +5,7 @@ go 1.21.13
 require (
 	cloud.google.com/go/longrunning v0.6.1
 	github.com/googleapis/gax-go/v2 v2.13.0
-	google.golang.org/api v0.199.0
+	google.golang.org/api v0.200.0
 	google.golang.org/genproto v0.0.0-20241007155032-5fefd90f89a9
 	google.golang.org/genproto/googleapis/api v0.0.0-20241007155032-5fefd90f89a9
 	google.golang.org/grpc v1.67.1

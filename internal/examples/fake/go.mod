@@ -4,8 +4,8 @@ go 1.21
 
 require (
 	cloud.google.com/go/translate v1.12.1
-	google.golang.org/api v0.197.0
-	google.golang.org/grpc v1.66.2
+	google.golang.org/api v0.200.0
+	google.golang.org/grpc v1.67.1
 )
 
 require (

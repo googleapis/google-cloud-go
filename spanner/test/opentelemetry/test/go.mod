@@ -8,13 +8,13 @@ replace (
 )
 
 require (
-	cloud.google.com/go v0.115.1
-	cloud.google.com/go/spanner v1.67.0
+	cloud.google.com/go v0.116.0
+	cloud.google.com/go/spanner v1.69.0
 	go.opentelemetry.io/otel v1.29.0
 	go.opentelemetry.io/otel/sdk v1.29.0
 	go.opentelemetry.io/otel/sdk/metric v1.29.0
-	google.golang.org/api v0.197.0
-	google.golang.org/protobuf v1.34.2
+	google.golang.org/api v0.200.0
+	google.golang.org/protobuf v1.35.1
 )
 
 require (
