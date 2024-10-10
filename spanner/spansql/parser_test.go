@@ -331,11 +331,42 @@ func TestParseDMLStmt(t *testing.T) {
 			},
 		},
 		{
+			"INSERT Singers (SingerId, FirstName, LastName) VALUES (1, 'Marc', 'Richards') THEN RETURN FirstName",
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+				Return:  []Expr{ID("FirstName")},
+			},
+		},
+		{
 			"INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, 'Marc', 'Richards')",
 			&Insert{
 				Table:   "Singers",
 				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
 				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+			},
+		},
+		{
+			"INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, 'Marc', 'Richards')" +
+				" THEN RETURN SingerId, FirstName || ' ' || LastName AS Name",
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+				Return: []Expr{
+					ID("SingerId"),
+					ArithOp{
+						Op: Concat,
+						LHS: ArithOp{
+							Op:  Concat,
+							LHS: ID("FirstName"),
+							RHS: StringLiteral(" "),
+						},
+						RHS: ID("LastName"),
+					},
+				},
+				ReturnAliases: []ID{ID(""), ID("Name")},
 			},
 		},
 		{
