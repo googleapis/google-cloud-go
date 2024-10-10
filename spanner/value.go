@@ -27,6 +27,7 @@ import (
 	"math"
 	"math/big"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -1111,6 +1112,167 @@ func (n *PGJsonB) UnmarshalJSON(payload []byte) error {
 	}
 	n.Value = v
 	n.Valid = true
+	return nil
+}
+
+// Interval represents a duration in ISO8601 format.
+type Interval struct {
+	Duration time.Duration
+}
+
+func NewInterval(iso8601 string) (*Interval, error) {
+	if iso8601 == "" {
+		return nil, fmt.Errorf("empty interval string")
+	}
+
+	d, err := parseISO8601Duration(iso8601)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Interval{Duration: d}, nil
+}
+
+func parseISO8601Duration(iso8601 string) (time.Duration, error) {
+	if iso8601 == "P" || iso8601 == "PT" {
+		return 0, fmt.Errorf("invalid ISO8601 duration format: %s", iso8601)
+	}
+
+	re := regexp.MustCompile(`^P(-?\d+Y)?(-?\d+M)?(-?\d+D)?(T(-?\d+H)?(-?\d+M)?(-?\d+(\.\d{1,9})?S)?)?$`)
+	matches := re.FindStringSubmatch(iso8601)
+
+	if matches == nil {
+		return 0, fmt.Errorf("invalid ISO8601 duration format: %s", iso8601)
+	}
+
+	// Check if there's at least one non-empty component after T
+	if matches[4] != "" && matches[5] == "" && matches[6] == "" && matches[7] == "" {
+		return 0, fmt.Errorf("invalid ISO8601 duration format: time designator 'T' present but no time components")
+	}
+
+	var duration time.Duration
+
+	// Helper function to parse components
+	parseComponent := func(match string, unit time.Duration) time.Duration {
+		if match == "" {
+			return 0
+		}
+		value, _ := strconv.Atoi(match[:len(match)-1])
+		return time.Duration(value) * unit
+	}
+
+	// Parse years, months, days
+	duration += parseComponent(matches[1], 365*24*time.Hour)
+	duration += parseComponent(matches[2], 30*24*time.Hour)
+	duration += parseComponent(matches[3], 24*time.Hour)
+
+	// Parse hours, minutes
+	duration += parseComponent(matches[5], time.Hour)
+	duration += parseComponent(matches[6], time.Minute)
+
+	// Parse seconds
+	if matches[7] != "" {
+		seconds, _ := strconv.ParseFloat(matches[7][:len(matches[7])-1], 64)
+		duration += time.Duration(seconds * float64(time.Second))
+	}
+
+	return duration, nil
+}
+
+// String returns the ISO8601 representation of the Interval.
+func (i Interval) String() string {
+	d := i.Duration
+
+	components := []struct {
+		unit   time.Duration
+		symbol string
+	}{
+		{365 * 24 * time.Hour, "Y"},
+		{30 * 24 * time.Hour, "M"},
+		{24 * time.Hour, "D"},
+		{time.Hour, "H"},
+		{time.Minute, "M"},
+		{time.Second, "S"},
+	}
+
+	var result strings.Builder
+	result.WriteString("P")
+
+	hasTime := false
+	for i, c := range components {
+		value := d / c.unit
+		if value != 0 {
+			if i >= 3 && !hasTime {
+				result.WriteString("T")
+				hasTime = true
+			}
+			result.WriteString(fmt.Sprintf("%d%s", value, c.symbol))
+		}
+		d %= c.unit
+	}
+
+	if d != 0 {
+		if !hasTime {
+			result.WriteString("T")
+		}
+		seconds := float64(d) / float64(time.Second)
+		result.WriteString(fmt.Sprintf("%.9fS", seconds))
+	}
+
+	if result.Len() == 1 {
+		result.WriteString("T0S")
+	}
+
+	return result.String()
+}
+
+// NullInterval represents a Cloud Spanner Interval that may be NULL.
+type NullInterval struct {
+	Interval Interval
+	Valid    bool // Valid is true if Interval is not NULL
+}
+
+// IsNull implements NullableValue.IsNull for NullInterval.
+func (ni NullInterval) IsNull() bool {
+	return !ni.Valid
+}
+
+// String implements Stringer.String for NullInterval.
+func (ni NullInterval) String() string {
+	if !ni.Valid {
+		return nullString
+	}
+	return ni.Interval.String()
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullInterval.
+func (ni NullInterval) MarshalJSON() ([]byte, error) {
+	if !ni.Valid {
+		return []byte("null"), nil
+	}
+	return json.Marshal(ni.Interval.String())
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullInterval.
+func (ni *NullInterval) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return errPayloadNil
+	}
+	if jsonIsNull(payload) {
+		ni.Valid = false
+		return nil
+	}
+	var s string
+	err := json.Unmarshal(payload, &s)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to Interval: got %v", string(payload))
+	}
+	interval, err := NewInterval(s)
+	if err != nil {
+		return err
+	}
+	ni.Interval = *interval
+	ni.Valid = true
 	return nil
 }
 
@@ -2345,6 +2507,28 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 			return err
 		}
 		p.Valid = true
+	case *Interval:
+		if v.GetStringValue() == "" {
+			return errNilSpannerType()
+		}
+		interval, err := NewInterval(v.GetStringValue())
+		if err != nil {
+			return err
+		}
+		*p = *interval
+		return nil
+	case *NullInterval:
+		if v.GetStringValue() == "" {
+			p.Valid = false
+			return nil
+		}
+		interval, err := NewInterval(v.GetStringValue())
+		if err != nil {
+			return err
+		}
+		p.Interval = *interval
+		p.Valid = true
+		return nil
 	default:
 		// Check if the pointer is a custom type that implements spanner.Decoder
 		// interface.
@@ -4503,6 +4687,14 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			return encodeValue(v.ProtoMessageVal)
 		}
 		return nil, nil, errNotValidSrc(v)
+	case Interval:
+		pb.Kind = stringKind(v.String())
+		pt = stringType()
+	case NullInterval:
+		if v.IsNull() {
+			return nil, &sppb.Type{Code: sppb.TypeCode_STRING}, nil
+		}
+		return encodeValue(v.Interval.String())
 	default:
 		// Check if the value is a custom type that implements spanner.Encoder
 		// interface.
