@@ -101,7 +101,7 @@ type Project struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Output only. Full resource name of the project, for example
-	// `projects/{project_number}`.
+	// `projects/{project}`.
 	// Note that when making requests, project number and project id are both
 	// acceptable, but the server will always respond in project number.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`

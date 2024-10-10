@@ -2807,6 +2807,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1_generated_GroundedGenerationService_GenerateGroundedContent_sync",
+      "title": "discoveryengine GenerateGroundedContent Sample",
+      "description": "GenerateGroundedContent generates grounded content.",
+      "file": "GroundedGenerationClient/GenerateGroundedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateGroundedContent",
+        "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationClient.GenerateGroundedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GenerateGroundedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.GenerateGroundedContentResponse",
+        "client": {
+          "shortName": "GroundedGenerationClient",
+          "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationClient"
+        },
+        "method": {
+          "shortName": "GenerateGroundedContent",
+          "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationService.GenerateGroundedContent",
+          "service": {
+            "shortName": "GroundedGenerationService",
+            "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1_generated_GroundedGenerationService_GetOperation_sync",
       "title": "discoveryengine GetOperation Sample",
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
@@ -2894,6 +2940,48 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_GroundedGenerationService_StreamGenerateGroundedContent_sync",
+      "title": "discoveryengine StreamGenerateGroundedContent Sample",
+      "description": "StreamGenerateGroundedContent generates grounded content in a streaming fashion.\n\n\nThis method is not supported for the REST transport.",
+      "file": "GroundedGenerationClient/StreamGenerateGroundedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamGenerateGroundedContent",
+        "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationClient.StreamGenerateGroundedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "discoveryenginepb.GroundedGenerationService_StreamGenerateGroundedContentClient",
+        "client": {
+          "shortName": "GroundedGenerationClient",
+          "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationClient"
+        },
+        "method": {
+          "shortName": "StreamGenerateGroundedContent",
+          "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationService.StreamGenerateGroundedContent",
+          "service": {
+            "shortName": "GroundedGenerationService",
+            "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
           "type": "FULL"
         }
       ]
