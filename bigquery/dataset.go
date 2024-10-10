@@ -717,9 +717,10 @@ func (c *Client) Datasets(ctx context.Context) *DatasetIterator {
 // Deprecated: call Client.Datasets, then set ProjectID on the returned iterator.
 func (c *Client) DatasetsInProject(ctx context.Context, projectID string) *DatasetIterator {
 	it := &DatasetIterator{
-		ctx:       ctx,
-		c:         c,
-		ProjectID: projectID,
+		ctx:         ctx,
+		c:           c,
+		ProjectID:   projectID,
+		unreachable: make(map[string]struct{}),
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
@@ -748,6 +749,8 @@ type DatasetIterator struct {
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 	items    []*Dataset
+
+	unreachable map[string]struct{}
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -763,6 +766,20 @@ func (it *DatasetIterator) Next() (*Dataset, error) {
 	item := it.items[0]
 	it.items = it.items[1:]
 	return item, nil
+}
+
+// Unreachable returns the cumulative set of locations that the API reported as unreachable.
+// This will be empty before iteration begins, but may grow as subsequent pages of results
+// are returned from the service.
+func (it *DatasetIterator) Unreachable() []string {
+	if len(it.unreachable) == 0 {
+		return nil
+	}
+	var locations []string
+	for k := range it.unreachable {
+		locations = append(locations, k)
+	}
+	return locations
 }
 
 // for testing
@@ -799,6 +816,9 @@ func (it *DatasetIterator) fetch(pageSize int, pageToken string) (string, error)
 			DatasetID: d.DatasetReference.DatasetId,
 			c:         it.c,
 		})
+	}
+	for _, r := range res.Unreachable {
+		it.unreachable[r] = struct{}{}
 	}
 	return res.NextPageToken, nil
 }
