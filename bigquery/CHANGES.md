@@ -3,6 +3,13 @@
 
 
 
+## [1.64.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.63.1...bigquery/v1.64.0) (2024-10-10)
+
+
+### Features
+
+* **bigquery/datatransfer:** Add scheduleOptionsV2 and Error fields for TransferConfig ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
 ## [1.63.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.63.0...bigquery/v1.63.1) (2024-10-01)
 
 
