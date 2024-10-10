@@ -15,7 +15,9 @@
 package storage
 
 import (
+	"os"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
@@ -81,6 +83,22 @@ func TestApplyStorageOpt(t *testing.T) {
 				disableClientMetrics: true,
 			},
 		},
+		{
+			desc: "set dynamic read req stall timeout option",
+			opts: []option.ClientOption{WithDynamicReadReqStallTimeout(&DynamicReadReqStallTimeoutConfig{
+				TargetPercentile: 0.99,
+				Min:              time.Second,
+			})},
+			want: storageConfig{
+				useJSONforReads:      false,
+				readAPIWasSet:        false,
+				disableClientMetrics: false,
+				DynamicReadReqStallTimeoutConfig: &DynamicReadReqStallTimeoutConfig{
+					TargetPercentile: 0.99,
+					Min:              time.Second,
+				},
+			},
+		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var got storageConfig
@@ -89,8 +107,50 @@ func TestApplyStorageOpt(t *testing.T) {
 					storageOpt.ApplyStorageOpt(&got)
 				}
 			}
-			if !cmp.Equal(got, test.want, cmp.AllowUnexported(storageConfig{})) {
-				t.Errorf(cmp.Diff(got, test.want, cmp.AllowUnexported(storageConfig{})))
+			if !cmp.Equal(got, test.want, cmp.AllowUnexported(storageConfig{}, DynamicReadReqStallTimeoutConfig{})) {
+				t.Errorf(cmp.Diff(got, test.want, cmp.AllowUnexported(storageConfig{}, DynamicReadReqStallTimeoutConfig{})))
+			}
+		})
+	}
+}
+
+func TestGetDynamicReadReqInitialTimeoutSecFromEnv(t *testing.T) {
+	defaultValue := 10 * time.Second
+
+	tests := []struct {
+		name     string
+		envValue string
+		want     time.Duration
+	}{
+		{"env variable not set", "", 10 * time.Second},
+		{"valid duration string", "5s", 5 * time.Second},
+		{"invalid duration string", "invalid", 10 * time.Second},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			os.Setenv(dynamicReadReqInitialTimeoutEnv, tt.envValue)
+			if got := getDynamicReadReqInitialTimeoutSecFromEnv(defaultValue); got != tt.want {
+				t.Errorf("getDynamicReadReqInitialTimeoutSecFromEnv(defaultValue) = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetDynamicReadReqIncreaseRateFromEnv(t *testing.T) {
+	tests := []struct {
+		name     string
+		envValue string
+		want     float64
+	}{
+		{"env variable not set", "", defaultDynamicReadReqIncreaseRate},
+		{"valid float string", "1.5", 1.5},
+		{"invalid float string", "abc", defaultDynamicReadReqIncreaseRate},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			os.Setenv(dynamicReadReqIncreaseRateEnv, tt.envValue)
+			if got := getDynamicReadReqIncreaseRateFromEnv(); got != tt.want {
+				t.Errorf("getDynamicReadReqIncreaseRateFromEnv() = %v, want %v", got, tt.want)
 			}
 		})
 	}

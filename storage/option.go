@@ -15,16 +15,56 @@
 package storage
 
 import (
+	"os"
+	"strconv"
+	"time"
+
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 )
 
+const (
+	dynamicReadReqIncreaseRateEnv     = "DYNAMIC_READ_REQ_INCREASE_RATE"
+	dynamicReadReqInitialTimeoutEnv   = "DYNAMIC_READ_REQ_INITIAL_TIMEOUT"
+	defaultDynamicReadReqIncreaseRate = 15.0
+	defaultDynamicReqdReqMaxTimeout   = 1 * time.Hour
+)
+
+// getDynamicReadReqIncreaseRateFromEnv returns the value set in the env variable.
+// It returns defaultDynamicReadReqIncreaseRate if env is not set or the set value is invalid.
+func getDynamicReadReqIncreaseRateFromEnv() float64 {
+	if increaseRate := os.Getenv(dynamicReadReqIncreaseRateEnv); increaseRate == "" {
+		return defaultDynamicReadReqIncreaseRate
+	} else {
+		val, err := strconv.ParseFloat(increaseRate, 64)
+		if err != nil {
+			return defaultDynamicReadReqIncreaseRate
+		}
+		return val
+	}
+}
+
+// getDynamicReadReqInitialTimeoutSecFromEnv returns the value set in the env variable.
+// It returns the passed defaultVal if env is not set or the set value is invalid.
+func getDynamicReadReqInitialTimeoutSecFromEnv(defaultVal time.Duration) time.Duration {
+	if initialTimeout := os.Getenv(dynamicReadReqInitialTimeoutEnv); initialTimeout == "" {
+		return defaultVal
+	} else {
+		val, err := time.ParseDuration(initialTimeout)
+		if err != nil {
+			return defaultVal
+		}
+		return val
+	}
+}
+
 // storageConfig contains the Storage client option configuration that can be
 // set through storageClientOptions.
 type storageConfig struct {
-	useJSONforReads      bool
-	readAPIWasSet        bool
-	disableClientMetrics bool
+	useJSONforReads                  bool
+	readAPIWasSet                    bool
+	disableClientMetrics             bool
+	DynamicReadReqStallTimeoutConfig *DynamicReadReqStallTimeoutConfig
 }
 
 // newStorageConfig generates a new storageConfig with all the given
@@ -107,4 +147,41 @@ func WithDisabledClientMetrics() option.ClientOption {
 
 func (w *withDisabledClientMetrics) ApplyStorageOpt(c *storageConfig) {
 	c.disableClientMetrics = w.disabledClientMetrics
+}
+
+// WithDynamicReadReqStallTimeout is an option that may be passed to [NewClient].
+// It enables the client to retry the stalled read request, happens as part of
+// storage.Reader creation. As the name suggest, timeout is adjusted dynamically
+// based on past observed read-req latencies.
+//
+// This is only supported for the read operation and that too for http(XML) client.
+// Grpc read-operation will be supported soon.
+//
+// Here, the input parameter decides the value of dynamic-timeout.
+// targetPercentile is the desired percentile of the observed latencies.
+// Min is the lower bound of the timeout.
+func WithDynamicReadReqStallTimeout(drrst *DynamicReadReqStallTimeoutConfig) option.ClientOption {
+	// TODO (raj-prince): To keep separate dynamicDelay instance for different BucketHandle.
+	// Currently, dynamicTimeout is kept at the client and hence shared across all the
+	// BucketHandle, which is not not the ideal state. As latency depends on location of VM
+	// and Bucket, and read latency of different buckets may lie in different range.
+	// Hence hence having a separate dynamicTimeout instance at BucketHandle level will
+	// be better
+	return &withDynamicReadReqStallTimeout{
+		dynamicReadReqStallTimeoutConfig: drrst,
+	}
+}
+
+type DynamicReadReqStallTimeoutConfig struct {
+	Min              time.Duration
+	TargetPercentile float64
+}
+
+type withDynamicReadReqStallTimeout struct {
+	internaloption.EmbeddableAdapter
+	dynamicReadReqStallTimeoutConfig *DynamicReadReqStallTimeoutConfig
+}
+
+func (wdrrst *withDynamicReadReqStallTimeout) ApplyStorageOpt(config *storageConfig) {
+	config.DynamicReadReqStallTimeoutConfig = wdrrst.dynamicReadReqStallTimeoutConfig
 }
