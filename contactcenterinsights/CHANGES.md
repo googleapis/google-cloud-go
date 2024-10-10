@@ -1,5 +1,21 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.14.1...contactcenterinsights/v1.15.0) (2024-10-09)
+
+
+### Features
+
+* **contactcenterinsights:** Add CMEK InitializeLroSpec ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **contactcenterinsights:** Add import / export IssueModel ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **contactcenterinsights:** Add metadata import to IngestConversations ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **contactcenterinsights:** Add sampling to IngestConversations ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **contactcenterinsights:** Add a comment for valid `order_by` values in ListConversations ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **contactcenterinsights:** Add a comment for valid `update_mask` values in UpdateConversation ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.14.0...contactcenterinsights/v1.14.1) (2024-09-12)
 
 
