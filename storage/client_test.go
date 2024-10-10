@@ -1336,10 +1336,14 @@ func TestObjectConditionsEmulated(t *testing.T) {
 // Test that RetryNever prevents any retries from happening in both transports.
 func TestRetryNeverEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
 		instructions := map[string][]string{"storage.buckets.get": {"return-503"}}
-		testID := createRetryTest(t, project, bucket, client, instructions)
+		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-		_, err := client.GetBucket(ctx, bucket, nil, withRetryConfig(&retryConfig{policy: RetryNever}))
+		_, err = client.GetBucket(ctx, bucket, nil, withRetryConfig(&retryConfig{policy: RetryNever}))
 
 		var ae *apierror.APIError
 		if errors.As(err, &ae) {
@@ -1355,12 +1359,16 @@ func TestRetryNeverEmulated(t *testing.T) {
 // Test that errors are wrapped correctly if retry happens until a timeout.
 func TestRetryTimeoutEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
 		instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503", "return-503", "return-503", "return-503"}}
-		testID := createRetryTest(t, project, bucket, client, instructions)
+		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
 		ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
 		defer cancel()
-		_, err := client.GetBucket(ctx, bucket, nil, idempotent(true))
+		_, err = client.GetBucket(ctx, bucket, nil, idempotent(true))
 
 		var ae *apierror.APIError
 		if errors.As(err, &ae) {
@@ -1380,11 +1388,15 @@ func TestRetryTimeoutEmulated(t *testing.T) {
 // Test that errors are wrapped correctly if retry happens until max attempts.
 func TestRetryMaxAttemptsEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
 		instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503", "return-503", "return-503", "return-503"}}
-		testID := createRetryTest(t, project, bucket, client, instructions)
+		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
 		config := &retryConfig{maxAttempts: expectedAttempts(3), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
-		_, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config))
+		_, err = client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config))
 
 		var ae *apierror.APIError
 		if errors.As(err, &ae) {
@@ -1427,8 +1439,12 @@ func TestTimeoutErrorEmulated(t *testing.T) {
 // Test that server-side DEADLINE_EXCEEDED errors are retried as expected with gRPC.
 func TestRetryDeadlineExceedeEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
 		instructions := map[string][]string{"storage.buckets.get": {"return-504", "return-504"}}
-		testID := createRetryTest(t, project, bucket, client, instructions)
+		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
 		config := &retryConfig{maxAttempts: expectedAttempts(4), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
 		if _, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config)); err != nil {
@@ -1454,7 +1470,7 @@ func TestRetryReadReqStallEmulated(t *testing.T) {
 
 		// Plant stall at start for 2s.
 		instructions := map[string][]string{"storage.objects.get": {"stall-for-2s-after-0K"}}
-		testID := plantRetryInstructions(t, client.tc, instructions)
+		testID := createRetryTest(t, client.tc, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
 
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -1480,25 +1496,19 @@ func TestRetryReadReqStallEmulated(t *testing.T) {
 			t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
 		}
 
-	}, WithDynamicReadReqStallTimeout(0.99, 15, time.Second, time.Second, 2*time.Second))
+	}, WithDynamicReadReqStallTimeout(
+		&DynamicReadReqStallTimeoutConfig{
+			TargetPercentile: 0.99,
+			Min:              time.Second,
+		}))
 }
 
 // createRetryTest creates a bucket in the emulator and sets up a test using the
 // Retry Test API for the given instructions. This is intended for emulator tests
 // of retry behavior that are not covered by conformance tests.
-func createRetryTest(t *testing.T, project, bucket string, client storageClient, instructions map[string][]string) string {
+func createRetryTest(t *testing.T, client storageClient, instructions map[string][]string) string {
 	t.Helper()
-	ctx := context.Background()
 
-	_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
-	if err != nil {
-		t.Fatalf("creating bucket: %v", err)
-	}
-
-	return plantRetryInstructions(t, client, instructions)
-}
-
-func plantRetryInstructions(t *testing.T, client storageClient, instructions map[string][]string) string {
 	// Need the HTTP hostname to set up a retry test, as well as knowledge of
 	// underlying transport to specify instructions.
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
