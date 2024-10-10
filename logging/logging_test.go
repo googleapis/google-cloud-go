@@ -311,13 +311,13 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=1"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/000000000000001;o=1"}},
 					},
 				},
 			},
 			want: &logpb.LogEntry{
-				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
-				SpanId:       "000000000000004a",
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100000",
+				SpanId:       "0000000000000001",
 				TraceSampled: true,
 			},
 		}, {
@@ -327,14 +327,54 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=0"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/0000000000000001;o=0"}},
 					},
 				},
 			},
 			want: &logpb.LogEntry{
-				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
-				SpanId:       "000000000000004a",
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100000",
+				SpanId:       "0000000000000001",
 				TraceSampled: true,
+			},
+		}, {
+			name: "X-Trace-Context header with all fields; Span ID properly encoded in hexadecimal",
+			in: logging.Entry{
+				TraceSampled: true,
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/16;o=0"}},
+					},
+				},
+			},
+			want: &logpb.LogEntry{
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100000",
+				SpanId:       "0000000000000010",
+				TraceSampled: true,
+			},
+		}, {
+			name: "X-Trace-Context header with invalid trace ID",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"12345/16;o=0"}},
+					},
+				},
+			},
+			want: &logpb.LogEntry{},
+		}, {
+			name: "X-Trace-Context header with valid trace ID, invalid span ID",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/123google;o=0"}},
+					},
+				},
+			},
+			want: &logpb.LogEntry{
+				Trace: "projects/P/traces/105445aa7843bc8bf206b12000100000",
 			},
 		}, {
 			name: "X-Trace-Context header with all fields; TraceSampled from Header",
@@ -342,13 +382,13 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=1"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/0000000000000001;o=1"}},
 					},
 				},
 			},
 			want: &logpb.LogEntry{
-				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
-				SpanId:       "000000000000004a",
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100000",
+				SpanId:       "0000000000000001",
 				TraceSampled: true,
 			},
 		}, {
@@ -368,12 +408,12 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/;o=0"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/;o=0"}},
 					},
 				},
 			},
 			want: &logpb.LogEntry{
-				Trace: "projects/P/traces/105445aa7843bc8bf206b120001000",
+				Trace: "projects/P/traces/105445aa7843bc8bf206b12000100000",
 			},
 		}, {
 			name: "X-Trace-Context header with missing traceSampled aka ?o=*",
@@ -381,12 +421,12 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/0"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/0"}},
 					},
 				},
 			},
 			want: &logpb.LogEntry{
-				Trace: "projects/P/traces/105445aa7843bc8bf206b120001000",
+				Trace: "projects/P/traces/105445aa7843bc8bf206b12000100000",
 			},
 		}, {
 			name: "X-Trace-Context header with all blank fields",

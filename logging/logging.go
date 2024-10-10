@@ -875,34 +875,39 @@ func deconstructTraceParent(s string) (traceID, spanID string, traceSampled bool
 	return
 }
 
-var validXCloudTraceContext = regexp.MustCompile(
-	// Matches on "TRACE_ID"
-	`([a-f\d]+)?` +
-		// Matches on "/SPAN_ID"
-		`(?:/([a-f\d]+))?` +
-		// Matches on ";0=TRACE_TRUE"
-		`(?:;o=(\d))?`)
+var validXCloudTraceContextTraceID = regexp.MustCompile(`^([a-f\d]{32})$`)
 
 func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampled bool) {
-	// As per the format described at https://cloud.google.com/trace/docs/setup#force-trace
-	//    "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
+	// As per the format described at https://cloud.google.com/trace/docs/trace-context#legacy-http-header
+	//    "X-Cloud-Trace-Context: TRACE_ID[/SPAN_ID][;o=TRACE_TRUE]"
 	// for example:
-	//    "X-Cloud-Trace-Context: 105445aa7843bc8bf206b120001000/1;o=1"
+	//    "X-Cloud-Trace-Context: 105445aa7843bc8bf206b12000100000/1;o=1"
 	//
 	// We expect:
-	//   * traceID (optional): 			"105445aa7843bc8bf206b120001000"
-	//   * spanID (optional):       	"1"
-	//   * traceSampled (optional): 	true
-	matches := validXCloudTraceContext.FindStringSubmatch(s)
-
-	if matches != nil {
-		traceID, spanID, traceSampled = matches[1], matches[2], matches[3] == "1"
+	//   * traceID (32-bit hex string): 		   "105445aa7843bc8bf206b12000100000"
+	//   * spanID (optional, 16-bit hex string):   "0000000000000001" (needs to be converted into 16 bit hex string)
+	//   * traceSampled (optional, bool): 	       true
+	traceSpan, traceOptions, foundOptions := strings.Cut(s, ";o=")
+	if foundOptions {
+		traceSampled = traceOptions == "1"
 	}
 
-	if spanID == "0" {
-		spanID = ""
-	}
+	traceInfo, spanInfo, foundSpanInfo := strings.Cut(traceSpan, "/")
+	if traceInfo != "" && validXCloudTraceContextTraceID.FindStringSubmatch(traceInfo) != nil {
+		traceID = traceInfo
 
+		if foundSpanInfo {
+			spanID = spanInfo
+			// Convert to 16 byte unsigned hex string
+			intSpanID, err := strconv.ParseUint(spanID, 10, 64)
+
+			if err != nil || intSpanID == 0 {
+				spanID = ""
+			} else {
+				spanID = fmt.Sprintf("%016x", intSpanID)
+			}
+		}
+	}
 	return
 }
 
