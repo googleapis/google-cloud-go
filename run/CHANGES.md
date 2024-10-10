@@ -1,6 +1,22 @@
 # Changelog
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.5.1...run/v1.6.0) (2024-10-09)
+
+
+### Features
+
+* **run:** Add Builds API ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **run:** Add GPU configuration to Services ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **run:** Add INGRESS_TRAFFIC_NONE to Services ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **run:** Add Service Mesh configuration to Services ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **run:** Add ServiceScaling to Services ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **run:** Fixed formatting of some documentation ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.5.0...run/v1.5.1) (2024-09-12)
 
 
