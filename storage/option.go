@@ -127,10 +127,6 @@ type withMeterOptions struct {
 	interval time.Duration
 }
 
-// Experimental: Configure how often to emit metrics when
-// using NewPeriodicReader
-// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#NewPeriodicReader
-// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#WithInterval
 func withMetricInterval(interval time.Duration) option.ClientOption {
 	return &withMeterOptions{interval: interval}
 }
@@ -145,12 +141,6 @@ type withMetricExporterConfig struct {
 	metricExporter *metric.Exporter
 }
 
-// Experimental: Configure alternate client-side metric Open Telemetry exporter
-// to emit metrics through.
-// Exporter must implement interface metric.Exporter:
-// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#Exporter
-//
-// Only WithMetricOptions or WithMetricExporter option can be used at a time.
 func withMetricExporter(ex *metric.Exporter) option.ClientOption {
 	return &withMetricExporterConfig{metricExporter: ex}
 }
