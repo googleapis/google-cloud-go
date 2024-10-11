@@ -671,6 +671,8 @@ type ListSpaceEventsResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Results are returned in chronological order (oldest event first).
+	// Note: The `permissionSettings` field is not returned in the Space
+	// object for list requests.
 	SpaceEvents []*SpaceEvent `protobuf:"bytes,1,rep,name=space_events,json=spaceEvents,proto3" json:"space_events,omitempty"`
 	// Continuation token used to fetch more events.
 	// If this field is omitted, there are no subsequent pages.

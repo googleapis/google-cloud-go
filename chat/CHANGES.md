@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.6.0...chat/v0.7.0) (2024-10-09)
+
+
+### Features
+
+* **chat:** Add doc for import mode external users support ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **chat:** Add doc for permission settings & announcement space support ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **chat:** Discoverable space docs improvement ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **chat:** Memberships API dev docs improvement ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **chat:** Messages API dev docs improvement ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.5.0...chat/v0.6.0) (2024-09-19)
 
 
