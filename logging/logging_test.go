@@ -339,11 +339,10 @@ func TestToLogEntry(t *testing.T) {
 		}, {
 			name: "X-Trace-Context header with all fields; Span ID properly encoded in hexadecimal",
 			in: logging.Entry{
-				TraceSampled: true,
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/16;o=0"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/16;o=1"}},
 					},
 				},
 			},
@@ -353,23 +352,12 @@ func TestToLogEntry(t *testing.T) {
 				TraceSampled: true,
 			},
 		}, {
-			name: "X-Trace-Context header with invalid trace ID",
+			name: "X-Trace-Context with Span ID too large",
 			in: logging.Entry{
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"12345/16;o=0"}},
-					},
-				},
-			},
-			want: &logpb.LogEntry{},
-		}, {
-			name: "X-Trace-Context header with valid trace ID, invalid span ID",
-			in: logging.Entry{
-				HTTPRequest: &logging.HTTPRequest{
-					Request: &http.Request{
-						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/123google;o=0"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b12000100000/99999999999999999999999999999999"}},
 					},
 				},
 			},
