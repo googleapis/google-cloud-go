@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"sort"
 	"testing"
@@ -41,8 +42,6 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	os.Setenv("SPANNER_ENABLE_BUILTIN_METRICS", "true")
 	defer os.Unsetenv("SPANNER_ENABLE_BUILTIN_METRICS")
 	ctx := context.Background()
-	project := "test-project"
-	instance := "test-instance"
 	clientUID := "test-uid"
 	createSessionRPC := "Spanner.BatchCreateSessions"
 	if isMultiplexEnabled {
@@ -50,12 +49,12 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 
 	wantClientAttributes := []attribute.KeyValue{
-		attribute.String(monitoredResLabelKeyProject, project),
-		attribute.String(monitoredResLabelKeyInstance, instance),
+		attribute.String(monitoredResLabelKeyProject, "[PROJECT]"),
+		attribute.String(monitoredResLabelKeyInstance, "[INSTANCE]"),
 		attribute.String(metricLabelKeyDatabase, "[DATABASE]"),
 		attribute.String(metricLabelKeyClientUID, clientUID),
 		attribute.String(metricLabelKeyClientName, clientName),
-		attribute.String(monitoredResLabelKeyClientHash, "cloud_spanner_client_raw_metrics"),
+		attribute.String(monitoredResLabelKeyClientHash, "0000ed"),
 		attribute.String(monitoredResLabelKeyInstanceConfig, "unknown"),
 		attribute.String(monitoredResLabelKeyLocation, "global"),
 	}
@@ -74,11 +73,16 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 
 	// return constant client UID instead of random, so that attributes can be compared
 	origGenerateClientUID := generateClientUID
+	origDetectClientLocation := detectClientLocation
 	generateClientUID = func() (string, error) {
 		return clientUID, nil
 	}
+	detectClientLocation = func(ctx context.Context) string {
+		return "global"
+	}
 	defer func() {
 		generateClientUID = origGenerateClientUID
+		detectClientLocation = origDetectClientLocation
 	}()
 
 	// Setup mock monitoring server
@@ -153,8 +157,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 				t.Errorf("builtinEnabled: got: %v, want: %v", client.metricsTracerFactory.enabled, test.wantBuiltinEnabled)
 			}
 
-			if diff := testutil.Diff(client.metricsTracerFactory.clientAttributes, wantClientAttributes,
-				cmpopts.IgnoreUnexported(attribute.KeyValue{}, attribute.Value{})); diff != "" {
+			if diff := testutil.Diff(client.metricsTracerFactory.clientAttributes, wantClientAttributes, cmpopts.EquateComparable(attribute.KeyValue{}, attribute.Value{})); diff != "" {
 				t.Errorf("clientAttributes: got=-, want=+ \n%v", diff)
 			}
 
@@ -234,4 +237,47 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestGenerateClientHash tests the generateClientHash function.
+func TestGenerateClientHash(t *testing.T) {
+	tests := []struct {
+		name             string
+		clientUID        string
+		expectedLength   int
+		expectedMaxValue int64
+	}{
+		{"Simple UID", "exampleUID", 6, 0x3FF},
+		{"Empty UID", "", 6, 0x3FF},
+		{"Special Characters", "!@#$%^&*()", 6, 0x3FF},
+		{"Very Long UID", "aVeryLongUniqueIdentifierThatExceedsNormalLength", 6, 0x3FF},
+		{"Numeric UID", "1234567890", 6, 0x3FF},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			hash := generateClientHash(tt.clientUID)
+
+			// Check if the hash length is 6
+			if len(hash) != tt.expectedLength {
+				t.Errorf("expected hash length %d, got %d", tt.expectedLength, len(hash))
+			}
+
+			// Check if the hash is in the range [000000, 0003ff]
+			hashValue, err := parseHex(hash)
+			if err != nil {
+				t.Errorf("failed to parse hash: %v", err)
+			}
+			if hashValue < 0 || hashValue > tt.expectedMaxValue {
+				t.Errorf("expected hash value in range [0, %d], got %d", tt.expectedMaxValue, hashValue)
+			}
+		})
+	}
+}
+
+// parseHex converts a hexadecimal string to an int64.
+func parseHex(hexStr string) (int64, error) {
+	var value int64
+	_, err := fmt.Sscanf(hexStr, "%x", &value)
+	return value, err
 }
