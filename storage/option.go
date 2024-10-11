@@ -33,29 +33,31 @@ const (
 // getDynamicReadReqIncreaseRateFromEnv returns the value set in the env variable.
 // It returns defaultDynamicReadReqIncreaseRate if env is not set or the set value is invalid.
 func getDynamicReadReqIncreaseRateFromEnv() float64 {
-	if increaseRate := os.Getenv(dynamicReadReqIncreaseRateEnv); increaseRate == "" {
+	increaseRate := os.Getenv(dynamicReadReqIncreaseRateEnv)
+	if increaseRate == "" {
 		return defaultDynamicReadReqIncreaseRate
-	} else {
-		val, err := strconv.ParseFloat(increaseRate, 64)
-		if err != nil {
-			return defaultDynamicReadReqIncreaseRate
-		}
-		return val
 	}
+
+	val, err := strconv.ParseFloat(increaseRate, 64)
+	if err != nil {
+		return defaultDynamicReadReqIncreaseRate
+	}
+	return val
 }
 
 // getDynamicReadReqInitialTimeoutSecFromEnv returns the value set in the env variable.
 // It returns the passed defaultVal if env is not set or the set value is invalid.
 func getDynamicReadReqInitialTimeoutSecFromEnv(defaultVal time.Duration) time.Duration {
-	if initialTimeout := os.Getenv(dynamicReadReqInitialTimeoutEnv); initialTimeout == "" {
+	initialTimeout := os.Getenv(dynamicReadReqInitialTimeoutEnv)
+	if initialTimeout == "" {
 		return defaultVal
-	} else {
-		val, err := time.ParseDuration(initialTimeout)
-		if err != nil {
-			return defaultVal
-		}
-		return val
 	}
+
+	val, err := time.ParseDuration(initialTimeout)
+	if err != nil {
+		return defaultVal
+	}
+	return val
 }
 
 // storageConfig contains the Storage client option configuration that can be
@@ -156,10 +158,6 @@ func (w *withDisabledClientMetrics) ApplyStorageOpt(c *storageConfig) {
 //
 // This is only supported for the read operation and that too for http(XML) client.
 // Grpc read-operation will be supported soon.
-//
-// Here, the input parameter decides the value of dynamic-timeout.
-// targetPercentile is the desired percentile of the observed latencies.
-// Min is the lower bound of the timeout.
 func WithDynamicReadReqStallTimeout(drrst *DynamicReadReqStallTimeoutConfig) option.ClientOption {
 	// TODO (raj-prince): To keep separate dynamicDelay instance for different BucketHandle.
 	// Currently, dynamicTimeout is kept at the client and hence shared across all the
@@ -172,6 +170,11 @@ func WithDynamicReadReqStallTimeout(drrst *DynamicReadReqStallTimeoutConfig) opt
 	}
 }
 
+// DynamicReadReqStallTimeoutConfig defines the timeout which is adjusted based on
+// past observed latencies. Here,
+// TargetPercentile tells the timeout should be the desired percentile of the past
+// observed latencies.
+// Min is the lower bound of the timeout.
 type DynamicReadReqStallTimeoutConfig struct {
 	Min              time.Duration
 	TargetPercentile float64
