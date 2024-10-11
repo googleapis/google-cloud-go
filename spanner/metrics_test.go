@@ -244,20 +244,23 @@ func TestGenerateClientHash(t *testing.T) {
 	tests := []struct {
 		name             string
 		clientUID        string
+		expectedValue    string
 		expectedLength   int
 		expectedMaxValue int64
 	}{
-		{"Simple UID", "exampleUID", 6, 0x3FF},
-		{"Empty UID", "", 6, 0x3FF},
-		{"Special Characters", "!@#$%^&*()", 6, 0x3FF},
-		{"Very Long UID", "aVeryLongUniqueIdentifierThatExceedsNormalLength", 6, 0x3FF},
-		{"Numeric UID", "1234567890", 6, 0x3FF},
+		{"Simple UID", "exampleUID", "00006b", 6, 0x3FF},
+		{"Empty UID", "", "000000", 6, 0x3FF},
+		{"Special Characters", "!@#$%^&*()", "000389", 6, 0x3FF},
+		{"Very Long UID", "aVeryLongUniqueIdentifierThatExceedsNormalLength", "000125", 6, 0x3FF},
+		{"Numeric UID", "1234567890", "00003e", 6, 0x3FF},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			hash := generateClientHash(tt.clientUID)
-
+			if hash != tt.expectedValue {
+				t.Errorf("expected hash value %s, got %s", tt.expectedValue, hash)
+			}
 			// Check if the hash length is 6
 			if len(hash) != tt.expectedLength {
 				t.Errorf("expected hash length %d, got %d", tt.expectedLength, len(hash))
