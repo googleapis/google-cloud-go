@@ -17,11 +17,13 @@ package storage
 import (
 	"context"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
 	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
@@ -150,17 +152,29 @@ func createHistogramView(name string, boundaries []float64) metric.View {
 	})
 }
 
-func newGRPCMetricContext(ctx context.Context, s *settings, config storageConfig) (*metricsContext, error) {
+func newGRPCMetricContext(ctx context.Context, project string, config storageConfig) (*metricsContext, error) {
 	var exporter metric.Exporter
+	meterOpts := []metric.Option{}
 	if config.metricExporter != nil {
 		exporter = *config.metricExporter
 	} else {
-		c, err := transport.Creds(ctx) //, s.clientOption...)
+		preparedResource, err := newPreparedResource(ctx, project, []resource.Option{resource.WithDetectors(gcp.NewDetector())})
 		if err != nil {
 			return nil, err
 		}
+		meterOpts = append(meterOpts, metric.WithResource(preparedResource.resource))
+		// Implementation requires a project, if one is not determined possibly user
+		// credentials. Then we will fail stating gRPC Metrics require a project-id.
+		if project == "" && preparedResource.projectToUse == "" {
+			return nil, fmt.Errorf("google cloud project is required to start client-side metrics")
+		}
+		// If projectTouse isn't the same as project provided to Storage client, then
+		// emit a log stating which project is being used to emit metrics to.
+		if project != preparedResource.projectToUse {
+			log.Printf("The Project ID configured for metrics is %s, but the Project ID of the storage client is %s. Make sure that the service account in use has the required metric writing role (roles/monitoring.metricWriter) in the project projectIdToUse or metrics will not be written.", preparedResource.projectToUse, project)
+		}
 		meOpts := []mexporter.Option{
-			mexporter.WithProjectID(c.ProjectID),
+			mexporter.WithProjectID(preparedResource.projectToUse),
 			mexporter.WithMetricDescriptorTypeFormatter(metricFormatter),
 			mexporter.WithCreateServiceTimeSeries(),
 			mexporter.WithMonitoredResourceDescription(monitoredResourceName, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"})}
@@ -176,15 +190,13 @@ func newGRPCMetricContext(ctx context.Context, s *settings, config storageConfig
 		createHistogramView("grpc.client.attempt.rcvd_total_compressed_message_size", sizeHistogramBoundaries()),
 		createHistogramView("grpc.client.attempt.sent_total_compressed_message_size", sizeHistogramBoundaries()),
 	}
-	samplingInterval := time.Minute
+	interval := time.Minute
 	if config.metricInterval > time.Minute {
-		samplingInterval = config.metricInterval
+		interval = config.metricInterval
 	}
-	provider := metric.NewMeterProvider(
-		metric.WithReader(
-			metric.NewPeriodicReader(&exporterLogSuppressor{exporter: exporter}, metric.WithInterval(samplingInterval))),
-		metric.WithView(metricViews...),
-	)
+	meterOpts = append(meterOpts, metric.WithReader(metric.NewPeriodicReader(&exporterLogSuppressor{exporter: exporter}, metric.WithInterval(interval))),
+		metric.WithView(metricViews...))
+	provider := metric.NewMeterProvider(meterOpts...)
 	mo := opentelemetry.MetricsOptions{
 		MeterProvider: provider,
 		Metrics: opentelemetry.DefaultMetrics().Add(
@@ -212,9 +224,13 @@ func newGRPCMetricContext(ctx context.Context, s *settings, config storageConfig
 }
 
 func enableClientMetrics(ctx context.Context, s *settings, config storageConfig) (*metricsContext, error) {
+	var project string
+	c, err := transport.Creds(ctx, s.clientOption...)
+	if err == nil {
+		project = c.ProjectID
+	}
 	// Enable client-side metrics for gRPC
-	var metricsContext *metricsContext
-	metricsContext, err := newGRPCMetricContext(ctx, s, config)
+	metricsContext, err := newGRPCMetricContext(ctx, project, config)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC Metrics: %w", err)
 	}

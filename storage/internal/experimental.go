@@ -17,6 +17,14 @@
 package internal
 
 var (
+	// WithMetricInterval how often to emit metrics when using NewPeriodicReader
+	// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#NewPeriodicReader
+	// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#WithInterval
 	WithMetricInterval any
+
+	// WithMetricExporter provide alternate client-side meterProvider
+	// to emit metrics through.
+	// Must implement interface metric.Exporter:
+	// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#Exporter
 	WithMetricExporter any
 )

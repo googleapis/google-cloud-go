@@ -24,19 +24,17 @@ import (
 	"google.golang.org/api/option"
 )
 
-// Configure how often to emit metrics when using NewPeriodicReader
+// WithMetricInterval how often to emit metrics when using NewPeriodicReader
 // https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#NewPeriodicReader
 // https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#WithInterval
 func WithMetricInterval(metricInterval time.Duration) option.ClientOption {
 	return internal.WithMetricInterval.(func(time.Duration) option.ClientOption)(metricInterval)
 }
 
-// Configure alternate client-side metric Open Telemetry exporter
+// WithMetricExporter provide alternate client-side meterProvider
 // to emit metrics through.
-// Exporter must implement interface metric.Exporter:
+// Must implement interface metric.Exporter:
 // https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#Exporter
-//
-// Only WithMetricOptions or WithMetricExporter option can be used at a time.
 func WithMetricExporter(ex *metric.Exporter) option.ClientOption {
 	return internal.WithMetricInterval.(func(*metric.Exporter) option.ClientOption)(ex)
 }
