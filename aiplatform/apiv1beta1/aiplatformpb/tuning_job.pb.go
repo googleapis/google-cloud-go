@@ -21,15 +21,14 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -381,7 +380,7 @@ type TuningJob_DistillationSpec struct {
 }
 
 type TuningJob_PartnerModelTuningSpec struct {
-	// Tuning Spec for open sourced and third party Partner models.
+	// Tuning Spec for open sourced and third party partner models.
 	PartnerModelTuningSpec *PartnerModelTuningSpec `protobuf:"bytes,21,opt,name=partner_model_tuning_spec,json=partnerModelTuningSpec,proto3,oneof"`
 }
 
