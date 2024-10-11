@@ -19,63 +19,16 @@ package experimental
 import (
 	"time"
 
-	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
+	"cloud.google.com/go/storage/internal"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 )
-
-type StorageExperimentalConfig struct {
-	MetricExporterOptions []mexporter.Option
-	MetricExporter        *metric.Exporter
-	MetricInterval        time.Duration
-}
-
-func NewStorageExperimentalConfig(opts ...option.ClientOption) StorageExperimentalConfig {
-	var conf StorageExperimentalConfig
-	for _, opt := range opts {
-		if storageOpt, ok := opt.(storageExperimentalClientOption); ok {
-			storageOpt.ApplyStorageOpt(&conf)
-		}
-	}
-	return conf
-}
-
-type storageExperimentalClientOption interface {
-	option.ClientOption
-	ApplyStorageOpt(*StorageExperimentalConfig)
-}
-
-type withMeterOptions struct {
-	internaloption.EmbeddableAdapter
-	// set sampling interval
-	interval time.Duration
-}
 
 // Configure how often to emit metrics when using NewPeriodicReader
 // https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#NewPeriodicReader
 // https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#WithInterval
-func WithMetricInterval(interval time.Duration) option.ClientOption {
-	return &withMeterOptions{interval: interval}
-}
-
-func (w *withMeterOptions) ApplyStorageOpt(c *StorageExperimentalConfig) {
-	c.MetricInterval = w.interval
-}
-
-type withMetricExporterConfig struct {
-	internaloption.EmbeddableAdapter
-	// client options for exporter
-	exporterOptions []mexporter.Option
-	// exporter override
-	metricExporter *metric.Exporter
-}
-
-// Configure Google Cloud Monitoring Exporter options such as Project,
-// Credentials and Sampling Rate.
-// Only WithMetricOptions or WithMetricExporter option can be used at a time.
-func WithMetricOptions(opts []mexporter.Option) option.ClientOption {
-	return &withMetricExporterConfig{exporterOptions: opts}
+func WithMetricInterval(metricInterval time.Duration) option.ClientOption {
+	return internal.WithMetricInterval.(func(time.Duration) option.ClientOption)(metricInterval)
 }
 
 // Configure alternate client-side metric Open Telemetry exporter
@@ -85,10 +38,5 @@ func WithMetricOptions(opts []mexporter.Option) option.ClientOption {
 //
 // Only WithMetricOptions or WithMetricExporter option can be used at a time.
 func WithMetricExporter(ex *metric.Exporter) option.ClientOption {
-	return &withMetricExporterConfig{metricExporter: ex}
-}
-
-func (w *withMetricExporterConfig) ApplyStorageOpt(c *StorageExperimentalConfig) {
-	c.MetricExporterOptions = w.exporterOptions
-	c.MetricExporter = w.metricExporter
+	return internal.WithMetricInterval.(func(*metric.Exporter) option.ClientOption)(ex)
 }

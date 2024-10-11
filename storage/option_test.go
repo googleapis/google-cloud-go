@@ -16,6 +16,7 @@ package storage
 
 import (
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
@@ -79,6 +80,17 @@ func TestApplyStorageOpt(t *testing.T) {
 				useJSONforReads:      false,
 				readAPIWasSet:        false,
 				disableClientMetrics: true,
+			},
+		},
+		{
+			desc: "change metrics interval",
+			opts: []option.ClientOption{withMetricInterval(time.Minute * 5)},
+			want: storageConfig{
+				useJSONforReads:      false,
+				readAPIWasSet:        false,
+				disableClientMetrics: true,
+				metricInterval:       time.Minute * 5,
+				metricExporter:       nil,
 			},
 		},
 	} {

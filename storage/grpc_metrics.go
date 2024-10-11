@@ -20,7 +20,6 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/storage/experimental"
 	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/attribute"
@@ -151,12 +150,12 @@ func createHistogramView(name string, boundaries []float64) metric.View {
 	})
 }
 
-func newGRPCMetricContext(ctx context.Context, s *settings, exp experimental.StorageExperimentalConfig) (*metricsContext, error) {
+func newGRPCMetricContext(ctx context.Context, s *settings, config storageConfig) (*metricsContext, error) {
 	var exporter metric.Exporter
-	if exp.MetricExporter != nil {
-		exporter = *exp.MetricExporter
+	if config.metricExporter != nil {
+		exporter = *config.metricExporter
 	} else {
-		c, err := transport.Creds(ctx, s.clientOption...)
+		c, err := transport.Creds(ctx) //, s.clientOption...)
 		if err != nil {
 			return nil, err
 		}
@@ -165,9 +164,6 @@ func newGRPCMetricContext(ctx context.Context, s *settings, exp experimental.Sto
 			mexporter.WithMetricDescriptorTypeFormatter(metricFormatter),
 			mexporter.WithCreateServiceTimeSeries(),
 			mexporter.WithMonitoredResourceDescription(monitoredResourceName, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"})}
-		if len(exp.MetricExporterOptions) > 0 {
-			meOpts = append(meOpts, exp.MetricExporterOptions...)
-		}
 		exporter, err = mexporter.New(meOpts...)
 		if err != nil {
 			return nil, err
@@ -181,8 +177,8 @@ func newGRPCMetricContext(ctx context.Context, s *settings, exp experimental.Sto
 		createHistogramView("grpc.client.attempt.sent_total_compressed_message_size", sizeHistogramBoundaries()),
 	}
 	samplingInterval := time.Minute
-	if exp.MetricInterval > time.Second {
-		samplingInterval = exp.MetricInterval
+	if config.metricInterval > time.Minute {
+		samplingInterval = config.metricInterval
 	}
 	provider := metric.NewMeterProvider(
 		metric.WithReader(
@@ -215,10 +211,10 @@ func newGRPCMetricContext(ctx context.Context, s *settings, exp experimental.Sto
 	return context, nil
 }
 
-func enableClientMetrics(ctx context.Context, s *settings, exp experimental.StorageExperimentalConfig) (*metricsContext, error) {
+func enableClientMetrics(ctx context.Context, s *settings, config storageConfig) (*metricsContext, error) {
 	// Enable client-side metrics for gRPC
 	var metricsContext *metricsContext
-	metricsContext, err := newGRPCMetricContext(ctx, s, exp)
+	metricsContext, err := newGRPCMetricContext(ctx, s, config)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC Metrics: %w", err)
 	}

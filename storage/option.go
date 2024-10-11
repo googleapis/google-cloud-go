@@ -15,9 +15,19 @@
 package storage
 
 import (
+	"time"
+
+	storageinternal "cloud.google.com/go/storage/internal"
+	"go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 )
+
+func init() {
+	// initialize experimental options
+	storageinternal.WithMetricInterval = withMetricInterval
+	storageinternal.WithMetricExporter = withMetricExporter
+}
 
 // storageConfig contains the Storage client option configuration that can be
 // set through storageClientOptions.
@@ -25,6 +35,8 @@ type storageConfig struct {
 	useJSONforReads      bool
 	readAPIWasSet        bool
 	disableClientMetrics bool
+	metricExporter       *metric.Exporter
+	metricInterval       time.Duration
 }
 
 // newStorageConfig generates a new storageConfig with all the given
@@ -107,4 +119,42 @@ func WithDisabledClientMetrics() option.ClientOption {
 
 func (w *withDisabledClientMetrics) ApplyStorageOpt(c *storageConfig) {
 	c.disableClientMetrics = w.disabledClientMetrics
+}
+
+type withMeterOptions struct {
+	internaloption.EmbeddableAdapter
+	// set sampling interval
+	interval time.Duration
+}
+
+// Experimental: Configure how often to emit metrics when
+// using NewPeriodicReader
+// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#NewPeriodicReader
+// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#WithInterval
+func withMetricInterval(interval time.Duration) option.ClientOption {
+	return &withMeterOptions{interval: interval}
+}
+
+func (w *withMeterOptions) ApplyStorageOpt(c *storageConfig) {
+	c.metricInterval = w.interval
+}
+
+type withMetricExporterConfig struct {
+	internaloption.EmbeddableAdapter
+	// exporter override
+	metricExporter *metric.Exporter
+}
+
+// Experimental: Configure alternate client-side metric Open Telemetry exporter
+// to emit metrics through.
+// Exporter must implement interface metric.Exporter:
+// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#Exporter
+//
+// Only WithMetricOptions or WithMetricExporter option can be used at a time.
+func withMetricExporter(ex *metric.Exporter) option.ClientOption {
+	return &withMetricExporterConfig{metricExporter: ex}
+}
+
+func (w *withMetricExporterConfig) ApplyStorageOpt(c *storageConfig) {
+	c.metricExporter = w.metricExporter
 }
