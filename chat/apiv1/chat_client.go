@@ -839,26 +839,35 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateMessage creates a message in a Google Chat space. The maximum message size,
-// including text and cards, is 32,000 bytes. For an example, see Send a
+// CreateMessage creates a message in a Google Chat space. For an example, see Send a
 // message (at https://developers.google.com/workspace/chat/create-messages).
 //
-// Calling this method requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize)
-// and supports the following authentication types:
+// The create() method requires either user or app authentication. Chat
+// attributes the message sender differently depending on the type of
+// authentication that you use in your request.
 //
-//	For text messages, user authentication or app authentication are
-//	supported.
+// The following image shows how Chat attributes a message when you use app
+// authentication. Chat displays the Chat app as the message
+// sender. The content of the message can contain text (text), cards
+// (cardsV2), and accessory widgets (accessoryWidgets).
 //
-//	For card messages, only app authentication is supported. (Only Chat apps
-//	can create card messages.)
+// The following image shows how Chat attributes a message when you use user
+// authentication. Chat displays the user as the message sender and attributes
+// the Chat app to the message by displaying its name. The content of message
+// can only contain text (text).
+//
+// The maximum message size, including the message contents, is 32,000 bytes.
 func (c *Client) CreateMessage(ctx context.Context, req *chatpb.CreateMessageRequest, opts ...gax.CallOption) (*chatpb.Message, error) {
 	return c.internalClient.CreateMessage(ctx, req, opts...)
 }
 
 // ListMessages lists messages in a space that the caller is a member of, including
-// messages from blocked members and spaces. For an example, see
-// List messages (at /chat/api/guides/v1/messages/list).
+// messages from blocked members and spaces. If you list messages from a
+// space with no messages, the response is an empty object. When using a
+// REST/HTTP interface, the response contains an empty JSON object, {}.
+// For an example, see
+// List
+// messages (at https://developers.google.com/workspace/chat/api/guides/v1/messages/list).
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *Client) ListMessages(ctx context.Context, req *chatpb.ListMessagesRequest, opts ...gax.CallOption) *MessageIterator {
@@ -1029,13 +1038,18 @@ func (c *Client) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, opts
 	return c.internalClient.GetSpace(ctx, req, opts...)
 }
 
-// CreateSpace creates a named space. Spaces grouped by topics aren’t supported. For an
-// example, see Create a
+// CreateSpace creates a space with no members. Can be used to create a named space.
+// Spaces grouped by topics aren’t supported. For an example, see
+// Create a
 // space (at https://developers.google.com/workspace/chat/create-spaces).
 //
 // If you receive the error message ALREADY_EXISTS when creating
 // a space, try a different displayName. An existing space within
 // the Google Workspace organization might already use this display name.
+//
+// If you’re a member of the Developer Preview
+// program (at https://developers.google.com/workspace/preview), you can create a
+// group chat in import mode using spaceType.GROUP_CHAT.
 //
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
@@ -1158,40 +1172,25 @@ func (c *Client) FindDirectMessage(ctx context.Context, req *chatpb.FindDirectMe
 	return c.internalClient.FindDirectMessage(ctx, req, opts...)
 }
 
-// CreateMembership creates a human membership or app membership for the calling app. Creating
-// memberships for other apps isn’t supported. For an example, see
-// Invite or add a user or a Google Chat app to a
-// space (at https://developers.google.com/workspace/chat/create-members).
+// CreateMembership creates a membership for the calling Chat app, a user, or a Google Group.
+// Creating memberships for other Chat apps isn’t supported.
 // When creating a membership, if the specified member has their auto-accept
 // policy turned off, then they’re invited, and must accept the space
 // invitation before joining. Otherwise, creating a membership adds the member
-// directly to the specified space. Requires user
+// directly to the specified space.
+// Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 //
-// To specify the member to add, set the membership.member.name for the
-// human or app member, or set the membership.group_member.name for the
-// group member.
+// For example usage, see:
 //
-//	To add the calling app to a space or a direct message between two human
-//	users, use users/app. Unable to add other
-//	apps to the space.
+//	Invite or add a user to a
+//	space (at https://developers.google.com/workspace/chat/create-members#create-user-membership).
 //
-//	To add a human user, use users/{user}, where {user} can be the email
-//	address for the user. For users in the same Workspace organization {user}
-//	can also be the id for the person from the People API, or the id for
-//	the user in the Directory API. For example, if the People API Person
-//	profile ID for user@example.com is 123456789, you can add the user to
-//	the space by setting the membership.member.name to
-//	users/user@example.com or users/123456789.
+//	Invite or add a Google Group to a
+//	space (at https://developers.google.com/workspace/chat/create-members#create-group-membership).
 //
-//	To add or invite a Google group in a named space, use
-//	groups/{group}, where {group} is the id for the group from the Cloud
-//	Identity Groups API. For example, you can use Cloud Identity Groups lookup
-//	API (at https://cloud.google.com/identity/docs/reference/rest/v1/groups/lookup)
-//	to retrieve the ID 123456789 for group email group@example.com, then
-//	you can add or invite the group to a named space by setting the
-//	membership.group_member.name to groups/123456789. Group email is not
-//	supported, and Google groups can only be added as members in named spaces.
+//	Add the Chat app to a
+//	space (at https://developers.google.com/workspace/chat/create-members#create-membership-calling-api).
 func (c *Client) CreateMembership(ctx context.Context, req *chatpb.CreateMembershipRequest, opts ...gax.CallOption) (*chatpb.Membership, error) {
 	return c.internalClient.CreateMembership(ctx, req, opts...)
 }
@@ -1282,6 +1281,9 @@ func (c *Client) GetThreadReadState(ctx context.Context, req *chatpb.GetThreadRe
 // if you request an event about a new message but the message was later
 // updated, the server returns the updated Message resource in the event
 // payload.
+//
+// Note: The permissionSettings field is not returned in the Space
+// object of the Space event data for this request.
 //
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
@@ -2124,19 +2126,24 @@ func (c *gRPCClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 	return it
 }
 
-// CreateMessage creates a message in a Google Chat space. The maximum message size,
-// including text and cards, is 32,000 bytes. For an example, see Send a
+// CreateMessage creates a message in a Google Chat space. For an example, see Send a
 // message (at https://developers.google.com/workspace/chat/create-messages).
 //
-// Calling this method requires
-// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize)
-// and supports the following authentication types:
+// The create() method requires either user or app authentication. Chat
+// attributes the message sender differently depending on the type of
+// authentication that you use in your request.
 //
-//	For text messages, user authentication or app authentication are
-//	supported.
+// The following image shows how Chat attributes a message when you use app
+// authentication. Chat displays the Chat app as the message
+// sender. The content of the message can contain text (text), cards
+// (cardsV2), and accessory widgets (accessoryWidgets).
 //
-//	For card messages, only app authentication is supported. (Only Chat apps
-//	can create card messages.)
+// The following image shows how Chat attributes a message when you use user
+// authentication. Chat displays the user as the message sender and attributes
+// the Chat app to the message by displaying its name. The content of message
+// can only contain text (text).
+//
+// The maximum message size, including the message contents, is 32,000 bytes.
 func (c *restClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessageRequest, opts ...gax.CallOption) (*chatpb.Message, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetMessage()
@@ -2216,8 +2223,12 @@ func (c *restClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessag
 }
 
 // ListMessages lists messages in a space that the caller is a member of, including
-// messages from blocked members and spaces. For an example, see
-// List messages (at /chat/api/guides/v1/messages/list).
+// messages from blocked members and spaces. If you list messages from a
+// space with no messages, the response is an empty object. When using a
+// REST/HTTP interface, the response contains an empty JSON object, {}.
+// For an example, see
+// List
+// messages (at https://developers.google.com/workspace/chat/api/guides/v1/messages/list).
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *restClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesRequest, opts ...gax.CallOption) *MessageIterator {
@@ -3154,13 +3165,18 @@ func (c *restClient) GetSpace(ctx context.Context, req *chatpb.GetSpaceRequest, 
 	return resp, nil
 }
 
-// CreateSpace creates a named space. Spaces grouped by topics aren’t supported. For an
-// example, see Create a
+// CreateSpace creates a space with no members. Can be used to create a named space.
+// Spaces grouped by topics aren’t supported. For an example, see
+// Create a
 // space (at https://developers.google.com/workspace/chat/create-spaces).
 //
 // If you receive the error message ALREADY_EXISTS when creating
 // a space, try a different displayName. An existing space within
 // the Google Workspace organization might already use this display name.
+//
+// If you’re a member of the Developer Preview
+// program (at https://developers.google.com/workspace/preview), you can create a
+// group chat in import mode using spaceType.GROUP_CHAT.
 //
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
@@ -3629,40 +3645,25 @@ func (c *restClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDire
 	return resp, nil
 }
 
-// CreateMembership creates a human membership or app membership for the calling app. Creating
-// memberships for other apps isn’t supported. For an example, see
-// Invite or add a user or a Google Chat app to a
-// space (at https://developers.google.com/workspace/chat/create-members).
+// CreateMembership creates a membership for the calling Chat app, a user, or a Google Group.
+// Creating memberships for other Chat apps isn’t supported.
 // When creating a membership, if the specified member has their auto-accept
 // policy turned off, then they’re invited, and must accept the space
 // invitation before joining. Otherwise, creating a membership adds the member
-// directly to the specified space. Requires user
+// directly to the specified space.
+// Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 //
-// To specify the member to add, set the membership.member.name for the
-// human or app member, or set the membership.group_member.name for the
-// group member.
+// For example usage, see:
 //
-//	To add the calling app to a space or a direct message between two human
-//	users, use users/app. Unable to add other
-//	apps to the space.
+//	Invite or add a user to a
+//	space (at https://developers.google.com/workspace/chat/create-members#create-user-membership).
 //
-//	To add a human user, use users/{user}, where {user} can be the email
-//	address for the user. For users in the same Workspace organization {user}
-//	can also be the id for the person from the People API, or the id for
-//	the user in the Directory API. For example, if the People API Person
-//	profile ID for user@example.com is 123456789, you can add the user to
-//	the space by setting the membership.member.name to
-//	users/user@example.com or users/123456789.
+//	Invite or add a Google Group to a
+//	space (at https://developers.google.com/workspace/chat/create-members#create-group-membership).
 //
-//	To add or invite a Google group in a named space, use
-//	groups/{group}, where {group} is the id for the group from the Cloud
-//	Identity Groups API. For example, you can use Cloud Identity Groups lookup
-//	API (at https://cloud.google.com/identity/docs/reference/rest/v1/groups/lookup)
-//	to retrieve the ID 123456789 for group email group@example.com, then
-//	you can add or invite the group to a named space by setting the
-//	membership.group_member.name to groups/123456789. Group email is not
-//	supported, and Google groups can only be added as members in named spaces.
+//	Add the Chat app to a
+//	space (at https://developers.google.com/workspace/chat/create-members#create-membership-calling-api).
 func (c *restClient) CreateMembership(ctx context.Context, req *chatpb.CreateMembershipRequest, opts ...gax.CallOption) (*chatpb.Membership, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetMembership()
@@ -4313,6 +4314,9 @@ func (c *restClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 // if you request an event about a new message but the message was later
 // updated, the server returns the updated Message resource in the event
 // payload.
+//
+// Note: The permissionSettings field is not returned in the Space
+// object of the Space event data for this request.
 //
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
