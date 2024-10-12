@@ -131,8 +131,8 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	}
 
 	var dd *dynamicDelay
-	if config.DynamicReadReqStallTimeoutConfig != nil {
-		drrstConfig := config.DynamicReadReqStallTimeoutConfig
+	if config.ReadStallTimeoutConfig != nil {
+		drrstConfig := config.ReadStallTimeoutConfig
 		dd, err = newDynamicDelay(
 			drrstConfig.TargetPercentile,
 			getDynamicReadReqIncreaseRateFromEnv(),

@@ -29,6 +29,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/storage/experimental"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
@@ -1454,7 +1455,7 @@ func TestRetryDeadlineExceedeEmulated(t *testing.T) {
 }
 
 // Test validates the retry for stalled read-request, when client is created with
-// WithDynamicReadReqStallTimeout.
+// WithReadStallTimeout.
 func TestRetryReadReqStallEmulated(t *testing.T) {
 	multiTransportTest(skipJSONReads(skipGRPC("not supported"), "not supported"), t, func(t *testing.T, ctx context.Context, project, _ string, client *Client) {
 		// Setup bucket and upload object.
@@ -1496,8 +1497,8 @@ func TestRetryReadReqStallEmulated(t *testing.T) {
 			t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
 		}
 
-	}, WithDynamicReadReqStallTimeout(
-		&DynamicReadReqStallTimeoutConfig{
+	}, experimental.WithReadStallTimeout(
+		&experimental.ReadStallTimeoutConfig{
 			TargetPercentile: 0.99,
 			Min:              time.Second,
 		}))

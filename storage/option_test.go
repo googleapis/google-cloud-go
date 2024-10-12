@@ -19,6 +19,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/storage/experimental"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
 )
@@ -85,7 +86,7 @@ func TestApplyStorageOpt(t *testing.T) {
 		},
 		{
 			desc: "set dynamic read req stall timeout option",
-			opts: []option.ClientOption{WithDynamicReadReqStallTimeout(&DynamicReadReqStallTimeoutConfig{
+			opts: []option.ClientOption{withReadStallTimeout(&experimental.ReadStallTimeoutConfig{
 				TargetPercentile: 0.99,
 				Min:              time.Second,
 			})},
@@ -93,7 +94,7 @@ func TestApplyStorageOpt(t *testing.T) {
 				useJSONforReads:      false,
 				readAPIWasSet:        false,
 				disableClientMetrics: false,
-				DynamicReadReqStallTimeoutConfig: &DynamicReadReqStallTimeoutConfig{
+				ReadStallTimeoutConfig: &experimental.ReadStallTimeoutConfig{
 					TargetPercentile: 0.99,
 					Min:              time.Second,
 				},
@@ -107,8 +108,8 @@ func TestApplyStorageOpt(t *testing.T) {
 					storageOpt.ApplyStorageOpt(&got)
 				}
 			}
-			if !cmp.Equal(got, test.want, cmp.AllowUnexported(storageConfig{}, DynamicReadReqStallTimeoutConfig{})) {
-				t.Errorf(cmp.Diff(got, test.want, cmp.AllowUnexported(storageConfig{}, DynamicReadReqStallTimeoutConfig{})))
+			if !cmp.Equal(got, test.want, cmp.AllowUnexported(storageConfig{}, experimental.ReadStallTimeoutConfig{})) {
+				t.Errorf(cmp.Diff(got, test.want, cmp.AllowUnexported(storageConfig{}, experimental.ReadStallTimeoutConfig{})))
 			}
 		})
 	}
