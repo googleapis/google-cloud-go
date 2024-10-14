@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.0...batch/v1.11.1) (2024-10-09)
+
+
+### Documentation
+
+* **batch:** Clarify Batch only supports global custom instance template now ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.10.0...batch/v1.11.0) (2024-09-12)
 
 

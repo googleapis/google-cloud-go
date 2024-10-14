@@ -1,5 +1,19 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.18.1...channel/v1.19.0) (2024-10-09)
+
+
+### Features
+
+* **channel:** Add support for importing team customer from a different reseller ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **channel:** Add support for primary_admin_email as customer_identity for ImportCustomer ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **channel:** Add support to look up team customer Cloud Identity information ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **channel:** Clarify the expected value of the domain field for team type customers ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/channel/v1.18.0...channel/v1.18.1) (2024-09-12)
 
 

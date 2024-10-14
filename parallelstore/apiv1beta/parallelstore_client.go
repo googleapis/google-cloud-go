@@ -196,12 +196,12 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListInstances lists Instances in a given project and location.
+// ListInstances lists all instances in a given project and location.
 func (c *Client) ListInstances(ctx context.Context, req *parallelstorepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	return c.internalClient.ListInstances(ctx, req, opts...)
 }
 
-// GetInstance gets details of a single Instance.
+// GetInstance gets details of a single instance.
 func (c *Client) GetInstance(ctx context.Context, req *parallelstorepb.GetInstanceRequest, opts ...gax.CallOption) (*parallelstorepb.Instance, error) {
 	return c.internalClient.GetInstance(ctx, req, opts...)
 }
@@ -217,7 +217,7 @@ func (c *Client) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return c.internalClient.CreateInstanceOperation(name)
 }
 
-// UpdateInstance updates the parameters of a single Instance.
+// UpdateInstance updates the parameters of a single instance.
 func (c *Client) UpdateInstance(ctx context.Context, req *parallelstorepb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
 	return c.internalClient.UpdateInstance(ctx, req, opts...)
 }
@@ -228,7 +228,7 @@ func (c *Client) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return c.internalClient.UpdateInstanceOperation(name)
 }
 
-// DeleteInstance deletes a single Instance.
+// DeleteInstance deletes a single instance.
 func (c *Client) DeleteInstance(ctx context.Context, req *parallelstorepb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
 	return c.internalClient.DeleteInstance(ctx, req, opts...)
 }
@@ -239,7 +239,7 @@ func (c *Client) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return c.internalClient.DeleteInstanceOperation(name)
 }
 
-// ImportData importData copies data from Cloud Storage to Parallelstore.
+// ImportData copies data from Cloud Storage to Parallelstore.
 func (c *Client) ImportData(ctx context.Context, req *parallelstorepb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
 	return c.internalClient.ImportData(ctx, req, opts...)
 }
@@ -250,7 +250,7 @@ func (c *Client) ImportDataOperation(name string) *ImportDataOperation {
 	return c.internalClient.ImportDataOperation(name)
 }
 
-// ExportData exportData copies data from Parallelstore to Cloud Storage
+// ExportData copies data from Parallelstore to Cloud Storage.
 func (c *Client) ExportData(ctx context.Context, req *parallelstorepb.ExportDataRequest, opts ...gax.CallOption) (*ExportDataOperation, error) {
 	return c.internalClient.ExportData(ctx, req, opts...)
 }
@@ -833,7 +833,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// ListInstances lists Instances in a given project and location.
+// ListInstances lists all instances in a given project and location.
 func (c *restClient) ListInstances(ctx context.Context, req *parallelstorepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
 	req = proto.Clone(req).(*parallelstorepb.ListInstancesRequest)
@@ -928,7 +928,7 @@ func (c *restClient) ListInstances(ctx context.Context, req *parallelstorepb.Lis
 	return it
 }
 
-// GetInstance gets details of a single Instance.
+// GetInstance gets details of a single instance.
 func (c *restClient) GetInstance(ctx context.Context, req *parallelstorepb.GetInstanceRequest, opts ...gax.CallOption) (*parallelstorepb.Instance, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1063,7 +1063,7 @@ func (c *restClient) CreateInstance(ctx context.Context, req *parallelstorepb.Cr
 	}, nil
 }
 
-// UpdateInstance updates the parameters of a single Instance.
+// UpdateInstance updates the parameters of a single instance.
 func (c *restClient) UpdateInstance(ctx context.Context, req *parallelstorepb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetInstance()
@@ -1144,7 +1144,7 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *parallelstorepb.Up
 	}, nil
 }
 
-// DeleteInstance deletes a single Instance.
+// DeleteInstance deletes a single instance.
 func (c *restClient) DeleteInstance(ctx context.Context, req *parallelstorepb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1211,7 +1211,7 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *parallelstorepb.De
 	}, nil
 }
 
-// ImportData importData copies data from Cloud Storage to Parallelstore.
+// ImportData copies data from Cloud Storage to Parallelstore.
 func (c *restClient) ImportData(ctx context.Context, req *parallelstorepb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1281,7 +1281,7 @@ func (c *restClient) ImportData(ctx context.Context, req *parallelstorepb.Import
 	}, nil
 }
 
-// ExportData exportData copies data from Parallelstore to Cloud Storage
+// ExportData copies data from Parallelstore to Cloud Storage.
 func (c *restClient) ExportData(ctx context.Context, req *parallelstorepb.ExportDataRequest, opts ...gax.CallOption) (*ExportDataOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
