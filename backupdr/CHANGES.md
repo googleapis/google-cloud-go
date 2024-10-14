@@ -2,6 +2,37 @@
 
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.1.1...backupdr/v1.2.0) (2024-10-09)
+
+
+### Features
+
+* **backupdr:** Add backupplan proto ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** Add backupplanassociation proto ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** Add backupvault_ba proto ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** Add backupvault_gce proto ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** Client library for the backupvault api is added ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Bug Fixes
+
+* **backupdr:** Remove visibility of unneeded AbandonBackup RPC ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** Remove visibility of unneeded FinalizeBackup RPC ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** Remove visibility of unneeded InitiateBackup RPC ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** Remove visibility of unneeded RemoveDataSource RPC ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** Remove visibility of unneeded SetInternalStatus RPC ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** Remove visibility of unneeded TestIamPermissions RPC ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **backupdr:** A comment for field `management_servers` in message `.google.cloud.backupdr.v1.ListManagementServersResponse` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** A comment for field `name` in message `.google.cloud.backupdr.v1.GetManagementServerRequest` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** A comment for field `oauth2_client_id` in message `.google.cloud.backupdr.v1.ManagementServer` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** A comment for field `parent` in message `.google.cloud.backupdr.v1.CreateManagementServerRequest` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** A comment for field `parent` in message `.google.cloud.backupdr.v1.ListManagementServersRequest` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **backupdr:** A comment for field `requested_cancellation` in message `.google.cloud.backupdr.v1.OperationMetadata` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
 ## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.1.0...backupdr/v1.1.1) (2024-09-12)
 
 

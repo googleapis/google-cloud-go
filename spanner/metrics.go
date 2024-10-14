@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"hash/fnv"
 	"strings"
 
 	"log"
@@ -125,6 +126,47 @@ var (
 		return uuid.NewString() + "@" + strconv.FormatInt(int64(os.Getpid()), 10) + "@" + hostname, nil
 	}
 
+	// generateClientHash generates a 6-digit zero-padded lowercase hexadecimal hash
+	// using the 10 most significant bits of a 64-bit hash value.
+	//
+	// The primary purpose of this function is to generate a hash value for the `client_hash`
+	// resource label using `client_uid` metric field. The range of values is chosen to be small
+	// enough to keep the cardinality of the Resource targets under control. Note: If at later time
+	// the range needs to be increased, it can be done by increasing the value of `kPrefixLength` to
+	// up to 24 bits without changing the format of the returned value.
+	generateClientHash = func(clientUID string) string {
+		if clientUID == "" {
+			return "000000"
+		}
+
+		// Use FNV hash function to generate a 64-bit hash
+		hasher := fnv.New64()
+		hasher.Write([]byte(clientUID))
+		hashValue := hasher.Sum64()
+
+		// Extract the 10 most significant bits
+		// Shift right by 54 bits to get the 10 most significant bits
+		kPrefixLength := 10
+		tenMostSignificantBits := hashValue >> (64 - kPrefixLength)
+
+		// Format the result as a 6-digit zero-padded hexadecimal string
+		return fmt.Sprintf("%06x", tenMostSignificantBits)
+	}
+
+	detectClientLocation = func(ctx context.Context) string {
+		resource, err := gcp.NewDetector().Detect(ctx)
+		if err != nil {
+			return "global"
+		}
+		for _, attr := range resource.Attributes() {
+			if attr.Key == semconv.CloudRegionKey {
+				return attr.Value.AsString()
+			}
+		}
+		// If region is not found, return global
+		return "global"
+	}
+
 	exporterOpts = []option.ClientOption{}
 )
 
@@ -151,20 +193,6 @@ type builtinMetricsTracerFactory struct {
 	attemptCount       metric.Int64Counter     // Counter for the number of attempts.
 }
 
-func detectClientLocation(ctx context.Context) string {
-	resource, err := gcp.NewDetector().Detect(ctx)
-	if err != nil {
-		return "global"
-	}
-	for _, attr := range resource.Attributes() {
-		if attr.Key == semconv.CloudRegionKey {
-			return attr.Value.AsString()
-		}
-	}
-	// If region is not found, return global
-	return "global"
-}
-
 func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsProvider metric.MeterProvider) (*builtinMetricsTracerFactory, error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
@@ -183,7 +211,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 			attribute.String(metricLabelKeyDatabase, database),
 			attribute.String(metricLabelKeyClientUID, clientUID),
 			attribute.String(metricLabelKeyClientName, clientName),
-			attribute.String(monitoredResLabelKeyClientHash, "cloud_spanner_client_raw_metrics"),
+			attribute.String(monitoredResLabelKeyClientHash, generateClientHash(clientUID)),
 			// Skipping instance config until we have a way to get it
 			attribute.String(monitoredResLabelKeyInstanceConfig, "unknown"),
 			attribute.String(monitoredResLabelKeyLocation, detectClientLocation(ctx)),
