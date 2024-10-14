@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// All options in this package are experimental.
+
 package internal
 
-// Version is the current tagged release of the library.
-const Version = "1.70.0"
+var (
+	// WithReadStallTimeout is a function which is implemented by storage package.
+	// It takes ReadStallTimeoutConfig as inputs and returns a option.ClientOption.
+	WithReadStallTimeout any // func (*ReadStallTimeoutConfig) option.ClientOption
+)
