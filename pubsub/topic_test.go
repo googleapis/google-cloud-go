@@ -122,9 +122,6 @@ func TestTopic_IngestionKinesis(t *testing.T) {
 				AWSRoleARN:        "fake-aws-role-arn",
 				GCPServiceAccount: "fake-gcp-sa",
 			},
-			PlatformLogsSettings: &PlatformLogsSettings{
-				Severity: PlatformLogsSeverityWarning,
-			},
 		},
 	}
 
@@ -147,9 +144,6 @@ func TestTopic_IngestionKinesis(t *testing.T) {
 			ConsumerARN:       "fake-consumer-arn-2",
 			AWSRoleARN:        "aws-role-arn-2",
 			GCPServiceAccount: "gcp-service-account-2",
-		},
-		PlatformLogsSettings: &PlatformLogsSettings{
-			Severity: PlatformLogsSeverityInfo,
 		},
 	}
 	config2, err := topic.Update(ctx, TopicConfigToUpdate{IngestionDataSourceSettings: settings})

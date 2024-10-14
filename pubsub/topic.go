@@ -709,6 +709,7 @@ func (i *IngestionDataSourceSettings) toProto() *pb.IngestionDataSourceSettings 
 }
 
 // PlatformLogsSettings configures logging produced by Pub/Sub.
+// Currently only valid on Cloud Storage ingestion topics.
 type PlatformLogsSettings struct {
 	Severity PlatformLogsSeverity
 }
