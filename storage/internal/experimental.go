@@ -27,4 +27,8 @@ var (
 	// Must implement interface metric.Exporter:
 	// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#Exporter
 	WithMetricExporter any
+
+	// WithReadStallTimeout is a function which is implemented by storage package.
+	// It takes ReadStallTimeoutConfig as inputs and returns a option.ClientOption.
+	WithReadStallTimeout any // func (*ReadStallTimeoutConfig) option.ClientOption
 )
