@@ -30,6 +30,8 @@ const (
 	dynamicReadReqInitialTimeoutEnv   = "DYNAMIC_READ_REQ_INITIAL_TIMEOUT"
 	defaultDynamicReadReqIncreaseRate = 15.0
 	defaultDynamicReqdReqMaxTimeout   = 1 * time.Hour
+	defaultDynamicReadReqMinTimeout   = 500 * time.Millisecond
+	defaultTargetPercentile           = 0.99
 )
 
 func init() {
@@ -73,7 +75,7 @@ type storageConfig struct {
 	useJSONforReads        bool
 	readAPIWasSet          bool
 	disableClientMetrics   bool
-	ReadStallTimeoutConfig *experimental.ReadStallTimeoutConfig
+	readStallTimeoutConfig *experimental.ReadStallTimeoutConfig
 }
 
 // newStorageConfig generates a new storageConfig with all the given
@@ -168,10 +170,16 @@ func (w *withDisabledClientMetrics) ApplyStorageOpt(c *storageConfig) {
 func withReadStallTimeout(rstc *experimental.ReadStallTimeoutConfig) option.ClientOption {
 	// TODO (raj-prince): To keep separate dynamicDelay instance for different BucketHandle.
 	// Currently, dynamicTimeout is kept at the client and hence shared across all the
-	// BucketHandle, which is not not the ideal state. As latency depends on location of VM
+	// BucketHandle, which is not the ideal state. As latency depends on location of VM
 	// and Bucket, and read latency of different buckets may lie in different range.
-	// Hence hence having a separate dynamicTimeout instance at BucketHandle level will
+	// Hence having a separate dynamicTimeout instance at BucketHandle level will
 	// be better
+	if rstc.Min == time.Duration(0) {
+		rstc.Min = defaultDynamicReadReqMinTimeout
+	}
+	if rstc.TargetPercentile == 0 {
+		rstc.TargetPercentile = defaultTargetPercentile
+	}
 	return &withReadStallTimeoutConfig{
 		readStallTimeoutConfig: rstc,
 	}
@@ -183,5 +191,5 @@ type withReadStallTimeoutConfig struct {
 }
 
 func (wrstc *withReadStallTimeoutConfig) ApplyStorageOpt(config *storageConfig) {
-	config.ReadStallTimeoutConfig = wrstc.readStallTimeoutConfig
+	config.readStallTimeoutConfig = wrstc.readStallTimeoutConfig
 }

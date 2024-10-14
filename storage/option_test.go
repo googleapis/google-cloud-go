@@ -94,9 +94,22 @@ func TestApplyStorageOpt(t *testing.T) {
 				useJSONforReads:      false,
 				readAPIWasSet:        false,
 				disableClientMetrics: false,
-				ReadStallTimeoutConfig: &experimental.ReadStallTimeoutConfig{
+				readStallTimeoutConfig: &experimental.ReadStallTimeoutConfig{
 					TargetPercentile: 0.99,
 					Min:              time.Second,
+				},
+			},
+		},
+		{
+			desc: "default dynamic read req stall timeout option",
+			opts: []option.ClientOption{withReadStallTimeout(&experimental.ReadStallTimeoutConfig{})},
+			want: storageConfig{
+				useJSONforReads:      false,
+				readAPIWasSet:        false,
+				disableClientMetrics: false,
+				readStallTimeoutConfig: &experimental.ReadStallTimeoutConfig{
+					TargetPercentile: 0.99,
+					Min:              500 * time.Millisecond,
 				},
 			},
 		},
