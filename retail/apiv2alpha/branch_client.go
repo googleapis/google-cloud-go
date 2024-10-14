@@ -204,8 +204,8 @@ func (c *BranchClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListBranches lists all Branchs under the specified
-// parent Catalog.
+// ListBranches lists all instances of Branch under
+// the specified parent Catalog.
 func (c *BranchClient) ListBranches(ctx context.Context, req *retailpb.ListBranchesRequest, opts ...gax.CallOption) (*retailpb.ListBranchesResponse, error) {
 	return c.internalClient.ListBranches(ctx, req, opts...)
 }
@@ -487,8 +487,8 @@ func (c *branchGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 	return it
 }
 
-// ListBranches lists all Branchs under the specified
-// parent Catalog.
+// ListBranches lists all instances of Branch under
+// the specified parent Catalog.
 func (c *branchRESTClient) ListBranches(ctx context.Context, req *retailpb.ListBranchesRequest, opts ...gax.CallOption) (*retailpb.ListBranchesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
