@@ -39,12 +39,6 @@ import (
 // [storage.NewRangeReader] calls) and only for the XML API. Other read APIs (gRPC & JSON)
 // will be supported soon.
 func WithReadStallTimeout(rstc *ReadStallTimeoutConfig) option.ClientOption {
-	// TODO (raj-prince): To keep separate dynamicDelay instance for different BucketHandle.
-	// Currently, dynamicTimeout is kept at the client and hence shared across all the
-	// BucketHandle, which is not the ideal state. As latency depends on location of VM
-	// and Bucket, and read latency of different buckets may lie in different range.
-	// Hence having a separate dynamicTimeout instance at BucketHandle level will
-	// be better.
 	return internal.WithReadStallTimeout.(func(config *ReadStallTimeoutConfig) option.ClientOption)(rstc)
 }
 
