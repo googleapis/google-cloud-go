@@ -20,8 +20,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage/experimental"
+	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
 	"github.com/google/go-cmp/cmp"
-	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
 	"google.golang.org/api/option"
 )
 
@@ -153,15 +153,15 @@ func TestApplyStorageOpt(t *testing.T) {
 }
 
 func TestSetCustomExporter(t *testing.T) {
-	exp, err := stdoutmetric.New()
+	exporter, err := mexporter.New()
 	if err != nil {
 		t.Errorf("TestSetCustomExporter: %v", err)
 	}
 	want := storageConfig{
-		metricExporter: &exp,
+		metricExporter: &exporter,
 	}
 	var got storageConfig
-	opt := experimental.WithMetricExporter(&exp)
+	opt := experimental.WithMetricExporter(&exporter)
 	if storageOpt, ok := opt.(storageClientOption); ok {
 		storageOpt.ApplyStorageOpt(&got)
 	}
