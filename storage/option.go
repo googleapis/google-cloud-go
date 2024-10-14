@@ -19,19 +19,17 @@ import (
 
 	"os"
 	"strconv"
-	"time"
-
-	storageinternal "cloud.google.com/go/storage/internal"
-	"go.opentelemetry.io/otel/sdk/metric"
 
 	"cloud.google.com/go/storage/experimental"
 	storageinternal "cloud.google.com/go/storage/internal"
+	"go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 )
 
 const (
 	dynamicReadReqIncreaseRateEnv     = "DYNAMIC_READ_REQ_INCREASE_RATE"
+	dynamicReadReqInitialTimeoutEnv   = "DYNAMIC_READ_REQ_INITIAL_TIMEOUT"
 	defaultDynamicReadReqIncreaseRate = 15.0
 	defaultDynamicReqdReqMaxTimeout   = 1 * time.Hour
 	defaultDynamicReadReqMinTimeout   = 500 * time.Millisecond
@@ -82,9 +80,6 @@ type storageConfig struct {
 	disableClientMetrics   bool
 	metricExporter         *metric.Exporter
 	metricInterval         time.Duration
-	useJSONforReads        bool
-	readAPIWasSet          bool
-	disableClientMetrics   bool
 	readStallTimeoutConfig *experimental.ReadStallTimeoutConfig
 }
 

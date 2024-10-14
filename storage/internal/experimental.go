@@ -20,13 +20,13 @@ var (
 	// WithMetricInterval how often to emit metrics when using NewPeriodicReader
 	// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#NewPeriodicReader
 	// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#WithInterval
-	WithMetricInterval any
+	WithMetricInterval any // func (*time.Duration) option.ClientOption
 
 	// WithMetricExporter provide alternate client-side meterProvider
 	// to emit metrics through.
 	// Must implement interface metric.Exporter:
 	// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#Exporter
-	WithMetricExporter any
+	WithMetricExporter any // func (*metric.Exporter) option.ClientOption
 
 	// WithReadStallTimeout is a function which is implemented by storage package.
 	// It takes ReadStallTimeoutConfig as inputs and returns a option.ClientOption.

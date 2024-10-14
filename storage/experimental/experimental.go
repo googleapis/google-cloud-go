@@ -41,7 +41,7 @@ func WithMetricInterval(metricInterval time.Duration) option.ClientOption {
 // Must implement interface metric.Exporter:
 // https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#Exporter
 func WithMetricExporter(ex *metric.Exporter) option.ClientOption {
-	return internal.WithMetricInterval.(func(*metric.Exporter) option.ClientOption)(ex)
+	return internal.WithMetricExporter.(func(*metric.Exporter) option.ClientOption)(ex)
 }
 
 // WithReadStallTimeout provides a [ClientOption] that may be passed to [storage.NewClient].
