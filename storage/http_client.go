@@ -892,8 +892,6 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 				res, err = c.hc.Do(req.WithContext(cancelCtx))
 				if err == nil {
 					reqLatency := time.Since(reqStartTime)
-					fmt.Println(reqLatency)
-					fmt.Println(params.bucket)
 					c.dynamicReadReqStallTimeout.update(params.bucket, reqLatency)
 				} else if errors.Is(err, context.Canceled) {
 					// context.Canceled means operation took more than current dynamicTimeout,
