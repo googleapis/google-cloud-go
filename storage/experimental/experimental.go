@@ -29,15 +29,17 @@ import (
 	"google.golang.org/api/option"
 )
 
-// WithMetricInterval how often to emit metrics when using NewPeriodicReader
+// WithMetricInterval provides a [ClientOption] that may be passed to [storage.NewGrpcClient].
+// It sets how often to emit metrics when using NewPeriodicReader and must be
+// greater than 1 minute.
 // https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#NewPeriodicReader
 // https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#WithInterval
 func WithMetricInterval(metricInterval time.Duration) option.ClientOption {
 	return internal.WithMetricInterval.(func(time.Duration) option.ClientOption)(metricInterval)
 }
 
-// WithMetricExporter provide alternate client-side meterProvider
-// to emit metrics through.
+// WithMetricExporter provides a [ClientOption] that may be passed to [storage.NewGrpcClient].
+// Set an alternate client-side metric Exporter to emit metrics through.
 // Must implement interface metric.Exporter:
 // https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#Exporter
 func WithMetricExporter(ex *metric.Exporter) option.ClientOption {
