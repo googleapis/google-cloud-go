@@ -59,6 +59,14 @@ func newDynamicDelay(targetPercentile float64, increaseRate float64, initialDela
 	if minDelay >= maxDelay {
 		return nil, fmt.Errorf("invalid minDelay (%v) and maxDelay (%v) combination: minDelay must be smaller than maxDelay", minDelay, maxDelay)
 	}
+
+	return newDynamicDelayInternal(targetPercentile, increaseRate, initialDelay, minDelay, maxDelay), nil
+}
+
+// newDynamicDelayInternal constructs the dynamicDelay object without validating the
+// arguments. This is created specifically to use by bucketDelay which validates
+// the arguments in the start. newDynamicDelay is the recommended way to create dynamicDelay.
+func newDynamicDelayInternal(targetPercentile float64, increaseRate float64, initialDelay, minDelay, maxDelay time.Duration) *dynamicDelay {
 	if initialDelay < minDelay {
 		initialDelay = minDelay
 	}
@@ -84,7 +92,7 @@ func newDynamicDelay(targetPercentile float64, increaseRate float64, initialDela
 		maxDelay:       maxDelay,
 		value:          initialDelay,
 		mu:             &sync.RWMutex{},
-	}, nil
+	}
 }
 
 func (d *dynamicDelay) unsafeIncrease() {
@@ -133,6 +141,15 @@ func (d *dynamicDelay) update(latency time.Duration) {
 	}
 }
 
+// update updates the delay value depending on the specified latency.
+func (d *dynamicDelay) unsafeUpdate(latency time.Duration) {
+	if latency > d.value {
+		d.unsafeIncrease()
+	} else {
+		d.unsafeDecrease()
+	}
+}
+
 // getValue returns the desired delay to wait before retry the operation.
 func (d *dynamicDelay) getValue() time.Duration {
 	d.mu.RLock()
@@ -141,7 +158,12 @@ func (d *dynamicDelay) getValue() time.Duration {
 	return d.value
 }
 
-// PrintDelay prints the state of delay, helpful in debugging.
+// getValueUnsafe returns the desired delay to wait before retry the operation.
+func (d *dynamicDelay) getValueUnsafe() time.Duration {
+	return d.value
+}
+
+// printDelay prints the state of delay, helpful in debugging.
 func (d *dynamicDelay) printDelay() {
 	d.mu.RLock()
 	defer d.mu.RUnlock()

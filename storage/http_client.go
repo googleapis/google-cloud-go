@@ -55,7 +55,7 @@ type httpStorageClient struct {
 	scheme                     string
 	settings                   *settings
 	config                     *storageConfig
-	dynamicReadReqStallTimeout *dynamicDelay
+	dynamicReadReqStallTimeout *bucketDelay
 }
 
 // newHTTPStorageClient initializes a new storageClient that uses the HTTP-JSON
@@ -130,10 +130,10 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
 	}
 
-	var dd *dynamicDelay
+	var bd *bucketDelay
 	if config.readStallTimeoutConfig != nil {
 		drrstConfig := config.readStallTimeoutConfig
-		dd, err = newDynamicDelay(
+		bd, err = newBucketDelay(
 			drrstConfig.TargetPercentile,
 			getDynamicReadReqIncreaseRateFromEnv(),
 			getDynamicReadReqInitialTimeoutSecFromEnv(drrstConfig.Min),
@@ -152,7 +152,7 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		scheme:                     u.Scheme,
 		settings:                   s,
 		config:                     &config,
-		dynamicReadReqStallTimeout: dd,
+		dynamicReadReqStallTimeout: bd,
 	}, nil
 }
 
@@ -892,20 +892,22 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 				res, err = c.hc.Do(req.WithContext(cancelCtx))
 				if err == nil {
 					reqLatency := time.Since(reqStartTime)
-					c.dynamicReadReqStallTimeout.update(reqLatency)
+					fmt.Println(reqLatency)
+					fmt.Println(params.bucket)
+					c.dynamicReadReqStallTimeout.update(params.bucket, reqLatency)
 				} else if errors.Is(err, context.Canceled) {
 					// context.Canceled means operation took more than current dynamicTimeout,
 					// hence should be increased.
-					c.dynamicReadReqStallTimeout.increase()
+					c.dynamicReadReqStallTimeout.increase(params.bucket)
 				}
 				done <- true
 			}()
 
 			// Wait until timeout or request is successful.
-			timer := time.After(c.dynamicReadReqStallTimeout.getValue())
+			timer := time.After(c.dynamicReadReqStallTimeout.getValue(params.bucket))
 			select {
 			case <-timer:
-				log.Printf("stalled read-req cancelled after %fs", c.dynamicReadReqStallTimeout.getValue().Seconds())
+				log.Printf("stalled read-req cancelled after %fs", c.dynamicReadReqStallTimeout.getValue(params.bucket).Seconds())
 				cancel()
 				err = context.DeadlineExceeded
 				if res != nil && res.Body != nil {
