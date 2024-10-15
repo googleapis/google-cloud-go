@@ -19,6 +19,7 @@ package spanner
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"math/big"
@@ -211,7 +212,7 @@ func (c *customArray) DecodeSpanner(val interface{}) error {
 	}
 	asSlice := listVal.AsSlice()
 	if len(asSlice) != 4 {
-		return fmt.Errorf("failed to decode customArray: expected array of length 4")
+		return errors.New("failed to decode customArray: expected array of length 4")
 	}
 	for i, vI := range asSlice {
 		vStr, ok := vI.(string)
@@ -1981,6 +1982,14 @@ func TestDecodeValue(t *testing.T) {
 		},
 		{desc: "decode ENUM to protoreflect.Enum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: singerEnumValue},
 		{desc: "decode PROTO to NullProto", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{&singerProtoMsg, true}},
+		{desc: "decode PROTO to *pb.SingerInfo", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn),
+			want: &pb.SingerInfo{
+				SingerId:    proto.Int64(1),
+				BirthDate:   proto.String("January"),
+				Nationality: proto.String("Country1"),
+				Genre:       &singerEnumValue,
+			},
+		},
 		{desc: "decode NULL to NullProto", proto: nullProto(), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{}},
 		{desc: "decode ENUM to NullEnum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{&singerEnumValue, true}},
 		{desc: "decode NULL to NullEnum", proto: nullProto(), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{}},

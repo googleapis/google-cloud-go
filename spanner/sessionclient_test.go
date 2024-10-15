@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"testing"
@@ -260,7 +261,7 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 				client.idleSessions.mu.Lock()
 				defer client.idleSessions.mu.Unlock()
 				if client.idleSessions.multiplexedSession == nil {
-					return fmt.Errorf("multiplexed session not created yet")
+					return errors.New("multiplexed session not created yet")
 				}
 				return nil
 			})
@@ -281,7 +282,7 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 			t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", created, expectedNumSessions)
 		}
 		// Check that all channels are used evenly.
-		channelCounts := make(map[*vkit.Client]int32)
+		channelCounts := make(map[spannerClient]int32)
 		for _, s := range consumer.sessions {
 			channelCounts[s.client]++
 		}
@@ -475,7 +476,7 @@ func TestBatchCreateSessions_ServerExhausted(t *testing.T) {
 	if isMultiplexEnabled {
 		waitFor(t, func() error {
 			if client.idleSessions.multiplexedSession == nil {
-				return fmt.Errorf("multiplexed session not created yet")
+				return errors.New("multiplexed session not created yet")
 			}
 			return nil
 		})

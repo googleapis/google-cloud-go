@@ -45,7 +45,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := run.NewExecutionsClient(ctx)
+//	c, err := run.NewBuildsClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -65,22 +65,17 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := run.NewExecutionsClient(ctx)
+//	c, err := run.NewBuildsClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
 //	defer c.Close()
 //
-//	req := &runpb.CancelExecutionRequest{
+//	req := &runpb.SubmitBuildRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#CancelExecutionRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#SubmitBuildRequest.
 //	}
-//	op, err := c.CancelExecution(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//
-//	resp, err := op.Wait(ctx)
+//	resp, err := c.SubmitBuild(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -89,7 +84,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewExecutionsClient is used for authentication requests and
+// The ctx passed to NewBuildsClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

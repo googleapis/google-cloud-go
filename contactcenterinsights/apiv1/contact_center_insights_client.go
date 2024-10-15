@@ -68,6 +68,8 @@ type CallOptions struct {
 	DeleteIssueModel         []gax.CallOption
 	DeployIssueModel         []gax.CallOption
 	UndeployIssueModel       []gax.CallOption
+	ExportIssueModel         []gax.CallOption
+	ImportIssueModel         []gax.CallOption
 	GetIssue                 []gax.CallOption
 	ListIssues               []gax.CallOption
 	UpdateIssue              []gax.CallOption
@@ -81,6 +83,8 @@ type CallOptions struct {
 	CalculateStats           []gax.CallOption
 	GetSettings              []gax.CallOption
 	UpdateSettings           []gax.CallOption
+	GetEncryptionSpec        []gax.CallOption
+	InitializeEncryptionSpec []gax.CallOption
 	CreateView               []gax.CallOption
 	GetView                  []gax.CallOption
 	ListViews                []gax.CallOption
@@ -360,6 +364,30 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ExportIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ImportIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetIssue: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -505,6 +533,30 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetEncryptionSpec: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		InitializeEncryptionSpec: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -848,6 +900,28 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ExportIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ImportIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetIssue: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -991,6 +1065,28 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetEncryptionSpec: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		InitializeEncryptionSpec: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		CreateView: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1118,6 +1214,10 @@ type internalClient interface {
 	DeployIssueModelOperation(name string) *DeployIssueModelOperation
 	UndeployIssueModel(context.Context, *contactcenterinsightspb.UndeployIssueModelRequest, ...gax.CallOption) (*UndeployIssueModelOperation, error)
 	UndeployIssueModelOperation(name string) *UndeployIssueModelOperation
+	ExportIssueModel(context.Context, *contactcenterinsightspb.ExportIssueModelRequest, ...gax.CallOption) (*ExportIssueModelOperation, error)
+	ExportIssueModelOperation(name string) *ExportIssueModelOperation
+	ImportIssueModel(context.Context, *contactcenterinsightspb.ImportIssueModelRequest, ...gax.CallOption) (*ImportIssueModelOperation, error)
+	ImportIssueModelOperation(name string) *ImportIssueModelOperation
 	GetIssue(context.Context, *contactcenterinsightspb.GetIssueRequest, ...gax.CallOption) (*contactcenterinsightspb.Issue, error)
 	ListIssues(context.Context, *contactcenterinsightspb.ListIssuesRequest, ...gax.CallOption) (*contactcenterinsightspb.ListIssuesResponse, error)
 	UpdateIssue(context.Context, *contactcenterinsightspb.UpdateIssueRequest, ...gax.CallOption) (*contactcenterinsightspb.Issue, error)
@@ -1131,6 +1231,9 @@ type internalClient interface {
 	CalculateStats(context.Context, *contactcenterinsightspb.CalculateStatsRequest, ...gax.CallOption) (*contactcenterinsightspb.CalculateStatsResponse, error)
 	GetSettings(context.Context, *contactcenterinsightspb.GetSettingsRequest, ...gax.CallOption) (*contactcenterinsightspb.Settings, error)
 	UpdateSettings(context.Context, *contactcenterinsightspb.UpdateSettingsRequest, ...gax.CallOption) (*contactcenterinsightspb.Settings, error)
+	GetEncryptionSpec(context.Context, *contactcenterinsightspb.GetEncryptionSpecRequest, ...gax.CallOption) (*contactcenterinsightspb.EncryptionSpec, error)
+	InitializeEncryptionSpec(context.Context, *contactcenterinsightspb.InitializeEncryptionSpecRequest, ...gax.CallOption) (*InitializeEncryptionSpecOperation, error)
+	InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation
 	CreateView(context.Context, *contactcenterinsightspb.CreateViewRequest, ...gax.CallOption) (*contactcenterinsightspb.View, error)
 	GetView(context.Context, *contactcenterinsightspb.GetViewRequest, ...gax.CallOption) (*contactcenterinsightspb.View, error)
 	ListViews(context.Context, *contactcenterinsightspb.ListViewsRequest, ...gax.CallOption) *ViewIterator
@@ -1182,11 +1285,13 @@ func (c *Client) Connection() *grpc.ClientConn {
 }
 
 // CreateConversation creates a conversation.
+// Note that this method does not support audio transcription or redaction.
+// Use conversations.upload instead.
 func (c *Client) CreateConversation(ctx context.Context, req *contactcenterinsightspb.CreateConversationRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
 	return c.internalClient.CreateConversation(ctx, req, opts...)
 }
 
-// UploadConversation create a longrunning conversation upload operation. This method differs
+// UploadConversation create a long-running conversation upload operation. This method differs
 // from CreateConversation by allowing audio transcription and optional DLP
 // redaction.
 func (c *Client) UploadConversation(ctx context.Context, req *contactcenterinsightspb.UploadConversationRequest, opts ...gax.CallOption) (*UploadConversationOperation, error) {
@@ -1352,6 +1457,28 @@ func (c *Client) UndeployIssueModelOperation(name string) *UndeployIssueModelOpe
 	return c.internalClient.UndeployIssueModelOperation(name)
 }
 
+// ExportIssueModel exports an issue model to the provided destination.
+func (c *Client) ExportIssueModel(ctx context.Context, req *contactcenterinsightspb.ExportIssueModelRequest, opts ...gax.CallOption) (*ExportIssueModelOperation, error) {
+	return c.internalClient.ExportIssueModel(ctx, req, opts...)
+}
+
+// ExportIssueModelOperation returns a new ExportIssueModelOperation from a given name.
+// The name must be that of a previously created ExportIssueModelOperation, possibly from a different process.
+func (c *Client) ExportIssueModelOperation(name string) *ExportIssueModelOperation {
+	return c.internalClient.ExportIssueModelOperation(name)
+}
+
+// ImportIssueModel imports an issue model from a Cloud Storage bucket.
+func (c *Client) ImportIssueModel(ctx context.Context, req *contactcenterinsightspb.ImportIssueModelRequest, opts ...gax.CallOption) (*ImportIssueModelOperation, error) {
+	return c.internalClient.ImportIssueModel(ctx, req, opts...)
+}
+
+// ImportIssueModelOperation returns a new ImportIssueModelOperation from a given name.
+// The name must be that of a previously created ImportIssueModelOperation, possibly from a different process.
+func (c *Client) ImportIssueModelOperation(name string) *ImportIssueModelOperation {
+	return c.internalClient.ImportIssueModelOperation(name)
+}
+
 // GetIssue gets an issue.
 func (c *Client) GetIssue(ctx context.Context, req *contactcenterinsightspb.GetIssueRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Issue, error) {
 	return c.internalClient.GetIssue(ctx, req, opts...)
@@ -1415,6 +1542,26 @@ func (c *Client) GetSettings(ctx context.Context, req *contactcenterinsightspb.G
 // UpdateSettings updates project-level settings.
 func (c *Client) UpdateSettings(ctx context.Context, req *contactcenterinsightspb.UpdateSettingsRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Settings, error) {
 	return c.internalClient.UpdateSettings(ctx, req, opts...)
+}
+
+// GetEncryptionSpec gets location-level encryption key specification.
+func (c *Client) GetEncryptionSpec(ctx context.Context, req *contactcenterinsightspb.GetEncryptionSpecRequest, opts ...gax.CallOption) (*contactcenterinsightspb.EncryptionSpec, error) {
+	return c.internalClient.GetEncryptionSpec(ctx, req, opts...)
+}
+
+// InitializeEncryptionSpec initializes a location-level encryption key specification.  An error will
+// be thrown if the location has resources already created before the
+// initialization. Once the encryption specification is initialized at a
+// location, it is immutable and all newly created resources under the
+// location will be encrypted with the existing specification.
+func (c *Client) InitializeEncryptionSpec(ctx context.Context, req *contactcenterinsightspb.InitializeEncryptionSpecRequest, opts ...gax.CallOption) (*InitializeEncryptionSpecOperation, error) {
+	return c.internalClient.InitializeEncryptionSpec(ctx, req, opts...)
+}
+
+// InitializeEncryptionSpecOperation returns a new InitializeEncryptionSpecOperation from a given name.
+// The name must be that of a previously created InitializeEncryptionSpecOperation, possibly from a different process.
+func (c *Client) InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation {
+	return c.internalClient.InitializeEncryptionSpecOperation(name)
 }
 
 // CreateView creates a view.
@@ -2084,6 +2231,46 @@ func (c *gRPCClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 	}, nil
 }
 
+func (c *gRPCClient) ExportIssueModel(ctx context.Context, req *contactcenterinsightspb.ExportIssueModelRequest, opts ...gax.CallOption) (*ExportIssueModelOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportIssueModel[0:len((*c.CallOptions).ExportIssueModel):len((*c.CallOptions).ExportIssueModel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ExportIssueModel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportIssueModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ImportIssueModel(ctx context.Context, req *contactcenterinsightspb.ImportIssueModelRequest, opts ...gax.CallOption) (*ImportIssueModelOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ImportIssueModel[0:len((*c.CallOptions).ImportIssueModel):len((*c.CallOptions).ImportIssueModel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ImportIssueModel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ImportIssueModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) GetIssue(ctx context.Context, req *contactcenterinsightspb.GetIssueRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Issue, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2338,6 +2525,44 @@ func (c *gRPCClient) UpdateSettings(ctx context.Context, req *contactcenterinsig
 	return resp, nil
 }
 
+func (c *gRPCClient) GetEncryptionSpec(ctx context.Context, req *contactcenterinsightspb.GetEncryptionSpecRequest, opts ...gax.CallOption) (*contactcenterinsightspb.EncryptionSpec, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetEncryptionSpec[0:len((*c.CallOptions).GetEncryptionSpec):len((*c.CallOptions).GetEncryptionSpec)], opts...)
+	var resp *contactcenterinsightspb.EncryptionSpec
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetEncryptionSpec(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) InitializeEncryptionSpec(ctx context.Context, req *contactcenterinsightspb.InitializeEncryptionSpecRequest, opts ...gax.CallOption) (*InitializeEncryptionSpecOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "encryption_spec.name", url.QueryEscape(req.GetEncryptionSpec().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).InitializeEncryptionSpec[0:len((*c.CallOptions).InitializeEncryptionSpec):len((*c.CallOptions).InitializeEncryptionSpec)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.InitializeEncryptionSpec(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &InitializeEncryptionSpecOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) CreateView(ctx context.Context, req *contactcenterinsightspb.CreateViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -2531,6 +2756,8 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 }
 
 // CreateConversation creates a conversation.
+// Note that this method does not support audio transcription or redaction.
+// Use conversations.upload instead.
 func (c *restClient) CreateConversation(ctx context.Context, req *contactcenterinsightspb.CreateConversationRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetConversation()
@@ -2600,7 +2827,7 @@ func (c *restClient) CreateConversation(ctx context.Context, req *contactcenteri
 	return resp, nil
 }
 
-// UploadConversation create a longrunning conversation upload operation. This method differs
+// UploadConversation create a long-running conversation upload operation. This method differs
 // from CreateConversation by allowing audio transcription and optional DLP
 // redaction.
 func (c *restClient) UploadConversation(ctx context.Context, req *contactcenterinsightspb.UploadConversationRequest, opts ...gax.CallOption) (*UploadConversationOperation, error) {
@@ -2834,6 +3061,9 @@ func (c *restClient) ListConversations(ctx context.Context, req *contactcenterin
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -3967,6 +4197,146 @@ func (c *restClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 	}, nil
 }
 
+// ExportIssueModel exports an issue model to the provided destination.
+func (c *restClient) ExportIssueModel(ctx context.Context, req *contactcenterinsightspb.ExportIssueModelRequest, opts ...gax.CallOption) (*ExportIssueModelOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:export", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ExportIssueModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ImportIssueModel imports an issue model from a Cloud Storage bucket.
+func (c *restClient) ImportIssueModel(ctx context.Context, req *contactcenterinsightspb.ImportIssueModelRequest, opts ...gax.CallOption) (*ImportIssueModelOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/issueModels:import", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ImportIssueModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetIssue gets an issue.
 func (c *restClient) GetIssue(ctx context.Context, req *contactcenterinsightspb.GetIssueRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Issue, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -4795,6 +5165,140 @@ func (c *restClient) UpdateSettings(ctx context.Context, req *contactcenterinsig
 	return resp, nil
 }
 
+// GetEncryptionSpec gets location-level encryption key specification.
+func (c *restClient) GetEncryptionSpec(ctx context.Context, req *contactcenterinsightspb.GetEncryptionSpecRequest, opts ...gax.CallOption) (*contactcenterinsightspb.EncryptionSpec, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetEncryptionSpec[0:len((*c.CallOptions).GetEncryptionSpec):len((*c.CallOptions).GetEncryptionSpec)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &contactcenterinsightspb.EncryptionSpec{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// InitializeEncryptionSpec initializes a location-level encryption key specification.  An error will
+// be thrown if the location has resources already created before the
+// initialization. Once the encryption specification is initialized at a
+// location, it is immutable and all newly created resources under the
+// location will be encrypted with the existing specification.
+func (c *restClient) InitializeEncryptionSpec(ctx context.Context, req *contactcenterinsightspb.InitializeEncryptionSpecRequest, opts ...gax.CallOption) (*InitializeEncryptionSpecOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:initialize", req.GetEncryptionSpec().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "encryption_spec.name", url.QueryEscape(req.GetEncryptionSpec().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &InitializeEncryptionSpecOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // CreateView creates a view.
 func (c *restClient) CreateView(ctx context.Context, req *contactcenterinsightspb.CreateViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -5447,6 +5951,42 @@ func (c *restClient) ExportInsightsDataOperation(name string) *ExportInsightsDat
 	}
 }
 
+// ExportIssueModelOperation returns a new ExportIssueModelOperation from a given name.
+// The name must be that of a previously created ExportIssueModelOperation, possibly from a different process.
+func (c *gRPCClient) ExportIssueModelOperation(name string) *ExportIssueModelOperation {
+	return &ExportIssueModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExportIssueModelOperation returns a new ExportIssueModelOperation from a given name.
+// The name must be that of a previously created ExportIssueModelOperation, possibly from a different process.
+func (c *restClient) ExportIssueModelOperation(name string) *ExportIssueModelOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ExportIssueModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ImportIssueModelOperation returns a new ImportIssueModelOperation from a given name.
+// The name must be that of a previously created ImportIssueModelOperation, possibly from a different process.
+func (c *gRPCClient) ImportIssueModelOperation(name string) *ImportIssueModelOperation {
+	return &ImportIssueModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ImportIssueModelOperation returns a new ImportIssueModelOperation from a given name.
+// The name must be that of a previously created ImportIssueModelOperation, possibly from a different process.
+func (c *restClient) ImportIssueModelOperation(name string) *ImportIssueModelOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ImportIssueModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // IngestConversationsOperation returns a new IngestConversationsOperation from a given name.
 // The name must be that of a previously created IngestConversationsOperation, possibly from a different process.
 func (c *gRPCClient) IngestConversationsOperation(name string) *IngestConversationsOperation {
@@ -5460,6 +6000,24 @@ func (c *gRPCClient) IngestConversationsOperation(name string) *IngestConversati
 func (c *restClient) IngestConversationsOperation(name string) *IngestConversationsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &IngestConversationsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// InitializeEncryptionSpecOperation returns a new InitializeEncryptionSpecOperation from a given name.
+// The name must be that of a previously created InitializeEncryptionSpecOperation, possibly from a different process.
+func (c *gRPCClient) InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation {
+	return &InitializeEncryptionSpecOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// InitializeEncryptionSpecOperation returns a new InitializeEncryptionSpecOperation from a given name.
+// The name must be that of a previously created InitializeEncryptionSpecOperation, possibly from a different process.
+func (c *restClient) InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &InitializeEncryptionSpecOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

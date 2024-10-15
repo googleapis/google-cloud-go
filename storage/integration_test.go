@@ -59,7 +59,6 @@ import (
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -93,7 +92,6 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	grpc.EnableTracing = true
 	cleanup := initIntegrationTest()
 	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
@@ -4728,7 +4726,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 }
 
 func TestIntegration_ServiceAccount(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipJSONReads(skipGRPC("serviceaccount is not implemented"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, _ string, client *Client) {
 		s, err := client.ServiceAccount(ctx, testutil.ProjID())
 		if err != nil {
@@ -5262,7 +5260,7 @@ func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 }
 
 func TestIntegration_HMACKey(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "no reads in test")
+	ctx := skipJSONReads(skipGRPC("hmac not implemented"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, _ string, client *Client) {
 		client.SetRetry(WithPolicy(RetryAlways))
 

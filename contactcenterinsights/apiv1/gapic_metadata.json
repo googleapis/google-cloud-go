@@ -100,6 +100,11 @@
                 "ExportInsightsData"
               ]
             },
+            "ExportIssueModel": {
+              "methods": [
+                "ExportIssueModel"
+              ]
+            },
             "GetAnalysis": {
               "methods": [
                 "GetAnalysis"
@@ -108,6 +113,11 @@
             "GetConversation": {
               "methods": [
                 "GetConversation"
+              ]
+            },
+            "GetEncryptionSpec": {
+              "methods": [
+                "GetEncryptionSpec"
               ]
             },
             "GetIssue": {
@@ -140,9 +150,19 @@
                 "GetView"
               ]
             },
+            "ImportIssueModel": {
+              "methods": [
+                "ImportIssueModel"
+              ]
+            },
             "IngestConversations": {
               "methods": [
                 "IngestConversations"
+              ]
+            },
+            "InitializeEncryptionSpec": {
+              "methods": [
+                "InitializeEncryptionSpec"
               ]
             },
             "ListAnalyses": {
@@ -315,6 +335,11 @@
                 "ExportInsightsData"
               ]
             },
+            "ExportIssueModel": {
+              "methods": [
+                "ExportIssueModel"
+              ]
+            },
             "GetAnalysis": {
               "methods": [
                 "GetAnalysis"
@@ -323,6 +348,11 @@
             "GetConversation": {
               "methods": [
                 "GetConversation"
+              ]
+            },
+            "GetEncryptionSpec": {
+              "methods": [
+                "GetEncryptionSpec"
               ]
             },
             "GetIssue": {
@@ -355,9 +385,19 @@
                 "GetView"
               ]
             },
+            "ImportIssueModel": {
+              "methods": [
+                "ImportIssueModel"
+              ]
+            },
             "IngestConversations": {
               "methods": [
                 "IngestConversations"
+              ]
+            },
+            "InitializeEncryptionSpec": {
+              "methods": [
+                "InitializeEncryptionSpec"
               ]
             },
             "ListAnalyses": {

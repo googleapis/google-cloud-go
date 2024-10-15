@@ -167,6 +167,36 @@ func ExampleProductClient_DeleteProduct() {
 	}
 }
 
+func ExampleProductClient_ExportProducts() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewProductClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.ExportProductsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#ExportProductsRequest.
+	}
+	op, err := c.ExportProducts(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleProductClient_GetProduct() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

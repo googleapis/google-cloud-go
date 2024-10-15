@@ -27,6 +27,12 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *LicensedUserIterator) All() iter.Seq2[*procurementpb.LicensedUser, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *OrderIterator) All() iter.Seq2[*procurementpb.Order, error] {
 	return iterator.RangeAdapter(it.Next)
 }
