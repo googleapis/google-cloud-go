@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.6.1...parallelstore/v0.7.0) (2024-10-09)
+
+
+### Features
+
+* **parallelstore:** Add UPGRADING state to Parallelstore state ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **parallelstore:** Cleanup of Parallelstore API descriptions ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **parallelstore:** Minor documentation formatting fix for Parallelstore ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **parallelstore:** Minor documentation formatting fix for Parallelstore ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
 ## [0.6.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.6.0...parallelstore/v0.6.1) (2024-09-12)
 
 

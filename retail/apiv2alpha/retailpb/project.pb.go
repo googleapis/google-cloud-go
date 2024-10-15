@@ -493,8 +493,10 @@ type AlertConfig_AlertPolicy struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The feature that provides alerting capability. Supported value is
-	// only `search-data-quality` for now.
+	// The feature that provides alerting capability.
+	// Supported value:
+	// - `search-data-quality` for retail search customers.
+	// - `conv-data-quality` for retail conversation customers.
 	AlertGroup string `protobuf:"bytes,1,opt,name=alert_group,json=alertGroup,proto3" json:"alert_group,omitempty"`
 	// The enrollment status of a customer.
 	EnrollStatus AlertConfig_AlertPolicy_EnrollStatus `protobuf:"varint,2,opt,name=enroll_status,json=enrollStatus,proto3,enum=google.cloud.retail.v2alpha.AlertConfig_AlertPolicy_EnrollStatus" json:"enroll_status,omitempty"`
