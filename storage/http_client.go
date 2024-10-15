@@ -22,6 +22,7 @@ import (
 	"hash/crc32"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -904,6 +905,7 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 			timer := time.After(c.dynamicReadReqStallTimeout.getValue())
 			select {
 			case <-timer:
+				log.Printf("stalled read-req cancelled after %fs", c.dynamicReadReqStallTimeout.getValue().Seconds())
 				cancel()
 				err = context.DeadlineExceeded
 				if res != nil && res.Body != nil {
