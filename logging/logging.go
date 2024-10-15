@@ -890,7 +890,7 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 	//    "X-Cloud-Trace-Context: 105445aa7843bc8bf206b12000100000/1;o=1"
 	//
 	// We expect:
-	//   * traceID (optional, 32-bit hex string):  "105445aa7843bc8bf206b12000100000"
+	//   * traceID (optional, 128-bit hex string):  "105445aa7843bc8bf206b12000100000"
 	//   * spanID (optional, 16-bit hex string):   "0000000000000001" (needs to be converted into 16 bit hex string)
 	//   * traceSampled (optional, bool): 	       true
 	matches := validXCloudTraceContext.FindStringSubmatch(s)
@@ -899,8 +899,9 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 		traceID, spanID, traceSampled = matches[1], matches[2], matches[3] == "1"
 	}
 
-	if spanID == "0" {
-		spanID = ""
+	// Pad trace ID with 0s if too short
+	if traceID != "" {
+		traceID = fmt.Sprintf("%032s", traceID)
 	}
 
 	if spanID != "" {
