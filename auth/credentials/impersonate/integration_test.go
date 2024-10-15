@@ -58,15 +58,28 @@ func TestMain(m *testing.M) {
 	readerEmail = os.Getenv(envReaderEmail)
 	writerEmail = os.Getenv(envWriterEmail)
 
-	if !testing.Short() && (baseKeyFile == "" ||
-		readerKeyFile == "" ||
-		readerEmail == "" ||
-		writerEmail == "" ||
-		projectID == "") {
-		log.Println("required environment variable not set, skipping")
-		os.Exit(0)
+	if !testing.Short() {
+		missing := []string{}
+		if baseKeyFile == "" {
+			missing = append(missing, credsfile.GoogleAppCredsEnvVar)
+		}
+		if projectID == "" {
+			missing = append(missing, envProjectID)
+		}
+		if readerKeyFile == "" {
+			missing = append(missing, envReaderCreds)
+		}
+		if readerEmail == "" {
+			missing = append(missing, envReaderEmail)
+		}
+		if writerEmail == "" {
+			missing = append(missing, envWriterEmail)
+		}
+		if len(missing) > 0 {
+			log.Printf("skipping, required environment variable(s) not set: %s\n", missing)
+			os.Exit(0)
+		}
 	}
-
 	os.Exit(m.Run())
 }
 
