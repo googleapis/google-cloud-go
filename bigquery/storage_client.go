@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"runtime"
 
@@ -87,7 +88,7 @@ func newReadClient(ctx context.Context, projectID string, opts ...option.ClientO
 // close releases resources held by the client.
 func (c *readClient) close() error {
 	if c.rawClient == nil {
-		return fmt.Errorf("already closed")
+		return errors.New("already closed")
 	}
 	c.rawClient.Close()
 	c.rawClient = nil

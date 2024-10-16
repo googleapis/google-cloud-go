@@ -267,7 +267,7 @@ func toAutomatedBackupConfigProto(automatedBackupConfig TableAutomatedBackupConf
 	case *TableAutomatedBackupPolicy:
 		return backupConfig.toProto()
 	default:
-		return nil, fmt.Errorf("error: Unknown type of automated backup configuration")
+		return nil, errors.New("error: Unknown type of automated backup configuration")
 	}
 }
 
@@ -660,7 +660,7 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 				Frequency:       res.GetAutomatedBackupPolicy().GetFrequency().AsDuration(),
 			}
 		default:
-			return nil, fmt.Errorf("error: Unknown type of automated backup configuration")
+			return nil, errors.New("error: Unknown type of automated backup configuration")
 		}
 	}
 

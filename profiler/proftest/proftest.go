@@ -500,7 +500,7 @@ func (tr *GCETestRunner) PollAndLogSerialPort(ctx context.Context, inst *Instanc
 				return output, nil
 			}
 			if strings.Contains(output, errorString) {
-				return output, fmt.Errorf("failed to execute the prober benchmark script")
+				return output, errors.New("failed to execute the prober benchmark script")
 			}
 		}
 	}

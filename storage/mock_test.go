@@ -17,7 +17,7 @@ package storage
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -53,7 +53,7 @@ func (t *mockTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		t.gotBody = bytes
 	}
 	if len(t.results) == 0 {
-		return nil, fmt.Errorf("error handling request")
+		return nil, errors.New("error handling request")
 	}
 	result := t.results[0]
 	t.results = t.results[1:]

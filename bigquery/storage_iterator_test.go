@@ -83,9 +83,9 @@ func TestStorageIteratorRetry(t *testing.T) {
 			ctx:  cancelledCtx,
 			desc: "context cancelled/deadline exceeded",
 			errors: []error{
-				fmt.Errorf("random error"),
-				fmt.Errorf("another random error"),
-				fmt.Errorf("yet another random error"),
+				errors.New("random error"),
+				errors.New("another random error"),
+				errors.New("yet another random error"),
 			},
 			wantFail: true,
 		},

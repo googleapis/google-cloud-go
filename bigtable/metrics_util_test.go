@@ -17,6 +17,7 @@ limitations under the License.
 package bigtable
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 
@@ -42,7 +43,7 @@ func TestExtractServerLatency(t *testing.T) {
 			headerMD:    metadata.MD{},
 			trailerMD:   metadata.MD{},
 			wantLatency: 0,
-			wantError:   fmt.Errorf("strconv.ParseFloat: parsing \"\": invalid syntax"),
+			wantError:   errors.New("strconv.ParseFloat: parsing \"\": invalid syntax"),
 		},
 		{
 			desc: "Server latency in header",
@@ -118,7 +119,7 @@ func TestExtractLocation(t *testing.T) {
 			trailerMD:   metadata.MD{},
 			wantCluster: defaultCluster,
 			wantZone:    defaultZone,
-			wantError:   fmt.Errorf("failed to get location metadata"),
+			wantError:   errors.New("failed to get location metadata"),
 		},
 		{
 			desc:        "Location metadata in header",
@@ -152,7 +153,7 @@ func TestExtractLocation(t *testing.T) {
 			trailerMD:   metadata.MD{},
 			wantCluster: defaultCluster,
 			wantZone:    defaultZone,
-			wantError:   fmt.Errorf(invalidFormatErr),
+			wantError:   errors.New(invalidFormatErr),
 		},
 		{
 			desc:     "Invalid location metadata format in trailer",
@@ -162,7 +163,7 @@ func TestExtractLocation(t *testing.T) {
 			},
 			wantCluster: defaultCluster,
 			wantZone:    defaultZone,
-			wantError:   fmt.Errorf(invalidFormatErr),
+			wantError:   errors.New(invalidFormatErr),
 		},
 	}
 

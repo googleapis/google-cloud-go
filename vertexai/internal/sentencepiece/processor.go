@@ -15,6 +15,7 @@
 package sentencepiece
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -114,7 +115,7 @@ func NewProcessor(protoReader io.Reader) (*Processor, error) {
 			userDefined[piece.GetPiece()] = true
 		} else if piece.GetType() == model.ModelProto_SentencePiece_UNKNOWN {
 			if unkID > 0 {
-				return nil, fmt.Errorf("unk redefined")
+				return nil, errors.New("unk redefined")
 			}
 			unkID = i
 		} else if piece.GetType() == model.ModelProto_SentencePiece_BYTE {
@@ -130,7 +131,7 @@ func NewProcessor(protoReader io.Reader) (*Processor, error) {
 	}
 
 	if unkID < 0 {
-		return nil, fmt.Errorf("unk symbol is not defined")
+		return nil, errors.New("unk symbol is not defined")
 	}
 
 	// In case byte_fallback is specified, make sure that all 256 possible byte

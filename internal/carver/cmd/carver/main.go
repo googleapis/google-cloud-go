@@ -17,6 +17,7 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -119,7 +120,7 @@ func main() {
 
 func (c *carver) Run() ([]string, error) {
 	if c.rootMod.path == "" || c.childMod.path == "" || c.repoMetadataPath == "" {
-		return nil, fmt.Errorf("all required flags were not provided")
+		return nil, errors.New("all required flags were not provided")
 	}
 	if err := c.CreateChildCommonFiles(); err != nil {
 		return nil, fmt.Errorf("failed to create readme: %v", err)
@@ -251,7 +252,7 @@ func (c *carver) CreateChildCommonFiles() error {
 	if name == "" {
 		name = meta[c.childMod.importPath]
 		if name == "" {
-			return fmt.Errorf("unable to determine a name from API metadata, please set -name flag")
+			return errors.New("unable to determine a name from API metadata, please set -name flag")
 		}
 	}
 	readmeData := struct {

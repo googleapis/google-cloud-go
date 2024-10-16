@@ -213,7 +213,7 @@ func makeParent(parent string) (string, error) {
 		if parent == DetectProjectID {
 			resource := detectResourceInternal()
 			if resource == nil {
-				return parent, fmt.Errorf("could not determine project ID from environment")
+				return parent, errors.New("could not determine project ID from environment")
 			}
 			parent = resource.Labels["project_id"]
 		}
@@ -221,7 +221,7 @@ func makeParent(parent string) (string, error) {
 	}
 	prefix := strings.Split(parent, "/")[0]
 	if prefix != "projects" && prefix != "folders" && prefix != "billingAccounts" && prefix != "organizations" {
-		return parent, fmt.Errorf("parent parameter must start with 'projects/' 'folders/' 'billingAccounts/' or 'organizations/'")
+		return parent, errors.New("parent parameter must start with 'projects/' 'folders/' 'billingAccounts/' or 'organizations/'")
 	}
 	return parent, nil
 }
