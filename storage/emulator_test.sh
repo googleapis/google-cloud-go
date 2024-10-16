@@ -34,7 +34,7 @@ fi
 export STORAGE_EMULATOR_HOST="http://localhost:9000"
 export STORAGE_EMULATOR_HOST_GRPC="localhost:8888"
 
-DEFAULT_IMAGE_NAME='gcr.io/cloud-devrel-public-resources/storage-testbench'
+DEFAULT_IMAGE_NAME='gcr.io/gcs-sdk-cloud-builds/storage-testbench-prelaunch'
 DEFAULT_IMAGE_TAG='latest'
 DOCKER_IMAGE=${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG}
 CONTAINER_NAME=storage_testbench
