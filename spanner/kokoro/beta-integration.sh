@@ -42,6 +42,7 @@ set -x
 
 # cd to project dir on Kokoro instance
 cd github/google-cloud-go
+git config --global --add safe.directory "$(pwd)/./.git"
 
 go version
 
