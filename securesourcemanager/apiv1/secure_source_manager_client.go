@@ -1485,6 +1485,9 @@ func (c *restClient) ListRepositories(ctx context.Context, req *securesourcemana
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
+		if req.GetInstance() != "" {
+			params.Add("instance", fmt.Sprintf("%v", req.GetInstance()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
