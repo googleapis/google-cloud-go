@@ -33,8 +33,9 @@ import (
 // Cloud Storage. If the timeout elapses with no response from the server, the request
 // is automatically retried.
 // The timeout is initially set to ReadStallTimeoutConfig.Min. The client tracks
-// latency across all read requests from the client, and can adjust the timeout higher
-// to the target percentile when latency from the server is high.
+// latency across all read requests from the client for each bucket accessed, and can
+// adjust the timeout higher to the target percentile when latency for request to that
+// bucket is high.
 // Currently, this is supported only for downloads ([storage.NewReader] and
 // [storage.NewRangeReader] calls) and only for the XML API. Other read APIs (gRPC & JSON)
 // will be supported soon.
