@@ -49,9 +49,9 @@ type CreateControlRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Full resource name of parent data store. Format:
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/dataStores/{data_store_id}`
+	// `projects/{project}/locations/{location}/collections/{collection_id}/dataStores/{data_store_id}`
 	// or
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/engines/{engine_id}`.
+	// `projects/{project}/locations/{location}/collections/{collection_id}/engines/{engine_id}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The Control to create.
 	Control *Control `protobuf:"bytes,2,opt,name=control,proto3" json:"control,omitempty"`
@@ -188,7 +188,7 @@ type DeleteControlRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the Control to delete. Format:
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/dataStores/{data_store_id}/controls/{control_id}`
+	// `projects/{project}/locations/{location}/collections/{collection_id}/dataStores/{data_store_id}/controls/{control_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -238,7 +238,7 @@ type GetControlRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the Control to get. Format:
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/dataStores/{data_store_id}/controls/{control_id}`
+	// `projects/{project}/locations/{location}/collections/{collection_id}/dataStores/{data_store_id}/controls/{control_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -288,9 +288,9 @@ type ListControlsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The data store resource name. Format:
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/dataStores/{data_store_id}`
+	// `projects/{project}/locations/{location}/collections/{collection_id}/dataStores/{data_store_id}`
 	// or
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/engines/{engine_id}`.
+	// `projects/{project}/locations/{location}/collections/{collection_id}/engines/{engine_id}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. Maximum number of results to return. If unspecified, defaults
 	// to 50. Max allowed value is 1000.

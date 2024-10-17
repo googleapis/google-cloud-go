@@ -1457,6 +1457,7 @@ func TestRetryDeadlineExceedeEmulated(t *testing.T) {
 // Test validates the retry for stalled read-request, when client is created with
 // WithReadStallTimeout.
 func TestRetryReadReqStallEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
 	multiTransportTest(skipJSONReads(skipGRPC("not supported"), "not supported"), t, func(t *testing.T, ctx context.Context, project, _ string, client *Client) {
 		// Setup bucket and upload object.
 		bucket := fmt.Sprintf("http-bucket-%d", time.Now().Nanosecond())

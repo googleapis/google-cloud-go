@@ -381,7 +381,7 @@ type TuningJob_DistillationSpec struct {
 }
 
 type TuningJob_PartnerModelTuningSpec struct {
-	// Tuning Spec for open sourced and third party Partner models.
+	// Tuning Spec for open sourced and third party partner models.
 	PartnerModelTuningSpec *PartnerModelTuningSpec `protobuf:"bytes,21,opt,name=partner_model_tuning_spec,json=partnerModelTuningSpec,proto3,oneof"`
 }
 
