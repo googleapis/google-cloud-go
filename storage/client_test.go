@@ -1456,7 +1456,7 @@ func TestRetryDeadlineExceedeEmulated(t *testing.T) {
 
 // Test validates the retry for stalled read-request, when client is created with
 // WithReadStallTimeout.
-func TestRetryReadReqStallEmulated(t *testing.T) {
+func TestRetryReadStallEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -1484,8 +1484,10 @@ func TestRetryReadReqStallEmulated(t *testing.T) {
 		t.Fatalf("createObject: %v", err)
 	}
 
-	// Plant stall at start for 1s.
-	instructions := map[string][]string{"storage.objects.get": {"stall-for-1s-after-0K"}}
+	// Plant stall at start for 10s.
+	// The ReadStallTimeout should cause the stalled request to be stopped and
+	// retried before hitting the 5s context deadline.
+	instructions := map[string][]string{"storage.objects.get": {"stall-for-10s-after-0K"}}
 	testID := createRetryTest(t, client.tc, instructions)
 
 	ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
