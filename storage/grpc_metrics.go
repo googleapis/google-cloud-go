@@ -191,7 +191,7 @@ func newGRPCMetricContext(ctx context.Context, project string, config storageCon
 		createHistogramView("grpc.client.attempt.sent_total_compressed_message_size", sizeHistogramBoundaries()),
 	}
 	interval := time.Minute
-	if config.metricInterval > time.Minute {
+	if config.metricInterval > 0 {
 		interval = config.metricInterval
 	}
 	meterOpts = append(meterOpts, metric.WithReader(metric.NewPeriodicReader(&exporterLogSuppressor{exporter: exporter}, metric.WithInterval(interval))),
