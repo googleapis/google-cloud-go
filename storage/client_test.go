@@ -1466,7 +1466,7 @@ func TestRetryReadReqStallEmulated(t *testing.T) {
 	client, err := NewClient(ctx, experimental.WithReadStallTimeout(
 		&experimental.ReadStallTimeoutConfig{
 			TargetPercentile: 0.99,
-			Min:              500 * time.Millisecond,
+			Min:              10 * time.Millisecond,
 		}))
 	if err != nil {
 		t.Fatalf("storage.NewClient: %v", err)
@@ -1484,7 +1484,7 @@ func TestRetryReadReqStallEmulated(t *testing.T) {
 		t.Fatalf("createObject: %v", err)
 	}
 
-	// Plant stall at start for 2s.
+	// Plant stall at start for 1s.
 	instructions := map[string][]string{"storage.objects.get": {"stall-for-1s-after-0K"}}
 	testID := createRetryTest(t, client.tc, instructions)
 
