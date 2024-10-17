@@ -19,7 +19,6 @@ package spanner
 import (
 	"context"
 	"fmt"
-	"os"
 	"sort"
 	"testing"
 
@@ -39,8 +38,6 @@ import (
 )
 
 func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
-	os.Setenv("SPANNER_ENABLE_BUILTIN_METRICS", "true")
-	defer os.Unsetenv("SPANNER_ENABLE_BUILTIN_METRICS")
 	ctx := context.Background()
 	clientUID := "test-uid"
 	createSessionRPC := "Spanner.BatchCreateSessions"
