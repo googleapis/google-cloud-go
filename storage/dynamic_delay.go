@@ -36,7 +36,7 @@ type dynamicDelay struct {
 	mu *sync.RWMutex
 }
 
-// validateDynamicDelayParams ensures
+// validateDynamicDelayParams ensures,
 // targetPercentile is a valid fraction (between 0 and 1).
 // increaseRate is a positive number.
 // minDelay is less than maxDelay.

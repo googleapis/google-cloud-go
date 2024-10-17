@@ -1352,7 +1352,7 @@ func setRangeReaderHeaders(h http.Header, params *newRangeReaderParams) error {
 // readerReopen initiates a Read with offset and length, assuming we
 // have already read seen bytes.
 func readerReopen(ctx context.Context, header http.Header, params *newRangeReaderParams, s *settings,
-		doDownload func(context.Context) (*http.Response, error), applyConditions func() error, setGeneration func()) func(int64) (*http.Response, error) {
+	doDownload func(context.Context) (*http.Response, error), applyConditions func() error, setGeneration func()) func(int64) (*http.Response, error) {
 	return func(seen int64) (*http.Response, error) {
 		// If the context has already expired, return immediately without making a
 		// call.
@@ -1407,9 +1407,9 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 			}
 
 			partialContentNotSatisfied :=
-					!decompressiveTranscoding(res) &&
-							start > 0 && params.length != 0 &&
-							res.StatusCode != http.StatusPartialContent
+				!decompressiveTranscoding(res) &&
+					start > 0 && params.length != 0 &&
+					res.StatusCode != http.StatusPartialContent
 
 			if partialContentNotSatisfied {
 				res.Body.Close()
