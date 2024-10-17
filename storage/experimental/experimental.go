@@ -29,24 +29,21 @@ import (
 	"google.golang.org/api/option"
 )
 
-// WithMetricInterval provides a [ClientOption] that may be passed to [storage.NewGrpcClient].
-// It sets how often to emit metrics when using NewPeriodicReader and must be
-// greater than 1 minute.
-// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#NewPeriodicReader
-// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#WithInterval
+// WithMetricInterval provides a [option.ClientOption] that may be passed to [storage.NewGRPCClient].
+// It sets how often to emit metrics [metric.WithInterval] when using
+// [metric.NewPeriodicReader]
 func WithMetricInterval(metricInterval time.Duration) option.ClientOption {
 	return internal.WithMetricInterval.(func(time.Duration) option.ClientOption)(metricInterval)
 }
 
-// WithMetricExporter provides a [ClientOption] that may be passed to [storage.NewGrpcClient].
+// WithMetricExporter provides a [option.ClientOption] that may be passed to [storage.NewGRPCClient].
 // Set an alternate client-side metric Exporter to emit metrics through.
-// Must implement interface metric.Exporter:
-// https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric#Exporter
+// Must implement [metric.Exporter]
 func WithMetricExporter(ex *metric.Exporter) option.ClientOption {
 	return internal.WithMetricExporter.(func(*metric.Exporter) option.ClientOption)(ex)
 }
 
-// WithReadStallTimeout provides a [ClientOption] that may be passed to [storage.NewClient].
+// WithReadStallTimeout provides a [option.ClientOption] that may be passed to [storage.NewClient].
 // It enables the client to retry stalled requests when starting a download from
 // Cloud Storage. If the timeout elapses with no response from the server, the request
 // is automatically retried.

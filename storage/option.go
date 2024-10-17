@@ -15,10 +15,9 @@
 package storage
 
 import (
-	"time"
-
 	"os"
 	"strconv"
+	"time"
 
 	"cloud.google.com/go/storage/experimental"
 	storageinternal "cloud.google.com/go/storage/internal"
