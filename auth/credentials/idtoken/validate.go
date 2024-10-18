@@ -67,13 +67,19 @@ type jwk struct {
 
 // Validator provides a way to validate Google ID Tokens
 type Validator struct {
-	client *cachingClient
+	client         *cachingClient
+	rsa256CertsURL string
+	es256CertsURL  string
 }
 
 // ValidatorOptions provides a way to configure a [Validator].
 type ValidatorOptions struct {
 	// Client used to make requests to the certs URL. Optional.
 	Client *http.Client
+	// Custom certs URL for RSA256 JWK to be used. Optional.
+	RSA256CertsURL string
+	// Custom certs URL for ES256 JWK to be used. Optional.
+	ES256CertsURL string
 }
 
 // NewValidator creates a Validator that uses the options provided to configure
@@ -85,7 +91,17 @@ func NewValidator(opts *ValidatorOptions) (*Validator, error) {
 	} else {
 		client = internal.DefaultClient()
 	}
-	return &Validator{client: newCachingClient(client)}, nil
+
+	rsa256CertsURL := googleSACertsURL
+	es256CertsURL := googleIAPCertsURL
+	if opts != nil && opts.RSA256CertsURL != "" {
+		rsa256CertsURL = opts.RSA256CertsURL
+	}
+	if opts != nil && opts.ES256CertsURL != "" {
+		es256CertsURL = opts.ES256CertsURL
+	}
+
+	return &Validator{client: newCachingClient(client), rsa256CertsURL: rsa256CertsURL, es256CertsURL: es256CertsURL}, nil
 }
 
 // Validate is used to validate the provided idToken with a known Google cert
@@ -137,11 +153,11 @@ func (v *Validator) validate(ctx context.Context, idToken string, audience strin
 	hashedContent := hashHeaderPayload(idToken)
 	switch header.Algorithm {
 	case jwt.HeaderAlgRSA256:
-		if err := v.validateRS256(ctx, header.KeyID, hashedContent, sig); err != nil {
+		if err := v.validateRS256(ctx, header.KeyID, hashedContent, sig, v.rsa256CertsURL); err != nil {
 			return nil, err
 		}
-	case "ES256":
-		if err := v.validateES256(ctx, header.KeyID, hashedContent, sig); err != nil {
+	case jwt.HeaderAlgES256:
+		if err := v.validateES256(ctx, header.KeyID, hashedContent, sig, v.es256CertsURL); err != nil {
 			return nil, err
 		}
 	default:
@@ -151,8 +167,8 @@ func (v *Validator) validate(ctx context.Context, idToken string, audience strin
 	return payload, nil
 }
 
-func (v *Validator) validateRS256(ctx context.Context, keyID string, hashedContent []byte, sig []byte) error {
-	certResp, err := v.client.getCert(ctx, googleSACertsURL)
+func (v *Validator) validateRS256(ctx context.Context, keyID string, hashedContent []byte, sig []byte, certsURL string) error {
+	certResp, err := v.client.getCert(ctx, certsURL)
 	if err != nil {
 		return err
 	}
@@ -176,8 +192,8 @@ func (v *Validator) validateRS256(ctx context.Context, keyID string, hashedConte
 	return rsa.VerifyPKCS1v15(pk, crypto.SHA256, hashedContent, sig)
 }
 
-func (v *Validator) validateES256(ctx context.Context, keyID string, hashedContent []byte, sig []byte) error {
-	certResp, err := v.client.getCert(ctx, googleIAPCertsURL)
+func (v *Validator) validateES256(ctx context.Context, keyID string, hashedContent []byte, sig []byte, certsURL string) error {
+	certResp, err := v.client.getCert(ctx, certsURL)
 	if err != nil {
 		return err
 	}

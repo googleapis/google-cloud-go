@@ -49,44 +49,60 @@ var (
 func TestValidateRS256(t *testing.T) {
 	idToken, pk := createRS256JWT(t)
 	tests := []struct {
-		name    string
-		keyID   string
-		n       *big.Int
-		e       int
-		nowFunc func() time.Time
-		wantErr bool
+		name         string
+		keyID        string
+		certsURL     string
+		n            *big.Int
+		e            int
+		nowFunc      func() time.Time
+		wantErr      bool
+		wantCertsURL string
 	}{
 		{
-			name:    "works",
-			keyID:   keyID,
-			n:       pk.N,
-			e:       pk.E,
-			nowFunc: beforeExp,
-			wantErr: false,
+			name:         "works",
+			keyID:        keyID,
+			n:            pk.N,
+			e:            pk.E,
+			nowFunc:      beforeExp,
+			wantErr:      false,
+			wantCertsURL: googleSACertsURL,
 		},
 		{
-			name:    "no matching key",
-			keyID:   "5678",
-			n:       pk.N,
-			e:       pk.E,
-			nowFunc: beforeExp,
-			wantErr: true,
+			name:         "works with custom certs url",
+			keyID:        keyID,
+			certsURL:     "https://www.googleapis.com/service_accounts/v1/jwk/chat@system.gserviceaccount.com",
+			n:            pk.N,
+			e:            pk.E,
+			nowFunc:      beforeExp,
+			wantErr:      false,
+			wantCertsURL: "https://www.googleapis.com/service_accounts/v1/jwk/chat@system.gserviceaccount.com",
 		},
 		{
-			name:    "sig does not match",
-			keyID:   keyID,
-			n:       new(big.Int).SetBytes([]byte("42")),
-			e:       42,
-			nowFunc: beforeExp,
-			wantErr: true,
+			name:         "no matching key",
+			keyID:        "5678",
+			n:            pk.N,
+			e:            pk.E,
+			nowFunc:      beforeExp,
+			wantErr:      true,
+			wantCertsURL: googleSACertsURL,
 		},
 		{
-			name:    "token expired",
-			keyID:   keyID,
-			n:       pk.N,
-			e:       pk.E,
-			nowFunc: afterExp,
-			wantErr: true,
+			name:         "sig does not match",
+			keyID:        keyID,
+			n:            new(big.Int).SetBytes([]byte("42")),
+			e:            42,
+			nowFunc:      beforeExp,
+			wantErr:      true,
+			wantCertsURL: googleSACertsURL,
+		},
+		{
+			name:         "token expired",
+			keyID:        keyID,
+			n:            pk.N,
+			e:            pk.E,
+			nowFunc:      afterExp,
+			wantErr:      true,
+			wantCertsURL: googleSACertsURL,
 		},
 	}
 
@@ -94,6 +110,9 @@ func TestValidateRS256(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
+					if req.URL.String() != tt.wantCertsURL {
+						t.Fatalf("Invalid request uri, want %v got %v", tt.wantCertsURL, req.URL.String())
+					}
 					cr := certResponse{
 						Keys: []jwk{
 							{
@@ -119,7 +138,8 @@ func TestValidateRS256(t *testing.T) {
 			now = tt.nowFunc
 
 			v, err := NewValidator(&ValidatorOptions{
-				Client: client,
+				Client:         client,
+				RSA256CertsURL: tt.certsURL,
 			})
 			if err != nil {
 				t.Fatalf("NewValidator(...) = %q, want nil", err)
@@ -162,50 +182,69 @@ func TestValidateRS256(t *testing.T) {
 func TestValidateES256(t *testing.T) {
 	idToken, pk := createES256JWT(t)
 	tests := []struct {
-		name    string
-		keyID   string
-		x       *big.Int
-		y       *big.Int
-		nowFunc func() time.Time
-		wantErr bool
+		name         string
+		keyID        string
+		certsUrl     string
+		x            *big.Int
+		y            *big.Int
+		nowFunc      func() time.Time
+		wantErr      bool
+		wantCertsURL string
 	}{
 		{
-			name:    "works",
-			keyID:   keyID,
-			x:       pk.X,
-			y:       pk.Y,
-			nowFunc: beforeExp,
-			wantErr: false,
+			name:         "works",
+			keyID:        keyID,
+			x:            pk.X,
+			y:            pk.Y,
+			nowFunc:      beforeExp,
+			wantErr:      false,
+			wantCertsURL: googleIAPCertsURL,
 		},
 		{
-			name:    "no matching key",
-			keyID:   "5678",
-			x:       pk.X,
-			y:       pk.Y,
-			nowFunc: beforeExp,
-			wantErr: true,
+			name:         "works with custom certs url",
+			keyID:        keyID,
+			certsUrl:     "http://example.com",
+			x:            pk.X,
+			y:            pk.Y,
+			nowFunc:      beforeExp,
+			wantErr:      false,
+			wantCertsURL: "http://example.com",
 		},
 		{
-			name:    "sig does not match",
-			keyID:   keyID,
-			x:       new(big.Int),
-			y:       new(big.Int),
-			nowFunc: beforeExp,
-			wantErr: true,
+			name:         "no matching key",
+			keyID:        "5678",
+			x:            pk.X,
+			y:            pk.Y,
+			nowFunc:      beforeExp,
+			wantErr:      true,
+			wantCertsURL: googleIAPCertsURL,
 		},
 		{
-			name:    "token expired",
-			keyID:   keyID,
-			x:       pk.X,
-			y:       pk.Y,
-			nowFunc: afterExp,
-			wantErr: true,
+			name:         "sig does not match",
+			keyID:        keyID,
+			x:            new(big.Int),
+			y:            new(big.Int),
+			nowFunc:      beforeExp,
+			wantErr:      true,
+			wantCertsURL: googleIAPCertsURL,
+		},
+		{
+			name:         "token expired",
+			keyID:        keyID,
+			x:            pk.X,
+			y:            pk.Y,
+			nowFunc:      afterExp,
+			wantErr:      true,
+			wantCertsURL: googleIAPCertsURL,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
+					if req.URL.String() != tt.wantCertsURL {
+						t.Fatalf("Invalid request uri, want %v got %v", tt.wantCertsURL, req.URL.String())
+					}
 					cr := certResponse{
 						Keys: []jwk{
 							{
@@ -231,7 +270,8 @@ func TestValidateES256(t *testing.T) {
 			now = tt.nowFunc
 
 			v, err := NewValidator(&ValidatorOptions{
-				Client: client,
+				Client:        client,
+				ES256CertsURL: tt.certsUrl,
 			})
 			if err != nil {
 				t.Fatalf("NewValidator(...) = %q, want nil", err)
