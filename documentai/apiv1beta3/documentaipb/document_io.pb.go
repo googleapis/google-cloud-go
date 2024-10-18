@@ -21,12 +21,11 @@
 package documentaipb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -270,7 +269,8 @@ type BatchDocumentsInputConfig struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The source.
+	// The source. Make sure that the caller of the API has storage.objects.get
+	// access to the buckets.
 	//
 	// Types that are assignable to Source:
 	//
