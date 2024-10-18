@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package generativelanguage_test
+
+import (
+	generativelanguage "cloud.google.com/go/ai/generativelanguage/apiv1beta"
+)

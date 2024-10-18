@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package agentendpoint_test
+
+import (
+	agentendpoint "cloud.google.com/go/osconfig/agentendpoint/apiv1beta"
+)

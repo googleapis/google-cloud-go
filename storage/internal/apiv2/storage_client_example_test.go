@@ -158,56 +158,6 @@ func ExampleClient_CreateBucket() {
 	_ = resp
 }
 
-func ExampleClient_CreateHmacKey() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := storage.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &storagepb.CreateHmacKeyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#CreateHmacKeyRequest.
-	}
-	resp, err := c.CreateHmacKey(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_CreateNotificationConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := storage.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &storagepb.CreateNotificationConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#CreateNotificationConfigRequest.
-	}
-	resp, err := c.CreateNotificationConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleClient_DeleteBucket() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -226,52 +176,6 @@ func ExampleClient_DeleteBucket() {
 		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#DeleteBucketRequest.
 	}
 	err = c.DeleteBucket(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_DeleteHmacKey() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := storage.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &storagepb.DeleteHmacKeyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#DeleteHmacKeyRequest.
-	}
-	err = c.DeleteHmacKey(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_DeleteNotificationConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := storage.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &storagepb.DeleteNotificationConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#DeleteNotificationConfigRequest.
-	}
-	err = c.DeleteNotificationConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -325,31 +229,6 @@ func ExampleClient_GetBucket() {
 	_ = resp
 }
 
-func ExampleClient_GetHmacKey() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := storage.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &storagepb.GetHmacKeyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#GetHmacKeyRequest.
-	}
-	resp, err := c.GetHmacKey(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleClient_GetIamPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -375,31 +254,6 @@ func ExampleClient_GetIamPolicy() {
 	_ = resp
 }
 
-func ExampleClient_GetNotificationConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := storage.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &storagepb.GetNotificationConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#GetNotificationConfigRequest.
-	}
-	resp, err := c.GetNotificationConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleClient_GetObject() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -418,31 +272,6 @@ func ExampleClient_GetObject() {
 		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#GetObjectRequest.
 	}
 	resp, err := c.GetObject(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_GetServiceAccount() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := storage.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &storagepb.GetServiceAccountRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#GetServiceAccountRequest.
-	}
-	resp, err := c.GetServiceAccount(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -484,80 +313,6 @@ func ExampleClient_ListBuckets() {
 		// Otherwise, remove this line. Only populated after
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*storagepb.ListBucketsResponse)
-	}
-}
-
-func ExampleClient_ListHmacKeys() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := storage.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &storagepb.ListHmacKeysRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#ListHmacKeysRequest.
-	}
-	it := c.ListHmacKeys(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-
-		// If you need to access the underlying RPC response,
-		// you can do so by casting the `Response` as below.
-		// Otherwise, remove this line. Only populated after
-		// first call to Next(). Not safe for concurrent access.
-		_ = it.Response.(*storagepb.ListHmacKeysResponse)
-	}
-}
-
-func ExampleClient_ListNotificationConfigs() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := storage.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &storagepb.ListNotificationConfigsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#ListNotificationConfigsRequest.
-	}
-	it := c.ListNotificationConfigs(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-
-		// If you need to access the underlying RPC response,
-		// you can do so by casting the `Response` as below.
-		// Otherwise, remove this line. Only populated after
-		// first call to Next(). Not safe for concurrent access.
-		_ = it.Response.(*storagepb.ListNotificationConfigsResponse)
 	}
 }
 
@@ -791,31 +546,6 @@ func ExampleClient_UpdateBucket() {
 		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#UpdateBucketRequest.
 	}
 	resp, err := c.UpdateBucket(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateHmacKey() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := storage.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &storagepb.UpdateHmacKeyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#UpdateHmacKeyRequest.
-	}
-	resp, err := c.UpdateHmacKey(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

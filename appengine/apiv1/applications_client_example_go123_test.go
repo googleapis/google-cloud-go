@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package appengine_test
+
+import (
+	appengine "cloud.google.com/go/appengine/apiv1"
+)
