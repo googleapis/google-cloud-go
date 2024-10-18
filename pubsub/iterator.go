@@ -340,7 +340,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 				opts,
 				trace.WithAttributes(
 					attribute.Bool(eosAttribute, it.enableExactlyOnceDelivery),
-					attribute.String(ackIDAttribute, ackID),
+					semconv.MessagingGCPPubsubMessageAckID(ackID),
 					semconv.MessagingBatchMessageCount(len(msgs)),
 					semconv.CodeFunction("receive"),
 				),
