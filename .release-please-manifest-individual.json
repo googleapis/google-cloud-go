@@ -11,7 +11,7 @@
   "logging": "1.12.0",
   "profiler": "0.4.1",
   "pubsub": "1.44.0",
-  "pubsublite": "1.8.2",
+  "pubsublite": "1.9.0",
   "spanner": "1.70.0",
   "storage": "1.45.0",
   "vertexai": "0.13.1"
