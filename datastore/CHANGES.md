@@ -1,5 +1,21 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.19.0...datastore/v1.20.0) (2024-10-18)
+
+
+### Features
+
+* **datastore:** Add FindNearest API to the stable branch ([#10980](https://github.com/googleapis/google-cloud-go/issues/10980)) ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **datastore:** Support for field update operators in the Datastore API and resolution strategies when there is a conflict at write time ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Bug Fixes
+
+* **datastore:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+* **datastore:** Do not delay on final transaction attempt ([#10824](https://github.com/googleapis/google-cloud-go/issues/10824)) ([0d732cc](https://github.com/googleapis/google-cloud-go/commit/0d732cc87b432589f156c96d430e13c792dceeeb))
+* **datastore:** Remove namespace from Key.String() ([40229e6](https://github.com/googleapis/google-cloud-go/commit/40229e65f574d63e2f31e5b15ec61d565db59fef))
+* **datastore:** Remove namespace from Key.String() ([#10684](https://github.com/googleapis/google-cloud-go/issues/10684)) ([#10823](https://github.com/googleapis/google-cloud-go/issues/10823)) ([40229e6](https://github.com/googleapis/google-cloud-go/commit/40229e65f574d63e2f31e5b15ec61d565db59fef))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.18.0...datastore/v1.19.0) (2024-08-22)
 
 
