@@ -1,5 +1,12 @@
 # Changes
 
+## [1.70.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.70.0...spanner/v1.70.1) (2024-10-18)
+
+
+### Bug Fixes
+
+* **spanner:** Decode PROTO to custom type variant of base type ([#11007](https://github.com/googleapis/google-cloud-go/issues/11007)) ([5e363a3](https://github.com/googleapis/google-cloud-go/commit/5e363a31cc9f2616832540ca82aa5cb998a3938c))
+
 ## [1.70.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.69.0...spanner/v1.70.0) (2024-10-14)
 
 
