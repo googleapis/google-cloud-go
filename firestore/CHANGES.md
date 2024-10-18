@@ -1,5 +1,18 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.17.0...firestore/v1.18.0) (2024-10-18)
+
+
+### Features
+
+* **firestore:** Add WithCommitResponseTo TransactionOption ([#6967](https://github.com/googleapis/google-cloud-go/issues/6967)) ([eb25266](https://github.com/googleapis/google-cloud-go/commit/eb252663ad0bdabbd5de1767b42a69fd2aee54b2))
+* **firestore:** Surfacing the error returned from the service in Bulkwriter ([#10826](https://github.com/googleapis/google-cloud-go/issues/10826)) ([9ae039a](https://github.com/googleapis/google-cloud-go/commit/9ae039a38856133a2bde4c3bd70155d17538c974))
+
+
+### Bug Fixes
+
+* **firestore:** Add UTF-8 validation ([#10881](https://github.com/googleapis/google-cloud-go/issues/10881)) ([9199843](https://github.com/googleapis/google-cloud-go/commit/9199843947bc3a0fa415dba50ba2221850e0fbad))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.16.0...firestore/v1.17.0) (2024-09-11)
 
 
