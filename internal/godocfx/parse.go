@@ -23,6 +23,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"go/doc"
 	"go/format"
@@ -704,7 +705,7 @@ func (d *friendlyAPINamer) friendlyAPIName(importPath string) (string, error) {
 		return "", err
 	}
 	if d.metadata == nil {
-		return "", fmt.Errorf("no metadata found: earlier error fetching?")
+		return "", errors.New("no metadata found: earlier error fetching?")
 	}
 	pkg, ok := d.metadata[importPath]
 	if !ok {

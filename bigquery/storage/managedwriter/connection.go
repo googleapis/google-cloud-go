@@ -68,7 +68,7 @@ type connectionPool struct {
 // activateRouter handles wiring up a connection pool and it's router.
 func (pool *connectionPool) activateRouter(rtr poolRouter) error {
 	if pool.router != nil {
-		return fmt.Errorf("router already activated")
+		return errors.New("router already activated")
 	}
 	if err := rtr.poolAttach(pool); err != nil {
 		return fmt.Errorf("router rejected attach: %w", err)

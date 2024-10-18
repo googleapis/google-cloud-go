@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -201,7 +202,7 @@ func (cr *chunkReader) resetToNewRow() {
 
 func (cr *chunkReader) validateNewRow(cc *btpb.ReadRowsResponse_CellChunk) error {
 	if cc.GetResetRow() {
-		return fmt.Errorf("reset_row not allowed between rows")
+		return errors.New("reset_row not allowed between rows")
 	}
 	if cc.RowKey == nil || cc.FamilyName == nil || cc.Qualifier == nil {
 		return fmt.Errorf("missing key field for new row %v", cc)
@@ -265,7 +266,7 @@ func (cr *chunkReader) validateRowStatus(cc *btpb.ReadRowsResponse_CellChunk) er
 		return fmt.Errorf("reset must not be specified with other fields %v", cc)
 	}
 	if cc.GetCommitRow() && cc.ValueSize > 0 {
-		return fmt.Errorf("commit row found in between chunks in a cell")
+		return errors.New("commit row found in between chunks in a cell")
 	}
 	return nil
 }

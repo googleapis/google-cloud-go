@@ -23,6 +23,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math/big"
 	"net/http"
@@ -128,7 +129,7 @@ func (v *Validator) validate(ctx context.Context, idToken string, audience strin
 	}
 
 	if audience != "" && payload.Audience != audience {
-		return nil, fmt.Errorf("idtoken: audience provided does not match aud claim in the JWT")
+		return nil, errors.New("idtoken: audience provided does not match aud claim in the JWT")
 	}
 
 	if now().Unix() > payload.Expires {
@@ -202,21 +203,21 @@ func (v *Validator) validateES256(ctx context.Context, keyID string, hashedConte
 	r := big.NewInt(0).SetBytes(sig[:es256KeySize])
 	s := big.NewInt(0).SetBytes(sig[es256KeySize:])
 	if valid := ecdsa.Verify(pk, hashedContent, r, s); !valid {
-		return fmt.Errorf("idtoken: ES256 signature not valid")
+		return errors.New("idtoken: ES256 signature not valid")
 	}
 	return nil
 }
 
 func findMatchingKey(response *certResponse, keyID string) (*jwk, error) {
 	if response == nil {
-		return nil, fmt.Errorf("idtoken: cert response is nil")
+		return nil, errors.New("idtoken: cert response is nil")
 	}
 	for _, v := range response.Keys {
 		if v.Kid == keyID {
 			return &v, nil
 		}
 	}
-	return nil, fmt.Errorf("idtoken: could not find matching cert keyId for the token provided")
+	return nil, errors.New("idtoken: could not find matching cert keyId for the token provided")
 }
 
 func parseToken(idToken string) (*jwt.Header, *Payload, []byte, error) {

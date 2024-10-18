@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"sort"
@@ -410,7 +411,7 @@ func TestToOtelMetricAttrs(t *testing.T) {
 				attribute.String(monitoredResLabelKeyCluster, clusterID1),
 				attribute.String(monitoredResLabelKeyZone, zoneID1),
 			},
-			wantError: fmt.Errorf("unable to create attributes list for unknown metric: unknown_metric"),
+			wantError: errors.New("unable to create attributes list for unknown metric: unknown_metric"),
 		},
 	}
 

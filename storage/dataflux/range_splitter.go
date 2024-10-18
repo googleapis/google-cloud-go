@@ -15,6 +15,7 @@
 package dataflux
 
 import (
+	"errors"
 	"fmt"
 	"math/big"
 	"sort"
@@ -58,7 +59,7 @@ func newRangeSplitter(alphabet string) (*rangeSplitter, error) {
 
 	// Validate that we do not have empty alphabet passed in.
 	if len(alphabet) == 0 {
-		return nil, fmt.Errorf("no alphabet specified for the range splitter")
+		return nil, errors.New("no alphabet specified for the range splitter")
 	}
 	// Sort the alphabet lexicographically and store a mapping of each alphabet
 	// to its index. We need a mapping for efficient index lookup in later operations.

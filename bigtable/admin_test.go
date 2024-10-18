@@ -74,7 +74,7 @@ func (c *mockTableAdminClock) CopyBackup(
 	ctx context.Context, in *btapb.CopyBackupRequest, opts ...grpc.CallOption,
 ) (*longrunning.Operation, error) {
 	c.copyBackupReq = in
-	c.copyBackupError = fmt.Errorf("Mock error from client API")
+	c.copyBackupError = errors.New("Mock error from client API")
 	return nil, c.copyBackupError
 }
 

@@ -131,7 +131,7 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 			fallthrough
 		case reflect.Struct:
 			if !v.CanAddr() {
-				return fmt.Errorf("datastore: unsupported struct field: value is unaddressable")
+				return errors.New("datastore: unsupported struct field: value is unaddressable")
 			}
 			vi := v.Addr().Interface()
 

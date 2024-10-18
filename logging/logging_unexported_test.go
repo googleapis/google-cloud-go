@@ -18,7 +18,7 @@ package logging
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http"
 	"net/url"
 	"testing"
@@ -44,7 +44,7 @@ func TestLoggerRetryer_Retry(t *testing.T) {
 	}{
 		{
 			name:      "non_status_no_retry",
-			err:       fmt.Errorf("non-API error, do not retry"),
+			err:       errors.New("non-API error, do not retry"),
 			wantRetry: false,
 		},
 		{

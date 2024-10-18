@@ -16,7 +16,7 @@ package managedwriter
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"io"
 	"testing"
 
@@ -37,7 +37,7 @@ func TestManagedStream_AppendErrorRetries(t *testing.T) {
 			want: false,
 		},
 		{
-			err:  fmt.Errorf("random error"),
+			err:  errors.New("random error"),
 			want: false,
 		},
 		{
@@ -83,7 +83,7 @@ func TestManagedStream_ShouldReconnect(t *testing.T) {
 		want bool
 	}{
 		{
-			err:  fmt.Errorf("random error"),
+			err:  errors.New("random error"),
 			want: false,
 		},
 		{

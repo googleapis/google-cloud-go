@@ -702,9 +702,9 @@ func TestInitializeConfig(t *testing.T) {
 			getInstanceName = func() (string, error) { return testInstance, nil }
 		} else {
 			onGCE = func() bool { return false }
-			getProjectID = func() (string, error) { return "", fmt.Errorf("test get project id error") }
-			getZone = func() (string, error) { return "", fmt.Errorf("test get zone error") }
-			getInstanceName = func() (string, error) { return "", fmt.Errorf("test get instance error") }
+			getProjectID = func() (string, error) { return "", errors.New("test get project id error") }
+			getZone = func() (string, error) { return "", errors.New("test get zone error") }
+			getInstanceName = func() (string, error) { return "", errors.New("test get instance error") }
 		}
 		envProjectID := ""
 		if tt.envProjectID {

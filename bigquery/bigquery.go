@@ -124,7 +124,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // Calling this method twice will return an error.
 func (c *Client) EnableStorageReadClient(ctx context.Context, opts ...option.ClientOption) error {
 	if c.isStorageReadAvailable() {
-		return fmt.Errorf("failed: storage read client already set up")
+		return errors.New("failed: storage read client already set up")
 	}
 	rc, err := newReadClient(ctx, c.projectID, opts...)
 	if err != nil {

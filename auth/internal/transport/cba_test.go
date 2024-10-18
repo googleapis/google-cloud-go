@@ -17,6 +17,7 @@ package transport
 import (
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -78,7 +79,7 @@ var (
 	}
 
 	errorConfigResp = func() (string, error) {
-		return "", fmt.Errorf("error getting config")
+		return "", errors.New("error getting config")
 	}
 
 	invalidConfigResp = func() (string, error) {

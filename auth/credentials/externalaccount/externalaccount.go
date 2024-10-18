@@ -16,7 +16,7 @@ package externalaccount
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"net/http"
 
 	"cloud.google.com/go/auth"
@@ -210,7 +210,7 @@ type AwsSecurityCredentials struct {
 
 func (o *Options) validate() error {
 	if o == nil {
-		return fmt.Errorf("externalaccount: options must be provided")
+		return errors.New("externalaccount: options must be provided")
 	}
 	return nil
 }

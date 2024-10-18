@@ -607,7 +607,7 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 	}
 	if tp.opts.UseIDToken {
 		if tokenRes.IDToken == "" {
-			return nil, fmt.Errorf("auth: response doesn't have JWT token")
+			return nil, errors.New("auth: response doesn't have JWT token")
 		}
 		token.Value = tokenRes.IDToken
 	}

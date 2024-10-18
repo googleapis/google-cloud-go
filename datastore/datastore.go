@@ -709,7 +709,7 @@ func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 		}
 	}
 	if multiArgType == multiArgTypeInvalid {
-		return nil, fmt.Errorf("datastore: src has invalid type")
+		return nil, errors.New("datastore: src has invalid type")
 	}
 	dstLen := v.Len()
 

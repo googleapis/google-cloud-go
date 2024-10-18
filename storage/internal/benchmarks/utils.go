@@ -180,7 +180,7 @@ var dependencyVersions = map[string]string{
 func populateDependencyVersions() error {
 	info, ok := debug.ReadBuildInfo()
 	if !ok {
-		return fmt.Errorf("binary not built with module support, cannot read build info")
+		return errors.New("binary not built with module support, cannot read build info")
 	}
 
 	goVersion = info.GoVersion

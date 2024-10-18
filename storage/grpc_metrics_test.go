@@ -16,7 +16,7 @@ package storage
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"testing"
 
 	"go.opentelemetry.io/otel/attribute"
@@ -132,7 +132,7 @@ func TestNewExporterLogSuppressor(t *testing.T) {
 type failingExporter struct{}
 
 func (f *failingExporter) Export(ctx context.Context, rm *metricdata.ResourceMetrics) error {
-	return fmt.Errorf("PermissionDenied")
+	return errors.New("PermissionDenied")
 }
 
 func (f *failingExporter) Temporality(m metric.InstrumentKind) metricdata.Temporality {
