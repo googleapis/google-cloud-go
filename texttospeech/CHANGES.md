@@ -1,5 +1,13 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.8.1...texttospeech/v1.9.0) (2024-10-18)
+
+
+### Features
+
+* **texttospeech:** Add CustomPronunciationParams for upcoming feature work ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **texttospeech:** Add low latency journey option to proto ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.8.0...texttospeech/v1.8.1) (2024-09-12)
 
 

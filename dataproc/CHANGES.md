@@ -1,5 +1,13 @@
 # Changes
 
+## [2.10.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.9.0...dataproc/v2.10.0) (2024-10-18)
+
+
+### Features
+
+* **dataproc:** Add `ProvisioningModelMix` to support mixing of spot and standard instances for secondary workers ([#10990](https://github.com/googleapis/google-cloud-go/issues/10990)) ([0544c0a](https://github.com/googleapis/google-cloud-go/commit/0544c0a920d853a90e0f7115a96389cd06067830))
+* **dataproc:** Add support for configuration of bootdisk IOPS and throughput when bootdisk is a hyperdisk ([0544c0a](https://github.com/googleapis/google-cloud-go/commit/0544c0a920d853a90e0f7115a96389cd06067830))
+
 ## [2.9.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.8.0...dataproc/v2.9.0) (2024-09-25)
 
 

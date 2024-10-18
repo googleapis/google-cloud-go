@@ -1,5 +1,17 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.19.0...dlp/v1.20.0) (2024-10-18)
+
+
+### Features
+
+* **dlp:** Discovery of BigQuery snapshots ([70d82fe](https://github.com/googleapis/google-cloud-go/commit/70d82fe93f60f1075298a077ce1616f9ae7e13fe))
+
+
+### Documentation
+
+* **dlp:** Documentation revisions for data profiles ([70d82fe](https://github.com/googleapis/google-cloud-go/commit/70d82fe93f60f1075298a077ce1616f9ae7e13fe))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.18.1...dlp/v1.19.0) (2024-09-19)
 
 

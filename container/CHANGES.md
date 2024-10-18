@@ -1,5 +1,24 @@
 # Changes
 
+## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.40.0...container/v1.41.0) (2024-10-18)
+
+
+### Features
+
+* **container:** Add an effective_cgroup_mode field in node config ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Add API to enable/disable secret manager csi component on GKE clusters ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Add CompliancePosture field for configuration of GKE Compliance Posture product ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Add CompliancePosture field for configuration of GKE Compliance Posture product ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Add KCP_SSHD and KCP_CONNECTION to the supported values for the --logging flag for the create and update cluster commands ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Add RBACBindingConfig to API ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Added support for Parallelstore CSI Driver ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **container:** Surface upgrade_target_version in GetServerConfig for all supported release channels ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+
+
+### Documentation
+
+* **container:** Minor documentation updates ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+
 ## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.39.0...container/v1.40.0) (2024-09-12)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/essentialcontacts/v1.7.1...essentialcontacts/v1.7.2) (2024-10-18)
+
+
+### Documentation
+
+* **essentialcontacts:** Marks the `google.cloud.essentialcontacts.v1.Contact.validation_state` field as `output_only` ([0544c0a](https://github.com/googleapis/google-cloud-go/commit/0544c0a920d853a90e0f7115a96389cd06067830))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/essentialcontacts/v1.7.0...essentialcontacts/v1.7.1) (2024-09-12)
 
 

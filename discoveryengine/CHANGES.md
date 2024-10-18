@@ -1,6 +1,28 @@
 # Changelog
 
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.14.0...discoveryengine/v1.15.0) (2024-10-18)
+
+
+### Features
+
+* **discoveryengine:** Add BillingEstimation in data store ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **discoveryengine:** Add GroundedGenerationService API ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **discoveryengine:** Add one_box_page_size on search ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **discoveryengine:** Add site_credential for site search config ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **discoveryengine:** Support advanced boost search ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **discoveryengine:** Support Google Workspace search ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+
+
+### Bug Fixes
+
+* **discoveryengine:** Fix the location type annotation ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+
+
+### Documentation
+
+* **discoveryengine:** Update documentation ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.13.0...discoveryengine/v1.14.0) (2024-09-12)
 
 

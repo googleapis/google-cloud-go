@@ -2,6 +2,18 @@
 
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.2.1...securesourcemanager/v1.3.0) (2024-10-18)
+
+
+### Features
+
+* **securesourcemanager:** Add field `instance` to message `.google.cloud.securesourcemanager.v1.ListRepositoriesRequest` ([#10997](https://github.com/googleapis/google-cloud-go/issues/10997)) ([70d82fe](https://github.com/googleapis/google-cloud-go/commit/70d82fe93f60f1075298a077ce1616f9ae7e13fe))
+
+
+### Documentation
+
+* **securesourcemanager:** A comment for field `instance` in message `.google.cloud.securesourcemanager.v1.Repository` is changed ([70d82fe](https://github.com/googleapis/google-cloud-go/commit/70d82fe93f60f1075298a077ce1616f9ae7e13fe))
+
 ## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.2.0...securesourcemanager/v1.2.1) (2024-09-12)
 
 
