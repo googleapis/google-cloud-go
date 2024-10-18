@@ -2718,7 +2718,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			result = &NullString{x, !isNull}
 		}
 	case spannerTypeByteArray:
-		if code != sppb.TypeCode_BYTES {
+		if code != sppb.TypeCode_BYTES && code != sppb.TypeCode_PROTO {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -2735,7 +2735,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		}
 		result = y
 	case spannerTypeNonNullInt64, spannerTypeNullInt64:
-		if code != sppb.TypeCode_INT64 {
+		if code != sppb.TypeCode_INT64 && code != sppb.TypeCode_ENUM {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -2913,7 +2913,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		}
 		result = y
 	case spannerTypeArrayOfByteArray:
-		if acode != sppb.TypeCode_BYTES {
+		if acode != sppb.TypeCode_BYTES && acode != sppb.TypeCode_PROTO {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
@@ -2930,7 +2930,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		}
 		result = y
 	case spannerTypeArrayOfNonNullInt64, spannerTypeArrayOfNullInt64:
-		if acode != sppb.TypeCode_INT64 {
+		if acode != sppb.TypeCode_INT64 && acode != sppb.TypeCode_ENUM {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
