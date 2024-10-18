@@ -32,6 +32,7 @@ import (
 // WithMetricInterval provides a [option.ClientOption] that may be passed to [storage.NewGRPCClient].
 // It sets how often to emit metrics [metric.WithInterval] when using
 // [metric.NewPeriodicReader]
+// When using Cloud Monitoring interval must be at minimum 1 [time.Minute].
 func WithMetricInterval(metricInterval time.Duration) option.ClientOption {
 	return internal.WithMetricInterval.(func(time.Duration) option.ClientOption)(metricInterval)
 }
