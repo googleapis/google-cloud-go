@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.46.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.45.0...storage/v1.46.0) (2024-10-18)
+
+
+### Features
+
+* **storage:** Add grpc metrics experimental options ([#10984](https://github.com/googleapis/google-cloud-go/issues/10984)) ([5b7397b](https://github.com/googleapis/google-cloud-go/commit/5b7397b169176f030049e1511859a883422c774e))
+
 ## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.44.0...storage/v1.45.0) (2024-10-17)
 
 
