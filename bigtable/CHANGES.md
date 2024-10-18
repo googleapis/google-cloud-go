@@ -1,5 +1,12 @@
 # Changes
 
+## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.33.0...bigtable/v1.34.0) (2024-10-18)
+
+
+### Features
+
+* **bigtable/admin:** Add support for Cloud Bigtable Node Scaling Factor for CBT Clusters ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
 ## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.32.0...bigtable/v1.33.0) (2024-09-23)
 
 
