@@ -171,6 +171,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 			results = objects
 			c.pageToken = nextToken
 			c.method = sequential
+			c.ranges = nil
 			// Close context when sequential listing is complete.
 			cancel()
 			return nil
