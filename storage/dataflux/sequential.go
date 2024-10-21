@@ -63,11 +63,11 @@ func doSeqListing(objectIterator *storage.ObjectIterator, skipDirectoryObjects b
 		if errObjectIterator == iterator.Done {
 			break
 		}
-		pageSize++
 		if errObjectIterator != nil {
 			err = fmt.Errorf("iterating through objects %w", errObjectIterator)
 			return
 		}
+		pageSize++
 		if !(skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
 			result = append(result, attrs)
 		}

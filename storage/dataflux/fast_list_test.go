@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"github.com/google/uuid"
 )
 
 func TestUpdateStartEndOffset(t *testing.T) {
@@ -268,13 +269,12 @@ func isEmulatorEnvironmentSet() bool {
 	return os.Getenv("STORAGE_EMULATOR_HOST_GRPC") != "" && os.Getenv("STORAGE_EMULATOR_HOST") != ""
 }
 
-// createObject creates an object in the emulator and returns its name, generation, and
-// metageneration.
+// createObject creates given number of objects in the given bucket.
 func createObject(ctx context.Context, bucket *storage.BucketHandle, numObjects int) error {
 
 	for i := 0; i < numObjects; i++ {
 		// Generate a unique object name using UUIDs
-		objectName := fmt.Sprintf("object%d", i)
+		objectName := fmt.Sprintf("object%s", uuid.New().String())
 		// Create a writer for the object
 		wc := bucket.Object(objectName).NewWriter(ctx)
 

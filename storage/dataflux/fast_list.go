@@ -187,7 +187,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 	// only then return error. other method. If both sequential and worksteal listing
 	// fail due to context canceled, return error.
 	if err != nil && (!errors.Is(err, context.Canceled) || countError > 1) {
-		return nil, fmt.Errorf("failed waiting for sequntial and work steal lister : %w", err)
+		return nil, fmt.Errorf("failed waiting for sequential and work steal lister : %w", err)
 	}
 
 	// If ranges for worksteal and pageToken for sequential listing is empty, then

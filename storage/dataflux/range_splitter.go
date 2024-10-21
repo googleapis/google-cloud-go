@@ -216,6 +216,7 @@ func (rs *rangeSplitter) addCharsToAlphabet(characters []rune) {
 		if _, exists := rs.alphabetMap[char]; !exists {
 			allAlphabet = append(allAlphabet, char)
 			newChars = true
+			rs.alphabetMap[char] = 0
 		}
 	}
 	if newChars {

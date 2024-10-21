@@ -26,9 +26,6 @@ func TestWorkstealListingEmulated(t *testing.T) {
 
 		attrs := &storage.BucketAttrs{
 			Name: bucket,
-			Logging: &storage.BucketLogging{
-				LogBucket: bucket,
-			},
 		}
 		bucketHandle := client.Bucket(bucket)
 		if err := bucketHandle.Create(ctx, project, attrs); err != nil {
@@ -49,7 +46,7 @@ func TestWorkstealListingEmulated(t *testing.T) {
 			t.Fatalf("failed to call workstealListing() : %v", err)
 		}
 		if len(objects) != numObjects {
-			t.Errorf("doSeqListing() expected to receive  %d results, got %d results", numObjects, len(objects))
+			t.Errorf("workstealListing() expected to receive  %d results, got %d results", numObjects, len(objects))
 		}
 	})
 }

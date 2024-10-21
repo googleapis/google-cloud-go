@@ -74,7 +74,7 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 
 	rs, err := newRangeSplitter(defaultAlphabet)
 	if err != nil {
-		return nil, fmt.Errorf("creating new range splitter: %v", err)
+		return nil, fmt.Errorf("creating new range splitter: %w", err)
 	}
 
 	g, ctx := errgroup.WithContext(ctx)
@@ -95,14 +95,14 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 		g.Go(func() error {
 			if err := idleWorker.doWorkstealListing(ctx); err != nil {
 				workerErr = append(workerErr, err)
-				return fmt.Errorf("listing worker ID %d: %v", idleWorker.goroutineID, err)
+				return fmt.Errorf("listing worker ID %d: %w", idleWorker.goroutineID, err)
 			}
 			return nil
 		})
 	}
 
 	if err := g.Wait(); err != nil {
-		return nil, fmt.Errorf("failed waiting for multiple workers : %v", err)
+		return nil, fmt.Errorf("failed waiting for multiple workers : %w", err)
 	}
 	if len(workerErr) > 0 {
 		return nil, fmt.Errorf("failure in workers : %v", workerErr)
@@ -141,7 +141,7 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 		// Active worker to list next page of objects within the range.
 		doneListing, err := w.objectLister(ctx)
 		if err != nil {
-			return fmt.Errorf("objectLister failed: %v", err)
+			return fmt.Errorf("objectLister failed: %w", err)
 		}
 
 		// If listing is complete for the range, make worker idle and continue.
@@ -158,7 +158,7 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 			// Split range and upload half of work for idle worker.
 			splitPoint, err := w.rangesplitter.splitRange(w.startRange, w.endRange, 1)
 			if err != nil {
-				return fmt.Errorf("splitting range for worker ID:%v, err: %v", w.goroutineID, err)
+				return fmt.Errorf("splitting range for worker ID:%v, err: %w", w.goroutineID, err)
 			}
 			// If split point is empty, skip splitting the work.
 			if len(splitPoint) < 1 {
@@ -187,7 +187,7 @@ func (w *worker) shutDownSignal() bool {
 
 	// If number of objects listed is equal to the given batchSize, then shutdown.
 	// If batch size is not given i.e. 0, then list until all objects have been listed.
-	alreadyListedBatchSizeObjects := len(w.idleChannel) == w.lister.parallelism && len(w.lister.ranges) == 0
+	alreadyListedBatchSizeObjects := w.lister.batchSize > 0 && len(w.result.objects) >= w.lister.batchSize
 
 	return noMoreObjects || alreadyListedBatchSizeObjects
 }
@@ -211,7 +211,7 @@ func (w *worker) objectLister(ctx context.Context) (bool, error) {
 		generation:           w.generation,
 	})
 	if err != nil {
-		return false, fmt.Errorf("listing next page for worker ID %v,  err: %v", w.goroutineID, err)
+		return false, fmt.Errorf("listing next page for worker ID %v,  err: %w", w.goroutineID, err)
 	}
 
 	// Append objects listed by objectLister to result.

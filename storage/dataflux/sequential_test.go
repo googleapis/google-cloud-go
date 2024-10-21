@@ -25,10 +25,7 @@ func TestDoSeqListingEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
 
 		attrs := &storage.BucketAttrs{
-			Name: bucket,
-			Logging: &storage.BucketLogging{
-				LogBucket: bucket,
-			},
+			Name:              bucket,
 			VersioningEnabled: true,
 		}
 		bucketHandle := client.Bucket(bucket)
@@ -61,9 +58,6 @@ func TestSequentialListingEmulated(t *testing.T) {
 
 		attrs := &storage.BucketAttrs{
 			Name: bucket,
-			Logging: &storage.BucketLogging{
-				LogBucket: bucket,
-			},
 		}
 		bucketHandle := client.Bucket(bucket)
 		if err := bucketHandle.Create(ctx, project, attrs); err != nil {
@@ -85,8 +79,6 @@ func TestSequentialListingEmulated(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to call doSeqListing() : %v", err)
 		}
-		// Even if the batchSize is smaller , more objects are listed. Sequential listing
-		// lists an entire page (defaultPageSize) which is bigger than given batchSize.
 		if len(objects) != wantObjects {
 			t.Errorf("sequentialListing() expected to receive %d results, got %d results", len(objects), wantObjects)
 		}
