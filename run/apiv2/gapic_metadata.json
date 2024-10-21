@@ -5,6 +5,70 @@
   "protoPackage": "google.cloud.run.v2",
   "libraryPackage": "cloud.google.com/go/run/apiv2",
   "services": {
+    "Builds": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "BuildsClient",
+          "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SubmitBuild": {
+              "methods": [
+                "SubmitBuild"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "BuildsClient",
+          "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SubmitBuild": {
+              "methods": [
+                "SubmitBuild"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
     "Executions": {
       "clients": {
         "grpc": {

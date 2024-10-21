@@ -1,6 +1,13 @@
 # Changes
 
 
+## [2.17.2](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.17.1...recaptchaenterprise/v2.17.2) (2024-10-09)
+
+
+### Documentation
+
+* **recaptchaenterprise:** Minor wording and branding adjustments ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
 ## [2.17.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.17.0...recaptchaenterprise/v2.17.1) (2024-09-12)
 
 

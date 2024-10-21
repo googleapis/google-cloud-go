@@ -1101,13 +1101,9 @@ type internalClient interface {
 // Client is a client for interacting with Sensitive Data Protection (DLP).
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// The Cloud Data Loss Prevention (DLP) API is a service that allows clients
-// to detect the presence of Personally Identifiable Information (PII) and other
-// privacy-sensitive data in user-supplied, unstructured data streams, like text
-// blocks or images.
-// The service also includes methods for sensitive data redaction and
-// scheduling of data scans on Google Cloud Platform based data sets.
-//
+// Sensitive Data Protection provides access to a powerful sensitive data
+// inspection, classification, and de-identification platform that works
+// on text, images, and Google Cloud storage repositories.
 // To learn more about concepts and find how-to guides see
 // https://cloud.google.com/sensitive-data-protection/docs/ (at https://cloud.google.com/sensitive-data-protection/docs/).
 type Client struct {
@@ -1574,13 +1570,9 @@ type gRPCClient struct {
 // NewClient creates a new dlp service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// The Cloud Data Loss Prevention (DLP) API is a service that allows clients
-// to detect the presence of Personally Identifiable Information (PII) and other
-// privacy-sensitive data in user-supplied, unstructured data streams, like text
-// blocks or images.
-// The service also includes methods for sensitive data redaction and
-// scheduling of data scans on Google Cloud Platform based data sets.
-//
+// Sensitive Data Protection provides access to a powerful sensitive data
+// inspection, classification, and de-identification platform that works
+// on text, images, and Google Cloud storage repositories.
 // To learn more about concepts and find how-to guides see
 // https://cloud.google.com/sensitive-data-protection/docs/ (at https://cloud.google.com/sensitive-data-protection/docs/).
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
@@ -1653,13 +1645,9 @@ type restClient struct {
 
 // NewRESTClient creates a new dlp service rest client.
 //
-// The Cloud Data Loss Prevention (DLP) API is a service that allows clients
-// to detect the presence of Personally Identifiable Information (PII) and other
-// privacy-sensitive data in user-supplied, unstructured data streams, like text
-// blocks or images.
-// The service also includes methods for sensitive data redaction and
-// scheduling of data scans on Google Cloud Platform based data sets.
-//
+// Sensitive Data Protection provides access to a powerful sensitive data
+// inspection, classification, and de-identification platform that works
+// on text, images, and Google Cloud storage repositories.
 // To learn more about concepts and find how-to guides see
 // https://cloud.google.com/sensitive-data-protection/docs/ (at https://cloud.google.com/sensitive-data-protection/docs/).
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {

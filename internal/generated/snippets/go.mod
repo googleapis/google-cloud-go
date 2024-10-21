@@ -522,3 +522,5 @@ replace cloud.google.com/go/networkservices => ../../../networkservices
 replace cloud.google.com/go/privilegedaccessmanager => ../../../privilegedaccessmanager
 
 replace cloud.google.com/go/apihub => ../../../apihub
+
+replace cloud.google.com/go/oracledatabase => ../../../oracledatabase

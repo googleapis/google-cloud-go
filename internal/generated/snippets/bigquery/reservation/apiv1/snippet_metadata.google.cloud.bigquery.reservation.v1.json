@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/reservation/apiv1",
-    "version": "1.63.0",
+    "version": "1.63.1",
     "language": "GO",
     "apis": [
       {

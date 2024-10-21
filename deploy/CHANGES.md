@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.22.1...deploy/v1.23.0) (2024-10-09)
+
+
+### Features
+
+* **deploy:** Added support for deploy policies ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **deploy:** Minor documentation updates ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
 ## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.22.0...deploy/v1.22.1) (2024-09-12)
 
 
