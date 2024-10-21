@@ -25,8 +25,7 @@ func TestDoSeqListingEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
 
 		attrs := &storage.BucketAttrs{
-			Name:              bucket,
-			VersioningEnabled: true,
+			Name: bucket,
 		}
 		bucketHandle := client.Bucket(bucket)
 		if err := bucketHandle.Create(ctx, project, attrs); err != nil {
