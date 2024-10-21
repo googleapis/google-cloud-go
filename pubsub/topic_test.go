@@ -181,6 +181,9 @@ func TestTopic_IngestionCloudStorage(t *testing.T) {
 				MinimumObjectCreateTime: time.Now().Add(-time.Hour),
 				MatchGlob:               "**.txt",
 			},
+			PlatformLogsSettings: &PlatformLogsSettings{
+				Severity: PlatformLogsSeverityDisabled,
+			},
 		},
 	}
 
@@ -203,6 +206,9 @@ func TestTopic_IngestionCloudStorage(t *testing.T) {
 			InputFormat:             &IngestionDataSourceCloudStoragePubSubAvroFormat{},
 			MinimumObjectCreateTime: time.Now().Add(-2 * time.Hour),
 			MatchGlob:               "**.txt",
+		},
+		PlatformLogsSettings: &PlatformLogsSettings{
+			Severity: PlatformLogsSeverityError,
 		},
 	}
 	config2, err := topic.Update(ctx, TopicConfigToUpdate{IngestionDataSourceSettings: settings})
