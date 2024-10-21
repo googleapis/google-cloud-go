@@ -47,8 +47,8 @@ func TestDoSeqListingEmulated(t *testing.T) {
 		if nextToken != "" {
 			t.Errorf("doSequential() expected to receive empty token, got %q", nextToken)
 		}
-		if pageSize > defaultPageSize {
-			t.Errorf("doSequential() expected to receive less than %d results, got %d results", defaultPageSize, pageSize)
+		if pageSize > seqDefaultPageSize {
+			t.Errorf("doSequential() expected to receive less than %d results, got %d results", seqDefaultPageSize, pageSize)
 		}
 	})
 }

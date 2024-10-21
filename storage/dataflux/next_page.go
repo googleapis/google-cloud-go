@@ -23,6 +23,11 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+const (
+	// wsDefaultPageSize specifies the number of object results to include on a single page for worksteal listing.
+	wsDefaultPageSize = 5000
+)
+
 // nextPageOpts specifies options for next page of listing result .
 type nextPageOpts struct {
 	// startRange is the start offset of the objects to be listed.
@@ -69,7 +74,7 @@ func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 	itemIndex := -1
 	// The Go Listing API does not expose a convenient interface to list multiple objects together,
 	// thus we need to manually loop to construct a page of results using the iterator.
-	for i := 0; i < defaultPageSize; i++ {
+	for i := 0; i < wsDefaultPageSize; i++ {
 		attrs, err := objectIterator.Next()
 
 		// If the lister has listed the last item for the assigned range,
@@ -115,12 +120,12 @@ func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 
 		// If the "startoffset" value matches the name of the last object,
 		// list another page to ensure the next NextStartRange is distinct from the current one.
-		if opts.query.Versions && i == defaultPageSize-1 && attrs.Generation != int64(0) && opts.query.StartOffset == attrs.Name {
+		if opts.query.Versions && i == wsDefaultPageSize-1 && attrs.Generation != int64(0) && opts.query.StartOffset == attrs.Name {
 			i = -1
 		}
 
 		// When generation value is not set, list next page if the last item is a version of previous item to prevent duplicate listing.
-		if opts.query.Versions && i == defaultPageSize-1 && attrs.Generation == int64(0) && indexLexLast > 0 && items[indexLexLast-1].Name == items[indexLexLast].Name {
+		if opts.query.Versions && i == wsDefaultPageSize-1 && attrs.Generation == int64(0) && indexLexLast > 0 && items[indexLexLast-1].Name == items[indexLexLast].Name {
 			i = -1
 		}
 	}

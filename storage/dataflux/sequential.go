@@ -24,8 +24,8 @@ import (
 )
 
 const (
-	// defaultPageSize specifies the number of object results to include on a single page.
-	defaultPageSize = 5000
+	// seqDefaultPageSize specifies the number of object results to include on a single page for sequential listing.
+	seqDefaultPageSize = 5000
 )
 
 // sequentialListing performs a sequential listing on the given bucket.
@@ -37,7 +37,7 @@ func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs,
 	var lastToken string
 	objectIterator := c.bucket.Objects(ctx, &c.query)
 	objectIterator.PageInfo().Token = c.pageToken
-	objectIterator.PageInfo().MaxSize = defaultPageSize
+	objectIterator.PageInfo().MaxSize = seqDefaultPageSize
 
 	for {
 		objects, nextToken, pageSize, err := doSeqListing(objectIterator, c.skipDirectoryObjects)
