@@ -771,13 +771,13 @@ func (x *VertexRagStore) GetVectorDistanceThreshold() float64 {
 }
 
 // Retrieve from Vertex AI Search datastore for grounding.
-// See https://cloud.google.com/vertex-ai-search-and-conversation
+// See https://cloud.google.com/products/agent-builder
 type VertexAISearch struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Fully-qualified Vertex AI Search's datastore resource ID.
+	// Required. Fully-qualified Vertex AI Search data store resource ID.
 	// Format:
 	// `projects/{project}/locations/{location}/collections/{collection}/dataStores/{dataStore}`
 	Datastore string `protobuf:"bytes,1,opt,name=datastore,proto3" json:"datastore,omitempty"`
