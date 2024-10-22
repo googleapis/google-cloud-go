@@ -187,7 +187,11 @@ func (w *worker) shutDownSignal() bool {
 
 	// If number of objects listed is equal to the given batchSize, then shutdown.
 	// If batch size is not given i.e. 0, then list until all objects have been listed.
-	alreadyListedBatchSizeObjects := w.lister.batchSize > 0 && len(w.result.objects) >= w.lister.batchSize
+	w.result.mu.Lock()
+	lenResult := len(w.result.objects)
+	w.result.mu.Unlock()
+
+	alreadyListedBatchSizeObjects := w.lister.batchSize > 0 && lenResult >= w.lister.batchSize
 
 	return noMoreObjects || alreadyListedBatchSizeObjects
 }
