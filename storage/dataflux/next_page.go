@@ -25,7 +25,7 @@ import (
 
 const (
 	// wsDefaultPageSize specifies the number of object results to include on a single page for worksteal listing.
-	wsDefaultPageSize = 5000
+	wsDefaultPageSize = 1000
 )
 
 // nextPageOpts specifies options for next page of listing result .
@@ -62,17 +62,18 @@ func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 
 	opts.query.StartOffset = addPrefix(opts.startRange, opts.query.Prefix)
 	opts.query.EndOffset = addPrefix(opts.endRange, opts.query.Prefix)
-
-	// objectLexLast is the lexicographically last item in the page.
-	objectLexLast := ""
-	// indexLexLast is the index of lexicographically last item in the page.
-	indexLexLast := 0
-
 	objectIterator := opts.bucketHandle.Objects(ctx, &opts.query)
 	var items []*storage.ObjectAttrs
-	// itemIndex is the index of the last item in the items list.
-	itemIndex := -1
-	// The Go Listing API does not expose a convenient interface to list multiple objects together,
+
+	// nameLexLast is the name of lexicographically last object in the page.
+	nameLexLast := ""
+	// indexLexLast is the index of lexicographically last object in the page.
+	// If the item is iterated but not added to the items list, then indexLexLast is -1.
+	indexLexLast := 0
+	// indexItemLast is the index of the last item in the items list.
+	indexItemLast := -1
+
+	// The Go Listing API does not expose an interface to list multiple objects together,
 	// thus we need to manually loop to construct a page of results using the iterator.
 	for i := 0; i < wsDefaultPageSize; i++ {
 		attrs, err := objectIterator.Next()
@@ -86,9 +87,7 @@ func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 				nextStartRange: "",
 				generation:     int64(0),
 			}, nil
-		}
-
-		if err != nil {
+		} else if err != nil {
 			return nil, fmt.Errorf("iterating through objects: %w", err)
 		}
 
@@ -97,43 +96,40 @@ func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 			continue
 		}
 
+		// Append object to items.
+		// indexItemLast tracks index of the last item added to the items list.
 		if !(opts.skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
 			items = append(items, attrs)
-			// Track index of the current item added to the items list.
-			itemIndex++
+			indexItemLast++
 		}
 
-		// If name/prefix is greater than objectLexLast, update objectLexLast and indexLexLast.
-		if objectLexLast <= attrs.Name || objectLexLast <= attrs.Prefix {
-			objectLexLast = attrs.Prefix
-			if objectLexLast <= attrs.Name {
-				objectLexLast = attrs.Name
-			}
-			// If object is added to the items list, then update indexLexLast to current item index, else set indexLexLast to -1.
-			// Setting indexLexLast to -1, indicates that the lexicographically last item is not added to items list.
-			if !(opts.skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
-				indexLexLast = itemIndex
-			} else {
-				indexLexLast = -1
-			}
+		// If name/prefix of current object is greater than nameLexLast, update nameLexLast and indexLexLast.
+		if nameLexLast <= attrs.Name || nameLexLast <= attrs.Prefix {
+			updateLexLastObject(&nameLexLast, &indexLexLast, indexItemLast, attrs, opts.skipDirectoryObjects)
 		}
 
-		// If the "startoffset" value matches the name of the last object,
+		// If the whole page lists different versions of the same object, i.e.
+		// "startoffset" value matches the name of the last object,
 		// list another page to ensure the next NextStartRange is distinct from the current one.
-		if opts.query.Versions && i == wsDefaultPageSize-1 && attrs.Generation != int64(0) && opts.query.StartOffset == attrs.Name {
+		sameObjectPage := opts.query.Versions && i == wsDefaultPageSize-1 && attrs.Generation != int64(0) && opts.query.StartOffset == attrs.Name
+
+		// If the generation value is not set, list next page if the last item is a version of previous item to prevent duplicate listing.
+		generationNotSet := opts.query.Versions && i == wsDefaultPageSize-1 && attrs.Generation == int64(0) && indexLexLast > 0 && items[indexLexLast-1].Name == items[indexLexLast].Name
+
+		if sameObjectPage || generationNotSet {
 			i = -1
 		}
 
-		// When generation value is not set, list next page if the last item is a version of previous item to prevent duplicate listing.
-		if opts.query.Versions && i == wsDefaultPageSize-1 && attrs.Generation == int64(0) && indexLexLast > 0 && items[indexLexLast-1].Name == items[indexLexLast].Name {
-			i = -1
-		}
 	}
 
-	// Make last item as next start range.
-	nextStartRange := strings.TrimPrefix(objectLexLast, opts.query.Prefix)
+	// Make last item as next start range. Remove the prefix from the name so that range calculations
+	// remain prefix-agnostic. This is necessary due to the unbounded end-range when splitting string
+	// namespaces of unknown size.
+	nextStartRange := strings.TrimPrefix(nameLexLast, opts.query.Prefix)
 	// When the lexicographically last item is not added to items list due to skipDirectoryObjects,
-	// then set doneListing return objectLexLast as next start range.
+	// then return nameLexLast as next start range.
+	// This does not require to check for generations as directory object cannot have multiple
+	// versions.
 	if len(items) < 1 || indexLexLast == -1 {
 		return &nextPageResult{
 			items:          items,
@@ -144,17 +140,20 @@ func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 
 	generation := int64(0)
 
-	// Remove lexicographically last item from the item list to avoid duplicate listing.
-	// Store generation of the item to be removed from the list.
-	if indexLexLast >= itemIndex {
-		generation = items[itemIndex].Generation
+	// Remove lexicographically last item from the item list to avoid duplicate listing and
+	// store generation value of the item removed from the list.
+	if indexLexLast >= indexItemLast {
+		// If the item is at the end of the list, remove last item.
+		generation = items[indexItemLast].Generation
 		items = items[:len(items)-1]
 	} else if indexLexLast >= 0 {
+		// If the item is not at the end of the list, remove the item at indexLexLast.
 		generation = items[indexLexLast].Generation
 		items = append(items[:indexLexLast], items[indexLexLast+1:]...)
 	}
 
-	// Check if is versions is false, generation is not required.
+	// If versions is false in query, only latest version of the object will be
+	// listed. Therefore, generation is not required.
 	if !opts.query.Versions {
 		generation = int64(0)
 	}
@@ -165,6 +164,20 @@ func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 		nextStartRange: nextStartRange,
 		generation:     generation,
 	}, nil
+}
+
+func updateLexLastObject(nameLexLast *string, indexLexLast *int, indexItemLast int, attrs *storage.ObjectAttrs, skipDirectoryObjects bool) {
+	*nameLexLast = attrs.Prefix
+	if *nameLexLast <= attrs.Name {
+		*nameLexLast = attrs.Name
+	}
+	// If object is added to the items list, then update indexLexLast to current item index, else set indexLexLast to -1.
+	// Setting indexLexLast to -1, indicates that the lexicographically last item is not added to items list.
+	if !(skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
+		*indexLexLast = indexItemLast
+	} else {
+		*indexLexLast = -1
+	}
 }
 
 func addPrefix(name, prefix string) string {
