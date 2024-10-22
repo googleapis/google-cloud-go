@@ -1,5 +1,13 @@
 # Changes
 
+## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.44.0...pubsub/v1.45.0) (2024-10-22)
+
+
+### Features
+
+* **pubsub:** Add IngestionFailureEvent to the external proto ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+* **pubsub:** Add support for ingestion platform logging settings ([#10969](https://github.com/googleapis/google-cloud-go/issues/10969)) ([c60241f](https://github.com/googleapis/google-cloud-go/commit/c60241f46db2b021d799f621851a352f2baec96e))
+
 ## [1.44.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.43.0...pubsub/v1.44.0) (2024-10-08)
 
 
