@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.44.0...storage/v1.45.0) (2024-10-17)
+
+
+### Features
+
+* **storage/internal:** Adds support for restore token ([70d82fe](https://github.com/googleapis/google-cloud-go/commit/70d82fe93f60f1075298a077ce1616f9ae7e13fe))
+* **storage:** Adding bucket-specific dynamicDelay ([#10987](https://github.com/googleapis/google-cloud-go/issues/10987)) ([a807a7e](https://github.com/googleapis/google-cloud-go/commit/a807a7e7f9fb002374407622c126102c5e61af82))
+* **storage:** Dynamic read request stall timeout ([#10958](https://github.com/googleapis/google-cloud-go/issues/10958)) ([a09f00e](https://github.com/googleapis/google-cloud-go/commit/a09f00eeecac82af98ae769bab284ee58a3a66cb))
+
+
+### Documentation
+
+* **storage:** Remove preview wording from NewGRPCClient ([#11002](https://github.com/googleapis/google-cloud-go/issues/11002)) ([40c3a5b](https://github.com/googleapis/google-cloud-go/commit/40c3a5b9c4cd4db2f1695e180419197b6a03ed7f))
+
 ## [1.44.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.43.0...storage/v1.44.0) (2024-10-03)
 
 
