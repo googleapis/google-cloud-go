@@ -1584,10 +1584,10 @@ func transportClientTest(ctx context.Context, t *testing.T, test func(*testing.T
 	checkEmulatorEnvironment(t)
 
 	for transport, client := range emulatorClients {
-		if reason := ctx.Value(skipTransportTestKey(transport)); reason != nil {
-			t.Skip("transport", fmt.Sprintf("%q", transport), "explicitly skipped:", reason)
-		}
 		t.Run(transport, func(t *testing.T) {
+			if reason := ctx.Value(skipTransportTestKey(transport)); reason != nil {
+				t.Skip("transport", fmt.Sprintf("%q", transport), "explicitly skipped:", reason)
+			}
 			project := fmt.Sprintf("%s-project", transport)
 			bucket := fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond())
 			test(t, ctx, project, bucket, client)
