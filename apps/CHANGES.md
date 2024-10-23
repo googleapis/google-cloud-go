@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.2](https://github.com/googleapis/google-cloud-go/compare/apps/v0.5.1...apps/v0.5.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **apps:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **apps:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/apps/v0.5.0...apps/v0.5.1) (2024-09-12)
 
 
@@ -100,4 +108,3 @@
 * **apps:** New clients ([#9142](https://github.com/googleapis/google-cloud-go/issues/9142)) ([8095c6e](https://github.com/googleapis/google-cloud-go/commit/8095c6ee342d9cca812c966b708ba48398fd91ed))
 
 ## Changes
-
