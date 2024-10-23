@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package asset_test
-
-import (
-	asset "cloud.google.com/go/asset/apiv1p2beta1"
-)
