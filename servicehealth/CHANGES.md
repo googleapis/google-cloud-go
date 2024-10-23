@@ -99,3 +99,4 @@
 * **servicehealth:** New clients ([#9245](https://github.com/googleapis/google-cloud-go/issues/9245)) ([2868a43](https://github.com/googleapis/google-cloud-go/commit/2868a43805e87ec51bfb816ecb3289c4c0e6bc09))
 
 ## Changes
+

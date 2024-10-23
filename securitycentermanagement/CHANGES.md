@@ -148,3 +148,4 @@
 * **securitycentermanagement:** Security Center Management API ([#9068](https://github.com/googleapis/google-cloud-go/issues/9068)) ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
 
 ## Changes
+

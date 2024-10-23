@@ -144,3 +144,4 @@
 * **parallelstore:** New client(s) ([#9434](https://github.com/googleapis/google-cloud-go/issues/9434)) ([3410b19](https://github.com/googleapis/google-cloud-go/commit/3410b190796edbf73f439494abcbeb204ed5e395))
 
 ## Changes
+
