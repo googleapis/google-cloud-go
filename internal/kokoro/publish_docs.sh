@@ -24,7 +24,7 @@ go install -buildvcs=false
 cd -
 
 # Use the google-cloud-go service account to store godocfx state.
-export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_service_account
+export GOOGLE_APPLICATION_CREDENTIALS="${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-service-account"
 # Keep GCLOUD_TESTS_GOLANG_PROJECT_ID in sync with continuous.sh.
 export GCLOUD_TESTS_GOLANG_PROJECT_ID=dulcet-port-762
 
@@ -43,7 +43,7 @@ gcloud auth activate-service-account --key-file "$KOKORO_KEYSTORE_DIR/73713_docu
 
 for f in $(find obj/api -name docs.metadata); do
   # Extract the module name and version from the docs.metadata file.
-  module=$(cat $f  | grep name    | sed 's/.*"\(.*\)"/\1/')
+  module=$(cat $f | grep name | sed 's/.*"\(.*\)"/\1/')
   version=$(cat $f | grep version | sed 's/.*"\(.*\)"/\1/')
   name="docfx-go-$module-$version.tar.gz"
   tar_dir=$(dirname $name)
