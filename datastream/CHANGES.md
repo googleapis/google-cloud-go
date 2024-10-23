@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.11.1...datastream/v1.11.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **datastream:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **datastream:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.11.0...datastream/v1.11.1) (2024-09-12)
 
 
@@ -229,4 +237,3 @@
 
 This is the first tag to carve out datastream as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

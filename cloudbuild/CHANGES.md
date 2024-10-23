@@ -1,5 +1,13 @@
 # Changes
 
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.18.0...cloudbuild/v1.18.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **cloudbuild:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.17.1...cloudbuild/v1.18.0) (2024-09-25)
 
 
@@ -255,4 +263,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out cloudbuild as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
