@@ -1,5 +1,33 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.14.1...networkmanagement/v1.15.0) (2024-10-23)
+
+
+### Features
+
+* **networkmanagement:** Add fields related to advertised routes to the RouteInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add firewall policy URI to the FirewallInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add load balancer name to the ForwardingRuleInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add messages and fields related to Redis Clusters ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add messages and fields related to Redis Instances ([#10995](https://github.com/googleapis/google-cloud-go/issues/10995)) ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add more detailed abort and drop causes to corresponding enums ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add PSC network attachment URI to the InstanceInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add PSC target fields to the ForwardingRuleInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add region name field to the RouteInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add region name to the ForwardingRuleInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+* **networkmanagement:** Add subnet URI and region name to the NetworkInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+
+
+### Bug Fixes
+
+* **networkmanagement:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **networkmanagement:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+
+### Documentation
+
+* **networkmanagement:** Update outdated comments in the FirewallInfo proto ([1a33f93](https://github.com/googleapis/google-cloud-go/commit/1a33f9393851d7f9ba45f4226e3792960909d99e))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.14.0...networkmanagement/v1.14.1) (2024-09-12)
 
 
@@ -211,4 +239,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out networkmanagement as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
