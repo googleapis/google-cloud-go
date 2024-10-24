@@ -247,19 +247,11 @@ errors can still be unwrapped using the APIError.
 	      log.Println(ae.Reason())
 	      log.Println(ae.Details().Help.GetLinks())
 	   }
-	}
-
-If the gRPC transport was used, the [google.golang.org/grpc/status.Status] can
-still be parsed using the [google.golang.org/grpc/status.FromError] function.
-
-	if err != nil {
-	   if s, ok := status.FromError(err); ok {
-	      log.Println(s.Message())
-	      for _, d := range s.Proto().Details {
-	         log.Println(d)
-	      }
+	   // If a gRPC transport was used you can extract the
+	   // google.golang.org/grpc/status.Status from the error
+	   s := ae.GRPCStatus()
+	   log.Println(s.Code())
 	   }
-	}
 
 # Client Stability
 
