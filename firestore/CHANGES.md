@@ -1,5 +1,20 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.17.0...firestore/v1.18.0) (2024-10-24)
+
+
+### Features
+
+* **firestore:** Add WithCommitResponseTo TransactionOption ([#6967](https://github.com/googleapis/google-cloud-go/issues/6967)) ([eb25266](https://github.com/googleapis/google-cloud-go/commit/eb252663ad0bdabbd5de1767b42a69fd2aee54b2))
+* **firestore:** Surfacing the error returned from the service in Bulkwriter ([#10826](https://github.com/googleapis/google-cloud-go/issues/10826)) ([9ae039a](https://github.com/googleapis/google-cloud-go/commit/9ae039a38856133a2bde4c3bd70155d17538c974))
+
+
+### Bug Fixes
+
+* **firestore:** Add UTF-8 validation ([#10881](https://github.com/googleapis/google-cloud-go/issues/10881)) ([9199843](https://github.com/googleapis/google-cloud-go/commit/9199843947bc3a0fa415dba50ba2221850e0fbad))
+* **firestore:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **firestore:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.16.0...firestore/v1.17.0) (2024-09-11)
 
 
@@ -249,4 +264,3 @@
 
 This is the first tag to carve out firestore as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
