@@ -467,6 +467,7 @@ func featureFlagsFromContext(context context.Context) *btpb.FeatureFlags {
 }
 
 func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
+	fmt.Println("Entering server ReadRows")
 	featureFlags := featureFlagsFromContext(stream.Context())
 
 	start := time.Now()
@@ -651,7 +652,28 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s
 		rrr.Chunks[len(rrr.Chunks)-1].RowStatus = &btpb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true}
 	}
 
-	return stream.Send(rrr)
+	fmt.Println("Sending response on stream")
+	sendErr := stream.Send(rrr)
+
+	go func() {
+		locationMDKey := "x-goog-ext-425905942-bin"
+		serverTimingMDKey := "server-timing"
+		clusterID2 := "cluster-id-2"
+		zoneID1 := "zone-id-1"
+		testTrailers, _ := proto.Marshal(&btpb.ResponseParams{
+			ClusterId: &clusterID2,
+			ZoneId:    &zoneID1,
+		})
+		fmt.Println("Sending trailer on stream")
+		time.Sleep(10 * time.Second)
+		stream.SetTrailer(metadata.MD{
+			locationMDKey:     []string{string(testTrailers)},
+			serverTimingMDKey: []string{"gfet4t7; dur=5678"},
+		})
+	}()
+
+	fmt.Println("Returing sendErr")
+	return sendErr
 }
 
 // filterRow modifies a row with the given filter. Returns true if at least one cell from the row matches,
