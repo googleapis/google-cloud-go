@@ -2343,7 +2343,7 @@ type Rule_ForceReturnFacetAction struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Each instance corresponds to a force return attribute for the given
-	// condition. There can't be more 3 instances here.
+	// condition. There can't be more 15 instances here.
 	FacetPositionAdjustments []*Rule_ForceReturnFacetAction_FacetPositionAdjustment `protobuf:"bytes,1,rep,name=facet_position_adjustments,json=facetPositionAdjustments,proto3" json:"facet_position_adjustments,omitempty"`
 }
 

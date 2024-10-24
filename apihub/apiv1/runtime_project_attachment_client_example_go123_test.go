@@ -34,7 +34,7 @@ func ExampleRuntimeProjectAttachmentClient_ListRuntimeProjectAttachments_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -60,7 +60,7 @@ func ExampleRuntimeProjectAttachmentClient_ListLocations_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -86,7 +86,7 @@ func ExampleRuntimeProjectAttachmentClient_ListOperations_all() {
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apihub.NewRuntimeProjectAttachmentClient(ctx)
+	c, err := apihub.NewRuntimeProjectAttachmentRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

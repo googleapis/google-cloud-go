@@ -324,7 +324,7 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AclConfigServiceClient interface {
-	// Default Acl Configuration for use in a location of a customer's project.
+	// Default ACL configuration for use in a location of a customer's project.
 	// Updates will only reflect to new data stores. Existing data stores will
 	// still use the old value.
 	UpdateAclConfig(ctx context.Context, in *UpdateAclConfigRequest, opts ...grpc.CallOption) (*AclConfig, error)
@@ -360,7 +360,7 @@ func (c *aclConfigServiceClient) GetAclConfig(ctx context.Context, in *GetAclCon
 
 // AclConfigServiceServer is the server API for AclConfigService service.
 type AclConfigServiceServer interface {
-	// Default Acl Configuration for use in a location of a customer's project.
+	// Default ACL configuration for use in a location of a customer's project.
 	// Updates will only reflect to new data stores. Existing data stores will
 	// still use the old value.
 	UpdateAclConfig(context.Context, *UpdateAclConfigRequest) (*AclConfig, error)

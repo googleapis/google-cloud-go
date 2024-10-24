@@ -1,5 +1,29 @@
 # Changes
 
+## [1.58.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.58.0...dialogflow/v1.58.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **dialogflow:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **dialogflow:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.58.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.57.1...dialogflow/v1.58.0) (2024-09-25)
+
+
+### Features
+
+* **dialogflow:** Add ALAW encoding value to Audio encoding enum ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **dialogflow:** Created new boolean fields in conversation dataset for zone isolation and zone separation compliance status ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+* **dialogflow:** Created new boolean fields in conversation model for zone isolation and zone separation compliance status ([7250d71](https://github.com/googleapis/google-cloud-go/commit/7250d714a638dcd5df3fbe0e91c5f1250c3f80f9))
+
+## [1.57.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.57.0...dialogflow/v1.57.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **dialogflow:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.57.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.56.0...dialogflow/v1.57.0) (2024-08-20)
 
 

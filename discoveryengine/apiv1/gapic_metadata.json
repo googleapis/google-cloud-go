@@ -466,6 +466,11 @@
         "grpc": {
           "libraryClient": "DocumentClient",
           "rpcs": {
+            "BatchGetDocumentsMetadata": {
+              "methods": [
+                "BatchGetDocumentsMetadata"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -521,6 +526,11 @@
         "rest": {
           "libraryClient": "DocumentClient",
           "rpcs": {
+            "BatchGetDocumentsMetadata": {
+              "methods": [
+                "BatchGetDocumentsMetadata"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -684,6 +694,11 @@
                 "CheckGrounding"
               ]
             },
+            "GenerateGroundedContent": {
+              "methods": [
+                "GenerateGroundedContent"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -692,6 +707,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "StreamGenerateGroundedContent": {
+              "methods": [
+                "StreamGenerateGroundedContent"
               ]
             }
           }
@@ -709,6 +729,11 @@
                 "CheckGrounding"
               ]
             },
+            "GenerateGroundedContent": {
+              "methods": [
+                "GenerateGroundedContent"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -717,6 +742,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "StreamGenerateGroundedContent": {
+              "methods": [
+                "StreamGenerateGroundedContent"
               ]
             }
           }
@@ -1033,6 +1063,70 @@
         }
       }
     },
+    "SearchTuningService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SearchTuningClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCustomModels": {
+              "methods": [
+                "ListCustomModels"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "TrainCustomModel": {
+              "methods": [
+                "TrainCustomModel"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SearchTuningClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCustomModels": {
+              "methods": [
+                "ListCustomModels"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "TrainCustomModel": {
+              "methods": [
+                "TrainCustomModel"
+              ]
+            }
+          }
+        }
+      }
+    },
     "SiteSearchEngineService": {
       "clients": {
         "grpc": {
@@ -1227,6 +1321,11 @@
                 "ListOperations"
               ]
             },
+            "PurgeUserEvents": {
+              "methods": [
+                "PurgeUserEvents"
+              ]
+            },
             "WriteUserEvent": {
               "methods": [
                 "WriteUserEvent"
@@ -1260,6 +1359,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "PurgeUserEvents": {
+              "methods": [
+                "PurgeUserEvents"
               ]
             },
             "WriteUserEvent": {

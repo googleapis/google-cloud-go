@@ -69,6 +69,11 @@ type CloudDeployCallOptions struct {
 	GetRelease             []gax.CallOption
 	CreateRelease          []gax.CallOption
 	AbandonRelease         []gax.CallOption
+	CreateDeployPolicy     []gax.CallOption
+	UpdateDeployPolicy     []gax.CallOption
+	DeleteDeployPolicy     []gax.CallOption
+	ListDeployPolicies     []gax.CallOption
+	GetDeployPolicy        []gax.CallOption
 	ApproveRollout         []gax.CallOption
 	AdvanceRollout         []gax.CallOption
 	CancelRollout          []gax.CallOption
@@ -246,6 +251,39 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 		},
 		AbandonRelease: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListDeployPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		ApproveRollout: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -524,6 +562,37 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 		AbandonRelease: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		CreateDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListDeployPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetDeployPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ApproveRollout: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -703,6 +772,14 @@ type internalCloudDeployClient interface {
 	CreateRelease(context.Context, *deploypb.CreateReleaseRequest, ...gax.CallOption) (*CreateReleaseOperation, error)
 	CreateReleaseOperation(name string) *CreateReleaseOperation
 	AbandonRelease(context.Context, *deploypb.AbandonReleaseRequest, ...gax.CallOption) (*deploypb.AbandonReleaseResponse, error)
+	CreateDeployPolicy(context.Context, *deploypb.CreateDeployPolicyRequest, ...gax.CallOption) (*CreateDeployPolicyOperation, error)
+	CreateDeployPolicyOperation(name string) *CreateDeployPolicyOperation
+	UpdateDeployPolicy(context.Context, *deploypb.UpdateDeployPolicyRequest, ...gax.CallOption) (*UpdateDeployPolicyOperation, error)
+	UpdateDeployPolicyOperation(name string) *UpdateDeployPolicyOperation
+	DeleteDeployPolicy(context.Context, *deploypb.DeleteDeployPolicyRequest, ...gax.CallOption) (*DeleteDeployPolicyOperation, error)
+	DeleteDeployPolicyOperation(name string) *DeleteDeployPolicyOperation
+	ListDeployPolicies(context.Context, *deploypb.ListDeployPoliciesRequest, ...gax.CallOption) *DeployPolicyIterator
+	GetDeployPolicy(context.Context, *deploypb.GetDeployPolicyRequest, ...gax.CallOption) (*deploypb.DeployPolicy, error)
 	ApproveRollout(context.Context, *deploypb.ApproveRolloutRequest, ...gax.CallOption) (*deploypb.ApproveRolloutResponse, error)
 	AdvanceRollout(context.Context, *deploypb.AdvanceRolloutRequest, ...gax.CallOption) (*deploypb.AdvanceRolloutResponse, error)
 	CancelRollout(context.Context, *deploypb.CancelRolloutRequest, ...gax.CallOption) (*deploypb.CancelRolloutResponse, error)
@@ -937,6 +1014,49 @@ func (c *CloudDeployClient) CreateReleaseOperation(name string) *CreateReleaseOp
 // AbandonRelease abandons a Release in the Delivery Pipeline.
 func (c *CloudDeployClient) AbandonRelease(ctx context.Context, req *deploypb.AbandonReleaseRequest, opts ...gax.CallOption) (*deploypb.AbandonReleaseResponse, error) {
 	return c.internalClient.AbandonRelease(ctx, req, opts...)
+}
+
+// CreateDeployPolicy creates a new DeployPolicy in a given project and location.
+func (c *CloudDeployClient) CreateDeployPolicy(ctx context.Context, req *deploypb.CreateDeployPolicyRequest, opts ...gax.CallOption) (*CreateDeployPolicyOperation, error) {
+	return c.internalClient.CreateDeployPolicy(ctx, req, opts...)
+}
+
+// CreateDeployPolicyOperation returns a new CreateDeployPolicyOperation from a given name.
+// The name must be that of a previously created CreateDeployPolicyOperation, possibly from a different process.
+func (c *CloudDeployClient) CreateDeployPolicyOperation(name string) *CreateDeployPolicyOperation {
+	return c.internalClient.CreateDeployPolicyOperation(name)
+}
+
+// UpdateDeployPolicy updates the parameters of a single DeployPolicy.
+func (c *CloudDeployClient) UpdateDeployPolicy(ctx context.Context, req *deploypb.UpdateDeployPolicyRequest, opts ...gax.CallOption) (*UpdateDeployPolicyOperation, error) {
+	return c.internalClient.UpdateDeployPolicy(ctx, req, opts...)
+}
+
+// UpdateDeployPolicyOperation returns a new UpdateDeployPolicyOperation from a given name.
+// The name must be that of a previously created UpdateDeployPolicyOperation, possibly from a different process.
+func (c *CloudDeployClient) UpdateDeployPolicyOperation(name string) *UpdateDeployPolicyOperation {
+	return c.internalClient.UpdateDeployPolicyOperation(name)
+}
+
+// DeleteDeployPolicy deletes a single DeployPolicy.
+func (c *CloudDeployClient) DeleteDeployPolicy(ctx context.Context, req *deploypb.DeleteDeployPolicyRequest, opts ...gax.CallOption) (*DeleteDeployPolicyOperation, error) {
+	return c.internalClient.DeleteDeployPolicy(ctx, req, opts...)
+}
+
+// DeleteDeployPolicyOperation returns a new DeleteDeployPolicyOperation from a given name.
+// The name must be that of a previously created DeleteDeployPolicyOperation, possibly from a different process.
+func (c *CloudDeployClient) DeleteDeployPolicyOperation(name string) *DeleteDeployPolicyOperation {
+	return c.internalClient.DeleteDeployPolicyOperation(name)
+}
+
+// ListDeployPolicies lists DeployPolicies in a given project and location.
+func (c *CloudDeployClient) ListDeployPolicies(ctx context.Context, req *deploypb.ListDeployPoliciesRequest, opts ...gax.CallOption) *DeployPolicyIterator {
+	return c.internalClient.ListDeployPolicies(ctx, req, opts...)
+}
+
+// GetDeployPolicy gets details of a single DeployPolicy.
+func (c *CloudDeployClient) GetDeployPolicy(ctx context.Context, req *deploypb.GetDeployPolicyRequest, opts ...gax.CallOption) (*deploypb.DeployPolicy, error) {
+	return c.internalClient.GetDeployPolicy(ctx, req, opts...)
 }
 
 // ApproveRollout approves a Rollout.
@@ -1795,6 +1915,130 @@ func (c *cloudDeployGRPCClient) AbandonRelease(ctx context.Context, req *deployp
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.cloudDeployClient.AbandonRelease(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudDeployGRPCClient) CreateDeployPolicy(ctx context.Context, req *deploypb.CreateDeployPolicyRequest, opts ...gax.CallOption) (*CreateDeployPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateDeployPolicy[0:len((*c.CallOptions).CreateDeployPolicy):len((*c.CallOptions).CreateDeployPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudDeployClient.CreateDeployPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateDeployPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudDeployGRPCClient) UpdateDeployPolicy(ctx context.Context, req *deploypb.UpdateDeployPolicyRequest, opts ...gax.CallOption) (*UpdateDeployPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "deploy_policy.name", url.QueryEscape(req.GetDeployPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDeployPolicy[0:len((*c.CallOptions).UpdateDeployPolicy):len((*c.CallOptions).UpdateDeployPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudDeployClient.UpdateDeployPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateDeployPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudDeployGRPCClient) DeleteDeployPolicy(ctx context.Context, req *deploypb.DeleteDeployPolicyRequest, opts ...gax.CallOption) (*DeleteDeployPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteDeployPolicy[0:len((*c.CallOptions).DeleteDeployPolicy):len((*c.CallOptions).DeleteDeployPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudDeployClient.DeleteDeployPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteDeployPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudDeployGRPCClient) ListDeployPolicies(ctx context.Context, req *deploypb.ListDeployPoliciesRequest, opts ...gax.CallOption) *DeployPolicyIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDeployPolicies[0:len((*c.CallOptions).ListDeployPolicies):len((*c.CallOptions).ListDeployPolicies)], opts...)
+	it := &DeployPolicyIterator{}
+	req = proto.Clone(req).(*deploypb.ListDeployPoliciesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.DeployPolicy, string, error) {
+		resp := &deploypb.ListDeployPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudDeployClient.ListDeployPolicies(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDeployPolicies(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudDeployGRPCClient) GetDeployPolicy(ctx context.Context, req *deploypb.GetDeployPolicyRequest, opts ...gax.CallOption) (*deploypb.DeployPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDeployPolicy[0:len((*c.CallOptions).GetDeployPolicy):len((*c.CallOptions).GetDeployPolicy)], opts...)
+	var resp *deploypb.DeployPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudDeployClient.GetDeployPolicy(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -3922,6 +4166,11 @@ func (c *cloudDeployRESTClient) CreateRelease(ctx context.Context, req *deploypb
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetOverrideDeployPolicy(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("overrideDeployPolicy", fmt.Sprintf("%v", item))
+		}
+	}
 	params.Add("releaseId", fmt.Sprintf("%v", req.GetReleaseId()))
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -4016,6 +4265,402 @@ func (c *cloudDeployRESTClient) AbandonRelease(ctx context.Context, req *deployp
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateDeployPolicy creates a new DeployPolicy in a given project and location.
+func (c *cloudDeployRESTClient) CreateDeployPolicy(ctx context.Context, req *deploypb.CreateDeployPolicyRequest, opts ...gax.CallOption) (*CreateDeployPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDeployPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/deployPolicies", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("deployPolicyId", fmt.Sprintf("%v", req.GetDeployPolicyId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateDeployPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateDeployPolicy updates the parameters of a single DeployPolicy.
+func (c *cloudDeployRESTClient) UpdateDeployPolicy(ctx context.Context, req *deploypb.UpdateDeployPolicyRequest, opts ...gax.CallOption) (*UpdateDeployPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDeployPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDeployPolicy().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "deploy_policy.name", url.QueryEscape(req.GetDeployPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateDeployPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteDeployPolicy deletes a single DeployPolicy.
+func (c *cloudDeployRESTClient) DeleteDeployPolicy(ctx context.Context, req *deploypb.DeleteDeployPolicyRequest, opts ...gax.CallOption) (*DeleteDeployPolicyOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteDeployPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListDeployPolicies lists DeployPolicies in a given project and location.
+func (c *cloudDeployRESTClient) ListDeployPolicies(ctx context.Context, req *deploypb.ListDeployPoliciesRequest, opts ...gax.CallOption) *DeployPolicyIterator {
+	it := &DeployPolicyIterator{}
+	req = proto.Clone(req).(*deploypb.ListDeployPoliciesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.DeployPolicy, string, error) {
+		resp := &deploypb.ListDeployPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/deployPolicies", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDeployPolicies(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetDeployPolicy gets details of a single DeployPolicy.
+func (c *cloudDeployRESTClient) GetDeployPolicy(ctx context.Context, req *deploypb.GetDeployPolicyRequest, opts ...gax.CallOption) (*deploypb.DeployPolicy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDeployPolicy[0:len((*c.CallOptions).GetDeployPolicy):len((*c.CallOptions).GetDeployPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &deploypb.DeployPolicy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}
@@ -4419,6 +5064,11 @@ func (c *cloudDeployRESTClient) CreateRollout(ctx context.Context, req *deploypb
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetOverrideDeployPolicy(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("overrideDeployPolicy", fmt.Sprintf("%v", item))
+		}
+	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -6170,6 +6820,24 @@ func (c *cloudDeployRESTClient) CreateDeliveryPipelineOperation(name string) *Cr
 	}
 }
 
+// CreateDeployPolicyOperation returns a new CreateDeployPolicyOperation from a given name.
+// The name must be that of a previously created CreateDeployPolicyOperation, possibly from a different process.
+func (c *cloudDeployGRPCClient) CreateDeployPolicyOperation(name string) *CreateDeployPolicyOperation {
+	return &CreateDeployPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateDeployPolicyOperation returns a new CreateDeployPolicyOperation from a given name.
+// The name must be that of a previously created CreateDeployPolicyOperation, possibly from a different process.
+func (c *cloudDeployRESTClient) CreateDeployPolicyOperation(name string) *CreateDeployPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateDeployPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateReleaseOperation returns a new CreateReleaseOperation from a given name.
 // The name must be that of a previously created CreateReleaseOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) CreateReleaseOperation(name string) *CreateReleaseOperation {
@@ -6278,6 +6946,24 @@ func (c *cloudDeployRESTClient) DeleteDeliveryPipelineOperation(name string) *De
 	}
 }
 
+// DeleteDeployPolicyOperation returns a new DeleteDeployPolicyOperation from a given name.
+// The name must be that of a previously created DeleteDeployPolicyOperation, possibly from a different process.
+func (c *cloudDeployGRPCClient) DeleteDeployPolicyOperation(name string) *DeleteDeployPolicyOperation {
+	return &DeleteDeployPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteDeployPolicyOperation returns a new DeleteDeployPolicyOperation from a given name.
+// The name must be that of a previously created DeleteDeployPolicyOperation, possibly from a different process.
+func (c *cloudDeployRESTClient) DeleteDeployPolicyOperation(name string) *DeleteDeployPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteDeployPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteTargetOperation returns a new DeleteTargetOperation from a given name.
 // The name must be that of a previously created DeleteTargetOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) DeleteTargetOperation(name string) *DeleteTargetOperation {
@@ -6345,6 +7031,24 @@ func (c *cloudDeployGRPCClient) UpdateDeliveryPipelineOperation(name string) *Up
 func (c *cloudDeployRESTClient) UpdateDeliveryPipelineOperation(name string) *UpdateDeliveryPipelineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDeliveryPipelineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateDeployPolicyOperation returns a new UpdateDeployPolicyOperation from a given name.
+// The name must be that of a previously created UpdateDeployPolicyOperation, possibly from a different process.
+func (c *cloudDeployGRPCClient) UpdateDeployPolicyOperation(name string) *UpdateDeployPolicyOperation {
+	return &UpdateDeployPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateDeployPolicyOperation returns a new UpdateDeployPolicyOperation from a given name.
+// The name must be that of a previously created UpdateDeployPolicyOperation, possibly from a different process.
+func (c *cloudDeployRESTClient) UpdateDeployPolicyOperation(name string) *UpdateDeployPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateDeployPolicyOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

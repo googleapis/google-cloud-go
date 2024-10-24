@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/commerce/consumer/procurement/apiv1",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "cloudcommerceconsumerprocurement_v1_generated_ConsumerProcurementService_CancelOrder_sync",
+      "title": "cloudcommerceconsumerprocurement CancelOrder Sample",
+      "description": "CancelOrder cancels an existing\n[Order][google.cloud.commerce.consumer.procurement.v1.Order]. Every product\nprocured in the Order will be cancelled.",
+      "file": "ConsumerProcurementClient/CancelOrder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOrder",
+        "fullName": "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementClient.CancelOrder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "procurementpb.CancelOrderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CancelOrderOperation",
+        "client": {
+          "shortName": "ConsumerProcurementClient",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementClient"
+        },
+        "method": {
+          "shortName": "CancelOrder",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService.CancelOrder",
+          "service": {
+            "shortName": "ConsumerProcurementService",
+            "fullName": "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "cloudcommerceconsumerprocurement_v1_generated_ConsumerProcurementService_GetOperation_sync",
       "title": "cloudcommerceconsumerprocurement GetOperation Sample",
@@ -150,6 +196,52 @@
       ]
     },
     {
+      "regionTag": "cloudcommerceconsumerprocurement_v1_generated_ConsumerProcurementService_ModifyOrder_sync",
+      "title": "cloudcommerceconsumerprocurement ModifyOrder Sample",
+      "description": "ModifyOrder modifies an existing\n[Order][google.cloud.commerce.consumer.procurement.v1.Order] resource.",
+      "file": "ConsumerProcurementClient/ModifyOrder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ModifyOrder",
+        "fullName": "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementClient.ModifyOrder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "procurementpb.ModifyOrderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModifyOrderOperation",
+        "client": {
+          "shortName": "ConsumerProcurementClient",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementClient"
+        },
+        "method": {
+          "shortName": "ModifyOrder",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService.ModifyOrder",
+          "service": {
+            "shortName": "ConsumerProcurementService",
+            "fullName": "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudcommerceconsumerprocurement_v1_generated_ConsumerProcurementService_PlaceOrder_sync",
       "title": "cloudcommerceconsumerprocurement PlaceOrder Sample",
       "description": "PlaceOrder creates a new [Order][google.cloud.commerce.consumer.procurement.v1.Order].\n\nThis API only supports GCP spend-based committed use\ndiscounts specified by GCP documentation.\n\nThe returned long-running operation is in-progress until the backend\ncompletes the creation of the resource. Once completed, the order is\nin\n[OrderState.ORDER_STATE_ACTIVE][google.cloud.commerce.consumer.procurement.v1.OrderState.ORDER_STATE_ACTIVE].\nIn case of failure, the order resource will be removed.",
@@ -191,6 +283,282 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcommerceconsumerprocurement_v1_generated_LicenseManagementService_Assign_sync",
+      "title": "cloudcommerceconsumerprocurement Assign Sample",
+      "description": "Assign assigns a license to a user.",
+      "file": "LicenseManagementClient/Assign/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Assign",
+        "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementClient.Assign",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "procurementpb.AssignRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*procurementpb.AssignResponse",
+        "client": {
+          "shortName": "LicenseManagementClient",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementClient"
+        },
+        "method": {
+          "shortName": "Assign",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService.Assign",
+          "service": {
+            "shortName": "LicenseManagementService",
+            "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcommerceconsumerprocurement_v1_generated_LicenseManagementService_EnumerateLicensedUsers_sync",
+      "title": "cloudcommerceconsumerprocurement EnumerateLicensedUsers Sample",
+      "description": "EnumerateLicensedUsers enumerates all users assigned a license.",
+      "file": "LicenseManagementClient/EnumerateLicensedUsers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EnumerateLicensedUsers",
+        "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementClient.EnumerateLicensedUsers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "procurementpb.EnumerateLicensedUsersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LicensedUserIterator",
+        "client": {
+          "shortName": "LicenseManagementClient",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementClient"
+        },
+        "method": {
+          "shortName": "EnumerateLicensedUsers",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService.EnumerateLicensedUsers",
+          "service": {
+            "shortName": "LicenseManagementService",
+            "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcommerceconsumerprocurement_v1_generated_LicenseManagementService_GetLicensePool_sync",
+      "title": "cloudcommerceconsumerprocurement GetLicensePool Sample",
+      "description": "GetLicensePool gets the license pool.",
+      "file": "LicenseManagementClient/GetLicensePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLicensePool",
+        "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementClient.GetLicensePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "procurementpb.GetLicensePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*procurementpb.LicensePool",
+        "client": {
+          "shortName": "LicenseManagementClient",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementClient"
+        },
+        "method": {
+          "shortName": "GetLicensePool",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService.GetLicensePool",
+          "service": {
+            "shortName": "LicenseManagementService",
+            "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcommerceconsumerprocurement_v1_generated_LicenseManagementService_GetOperation_sync",
+      "title": "cloudcommerceconsumerprocurement GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "LicenseManagementClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "LicenseManagementClient",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcommerceconsumerprocurement_v1_generated_LicenseManagementService_Unassign_sync",
+      "title": "cloudcommerceconsumerprocurement Unassign Sample",
+      "description": "Unassign unassigns a license from a user.",
+      "file": "LicenseManagementClient/Unassign/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Unassign",
+        "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementClient.Unassign",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "procurementpb.UnassignRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*procurementpb.UnassignResponse",
+        "client": {
+          "shortName": "LicenseManagementClient",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementClient"
+        },
+        "method": {
+          "shortName": "Unassign",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService.Unassign",
+          "service": {
+            "shortName": "LicenseManagementService",
+            "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcommerceconsumerprocurement_v1_generated_LicenseManagementService_UpdateLicensePool_sync",
+      "title": "cloudcommerceconsumerprocurement UpdateLicensePool Sample",
+      "description": "UpdateLicensePool updates the license pool if one exists for this Order.",
+      "file": "LicenseManagementClient/UpdateLicensePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateLicensePool",
+        "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementClient.UpdateLicensePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "procurementpb.UpdateLicensePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*procurementpb.LicensePool",
+        "client": {
+          "shortName": "LicenseManagementClient",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementClient"
+        },
+        "method": {
+          "shortName": "UpdateLicensePool",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService.UpdateLicensePool",
+          "service": {
+            "shortName": "LicenseManagementService",
+            "fullName": "google.cloud.commerce.consumer.procurement.v1.LicenseManagementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

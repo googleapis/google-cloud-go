@@ -408,8 +408,9 @@ type ProcessOptions struct {
 	// If a page range is set, only the given pages are extracted and processed
 	// from the document. In the output document,
 	// [Document.Page.page_number][google.cloud.documentai.v1beta3.Document.Page.page_number]
-	// refers to the page number in the original document. This configuration
-	// only applies to sync requests.
+	// refers to the page number in the original document.
+	// This configuration only applies to online processing with
+	// [ProcessDocument][google.cloud.documentai.v1beta3.DocumentProcessorService.ProcessDocument].
 	//
 	// Types that are assignable to PageRange:
 	//

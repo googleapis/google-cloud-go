@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.1](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.13.0...vertexai/v0.13.1) (2024-09-05)
+
+
+### Bug Fixes
+
+* **vertexai:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.12.0...vertexai/v0.13.0) (2024-08-22)
 
 
@@ -175,3 +182,4 @@
 ### Features
 
 * **vertexai:** Vertex AI for go ([#9095](https://github.com/googleapis/google-cloud-go/issues/9095)) ([b3b293a](https://github.com/googleapis/google-cloud-go/commit/b3b293aee06690ed734bb19c404eb6c8af893fa1))
+

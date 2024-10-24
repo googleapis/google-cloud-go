@@ -23,6 +23,7 @@ import (
 
 	kms "cloud.google.com/go/kms/apiv1"
 	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
+	"google.golang.org/api/iterator"
 )
 
 func main() {
@@ -42,12 +43,24 @@ func main() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListKeyHandlesRequest.
 	}
-	resp, err := c.ListKeyHandles(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListKeyHandles(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*kmspb.ListKeyHandlesResponse)
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 // [END cloudkms_v1_generated_Autokey_ListKeyHandles_sync]

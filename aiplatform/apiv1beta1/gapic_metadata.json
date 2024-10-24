@@ -2393,6 +2393,11 @@
                 "ListTuningJobs"
               ]
             },
+            "RebaseTunedModel": {
+              "methods": [
+                "RebaseTunedModel"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -2466,6 +2471,11 @@
             "ListTuningJobs": {
               "methods": [
                 "ListTuningJobs"
+              ]
+            },
+            "RebaseTunedModel": {
+              "methods": [
+                "RebaseTunedModel"
               ]
             },
             "SetIamPolicy": {
@@ -6883,6 +6893,11 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdateRagCorpus": {
+              "methods": [
+                "UpdateRagCorpus"
+              ]
+            },
             "UploadRagFile": {
               "methods": [
                 "UploadRagFile"
@@ -6981,6 +6996,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateRagCorpus": {
+              "methods": [
+                "UpdateRagCorpus"
               ]
             },
             "UploadRagFile": {
