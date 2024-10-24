@@ -1675,7 +1675,7 @@ func recordAttemptCompletion(mt *builtinMetricsTracer, streamAddr *btpb.Bigtable
 	clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
 	mt.currOp.currAttempt.setClusterID(clusterID)
 	mt.currOp.currAttempt.setZoneID(zoneID)
-
+	fmt.Println("clusterID: ", clusterID, ", zoneID: ", zoneID)
 	serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
 	mt.currOp.currAttempt.setServerLatencyErr(serverLatencyErr)
 	mt.currOp.currAttempt.setServerLatency(serverLatency)

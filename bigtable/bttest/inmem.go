@@ -467,7 +467,6 @@ func featureFlagsFromContext(context context.Context) *btpb.FeatureFlags {
 }
 
 func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
-	fmt.Println("Entering server ReadRows")
 	featureFlags := featureFlagsFromContext(stream.Context())
 
 	start := time.Now()
@@ -652,7 +651,7 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s
 		rrr.Chunks[len(rrr.Chunks)-1].RowStatus = &btpb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true}
 	}
 
-	fmt.Println("Sending response on stream")
+	fmt.Println(time.Now(), " Server Sending response on stream")
 	sendErr := stream.Send(rrr)
 
 	go func() {
@@ -664,15 +663,18 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s
 			ClusterId: &clusterID2,
 			ZoneId:    &zoneID1,
 		})
-		fmt.Println("Sending trailer on stream")
 		time.Sleep(10 * time.Second)
+		fmt.Println(time.Now(), " Server sending trailer on stream")
 		stream.SetTrailer(metadata.MD{
 			locationMDKey:     []string{string(testTrailers)},
 			serverTimingMDKey: []string{"gfet4t7; dur=5678"},
 		})
+		// sendErr := stream.SendMsg(nil)
+
 	}()
 
-	fmt.Println("Returing sendErr")
+	fmt.Println(" Returing sendErr")
+	fmt.Println(time.Now(), " Returing sendErr")
 	return sendErr
 }
 

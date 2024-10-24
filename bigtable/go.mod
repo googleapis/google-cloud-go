@@ -1,6 +1,10 @@
 module cloud.google.com/go/bigtable
 
-go 1.21
+go 1.22.7
+
+toolchain go1.23.0
+
+replace google.golang.org/grpc => /usr/local/google/home/bahaaiman/Documents/cfdb-workspace-01/bigtable-client-docker-image/grpc-go
 
 require (
 	cloud.google.com/go v0.115.1
@@ -29,13 +33,13 @@ require (
 )
 
 require (
-	cel.dev/expr v0.16.0 // indirect
+	cel.dev/expr v0.16.1 // indirect
 	cloud.google.com/go/auth v0.9.3 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
 	cloud.google.com/go/compute/metadata v0.5.0 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.4.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/cncf/xds/go v0.0.0-20240822171458-6449f94b4d59 // indirect
+	github.com/cncf/xds/go v0.0.0-20240905190251-b4127c9b8d78 // indirect
 	github.com/envoyproxy/go-control-plane v0.13.0 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.1.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
