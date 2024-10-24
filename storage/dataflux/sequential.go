@@ -24,8 +24,8 @@ import (
 )
 
 const (
-	// defaultPageSize specifies the number of object results to include on a single page.
-	defaultPageSize = 5000
+	// seqDefaultPageSize specifies the number of object results to include on a single page for sequential listing.
+	seqDefaultPageSize = 5000
 )
 
 // sequentialListing performs a sequential listing on the given bucket.
@@ -33,21 +33,21 @@ const (
 // If the next token is empty, then listing is complete.
 func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs, string, error) {
 	var result []*storage.ObjectAttrs
-	var objectsListed int
+	var objectsIterated int
 	var lastToken string
 	objectIterator := c.bucket.Objects(ctx, &c.query)
 	objectIterator.PageInfo().Token = c.pageToken
-	objectIterator.PageInfo().MaxSize = defaultPageSize
+	objectIterator.PageInfo().MaxSize = seqDefaultPageSize
 
 	for {
-		objects, nextToken, numObjects, err := doSeqListing(objectIterator, c.skipDirectoryObjects)
+		objects, nextToken, pageSize, err := doSeqListing(objectIterator, c.skipDirectoryObjects)
 		if err != nil {
 			return nil, "", fmt.Errorf("failed while listing objects: %w", err)
 		}
 		result = append(result, objects...)
 		lastToken = nextToken
-		objectsListed += numObjects
-		if nextToken == "" || (c.batchSize > 0 && objectsListed >= c.batchSize) {
+		objectsIterated += pageSize
+		if nextToken == "" || (c.batchSize > 0 && objectsIterated >= c.batchSize) {
 			break
 		}
 		c.pageToken = nextToken
@@ -55,11 +55,10 @@ func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs,
 	return result, lastToken, nil
 }
 
-func doSeqListing(objectIterator *storage.ObjectIterator, skipDirectoryObjects bool) (result []*storage.ObjectAttrs, token string, objectsListed int, err error) {
+func doSeqListing(objectIterator *storage.ObjectIterator, skipDirectoryObjects bool) (result []*storage.ObjectAttrs, token string, pageSize int, err error) {
 
 	for {
 		attrs, errObjectIterator := objectIterator.Next()
-		objectsListed++
 		// Stop listing when all the requested objects have been listed.
 		if errObjectIterator == iterator.Done {
 			break
@@ -68,6 +67,7 @@ func doSeqListing(objectIterator *storage.ObjectIterator, skipDirectoryObjects b
 			err = fmt.Errorf("iterating through objects %w", errObjectIterator)
 			return
 		}
+		pageSize++
 		if !(skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
 			result = append(result, attrs)
 		}
