@@ -1,5 +1,19 @@
 # Changes
 
+## [2.10.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.9.0...dataproc/v2.10.0) (2024-10-23)
+
+
+### Features
+
+* **dataproc:** Add `ProvisioningModelMix` to support mixing of spot and standard instances for secondary workers ([#10990](https://github.com/googleapis/google-cloud-go/issues/10990)) ([0544c0a](https://github.com/googleapis/google-cloud-go/commit/0544c0a920d853a90e0f7115a96389cd06067830))
+* **dataproc:** Add support for configuration of bootdisk IOPS and throughput when bootdisk is a hyperdisk ([0544c0a](https://github.com/googleapis/google-cloud-go/commit/0544c0a920d853a90e0f7115a96389cd06067830))
+
+
+### Bug Fixes
+
+* **dataproc:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **dataproc:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [2.9.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.8.0...dataproc/v2.9.0) (2024-09-25)
 
 
