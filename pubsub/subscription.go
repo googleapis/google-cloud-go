@@ -899,8 +899,7 @@ type ReceiveSettings struct {
 	//
 	// MinExtensionPeriod must be between 10s and 600s (inclusive). This configuration
 	// can be disabled by specifying a duration less than (or equal to) 0.
-	// Defaults to off but set to 60 seconds if the subscription has exactly-once delivery enabled,
-	// which will be added in a future release.
+	// Disabled by default but set to 60 seconds if the subscription has exactly-once delivery enabled.
 	MinExtensionPeriod time.Duration
 
 	// MaxOutstandingMessages is the maximum number of unprocessed messages
