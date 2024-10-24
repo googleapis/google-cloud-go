@@ -284,8 +284,10 @@ type builtinMetricsTracer struct {
 // The method might require multiple attempts/rpcs and backoff logic to complete
 type opTracer struct {
 	attemptCount int64
+	completed    chan bool
 
 	startTime time.Time
+	endTime   time.Time
 
 	// gRPC status code of last completed attempt
 	status string
@@ -293,8 +295,23 @@ type opTracer struct {
 	currAttempt attemptTracer
 }
 
+func newOpTracer() opTracer {
+	return opTracer{
+		completed: make(chan bool),
+	}
+}
 func (o *opTracer) setStartTime(t time.Time) {
 	o.startTime = t
+}
+
+func (o *opTracer) setEndTime(t time.Time) {
+	o.completed <- true
+	o.endTime = t
+}
+
+func (o *opTracer) signalOperationCompletion() {
+	fmt.Println("operation completed. setting end time")
+	o.completed <- true
 }
 
 func (o *opTracer) setStatus(status string) {
@@ -309,6 +326,8 @@ func (o *opTracer) incrementAttemptCount() {
 // Attempt corresponds to an attempt of an RPC.
 type attemptTracer struct {
 	startTime time.Time
+	endTime   time.Time
+
 	clusterID string
 	zoneID    string
 
@@ -324,6 +343,10 @@ type attemptTracer struct {
 
 func (a *attemptTracer) setStartTime(t time.Time) {
 	a.startTime = t
+}
+
+func (a *attemptTracer) setEndTime(t time.Time) {
+	a.endTime = t
 }
 
 func (a *attemptTracer) setClusterID(clusterID string) {
@@ -346,12 +369,13 @@ func (a *attemptTracer) setServerLatencyErr(err error) {
 	a.serverLatencyErr = err
 }
 
-func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Context, tableName string, isStreaming bool) builtinMetricsTracer {
+func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Context,
+	tableName string, isStreaming bool) builtinMetricsTracer {
 	// Operation has started but not the attempt.
 	// So, create only operation tracer and not attempt tracer
-	currOpTracer := opTracer{}
+	currOpTracer := newOpTracer()
 	currOpTracer.setStartTime(time.Now())
-
+	fmt.Println("tf.enabled ", tf.enabled)
 	return builtinMetricsTracer{
 		ctx:            ctx,
 		builtInEnabled: tf.enabled,
@@ -385,6 +409,7 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 
 		// Irrespective of whether metric is attempt specific or operation specific,
 		// use last attempt's cluster and zone
+		// TODO: Revisit above comment
 		attribute.String(monitoredResLabelKeyCluster, mt.currOp.currAttempt.clusterID),
 		attribute.String(monitoredResLabelKeyZone, mt.currOp.currAttempt.zoneID),
 	}
