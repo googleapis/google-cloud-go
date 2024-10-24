@@ -27,7 +27,7 @@ import (
 	vkit "cloud.google.com/go/firestore/apiv1"
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/firestore/internal"
-	"cloud.google.com/go/internal/trace"
+	cloudOtelTrace "cloud.google.com/go/otel/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -39,12 +39,18 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// resourcePrefixHeader is the name of the metadata header used to indicate
-// the resource being operated on.
-const resourcePrefixHeader = "google-cloud-resource-prefix"
+const (
+	// resourcePrefixHeader is the name of the metadata header used to indicate
+	// the resource being operated on.
+	resourcePrefixHeader = "google-cloud-resource-prefix"
 
-// requestParamsHeader is routing header required to access named databases
-const reqParamsHeader = "x-goog-request-params"
+	// requestParamsHeader is routing header required to access named databases
+	reqParamsHeader = "x-goog-request-params"
+
+	// OpenTelemetryTracerName is the name given to the OpenTelemetry Tracer
+	// when it is obtained from the OpenTelemetry TracerProvider.
+	OpenTelemetryTracerName = "cloud.google.com/go"
+)
 
 // reqParamsHeaderVal constructs header from dbPath
 // dbPath is of the form projects/{project_id}/databases/{database_id}
@@ -73,6 +79,26 @@ type Client struct {
 	projectID    string
 	databaseID   string        // A client is tied to a single database.
 	readSettings *readSettings // readSettings allows setting a snapshot time to read the database
+	config       *clientConfig
+}
+
+// clientConfig contains the Firestore client option configuration that can be
+// set through firestoreClientOptions.
+type clientConfig struct {
+	enableTracing  bool
+	tracerProvider cloudOtelTrace.TracerProvider
+}
+
+// newClientConfig generates a new clientConfig with all the given
+// firestoreClientOptions applied.
+func newClientConfig(opts ...option.ClientOption) clientConfig {
+	var conf clientConfig
+	for _, opt := range opts {
+		if firestoreOpt, ok := opt.(firestoreClientOption); ok {
+			firestoreOpt.applyFirestoreOpt(&conf)
+		}
+	}
+	return conf
 }
 
 // NewClient creates a new Firestore client that uses the given project.
@@ -110,11 +136,14 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		return nil, err
 	}
 	vc.SetGoogleClientInfo("gccl", internal.Version)
+
+	config := newClientConfig(o...)
 	c := &Client{
 		c:            vc,
 		projectID:    projectID,
 		databaseID:   DefaultDatabaseID,
 		readSettings: &readSettings{},
+		config:       &config,
 	}
 	return c, nil
 }
@@ -243,15 +272,15 @@ func (c *Client) idsToRef(IDs []string, dbPath string) (*CollectionRef, *Documen
 // If a document is not present, the corresponding DocumentSnapshot's Exists
 // method will return false.
 func (c *Client) GetAll(ctx context.Context, docRefs []*DocumentRef) (_ []*DocumentSnapshot, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.GetAll")
-	defer func() { trace.EndSpan(ctx, err) }()
+	ctx = c.startSpan(ctx, "cloud.google.com/go/firestore.GetAll")
+	defer func() { c.endSpan(ctx, err) }()
 
 	return c.getAll(ctx, docRefs, nil, nil)
 }
 
 func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte, rs *readSettings) (_ []*DocumentSnapshot, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.BatchGetDocuments")
-	defer func() { trace.EndSpan(ctx, err) }()
+	ctx = c.startSpan(ctx, "cloud.google.com/go/firestore.Client.BatchGetDocuments")
+	defer func() { c.endSpan(ctx, err) }()
 
 	var docNames []string
 	docIndices := map[string][]int{} // doc name to positions in docRefs
@@ -331,8 +360,8 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 
 // Collections returns an iterator over the top-level collections.
 func (c *Client) Collections(ctx context.Context) *CollectionIterator {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.ListCollectionIds")
-	defer func() { trace.EndSpan(ctx, nil) }()
+	ctx = c.startSpan(ctx, "cloud.google.com/go/firestore.Client.ListCollectionIds")
+	defer func() { c.endSpan(ctx, nil) }()
 
 	it := &CollectionIterator{
 		client: c,
@@ -375,8 +404,8 @@ func (c *Client) WithReadOptions(opts ...ReadOption) *Client {
 
 // commit calls the Commit RPC outside of a transaction.
 func (c *Client) commit(ctx context.Context, ws []*pb.Write) (_ []*WriteResult, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.commit")
-	defer func() { trace.EndSpan(ctx, err) }()
+	ctx = c.startSpan(ctx, "cloud.google.com/go/firestore.Client.commit")
+	defer func() { c.endSpan(ctx, err) }()
 
 	req := &pb.CommitRequest{
 		Database: c.path(),
