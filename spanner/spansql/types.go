@@ -526,6 +526,10 @@ type Type struct {
 	Array bool
 	Base  TypeBase // Bool, Int64, Float64, Numeric, String, Bytes, Date, Timestamp
 	Len   int64    // if Base is String or Bytes; may be MaxLen
+	// fully-qualified Protocol Buffer Message or Enum type-name (including
+	// leading dot-separated namespace)
+	// non-empty if Base is ProtoMessage or ProtoEnum
+	ProtoRef string
 }
 
 // MaxLen is a sentinel for Type's Len field, representing the MAX value.
@@ -543,6 +547,8 @@ const (
 	Date
 	Timestamp
 	JSON
+	Proto
+	Enum // Enum used in CAST expressions
 )
 
 type PrivilegeType int
@@ -1392,3 +1398,38 @@ func (ds *DropSequence) String() string { return fmt.Sprintf("%#v", ds) }
 func (*DropSequence) isDDLStmt()        {}
 func (ds *DropSequence) Pos() Position  { return ds.Position }
 func (ds *DropSequence) clearOffset()   { ds.Position.Offset = 0 }
+
+// CreateProtoBundle represents a CREATE PROTO BUNDLE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#create-proto-bundle
+type CreateProtoBundle struct {
+	Types    []string
+	Position Position
+}
+
+func (cp *CreateProtoBundle) String() string { return fmt.Sprintf("%#v", cp) }
+func (*CreateProtoBundle) isDDLStmt()        {}
+func (cp *CreateProtoBundle) Pos() Position  { return cp.Position }
+func (cp *CreateProtoBundle) clearOffset()   { cp.Position.Offset = 0 }
+
+// AlterProtoBundle represents a ALTER PROTO BUNDLE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#alter-proto-bundle
+type AlterProtoBundle struct {
+	AddTypes, UpdateTypes, DeleteTypes []string
+	Position                           Position
+}
+
+func (ap *AlterProtoBundle) String() string { return fmt.Sprintf("%#v", ap) }
+func (*AlterProtoBundle) isDDLStmt()        {}
+func (ap *AlterProtoBundle) Pos() Position  { return ap.Position }
+func (ap *AlterProtoBundle) clearOffset()   { ap.Position.Offset = 0 }
+
+// DropProtoBundle represents a DROP PROTO BUNDLE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#drop-proto-bundle
+type DropProtoBundle struct {
+	Position Position
+}
+
+func (dp *DropProtoBundle) String() string { return fmt.Sprintf("%#v", dp) }
+func (*DropProtoBundle) isDDLStmt()        {}
+func (dp *DropProtoBundle) Pos() Position  { return dp.Position }
+func (dp *DropProtoBundle) clearOffset()   { dp.Position.Offset = 0 }

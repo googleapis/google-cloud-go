@@ -46,6 +46,7 @@ This file is structured as follows:
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -1007,6 +1008,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		// DROP VIEW view_name
 		// DROP ROLE role_name
 		// DROP CHANGE STREAM change_stream_name
+		// DROP PROTO BUNDLE
 		tok := p.next()
 		if tok.err != nil {
 			return nil, tok.err
@@ -1065,6 +1067,12 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 				return nil, err
 			}
 			return &DropSequence{Name: name, IfExists: ifExists, Position: pos}, nil
+		case tok.caseEqual("PROTO"):
+			// the syntax for this is dead simple: DROP PROTO BUNDLE
+			if bundleErr := p.expect("BUNDLE"); bundleErr != nil {
+				return nil, bundleErr
+			}
+			return &DropProtoBundle{Position: pos}, nil
 		}
 	} else if p.sniff("RENAME", "TABLE") {
 		a, err := p.parseRenameTable()
@@ -1096,6 +1104,12 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	} else if p.sniff("ALTER", "SEQUENCE") {
 		as, err := p.parseAlterSequence()
 		return as, err
+	} else if p.sniff("CREATE", "PROTO", "BUNDLE") {
+		cp, err := p.parseCreateProtoBundle()
+		return cp, err
+	} else if p.sniff("ALTER", "PROTO", "BUNDLE") {
+		ap, err := p.parseAlterProtoBundle()
+		return ap, err
 	}
 
 	return nil, p.errorf("unknown DDL statement")
@@ -2877,6 +2891,93 @@ func (p *parser) parseCreateSequence() (*CreateSequence, *parseError) {
 
 	return cs, nil
 }
+func (p *parser) parseCreateProtoBundle() (*CreateProtoBundle, *parseError) {
+	debugf("parseCreateProtoBundle: %v", p)
+
+	/*
+		CREATE PROTO BUNDLE (
+		  [proto_type_name"," ...]
+		)
+	*/
+
+	if err := p.expect("CREATE"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("PROTO", "BUNDLE"); err != nil {
+		return nil, err
+	}
+
+	typeNames, listErr := p.parseProtobufTypeNameList()
+	if listErr != nil {
+		return nil, listErr
+	}
+
+	return &CreateProtoBundle{Types: typeNames, Position: pos}, nil
+}
+
+func (p *parser) parseAlterProtoBundle() (*AlterProtoBundle, *parseError) {
+	debugf("parseAlterProtoBundle: %v", p)
+
+	/*
+		ALTER PROTO BUNDLE
+		  INSERT (
+		    [proto_type_name"," ...]
+		  )
+		  UPDATE (
+		    [proto_type_name"," ...]
+		  )
+		  DELETE (
+		    [proto_type_name"," ...]
+		  )
+	*/
+
+	if err := p.expect("ALTER"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("PROTO", "BUNDLE"); err != nil {
+		return nil, err
+	}
+	alter := AlterProtoBundle{Position: pos}
+	for {
+		var typeSlice *[]string
+		switch {
+		case p.eat("INSERT"):
+			if alter.AddTypes != nil {
+				return nil, p.errorf("multiple INSERTs in ALTER PROTO BUNDLE")
+			}
+			typeSlice = &alter.AddTypes
+		case p.eat("UPDATE"):
+			if alter.UpdateTypes != nil {
+				return nil, p.errorf("multiple UPDATEs in ALTER PROTO BUNDLE")
+			}
+			typeSlice = &alter.UpdateTypes
+		case p.eat("DELETE"):
+			if alter.DeleteTypes != nil {
+				return nil, p.errorf("multiple DELETEs in ALTER PROTO BUNDLE")
+			}
+			typeSlice = &alter.DeleteTypes
+		default:
+			tok := p.next()
+			if tok.err == eof {
+				return &alter, nil
+			} else if tok.err != nil {
+				return nil, tok.err
+			} else if tok.typ == unknownToken && tok.value == ";" {
+				p.back()
+				return &alter, nil
+			}
+			return nil, p.errorf("invalid clause in ALTER PROTO BUNDLE %q", tok.value)
+		}
+
+		typeNames, listErr := p.parseProtobufTypeNameList()
+		if listErr != nil {
+			return nil, listErr
+		}
+		*typeSlice = typeNames
+	}
+}
 
 func (p *parser) parseAlterSequence() (*AlterSequence, *parseError) {
 	debugf("parseAlterSequence: %v", p)
@@ -3004,6 +3105,8 @@ var baseTypes = map[string]TypeBase{
 	"DATE":      Date,
 	"TIMESTAMP": Timestamp,
 	"JSON":      JSON,
+	"PROTO":     Proto, // for use in CAST
+	"ENUM":      Enum,  // for use in CAST
 }
 
 func (p *parser) parseBaseType() (Type, *parseError) {
@@ -3035,6 +3138,59 @@ func (p *parser) parseExtractType() (Type, string, *parseError) {
 	return t, strings.ToUpper(tok.value), nil
 }
 
+// protobuf identifiers allow one letter-class character followed by any number of alphanumeric characters or an
+// underscore (which matches the [:word:] class in RE2/go regexp).
+// Fully qualified protobuf type names (enums or messages) include a dot-separated namespace, where each component is
+// also an identifier.
+// https://github.com/protocolbuffers/protobuf/blob/eeb7dc88f286df558d933214fff829205ffa5506/src/google/protobuf/io/tokenizer.cc#L653-L655
+// https://github.com/protocolbuffers/protobuf/blob/eeb7dc88f286df558d933214fff829205ffa5506/src/google/protobuf/io/tokenizer.cc#L115-L120
+var fqProtoMsgName = regexp.MustCompile(`^(?:[[:alpha:]][[:word:]]*)(?:\.(?:[[:alpha:]][[:word:]]*))*$`)
+
+func (p *parser) parseProtobufTypeName(consumed string) (string, *parseError) {
+	// Whether it's quoted or not, we might have multiple namespace components (with `.` separation)
+	possibleProtoTypeName := strings.Builder{}
+	possibleProtoTypeName.WriteString(consumed)
+	ntok := p.next()
+PROTO_TOK_CONSUME:
+	for ; ntok.err == nil; ntok = p.next() {
+		appendVal := ntok.value
+		switch ntok.typ {
+		case unquotedID:
+		case quotedID:
+			if !fqProtoMsgName.MatchString(ntok.string) {
+				return "", p.errorf("got %q, want fully qualified protobuf type", ntok.string)
+			}
+			appendVal = ntok.string
+		case unknownToken:
+			if ntok.value != "." {
+				p.back()
+				break PROTO_TOK_CONSUME
+			}
+		default:
+			p.back()
+			break PROTO_TOK_CONSUME
+		}
+		possibleProtoTypeName.WriteString(appendVal)
+	}
+	if ntok.err != nil {
+		return "", ntok.err
+	}
+	return possibleProtoTypeName.String(), nil
+}
+
+func (p *parser) parseProtobufTypeNameList() ([]string, *parseError) {
+	var list []string
+	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
+		tn, err := p.parseProtobufTypeName("")
+		if err != nil {
+			return err
+		}
+		list = append(list, tn)
+		return nil
+	})
+	return list, err
+}
+
 func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError) {
 	debugf("parseBaseOrParameterizedType: %v", p)
 
@@ -3064,12 +3220,38 @@ func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError
 			return Type{}, tok.err
 		}
 	}
-	base, ok := baseTypes[strings.ToUpper(tok.value)] // baseTypes is keyed by upper case strings.
-	if !ok {
-		return Type{}, p.errorf("got %q, want scalar type", tok.value)
-	}
-	t.Base = base
+	switch tok.typ {
+	case unquotedID:
+		base, ok := baseTypes[strings.ToUpper(tok.value)] // baseTypes is keyed by upper case strings.
+		if ok {
+			t.Base = base
+			break
+		}
 
+		// Likely a protobuf type; make sure its value matches the regexp
+		// protobuf types can be either quoted or unquoted, so we need to handle both.
+		// Fortunately, the identifier tokenization rules match between protobuf and SQL, so we only need to
+		// verify quoted identifiers.
+		pbTypeName, pbParseErr := p.parseProtobufTypeName(tok.value)
+		if pbParseErr != nil {
+			return Type{}, pbParseErr
+		}
+		t.ProtoRef = pbTypeName
+		t.Base = Proto
+		return t, nil
+	case quotedID:
+		if !fqProtoMsgName.MatchString(tok.string) {
+			return Type{}, p.errorf("got %q, want fully qualified protobuf type", tok.value)
+		}
+		pbTypeName, pbParseErr := p.parseProtobufTypeName(tok.string)
+		if pbParseErr != nil {
+			return Type{}, pbParseErr
+		}
+		t.ProtoRef = pbTypeName
+		t.Base = Proto
+		return t, nil
+	default:
+	}
 	if withParam && (t.Base == String || t.Base == Bytes) {
 		if err := p.expect("("); err != nil {
 			return Type{}, err
