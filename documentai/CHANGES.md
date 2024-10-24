@@ -1,6 +1,21 @@
 # Changes
 
 
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.34.0...documentai/v1.35.0) (2024-10-23)
+
+
+### Features
+
+* **documentai:** Add RESOURCE_EXHAUSTED to retryable status codes for ProcessDocument method ([6e69d2e](https://github.com/googleapis/google-cloud-go/commit/6e69d2e85849002bad227ea5bebcde9199605bef))
+* **documentai:** Added an url for issue reporting and api short name ([6e69d2e](https://github.com/googleapis/google-cloud-go/commit/6e69d2e85849002bad227ea5bebcde9199605bef))
+* **documentai:** Updated the exponential backoff settings for the Document AI ProcessDocument and BatchProcessDocuments methods ([6e69d2e](https://github.com/googleapis/google-cloud-go/commit/6e69d2e85849002bad227ea5bebcde9199605bef))
+
+
+### Bug Fixes
+
+* **documentai:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **documentai:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.33.0...documentai/v1.34.0) (2024-09-12)
 
 
