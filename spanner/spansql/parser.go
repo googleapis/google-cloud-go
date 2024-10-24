@@ -2498,6 +2498,10 @@ func (p *parser) parseCreateChangeStream() (*CreateChangeStream, *parseError) {
 		        OPTIONS (
 		            retention_period = timespan,
 		            value_capture_type = type
+		            exclude_ttl_deletes = { false | true }
+		            exclude_insert = { false | true }
+		            exclude_update = { false | true }
+		            exclude_delete = { false | true }
 		        )
 		    ]
 	*/
@@ -2638,6 +2642,10 @@ func (p *parser) parseChangeStreamOptions() (ChangeStreamOptions, *parseError) {
 			OPTIONS (
 									retention_period = timespan,
 									value_capture_type = type
+									exclude_ttl_deletes = { false | true }
+									exclude_insert = { false | true }
+									exclude_update = { false | true }
+									exclude_delete = { false | true }
 							) 	*/
 
 	if err := p.expect("OPTIONS"); err != nil {
@@ -2675,6 +2683,54 @@ func (p *parser) parseChangeStreamOptions() (ChangeStreamOptions, *parseError) {
 			}
 			*valueCaptureType = tok.string
 			cso.ValueCaptureType = valueCaptureType
+		} else if p.eat("exclude_ttl_deletes", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return ChangeStreamOptions{}, tok.err
+			}
+			if tok.caseEqual("TRUE") {
+				cso.ExcludeTTLDeletes = True
+			} else if tok.caseEqual("FALSE") {
+				cso.ExcludeTTLDeletes = False
+			} else {
+				return ChangeStreamOptions{}, p.errorf("invalid exclude_ttl_deletes: %v", tok.value)
+			}
+		} else if p.eat("exclude_insert", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return ChangeStreamOptions{}, tok.err
+			}
+			if tok.caseEqual("TRUE") {
+				cso.ExcludeInsert = True
+			} else if tok.caseEqual("FALSE") {
+				cso.ExcludeInsert = False
+			} else {
+				return ChangeStreamOptions{}, p.errorf("invalid exclude_insert: %v", tok.value)
+			}
+		} else if p.eat("exclude_update", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return ChangeStreamOptions{}, tok.err
+			}
+			if tok.caseEqual("TRUE") {
+				cso.ExcludeUpdate = True
+			} else if tok.caseEqual("FALSE") {
+				cso.ExcludeUpdate = False
+			} else {
+				return ChangeStreamOptions{}, p.errorf("invalid exclude_update: %v", tok.value)
+			}
+		} else if p.eat("exclude_delete", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return ChangeStreamOptions{}, tok.err
+			}
+			if tok.caseEqual("TRUE") {
+				cso.ExcludeDelete = True
+			} else if tok.caseEqual("FALSE") {
+				cso.ExcludeDelete = False
+			} else {
+				return ChangeStreamOptions{}, p.errorf("invalid exclude_delete: %v", tok.value)
+			}
 		} else {
 			tok := p.next()
 			return ChangeStreamOptions{}, p.errorf("unknown change stream option: %v", tok.value)
