@@ -209,9 +209,9 @@ connections for later re-use. These are cached to the http.MaxIdleConns
 and http.MaxIdleConnsPerHost settings in http.DefaultTransport by default.
 
 For gRPC clients, connection pooling is configurable. Users of Cloud Client
-Libraries may specify option.WithGRPCConnectionPool(n) as a client option to
-NewClient calls. This configures the underlying gRPC connections to be pooled
-and accessed in a round robin fashion.
+Libraries may specify [google.golang.org/api/option.WithGRPCConnectionPool]
+as a client option to NewClient calls. This configures the underlying gRPC
+connections to be pooled and accessed in a round robin fashion.
 
 # Using the Libraries in Container environments(Docker)
 
