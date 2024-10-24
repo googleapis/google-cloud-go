@@ -848,6 +848,21 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&AlterTable{
+				Name: "tname1",
+				Alteration: AddConstraint{
+					Constraint: TableConstraint{
+						Name:       "con1",
+						Constraint: ForeignKey{Columns: []ID{"cname2"}, RefTable: "tname2", RefColumns: []ID{"cname3"}, OnDelete: OnDeleteUnspecified, Position: line(1)},
+						Position:   line(1),
+					},
+				},
+				Position: line(1),
+			},
+			`ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (cname2) REFERENCES tname2 (cname3)`,
+			reparseDDL,
+		},
+		{
 			&CreateSequence{
 				Name:        "sname",
 				IfNotExists: true,
