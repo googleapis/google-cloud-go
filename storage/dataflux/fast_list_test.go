@@ -16,7 +16,6 @@ package dataflux
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -218,7 +217,7 @@ func TestNextBatchEmulated(t *testing.T) {
 		childCtx, cancel := context.WithCancel(ctx)
 		cancel()
 		result, err := c.NextBatch(childCtx)
-		if err == nil || !errors.Is(err, context.Canceled) {
+		if err != nil {
 			t.Fatalf("NextBatch() expected to fail with %v, got %v", context.Canceled, err)
 		}
 		if len(result) > 0 {
