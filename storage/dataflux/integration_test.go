@@ -122,15 +122,16 @@ func TestIntegration_NextBatch(t *testing.T) {
 	totalObjects := 0
 	counter := 0
 	for {
-		counter++
 		objects, err := df.NextBatch(ctx)
 		if err == iterator.Done {
+			counter++
 			totalObjects += len(objects)
 			break
 		}
 		if err != nil {
 			t.Errorf("df.NextBatch : %v", err)
 		}
+		counter++
 		totalObjects += len(objects)
 	}
 	if totalObjects != numObjectsPrefix {
