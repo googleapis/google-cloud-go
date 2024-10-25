@@ -94,14 +94,7 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 	// If a subject is specified a domain-wide delegation auth-flow is initiated
 	// to impersonate as the provided subject (user).
 	if opts.Subject != "" {
-		gdu, err := isUniverseDomainGDU(universeDomainProvider)
-		if err != nil {
-			return nil, err
-		}
-		if !gdu {
-			return nil, errUniverseNotSupportedDomainWideDelegation
-		}
-		tp, err := user(opts, client, lifetime, isStaticToken)
+		tp, err := user(opts, client, lifetime, isStaticToken, universeDomainProvider)
 		if err != nil {
 			return nil, err
 		}
@@ -154,17 +147,6 @@ func resolveUniverseDomainProvider(opts *CredentialsOptions, creds *auth.Credent
 		return auth.CredentialsPropertyFunc(creds.UniverseDomain)
 	}
 	return internal.StaticCredentialsProperty(internal.DefaultUniverseDomain)
-}
-
-// isUniverseDomainGDU returns true if the universe domain is the default Google
-// universe or if it is empty.
-func isUniverseDomainGDU(universeDomainProvider auth.CredentialsPropertyProvider) (bool, error) {
-	universeDomain, err := universeDomainProvider.GetProperty(context.Background())
-	if err != nil {
-		return false, err
-	}
-	gdu := universeDomain == internal.DefaultUniverseDomain || universeDomain == ""
-	return gdu, nil
 }
 
 // CredentialsOptions for generating an impersonated credential token.
