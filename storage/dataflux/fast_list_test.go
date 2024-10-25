@@ -16,6 +16,7 @@ package dataflux
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -197,6 +198,33 @@ func TestNewLister(t *testing.T) {
 
 		})
 	}
+}
+
+func TestNextBatchEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
+
+		bucketHandle := client.Bucket(bucket)
+		if err := bucketHandle.Create(ctx, project, &storage.BucketAttrs{
+			Name: bucket,
+		}); err != nil {
+			t.Fatal(err)
+		}
+		wantObjects := 2
+		if err := createObject(ctx, bucketHandle, wantObjects); err != nil {
+			t.Fatalf("unable to create objects: %v", err)
+		}
+		c := NewLister(client, &ListerInput{BucketName: bucket})
+		defer c.Close()
+		childCtx, cancel := context.WithCancel(ctx)
+		cancel()
+		result, err := c.NextBatch(childCtx)
+		if err == nil || !errors.Is(err, context.Canceled) {
+			t.Fatalf("NextBatch() expected to fail with %v, got %v", context.Canceled, err)
+		}
+		if len(result) > 0 {
+			t.Errorf("NextBatch() got object %v, want 0 objects", len(result))
+		}
+	})
 }
 
 var emulatorClients map[string]*storage.Client

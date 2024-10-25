@@ -64,7 +64,6 @@ type worker struct {
 // workstealListing creates multiple (parallelism) workers that simultaneosly lists
 // objects from the buckets.
 func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, error) {
-	var workerErr []error
 	// Idle channel is used to track number of idle workers.
 	idleChannel := make(chan int, c.parallelism)
 	// Result is used to store results from each worker.
@@ -94,7 +93,6 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 		idleChannel <- 1
 		g.Go(func() error {
 			if err := idleWorker.doWorkstealListing(ctx); err != nil {
-				workerErr = append(workerErr, err)
 				return fmt.Errorf("listing worker ID %d: %w", idleWorker.id, err)
 			}
 			return nil
@@ -103,9 +101,6 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 
 	if err := g.Wait(); err != nil {
 		return nil, fmt.Errorf("failed waiting for multiple workers : %w", err)
-	}
-	if len(workerErr) > 0 {
-		return nil, fmt.Errorf("failure in workers : %v", workerErr)
 	}
 
 	close(idleChannel)
