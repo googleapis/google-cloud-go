@@ -2,6 +2,14 @@
 
 
 
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.1...secretmanager/v1.14.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **secretmanager:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **secretmanager:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([2b8ca4b](https://github.com/googleapis/google-cloud-go/commit/2b8ca4b4127ce3025c7a21cc7247510e07cc5625))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.14.0...secretmanager/v1.14.1) (2024-09-12)
 
 
