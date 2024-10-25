@@ -21,11 +21,8 @@
 package discoveryenginepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1013,7 +1012,7 @@ type BatchGetDocumentsMetadataResponse_DocumentMetadata_MatcherValue_Uri struct 
 }
 
 type BatchGetDocumentsMetadataResponse_DocumentMetadata_MatcherValue_FhirResource struct {
-	// Required. Format:
+	// Format:
 	// projects/{project}/locations/{location}/datasets/{dataset}/fhirStores/{fhir_store}/fhir/{resource_type}/{fhir_resource_id}
 	FhirResource string `protobuf:"bytes,2,opt,name=fhir_resource,json=fhirResource,proto3,oneof"`
 }
