@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &securesourcemanagerpb.CreateInstanceRequest{
+//	req := &securesourcemanagerpb.CreateBranchRuleRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/securesourcemanager/apiv1/securesourcemanagerpb#CreateInstanceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/securesourcemanager/apiv1/securesourcemanagerpb#CreateBranchRuleRequest.
 //	}
-//	op, err := c.CreateInstance(ctx, req)
+//	op, err := c.CreateBranchRule(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

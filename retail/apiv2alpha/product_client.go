@@ -54,6 +54,7 @@ type ProductCallOptions struct {
 	DeleteProduct           []gax.CallOption
 	PurgeProducts           []gax.CallOption
 	ImportProducts          []gax.CallOption
+	ExportProducts          []gax.CallOption
 	SetInventory            []gax.CallOption
 	AddFulfillmentPlaces    []gax.CallOption
 	RemoveFulfillmentPlaces []gax.CallOption
@@ -167,6 +168,19 @@ func defaultProductCallOptions() *ProductCallOptions {
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        300000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ExportProducts: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -339,6 +353,18 @@ func defaultProductRESTCallOptions() *ProductCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		ExportProducts: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		SetInventory: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -429,6 +455,8 @@ type internalProductClient interface {
 	PurgeProductsOperation(name string) *PurgeProductsOperation
 	ImportProducts(context.Context, *retailpb.ImportProductsRequest, ...gax.CallOption) (*ImportProductsOperation, error)
 	ImportProductsOperation(name string) *ImportProductsOperation
+	ExportProducts(context.Context, *retailpb.ExportProductsRequest, ...gax.CallOption) (*ExportProductsOperation, error)
+	ExportProductsOperation(name string) *ExportProductsOperation
 	SetInventory(context.Context, *retailpb.SetInventoryRequest, ...gax.CallOption) (*SetInventoryOperation, error)
 	SetInventoryOperation(name string) *SetInventoryOperation
 	AddFulfillmentPlaces(context.Context, *retailpb.AddFulfillmentPlacesRequest, ...gax.CallOption) (*AddFulfillmentPlacesOperation, error)
@@ -551,6 +579,17 @@ func (c *ProductClient) ImportProducts(ctx context.Context, req *retailpb.Import
 // The name must be that of a previously created ImportProductsOperation, possibly from a different process.
 func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOperation {
 	return c.internalClient.ImportProductsOperation(name)
+}
+
+// ExportProducts exports multiple Products.
+func (c *ProductClient) ExportProducts(ctx context.Context, req *retailpb.ExportProductsRequest, opts ...gax.CallOption) (*ExportProductsOperation, error) {
+	return c.internalClient.ExportProducts(ctx, req, opts...)
+}
+
+// ExportProductsOperation returns a new ExportProductsOperation from a given name.
+// The name must be that of a previously created ExportProductsOperation, possibly from a different process.
+func (c *ProductClient) ExportProductsOperation(name string) *ExportProductsOperation {
+	return c.internalClient.ExportProductsOperation(name)
 }
 
 // SetInventory updates inventory information for a
@@ -1109,6 +1148,26 @@ func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.Im
 		return nil, err
 	}
 	return &ImportProductsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *productGRPCClient) ExportProducts(ctx context.Context, req *retailpb.ExportProductsRequest, opts ...gax.CallOption) (*ExportProductsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportProducts[0:len((*c.CallOptions).ExportProducts):len((*c.CallOptions).ExportProducts)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.productClient.ExportProducts(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportProductsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1786,6 +1845,76 @@ func (c *productRESTClient) ImportProducts(ctx context.Context, req *retailpb.Im
 
 	override := fmt.Sprintf("/v2alpha/%s", resp.GetName())
 	return &ImportProductsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ExportProducts exports multiple Products.
+func (c *productRESTClient) ExportProducts(ctx context.Context, req *retailpb.ExportProductsRequest, opts ...gax.CallOption) (*ExportProductsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/products:export", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2alpha/%s", resp.GetName())
+	return &ExportProductsOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -2482,6 +2611,24 @@ func (c *productGRPCClient) AddLocalInventoriesOperation(name string) *AddLocalI
 func (c *productRESTClient) AddLocalInventoriesOperation(name string) *AddLocalInventoriesOperation {
 	override := fmt.Sprintf("/v2alpha/%s", name)
 	return &AddLocalInventoriesOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ExportProductsOperation returns a new ExportProductsOperation from a given name.
+// The name must be that of a previously created ExportProductsOperation, possibly from a different process.
+func (c *productGRPCClient) ExportProductsOperation(name string) *ExportProductsOperation {
+	return &ExportProductsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExportProductsOperation returns a new ExportProductsOperation from a given name.
+// The name must be that of a previously created ExportProductsOperation, possibly from a different process.
+func (c *productRESTClient) ExportProductsOperation(name string) *ExportProductsOperation {
+	override := fmt.Sprintf("/v2alpha/%s", name)
+	return &ExportProductsOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
