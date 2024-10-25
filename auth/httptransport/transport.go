@@ -90,7 +90,7 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 		trans = &authTransport{
 			base:                 trans,
 			creds:                creds,
-			clientUniverseDomain: opts.UniverseDomain,
+			clientUniverseDomain: internal.StaticCredentialsProperty(opts.UniverseDomain),
 		}
 	}
 	return trans, nil
@@ -187,7 +187,7 @@ func addOCTransport(trans http.RoundTripper, opts *Options) http.RoundTripper {
 type authTransport struct {
 	creds                *auth.Credentials
 	base                 http.RoundTripper
-	clientUniverseDomain string
+	clientUniverseDomain auth.CredentialsPropertyProvider
 }
 
 // getClientUniverseDomain returns the default service domain for a given Cloud
@@ -199,14 +199,20 @@ type authTransport struct {
 //
 // This is the universe domain configured for the client, which will be compared
 // to the universe domain that is separately configured for the credentials.
-func (t *authTransport) getClientUniverseDomain() string {
-	if t.clientUniverseDomain != "" {
-		return t.clientUniverseDomain
+func (t *authTransport) getClientUniverseDomain(ctx context.Context) (string, error) {
+	if t.clientUniverseDomain != nil {
+		clientUD, err := t.clientUniverseDomain.GetProperty(ctx)
+		if err != nil {
+			return "", err
+		}
+		if clientUD != "" {
+			return clientUD, nil
+		}
 	}
 	if envUD := os.Getenv(internal.UniverseDomainEnvVar); envUD != "" {
-		return envUD
+		return envUD, nil
 	}
-	return internal.DefaultUniverseDomain
+	return internal.DefaultUniverseDomain, nil
 }
 
 // RoundTrip authorizes and authenticates the request with an
@@ -231,7 +237,11 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		if err != nil {
 			return nil, err
 		}
-		if err := transport.ValidateUniverseDomain(t.getClientUniverseDomain(), credentialsUniverseDomain); err != nil {
+		clientUniverseDomain, err := t.getClientUniverseDomain(req.Context())
+		if err != nil {
+			return nil, err
+		}
+		if err := transport.ValidateUniverseDomain(clientUniverseDomain, credentialsUniverseDomain); err != nil {
 			return nil, err
 		}
 	}

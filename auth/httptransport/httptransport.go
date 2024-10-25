@@ -17,7 +17,6 @@
 package httptransport
 
 import (
-	"context"
 	"crypto/tls"
 	"errors"
 	"fmt"
@@ -171,14 +170,10 @@ func AddAuthorizationMiddleware(client *http.Client, creds *auth.Credentials) er
 			base = http.DefaultTransport
 		}
 	}
-	clientUniverseDomain, err := creds.UniverseDomain(context.Background())
-	if err != nil {
-		return err
-	}
 	client.Transport = &authTransport{
 		creds:                creds,
 		base:                 base,
-		clientUniverseDomain: clientUniverseDomain,
+		clientUniverseDomain: creds.UniverseDomainPropertyProvider(),
 	}
 	return nil
 }
