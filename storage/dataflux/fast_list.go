@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"runtime"
 	"strings"
+	"sync"
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/sync/errgroup"
@@ -92,6 +93,11 @@ type Lister struct {
 	skipDirectoryObjects bool
 }
 
+type contextErr struct {
+	mu      sync.Mutex
+	counter int
+}
+
 // NewLister creates a new dataflux Lister to list objects in the give bucket.
 func NewLister(c *storage.Client, in *ListerInput) *Lister {
 	bucket := c.Bucket(in.BucketName)
@@ -127,7 +133,8 @@ func NewLister(c *storage.Client, in *ListerInput) *Lister {
 // worksteal listing is expected to be faster.
 func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) {
 	// countError tracks the number of failed listing methods.
-	countError := 0
+	cc := &contextErr{counter: 0}
+
 	var results []*storage.ObjectAttrs
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -151,7 +158,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 		g.Go(func() error {
 			objects, err := c.workstealListing(childCtx)
 			if err != nil {
-				countError++
+				cc.increment()
 				return fmt.Errorf("error in running worksteal_lister: %w", err)
 			}
 			// Close context when sequential listing is complete.
@@ -169,7 +176,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 		g.Go(func() error {
 			objects, token, err := c.sequentialListing(childCtx)
 			if err != nil {
-				countError++
+				cc.increment()
 				return fmt.Errorf("error in running sequential listing: %w", err)
 			}
 			// Close context when sequential listing is complete.
@@ -191,7 +198,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 	// As one of the listing method completes, it is expected to cancel context for the
 	// only then return error. other method. If both sequential and worksteal listing
 	// fail due to context canceled, return error.
-	if err != nil && (!errors.Is(err, context.Canceled) || countError > 1) {
+	if err != nil && (!errors.Is(err, context.Canceled) || cc.counter > 1) {
 		return nil, fmt.Errorf("failed waiting for sequential and work steal lister : %w", err)
 	}
 	if wsCompletedfirst {
@@ -222,6 +229,12 @@ func (c *Lister) Close() {
 	if c.ranges != nil {
 		close(c.ranges)
 	}
+}
+
+func (cc *contextErr) increment() {
+	cc.mu.Lock()
+	defer cc.mu.Unlock()
+	cc.counter++
 }
 
 // updateStartEndOffset updates start and end offset based on prefix.
