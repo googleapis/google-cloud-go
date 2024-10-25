@@ -65,12 +65,12 @@ type Client struct {
 	enableQueryPreview bool
 }
 
-// DetectProjectID is a sentinel value that instructs NewClient to detect the
-// project ID. It is given in place of the projectID argument. NewClient will
+// DetectProjectID is a sentinel value that instructs [NewClient] to detect the
+// project ID. It is given in place of the projectID argument. [NewClient] will
 // use the project ID from the given credentials or the default credentials
 // (https://developers.google.com/accounts/docs/application-default-credentials)
 // if no credentials were provided. When providing credentials, not all
-// options will allow NewClient to extract the project ID. Specifically a JWT
+// options will allow [NewClient] to extract the project ID. Specifically a JWT
 // does not have the project ID encoded.
 const DetectProjectID = "*detect-project-id*"
 
