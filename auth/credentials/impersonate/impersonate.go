@@ -93,7 +93,7 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 	// If a subject is specified a domain-wide delegation auth-flow is initiated
 	// to impersonate as the provided subject (user).
 	if opts.Subject != "" {
-		tp, err := user(opts, client, lifetime, isStaticToken, universeDomainProvider)
+		tp, err := user(opts, client, lifetime, isStaticToken, creds)
 		if err != nil {
 			return nil, err
 		}

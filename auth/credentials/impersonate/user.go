@@ -30,13 +30,13 @@ import (
 
 // user provides an auth flow for domain-wide delegation, setting
 // CredentialsConfig.Subject to be the impersonated user.
-func user(opts *CredentialsOptions, client *http.Client, lifetime time.Duration, isStaticToken bool, universeDomainProvider auth.CredentialsPropertyProvider) (auth.TokenProvider, error) {
+func user(opts *CredentialsOptions, client *http.Client, lifetime time.Duration, isStaticToken bool, creds *auth.Credentials) (auth.TokenProvider, error) {
 	u := userTokenProvider{
-		client:                 client,
-		targetPrincipal:        opts.TargetPrincipal,
-		subject:                opts.Subject,
-		lifetime:               lifetime,
-		universeDomainProvider: universeDomainProvider,
+		client:          client,
+		targetPrincipal: opts.TargetPrincipal,
+		subject:         opts.Subject,
+		lifetime:        lifetime,
+		creds:           creds,
 	}
 	u.delegates = make([]string, len(opts.Delegates))
 	for i, v := range opts.Delegates {
@@ -85,23 +85,24 @@ type exchangeTokenResponse struct {
 type userTokenProvider struct {
 	client *http.Client
 
-	targetPrincipal        string
-	subject                string
-	scopes                 []string
-	lifetime               time.Duration
-	delegates              []string
-	universeDomainProvider auth.CredentialsPropertyProvider
+	targetPrincipal string
+	subject         string
+	scopes          []string
+	lifetime        time.Duration
+	delegates       []string
+	creds           *auth.Credentials
 }
 
 func (u userTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	// If a subject is specified a domain-wide delegation auth-flow is initiated
 	// to impersonate as the provided subject (user).
 	if u.subject != "" {
-		gdu, err := isUniverseDomainGDU(ctx, u.universeDomainProvider)
+		// Return error if users try to use domain-wide delegation in a non-GDU universe.
+		ud, err := u.creds.UniverseDomain(ctx)
 		if err != nil {
 			return nil, err
 		}
-		if !gdu {
+		if ud != internal.DefaultUniverseDomain {
 			return nil, errUniverseNotSupportedDomainWideDelegation
 		}
 	}
@@ -110,17 +111,6 @@ func (u userTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 		return nil, err
 	}
 	return u.exchangeToken(ctx, signedJWT)
-}
-
-// isUniverseDomainGDU returns true if the universe domain is the default Google
-// universe or if it is empty.
-func isUniverseDomainGDU(ctx context.Context, universeDomainProvider auth.CredentialsPropertyProvider) (bool, error) {
-	universeDomain, err := universeDomainProvider.GetProperty(ctx)
-	if err != nil {
-		return false, err
-	}
-	gdu := universeDomain == internal.DefaultUniverseDomain || universeDomain == ""
-	return gdu, nil
 }
 
 func (u userTokenProvider) signJWT(ctx context.Context) (string, error) {
