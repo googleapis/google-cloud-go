@@ -15,7 +15,6 @@
 package httptransport
 
 import (
-	"context"
 	"testing"
 
 	"cloud.google.com/go/auth/internal"
@@ -58,8 +57,8 @@ func TestAuthTransport_GetClientUniverseDomain(t *testing.T) {
 			if tt.envUniverseDomain != "" {
 				t.Setenv(internal.UniverseDomainEnvVar, tt.envUniverseDomain)
 			}
-			at := &authTransport{clientUniverseDomain: internal.StaticCredentialsProperty(tt.clientUniverseDomain)}
-			got, _ := at.getClientUniverseDomain(context.Background())
+			at := &authTransport{clientUniverseDomain: tt.clientUniverseDomain}
+			got := at.getClientUniverseDomain()
 			if got != tt.want {
 				t.Errorf("got %q, want %q", got, tt.want)
 			}

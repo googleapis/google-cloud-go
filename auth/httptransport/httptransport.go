@@ -154,7 +154,9 @@ type InternalOptions struct {
 // AddAuthorizationMiddleware adds a middleware to the provided client's
 // transport that sets the Authorization header with the value produced by the
 // provided [cloud.google.com/go/auth.Credentials]. An error is returned only
-// if client or creds is nil, or if auth.Credentials.UniverseDomain returns err.
+// if client or creds is nil.
+//
+// This function does not support setting a universe domain value on the client.
 func AddAuthorizationMiddleware(client *http.Client, creds *auth.Credentials) error {
 	if client == nil || creds == nil {
 		return fmt.Errorf("httptransport: client and tp must not be nil")
@@ -173,7 +175,6 @@ func AddAuthorizationMiddleware(client *http.Client, creds *auth.Credentials) er
 	client.Transport = &authTransport{
 		creds:                creds,
 		base:                 base,
-		clientUniverseDomain: creds.UniverseDomainPropertyProvider(),
 	}
 	return nil
 }

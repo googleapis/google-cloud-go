@@ -196,14 +196,6 @@ func (c *Credentials) UniverseDomain(ctx context.Context) (string, error) {
 	return v, err
 }
 
-// UniverseDomainPropertyProvider returns a [CredentialsPropertyProvider] for
-// the default service domain for a given Cloud universe.
-//
-// To immediately access the universe domain, use [Credentials.UniverseDomain].
-func (c *Credentials) UniverseDomainPropertyProvider() CredentialsPropertyProvider {
-	return c.universeDomain
-}
-
 // CredentialsPropertyProvider provides an implementation to fetch a property
 // value for [Credentials].
 type CredentialsPropertyProvider interface {

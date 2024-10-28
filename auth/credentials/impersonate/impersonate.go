@@ -65,25 +65,24 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 
 	var client *http.Client
 	var creds *auth.Credentials
-	if opts.Client == nil && opts.Credentials == nil {
+	if opts.Client == nil {
 		var err error
-		creds, err = credentials.DetectDefault(&credentials.DetectOptions{
-			Scopes:           []string{defaultScope},
-			UseSelfSignedJWT: true,
-		})
-		if err != nil {
-			return nil, err
+		if opts.Credentials == nil {
+			creds, err = credentials.DetectDefault(&credentials.DetectOptions{
+				Scopes:           []string{defaultScope},
+				UseSelfSignedJWT: true,
+			})
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			creds = opts.Credentials
 		}
 		client, err = httptransport.NewClient(&httptransport.Options{
 			Credentials: creds,
+			UniverseDomain: opts.UniverseDomain,
 		})
 		if err != nil {
-			return nil, err
-		}
-	} else if opts.Credentials != nil {
-		creds = opts.Credentials
-		client = internal.DefaultClient()
-		if err := httptransport.AddAuthorizationMiddleware(client, opts.Credentials); err != nil {
 			return nil, err
 		}
 	} else {
@@ -181,7 +180,9 @@ type CredentialsOptions struct {
 	// credentials at call time. Optional.
 	Client *http.Client
 	// UniverseDomain is the default service domain for a given Cloud universe.
-	// The default value is "googleapis.com". Optional.
+	// The default value is "googleapis.com". This is the universe domain
+	// configured for the client, which will be compared to the universe domain
+	// that is separately configured for the credentials. Optional.
 	UniverseDomain string
 }
 
