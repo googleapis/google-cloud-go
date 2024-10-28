@@ -79,7 +79,7 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 			creds = opts.Credentials
 		}
 		client, err = httptransport.NewClient(&httptransport.Options{
-			Credentials: creds,
+			Credentials:    creds,
 			UniverseDomain: opts.UniverseDomain,
 		})
 		if err != nil {

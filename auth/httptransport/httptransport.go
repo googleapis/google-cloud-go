@@ -173,8 +173,8 @@ func AddAuthorizationMiddleware(client *http.Client, creds *auth.Credentials) er
 		}
 	}
 	client.Transport = &authTransport{
-		creds:                creds,
-		base:                 base,
+		creds: creds,
+		base:  base,
 	}
 	return nil
 }
