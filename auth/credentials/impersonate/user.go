@@ -97,7 +97,7 @@ func (u userTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	// If a subject is specified a domain-wide delegation auth-flow is initiated
 	// to impersonate as the provided subject (user).
 	if u.subject != "" {
-		gdu, err := isUniverseDomainGDU(u.universeDomainProvider)
+		gdu, err := isUniverseDomainGDU(ctx, u.universeDomainProvider)
 		if err != nil {
 			return nil, err
 		}
@@ -114,8 +114,8 @@ func (u userTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 
 // isUniverseDomainGDU returns true if the universe domain is the default Google
 // universe or if it is empty.
-func isUniverseDomainGDU(universeDomainProvider auth.CredentialsPropertyProvider) (bool, error) {
-	universeDomain, err := universeDomainProvider.GetProperty(context.Background())
+func isUniverseDomainGDU(ctx context.Context, universeDomainProvider auth.CredentialsPropertyProvider) (bool, error) {
+	universeDomain, err := universeDomainProvider.GetProperty(ctx)
 	if err != nil {
 		return false, err
 	}
