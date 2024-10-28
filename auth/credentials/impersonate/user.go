@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -30,13 +31,16 @@ import (
 
 // user provides an auth flow for domain-wide delegation, setting
 // CredentialsConfig.Subject to be the impersonated user.
-func user(opts *CredentialsOptions, client *http.Client, lifetime time.Duration, isStaticToken bool, creds *auth.Credentials) (auth.TokenProvider, error) {
+func user(opts *CredentialsOptions, client *http.Client, lifetime time.Duration, isStaticToken bool, universeDomainProvider auth.CredentialsPropertyProvider) (auth.TokenProvider, error) {
+	if opts.Subject == "" {
+		return nil, errors.New("CredentialsConfig.Subject must not be empty")
+	}
 	u := userTokenProvider{
-		client:          client,
-		targetPrincipal: opts.TargetPrincipal,
-		subject:         opts.Subject,
-		lifetime:        lifetime,
-		creds:           creds,
+		client:                 client,
+		targetPrincipal:        opts.TargetPrincipal,
+		subject:                opts.Subject,
+		lifetime:               lifetime,
+		universeDomainProvider: universeDomainProvider,
 	}
 	u.delegates = make([]string, len(opts.Delegates))
 	for i, v := range opts.Delegates {
@@ -85,26 +89,24 @@ type exchangeTokenResponse struct {
 type userTokenProvider struct {
 	client *http.Client
 
-	targetPrincipal string
-	subject         string
-	scopes          []string
-	lifetime        time.Duration
-	delegates       []string
-	creds           *auth.Credentials
+	targetPrincipal        string
+	subject                string
+	scopes                 []string
+	lifetime               time.Duration
+	delegates              []string
+	universeDomainProvider auth.CredentialsPropertyProvider
 }
 
 func (u userTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	// If a subject is specified a domain-wide delegation auth-flow is initiated
+	// Because a subject is specified a domain-wide delegation auth-flow is initiated
 	// to impersonate as the provided subject (user).
-	if u.subject != "" {
-		// Return error if users try to use domain-wide delegation in a non-GDU universe.
-		ud, err := u.creds.UniverseDomain(ctx)
-		if err != nil {
-			return nil, err
-		}
-		if ud != internal.DefaultUniverseDomain {
-			return nil, errUniverseNotSupportedDomainWideDelegation
-		}
+	// Return error if users try to use domain-wide delegation in a non-GDU universe.
+	ud, err := u.universeDomainProvider.GetProperty(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if ud != internal.DefaultUniverseDomain {
+		return nil, errUniverseNotSupportedDomainWideDelegation
 	}
 	signedJWT, err := u.signJWT(ctx)
 	if err != nil {

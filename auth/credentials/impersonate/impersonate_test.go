@@ -84,18 +84,18 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 				UniverseDomain:  "example.com",
 			},
 			wantErr:            nil,
-			wantUniverseDomain: "example.com",
+			wantUniverseDomain: "googleapis.com", // From creds, not CredentialsOptions.UniverseDomain
 		},
 		{
 			name: "universe domain from options and credentials",
 			config: CredentialsOptions{
 				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
 				Scopes:          []string{"scope"},
-				UniverseDomain:  "example.com",
-				Credentials:     staticCredentials("NOT.example.com"),
+				UniverseDomain:  "NOT.example.com",
+				Credentials:     staticCredentials("example.com"),
 			},
 			wantErr:            nil,
-			wantUniverseDomain: "example.com",
+			wantUniverseDomain: "example.com", // From creds, not CredentialsOptions.UniverseDomain
 		},
 		{
 			name: "universe domain from credentials",
