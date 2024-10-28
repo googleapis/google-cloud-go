@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gkemulticloud/apiv1",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "language": "GO",
     "apis": [
       {
