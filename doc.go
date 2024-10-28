@@ -14,8 +14,8 @@
 
 /*
 Package cloud is the root of the packages used to access Google Cloud
-Services. See https://pkg.go.dev/cloud.google.com/go for a full list
-of sub-modules.
+Services. See https://pkg.go.dev/cloud.google.com/go#section-directories for a
+full list of sub-modules.
 
 # Client Options
 
