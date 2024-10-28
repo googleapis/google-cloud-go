@@ -51,7 +51,7 @@ type Tag struct {
 	// must be URL encoded.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The name of the version the tag refers to, for example:
-	// "projects/p1/locations/us-central1/repositories/repo1/packages/pkg1/versions/sha256:5243811"
+	// `projects/p1/locations/us-central1/repositories/repo1/packages/pkg1/versions/sha256:5243811`
 	// If the package or version ID parts contain slashes, the slashes are
 	// escaped.
 	Version string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
@@ -116,14 +116,35 @@ type ListTagsRequest struct {
 	// An expression for filtering the results of the request. Filter rules are
 	// case insensitive. The fields eligible for filtering are:
 	//
+	//   - `name`
+	//
 	//   - `version`
 	//
-	//     An example of using a filter:
+	//     Examples of using a filter:
 	//
-	//   - `version="projects/p1/locations/us-central1/repositories/repo1/packages/pkg1/versions/1.0"`
-	//     --> Tags that are applied to the version `1.0` in package `pkg1`.
+	//     To filter the results of your request to tags with the name `my-tag` in
+	//     package `my-package` in repository `my-repo` in project "`y-project` in
+	//     the us-central region, append the following filter expression to your
+	//     request:
+	//
+	//   - `name="projects/my-project/locations/us-central1/repositories/my-repo/packages/my-package/tags/my-tag"`
+	//
+	//     You can also use wildcards to match any number of characters before or
+	//     after the value:
+	//
+	//   - `name="projects/my-project/locations/us-central1/repositories/my-repo/packages/my-package/tags/my*"`
+	//
+	//   - `name="projects/my-project/locations/us-central1/repositories/my-repo/packages/my-package/tags/*tag"`
+	//
+	//   - `name="projects/my-project/locations/us-central1/repositories/my-repo/packages/my-package/tags/*tag*"`
+	//
+	//     To filter the results of your request to tags applied to the version
+	//     `1.0` in package `my-package`, append the following filter expression to
+	//     your request:
+	//
+	//   - `version="projects/my-project/locations/us-central1/repositories/my-repo/packages/my-package/versions/1.0"`
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
-	// The maximum number of tags to return. Maximum page size is 10,000.
+	// The maximum number of tags to return. Maximum page size is 1,000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// The next_page_token value returned from a previous list request, if any.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`

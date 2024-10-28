@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/vision/v2/apiv1p1beta1",
-    "version": "2.9.1",
+    "version": "2.9.2",
     "language": "GO",
     "apis": [
       {
