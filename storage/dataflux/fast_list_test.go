@@ -20,6 +20,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"strings"
 	"testing"
 	"time"
 
@@ -217,8 +218,11 @@ func TestNextBatchEmulated(t *testing.T) {
 		childCtx, cancel := context.WithCancel(ctx)
 		cancel()
 		result, err := c.NextBatch(childCtx)
-		if err != nil {
-			t.Fatalf("NextBatch() expected to fail with %v, got %v", context.Canceled, err)
+		if err != nil && !strings.Contains(err.Error(), context.Canceled.Error()) {
+			t.Fatalf("NextBatch() failed with error: %v", err)
+		}
+		if err == nil {
+			t.Errorf("NextBatch() expected to fail with %v, got nil", context.Canceled)
 		}
 		if len(result) > 0 {
 			t.Errorf("NextBatch() got object %v, want 0 objects", len(result))

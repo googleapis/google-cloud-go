@@ -16,7 +16,6 @@ package dataflux
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"runtime"
 	"strings"
@@ -198,7 +197,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 	// As one of the listing method completes, it is expected to cancel context for the
 	// only then return error. other method. If both sequential and worksteal listing
 	// fail due to context canceled, return error.
-	if err != nil && (!errors.Is(err, context.Canceled) || cc.counter > 1) {
+	if err != nil && (!strings.Contains(err.Error(), context.Canceled.Error()) || cc.counter > 1) {
 		return nil, fmt.Errorf("failed waiting for sequential and work steal lister : %w", err)
 	}
 	if wsCompletedfirst {
