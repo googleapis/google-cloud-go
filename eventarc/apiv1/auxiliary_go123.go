@@ -41,7 +41,25 @@ func (it *ChannelIterator) All() iter.Seq2[*eventarcpb.Channel, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *EnrollmentIterator) All() iter.Seq2[*eventarcpb.Enrollment, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoogleApiSourceIterator) All() iter.Seq2[*eventarcpb.GoogleApiSource, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MessageBusIterator) All() iter.Seq2[*eventarcpb.MessageBus, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -53,7 +71,19 @@ func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *PipelineIterator) All() iter.Seq2[*eventarcpb.Pipeline, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *ProviderIterator) All() iter.Seq2[*eventarcpb.Provider, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StringIterator) All() iter.Seq2[string, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
