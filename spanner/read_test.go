@@ -28,6 +28,7 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/metric/noop"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -882,6 +883,10 @@ func TestRsdNonblockingStates(t *testing.T) {
 					}
 					return
 				}
+				mt.currOp.incrementAttemptCount()
+				mt.currOp.currAttempt = &attemptTracer{
+					startTime: time.Now(),
+				}
 				// Receive next decoded item.
 				if r.next(&mt) {
 					rs = append(rs, r.get())
@@ -1146,6 +1151,10 @@ func TestRsdBlockingStates(t *testing.T) {
 			var rs []*sppb.PartialResultSet
 			rowsFetched := make(chan int)
 			go func() {
+				mt.currOp.incrementAttemptCount()
+				mt.currOp.currAttempt = &attemptTracer{
+					startTime: time.Now(),
+				}
 				for {
 					if !r.next(&mt) {
 						// Note that r.Next also exits on context cancel/timeout.
@@ -1769,8 +1778,12 @@ func TestIteratorStopEarly(t *testing.T) {
 }
 
 func TestIteratorWithError(t *testing.T) {
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/my-project/instances/my-instance/databases/my-database", noop.NewMeterProvider())
+	if err != nil {
+		t.Fatalf("failed to create metrics tracer factory: %v", err)
+	}
 	injected := errors.New("Failed iterator")
-	iter := RowIterator{err: injected}
+	iter := RowIterator{meterTracerFactory: metricsTracerFactory, err: injected}
 	defer iter.Stop()
 	if _, err := iter.Next(); err != injected {
 		t.Fatalf("Expected error: %v, got %v", injected, err)
