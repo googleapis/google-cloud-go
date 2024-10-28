@@ -324,11 +324,12 @@ func fetchToken(ctx context.Context, o *Options3LO, v url.Values) (*Token, strin
 		token = &Token{
 			Value:    vals.Get("access_token"),
 			Type:     vals.Get("token_type"),
-			Metadata: make(map[string]interface{}, len(vals)),
+			Metadata: make(map[string]interface{}, len(vals)+1),
 		}
 		for k, v := range vals {
 			token.Metadata[k] = v
 		}
+		token.Metadata["auth.google.tokenSource"] = "3lo"
 		refreshToken = vals.Get("refresh_token")
 		e := vals.Get("expires_in")
 		expires, _ := strconv.Atoi(e)
@@ -353,6 +354,7 @@ func fetchToken(ctx context.Context, o *Options3LO, v url.Values) (*Token, strin
 			Metadata: make(map[string]interface{}),
 		}
 		json.Unmarshal(body, &token.Metadata) // optional field, skip err check
+		token.Metadata["auth.google.tokenSource"] = "3lo"
 		refreshToken = tj.RefreshToken
 	}
 	// according to spec, servers should respond status 400 in error case

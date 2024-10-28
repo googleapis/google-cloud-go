@@ -32,6 +32,12 @@ const (
 	authHeaderKey        = "Authorization"
 )
 
+var (
+	impersonatedMetadata = map[string]interface{}{
+		"auth.google.tokenSource": "impersonated",
+	}
+)
+
 // generateAccesstokenReq is used for service account impersonation
 type generateAccessTokenReq struct {
 	Delegates []string `json:"delegates,omitempty"`
@@ -129,6 +135,7 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 		Value:  accessTokenResp.AccessToken,
 		Expiry: expiry,
 		Type:   internal.TokenTypeBearer,
+		Metadata: impersonatedMetadata,
 	}, nil
 }
 

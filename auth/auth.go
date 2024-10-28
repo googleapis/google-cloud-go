@@ -588,6 +588,7 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 	}
 	token.Metadata = make(map[string]interface{})
 	json.Unmarshal(body, &token.Metadata) // no error checks for optional fields
+	token.Metadata["auth.google.tokenSource"] = "2lo"
 
 	if secs := tokenRes.ExpiresIn; secs > 0 {
 		token.Expiry = time.Now().Add(time.Duration(secs) * time.Second)

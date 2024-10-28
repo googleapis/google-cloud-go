@@ -71,6 +71,9 @@ func (o *IDTokenOptions) validate() error {
 }
 
 var (
+	impersonatedIDMetadata = map[string]interface{}{
+		"auth.google.tokenSource": "impersonated-id",
+	}
 	defaultScope = "https://www.googleapis.com/auth/cloud-platform"
 )
 
@@ -183,5 +186,6 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 		Value: generateIDTokenResp.Token,
 		// Generated ID tokens are good for one hour.
 		Expiry: time.Now().Add(1 * time.Hour),
+		Metadata: impersonatedIDMetadata,
 	}, nil
 }

@@ -50,6 +50,18 @@ const (
 var (
 	// Set at init time by dial_socketopt.go. If nil, socketopt is not supported.
 	timeoutDialerOption grpc.DialOption
+
+	// tokenSourceCredTypes converts token metadata auth.google.tokenSource
+	// values to auth metrics values.
+	tokenSourceCredTypes = map[string]string{
+		"3lo":               "u",   // gcloud user credential
+		"2lo":               "sa",  // service account credential with assertion token flow
+		"self-signed-jwt":   "jwt", // service account credential with self signed jwt token flow
+		"compute-metadata":  "mds", // service account credential attached to metadata server, i.e. VM credential
+		"impersonated":      "imp", // impersonated credential
+		"impersonated-id":   "imp", // impersonated ID token credential
+		"impersonated-user": "imp", // impersonated user credential
+	}
 )
 
 // otelStatsHandler is a singleton otelgrpc.clientHandler to be used across
@@ -397,6 +409,7 @@ func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ..
 	}
 	metadata := make(map[string]string, len(c.metadata)+1)
 	setAuthMetadata(token, metadata)
+	setAuthMetricsMetadata(token, metadata)
 	for k, v := range c.metadata {
 		metadata[k] = v
 	}
@@ -411,6 +424,15 @@ func setAuthMetadata(token *auth.Token, m map[string]string) {
 		typ = internal.TokenTypeBearer
 	}
 	m["authorization"] = typ + " " + token.Value
+}
+
+// setAuthMetricsMetadata uses token metadata to append auth metrics details, if
+// present, to the x-goog-api-client header.
+func setAuthMetricsMetadata(token *auth.Token, m map[string]string) {
+	sourceType := token.MetadataString("auth.google.tokenSource")
+	if credType := tokenSourceCredTypes[sourceType]; credType != "" {
+		m["x-goog-api-client"] = m["x-goog-api-client"] + " cred-type/" + credType
+	}
 }
 
 func (c *grpcCredentialsProvider) RequireTransportSecurity() bool {
