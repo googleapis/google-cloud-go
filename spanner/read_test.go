@@ -805,10 +805,10 @@ func TestRsdNonblockingStates(t *testing.T) {
 			}
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			defer cancel()
+			mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 			r := newResumableStreamDecoder(
 				ctx,
 				nil,
-				c.metricsTracerFactory,
 				test.rpc,
 				nil,
 			)
@@ -883,7 +883,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 					return
 				}
 				// Receive next decoded item.
-				if r.next() {
+				if r.next(&mt) {
 					rs = append(rs, r.get())
 				}
 			}
@@ -1099,10 +1099,10 @@ func TestRsdBlockingStates(t *testing.T) {
 			}
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
+			mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 			r := newResumableStreamDecoder(
 				ctx,
 				nil,
-				c.metricsTracerFactory,
 				test.rpc,
 				nil,
 			)
@@ -1147,7 +1147,7 @@ func TestRsdBlockingStates(t *testing.T) {
 			rowsFetched := make(chan int)
 			go func() {
 				for {
-					if !r.next() {
+					if !r.next(&mt) {
 						// Note that r.Next also exits on context cancel/timeout.
 						close(rowsFetched)
 						return
@@ -1261,10 +1261,10 @@ func TestQueueBytes(t *testing.T) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 	decoder := newResumableStreamDecoder(
 		ctx,
 		nil,
-		c.metricsTracerFactory,
 		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 			r, err := mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
@@ -1286,24 +1286,24 @@ func TestQueueBytes(t *testing.T) {
 		ResumeToken: rt1,
 	})
 
-	decoder.next()
-	decoder.next()
-	decoder.next()
+	decoder.next(&mt)
+	decoder.next(&mt)
+	decoder.next(&mt)
 	if got, want := decoder.bytesBetweenResumeTokens, int32(2*sizeOfPRS); got != want {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want %v", got, want)
 	}
 
-	decoder.next()
+	decoder.next(&mt)
 	if decoder.bytesBetweenResumeTokens != 0 {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", decoder.bytesBetweenResumeTokens)
 	}
 
-	decoder.next()
+	decoder.next(&mt)
 	if got, want := decoder.bytesBetweenResumeTokens, int32(sizeOfPRS); got != want {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want %v", got, want)
 	}
 
-	decoder.next()
+	decoder.next(&mt)
 	if decoder.bytesBetweenResumeTokens != 0 {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", decoder.bytesBetweenResumeTokens)
 	}
