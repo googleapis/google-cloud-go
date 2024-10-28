@@ -89,7 +89,7 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 		client = opts.Client
 	}
 
-	universeDomainProvider := auth.CredentialsPropertyFunc(creds.UniverseDomain)
+	universeDomainProvider := resolveUniverseDomainProvider(creds)
 	// If a subject is specified a domain-wide delegation auth-flow is initiated
 	// to impersonate as the provided subject (user).
 	if opts.Subject != "" {
@@ -126,6 +126,17 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 		TokenProvider:          auth.NewCachedTokenProvider(its, tpo),
 		UniverseDomainProvider: universeDomainProvider,
 	}), nil
+}
+
+// resolveUniverseDomainProvider returns the default service domain for a given
+// Cloud universe. This is the universe domain configured for the credentials,
+// which will be used in endpoint(s), and compared to the universe domain that
+// is separately configured for the client.
+func resolveUniverseDomainProvider(creds *auth.Credentials) auth.CredentialsPropertyProvider {
+	if creds != nil {
+		return auth.CredentialsPropertyFunc(creds.UniverseDomain)
+	}
+	return internal.StaticCredentialsProperty(internal.DefaultUniverseDomain)
 }
 
 // CredentialsOptions for generating an impersonated credential token.
