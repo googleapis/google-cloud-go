@@ -74,6 +74,11 @@ type Options struct {
 	// when fetching tokens. If provided this should be a fully authenticated
 	// client. Optional.
 	Client *http.Client
+	// UseIAMEndpoint configures whether the IAM generateIdToken endpoint will
+	// be used instead of the oauth2.googleapis.com/token endpoint. Note that
+	// the iam.serviceAccountTokenCreator role is required to use the IAM
+	// generateIdToken endpoint. The default value is false. Optional.
+	UseIAMEndpoint bool
 }
 
 func (o *Options) client() *http.Client {

@@ -118,7 +118,7 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 		includeEmail:    opts.IncludeEmail,
 	}
 	for _, v := range opts.Delegates {
-		itp.delegates = append(itp.delegates, formatIAMServiceAccountName(v))
+		itp.delegates = append(itp.delegates, internal.FormatIAMServiceAccountName(v))
 	}
 
 	var udp auth.CredentialsPropertyProvider
@@ -161,7 +161,7 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 		return nil, fmt.Errorf("impersonate: unable to marshal request: %w", err)
 	}
 
-	url := fmt.Sprintf("%s/v1/%s:generateIdToken", iamCredentialsEndpoint, formatIAMServiceAccountName(i.targetPrincipal))
+	url := fmt.Sprintf("%s/v1/%s:generateIdToken", iamCredentialsEndpoint, internal.FormatIAMServiceAccountName(i.targetPrincipal))
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(bodyBytes))
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
