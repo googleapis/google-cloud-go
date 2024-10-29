@@ -16,41 +16,31 @@
 
 //go:build go1.23
 
-package recaptchaenterprise
+package parallelstore
 
 import (
 	"iter"
 
-	recaptchaenterprisepb "cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	parallelstorepb "cloud.google.com/go/parallelstore/apiv1/parallelstorepb"
 	"github.com/googleapis/gax-go/v2/iterator"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
-func (it *FirewallPolicyIterator) All() iter.Seq2[*recaptchaenterprisepb.FirewallPolicy, error] {
+func (it *InstanceIterator) All() iter.Seq2[*parallelstorepb.Instance, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
-func (it *IpOverrideDataIterator) All() iter.Seq2[*recaptchaenterprisepb.IpOverrideData, error] {
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
-func (it *KeyIterator) All() iter.Seq2[*recaptchaenterprisepb.Key, error] {
-	return iterator.RangeAdapter(it.Next)
-}
-
-// All returns an iterator. If an error is returned by the iterator, the
-// iterator will stop after that iteration.
-func (it *RelatedAccountGroupIterator) All() iter.Seq2[*recaptchaenterprisepb.RelatedAccountGroup, error] {
-	return iterator.RangeAdapter(it.Next)
-}
-
-// All returns an iterator. If an error is returned by the iterator, the
-// iterator will stop after that iteration.
-func (it *RelatedAccountGroupMembershipIterator) All() iter.Seq2[*recaptchaenterprisepb.RelatedAccountGroupMembership, error] {
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
 	return iterator.RangeAdapter(it.Next)
 }
