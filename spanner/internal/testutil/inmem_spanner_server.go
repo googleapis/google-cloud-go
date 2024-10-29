@@ -90,6 +90,7 @@ const (
 	MethodExecuteBatchDml     string = "EXECUTE_BATCH_DML"
 	MethodStreamingRead       string = "EXECUTE_STREAMING_READ"
 	MethodBatchWrite          string = "BATCH_WRITE"
+	MethodPartitionQuery      string = "PARTITION_QUERY"
 )
 
 // StatementResult represents a mocked result on the test server. The result is
@@ -1107,6 +1108,9 @@ func (s *inMemSpannerServer) Rollback(ctx context.Context, req *spannerpb.Rollba
 }
 
 func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQueryRequest) (*spannerpb.PartitionResponse, error) {
+	if err := s.simulateExecutionTime(MethodPartitionQuery, req); err != nil {
+		return nil, err
+	}
 	s.mu.Lock()
 	if s.stopped {
 		s.mu.Unlock()

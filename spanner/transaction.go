@@ -1370,7 +1370,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		return counts, errInlineBeginTransactionFailed()
 	}
 	if resp.Status != nil && resp.Status.Code != 0 {
-		return counts, t.txReadOnly.updateTxState(spannerErrorf(codes.Code(uint32(resp.Status.Code)), resp.Status.Message))
+		return counts, t.txReadOnly.updateTxState(spannerError(codes.Code(uint32(resp.Status.Code)), resp.Status.Message))
 	}
 	return counts, nil
 }
