@@ -299,13 +299,14 @@ func backoffBeforeRetry(ctx context.Context, retryer gax.Retryer, err error) err
 func (c *Client) newTransactionWithRetry(ctx context.Context, s *transactionSettings) (*Transaction, error) {
 	var t *Transaction
 	var newTxnErr error
+	retryer := gax.OnCodes(beginTxnRetryCodes, txnBackoff)
 	for attempt := 0; attempt < maxIndividualReqTxnRetry; attempt++ {
 		t, newTxnErr = c.newTransaction(ctx, s)
 		if newTxnErr == nil {
 			return t, newTxnErr
 		}
 		// Check if BeginTransaction should be retried
-		if backoffErr := backoffBeforeRetry(ctx, gax.OnCodes(beginTxnRetryCodes, txnBackoff), newTxnErr); backoffErr != nil {
+		if backoffErr := backoffBeforeRetry(ctx, retryer, newTxnErr); backoffErr != nil {
 			return nil, backoffErr
 		}
 	}
@@ -365,6 +366,7 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 
 	var tx *Transaction
 	settings := newTransactionSettings(opts)
+	retryer := gax.OnCodes(txnRetryCodes, txnBackoff)
 	for n := 0; n < settings.attempts; n++ {
 		tx, err = c.newTransactionWithRetry(ctx, settings)
 		if err != nil {
@@ -417,7 +419,7 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 			}
 		} else {
 			// Check whether error other than ResourceExhausted should be retried
-			backoffErr := backoffBeforeRetry(ctx, gax.OnCodes(txnRetryCodes, txnBackoff), retryErr)
+			backoffErr := backoffBeforeRetry(ctx, retryer, retryErr)
 			if backoffErr != nil {
 				return nil, err
 			}
@@ -492,6 +494,7 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 // Returns last attempt rollback error if rollback fails even after retries
 func (t *Transaction) rollbackWithRetry() error {
 	var rollbackErr error
+	retryer := gax.OnCodes(rollbackRetryCodes, txnBackoff)
 	for rollbackAttempt := 0; rollbackAttempt < maxIndividualReqTxnRetry; rollbackAttempt++ {
 		rollbackErr = t.Rollback()
 		if rollbackErr == nil {
@@ -499,7 +502,7 @@ func (t *Transaction) rollbackWithRetry() error {
 		}
 
 		// Check if Rollback should be retried
-		if backoffErr := backoffBeforeRetry(t.ctx, gax.OnCodes(rollbackRetryCodes, txnBackoff), rollbackErr); backoffErr != nil {
+		if backoffErr := backoffBeforeRetry(t.ctx, retryer, rollbackErr); backoffErr != nil {
 			return backoffErr
 		}
 	}
