@@ -499,6 +499,10 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		// Do not emit native metrics when emulator is being used
 		metricsProvider = noop.NewMeterProvider()
 	}
+	// Check if native metrics are disabled via env.
+	if disableNativeMetrics, _ := strconv.ParseBool(os.Getenv("SPANNER_DISABLE_BUILTIN_METRICS")); disableNativeMetrics {
+		config.DisableNativeMetrics = true
+	}
 	if config.DisableNativeMetrics {
 		// Do not emit native metrics when DisableNativeMetrics is set
 		metricsProvider = noop.NewMeterProvider()
