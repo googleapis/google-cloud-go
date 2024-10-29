@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/confidentialcomputing/apiv1alpha1",
-    "version": "1.7.1",
+    "version": "1.7.2",
     "language": "GO",
     "apis": [
       {

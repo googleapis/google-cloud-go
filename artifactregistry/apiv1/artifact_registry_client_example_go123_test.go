@@ -26,6 +26,32 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
+func ExampleClient_ListAttachments_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := artifactregistry.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &artifactregistrypb.ListAttachmentsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb#ListAttachmentsRequest.
+	}
+	for resp, err := range c.ListAttachments(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_ListDockerImages_all() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -200,6 +226,32 @@ func ExampleClient_ListRepositories_all() {
 		// See https://pkg.go.dev/cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb#ListRepositoriesRequest.
 	}
 	for resp, err := range c.ListRepositories(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListRules_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := artifactregistry.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &artifactregistrypb.ListRulesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb#ListRulesRequest.
+	}
+	for resp, err := range c.ListRules(ctx, req).All() {
 		if err != nil {
 			// TODO: Handle error.
 		}
