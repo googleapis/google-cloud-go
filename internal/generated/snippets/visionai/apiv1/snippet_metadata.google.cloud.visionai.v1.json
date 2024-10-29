@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/visionai/apiv1",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "language": "GO",
     "apis": [
       {

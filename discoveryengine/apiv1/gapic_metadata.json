@@ -1033,6 +1033,11 @@
               "methods": [
                 "Search"
               ]
+            },
+            "SearchLite": {
+              "methods": [
+                "SearchLite"
+              ]
             }
           }
         },
@@ -1057,6 +1062,11 @@
             "Search": {
               "methods": [
                 "Search"
+              ]
+            },
+            "SearchLite": {
+              "methods": [
+                "SearchLite"
               ]
             }
           }
