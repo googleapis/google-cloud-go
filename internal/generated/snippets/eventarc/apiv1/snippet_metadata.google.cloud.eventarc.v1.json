@@ -149,6 +149,190 @@
       ]
     },
     {
+      "regionTag": "eventarc_v1_generated_Eventarc_CreateEnrollment_sync",
+      "title": "eventarc CreateEnrollment Sample",
+      "description": "CreateEnrollment create a new Enrollment in a particular project and location.",
+      "file": "Client/CreateEnrollment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEnrollment",
+        "fullName": "google.cloud.eventarc.v1.Client.CreateEnrollment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.CreateEnrollmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateEnrollmentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateEnrollment",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.CreateEnrollment",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_CreateGoogleApiSource_sync",
+      "title": "eventarc CreateGoogleApiSource Sample",
+      "description": "CreateGoogleApiSource create a new GoogleApiSource in a particular project and location.",
+      "file": "Client/CreateGoogleApiSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateGoogleApiSource",
+        "fullName": "google.cloud.eventarc.v1.Client.CreateGoogleApiSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.CreateGoogleApiSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateGoogleApiSourceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateGoogleApiSource",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.CreateGoogleApiSource",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_CreateMessageBus_sync",
+      "title": "eventarc CreateMessageBus Sample",
+      "description": "CreateMessageBus create a new MessageBus in a particular project and location.",
+      "file": "Client/CreateMessageBus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMessageBus",
+        "fullName": "google.cloud.eventarc.v1.Client.CreateMessageBus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.CreateMessageBusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateMessageBusOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateMessageBus",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.CreateMessageBus",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_CreatePipeline_sync",
+      "title": "eventarc CreatePipeline Sample",
+      "description": "CreatePipeline create a new Pipeline in a particular project and location.",
+      "file": "Client/CreatePipeline/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePipeline",
+        "fullName": "google.cloud.eventarc.v1.Client.CreatePipeline",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.CreatePipelineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreatePipelineOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "CreatePipeline",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.CreatePipeline",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "eventarc_v1_generated_Eventarc_CreateTrigger_sync",
       "title": "eventarc CreateTrigger Sample",
       "description": "CreateTrigger create a new trigger in a particular project and location.",
@@ -287,6 +471,144 @@
       ]
     },
     {
+      "regionTag": "eventarc_v1_generated_Eventarc_DeleteEnrollment_sync",
+      "title": "eventarc DeleteEnrollment Sample",
+      "description": "DeleteEnrollment delete a single Enrollment.",
+      "file": "Client/DeleteEnrollment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEnrollment",
+        "fullName": "google.cloud.eventarc.v1.Client.DeleteEnrollment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.DeleteEnrollmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteEnrollmentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteEnrollment",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.DeleteEnrollment",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_DeleteGoogleApiSource_sync",
+      "title": "eventarc DeleteGoogleApiSource Sample",
+      "description": "DeleteGoogleApiSource delete a single GoogleApiSource.",
+      "file": "Client/DeleteGoogleApiSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteGoogleApiSource",
+        "fullName": "google.cloud.eventarc.v1.Client.DeleteGoogleApiSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.DeleteGoogleApiSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteGoogleApiSourceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteGoogleApiSource",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.DeleteGoogleApiSource",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_DeleteMessageBus_sync",
+      "title": "eventarc DeleteMessageBus Sample",
+      "description": "DeleteMessageBus delete a single message bus.",
+      "file": "Client/DeleteMessageBus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMessageBus",
+        "fullName": "google.cloud.eventarc.v1.Client.DeleteMessageBus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.DeleteMessageBusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteMessageBusOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteMessageBus",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.DeleteMessageBus",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "eventarc_v1_generated_Eventarc_DeleteOperation_sync",
       "title": "eventarc DeleteOperation Sample",
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
@@ -327,6 +649,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_DeletePipeline_sync",
+      "title": "eventarc DeletePipeline Sample",
+      "description": "DeletePipeline delete a single pipeline.",
+      "file": "Client/DeletePipeline/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePipeline",
+        "fullName": "google.cloud.eventarc.v1.Client.DeletePipeline",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.DeletePipelineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeletePipelineOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "DeletePipeline",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.DeletePipeline",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -454,6 +822,98 @@
         "method": {
           "shortName": "GetChannelConnection",
           "fullName": "google.cloud.eventarc.v1.Eventarc.GetChannelConnection",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_GetEnrollment_sync",
+      "title": "eventarc GetEnrollment Sample",
+      "description": "GetEnrollment get a single Enrollment.",
+      "file": "Client/GetEnrollment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEnrollment",
+        "fullName": "google.cloud.eventarc.v1.Client.GetEnrollment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.GetEnrollmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*eventarcpb.Enrollment",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "GetEnrollment",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.GetEnrollment",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_GetGoogleApiSource_sync",
+      "title": "eventarc GetGoogleApiSource Sample",
+      "description": "GetGoogleApiSource get a single GoogleApiSource.",
+      "file": "Client/GetGoogleApiSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGoogleApiSource",
+        "fullName": "google.cloud.eventarc.v1.Client.GetGoogleApiSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.GetGoogleApiSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*eventarcpb.GoogleApiSource",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "GetGoogleApiSource",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.GetGoogleApiSource",
           "service": {
             "shortName": "Eventarc",
             "fullName": "google.cloud.eventarc.v1.Eventarc"
@@ -608,6 +1068,52 @@
       ]
     },
     {
+      "regionTag": "eventarc_v1_generated_Eventarc_GetMessageBus_sync",
+      "title": "eventarc GetMessageBus Sample",
+      "description": "GetMessageBus get a single MessageBus.",
+      "file": "Client/GetMessageBus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMessageBus",
+        "fullName": "google.cloud.eventarc.v1.Client.GetMessageBus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.GetMessageBusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*eventarcpb.MessageBus",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "GetMessageBus",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.GetMessageBus",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "eventarc_v1_generated_Eventarc_GetOperation_sync",
       "title": "eventarc GetOperation Sample",
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
@@ -641,6 +1147,52 @@
           "service": {
             "shortName": "Operations",
             "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_GetPipeline_sync",
+      "title": "eventarc GetPipeline Sample",
+      "description": "GetPipeline get a single Pipeline.",
+      "file": "Client/GetPipeline/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPipeline",
+        "fullName": "google.cloud.eventarc.v1.Client.GetPipeline",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.GetPipelineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*eventarcpb.Pipeline",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPipeline",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.GetPipeline",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
           }
         }
       },
@@ -838,6 +1390,98 @@
       ]
     },
     {
+      "regionTag": "eventarc_v1_generated_Eventarc_ListEnrollments_sync",
+      "title": "eventarc ListEnrollments Sample",
+      "description": "ListEnrollments list Enrollments.",
+      "file": "Client/ListEnrollments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEnrollments",
+        "fullName": "google.cloud.eventarc.v1.Client.ListEnrollments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.ListEnrollmentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EnrollmentIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "ListEnrollments",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.ListEnrollments",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_ListGoogleApiSources_sync",
+      "title": "eventarc ListGoogleApiSources Sample",
+      "description": "ListGoogleApiSources list GoogleApiSources.",
+      "file": "Client/ListGoogleApiSources/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGoogleApiSources",
+        "fullName": "google.cloud.eventarc.v1.Client.ListGoogleApiSources",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.ListGoogleApiSourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GoogleApiSourceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "ListGoogleApiSources",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.ListGoogleApiSources",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "eventarc_v1_generated_Eventarc_ListLocations_sync",
       "title": "eventarc ListLocations Sample",
       "description": "ListLocations lists information about the supported locations for this service.",
@@ -884,6 +1528,98 @@
       ]
     },
     {
+      "regionTag": "eventarc_v1_generated_Eventarc_ListMessageBusEnrollments_sync",
+      "title": "eventarc ListMessageBusEnrollments Sample",
+      "description": "ListMessageBusEnrollments list message bus enrollments.",
+      "file": "Client/ListMessageBusEnrollments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMessageBusEnrollments",
+        "fullName": "google.cloud.eventarc.v1.Client.ListMessageBusEnrollments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.ListMessageBusEnrollmentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StringIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "ListMessageBusEnrollments",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.ListMessageBusEnrollments",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_ListMessageBuses_sync",
+      "title": "eventarc ListMessageBuses Sample",
+      "description": "ListMessageBuses list message buses.",
+      "file": "Client/ListMessageBuses/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMessageBuses",
+        "fullName": "google.cloud.eventarc.v1.Client.ListMessageBuses",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.ListMessageBusesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MessageBusIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "ListMessageBuses",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.ListMessageBuses",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "eventarc_v1_generated_Eventarc_ListOperations_sync",
       "title": "eventarc ListOperations Sample",
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
@@ -917,6 +1653,52 @@
           "service": {
             "shortName": "Operations",
             "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_ListPipelines_sync",
+      "title": "eventarc ListPipelines Sample",
+      "description": "ListPipelines list pipelines.",
+      "file": "Client/ListPipelines/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPipelines",
+        "fullName": "google.cloud.eventarc.v1.Client.ListPipelines",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.ListPipelinesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PipelineIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPipelines",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.ListPipelines",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
           }
         }
       },
@@ -1160,6 +1942,98 @@
       ]
     },
     {
+      "regionTag": "eventarc_v1_generated_Eventarc_UpdateEnrollment_sync",
+      "title": "eventarc UpdateEnrollment Sample",
+      "description": "UpdateEnrollment update a single Enrollment.",
+      "file": "Client/UpdateEnrollment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEnrollment",
+        "fullName": "google.cloud.eventarc.v1.Client.UpdateEnrollment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.UpdateEnrollmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEnrollmentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateEnrollment",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.UpdateEnrollment",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_UpdateGoogleApiSource_sync",
+      "title": "eventarc UpdateGoogleApiSource Sample",
+      "description": "UpdateGoogleApiSource update a single GoogleApiSource.",
+      "file": "Client/UpdateGoogleApiSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGoogleApiSource",
+        "fullName": "google.cloud.eventarc.v1.Client.UpdateGoogleApiSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.UpdateGoogleApiSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateGoogleApiSourceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateGoogleApiSource",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.UpdateGoogleApiSource",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "eventarc_v1_generated_Eventarc_UpdateGoogleChannelConfig_sync",
       "title": "eventarc UpdateGoogleChannelConfig Sample",
       "description": "UpdateGoogleChannelConfig update a single GoogleChannelConfig",
@@ -1201,6 +2075,98 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_UpdateMessageBus_sync",
+      "title": "eventarc UpdateMessageBus Sample",
+      "description": "UpdateMessageBus update a single message bus.",
+      "file": "Client/UpdateMessageBus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateMessageBus",
+        "fullName": "google.cloud.eventarc.v1.Client.UpdateMessageBus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.UpdateMessageBusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateMessageBusOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateMessageBus",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.UpdateMessageBus",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "eventarc_v1_generated_Eventarc_UpdatePipeline_sync",
+      "title": "eventarc UpdatePipeline Sample",
+      "description": "UpdatePipeline update a single pipeline.",
+      "file": "Client/UpdatePipeline/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePipeline",
+        "fullName": "google.cloud.eventarc.v1.Client.UpdatePipeline",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "eventarcpb.UpdatePipelineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdatePipelineOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.eventarc.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdatePipeline",
+          "fullName": "google.cloud.eventarc.v1.Eventarc.UpdatePipeline",
+          "service": {
+            "shortName": "Eventarc",
+            "fullName": "google.cloud.eventarc.v1.Eventarc"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
