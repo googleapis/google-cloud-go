@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/identitytoolkit/apiv2",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "language": "GO",
     "apis": [
       {

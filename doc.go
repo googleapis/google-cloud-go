@@ -209,9 +209,9 @@ connections for later re-use. These are cached to the http.MaxIdleConns
 and http.MaxIdleConnsPerHost settings in http.DefaultTransport by default.
 
 For gRPC clients, connection pooling is configurable. Users of Cloud Client
-Libraries may specify option.WithGRPCConnectionPool(n) as a client option to
-NewClient calls. This configures the underlying gRPC connections to be pooled
-and accessed in a round robin fashion.
+Libraries may specify [google.golang.org/api/option.WithGRPCConnectionPool]
+as a client option to NewClient calls. This configures the underlying gRPC
+connections to be pooled and accessed in a round robin fashion.
 
 # Using the Libraries in Container environments(Docker)
 
@@ -247,19 +247,11 @@ errors can still be unwrapped using the APIError.
 	      log.Println(ae.Reason())
 	      log.Println(ae.Details().Help.GetLinks())
 	   }
-	}
-
-If the gRPC transport was used, the [google.golang.org/grpc/status.Status] can
-still be parsed using the [google.golang.org/grpc/status.FromError] function.
-
-	if err != nil {
-	   if s, ok := status.FromError(err); ok {
-	      log.Println(s.Message())
-	      for _, d := range s.Proto().Details {
-	         log.Println(d)
-	      }
+	   // If a gRPC transport was used you can extract the
+	   // google.golang.org/grpc/status.Status from the error
+	   s := ae.GRPCStatus()
+	   log.Println(s.Code())
 	   }
-	}
 
 # Client Stability
 

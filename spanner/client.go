@@ -25,7 +25,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
@@ -656,29 +655,19 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 // wrappedStream  wraps around the embedded grpc.ClientStream, and intercepts the RecvMsg and
 // SendMsg method call.
 type wrappedStream struct {
-	sync.Mutex
-	isFirstRecv bool
-	method      string
-	target      string
+	method string
+	target string
 	grpc.ClientStream
 }
 
 func (w *wrappedStream) RecvMsg(m any) error {
-	attempt := &attemptTracer{}
-	attempt.setStartTime(time.Now())
 	err := w.ClientStream.RecvMsg(m)
-	statusCode, _ := status.FromError(err)
 	ctx := w.ClientStream.Context()
 	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-	if !ok || !w.isFirstRecv {
+	if !ok {
 		return err
 	}
-	w.Lock()
-	w.isFirstRecv = false
-	w.Unlock()
 	mt.method = w.method
-	mt.currOp.incrementAttemptCount()
-	mt.currOp.currAttempt = attempt
 	if strings.HasPrefix(w.target, "google-c2p") {
 		mt.currOp.setDirectPathEnabled(true)
 	}
@@ -692,9 +681,9 @@ func (w *wrappedStream) RecvMsg(m any) error {
 			}
 		}
 	}
-	mt.currOp.currAttempt.setStatus(statusCode.Code().String())
-	mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
-	recordAttemptCompletion(mt)
+	if mt.currOp.currAttempt != nil {
+		mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
+	}
 	return err
 }
 
@@ -703,7 +692,7 @@ func (w *wrappedStream) SendMsg(m any) error {
 }
 
 func newWrappedStream(s grpc.ClientStream, method, target string) grpc.ClientStream {
-	return &wrappedStream{ClientStream: s, method: method, target: target, isFirstRecv: true}
+	return &wrappedStream{ClientStream: s, method: method, target: target}
 }
 
 // metricsInterceptor is a gRPC stream client interceptor that records metrics for stream RPCs.
