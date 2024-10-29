@@ -152,7 +152,7 @@ func defaultAttachedClustersCallOptions() *AttachedClustersCallOptions {
 	}
 }
 
-// internalAttachedClustersClient is an interface that defines the methods available from Anthos Multi-Cloud API.
+// internalAttachedClustersClient is an interface that defines the methods available from GKE Multi-Cloud API.
 type internalAttachedClustersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -176,7 +176,7 @@ type internalAttachedClustersClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// AttachedClustersClient is a client for interacting with Anthos Multi-Cloud API.
+// AttachedClustersClient is a client for interacting with GKE Multi-Cloud API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The AttachedClusters API provides a single centrally managed service
@@ -331,7 +331,7 @@ func (c *AttachedClustersClient) ListOperations(ctx context.Context, req *longru
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// attachedClustersGRPCClient is a client for interacting with Anthos Multi-Cloud API over gRPC transport.
+// attachedClustersGRPCClient is a client for interacting with GKE Multi-Cloud API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type attachedClustersGRPCClient struct {

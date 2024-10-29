@@ -4385,10 +4385,12 @@ type QueryAssetsResponse struct {
 	JobReference string `protobuf:"bytes,1,opt,name=job_reference,json=jobReference,proto3" json:"job_reference,omitempty"`
 	// The query response, which can be either an `error` or a valid `response`.
 	//
-	// If `done` == `false` and the query result is being saved in a output, the
+	// If `done` == `false` and the query result is being saved in an output, the
 	// output_config field will be set.
 	// If `done` == `true`, exactly one of
 	// `error`, `query_result` or `output_config` will be set.
+	// [done] is unset unless the [QueryAssetsResponse] contains a
+	// [QueryAssetsResponse.job_reference].
 	Done bool `protobuf:"varint,2,opt,name=done,proto3" json:"done,omitempty"`
 	// Types that are assignable to Response:
 	//
@@ -4487,8 +4489,9 @@ type QueryAssetsResponse_QueryResult struct {
 }
 
 type QueryAssetsResponse_OutputConfig struct {
-	// Output configuration which indicates instead of being returned in API
-	// response on the fly, the query result will be saved in a specific output.
+	// Output configuration, which indicates that instead of being returned in
+	// an API response on the fly, the query result will be saved in a specific
+	// output.
 	OutputConfig *QueryAssetsOutputConfig `protobuf:"bytes,5,opt,name=output_config,json=outputConfig,proto3,oneof"`
 }
 

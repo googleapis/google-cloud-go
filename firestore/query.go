@@ -33,8 +33,14 @@ import (
 )
 
 var (
-	errMetricsBeforeEnd = errors.New("firestore: ExplainMetrics are available only after the iterator reaches the end")
+	errMetricsBeforeEnd     = errors.New("firestore: ExplainMetrics are available only after the iterator reaches the end")
+	errInvalidVector        = errors.New("firestore: queryVector must be Vector32 or Vector64")
+	errMalformedVectorQuery = errors.New("firestore: Malformed VectorQuery. Use FindNearest or FindNearestPath to create VectorQuery")
 )
+
+func errInvalidRunesField(field string) error {
+	return fmt.Errorf("firestore: %q contains an invalid rune (one of %s)", field, invalidRunes)
+}
 
 // Query represents a Firestore query.
 //
@@ -517,9 +523,27 @@ const (
 	DistanceMeasureDotProduct DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_DOT_PRODUCT)
 )
 
+// Ptr returns a pointer to its argument.
+// It can be used to initialize pointer fields:
+//
+//	findNearestOptions.DistanceThreshold = firestore.Ptr[float64](0.1)
+func Ptr[T any](t T) *T { return &t }
+
 // FindNearestOptions are options for a FindNearest vector query.
-// At present, there are no options.
 type FindNearestOptions struct {
+	// DistanceThreshold specifies a threshold for which no less similar documents
+	// will be returned. The behavior of the specified [DistanceMeasure] will
+	// affect the meaning of the distance threshold. Since [DistanceMeasureDotProduct]
+	// distances increase when the vectors are more similar, the comparison is inverted.
+	// For [DistanceMeasureEuclidean], [DistanceMeasureCosine]: WHERE distance <= distanceThreshold
+	// For [DistanceMeasureDotProduct]:                         WHERE distance >= distance_threshold
+	DistanceThreshold *float64
+
+	// DistanceResultField specifies name of the document field to output the result of
+	// the vector distance calculation.
+	// If the field already exists in the document, its value get overwritten with the distance calculation.
+	// Otherwise, a new field gets added to the document.
+	DistanceResultField string
 }
 
 // VectorQuery represents a query that uses [Query.FindNearest] or [Query.FindNearestPath].
@@ -582,7 +606,7 @@ func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit
 	case []float64:
 		fnvq = vectorToProtoValue(v)
 	default:
-		vq.q.err = errors.New("firestore: queryVector must be Vector32 or Vector64")
+		vq.q.err = errInvalidVector
 		return vq
 	}
 
@@ -591,6 +615,13 @@ func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit
 		QueryVector:     fnvq,
 		Limit:           &wrapperspb.Int32Value{Value: trunc32(limit)},
 		DistanceMeasure: pb.StructuredQuery_FindNearest_DistanceMeasure(measure),
+	}
+
+	if options != nil {
+		if options.DistanceThreshold != nil {
+			vq.q.findNearest.DistanceThreshold = &wrapperspb.DoubleValue{Value: *options.DistanceThreshold}
+		}
+		vq.q.findNearest.DistanceResultField = *&options.DistanceResultField
 	}
 	return vq
 }

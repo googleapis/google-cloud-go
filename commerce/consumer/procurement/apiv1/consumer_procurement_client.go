@@ -50,6 +50,8 @@ type ConsumerProcurementCallOptions struct {
 	PlaceOrder   []gax.CallOption
 	GetOrder     []gax.CallOption
 	ListOrders   []gax.CallOption
+	ModifyOrder  []gax.CallOption
+	CancelOrder  []gax.CallOption
 	GetOperation []gax.CallOption
 }
 
@@ -97,6 +99,8 @@ func defaultConsumerProcurementCallOptions() *ConsumerProcurementCallOptions {
 				})
 			}),
 		},
+		ModifyOrder:  []gax.CallOption{},
+		CancelOrder:  []gax.CallOption{},
 		GetOperation: []gax.CallOption{},
 	}
 }
@@ -128,6 +132,8 @@ func defaultConsumerProcurementRESTCallOptions() *ConsumerProcurementCallOptions
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ModifyOrder:  []gax.CallOption{},
+		CancelOrder:  []gax.CallOption{},
 		GetOperation: []gax.CallOption{},
 	}
 }
@@ -141,6 +147,10 @@ type internalConsumerProcurementClient interface {
 	PlaceOrderOperation(name string) *PlaceOrderOperation
 	GetOrder(context.Context, *procurementpb.GetOrderRequest, ...gax.CallOption) (*procurementpb.Order, error)
 	ListOrders(context.Context, *procurementpb.ListOrdersRequest, ...gax.CallOption) *OrderIterator
+	ModifyOrder(context.Context, *procurementpb.ModifyOrderRequest, ...gax.CallOption) (*ModifyOrderOperation, error)
+	ModifyOrderOperation(name string) *ModifyOrderOperation
+	CancelOrder(context.Context, *procurementpb.CancelOrderRequest, ...gax.CallOption) (*CancelOrderOperation, error)
+	CancelOrderOperation(name string) *CancelOrderOperation
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
@@ -222,6 +232,31 @@ func (c *ConsumerProcurementClient) GetOrder(ctx context.Context, req *procureme
 // resource.
 func (c *ConsumerProcurementClient) ListOrders(ctx context.Context, req *procurementpb.ListOrdersRequest, opts ...gax.CallOption) *OrderIterator {
 	return c.internalClient.ListOrders(ctx, req, opts...)
+}
+
+// ModifyOrder modifies an existing
+// Order resource.
+func (c *ConsumerProcurementClient) ModifyOrder(ctx context.Context, req *procurementpb.ModifyOrderRequest, opts ...gax.CallOption) (*ModifyOrderOperation, error) {
+	return c.internalClient.ModifyOrder(ctx, req, opts...)
+}
+
+// ModifyOrderOperation returns a new ModifyOrderOperation from a given name.
+// The name must be that of a previously created ModifyOrderOperation, possibly from a different process.
+func (c *ConsumerProcurementClient) ModifyOrderOperation(name string) *ModifyOrderOperation {
+	return c.internalClient.ModifyOrderOperation(name)
+}
+
+// CancelOrder cancels an existing
+// Order. Every product
+// procured in the Order will be cancelled.
+func (c *ConsumerProcurementClient) CancelOrder(ctx context.Context, req *procurementpb.CancelOrderRequest, opts ...gax.CallOption) (*CancelOrderOperation, error) {
+	return c.internalClient.CancelOrder(ctx, req, opts...)
+}
+
+// CancelOrderOperation returns a new CancelOrderOperation from a given name.
+// The name must be that of a previously created CancelOrderOperation, possibly from a different process.
+func (c *ConsumerProcurementClient) CancelOrderOperation(name string) *CancelOrderOperation {
+	return c.internalClient.CancelOrderOperation(name)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -508,6 +543,46 @@ func (c *consumerProcurementGRPCClient) ListOrders(ctx context.Context, req *pro
 	return it
 }
 
+func (c *consumerProcurementGRPCClient) ModifyOrder(ctx context.Context, req *procurementpb.ModifyOrderRequest, opts ...gax.CallOption) (*ModifyOrderOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ModifyOrder[0:len((*c.CallOptions).ModifyOrder):len((*c.CallOptions).ModifyOrder)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.consumerProcurementClient.ModifyOrder(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ModifyOrderOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *consumerProcurementGRPCClient) CancelOrder(ctx context.Context, req *procurementpb.CancelOrderRequest, opts ...gax.CallOption) (*CancelOrderOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOrder[0:len((*c.CallOptions).CancelOrder):len((*c.CallOptions).CancelOrder)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.consumerProcurementClient.CancelOrder(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CancelOrderOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *consumerProcurementGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -760,6 +835,149 @@ func (c *consumerProcurementRESTClient) ListOrders(ctx context.Context, req *pro
 	return it
 }
 
+// ModifyOrder modifies an existing
+// Order resource.
+func (c *consumerProcurementRESTClient) ModifyOrder(ctx context.Context, req *procurementpb.ModifyOrderRequest, opts ...gax.CallOption) (*ModifyOrderOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:modify", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ModifyOrderOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CancelOrder cancels an existing
+// Order. Every product
+// procured in the Order will be cancelled.
+func (c *consumerProcurementRESTClient) CancelOrder(ctx context.Context, req *procurementpb.CancelOrderRequest, opts ...gax.CallOption) (*CancelOrderOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CancelOrderOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetOperation is a utility method from google.longrunning.Operations.
 func (c *consumerProcurementRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -818,6 +1036,42 @@ func (c *consumerProcurementRESTClient) GetOperation(ctx context.Context, req *l
 		return nil, e
 	}
 	return resp, nil
+}
+
+// CancelOrderOperation returns a new CancelOrderOperation from a given name.
+// The name must be that of a previously created CancelOrderOperation, possibly from a different process.
+func (c *consumerProcurementGRPCClient) CancelOrderOperation(name string) *CancelOrderOperation {
+	return &CancelOrderOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CancelOrderOperation returns a new CancelOrderOperation from a given name.
+// The name must be that of a previously created CancelOrderOperation, possibly from a different process.
+func (c *consumerProcurementRESTClient) CancelOrderOperation(name string) *CancelOrderOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CancelOrderOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ModifyOrderOperation returns a new ModifyOrderOperation from a given name.
+// The name must be that of a previously created ModifyOrderOperation, possibly from a different process.
+func (c *consumerProcurementGRPCClient) ModifyOrderOperation(name string) *ModifyOrderOperation {
+	return &ModifyOrderOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ModifyOrderOperation returns a new ModifyOrderOperation from a given name.
+// The name must be that of a previously created ModifyOrderOperation, possibly from a different process.
+func (c *consumerProcurementRESTClient) ModifyOrderOperation(name string) *ModifyOrderOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ModifyOrderOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // PlaceOrderOperation returns a new PlaceOrderOperation from a given name.

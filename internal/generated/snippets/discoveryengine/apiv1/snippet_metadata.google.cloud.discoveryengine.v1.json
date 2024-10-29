@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1",
-    "version": "1.13.0",
+    "version": "1.15.0",
     "language": "GO",
     "apis": [
       {
@@ -1845,6 +1845,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1_generated_DocumentService_BatchGetDocumentsMetadata_sync",
+      "title": "discoveryengine BatchGetDocumentsMetadata Sample",
+      "description": "BatchGetDocumentsMetadata gets index freshness metadata for\n[Document][google.cloud.discoveryengine.v1.Document]s. Supported for\nwebsite search only.",
+      "file": "DocumentClient/BatchGetDocumentsMetadata/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchGetDocumentsMetadata",
+        "fullName": "google.cloud.discoveryengine.v1.DocumentClient.BatchGetDocumentsMetadata",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.BatchGetDocumentsMetadataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.BatchGetDocumentsMetadataResponse",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.discoveryengine.v1.DocumentClient"
+        },
+        "method": {
+          "shortName": "BatchGetDocumentsMetadata",
+          "fullName": "google.cloud.discoveryengine.v1.DocumentService.BatchGetDocumentsMetadata",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.discoveryengine.v1.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1_generated_DocumentService_CancelOperation_sync",
       "title": "discoveryengine CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -2761,6 +2807,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1_generated_GroundedGenerationService_GenerateGroundedContent_sync",
+      "title": "discoveryengine GenerateGroundedContent Sample",
+      "description": "GenerateGroundedContent generates grounded content.",
+      "file": "GroundedGenerationClient/GenerateGroundedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateGroundedContent",
+        "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationClient.GenerateGroundedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GenerateGroundedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.GenerateGroundedContentResponse",
+        "client": {
+          "shortName": "GroundedGenerationClient",
+          "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationClient"
+        },
+        "method": {
+          "shortName": "GenerateGroundedContent",
+          "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationService.GenerateGroundedContent",
+          "service": {
+            "shortName": "GroundedGenerationService",
+            "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1_generated_GroundedGenerationService_GetOperation_sync",
       "title": "discoveryengine GetOperation Sample",
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
@@ -2848,6 +2940,48 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_GroundedGenerationService_StreamGenerateGroundedContent_sync",
+      "title": "discoveryengine StreamGenerateGroundedContent Sample",
+      "description": "StreamGenerateGroundedContent generates grounded content in a streaming fashion.\n\n\nThis method is not supported for the REST transport.",
+      "file": "GroundedGenerationClient/StreamGenerateGroundedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamGenerateGroundedContent",
+        "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationClient.StreamGenerateGroundedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "discoveryenginepb.GroundedGenerationService_StreamGenerateGroundedContentClient",
+        "client": {
+          "shortName": "GroundedGenerationClient",
+          "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationClient"
+        },
+        "method": {
+          "shortName": "StreamGenerateGroundedContent",
+          "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationService.StreamGenerateGroundedContent",
+          "service": {
+            "shortName": "GroundedGenerationService",
+            "fullName": "google.cloud.discoveryengine.v1.GroundedGenerationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
           "type": "FULL"
         }
       ]
@@ -3952,6 +4086,281 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1_generated_SearchService_SearchLite_sync",
+      "title": "discoveryengine SearchLite Sample",
+      "description": "SearchLite performs a search. Similar to the\n[SearchService.Search][google.cloud.discoveryengine.v1.SearchService.Search]\nmethod, but a lite version that allows API key for authentication, where\nOAuth and IAM checks are not required.\n\nOnly public website search is supported by this method. If data stores and\nengines not associated with public website search are specified, a\n`FAILED_PRECONDITION` error is returned.\n\nThis method can be used for easy onboarding without having to implement an\nauthentication backend. However, it is strongly recommended to use\n[SearchService.Search][google.cloud.discoveryengine.v1.SearchService.Search]\ninstead with required OAuth and IAM checks to provide better data security.",
+      "file": "SearchClient/SearchLite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchLite",
+        "fullName": "google.cloud.discoveryengine.v1.SearchClient.SearchLite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.SearchRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SearchResponse_SearchResultIterator",
+        "client": {
+          "shortName": "SearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.SearchClient"
+        },
+        "method": {
+          "shortName": "SearchLite",
+          "fullName": "google.cloud.discoveryengine.v1.SearchService.SearchLite",
+          "service": {
+            "shortName": "SearchService",
+            "fullName": "google.cloud.discoveryengine.v1.SearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SearchTuningService_CancelOperation_sync",
+      "title": "discoveryengine CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "SearchTuningClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.discoveryengine.v1.SearchTuningClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SearchTuningClient",
+          "fullName": "google.cloud.discoveryengine.v1.SearchTuningClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SearchTuningService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SearchTuningClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1.SearchTuningClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "SearchTuningClient",
+          "fullName": "google.cloud.discoveryengine.v1.SearchTuningClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SearchTuningService_ListCustomModels_sync",
+      "title": "discoveryengine ListCustomModels Sample",
+      "description": "ListCustomModels gets a list of all the custom models.",
+      "file": "SearchTuningClient/ListCustomModels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCustomModels",
+        "fullName": "google.cloud.discoveryengine.v1.SearchTuningClient.ListCustomModels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListCustomModelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.ListCustomModelsResponse",
+        "client": {
+          "shortName": "SearchTuningClient",
+          "fullName": "google.cloud.discoveryengine.v1.SearchTuningClient"
+        },
+        "method": {
+          "shortName": "ListCustomModels",
+          "fullName": "google.cloud.discoveryengine.v1.SearchTuningService.ListCustomModels",
+          "service": {
+            "shortName": "SearchTuningService",
+            "fullName": "google.cloud.discoveryengine.v1.SearchTuningService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SearchTuningService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SearchTuningClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1.SearchTuningClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "SearchTuningClient",
+          "fullName": "google.cloud.discoveryengine.v1.SearchTuningClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SearchTuningService_TrainCustomModel_sync",
+      "title": "discoveryengine TrainCustomModel Sample",
+      "description": "TrainCustomModel trains a custom model.",
+      "file": "SearchTuningClient/TrainCustomModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TrainCustomModel",
+        "fullName": "google.cloud.discoveryengine.v1.SearchTuningClient.TrainCustomModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.TrainCustomModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TrainCustomModelOperation",
+        "client": {
+          "shortName": "SearchTuningClient",
+          "fullName": "google.cloud.discoveryengine.v1.SearchTuningClient"
+        },
+        "method": {
+          "shortName": "TrainCustomModel",
+          "fullName": "google.cloud.discoveryengine.v1.SearchTuningService.TrainCustomModel",
+          "service": {
+            "shortName": "SearchTuningService",
+            "fullName": "google.cloud.discoveryengine.v1.SearchTuningService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_BatchCreateTargetSites_sync",
       "title": "discoveryengine BatchCreateTargetSites Sample",
       "description": "BatchCreateTargetSites creates [TargetSite][google.cloud.discoveryengine.v1.TargetSite] in a\nbatch.",
@@ -4865,6 +5274,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_UserEventService_PurgeUserEvents_sync",
+      "title": "discoveryengine PurgeUserEvents Sample",
+      "description": "PurgeUserEvents deletes permanently all user events specified by the filter provided.\nDepending on the number of events specified by the filter, this operation\ncould take hours or days to complete. To test a filter, use the list\ncommand first.",
+      "file": "UserEventClient/PurgeUserEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PurgeUserEvents",
+        "fullName": "google.cloud.discoveryengine.v1.UserEventClient.PurgeUserEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.PurgeUserEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PurgeUserEventsOperation",
+        "client": {
+          "shortName": "UserEventClient",
+          "fullName": "google.cloud.discoveryengine.v1.UserEventClient"
+        },
+        "method": {
+          "shortName": "PurgeUserEvents",
+          "fullName": "google.cloud.discoveryengine.v1.UserEventService.PurgeUserEvents",
+          "service": {
+            "shortName": "UserEventService",
+            "fullName": "google.cloud.discoveryengine.v1.UserEventService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

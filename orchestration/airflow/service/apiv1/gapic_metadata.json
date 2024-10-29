@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "EnvironmentsClient",
           "rpcs": {
+            "CheckUpgrade": {
+              "methods": [
+                "CheckUpgrade"
+              ]
+            },
             "CreateEnvironment": {
               "methods": [
                 "CreateEnvironment"
@@ -145,6 +150,11 @@
         "rest": {
           "libraryClient": "EnvironmentsClient",
           "rpcs": {
+            "CheckUpgrade": {
+              "methods": [
+                "CheckUpgrade"
+              ]
+            },
             "CreateEnvironment": {
               "methods": [
                 "CreateEnvironment"

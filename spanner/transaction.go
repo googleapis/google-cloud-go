@@ -32,7 +32,6 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 
-	vkit "cloud.google.com/go/spanner/apiv1"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -243,16 +242,22 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	)
 	kset, err := keys.keySetProto()
 	if err != nil {
-		return &RowIterator{err: err}
+		return &RowIterator{
+			meterTracerFactory: t.sp.sc.metricsTracerFactory,
+			err:                err}
 	}
 	if sh, ts, err = t.acquire(ctx); err != nil {
-		return &RowIterator{err: err}
+		return &RowIterator{
+			meterTracerFactory: t.sp.sc.metricsTracerFactory,
+			err:                err}
 	}
 	// Cloud Spanner will return "Session not found" on bad sessions.
 	client := sh.getClient()
 	if client == nil {
 		// Might happen if transaction is closed in the middle of a API call.
-		return &RowIterator{err: errSessionClosed(sh)}
+		return &RowIterator{
+			meterTracerFactory: t.sp.sc.metricsTracerFactory,
+			err:                errSessionClosed(sh)}
 	}
 	index := t.ro.Index
 	limit := t.ro.Limit
@@ -292,6 +297,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	return streamWithReplaceSessionFunc(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
+		t.sp.sc.metricsTracerFactory,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			if t.sh != nil {
 				t.sh.updateLastUseTime()
@@ -573,7 +579,10 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	defer func() { trace.EndSpan(ctx, ri.err) }()
 	req, sh, err := t.prepareExecuteSQL(ctx, statement, options)
 	if err != nil {
-		return &RowIterator{err: err}
+		return &RowIterator{
+			meterTracerFactory: t.sp.sc.metricsTracerFactory,
+			err:                err,
+		}
 	}
 	var setTransactionID func(transactionID)
 	if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
@@ -585,6 +594,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	return streamWithReplaceSessionFunc(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
+		t.sp.sc.metricsTracerFactory,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			req.ResumeToken = resumeToken
 			req.Session = t.sh.getID()
@@ -1477,7 +1487,7 @@ func (t *ReadWriteTransaction) setSessionEligibilityForLongRunning(sh *sessionHa
 	}
 }
 
-func beginTransaction(ctx context.Context, sid string, client *vkit.Client, opts TransactionOptions) (transactionID, error) {
+func beginTransaction(ctx context.Context, sid string, client spannerClient, opts TransactionOptions) (transactionID, error) {
 	res, err := client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 		Session: sid,
 		Options: &sppb.TransactionOptions{
@@ -1586,8 +1596,7 @@ type CommitOptions struct {
 // merge combines two CommitOptions that the input parameter will have higher
 // order of precedence.
 func (co CommitOptions) merge(opts CommitOptions) CommitOptions {
-	var newOpts CommitOptions
-	newOpts = CommitOptions{
+	newOpts := CommitOptions{
 		ReturnCommitStats: co.ReturnCommitStats || opts.ReturnCommitStats,
 		MaxCommitDelay:    opts.MaxCommitDelay,
 	}

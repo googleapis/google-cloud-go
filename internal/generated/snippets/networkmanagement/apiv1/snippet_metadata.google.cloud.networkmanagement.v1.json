@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/networkmanagement/apiv1",
-    "version": "1.14.0",
+    "version": "1.15.0",
     "language": "GO",
     "apis": [
       {
@@ -656,7 +656,7 @@
     {
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_UpdateConnectivityTest_sync",
       "title": "networkmanagement UpdateConnectivityTest Sample",
-      "description": "UpdateConnectivityTest updates the configuration of an existing `ConnectivityTest`.\nAfter you update a test, the reachability analysis is performed as part\nof the long running operation, which completes when the analysis completes.\nThe Reachability state in the test resource is updated with the new result.\n\nIf the endpoint specifications in `ConnectivityTest` are invalid\n(for example, they contain non-existent resources in the network, or the\nuser does not have read permissions to the network configurations of\nlisted projects), then the reachability result returns a value of\n<code>UNKNOWN</code>.\n\nIf the endpoint specifications in `ConnectivityTest` are incomplete, the\nreachability result returns a value of `AMBIGUOUS`. See the documentation\nin `ConnectivityTest` for for more details.",
+      "description": "UpdateConnectivityTest updates the configuration of an existing `ConnectivityTest`.\nAfter you update a test, the reachability analysis is performed as part\nof the long running operation, which completes when the analysis completes.\nThe Reachability state in the test resource is updated with the new result.\n\nIf the endpoint specifications in `ConnectivityTest` are invalid\n(for example, they contain non-existent resources in the network, or the\nuser does not have read permissions to the network configurations of\nlisted projects), then the reachability result returns a value of\n<code>UNKNOWN</code>.\n\nIf the endpoint specifications in `ConnectivityTest` are incomplete, the\nreachability result returns a value of `AMBIGUOUS`. See the documentation\nin `ConnectivityTest` for more details.",
       "file": "ReachabilityClient/UpdateConnectivityTest/main.go",
       "language": "GO",
       "clientMethod": {

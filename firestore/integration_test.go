@@ -3218,6 +3218,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 		cancel()
 	})
 	queryField := "EmbeddedField64"
+	resultField := "vector_distance"
 	indexNames := createVectorIndexes(adminCtx, t, wantDBPath, []vectorIndex{
 		{
 			fieldPath: queryField,
@@ -3229,34 +3230,46 @@ func TestIntegration_FindNearest(t *testing.T) {
 	})
 
 	type coffeeBean struct {
-		ID              string
+		ID              int
 		EmbeddedField64 Vector64
 		EmbeddedField32 Vector32
 		Float32s        []float32 // When querying, saving and retrieving, this should be retrieved as []float32 and not Vector32
 	}
 
 	beans := []coffeeBean{
-		{
-			ID:              "Robusta",
+		{ // Euclidean Distance from {1, 2, 3} = 0
+			ID:              0,
 			EmbeddedField64: []float64{1, 2, 3},
 			EmbeddedField32: []float32{1, 2, 3},
 			Float32s:        []float32{1, 2, 3},
 		},
-		{
-			ID:              "Excelsa",
+		{ // Euclidean Distance from {1, 2, 3} = 5.19
+			ID:              1,
 			EmbeddedField64: []float64{4, 5, 6},
 			EmbeddedField32: []float32{4, 5, 6},
 			Float32s:        []float32{4, 5, 6},
 		},
+		{ // Euclidean Distance from {1, 2, 3} = 10.39
+			ID:              2,
+			EmbeddedField64: []float64{7, 8, 9},
+			EmbeddedField32: []float32{7, 8, 9},
+			Float32s:        []float32{7, 8, 9},
+		},
+		{ // Euclidean Distance from {1, 2, 3} = 15.58
+			ID:              3,
+			EmbeddedField64: []float64{10, 11, 12},
+			EmbeddedField32: []float32{10, 11, 12},
+			Float32s:        []float32{10, 11, 12},
+		},
 		{
-			ID:              "Arabica",
+			// Euclidean Distance from {1, 2, 3} = 370.42
+			ID:              4,
 			EmbeddedField64: []float64{100, 200, 300}, // too far from query vector. not within findNearest limit
 			EmbeddedField32: []float32{100, 200, 300},
 			Float32s:        []float32{100, 200, 300},
 		},
-
 		{
-			ID:              "Liberica",
+			ID:              5,
 			EmbeddedField64: []float64{1, 2}, // Not enough dimensions as compared to query vector.
 			EmbeddedField32: []float32{1, 2},
 			Float32s:        []float32{1, 2},
@@ -3277,27 +3290,55 @@ func TestIntegration_FindNearest(t *testing.T) {
 		h.mustCreate(doc, beans[i])
 	}
 
-	// Query documents with a vector field
-	vectorQuery := collRef.FindNearest(queryField, []float64{1, 2, 3}, 2, DistanceMeasureEuclidean, nil)
+	for _, tc := range []struct {
+		desc         string
+		vq           VectorQuery
+		wantBeans    []coffeeBean
+		wantResField string
+	}{
+		{
+			desc:      "FindNearest without threshold without resultField",
+			vq:        collRef.FindNearest(queryField, []float64{1, 2, 3}, 2, DistanceMeasureEuclidean, nil),
+			wantBeans: beans[:2],
+		},
+		{
+			desc: "FindNearest threshold and resultField",
+			vq: collRef.FindNearest(queryField, []float64{1, 2, 3}, 3, DistanceMeasureEuclidean, &FindNearestOptions{
+				DistanceThreshold:   Ptr(20.0),
+				DistanceResultField: resultField,
+			}),
+			wantBeans:    beans[:3],
+			wantResField: resultField,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			iter := tc.vq.Documents(ctx)
+			gotDocs, err := iter.GetAll()
+			if err != nil {
+				t.Fatalf("GetAll: %+v", err)
+			}
 
-	iter := vectorQuery.Documents(ctx)
-	gotDocs, err := iter.GetAll()
-	if err != nil {
-		t.Fatalf("GetAll: %+v", err)
-	}
+			if len(gotDocs) != len(tc.wantBeans) {
+				t.Fatalf("Expected %v results, got %d", len(tc.wantBeans), len(gotDocs))
+			}
 
-	if len(gotDocs) != 2 {
-		t.Fatalf("Expected 2 results, got %d", len(gotDocs))
-	}
-
-	for i, doc := range gotDocs {
-		gotBean := coffeeBean{}
-		err := doc.DataTo(&gotBean)
-		if err != nil {
-			t.Errorf("#%v: DataTo: %+v", doc.Ref.ID, err)
-		}
-		if beans[i].ID != gotBean.ID {
-			t.Errorf("#%v: want: %v, got: %v", i, beans[i].ID, gotBean.ID)
-		}
+			for i, doc := range gotDocs {
+				var gotBean coffeeBean
+				if len(tc.wantResField) != 0 {
+					_, ok := doc.Data()[tc.wantResField]
+					if !ok {
+						t.Errorf("Expected %v field to exist in %v", tc.wantResField, doc.Data())
+					}
+				}
+				err := doc.DataTo(&gotBean)
+				if err != nil {
+					t.Errorf("#%v: DataTo: %+v", doc.Ref.ID, err)
+					continue
+				}
+				if tc.wantBeans[i].ID != gotBean.ID {
+					t.Errorf("#%v: want: %v, got: %v", i, beans[i].ID, gotBean.ID)
+				}
+			}
+		})
 	}
 }
