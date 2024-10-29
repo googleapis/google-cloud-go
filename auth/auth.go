@@ -227,9 +227,7 @@ type CredentialsOptions struct {
 	UniverseDomainProvider CredentialsPropertyProvider
 }
 
-// NewCredentials returns new [Credentials] from the provided options. Most users
-// will want to build this object a function from the
-// [cloud.google.com/go/auth/credentials] package.
+// NewCredentials returns new [Credentials] from the provided options.
 func NewCredentials(opts *CredentialsOptions) *Credentials {
 	creds := &Credentials{
 		TokenProvider:  opts.TokenProvider,
