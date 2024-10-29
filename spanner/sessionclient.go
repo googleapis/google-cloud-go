@@ -48,7 +48,7 @@ func newClientIDGenerator() *clientIDGenerator {
 	return &clientIDGenerator{ids: make(map[string]int)}
 }
 
-func (cg *clientIDGenerator) nextID(database string) string {
+func (cg *clientIDGenerator) nextClientIDAndOrdinal(database string) (clientID string, nthClient int) {
 	cg.mu.Lock()
 	defer cg.mu.Unlock()
 	var id int
@@ -58,7 +58,12 @@ func (cg *clientIDGenerator) nextID(database string) string {
 		id = 1
 	}
 	cg.ids[database] = id
-	return fmt.Sprintf("client-%d", id)
+	return fmt.Sprintf("client-%d", id), id
+}
+
+func (cg *clientIDGenerator) nextID(database string) string {
+	clientStrID, _ := cg.nextClientIDAndOrdinal(database)
+	return clientStrID
 }
 
 // sessionConsumer is passed to the batchCreateSessions method and will receive
@@ -101,15 +106,19 @@ type sessionClient struct {
 	callOptions          *vkit.CallOptions
 	otConfig             *openTelemetryConfig
 	metricsTracerFactory *builtinMetricsTracerFactory
+	channelIDMap         map[*vkit.Client]uint64
+	nthClient            int
 }
 
 // newSessionClient creates a session client to use for a database.
 func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, sessionLabels map[string]string, databaseRole string, disableRouteToLeader bool, md metadata.MD, batchTimeout time.Duration, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
+	clientID, nthClient := cidGen.nextClientIDAndOrdinal(database)
 	return &sessionClient{
 		connPool:             connPool,
 		database:             database,
 		userAgent:            userAgent,
-		id:                   cidGen.nextID(database),
+		id:                   clientID,
+		nthClient:            nthClient,
 		sessionLabels:        sessionLabels,
 		databaseRole:         databaseRole,
 		disableRouteToLeader: disableRouteToLeader,

@@ -713,7 +713,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 				queueingRetryable, // got foo-02
 				aborted,           // got error
 			},
-			wantErr: status.Errorf(codes.Unknown, "I quit"),
+			wantErr: ToSpannerError(status.Errorf(codes.Unknown, "I quit")),
 		},
 		{
 			// unConnected->queueingRetryable->queueingUnretryable->queueingUnretryable
@@ -778,7 +778,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 				s = append(s, aborted)             // Error happens
 				return s
 			}(),
-			wantErr: status.Errorf(codes.Unknown, "Just Abort It"),
+			wantErr: ToSpannerError(status.Errorf(codes.Unknown, "Just Abort It")),
 		},
 	}
 	for _, test := range tests {
@@ -879,7 +879,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 					}
 					// Verify error message.
 					if !testEqual(lastErr, test.wantErr) {
-						t.Fatalf("got error %v, want %v", lastErr, test.wantErr)
+						t.Fatalf("Error mismatch\n\tGot:  %v\n\tWant: %v", lastErr, test.wantErr)
 					}
 					return
 				}
