@@ -20,32 +20,67 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 	"testing"
 )
 
 func TestNewIDTokenCredentials(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
-		name            string
-		aud             string
-		targetPrincipal string
-		wantErr         bool
+		name               string
+		config             IDTokenOptions
+		wantErr            bool
+		wantUniverseDomain string
 	}{
 		{
-			name:            "missing aud",
-			targetPrincipal: "foo@project-id.iam.gserviceaccount.com",
-			wantErr:         true,
-		},
-		{
-			name:    "missing targetPrincipal",
-			aud:     "http://example.com/",
+			name: "missing aud",
+			config: IDTokenOptions{
+				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+			},
 			wantErr: true,
 		},
 		{
-			name:            "works",
-			aud:             "http://example.com/",
-			targetPrincipal: "foo@project-id.iam.gserviceaccount.com",
-			wantErr:         false,
+			name: "missing targetPrincipal",
+			config: IDTokenOptions{
+				Audience: "http://example.com/",
+			},
+			wantErr: true,
+		},
+		{
+			name: "works",
+			config: IDTokenOptions{
+				Audience:        "http://example.com/",
+				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+			},
+			wantUniverseDomain: "googleapis.com",
+		},
+		{
+			name: "universe domain from options",
+			config: IDTokenOptions{
+				Audience:        "http://example.com/",
+				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+				UniverseDomain:  "example.com",
+			},
+			wantUniverseDomain: "googleapis.com", // From creds, not CredentialsOptions.UniverseDomain
+		},
+		{
+			name: "universe domain from options and credentials",
+			config: IDTokenOptions{
+				Audience:        "http://example.com/",
+				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+				UniverseDomain:  "NOT.example.com",
+				Credentials:     staticCredentials("example.com"),
+			},
+			wantUniverseDomain: "example.com", // From creds, not CredentialsOptions.UniverseDomain
+		},
+		{
+			name: "universe domain from credentials",
+			config: IDTokenOptions{
+				Audience:        "http://example.com/",
+				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+				Credentials:     staticCredentials("example.com"),
+			},
+			wantUniverseDomain: "example.com",
 		},
 	}
 
@@ -64,8 +99,14 @@ func TestNewIDTokenCredentials(t *testing.T) {
 					if err := json.Unmarshal(b, &r); err != nil {
 						t.Error(err)
 					}
-					if r.Audience != tt.aud {
-						t.Errorf("got %q, want %q", r.Audience, tt.aud)
+					if r.Audience != tt.config.Audience {
+						t.Errorf("got %q, want %q", r.Audience, tt.config.Audience)
+					}
+					if !strings.Contains(req.URL.Path, tt.config.TargetPrincipal) {
+						t.Errorf("got %q, want %q", req.URL.Path, tt.config.TargetPrincipal)
+					}
+					if !strings.Contains(req.URL.Hostname(), tt.wantUniverseDomain) {
+						t.Errorf("got %q, want %q", req.URL.Hostname(), tt.wantUniverseDomain)
 					}
 
 					resp := generateIDTokenResponse{
@@ -82,12 +123,9 @@ func TestNewIDTokenCredentials(t *testing.T) {
 					}
 				}),
 			}
-			creds, err := NewIDTokenCredentials(&IDTokenOptions{
-				Audience:        tt.aud,
-				TargetPrincipal: tt.targetPrincipal,
-				Client:          client,
-			},
-			)
+			opts := &tt.config
+			opts.Client = client
+			creds, err := NewIDTokenCredentials(opts)
 			if tt.wantErr && err != nil {
 				return
 			}
@@ -100,6 +138,9 @@ func TestNewIDTokenCredentials(t *testing.T) {
 			}
 			if tok.Value != idTok {
 				t.Fatalf("got %q, want %q", tok.Value, idTok)
+			}
+			if got, _ := creds.UniverseDomain(ctx); got != tt.wantUniverseDomain {
+				t.Errorf("got %q, want %q", got, tt.wantUniverseDomain)
 			}
 		})
 	}
