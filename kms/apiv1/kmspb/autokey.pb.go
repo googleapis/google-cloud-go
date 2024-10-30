@@ -21,17 +21,16 @@
 package kmspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -305,8 +304,8 @@ type ListKeyHandlesRequest struct {
 	// [KeyHandles][google.cloud.kms.v1.KeyHandle] can subsequently be obtained by
 	// including the
 	// [ListKeyHandlesResponse.next_page_token][google.cloud.kms.v1.ListKeyHandlesResponse.next_page_token]
-	// in a subsequent request.  If unspecified, at most
-	// 100 [KeyHandles][google.cloud.kms.v1.KeyHandle] will be returned.
+	// in a subsequent request.  If unspecified, at most 100
+	// [KeyHandles][google.cloud.kms.v1.KeyHandle] will be returned.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. Optional pagination token, returned earlier via
 	// [ListKeyHandlesResponse.next_page_token][google.cloud.kms.v1.ListKeyHandlesResponse.next_page_token].

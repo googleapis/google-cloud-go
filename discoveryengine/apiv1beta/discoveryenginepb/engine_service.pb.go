@@ -21,11 +21,8 @@
 package discoveryenginepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -579,7 +578,7 @@ type PauseEngineRequest struct {
 
 	// Required. The name of the engine to pause.
 	// Format:
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/engines/{engine_id}`
+	// `projects/{project}/locations/{location}/collections/{collection_id}/engines/{engine_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -630,7 +629,7 @@ type ResumeEngineRequest struct {
 
 	// Required. The name of the engine to resume.
 	// Format:
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/engines/{engine_id}`
+	// `projects/{project}/locations/{location}/collections/{collection_id}/engines/{engine_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -682,7 +681,7 @@ type TuneEngineRequest struct {
 
 	// Required. The resource name of the engine to tune.
 	// Format:
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/engines/{engine_id}`
+	// `projects/{project}/locations/{location}/collections/{collection_id}/engines/{engine_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -733,7 +732,7 @@ type TuneEngineMetadata struct {
 
 	// Required. The resource name of the engine that this tune applies to.
 	// Format:
-	// `projects/{project_number}/locations/{location_id}/collections/{collection_id}/engines/{engine_id}`
+	// `projects/{project}/locations/{location}/collections/{collection_id}/engines/{engine_id}`
 	Engine string `protobuf:"bytes,1,opt,name=engine,proto3" json:"engine,omitempty"`
 }
 
