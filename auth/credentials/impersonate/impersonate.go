@@ -32,7 +32,6 @@ import (
 
 var (
 	universeDomainPlaceholder                   = "UNIVERSE_DOMAIN"
-	iamCredentialsEndpoint                      = "https://iamcredentials.googleapis.com"
 	iamCredentialsUniverseDomainEndpoint        = "https://iamcredentials.UNIVERSE_DOMAIN"
 	oauth2Endpoint                              = "https://oauth2.googleapis.com"
 	errMissingTargetPrincipal                   = errors.New("impersonate: target service account must be provided")

@@ -15,6 +15,7 @@
 package idtoken
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -90,13 +91,18 @@ func credsFromBytes(b []byte, opts *Options) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-
+		// Hard pull of the provider is OK with file-based creds.
+		universeDomain, err := baseCreds.UniverseDomain(context.Background())
+		if err != nil {
+			return nil, err
+		}
 		config := impersonate.IDTokenOptions{
 			Audience:        opts.Audience,
 			TargetPrincipal: account,
 			IncludeEmail:    true,
 			Client:          opts.client(),
 			Credentials:     baseCreds,
+			UniverseDomain:  universeDomain,
 		}
 		creds, err := impersonate.NewIDTokenCredentials(&config)
 		if err != nil {

@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/auth"
@@ -55,6 +56,11 @@ type IDTokenOptions struct {
 	// when fetching tokens. If provided the client should provide it's own
 	// base credentials at call time. Optional.
 	Client *http.Client
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com". This is the universe domain
+	// configured for the client, which will be compared to the universe domain
+	// that is separately configured for the credentials. Optional.
+	UniverseDomain string
 }
 
 func (o *IDTokenOptions) validate() error {
@@ -85,49 +91,45 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 	}
 	var client *http.Client
 	var creds *auth.Credentials
-	if opts.Client == nil && opts.Credentials == nil {
+	if opts.Client == nil {
 		var err error
-		// TODO: test not signed jwt more
-		creds, err = credentials.DetectDefault(&credentials.DetectOptions{
-			Scopes:           []string{defaultScope},
-			UseSelfSignedJWT: true,
-		})
-		if err != nil {
-			return nil, err
+		if opts.Credentials == nil {
+			creds, err = credentials.DetectDefault(&credentials.DetectOptions{
+				Scopes:           []string{defaultScope},
+				UseSelfSignedJWT: true,
+			})
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			creds = opts.Credentials
 		}
 		client, err = httptransport.NewClient(&httptransport.Options{
-			Credentials: creds,
+			Credentials:    creds,
+			UniverseDomain: opts.UniverseDomain,
 		})
 		if err != nil {
-			return nil, err
-		}
-	} else if opts.Client == nil {
-		creds = opts.Credentials
-		client = internal.DefaultClient()
-		if err := httptransport.AddAuthorizationMiddleware(client, opts.Credentials); err != nil {
 			return nil, err
 		}
 	} else {
 		client = opts.Client
 	}
 
+	universeDomainProvider := resolveUniverseDomainProvider(creds)
 	itp := impersonatedIDTokenProvider{
-		client:          client,
-		targetPrincipal: opts.TargetPrincipal,
-		audience:        opts.Audience,
-		includeEmail:    opts.IncludeEmail,
+		client:                 client,
+		universeDomainProvider: universeDomainProvider,
+		targetPrincipal:        opts.TargetPrincipal,
+		audience:               opts.Audience,
+		includeEmail:           opts.IncludeEmail,
 	}
 	for _, v := range opts.Delegates {
 		itp.delegates = append(itp.delegates, internal.FormatIAMServiceAccountName(v))
 	}
 
-	var udp auth.CredentialsPropertyProvider
-	if creds != nil {
-		udp = auth.CredentialsPropertyFunc(creds.UniverseDomain)
-	}
 	return auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider:          auth.NewCachedTokenProvider(itp, nil),
-		UniverseDomainProvider: udp,
+		UniverseDomainProvider: universeDomainProvider,
 	}), nil
 }
 
@@ -142,7 +144,8 @@ type generateIDTokenResponse struct {
 }
 
 type impersonatedIDTokenProvider struct {
-	client *http.Client
+	client                 *http.Client
+	universeDomainProvider auth.CredentialsPropertyProvider
 
 	targetPrincipal string
 	audience        string
@@ -160,8 +163,12 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to marshal request: %w", err)
 	}
-
-	url := fmt.Sprintf("%s/v1/%s:generateIdToken", iamCredentialsEndpoint, internal.FormatIAMServiceAccountName(i.targetPrincipal))
+	universeDomain, err := i.universeDomainProvider.GetProperty(ctx)
+	if err != nil {
+		return nil, err
+	}
+	endpoint := strings.Replace(iamCredentialsUniverseDomainEndpoint, universeDomainPlaceholder, universeDomain, 1)
+	url := fmt.Sprintf("%s/v1/%s:generateIdToken", endpoint, internal.FormatIAMServiceAccountName(i.targetPrincipal))
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(bodyBytes))
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
