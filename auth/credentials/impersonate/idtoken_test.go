@@ -129,8 +129,10 @@ func TestNewIDTokenCredentials(t *testing.T) {
 			opts := &tt.config
 			opts.Client = client
 			creds, err := NewIDTokenCredentials(opts)
-			if err != nil && !tt.wantErr {
-				t.Errorf("err: %v", err)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("err: %v", err)
+				}
 			} else if tt.config.Credentials != nil {
 				// config.Credentials is invalid for Token request, just assert universe domain.
 				if got, _ := creds.UniverseDomain(ctx); got != tt.wantUniverseDomain {
