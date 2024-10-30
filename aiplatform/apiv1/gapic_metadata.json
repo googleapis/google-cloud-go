@@ -2211,6 +2211,11 @@
                 "StartNotebookRuntime"
               ]
             },
+            "StopNotebookRuntime": {
+              "methods": [
+                "StopNotebookRuntime"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
