@@ -24,4 +24,11 @@ function cleanup() {
 trap cleanup EXIT
 
 $(dirname $0)/populate-secrets.sh # Secret Manager secrets.
+TRAMPOLINE_HOST=$(echo "${TRAMPOLINE_IMAGE}" | cut -d/ -f1)
+if [[ ! "${TRAMPOLINE_HOST}" =~ "gcr.io" ]]; then
+  # If you need to specify a host other than gcr.io, you have to run on an update version of gcloud.
+  echo "TRAMPOLINE_HOST: ${TRAMPOLINE_HOST}"
+  gcloud components update
+  gcloud auth configure-docker "${TRAMPOLINE_HOST}"
+fi
 python3 "${KOKORO_GFILE_DIR}/trampoline_v1.py"
