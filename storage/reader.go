@@ -59,6 +59,10 @@ type ReaderObjectAttrs struct {
 	// Generation is the generation number of the object's content.
 	Generation int64
 
+	// Metadata represents user-provided metadata, in key/value pairs.
+	// Not supported by the JSON api.  Use ObjectHandle.Attrs instead.
+	Metadata map[string]string
+
 	// Metageneration is the version of the metadata for this object at
 	// this generation. This field is used for preconditions and for
 	// detecting changes in metadata. A metageneration number is only

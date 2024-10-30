@@ -1133,6 +1133,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			CacheControl:    obj.GetCacheControl(),
 			LastModified:    obj.GetUpdateTime().AsTime(),
 			Metageneration:  obj.GetMetageneration(),
+			Metadata:        obj.GetMetadata(),
 			Generation:      obj.GetGeneration(),
 			CRC32C:          wantCRC,
 		},

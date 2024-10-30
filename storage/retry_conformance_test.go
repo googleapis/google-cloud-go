@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -585,6 +586,9 @@ func TestRetryConformance(t *testing.T) {
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
+	}
+	if runtime.GOOS == "darwin" {
+		t.Skip("We do not expect the RetryConformanceTest suite to pass on darwin due to\n differences in the network errors emitted by the system.")
 	}
 	endpoint, err := url.Parse(host)
 	if err != nil {

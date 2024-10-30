@@ -795,6 +795,62 @@ func TestOpenReaderEmulated(t *testing.T) {
 	})
 }
 
+func TestOpenReaderEmulated_Metadata(t *testing.T) {
+	transportClientTest(skipHTTP("metadata on read not supported by JSON api"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		want := &ObjectAttrs{
+			Bucket: bucket,
+			Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+		}
+		w := veneerClient.Bucket(bucket).Object(want.Name).NewWriter(ctx)
+		if _, err := w.Write(randomBytesToWrite); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		if _, err := veneerClient.Bucket(bucket).Object(want.Name).Update(ctx, ObjectAttrsToUpdate{
+			Metadata: map[string]string{
+				"Custom-Key": "custom-value",
+			},
+		}); err != nil {
+			t.Fatalf("failed to update test object: %v", err)
+		}
+
+		params := &newRangeReaderParams{
+			bucket: bucket,
+			object: want.Name,
+			gen:    defaultGen,
+			offset: 0,
+			length: -1,
+		}
+		r, err := client.NewRangeReader(ctx, params)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(randomBytesToWrite)
+		got := make([]byte, wantLen)
+		n, err := r.Read(got)
+		if n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+		}
+		if diff := cmp.Diff(got, randomBytesToWrite); diff != "" {
+			t.Fatalf("Read: got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(r.Attrs.Metadata["Custom-Key"], "custom-value"); diff != "" {
+			t.Fatalf("Object Metadata: got(-),want(+):\n%s", diff)
+		}
+
+	})
+}
+
 func TestOpenWriterEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
