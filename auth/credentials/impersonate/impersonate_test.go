@@ -115,9 +115,6 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 			saTok := "sa-token"
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
-					if !strings.Contains(req.URL.Path, "generateAccessToken") {
-						t.Fatal("path must contain 'generateAccessToken'")
-					}
 					defer req.Body.Close()
 					b, err := io.ReadAll(req.Body)
 					if err != nil {
@@ -135,6 +132,9 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 					}
 					if !strings.Contains(req.URL.Hostname(), tt.wantUniverseDomain) {
 						t.Errorf("got %q, want %q", req.URL.Hostname(), tt.wantUniverseDomain)
+					}
+					if !strings.Contains(req.URL.Path, "generateAccessToken") {
+						t.Fatal("path must contain 'generateAccessToken'")
 					}
 
 					resp := generateAccessTokenResponse{

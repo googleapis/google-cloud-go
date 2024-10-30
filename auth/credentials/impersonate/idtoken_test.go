@@ -108,6 +108,9 @@ func TestNewIDTokenCredentials(t *testing.T) {
 					if !strings.Contains(req.URL.Hostname(), tt.wantUniverseDomain) {
 						t.Errorf("got %q, want %q", req.URL.Hostname(), tt.wantUniverseDomain)
 					}
+					if !strings.Contains(req.URL.Path, "generateIdToken") {
+						t.Fatal("path must contain 'generateIdToken'")
+					}
 
 					resp := generateIDTokenResponse{
 						Token: idTok,
@@ -126,21 +129,24 @@ func TestNewIDTokenCredentials(t *testing.T) {
 			opts := &tt.config
 			opts.Client = client
 			creds, err := NewIDTokenCredentials(opts)
-			if tt.wantErr && err != nil {
-				return
-			}
-			if err != nil {
-				t.Fatal(err)
-			}
-			tok, err := creds.Token(ctx)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if tok.Value != idTok {
-				t.Fatalf("got %q, want %q", tok.Value, idTok)
-			}
-			if got, _ := creds.UniverseDomain(ctx); got != tt.wantUniverseDomain {
-				t.Errorf("got %q, want %q", got, tt.wantUniverseDomain)
+			if err != nil && !tt.wantErr {
+				t.Errorf("err: %v", err)
+			} else if tt.config.Credentials != nil {
+				// config.Credentials is invalid for Token request, just assert universe domain.
+				if got, _ := creds.UniverseDomain(ctx); got != tt.wantUniverseDomain {
+					t.Errorf("got %q, want %q", got, tt.wantUniverseDomain)
+				}
+			} else {
+				tok, err := creds.Token(ctx)
+				if err != nil {
+					t.Error(err)
+				}
+				if tok.Value != idTok {
+					t.Errorf("got %q, want %q", tok.Value, idTok)
+				}
+				if got, _ := creds.UniverseDomain(ctx); got != tt.wantUniverseDomain {
+					t.Errorf("got %q, want %q", got, tt.wantUniverseDomain)
+				}
 			}
 		})
 	}
