@@ -22,7 +22,7 @@ function cleanup() {
     echo "cleanup";
 }
 trap cleanup EXIT
-echo "laura test"
+
 $(dirname $0)/populate-secrets.sh # Secret Manager secrets.
 TRAMPOLINE_HOST=$(echo "${TRAMPOLINE_IMAGE}" | cut -d/ -f1)
 if [[ ! "${TRAMPOLINE_HOST}" =~ "gcr.io" ]]; then
