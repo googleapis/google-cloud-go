@@ -53,7 +53,8 @@ func credsFromBytes(b []byte, opts *Options) (*auth.Credentials, error) {
 			return nil, err
 		}
 		var tp auth.TokenProvider
-		if opts.UseIAMEndpoint {
+		universeDomain := resolveUniverseDomain(f)
+		if universeDomain != internal.DefaultUniverseDomain {
 			tp, err = newIAMIDTokenProvider(b, f, opts)
 		} else {
 			tp, err = new2LOTokenProvider(f, opts)
