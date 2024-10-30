@@ -74,6 +74,11 @@ type Options struct {
 	// when fetching tokens. If provided this should be a fully authenticated
 	// client. Optional.
 	Client *http.Client
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com". This is the universe domain
+	// configured for the client, which will be compared to the universe domain
+	// that is separately configured for the credentials. Optional.
+	UniverseDomain string
 }
 
 func (o *Options) client() *http.Client {

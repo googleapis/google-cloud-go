@@ -208,7 +208,8 @@ type generateAccessTokenResponse struct {
 }
 
 type impersonatedTokenProvider struct {
-	client                 *http.Client
+	client *http.Client
+	// universeDomain is used for endpoint construction.
 	universeDomainProvider auth.CredentialsPropertyProvider
 
 	targetPrincipal string

@@ -49,7 +49,8 @@ type generateIAMIDTokenResponse struct {
 // do not have access to the oauth2.googleapis.com/token endpoint, and thus must
 // use IAM generateIdToken instead.
 type iamIDTokenProvider struct {
-	client         *http.Client
+	client *http.Client
+	// universeDomain is used for endpoint construction.
 	universeDomain string
 	// signerEmail is the service account client email used to form the IAM generateIdToken endpoint.
 	signerEmail string
