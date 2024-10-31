@@ -1,7 +1,7 @@
 # Changes
 
 
-## [2.0.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.45.0...storage/v2.0.0) (2024-10-31) 
+## [1.46.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.45.0...storage/v1.46.0) (2024-10-31) 
 
 ### Features
 
