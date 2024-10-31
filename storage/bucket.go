@@ -83,7 +83,7 @@ func (c *Client) Bucket(name string) *BucketHandle {
 // If attrs is nil the API defaults will be used.
 func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *BucketAttrs) (err error) {
 	if isOTelTracingDevEnabled() {
-		ctx, _ = startSpan(ctx, "cloud.google.com/go/storage.Bucket.Create")
+		ctx, _ = startSpan(ctx, "storage.Bucket.Create")
 		defer func() { endSpan(ctx, err) }()
 	} else {
 		ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Create")
@@ -101,7 +101,7 @@ func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *Buck
 // Delete deletes the Bucket.
 func (b *BucketHandle) Delete(ctx context.Context) (err error) {
 	if isOTelTracingDevEnabled() {
-		ctx, _ = startSpan(ctx, "cloud.google.com/go/storage.Bucket.Delete")
+		ctx, _ = startSpan(ctx, "storage.Bucket.Delete")
 		defer func() { endSpan(ctx, err) }()
 	} else {
 		ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Delete")
@@ -161,7 +161,7 @@ func (b *BucketHandle) Object(name string) *ObjectHandle {
 // Attrs returns the metadata for the bucket.
 func (b *BucketHandle) Attrs(ctx context.Context) (attrs *BucketAttrs, err error) {
 	if isOTelTracingDevEnabled() {
-		ctx, _ = startSpan(ctx, "cloud.google.com/go/storage.Bucket.Attrs")
+		ctx, _ = startSpan(ctx, "storage.Bucket.Attrs")
 		defer func() { endSpan(ctx, err) }()
 	} else {
 		ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Attrs")
@@ -175,7 +175,7 @@ func (b *BucketHandle) Attrs(ctx context.Context) (attrs *BucketAttrs, err error
 // Update updates a bucket's attributes.
 func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (attrs *BucketAttrs, err error) {
 	if isOTelTracingDevEnabled() {
-		ctx, _ = startSpan(ctx, "cloud.google.com/go/storage.Bucket.Update")
+		ctx, _ = startSpan(ctx, "storage.Bucket.Update")
 		defer func() { endSpan(ctx, err) }()
 	} else {
 		ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Bucket.Update")

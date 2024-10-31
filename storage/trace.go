@@ -26,15 +26,15 @@ import (
 )
 
 const (
-	OpenTelemetryTracingExpVar = "GO_STORAGE_EXPERIMENTAL_OTEL_TRACING"
-	defaultTracerName          = "cloud.google.com/go/storage"
-	gcpClientRepo              = "googleapis/google-cloud-go"
-	gcpClientArtifact          = "storage"
+	storageOtelTracingDevVar = "GO_STORAGE_DEV_OTEL_TRACING"
+	defaultTracerName        = "cloud.google.com/go/storage"
+	gcpClientRepo            = "googleapis/google-cloud-go"
+	gcpClientArtifact        = "storage"
 )
 
 // isOTelTracingDevEnabled checks the development flag until experimental feature is launched.
 func isOTelTracingDevEnabled() bool {
-	return os.Getenv(OpenTelemetryTracingExpVar) == "true"
+	return os.Getenv(storageOtelTracingDevVar) == "true"
 }
 
 func tracer() trace.Tracer {
