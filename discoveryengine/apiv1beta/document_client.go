@@ -1436,6 +1436,11 @@ func (c *documentRESTClient) BatchGetDocumentsMetadata(ctx context.Context, req 
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetMatcher().GetFhirMatcher().GetFhirResources(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("matcher.fhirMatcher.fhirResources", fmt.Sprintf("%v", item))
+		}
+	}
 	if items := req.GetMatcher().GetUrisMatcher().GetUris(); len(items) > 0 {
 		for _, item := range items {
 			params.Add("matcher.urisMatcher.uris", fmt.Sprintf("%v", item))

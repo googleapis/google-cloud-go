@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "ConsumerProcurementClient",
           "rpcs": {
+            "CancelOrder": {
+              "methods": [
+                "CancelOrder"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -23,6 +28,11 @@
             "ListOrders": {
               "methods": [
                 "ListOrders"
+              ]
+            },
+            "ModifyOrder": {
+              "methods": [
+                "ModifyOrder"
               ]
             },
             "PlaceOrder": {
@@ -35,6 +45,11 @@
         "rest": {
           "libraryClient": "ConsumerProcurementClient",
           "rpcs": {
+            "CancelOrder": {
+              "methods": [
+                "CancelOrder"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -50,9 +65,88 @@
                 "ListOrders"
               ]
             },
+            "ModifyOrder": {
+              "methods": [
+                "ModifyOrder"
+              ]
+            },
             "PlaceOrder": {
               "methods": [
                 "PlaceOrder"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "LicenseManagementService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "LicenseManagementClient",
+          "rpcs": {
+            "Assign": {
+              "methods": [
+                "Assign"
+              ]
+            },
+            "EnumerateLicensedUsers": {
+              "methods": [
+                "EnumerateLicensedUsers"
+              ]
+            },
+            "GetLicensePool": {
+              "methods": [
+                "GetLicensePool"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "Unassign": {
+              "methods": [
+                "Unassign"
+              ]
+            },
+            "UpdateLicensePool": {
+              "methods": [
+                "UpdateLicensePool"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LicenseManagementClient",
+          "rpcs": {
+            "Assign": {
+              "methods": [
+                "Assign"
+              ]
+            },
+            "EnumerateLicensedUsers": {
+              "methods": [
+                "EnumerateLicensedUsers"
+              ]
+            },
+            "GetLicensePool": {
+              "methods": [
+                "GetLicensePool"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "Unassign": {
+              "methods": [
+                "Unassign"
+              ]
+            },
+            "UpdateLicensePool": {
+              "methods": [
+                "UpdateLicensePool"
               ]
             }
           }

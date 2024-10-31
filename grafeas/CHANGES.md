@@ -1,5 +1,13 @@
 # Changes
 
+## [0.3.12](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.11...grafeas/v0.3.12) (2024-10-23)
+
+
+### Bug Fixes
+
+* **grafeas:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **grafeas:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [0.3.11](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.10...grafeas/v0.3.11) (2024-09-12)
 
 

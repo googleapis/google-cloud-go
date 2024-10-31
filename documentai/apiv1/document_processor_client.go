@@ -100,10 +100,11 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Initial:    1000 * time.Millisecond,
+					Max:        90000 * time.Millisecond,
+					Multiplier: 9.00,
 				})
 			}),
 		},
@@ -114,9 +115,9 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 1.50,
 				})
 			}),
 		},
@@ -143,9 +144,9 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 1.50,
 				})
 			}),
 		},
@@ -166,21 +167,22 @@ func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Initial:    1000 * time.Millisecond,
+					Max:        90000 * time.Millisecond,
+					Multiplier: 9.00,
 				},
 					http.StatusGatewayTimeout,
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		BatchProcessDocuments: []gax.CallOption{
 			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 1.50,
 				},
 					http.StatusGatewayTimeout,
 					http.StatusServiceUnavailable)
@@ -206,9 +208,9 @@ func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 1.50,
 				},
 					http.StatusGatewayTimeout,
 					http.StatusServiceUnavailable)

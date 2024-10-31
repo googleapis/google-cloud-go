@@ -1,5 +1,38 @@
 # Changes
 
+## [1.70.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.69.0...spanner/v1.70.0) (2024-10-14)
+
+
+### Features
+
+* **spanner/admin/instance:** Define ReplicaComputeCapacity and AsymmetricAutoscalingOption ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **spanner:** Add INTERVAL API ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **spanner:** Add new QueryMode enum values (WITH_STATS, WITH_PLAN_AND_STATS) ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **spanner/admin/instance:** A comment for field `node_count` in message `spanner.admin.instance.v1.Instance` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **spanner/admin/instance:** A comment for field `processing_units` in message `spanner.admin.instance.v1.Instance` is changed ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **spanner:** Update comment for PROFILE QueryMode ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+## [1.69.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.68.0...spanner/v1.69.0) (2024-10-03)
+
+
+### Features
+
+* **spanner:** Add x-goog-spanner-end-to-end-tracing header for requests to Spanner ([#10241](https://github.com/googleapis/google-cloud-go/issues/10241)) ([7f61cd5](https://github.com/googleapis/google-cloud-go/commit/7f61cd579f7e4ed4f1ac161f2c2a28e931406f16))
+
+
+### Bug Fixes
+
+* **spanner:** Handle errors ([#10943](https://github.com/googleapis/google-cloud-go/issues/10943)) ([c67f964](https://github.com/googleapis/google-cloud-go/commit/c67f964de364808c02085dda61fa53e2b2fda850))
+
+
+### Performance Improvements
+
+* **spanner:** Use passthrough with emulator endpoint ([#10947](https://github.com/googleapis/google-cloud-go/issues/10947)) ([9e964dd](https://github.com/googleapis/google-cloud-go/commit/9e964ddc01a54819f25435cfcc9d5b37c91f5a1d))
+
 ## [1.68.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.67.0...spanner/v1.68.0) (2024-09-25)
 
 
@@ -1091,3 +1124,4 @@
 
 This is the first tag to carve out spanner as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
+

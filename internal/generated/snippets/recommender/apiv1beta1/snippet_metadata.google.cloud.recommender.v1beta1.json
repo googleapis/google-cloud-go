@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/recommender/apiv1beta1",
-    "version": "1.13.1",
+    "version": "1.13.2",
     "language": "GO",
     "apis": [
       {

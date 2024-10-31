@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/deploy/apiv1",
-    "version": "1.22.1",
+    "version": "1.23.1",
     "language": "GO",
     "apis": [
       {
@@ -425,6 +425,52 @@
       ]
     },
     {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_CreateDeployPolicy_sync",
+      "title": "clouddeploy CreateDeployPolicy Sample",
+      "description": "CreateDeployPolicy creates a new DeployPolicy in a given project and location.",
+      "file": "CloudDeployClient/CreateDeployPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDeployPolicy",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.CreateDeployPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.CreateDeployPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDeployPolicyOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "CreateDeployPolicy",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.CreateDeployPolicy",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "clouddeploy_v1_generated_CloudDeploy_CreateRelease_sync",
       "title": "clouddeploy CreateRelease Sample",
       "description": "CreateRelease creates a new Release in a given project and location.",
@@ -685,6 +731,52 @@
         "method": {
           "shortName": "DeleteDeliveryPipeline",
           "fullName": "google.cloud.deploy.v1.CloudDeploy.DeleteDeliveryPipeline",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_DeleteDeployPolicy_sync",
+      "title": "clouddeploy DeleteDeployPolicy Sample",
+      "description": "DeleteDeployPolicy deletes a single DeployPolicy.",
+      "file": "CloudDeployClient/DeleteDeployPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDeployPolicy",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.DeleteDeployPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.DeleteDeployPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDeployPolicyOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "DeleteDeployPolicy",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.DeleteDeployPolicy",
           "service": {
             "shortName": "CloudDeploy",
             "fullName": "google.cloud.deploy.v1.CloudDeploy"
@@ -1006,6 +1098,52 @@
         "method": {
           "shortName": "GetDeliveryPipeline",
           "fullName": "google.cloud.deploy.v1.CloudDeploy.GetDeliveryPipeline",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_GetDeployPolicy_sync",
+      "title": "clouddeploy GetDeployPolicy Sample",
+      "description": "GetDeployPolicy gets details of a single DeployPolicy.",
+      "file": "CloudDeployClient/GetDeployPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDeployPolicy",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.GetDeployPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.GetDeployPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*deploypb.DeployPolicy",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "GetDeployPolicy",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.GetDeployPolicy",
           "service": {
             "shortName": "CloudDeploy",
             "fullName": "google.cloud.deploy.v1.CloudDeploy"
@@ -1558,6 +1696,52 @@
         "method": {
           "shortName": "ListDeliveryPipelines",
           "fullName": "google.cloud.deploy.v1.CloudDeploy.ListDeliveryPipelines",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_ListDeployPolicies_sync",
+      "title": "clouddeploy ListDeployPolicies Sample",
+      "description": "ListDeployPolicies lists DeployPolicies in a given project and location.",
+      "file": "CloudDeployClient/ListDeployPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDeployPolicies",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.ListDeployPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.ListDeployPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeployPolicyIterator",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "ListDeployPolicies",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.ListDeployPolicies",
           "service": {
             "shortName": "CloudDeploy",
             "fullName": "google.cloud.deploy.v1.CloudDeploy"
@@ -2202,6 +2386,52 @@
         "method": {
           "shortName": "UpdateDeliveryPipeline",
           "fullName": "google.cloud.deploy.v1.CloudDeploy.UpdateDeliveryPipeline",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_UpdateDeployPolicy_sync",
+      "title": "clouddeploy UpdateDeployPolicy Sample",
+      "description": "UpdateDeployPolicy updates the parameters of a single DeployPolicy.",
+      "file": "CloudDeployClient/UpdateDeployPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDeployPolicy",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.UpdateDeployPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.UpdateDeployPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDeployPolicyOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "UpdateDeployPolicy",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.UpdateDeployPolicy",
           "service": {
             "shortName": "CloudDeploy",
             "fullName": "google.cloud.deploy.v1.CloudDeploy"

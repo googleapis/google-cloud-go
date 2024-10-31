@@ -104,23 +104,27 @@ type LineItemChangeState int32
 const (
 	// Sentinel value. Do not use.
 	LineItemChangeState_LINE_ITEM_CHANGE_STATE_UNSPECIFIED LineItemChangeState = 0
-	// Change is in this state when a change is initiated and waiting for
-	// partner approval.
+	// Change is in this state when a change is initiated and waiting for partner
+	// approval. This state is only applicable for pending change.
 	LineItemChangeState_LINE_ITEM_CHANGE_STATE_PENDING_APPROVAL LineItemChangeState = 1
 	// Change is in this state after it's approved by the partner or auto-approved
-	// but before it takes effect. The change can be overwritten
-	// or cancelled depending on the new line item info property (pending Private
-	// Offer change cannot be cancelled and can only be overwritten by another
-	// Private Offer).
+	// but before it takes effect. The change can be overwritten or cancelled
+	// depending on the new line item info property (pending Private Offer change
+	// cannot be cancelled and can only be overwritten by another Private Offer).
+	// This state is only applicable for pending change.
 	LineItemChangeState_LINE_ITEM_CHANGE_STATE_APPROVED LineItemChangeState = 2
-	// Change is in this state after it's been activated.
+	// Change is in this state after it's been activated. This state is only
+	// applicable for change in history.
 	LineItemChangeState_LINE_ITEM_CHANGE_STATE_COMPLETED LineItemChangeState = 3
-	// Change is in this state if it was rejected by the partner.
+	// Change is in this state if it was rejected by the partner. This state is
+	// only applicable for change in history.
 	LineItemChangeState_LINE_ITEM_CHANGE_STATE_REJECTED LineItemChangeState = 4
-	// Change is in this state if it was abandoned by the user.
+	// Change is in this state if it was abandoned by the user. This state is only
+	// applicable for change in history.
 	LineItemChangeState_LINE_ITEM_CHANGE_STATE_ABANDONED LineItemChangeState = 5
 	// Change is in this state if it's currently being provisioned downstream. The
-	// change can't be overwritten or cancelled when it's in this state.
+	// change can't be overwritten or cancelled when it's in this state. This
+	// state is only applicable for pending change.
 	LineItemChangeState_LINE_ITEM_CHANGE_STATE_ACTIVATING LineItemChangeState = 6
 )
 

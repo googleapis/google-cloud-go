@@ -38,7 +38,9 @@ var supportedModels = map[string]bool{
 	"gemini-1.0-pro-001":   true,
 	"gemini-1.0-pro-002":   true,
 	"gemini-1.5-pro-001":   true,
+	"gemini-1.5-pro-002":   true,
 	"gemini-1.5-flash-001": true,
+	"gemini-1.5-flash-002": true,
 }
 
 // Tokenizer is a local tokenizer for text.

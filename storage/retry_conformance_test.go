@@ -777,7 +777,11 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 		et.T.Skip("This retry test case is not yet supported in the testbench.")
 	}
 	if err != nil || resp.StatusCode != 200 {
-		et.Fatalf("creating retry test: err: %v, resp: %+v", err, resp)
+		var respBody string
+		if body, err := io.ReadAll(resp.Body); err != nil {
+			respBody = string(body)
+		}
+		et.Fatalf("creating retry test: err: %v, resp: %+v, resp body: %v", err, resp, respBody)
 	}
 	defer func() {
 		closeErr := resp.Body.Close()

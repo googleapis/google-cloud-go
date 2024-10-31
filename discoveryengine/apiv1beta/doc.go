@@ -69,11 +69,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &discoveryenginepb.CompleteQueryRequest{
+//	req := &discoveryenginepb.AdvancedCompleteQueryRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb#CompleteQueryRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb#AdvancedCompleteQueryRequest.
 //	}
-//	resp, err := c.CompleteQuery(ctx, req)
+//	resp, err := c.AdvancedCompleteQuery(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

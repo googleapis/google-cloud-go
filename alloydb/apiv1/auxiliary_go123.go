@@ -41,6 +41,12 @@ func (it *ClusterIterator) All() iter.Seq2[*alloydbpb.Cluster, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *DatabaseIterator) All() iter.Seq2[*alloydbpb.Database, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *InstanceIterator) All() iter.Seq2[*alloydbpb.Instance, error] {
 	return iterator.RangeAdapter(it.Next)
 }

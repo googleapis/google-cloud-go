@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"sort"
 	"testing"
@@ -41,8 +42,6 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	os.Setenv("SPANNER_ENABLE_BUILTIN_METRICS", "true")
 	defer os.Unsetenv("SPANNER_ENABLE_BUILTIN_METRICS")
 	ctx := context.Background()
-	project := "test-project"
-	instance := "test-instance"
 	clientUID := "test-uid"
 	createSessionRPC := "Spanner.BatchCreateSessions"
 	if isMultiplexEnabled {
@@ -50,12 +49,12 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 
 	wantClientAttributes := []attribute.KeyValue{
-		attribute.String(monitoredResLabelKeyProject, project),
-		attribute.String(monitoredResLabelKeyInstance, instance),
+		attribute.String(monitoredResLabelKeyProject, "[PROJECT]"),
+		attribute.String(monitoredResLabelKeyInstance, "[INSTANCE]"),
 		attribute.String(metricLabelKeyDatabase, "[DATABASE]"),
 		attribute.String(metricLabelKeyClientUID, clientUID),
 		attribute.String(metricLabelKeyClientName, clientName),
-		attribute.String(monitoredResLabelKeyClientHash, "cloud_spanner_client_raw_metrics"),
+		attribute.String(monitoredResLabelKeyClientHash, "0000ed"),
 		attribute.String(monitoredResLabelKeyInstanceConfig, "unknown"),
 		attribute.String(monitoredResLabelKeyLocation, "global"),
 	}
@@ -74,11 +73,16 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 
 	// return constant client UID instead of random, so that attributes can be compared
 	origGenerateClientUID := generateClientUID
+	origDetectClientLocation := detectClientLocation
 	generateClientUID = func() (string, error) {
 		return clientUID, nil
 	}
+	detectClientLocation = func(ctx context.Context) string {
+		return "global"
+	}
 	defer func() {
 		generateClientUID = origGenerateClientUID
+		detectClientLocation = origDetectClientLocation
 	}()
 
 	// Setup mock monitoring server
@@ -153,8 +157,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 				t.Errorf("builtinEnabled: got: %v, want: %v", client.metricsTracerFactory.enabled, test.wantBuiltinEnabled)
 			}
 
-			if diff := testutil.Diff(client.metricsTracerFactory.clientAttributes, wantClientAttributes,
-				cmpopts.IgnoreUnexported(attribute.KeyValue{}, attribute.Value{})); diff != "" {
+			if diff := testutil.Diff(client.metricsTracerFactory.clientAttributes, wantClientAttributes, cmpopts.EquateComparable(attribute.KeyValue{}, attribute.Value{})); diff != "" {
 				t.Errorf("clientAttributes: got=-, want=+ \n%v", diff)
 			}
 
@@ -190,21 +193,26 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			// Get new CreateServiceTimeSeriesRequests
 			gotCreateTSCalls := monitoringServer.CreateServiceTimeSeriesRequests()
 			var gotExpectedMethods []string
-			gotOTELValues := make(map[string]map[string]int64)
+			gotOTELCountValues := make(map[string]map[string]int64)
+			gotOTELLatencyValues := make(map[string]map[string]float64)
 			for _, gotCreateTSCall := range gotCreateTSCalls {
 				gotMetricTypesPerMethod := make(map[string][]string)
 				for _, ts := range gotCreateTSCall.TimeSeries {
 					gotMetricTypesPerMethod[ts.Metric.GetLabels()["method"]] = append(gotMetricTypesPerMethod[ts.Metric.GetLabels()["method"]], ts.Metric.Type)
-					if _, ok := gotOTELValues[ts.Metric.GetLabels()["method"]]; !ok {
-						gotOTELValues[ts.Metric.GetLabels()["method"]] = make(map[string]int64)
+					if _, ok := gotOTELCountValues[ts.Metric.GetLabels()["method"]]; !ok {
+						gotOTELCountValues[ts.Metric.GetLabels()["method"]] = make(map[string]int64)
+						gotOTELLatencyValues[ts.Metric.GetLabels()["method"]] = make(map[string]float64)
 						gotExpectedMethods = append(gotExpectedMethods, ts.Metric.GetLabels()["method"])
 					}
 					if ts.MetricKind == metric.MetricDescriptor_CUMULATIVE && ts.GetValueType() == metric.MetricDescriptor_INT64 {
-						gotOTELValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type] = ts.Points[0].Value.GetInt64Value()
+						gotOTELCountValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type] = ts.Points[0].Value.GetInt64Value()
 					} else {
 						for _, p := range ts.Points {
-							if p.Value.GetInt64Value() > int64(elapsedTime) {
-								t.Errorf("Value %v is greater than elapsed time %v", p.Value.GetInt64Value(), elapsedTime)
+							if _, ok := gotOTELCountValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type]; !ok {
+								gotOTELLatencyValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type] = p.Value.GetDistributionValue().Mean
+							} else {
+								// sum up all attempt latencies
+								gotOTELLatencyValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type] += p.Value.GetDistributionValue().Mean
 							}
 						}
 					}
@@ -213,7 +221,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 					sort.Strings(gotMetricTypes)
 					sort.Strings(test.wantOTELMetrics[method])
 					if !testutil.Equal(gotMetricTypes, test.wantOTELMetrics[method]) {
-						t.Errorf("Metric types missing in req. %s got: %v, want: %v", method, gotMetricTypes, wantMetricTypesGCM)
+						t.Errorf("Metric types missing in req. %s got: %v, want: %v", method, gotMetricTypes, test.wantOTELMetrics[method])
 					}
 				}
 			}
@@ -223,9 +231,21 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			}
 			for method, wantOTELValues := range test.wantOTELValue {
 				for metricName, wantValue := range wantOTELValues {
-					if gotOTELValues[method][metricName] != wantValue {
-						t.Errorf("OTEL value for %s, %s: got: %v, want: %v", method, metricName, gotOTELValues[method][metricName], wantValue)
+					if gotOTELCountValues[method][metricName] != wantValue {
+						t.Errorf("OTEL value for %s, %s: got: %v, want: %v", method, metricName, gotOTELCountValues[method][metricName], wantValue)
 					}
+				}
+				// For StreamingRead, verify operation latency includes all attempt latencies
+				opLatency := gotOTELLatencyValues[method][nativeMetricsPrefix+metricNameOperationLatencies]
+				attemptLatency := gotOTELLatencyValues[method][nativeMetricsPrefix+metricNameAttemptLatencies]
+				// expect opLatency and attemptLatency to be non-zero
+				if opLatency == 0 || attemptLatency == 0 {
+					t.Errorf("Operation and attempt latencies should be non-zero for %s: operation_latency=%v, attempt_latency=%v",
+						method, opLatency, attemptLatency)
+				}
+				if opLatency <= attemptLatency {
+					t.Errorf("Operation latency should be greater than attempt latency for %s: operation_latency=%v, attempt_latency=%v",
+						method, opLatency, attemptLatency)
 				}
 			}
 			gotCreateTSCallsCount := len(gotCreateTSCalls)
@@ -234,4 +254,50 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestGenerateClientHash tests the generateClientHash function.
+func TestGenerateClientHash(t *testing.T) {
+	tests := []struct {
+		name             string
+		clientUID        string
+		expectedValue    string
+		expectedLength   int
+		expectedMaxValue int64
+	}{
+		{"Simple UID", "exampleUID", "00006b", 6, 0x3FF},
+		{"Empty UID", "", "000000", 6, 0x3FF},
+		{"Special Characters", "!@#$%^&*()", "000389", 6, 0x3FF},
+		{"Very Long UID", "aVeryLongUniqueIdentifierThatExceedsNormalLength", "000125", 6, 0x3FF},
+		{"Numeric UID", "1234567890", "00003e", 6, 0x3FF},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			hash := generateClientHash(tt.clientUID)
+			if hash != tt.expectedValue {
+				t.Errorf("expected hash value %s, got %s", tt.expectedValue, hash)
+			}
+			// Check if the hash length is 6
+			if len(hash) != tt.expectedLength {
+				t.Errorf("expected hash length %d, got %d", tt.expectedLength, len(hash))
+			}
+
+			// Check if the hash is in the range [000000, 0003ff]
+			hashValue, err := parseHex(hash)
+			if err != nil {
+				t.Errorf("failed to parse hash: %v", err)
+			}
+			if hashValue < 0 || hashValue > tt.expectedMaxValue {
+				t.Errorf("expected hash value in range [0, %d], got %d", tt.expectedMaxValue, hashValue)
+			}
+		})
+	}
+}
+
+// parseHex converts a hexadecimal string to an int64.
+func parseHex(hexStr string) (int64, error) {
+	var value int64
+	_, err := fmt.Sscanf(hexStr, "%x", &value)
+	return value, err
 }

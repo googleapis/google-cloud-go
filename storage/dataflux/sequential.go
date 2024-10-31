@@ -40,7 +40,7 @@ func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs,
 	objectIterator.PageInfo().MaxSize = defaultPageSize
 
 	for {
-		objects, nextToken, numObjects, err := doListing(objectIterator, c.skipDirectoryObjects)
+		objects, nextToken, numObjects, err := doSeqListing(objectIterator, c.skipDirectoryObjects)
 		if err != nil {
 			return nil, "", fmt.Errorf("failed while listing objects: %w", err)
 		}
@@ -55,7 +55,7 @@ func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs,
 	return result, lastToken, nil
 }
 
-func doListing(objectIterator *storage.ObjectIterator, skipDirectoryObjects bool) (result []*storage.ObjectAttrs, token string, objectsListed int, err error) {
+func doSeqListing(objectIterator *storage.ObjectIterator, skipDirectoryObjects bool) (result []*storage.ObjectAttrs, token string, objectsListed int, err error) {
 
 	for {
 		attrs, errObjectIterator := objectIterator.Next()

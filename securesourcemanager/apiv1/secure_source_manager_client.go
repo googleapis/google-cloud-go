@@ -60,6 +60,11 @@ type CallOptions struct {
 	GetIamPolicyRepo       []gax.CallOption
 	SetIamPolicyRepo       []gax.CallOption
 	TestIamPermissionsRepo []gax.CallOption
+	CreateBranchRule       []gax.CallOption
+	ListBranchRules        []gax.CallOption
+	GetBranchRule          []gax.CallOption
+	UpdateBranchRule       []gax.CallOption
+	DeleteBranchRule       []gax.CallOption
 	GetLocation            []gax.CallOption
 	ListLocations          []gax.CallOption
 	GetIamPolicy           []gax.CallOption
@@ -154,6 +159,11 @@ func defaultCallOptions() *CallOptions {
 		},
 		SetIamPolicyRepo:       []gax.CallOption{},
 		TestIamPermissionsRepo: []gax.CallOption{},
+		CreateBranchRule:       []gax.CallOption{},
+		ListBranchRules:        []gax.CallOption{},
+		GetBranchRule:          []gax.CallOption{},
+		UpdateBranchRule:       []gax.CallOption{},
+		DeleteBranchRule:       []gax.CallOption{},
 		GetLocation:            []gax.CallOption{},
 		ListLocations:          []gax.CallOption{},
 		GetIamPolicy:           []gax.CallOption{},
@@ -229,6 +239,11 @@ func defaultRESTCallOptions() *CallOptions {
 		},
 		SetIamPolicyRepo:       []gax.CallOption{},
 		TestIamPermissionsRepo: []gax.CallOption{},
+		CreateBranchRule:       []gax.CallOption{},
+		ListBranchRules:        []gax.CallOption{},
+		GetBranchRule:          []gax.CallOption{},
+		UpdateBranchRule:       []gax.CallOption{},
+		DeleteBranchRule:       []gax.CallOption{},
 		GetLocation:            []gax.CallOption{},
 		ListLocations:          []gax.CallOption{},
 		GetIamPolicy:           []gax.CallOption{},
@@ -261,6 +276,14 @@ type internalClient interface {
 	GetIamPolicyRepo(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicyRepo(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissionsRepo(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	CreateBranchRule(context.Context, *securesourcemanagerpb.CreateBranchRuleRequest, ...gax.CallOption) (*CreateBranchRuleOperation, error)
+	CreateBranchRuleOperation(name string) *CreateBranchRuleOperation
+	ListBranchRules(context.Context, *securesourcemanagerpb.ListBranchRulesRequest, ...gax.CallOption) *BranchRuleIterator
+	GetBranchRule(context.Context, *securesourcemanagerpb.GetBranchRuleRequest, ...gax.CallOption) (*securesourcemanagerpb.BranchRule, error)
+	UpdateBranchRule(context.Context, *securesourcemanagerpb.UpdateBranchRuleRequest, ...gax.CallOption) (*UpdateBranchRuleOperation, error)
+	UpdateBranchRuleOperation(name string) *UpdateBranchRuleOperation
+	DeleteBranchRule(context.Context, *securesourcemanagerpb.DeleteBranchRuleRequest, ...gax.CallOption) (*DeleteBranchRuleOperation, error)
+	DeleteBranchRuleOperation(name string) *DeleteBranchRuleOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -413,6 +436,49 @@ func (c *Client) SetIamPolicyRepo(ctx context.Context, req *iampb.SetIamPolicyRe
 // IAM permission checks are not required on this method.
 func (c *Client) TestIamPermissionsRepo(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissionsRepo(ctx, req, opts...)
+}
+
+// CreateBranchRule createBranchRule creates a branch rule in a given repository.
+func (c *Client) CreateBranchRule(ctx context.Context, req *securesourcemanagerpb.CreateBranchRuleRequest, opts ...gax.CallOption) (*CreateBranchRuleOperation, error) {
+	return c.internalClient.CreateBranchRule(ctx, req, opts...)
+}
+
+// CreateBranchRuleOperation returns a new CreateBranchRuleOperation from a given name.
+// The name must be that of a previously created CreateBranchRuleOperation, possibly from a different process.
+func (c *Client) CreateBranchRuleOperation(name string) *CreateBranchRuleOperation {
+	return c.internalClient.CreateBranchRuleOperation(name)
+}
+
+// ListBranchRules listBranchRules lists branch rules in a given repository.
+func (c *Client) ListBranchRules(ctx context.Context, req *securesourcemanagerpb.ListBranchRulesRequest, opts ...gax.CallOption) *BranchRuleIterator {
+	return c.internalClient.ListBranchRules(ctx, req, opts...)
+}
+
+// GetBranchRule getBranchRule gets a branch rule.
+func (c *Client) GetBranchRule(ctx context.Context, req *securesourcemanagerpb.GetBranchRuleRequest, opts ...gax.CallOption) (*securesourcemanagerpb.BranchRule, error) {
+	return c.internalClient.GetBranchRule(ctx, req, opts...)
+}
+
+// UpdateBranchRule updateBranchRule updates a branch rule.
+func (c *Client) UpdateBranchRule(ctx context.Context, req *securesourcemanagerpb.UpdateBranchRuleRequest, opts ...gax.CallOption) (*UpdateBranchRuleOperation, error) {
+	return c.internalClient.UpdateBranchRule(ctx, req, opts...)
+}
+
+// UpdateBranchRuleOperation returns a new UpdateBranchRuleOperation from a given name.
+// The name must be that of a previously created UpdateBranchRuleOperation, possibly from a different process.
+func (c *Client) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOperation {
+	return c.internalClient.UpdateBranchRuleOperation(name)
+}
+
+// DeleteBranchRule deleteBranchRule deletes a branch rule.
+func (c *Client) DeleteBranchRule(ctx context.Context, req *securesourcemanagerpb.DeleteBranchRuleRequest, opts ...gax.CallOption) (*DeleteBranchRuleOperation, error) {
+	return c.internalClient.DeleteBranchRule(ctx, req, opts...)
+}
+
+// DeleteBranchRuleOperation returns a new DeleteBranchRuleOperation from a given name.
+// The name must be that of a previously created DeleteBranchRuleOperation, possibly from a different process.
+func (c *Client) DeleteBranchRuleOperation(name string) *DeleteBranchRuleOperation {
+	return c.internalClient.DeleteBranchRuleOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -950,6 +1016,130 @@ func (c *gRPCClient) TestIamPermissionsRepo(ctx context.Context, req *iampb.Test
 	return resp, nil
 }
 
+func (c *gRPCClient) CreateBranchRule(ctx context.Context, req *securesourcemanagerpb.CreateBranchRuleRequest, opts ...gax.CallOption) (*CreateBranchRuleOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateBranchRule[0:len((*c.CallOptions).CreateBranchRule):len((*c.CallOptions).CreateBranchRule)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateBranchRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateBranchRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListBranchRules(ctx context.Context, req *securesourcemanagerpb.ListBranchRulesRequest, opts ...gax.CallOption) *BranchRuleIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListBranchRules[0:len((*c.CallOptions).ListBranchRules):len((*c.CallOptions).ListBranchRules)], opts...)
+	it := &BranchRuleIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListBranchRulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.BranchRule, string, error) {
+		resp := &securesourcemanagerpb.ListBranchRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListBranchRules(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBranchRules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetBranchRule(ctx context.Context, req *securesourcemanagerpb.GetBranchRuleRequest, opts ...gax.CallOption) (*securesourcemanagerpb.BranchRule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBranchRule[0:len((*c.CallOptions).GetBranchRule):len((*c.CallOptions).GetBranchRule)], opts...)
+	var resp *securesourcemanagerpb.BranchRule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetBranchRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateBranchRule(ctx context.Context, req *securesourcemanagerpb.UpdateBranchRuleRequest, opts ...gax.CallOption) (*UpdateBranchRuleOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "branch_rule.name", url.QueryEscape(req.GetBranchRule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBranchRule[0:len((*c.CallOptions).UpdateBranchRule):len((*c.CallOptions).UpdateBranchRule)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateBranchRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateBranchRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteBranchRule(ctx context.Context, req *securesourcemanagerpb.DeleteBranchRuleRequest, opts ...gax.CallOption) (*DeleteBranchRuleOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteBranchRule[0:len((*c.CallOptions).DeleteBranchRule):len((*c.CallOptions).DeleteBranchRule)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeleteBranchRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteBranchRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1485,6 +1675,9 @@ func (c *restClient) ListRepositories(ctx context.Context, req *securesourcemana
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
+		if req.GetInstance() != "" {
+			params.Add("instance", fmt.Sprintf("%v", req.GetInstance()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1950,6 +2143,375 @@ func (c *restClient) TestIamPermissionsRepo(ctx context.Context, req *iampb.Test
 		return nil, e
 	}
 	return resp, nil
+}
+
+// CreateBranchRule createBranchRule creates a branch rule in a given repository.
+func (c *restClient) CreateBranchRule(ctx context.Context, req *securesourcemanagerpb.CreateBranchRuleRequest, opts ...gax.CallOption) (*CreateBranchRuleOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBranchRule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/branchRules", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("branchRuleId", fmt.Sprintf("%v", req.GetBranchRuleId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateBranchRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListBranchRules listBranchRules lists branch rules in a given repository.
+func (c *restClient) ListBranchRules(ctx context.Context, req *securesourcemanagerpb.ListBranchRulesRequest, opts ...gax.CallOption) *BranchRuleIterator {
+	it := &BranchRuleIterator{}
+	req = proto.Clone(req).(*securesourcemanagerpb.ListBranchRulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.BranchRule, string, error) {
+		resp := &securesourcemanagerpb.ListBranchRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/branchRules", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBranchRules(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetBranchRule getBranchRule gets a branch rule.
+func (c *restClient) GetBranchRule(ctx context.Context, req *securesourcemanagerpb.GetBranchRuleRequest, opts ...gax.CallOption) (*securesourcemanagerpb.BranchRule, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBranchRule[0:len((*c.CallOptions).GetBranchRule):len((*c.CallOptions).GetBranchRule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securesourcemanagerpb.BranchRule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateBranchRule updateBranchRule updates a branch rule.
+func (c *restClient) UpdateBranchRule(ctx context.Context, req *securesourcemanagerpb.UpdateBranchRuleRequest, opts ...gax.CallOption) (*UpdateBranchRuleOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBranchRule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBranchRule().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "branch_rule.name", url.QueryEscape(req.GetBranchRule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateBranchRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteBranchRule deleteBranchRule deletes a branch rule.
+func (c *restClient) DeleteBranchRule(ctx context.Context, req *securesourcemanagerpb.DeleteBranchRuleRequest, opts ...gax.CallOption) (*DeleteBranchRuleOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteBranchRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // GetLocation gets information about a location.
@@ -2552,6 +3114,24 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
+// CreateBranchRuleOperation returns a new CreateBranchRuleOperation from a given name.
+// The name must be that of a previously created CreateBranchRuleOperation, possibly from a different process.
+func (c *gRPCClient) CreateBranchRuleOperation(name string) *CreateBranchRuleOperation {
+	return &CreateBranchRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateBranchRuleOperation returns a new CreateBranchRuleOperation from a given name.
+// The name must be that of a previously created CreateBranchRuleOperation, possibly from a different process.
+func (c *restClient) CreateBranchRuleOperation(name string) *CreateBranchRuleOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateBranchRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateInstanceOperation returns a new CreateInstanceOperation from a given name.
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *gRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
@@ -2588,6 +3168,24 @@ func (c *restClient) CreateRepositoryOperation(name string) *CreateRepositoryOpe
 	}
 }
 
+// DeleteBranchRuleOperation returns a new DeleteBranchRuleOperation from a given name.
+// The name must be that of a previously created DeleteBranchRuleOperation, possibly from a different process.
+func (c *gRPCClient) DeleteBranchRuleOperation(name string) *DeleteBranchRuleOperation {
+	return &DeleteBranchRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteBranchRuleOperation returns a new DeleteBranchRuleOperation from a given name.
+// The name must be that of a previously created DeleteBranchRuleOperation, possibly from a different process.
+func (c *restClient) DeleteBranchRuleOperation(name string) *DeleteBranchRuleOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteBranchRuleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteInstanceOperation returns a new DeleteInstanceOperation from a given name.
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *gRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
@@ -2619,6 +3217,24 @@ func (c *gRPCClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOpe
 func (c *restClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteRepositoryOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateBranchRuleOperation returns a new UpdateBranchRuleOperation from a given name.
+// The name must be that of a previously created UpdateBranchRuleOperation, possibly from a different process.
+func (c *gRPCClient) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOperation {
+	return &UpdateBranchRuleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateBranchRuleOperation returns a new UpdateBranchRuleOperation from a given name.
+// The name must be that of a previously created UpdateBranchRuleOperation, possibly from a different process.
+func (c *restClient) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateBranchRuleOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
