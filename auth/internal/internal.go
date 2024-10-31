@@ -15,6 +15,7 @@
 package internal
 
 import (
+	"bytes"
 	"context"
 	"crypto/rsa"
 	"crypto/x509"
@@ -139,6 +140,24 @@ func GetProjectID(b []byte, override string) string {
 		return v.ProjectID
 	}
 	return v.Project
+}
+
+// DoJSONRequest sends the provided JSON bytes with the client. It reads the response
+// body, checks the status code for errors, and returns the body.
+func DoJSONRequest(ctx context.Context, c *http.Client, url string, bodyBytes []byte, pkg string) ([]byte, error) {
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(bodyBytes))
+	if err != nil {
+		return nil, fmt.Errorf("%s: unable to create request: %w", pkg, err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, body, err := DoRequest(c, req)
+	if err != nil {
+		return nil, fmt.Errorf("%s: request to %s failed: %w", pkg, url, err)
+	}
+	if c := resp.StatusCode; c < 200 || c > 299 {
+		return nil, fmt.Errorf("%s: status code %d: %s", pkg, c, body)
+	}
+	return body, nil
 }
 
 // DoRequest executes the provided req with the client. It reads the response

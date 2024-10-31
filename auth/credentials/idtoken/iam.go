@@ -15,7 +15,6 @@
 package idtoken
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -62,26 +61,17 @@ func (i iamIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 		Audience:     i.audience,
 		IncludeEmail: true,
 	}
+	endpoint := strings.Replace(iamCredentialsUniverseDomainEndpoint, universeDomainPlaceholder, i.universeDomain, 1)
+	url := fmt.Sprintf("%s/v1/%s:generateIdToken", endpoint, internal.FormatIAMServiceAccountName(i.signerEmail))
+
 	bodyBytes, err := json.Marshal(tokenReq)
 	if err != nil {
 		return nil, fmt.Errorf("idtoken: unable to marshal request: %w", err)
 	}
-
-	endpoint := strings.Replace(iamCredentialsUniverseDomainEndpoint, universeDomainPlaceholder, i.universeDomain, 1)
-	url := fmt.Sprintf("%s/v1/%s:generateIdToken", endpoint, internal.FormatIAMServiceAccountName(i.signerEmail))
-	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(bodyBytes))
+	body, err := internal.DoJSONRequest(ctx, i.client, url, bodyBytes, "idtoken")
 	if err != nil {
-		return nil, fmt.Errorf("idtoken: unable to create request: %w", err)
+		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	resp, body, err := internal.DoRequest(i.client, req)
-	if err != nil {
-		return nil, fmt.Errorf("idtoken: unable to generate ID token: %w", err)
-	}
-	if c := resp.StatusCode; c < 200 || c > 299 {
-		return nil, fmt.Errorf("idtoken: status code %d: %s", c, body)
-	}
-
 	var tokenResp generateIAMIDTokenResponse
 	if err := json.Unmarshal(body, &tokenResp); err != nil {
 		return nil, fmt.Errorf("idtoken: unable to parse response: %w", err)

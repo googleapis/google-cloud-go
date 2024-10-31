@@ -15,7 +15,6 @@
 package impersonate
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -159,29 +158,21 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 		IncludeEmail: i.includeEmail,
 		Delegates:    i.delegates,
 	}
-	bodyBytes, err := json.Marshal(genIDTokenReq)
-	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to marshal request: %w", err)
-	}
 	universeDomain, err := i.universeDomainProvider.GetProperty(ctx)
 	if err != nil {
 		return nil, err
 	}
 	endpoint := strings.Replace(iamCredentialsUniverseDomainEndpoint, universeDomainPlaceholder, universeDomain, 1)
 	url := fmt.Sprintf("%s/v1/%s:generateIdToken", endpoint, internal.FormatIAMServiceAccountName(i.targetPrincipal))
-	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(bodyBytes))
-	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-	resp, body, err := internal.DoRequest(i.client, req)
-	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to generate ID token: %w", err)
-	}
-	if c := resp.StatusCode; c < 200 || c > 299 {
-		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)
-	}
 
+	bodyBytes, err := json.Marshal(genIDTokenReq)
+	if err != nil {
+		return nil, fmt.Errorf("impersonate: unable to marshal request: %w", err)
+	}
+	body, err := internal.DoJSONRequest(ctx, i.client, url, bodyBytes, "impersonate")
+	if err != nil {
+		return nil, err
+	}
 	var generateIDTokenResp generateIDTokenResponse
 	if err := json.Unmarshal(body, &generateIDTokenResp); err != nil {
 		return nil, fmt.Errorf("impersonate: unable to parse response: %w", err)
