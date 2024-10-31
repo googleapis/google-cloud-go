@@ -59,6 +59,7 @@ const (
 	metricNameAttemptLatencies   = "attempt_latencies"
 	metricNameServerLatencies    = "server_latencies"
 	metricNameRetryCount         = "retry_count"
+	metricNameConnErrCount       = "connectivity_error_count"
 
 	// Metric units
 	metricUnitMS    = "ms"
@@ -109,6 +110,12 @@ var (
 			},
 			recordedPerAttempt: true,
 		},
+		metricNameConnErrCount: {
+			additionalAttrs: []string{
+				metricLabelKeyStatus,
+			},
+			recordedPerAttempt: true,
+		},
 	}
 
 	// Generates unique client ID in the format go-<random UUID>@<hostname>
@@ -125,6 +132,7 @@ var (
 	// createExporterOptions takes Bigtable client options and returns exporter options
 	// Overwritten in tests
 	createExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
+		btOpts = append(btOpts, option.WithGRPCConnectionPool(4))
 		return btOpts
 	}
 )
@@ -148,6 +156,7 @@ type builtinMetricsTracerFactory struct {
 	serverLatencies    metric.Float64Histogram
 	attemptLatencies   metric.Float64Histogram
 	retryCount         metric.Int64Counter
+	connErrCount       metric.Int64Counter
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
@@ -271,6 +280,7 @@ type builtinMetricsTracer struct {
 	instrumentServerLatencies    metric.Float64Histogram
 	instrumentAttemptLatencies   metric.Float64Histogram
 	instrumentRetryCount         metric.Int64Counter
+	instrumentConnErrCount       metric.Int64Counter
 
 	tableName   string
 	method      string
@@ -363,6 +373,7 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		instrumentServerLatencies:    tf.serverLatencies,
 		instrumentAttemptLatencies:   tf.attemptLatencies,
 		instrumentRetryCount:         tf.retryCount,
+		instrumentConnErrCount:       tf.connErrCount,
 
 		tableName:   tableName,
 		isStreaming: isStreaming,

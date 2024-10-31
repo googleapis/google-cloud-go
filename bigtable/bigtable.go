@@ -95,6 +95,18 @@ func NewClient(ctx context.Context, project, instance string, opts ...option.Cli
 
 // NewClientWithConfig creates a new client with the given config.
 func NewClientWithConfig(ctx context.Context, project, instance string, config ClientConfig, opts ...option.ClientOption) (*Client, error) {
+	metricsProvider := config.MetricsProvider
+	if emulatorAddr := os.Getenv("BIGTABLE_EMULATOR_HOST"); emulatorAddr != "" {
+		// Do not emit metrics when emulator is being used
+		metricsProvider = NoopMetricsProvider{}
+	}
+
+	// Create a OpenTelemetry metrics configuration
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
+	if err != nil {
+		return nil, err
+	}
+
 	o, err := btopt.DefaultClientOptions(prodAddr, mtlsProdAddr, Scope, clientUserAgent)
 	if err != nil {
 		return nil, err
@@ -112,21 +124,10 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// Allow non-default service account in DirectPath.
 	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
 	o = append(o, opts...)
+	o = append(o, internaloption.EnableAsyncRefreshDryRun(metricsTracerFactory.connErrCount, metricsTracerFactory.clientAttributes))
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
-	}
-
-	metricsProvider := config.MetricsProvider
-	if emulatorAddr := os.Getenv("BIGTABLE_EMULATOR_HOST"); emulatorAddr != "" {
-		// Do not emit metrics when emulator is being used
-		metricsProvider = NoopMetricsProvider{}
-	}
-
-	// Create a OpenTelemetry metrics configuration
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
-	if err != nil {
-		return nil, err
 	}
 
 	return &Client{
@@ -152,6 +153,7 @@ var (
 	isIdempotentRetryCode = make(map[codes.Code]bool)
 	retryOptions          = []gax.CallOption{
 		gax.WithRetry(func() gax.Retryer {
+			fmt.Println("In default retryer")
 			backoff := gax.Backoff{
 				Initial:    100 * time.Millisecond,
 				Max:        2 * time.Second,
@@ -1598,6 +1600,7 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 		}
 	} else {
 		callWrapper = func(ctx context.Context, callSettings gax.CallSettings) error {
+			fmt.Println("Retrying")
 			// Increment number of attempts
 			mt.currOp.incrementAttemptCount()
 
