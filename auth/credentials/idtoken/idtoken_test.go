@@ -26,9 +26,9 @@ import (
 	"strings"
 	"testing"
 
+	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
-	"cloud.google.com/go/auth/credentials/internal/impersonate"
 )
 
 func TestNewCredentials_ServiceAccount(t *testing.T) {

@@ -19,8 +19,8 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
+	"cloud.google.com/go/auth/internal"
 )
 
 // iamIDTokenProvider performs an authenticated RPC with the IAM service to
