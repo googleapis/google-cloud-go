@@ -23,6 +23,7 @@ function println { printf '%s\n' "$(now) $*"; }
 if [[ -z "${SECRET_MANAGER_PROJECT_ID}" ]]; then
   msg "SECRET_MANAGER_PROJECT_ID is not set in environment variables, using default"
   SECRET_MANAGER_PROJECT_ID="cloud-devrel-kokoro-resources"
+  CREDENTIAL_FILE_OVERRIDE="${KOKORO_GFILE_DIR}/kokoro-trampoline.service-account.json"
 fi
 SECRET_LOCATION="${KOKORO_GFILE_DIR}/secret_manager"
 msg "Creating folder on disk for secrets: ${SECRET_LOCATION}"
@@ -33,7 +34,7 @@ for key in $(echo ${SECRET_MANAGER_KEYS} | sed "s/,/ /g"); do
     --volume=${KOKORO_GFILE_DIR}:${KOKORO_GFILE_DIR} \
     gcr.io/google.com/cloudsdktool/cloud-sdk \
     secrets versions access latest \
-    --credential-file-override=${KOKORO_GFILE_DIR}/kokoro-trampoline.service-account.json \
+    --credential-file-override=${CREDENTIAL_FILE_OVERRIDE} \
     --project ${SECRET_MANAGER_PROJECT_ID} \
     --secret ${key} > \
     "${SECRET_LOCATION}/${key}"
