@@ -230,9 +230,9 @@ type CredentialsOptions struct {
 // NewCredentials returns new [Credentials] from the provided options.
 func NewCredentials(opts *CredentialsOptions) *Credentials {
 	creds := &Credentials{
-		projectID:      opts.ProjectIDProvider,
 		TokenProvider:  opts.TokenProvider,
 		json:           opts.JSON,
+		projectID:      opts.ProjectIDProvider,
 		quotaProjectID: opts.QuotaProjectIDProvider,
 		universeDomain: opts.UniverseDomainProvider,
 	}
@@ -363,7 +363,6 @@ func (c *cachedTokenProvider) tokenAsync(ctx context.Context) {
 		c.mu.Lock()
 		c.isRefreshRunning = true
 		c.mu.Unlock()
-		fmt.Println("google-cloud-go auth.go. In tokenAsync. Calling Token()")
 		t, err := c.tp.Token(ctx)
 		c.mu.Lock()
 		defer c.mu.Unlock()
@@ -390,7 +389,6 @@ func (c *cachedTokenProvider) tokenBlocking(ctx context.Context) (*Token, error)
 	if c.cachedToken.IsValid() || (!c.autoRefresh && !c.cachedToken.isEmpty()) {
 		return c.cachedToken, nil
 	}
-	fmt.Println("google-cloud-go auth.go. In tokenBlocking. Calling Token()")
 	t, err := c.tp.Token(ctx)
 	if err != nil {
 		return nil, err

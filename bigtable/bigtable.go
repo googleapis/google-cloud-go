@@ -153,7 +153,6 @@ var (
 	isIdempotentRetryCode = make(map[codes.Code]bool)
 	retryOptions          = []gax.CallOption{
 		gax.WithRetry(func() gax.Retryer {
-			fmt.Println("In default retryer")
 			backoff := gax.Backoff{
 				Initial:    100 * time.Millisecond,
 				Max:        2 * time.Second,
@@ -1600,7 +1599,6 @@ func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method
 		}
 	} else {
 		callWrapper = func(ctx context.Context, callSettings gax.CallSettings) error {
-			fmt.Println("Retrying")
 			// Increment number of attempts
 			mt.currOp.incrementAttemptCount()
 

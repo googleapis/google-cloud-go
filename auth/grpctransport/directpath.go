@@ -16,7 +16,6 @@ package grpctransport
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"os"
 	"strconv"
@@ -60,7 +59,6 @@ func isTokenProviderDirectPathCompatible(tp auth.TokenProvider, o *Options) bool
 	if tp == nil {
 		return false
 	}
-	fmt.Println("isTokenProviderDirectPathCompatible Token")
 	tok, err := tp.Token(context.Background())
 	if err != nil {
 		return false

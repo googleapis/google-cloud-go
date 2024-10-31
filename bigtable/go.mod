@@ -2,16 +2,6 @@ module cloud.google.com/go/bigtable
 
 go 1.21
 
-replace google.golang.org/grpc => /mnt/disks/nvme0n2/work/grpc-go
-
-replace google.golang.org/api => /mnt/disks/nvme0n2/work/google-api-go-client
-
-replace cloud.google.com/go => /mnt/disks/nvme0n2/work/google-cloud-go
-
-replace cloud.google.com/go/auth => /mnt/disks/nvme0n2/work/google-cloud-go/auth
-
-replace cloud.google.com/go/auth/oauth2adapt => /mnt/disks/nvme0n2/work/google-cloud-go/auth/oauth2adapt
-
 require (
 	cloud.google.com/go v0.116.0
 	cloud.google.com/go/iam v1.2.1
@@ -29,7 +19,6 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241015192408-796eee8c2d53
 	google.golang.org/grpc v1.67.1
 	google.golang.org/protobuf v1.35.1
-
 	rsc.io/binaryregexp v0.2.0
 )
 
