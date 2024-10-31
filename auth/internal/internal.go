@@ -144,8 +144,8 @@ func GetProjectID(b []byte, override string) string {
 
 // DoJSONRequest sends the provided JSON bytes with the client. It reads the response
 // body, checks the status code for errors, and returns the body.
-func DoJSONRequest(ctx context.Context, c *http.Client, url string, bodyBytes []byte, pkg string) ([]byte, error) {
-	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(bodyBytes))
+func DoJSONRequest(ctx context.Context, c *http.Client, url string, method string, bodyBytes []byte, pkg string) ([]byte, error) {
+	req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewReader(bodyBytes))
 	if err != nil {
 		return nil, fmt.Errorf("%s: unable to create request: %w", pkg, err)
 	}

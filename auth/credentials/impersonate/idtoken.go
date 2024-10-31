@@ -88,11 +88,11 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
-	var client *http.Client
-	var creds *auth.Credentials
-	if opts.Client == nil {
+	client := opts.Client
+	creds := opts.Credentials
+	if client == nil {
 		var err error
-		if opts.Credentials == nil {
+		if creds == nil {
 			creds, err = credentials.DetectDefault(&credentials.DetectOptions{
 				Scopes:           []string{defaultScope},
 				UseSelfSignedJWT: true,
@@ -100,8 +100,6 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 			if err != nil {
 				return nil, err
 			}
-		} else {
-			creds = opts.Credentials
 		}
 		client, err = httptransport.NewClient(&httptransport.Options{
 			Credentials:    creds,
@@ -110,13 +108,12 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-	} else {
-		client = opts.Client
 	}
 
 	universeDomainProvider := resolveUniverseDomainProvider(creds)
 	itp := impersonatedIDTokenProvider{
-		client:                 client,
+		client: client,
+		// Pass the credentials universe domain provider to configure the endpoint.
 		universeDomainProvider: universeDomainProvider,
 		targetPrincipal:        opts.TargetPrincipal,
 		audience:               opts.Audience,
@@ -169,7 +166,7 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to marshal request: %w", err)
 	}
-	body, err := internal.DoJSONRequest(ctx, i.client, url, bodyBytes, "impersonate")
+	body, err := internal.DoJSONRequest(ctx, i.client, url, "POST", bodyBytes, "impersonate")
 	if err != nil {
 		return nil, err
 	}

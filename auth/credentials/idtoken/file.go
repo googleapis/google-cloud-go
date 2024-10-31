@@ -17,7 +17,6 @@ package idtoken
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"path/filepath"
 	"strings"
 
@@ -53,22 +52,21 @@ func credsFromBytes(b []byte, opts *Options) (*auth.Credentials, error) {
 			return nil, err
 		}
 		var tp auth.TokenProvider
-		if resolveUniverseDomain(f) != internal.DefaultUniverseDomain {
-			tp, err = newIAMIDTokenProvider(b, f, opts)
-		} else {
+		if resolveUniverseDomain(f) == internal.DefaultUniverseDomain {
 			tp, err = new2LOTokenProvider(f, opts)
+		} else {
+			tp, err = newIAMIDTokenProvider(b, f, opts)
 		}
 		if err != nil {
 			return nil, err
 		}
 		tp = auth.NewCachedTokenProvider(tp, nil)
-		creds := auth.NewCredentials(&auth.CredentialsOptions{
+		return auth.NewCredentials(&auth.CredentialsOptions{
 			TokenProvider:          tp,
 			JSON:                   b,
 			ProjectIDProvider:      internal.StaticCredentialsProperty(f.ProjectID),
 			UniverseDomainProvider: internal.StaticCredentialsProperty(f.UniverseDomain),
-		})
-		return creds, nil
+		}), nil
 	case credsfile.ImpersonatedServiceAccountKey, credsfile.ExternalAccountKey:
 		type url struct {
 			ServiceAccountImpersonationURL string `json:"service_account_impersonation_url"`
@@ -146,10 +144,10 @@ func new2LOTokenProvider(f *credsfile.ServiceAccountFile, opts *Options) (auth.T
 // do not have access to the oauth2.googleapis.com/token endpoint, and thus must
 // use IAM generateIdToken instead.
 func newIAMIDTokenProvider(b []byte, f *credsfile.ServiceAccountFile, opts *Options) (auth.TokenProvider, error) {
-	var client *http.Client
+	client := opts.Client
 	var creds *auth.Credentials
 	var err error
-	if opts.Client == nil {
+	if client == nil {
 		creds, err = credentials.DetectDefault(&credentials.DetectOptions{
 			CredentialsJSON:  b,
 			Scopes:           []string{"https://www.googleapis.com/auth/iam"},
@@ -165,11 +163,10 @@ func newIAMIDTokenProvider(b []byte, f *credsfile.ServiceAccountFile, opts *Opti
 		if err != nil {
 			return nil, err
 		}
-	} else {
-		client = opts.Client
 	}
 	its := iamIDTokenProvider{
-		client:         client,
+		client: client,
+		// Pass the credentials universe domain to configure the endpoint.
 		universeDomain: resolveUniverseDomain(f),
 		signerEmail:    f.ClientEmail,
 		audience:       opts.Audience,

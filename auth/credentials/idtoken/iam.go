@@ -68,7 +68,7 @@ func (i iamIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("idtoken: unable to marshal request: %w", err)
 	}
-	body, err := internal.DoJSONRequest(ctx, i.client, url, bodyBytes, "idtoken")
+	body, err := internal.DoJSONRequest(ctx, i.client, url, "POST", bodyBytes, "idtoken")
 	if err != nil {
 		return nil, err
 	}
