@@ -61,7 +61,7 @@ func TestNewIDTokenCredentials(t *testing.T) {
 				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
 				UniverseDomain:  "example.com",
 			},
-			wantUniverseDomain: "googleapis.com", // From creds, not CredentialsOptions.UniverseDomain
+			wantUniverseDomain: "googleapis.com", // From creds, not IDTokenOptions.UniverseDomain
 		},
 		{
 			name: "universe domain from options and credentials",
@@ -71,7 +71,7 @@ func TestNewIDTokenCredentials(t *testing.T) {
 				UniverseDomain:  "NOT.example.com",
 				Credentials:     staticCredentials("example.com"),
 			},
-			wantUniverseDomain: "example.com", // From creds, not CredentialsOptions.UniverseDomain
+			wantUniverseDomain: "example.com", // From creds, not IDTokenOptions.UniverseDomain
 		},
 		{
 			name: "universe domain from credentials",
@@ -109,7 +109,7 @@ func TestNewIDTokenCredentials(t *testing.T) {
 						t.Errorf("got %q, want %q", req.URL.Hostname(), tt.wantUniverseDomain)
 					}
 					if !strings.Contains(req.URL.Path, "generateIdToken") {
-						t.Fatal("path must contain 'generateIdToken'")
+						t.Error("path must contain 'generateIdToken'")
 					}
 
 					resp := generateIDTokenResponse{
@@ -133,12 +133,10 @@ func TestNewIDTokenCredentials(t *testing.T) {
 				if !tt.wantErr {
 					t.Errorf("err: %v", err)
 				}
-			} else if tt.config.Credentials != nil {
-				// config.Credentials is invalid for Token request, just assert universe domain.
-				if got, _ := creds.UniverseDomain(ctx); got != tt.wantUniverseDomain {
-					t.Errorf("got %q, want %q", got, tt.wantUniverseDomain)
-				}
-			} else {
+				return
+			}
+			// Static config.Credentials is invalid for Token request, skip.
+			if tt.config.Credentials != nil {
 				tok, err := creds.Token(ctx)
 				if err != nil {
 					t.Error(err)
@@ -146,9 +144,9 @@ func TestNewIDTokenCredentials(t *testing.T) {
 				if tok.Value != idTok {
 					t.Errorf("got %q, want %q", tok.Value, idTok)
 				}
-				if got, _ := creds.UniverseDomain(ctx); got != tt.wantUniverseDomain {
-					t.Errorf("got %q, want %q", got, tt.wantUniverseDomain)
-				}
+			}
+			if got, _ := creds.UniverseDomain(ctx); got != tt.wantUniverseDomain {
+				t.Errorf("got %q, want %q", got, tt.wantUniverseDomain)
 			}
 		})
 	}
