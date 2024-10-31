@@ -28,6 +28,7 @@ import (
 
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
+	"cloud.google.com/go/auth/credentials/internal/impersonate"
 )
 
 func TestNewCredentials_ServiceAccount(t *testing.T) {
@@ -86,7 +87,7 @@ func TestNewCredentials_ServiceAccount_UniverseDomain(t *testing.T) {
 			if err != nil {
 				t.Error(err)
 			}
-			var r generateIAMIDTokenRequest
+			var r impersonate.GenerateIDTokenRequest
 			if err := json.Unmarshal(b, &r); err != nil {
 				t.Error(err)
 			}
@@ -106,7 +107,7 @@ func TestNewCredentials_ServiceAccount_UniverseDomain(t *testing.T) {
 				t.Fatal("path must contain 'generateIdToken'")
 			}
 
-			resp := generateIAMIDTokenResponse{
+			resp := impersonate.GenerateIDTokenResponse{
 				Token: wantTok,
 			}
 			b, err = json.Marshal(&resp)

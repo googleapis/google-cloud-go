@@ -110,7 +110,7 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 		universeDomainProvider: universeDomainProvider,
 	}
 	for _, v := range opts.Delegates {
-		its.delegates = append(its.delegates, internal.FormatIAMServiceAccountName(v))
+		its.delegates = append(its.delegates, internal.FormatIAMServiceAccountResource(v))
 	}
 	its.scopes = make([]string, len(opts.Scopes))
 	copy(its.scopes, opts.Scopes)
@@ -234,7 +234,7 @@ func (i impersonatedTokenProvider) Token(ctx context.Context) (*auth.Token, erro
 		return nil, err
 	}
 	endpoint := strings.Replace(iamCredentialsUniverseDomainEndpoint, universeDomainPlaceholder, universeDomain, 1)
-	url := fmt.Sprintf("%s/v1/%s:generateAccessToken", endpoint, internal.FormatIAMServiceAccountName(i.targetPrincipal))
+	url := fmt.Sprintf("%s/v1/%s:generateAccessToken", endpoint, internal.FormatIAMServiceAccountResource(i.targetPrincipal))
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(b))
 	if err != nil {
 		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)

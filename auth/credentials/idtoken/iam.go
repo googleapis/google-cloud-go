@@ -16,29 +16,12 @@ package idtoken
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"net/http"
-	"strings"
-	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/credentials/internal/impersonate"
 )
-
-var (
-	universeDomainPlaceholder            = "UNIVERSE_DOMAIN"
-	iamCredentialsUniverseDomainEndpoint = "https://iamcredentials.UNIVERSE_DOMAIN"
-)
-
-type generateIAMIDTokenRequest struct {
-	Audience     string `json:"audience"`
-	IncludeEmail bool   `json:"includeEmail"`
-}
-
-type generateIAMIDTokenResponse struct {
-	Token string `json:"token"`
-}
 
 // iamIDTokenProvider performs an authenticated RPC with the IAM service to
 // obtain an ID token. The provided client must be fully authenticated and
@@ -57,28 +40,14 @@ type iamIDTokenProvider struct {
 }
 
 func (i iamIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	tokenReq := generateIAMIDTokenRequest{
-		Audience:     i.audience,
-		IncludeEmail: true,
+	opts := impersonate.IDTokenOptions{
+		Client:              i.client,
+		UniverseDomain:      internal.StaticCredentialsProperty(i.universeDomain),
+		ServiceAccountEmail: i.signerEmail,
+		GenerateIDTokenRequest: impersonate.GenerateIDTokenRequest{
+			Audience:     i.audience,
+			IncludeEmail: true,
+		},
 	}
-	endpoint := strings.Replace(iamCredentialsUniverseDomainEndpoint, universeDomainPlaceholder, i.universeDomain, 1)
-	url := fmt.Sprintf("%s/v1/%s:generateIdToken", endpoint, internal.FormatIAMServiceAccountName(i.signerEmail))
-
-	bodyBytes, err := json.Marshal(tokenReq)
-	if err != nil {
-		return nil, fmt.Errorf("idtoken: unable to marshal request: %w", err)
-	}
-	body, err := internal.DoJSONRequest(ctx, i.client, url, "POST", bodyBytes, "idtoken")
-	if err != nil {
-		return nil, err
-	}
-	var tokenResp generateIAMIDTokenResponse
-	if err := json.Unmarshal(body, &tokenResp); err != nil {
-		return nil, fmt.Errorf("idtoken: unable to parse response: %w", err)
-	}
-	return &auth.Token{
-		Value: tokenResp.Token,
-		// Generated ID tokens are good for one hour.
-		Expiry: time.Now().Add(1 * time.Hour),
-	}, nil
+	return opts.DoRequest(ctx)
 }

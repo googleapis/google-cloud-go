@@ -16,15 +16,12 @@ package impersonate
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
-	"strings"
-	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
+	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	"cloud.google.com/go/auth/httptransport"
 	"cloud.google.com/go/auth/internal"
 )
@@ -120,23 +117,13 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 		includeEmail:           opts.IncludeEmail,
 	}
 	for _, v := range opts.Delegates {
-		itp.delegates = append(itp.delegates, internal.FormatIAMServiceAccountName(v))
+		itp.delegates = append(itp.delegates, internal.FormatIAMServiceAccountResource(v))
 	}
 
 	return auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider:          auth.NewCachedTokenProvider(itp, nil),
 		UniverseDomainProvider: universeDomainProvider,
 	}), nil
-}
-
-type generateIDTokenRequest struct {
-	Audience     string   `json:"audience"`
-	IncludeEmail bool     `json:"includeEmail"`
-	Delegates    []string `json:"delegates,omitempty"`
-}
-
-type generateIDTokenResponse struct {
-	Token string `json:"token"`
 }
 
 type impersonatedIDTokenProvider struct {
@@ -150,33 +137,15 @@ type impersonatedIDTokenProvider struct {
 }
 
 func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	genIDTokenReq := generateIDTokenRequest{
-		Audience:     i.audience,
-		IncludeEmail: i.includeEmail,
-		Delegates:    i.delegates,
+	opts := impersonate.IDTokenOptions{
+		Client:              i.client,
+		UniverseDomain:      i.universeDomainProvider,
+		ServiceAccountEmail: i.targetPrincipal,
+		GenerateIDTokenRequest: impersonate.GenerateIDTokenRequest{
+			Audience:     i.audience,
+			IncludeEmail: i.includeEmail,
+			Delegates:    i.delegates,
+		},
 	}
-	universeDomain, err := i.universeDomainProvider.GetProperty(ctx)
-	if err != nil {
-		return nil, err
-	}
-	endpoint := strings.Replace(iamCredentialsUniverseDomainEndpoint, universeDomainPlaceholder, universeDomain, 1)
-	url := fmt.Sprintf("%s/v1/%s:generateIdToken", endpoint, internal.FormatIAMServiceAccountName(i.targetPrincipal))
-
-	bodyBytes, err := json.Marshal(genIDTokenReq)
-	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to marshal request: %w", err)
-	}
-	body, err := internal.DoJSONRequest(ctx, i.client, url, "POST", bodyBytes, "impersonate")
-	if err != nil {
-		return nil, err
-	}
-	var generateIDTokenResp generateIDTokenResponse
-	if err := json.Unmarshal(body, &generateIDTokenResp); err != nil {
-		return nil, fmt.Errorf("impersonate: unable to parse response: %w", err)
-	}
-	return &auth.Token{
-		Value: generateIDTokenResp.Token,
-		// Generated ID tokens are good for one hour.
-		Expiry: time.Now().Add(1 * time.Hour),
-	}, nil
+	return opts.DoRequest(ctx)
 }

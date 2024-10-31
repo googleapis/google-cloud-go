@@ -22,6 +22,8 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+
+	"cloud.google.com/go/auth/credentials/internal/impersonate"
 )
 
 func TestNewIDTokenCredentials(t *testing.T) {
@@ -95,7 +97,7 @@ func TestNewIDTokenCredentials(t *testing.T) {
 					if err != nil {
 						t.Error(err)
 					}
-					var r generateIDTokenRequest
+					var r impersonate.GenerateIDTokenRequest
 					if err := json.Unmarshal(b, &r); err != nil {
 						t.Error(err)
 					}
@@ -112,7 +114,7 @@ func TestNewIDTokenCredentials(t *testing.T) {
 						t.Error("path must contain 'generateIdToken'")
 					}
 
-					resp := generateIDTokenResponse{
+					resp := impersonate.GenerateIDTokenResponse{
 						Token: idTok,
 					}
 					b, err = json.Marshal(&resp)

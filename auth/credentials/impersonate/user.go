@@ -48,7 +48,7 @@ func user(opts *CredentialsOptions, client *http.Client, lifetime time.Duration,
 	}
 	u.delegates = make([]string, len(opts.Delegates))
 	for i, v := range opts.Delegates {
-		u.delegates[i] = internal.FormatIAMServiceAccountName(v)
+		u.delegates[i] = internal.FormatIAMServiceAccountResource(v)
 	}
 	u.scopes = make([]string, len(opts.Scopes))
 	copy(u.scopes, opts.Scopes)
@@ -143,7 +143,7 @@ func (u userTokenProvider) signJWT(ctx context.Context) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("impersonate: unable to marshal request: %w", err)
 	}
-	reqURL := fmt.Sprintf("%s/v1/%s:signJwt", iamCredentialsEndpoint, internal.FormatIAMServiceAccountName(u.targetPrincipal))
+	reqURL := fmt.Sprintf("%s/v1/%s:signJwt", iamCredentialsEndpoint, internal.FormatIAMServiceAccountResource(u.targetPrincipal))
 	req, err := http.NewRequestWithContext(ctx, "POST", reqURL, bytes.NewReader(bodyBytes))
 	if err != nil {
 		return "", fmt.Errorf("impersonate: unable to create request: %w", err)
