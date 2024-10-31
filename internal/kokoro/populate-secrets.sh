@@ -34,7 +34,7 @@ for key in $(echo ${SECRET_MANAGER_KEYS} | sed "s/,/ /g"); do
     gcr.io/google.com/cloudsdktool/cloud-sdk \
     secrets versions access latest \
     --credential-file-override=${KOKORO_GFILE_DIR}/kokoro-trampoline.service-account.json \
-    --project ${SECRET_MANAGER_PROEJECT_ID} \
+    --project ${SECRET_MANAGER_PROJECT_ID} \
     --secret ${key} > \
     "${SECRET_LOCATION}/${key}"
   if [[ $? == 0 ]]; then
