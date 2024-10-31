@@ -164,7 +164,6 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 			cancel()
 			wsCompletedfirst = true
 			wsObjects = objects
-
 			return nil
 		})
 	}
@@ -183,7 +182,6 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 			seqCompletedfirst = true
 			seqObjects = objects
 			nextToken = token
-
 			return nil
 		})
 	}

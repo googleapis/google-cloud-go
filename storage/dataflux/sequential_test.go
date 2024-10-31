@@ -32,7 +32,7 @@ func TestDoSeqListingEmulated(t *testing.T) {
 			t.Fatal(err)
 		}
 		wantObjects := 10
-		if err := createObject(ctx, bucketHandle, wantObjects); err != nil {
+		if err := createObject(ctx, bucketHandle, wantObjects, ""); err != nil {
 			t.Fatalf("unable to create objects: %v", err)
 		}
 		objectIterator := bucketHandle.Objects(ctx, nil)
@@ -41,13 +41,13 @@ func TestDoSeqListingEmulated(t *testing.T) {
 			t.Fatalf("failed to call doSeqListing() : %v", err)
 		}
 		if len(objects) != wantObjects {
-			t.Errorf("doSeqListing() expected to receive %d results, got %d results", len(objects), wantObjects)
+			t.Errorf("doSeqListing()  got %d objects, want %d objects ", len(objects), wantObjects)
 		}
 		if nextToken != "" {
-			t.Errorf("doSequential() expected to receive empty token, got %q", nextToken)
+			t.Errorf("doSequential() got %q token, want empty string ", nextToken)
 		}
 		if pageSize > seqDefaultPageSize {
-			t.Errorf("doSequential() expected to receive less than %d results, got %d results", seqDefaultPageSize, pageSize)
+			t.Errorf("doSequential() got %d pagesize, want less than %d pagesize", pageSize, seqDefaultPageSize)
 		}
 	})
 }
@@ -63,7 +63,7 @@ func TestSequentialListingEmulated(t *testing.T) {
 			t.Fatal(err)
 		}
 		wantObjects := 10
-		if err := createObject(ctx, bucketHandle, wantObjects); err != nil {
+		if err := createObject(ctx, bucketHandle, wantObjects, ""); err != nil {
 			t.Fatalf("unable to create objects: %v", err)
 		}
 

@@ -31,8 +31,8 @@ func TestWorkstealListingEmulated(t *testing.T) {
 		if err := bucketHandle.Create(ctx, project, attrs); err != nil {
 			t.Fatal(err)
 		}
-		numObjects := 10
-		if err := createObject(ctx, bucketHandle, numObjects); err != nil {
+		numObjects := 5000
+		if err := createObject(ctx, bucketHandle, numObjects, ""); err != nil {
 			t.Fatalf("unable to create objects: %v", err)
 		}
 		in := &ListerInput{
@@ -48,5 +48,65 @@ func TestWorkstealListingEmulated(t *testing.T) {
 		if len(objects) != numObjects {
 			t.Errorf("workstealListing() expected to receive  %d results, got %d results", numObjects, len(objects))
 		}
+	})
+}
+
+func TestObjectListerEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
+
+		attrs := &storage.BucketAttrs{
+			Name:              bucket,
+			VersioningEnabled: true,
+		}
+		bucketHandle := client.Bucket(bucket)
+		if err := bucketHandle.Create(ctx, project, attrs); err != nil {
+			t.Fatal(err)
+		}
+		wantObjects := 1005
+		objectName := "object1"
+		if err := createObjectWithVersion(ctx, bucketHandle, wantObjects, objectName); err != nil {
+			t.Fatalf("unable to create objects: %v", err)
+		}
+
+		c := NewLister(client, &ListerInput{
+			BucketName: bucket,
+			Query:      storage.Query{Versions: true},
+		})
+
+		w := &worker{
+			id:     0,
+			status: idle,
+			result: &listerResult{objects: []*storage.ObjectAttrs{}},
+			lister: c,
+		}
+		doneListing, err := w.objectLister(ctx)
+		if err != nil {
+			t.Fatalf("failed to call workstealListing() : %v", err)
+		}
+		if doneListing {
+			t.Errorf("objectLister() doneListing got = %v, want = false", doneListing)
+		}
+
+	})
+}
+
+func TestObjectListerErrorEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
+
+		c := NewLister(client, &ListerInput{
+			BucketName: bucket,
+		})
+
+		w := &worker{
+			id:     0,
+			status: idle,
+			result: &listerResult{objects: []*storage.ObjectAttrs{}},
+			lister: c,
+		}
+
+		if _, err := w.objectLister(ctx); err == nil {
+			t.Errorf("objectLister() expected to fail as bucket does not exist")
+		}
+
 	})
 }
