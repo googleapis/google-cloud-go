@@ -49,5 +49,5 @@ func (i iamIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 			IncludeEmail: true,
 		},
 	}
-	return opts.DoRequest(ctx)
+	return opts.Token(ctx)
 }

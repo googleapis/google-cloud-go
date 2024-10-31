@@ -147,5 +147,5 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 			Delegates:    i.delegates,
 		},
 	}
-	return opts.DoRequest(ctx)
+	return opts.Token(ctx)
 }
