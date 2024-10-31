@@ -126,9 +126,10 @@ func TestNewIDTokenCredentials(t *testing.T) {
 					}
 				}),
 			}
-			opts := &tt.config
-			opts.Client = client
-			creds, err := NewIDTokenCredentials(opts)
+			if tt.config.Credentials == nil {
+				tt.config.Client = client
+			}
+			creds, err := NewIDTokenCredentials(&tt.config)
 			if err != nil {
 				if !tt.wantErr {
 					t.Errorf("err: %v", err)
@@ -136,7 +137,7 @@ func TestNewIDTokenCredentials(t *testing.T) {
 				return
 			}
 			// Static config.Credentials is invalid for Token request, skip.
-			if tt.config.Credentials != nil {
+			if tt.config.Credentials == nil {
 				tok, err := creds.Token(ctx)
 				if err != nil {
 					t.Error(err)
