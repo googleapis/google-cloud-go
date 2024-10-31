@@ -1,12 +1,7 @@
 # Changes
 
 
-## [2.0.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.45.0...storage/v2.0.0) (2024-10-31)
-
-
-### ⚠ BREAKING CHANGES
-
-* **storage/internal:** Removes Notification Config, Service Account, and HMAC RPCs. These API have been migrated to Storage Control and are available via the JSON API.
+## [2.0.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.45.0...storage/v2.0.0) (2024-10-31) 
 
 ### Features
 
@@ -22,7 +17,7 @@
 
 ### Miscellaneous Chores
 
-* **storage/internal:** Remove notification, service account, and hmac RPCS ([#11008](https://github.com/googleapis/google-cloud-go/issues/11008)) ([e0759f4](https://github.com/googleapis/google-cloud-go/commit/e0759f46639b4c542e5b49e4dc81340d8e123370))
+* **storage/internal:** Remove notification, service account, and hmac RPCS. These API have been migrated to Storage Control and are available via the JSON API. ([#11008](https://github.com/googleapis/google-cloud-go/issues/11008)) ([e0759f4](https://github.com/googleapis/google-cloud-go/commit/e0759f46639b4c542e5b49e4dc81340d8e123370)) 
 
 ## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.44.0...storage/v1.45.0) (2024-10-17)
 
