@@ -32,7 +32,8 @@ import (
 
 var (
 	universeDomainPlaceholder                   = "UNIVERSE_DOMAIN"
-	iamCredentialsEndpoint                      = "https://iamcredentials.UNIVERSE_DOMAIN"
+	iamCredentialsEndpoint                      = "https://iamcredentials.googleapis.com"
+	iamCredentialsUniverseDomainEndpoint        = "https://iamcredentials.UNIVERSE_DOMAIN"
 	oauth2Endpoint                              = "https://oauth2.googleapis.com"
 	errMissingTargetPrincipal                   = errors.New("impersonate: target service account must be provided")
 	errMissingScopes                            = errors.New("impersonate: scopes must be provided")
@@ -236,7 +237,7 @@ func (i impersonatedTokenProvider) Token(ctx context.Context) (*auth.Token, erro
 	if err != nil {
 		return nil, err
 	}
-	endpoint := strings.Replace(iamCredentialsEndpoint, universeDomainPlaceholder, universeDomain, 1)
+	endpoint := strings.Replace(iamCredentialsUniverseDomainEndpoint, universeDomainPlaceholder, universeDomain, 1)
 	url := fmt.Sprintf("%s/v1/%s:generateAccessToken", endpoint, formatIAMServiceAccountName(i.targetPrincipal))
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(b))
 	if err != nil {

@@ -47,6 +47,8 @@ type CallOptions struct {
 	DeleteKey                            []gax.CallOption
 	MigrateKey                           []gax.CallOption
 	AddIpOverride                        []gax.CallOption
+	RemoveIpOverride                     []gax.CallOption
+	ListIpOverrides                      []gax.CallOption
 	GetMetrics                           []gax.CallOption
 	CreateFirewallPolicy                 []gax.CallOption
 	ListFirewallPolicies                 []gax.CallOption
@@ -100,6 +102,8 @@ func defaultCallOptions() *CallOptions {
 		},
 		MigrateKey:                           []gax.CallOption{},
 		AddIpOverride:                        []gax.CallOption{},
+		RemoveIpOverride:                     []gax.CallOption{},
+		ListIpOverrides:                      []gax.CallOption{},
 		GetMetrics:                           []gax.CallOption{},
 		CreateFirewallPolicy:                 []gax.CallOption{},
 		ListFirewallPolicies:                 []gax.CallOption{},
@@ -128,6 +132,8 @@ type internalClient interface {
 	DeleteKey(context.Context, *recaptchaenterprisepb.DeleteKeyRequest, ...gax.CallOption) error
 	MigrateKey(context.Context, *recaptchaenterprisepb.MigrateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
 	AddIpOverride(context.Context, *recaptchaenterprisepb.AddIpOverrideRequest, ...gax.CallOption) (*recaptchaenterprisepb.AddIpOverrideResponse, error)
+	RemoveIpOverride(context.Context, *recaptchaenterprisepb.RemoveIpOverrideRequest, ...gax.CallOption) (*recaptchaenterprisepb.RemoveIpOverrideResponse, error)
+	ListIpOverrides(context.Context, *recaptchaenterprisepb.ListIpOverridesRequest, ...gax.CallOption) *IpOverrideDataIterator
 	GetMetrics(context.Context, *recaptchaenterprisepb.GetMetricsRequest, ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error)
 	CreateFirewallPolicy(context.Context, *recaptchaenterprisepb.CreateFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
 	ListFirewallPolicies(context.Context, *recaptchaenterprisepb.ListFirewallPoliciesRequest, ...gax.CallOption) *FirewallPolicyIterator
@@ -236,6 +242,22 @@ func (c *Client) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.Migr
 //	IP range), an error is returned.
 func (c *Client) AddIpOverride(ctx context.Context, req *recaptchaenterprisepb.AddIpOverrideRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.AddIpOverrideResponse, error) {
 	return c.internalClient.AddIpOverride(ctx, req, opts...)
+}
+
+// RemoveIpOverride removes an IP override from a key. The following restrictions hold:
+//
+//	If the IP isn’t found in an existing IP override, a NOT_FOUND error
+//	is returned.
+//
+//	If the IP is found in an existing IP override, but the
+//	override type does not match, a NOT_FOUND error is returned.
+func (c *Client) RemoveIpOverride(ctx context.Context, req *recaptchaenterprisepb.RemoveIpOverrideRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.RemoveIpOverrideResponse, error) {
+	return c.internalClient.RemoveIpOverride(ctx, req, opts...)
+}
+
+// ListIpOverrides lists all IP overrides for a key.
+func (c *Client) ListIpOverrides(ctx context.Context, req *recaptchaenterprisepb.ListIpOverridesRequest, opts ...gax.CallOption) *IpOverrideDataIterator {
+	return c.internalClient.ListIpOverrides(ctx, req, opts...)
 }
 
 // GetMetrics get some aggregated metrics for a Key. This data can be used to build
@@ -567,6 +589,70 @@ func (c *gRPCClient) AddIpOverride(ctx context.Context, req *recaptchaenterprise
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) RemoveIpOverride(ctx context.Context, req *recaptchaenterprisepb.RemoveIpOverrideRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.RemoveIpOverrideResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RemoveIpOverride[0:len((*c.CallOptions).RemoveIpOverride):len((*c.CallOptions).RemoveIpOverride)], opts...)
+	var resp *recaptchaenterprisepb.RemoveIpOverrideResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RemoveIpOverride(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListIpOverrides(ctx context.Context, req *recaptchaenterprisepb.ListIpOverridesRequest, opts ...gax.CallOption) *IpOverrideDataIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListIpOverrides[0:len((*c.CallOptions).ListIpOverrides):len((*c.CallOptions).ListIpOverrides)], opts...)
+	it := &IpOverrideDataIterator{}
+	req = proto.Clone(req).(*recaptchaenterprisepb.ListIpOverridesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.IpOverrideData, string, error) {
+		resp := &recaptchaenterprisepb.ListIpOverridesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListIpOverrides(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetIpOverrides(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.GetMetricsRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error) {

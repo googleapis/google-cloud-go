@@ -516,6 +516,52 @@
       ]
     },
     {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_ListIpOverrides_sync",
+      "title": "recaptchaenterprise ListIpOverrides Sample",
+      "description": "ListIpOverrides lists all IP overrides for a key.",
+      "file": "Client/ListIpOverrides/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListIpOverrides",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.ListIpOverrides",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.ListIpOverridesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "IpOverrideDataIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "ListIpOverrides",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListIpOverrides",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_ListKeys_sync",
       "title": "recaptchaenterprise ListKeys Sample",
       "description": "ListKeys returns the list of all keys that belong to a project.",
@@ -684,6 +730,52 @@
         "method": {
           "shortName": "MigrateKey",
           "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.MigrateKey",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_RemoveIpOverride_sync",
+      "title": "recaptchaenterprise RemoveIpOverride Sample",
+      "description": "RemoveIpOverride removes an IP override from a key. The following restrictions hold: \n* If the IP isn't found in an existing IP override, a `NOT_FOUND` error\nis returned.\n* If the IP is found in an existing IP override, but the\noverride type does not match, a `NOT_FOUND` error is returned.",
+      "file": "Client/RemoveIpOverride/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveIpOverride",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.RemoveIpOverride",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.RemoveIpOverrideRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.RemoveIpOverrideResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "RemoveIpOverride",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.RemoveIpOverride",
           "service": {
             "shortName": "RecaptchaEnterpriseService",
             "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"

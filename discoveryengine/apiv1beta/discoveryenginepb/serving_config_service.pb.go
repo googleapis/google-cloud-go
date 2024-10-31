@@ -112,7 +112,7 @@ type GetServingConfigRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the ServingConfig to get. Format:
-	// `projects/{project_number}/locations/{location}/collections/{collection}/engines/{engine}/servingConfigs/{serving_config_id}`
+	// `projects/{project}/locations/{location}/collections/{collection}/engines/{engine}/servingConfigs/{serving_config_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -162,7 +162,7 @@ type ListServingConfigsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Full resource name of the parent resource. Format:
-	// `projects/{project_number}/locations/{location}/collections/{collection}/engines/{engine}`
+	// `projects/{project}/locations/{location}/collections/{collection}/engines/{engine}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. Maximum number of results to return. If unspecified, defaults
 	// to 100. If a value greater than 100 is provided, at most 100 results are

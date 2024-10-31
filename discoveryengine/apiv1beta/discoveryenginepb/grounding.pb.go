@@ -36,6 +36,56 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Grounding configuration.
+type GroundingConfig struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. Name of the GroundingConfig, of the form
+	// `projects/{project}/locations/{location}/groundingConfigs/{grounding_config}`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func (x *GroundingConfig) Reset() {
+	*x = GroundingConfig{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GroundingConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GroundingConfig) ProtoMessage() {}
+
+func (x *GroundingConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GroundingConfig.ProtoReflect.Descriptor instead.
+func (*GroundingConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_grounding_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *GroundingConfig) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 // Grounding Fact.
 type GroundingFact struct {
 	state         protoimpl.MessageState
@@ -53,7 +103,7 @@ type GroundingFact struct {
 func (x *GroundingFact) Reset() {
 	*x = GroundingFact{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes[0]
+		mi := &file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -66,7 +116,7 @@ func (x *GroundingFact) String() string {
 func (*GroundingFact) ProtoMessage() {}
 
 func (x *GroundingFact) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes[0]
+	mi := &file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -79,7 +129,7 @@ func (x *GroundingFact) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroundingFact.ProtoReflect.Descriptor instead.
 func (*GroundingFact) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_grounding_proto_rawDescGZIP(), []int{0}
+	return file_google_cloud_discoveryengine_v1beta_grounding_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *GroundingFact) GetFactText() string {
@@ -118,7 +168,7 @@ type FactChunk struct {
 func (x *FactChunk) Reset() {
 	*x = FactChunk{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes[1]
+		mi := &file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -131,7 +181,7 @@ func (x *FactChunk) String() string {
 func (*FactChunk) ProtoMessage() {}
 
 func (x *FactChunk) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes[1]
+	mi := &file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -144,7 +194,7 @@ func (x *FactChunk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FactChunk.ProtoReflect.Descriptor instead.
 func (*FactChunk) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_grounding_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_discoveryengine_v1beta_grounding_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *FactChunk) GetChunkText() string {
@@ -187,7 +237,18 @@ var file_google_cloud_discoveryengine_v1beta_grounding_proto_rawDesc = []byte{
 	0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x5f, 0x62, 0x65, 0x68,
 	0x61, 0x76, 0x69, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xcf, 0x01, 0x0a, 0x0d, 0x47, 0x72, 0x6f, 0x75, 0x6e,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xad, 0x01, 0x0a, 0x0f, 0x47, 0x72, 0x6f, 0x75, 0x6e,
+	0x64, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x17, 0x0a, 0x04, 0x6e, 0x61,
+	0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x04, 0x6e,
+	0x61, 0x6d, 0x65, 0x3a, 0x80, 0x01, 0xea, 0x41, 0x7d, 0x0a, 0x2e, 0x64, 0x69, 0x73, 0x63, 0x6f,
+	0x76, 0x65, 0x72, 0x79, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x47, 0x72, 0x6f, 0x75, 0x6e, 0x64,
+	0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x4b, 0x70, 0x72, 0x6f, 0x6a, 0x65,
+	0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x7d, 0x2f, 0x6c, 0x6f,
+	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x7d, 0x2f, 0x67, 0x72, 0x6f, 0x75, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66,
+	0x69, 0x67, 0x73, 0x2f, 0x7b, 0x67, 0x72, 0x6f, 0x75, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x5f, 0x63,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x7d, 0x22, 0xcf, 0x01, 0x0a, 0x0d, 0x47, 0x72, 0x6f, 0x75, 0x6e,
 	0x64, 0x69, 0x6e, 0x67, 0x46, 0x61, 0x63, 0x74, 0x12, 0x1b, 0x0a, 0x09, 0x66, 0x61, 0x63, 0x74,
 	0x5f, 0x74, 0x65, 0x78, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x66, 0x61, 0x63,
 	0x74, 0x54, 0x65, 0x78, 0x74, 0x12, 0x62, 0x0a, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75,
@@ -250,16 +311,17 @@ func file_google_cloud_discoveryengine_v1beta_grounding_proto_rawDescGZIP() []by
 	return file_google_cloud_discoveryengine_v1beta_grounding_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_google_cloud_discoveryengine_v1beta_grounding_proto_goTypes = []any{
-	(*GroundingFact)(nil), // 0: google.cloud.discoveryengine.v1beta.GroundingFact
-	(*FactChunk)(nil),     // 1: google.cloud.discoveryengine.v1beta.FactChunk
-	nil,                   // 2: google.cloud.discoveryengine.v1beta.GroundingFact.AttributesEntry
-	nil,                   // 3: google.cloud.discoveryengine.v1beta.FactChunk.SourceMetadataEntry
+	(*GroundingConfig)(nil), // 0: google.cloud.discoveryengine.v1beta.GroundingConfig
+	(*GroundingFact)(nil),   // 1: google.cloud.discoveryengine.v1beta.GroundingFact
+	(*FactChunk)(nil),       // 2: google.cloud.discoveryengine.v1beta.FactChunk
+	nil,                     // 3: google.cloud.discoveryengine.v1beta.GroundingFact.AttributesEntry
+	nil,                     // 4: google.cloud.discoveryengine.v1beta.FactChunk.SourceMetadataEntry
 }
 var file_google_cloud_discoveryengine_v1beta_grounding_proto_depIdxs = []int32{
-	2, // 0: google.cloud.discoveryengine.v1beta.GroundingFact.attributes:type_name -> google.cloud.discoveryengine.v1beta.GroundingFact.AttributesEntry
-	3, // 1: google.cloud.discoveryengine.v1beta.FactChunk.source_metadata:type_name -> google.cloud.discoveryengine.v1beta.FactChunk.SourceMetadataEntry
+	3, // 0: google.cloud.discoveryengine.v1beta.GroundingFact.attributes:type_name -> google.cloud.discoveryengine.v1beta.GroundingFact.AttributesEntry
+	4, // 1: google.cloud.discoveryengine.v1beta.FactChunk.source_metadata:type_name -> google.cloud.discoveryengine.v1beta.FactChunk.SourceMetadataEntry
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -274,7 +336,7 @@ func file_google_cloud_discoveryengine_v1beta_grounding_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes[0].Exporter = func(v any, i int) any {
-			switch v := v.(*GroundingFact); i {
+			switch v := v.(*GroundingConfig); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -286,6 +348,18 @@ func file_google_cloud_discoveryengine_v1beta_grounding_proto_init() {
 			}
 		}
 		file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes[1].Exporter = func(v any, i int) any {
+			switch v := v.(*GroundingFact); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_discoveryengine_v1beta_grounding_proto_msgTypes[2].Exporter = func(v any, i int) any {
 			switch v := v.(*FactChunk); i {
 			case 0:
 				return &v.state
@@ -304,7 +378,7 @@ func file_google_cloud_discoveryengine_v1beta_grounding_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_discoveryengine_v1beta_grounding_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

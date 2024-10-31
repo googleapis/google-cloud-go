@@ -1979,6 +1979,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/parallelstore/apiv1": {
+    "api_shortname": "parallelstore",
+    "distribution_name": "cloud.google.com/go/parallelstore/apiv1",
+    "description": "Parallelstore API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/parallelstore/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/parallelstore/apiv1beta": {
     "api_shortname": "parallelstore",
     "distribution_name": "cloud.google.com/go/parallelstore/apiv1beta",
@@ -2402,7 +2412,7 @@
   "cloud.google.com/go/securitycentermanagement/apiv1": {
     "api_shortname": "securitycentermanagement",
     "distribution_name": "cloud.google.com/go/securitycentermanagement/apiv1",
-    "description": "Security Center Management API",
+    "description": "Security Command Center Management API",
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/securitycentermanagement/latest/apiv1",
