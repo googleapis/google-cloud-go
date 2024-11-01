@@ -65,19 +65,19 @@ type Client struct {
 	enableQueryPreview bool
 }
 
-// DetectProjectID is a sentinel value that instructs NewClient to detect the
-// project ID. It is given in place of the projectID argument. NewClient will
+// DetectProjectID is a sentinel value that instructs [NewClient] to detect the
+// project ID. It is given in place of the projectID argument. [NewClient] will
 // use the project ID from the given credentials or the default credentials
 // (https://developers.google.com/accounts/docs/application-default-credentials)
 // if no credentials were provided. When providing credentials, not all
-// options will allow NewClient to extract the project ID. Specifically a JWT
+// options will allow [NewClient] to extract the project ID. Specifically a JWT
 // does not have the project ID encoded.
 const DetectProjectID = "*detect-project-id*"
 
-// NewClient constructs a new Client which can perform BigQuery operations.
+// NewClient constructs a new [Client] which can perform BigQuery operations.
 // Operations performed via the client are billed to the specified GCP project.
 //
-// If the project ID is set to DetectProjectID, NewClient will attempt to detect
+// If the project ID is set to [DetectProjectID], NewClient will attempt to detect
 // the project ID from credentials.
 //
 // This client supports enabling query-related preview features via environmental

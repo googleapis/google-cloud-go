@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "CompletionClient",
           "rpcs": {
+            "AdvancedCompleteQuery": {
+              "methods": [
+                "AdvancedCompleteQuery"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -55,6 +60,11 @@
         "rest": {
           "libraryClient": "CompletionClient",
           "rpcs": {
+            "AdvancedCompleteQuery": {
+              "methods": [
+                "AdvancedCompleteQuery"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -808,6 +818,11 @@
                 "CheckGrounding"
               ]
             },
+            "GenerateGroundedContent": {
+              "methods": [
+                "GenerateGroundedContent"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -816,6 +831,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "StreamGenerateGroundedContent": {
+              "methods": [
+                "StreamGenerateGroundedContent"
               ]
             }
           }
@@ -833,6 +853,11 @@
                 "CheckGrounding"
               ]
             },
+            "GenerateGroundedContent": {
+              "methods": [
+                "GenerateGroundedContent"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -841,6 +866,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "StreamGenerateGroundedContent": {
+              "methods": [
+                "StreamGenerateGroundedContent"
               ]
             }
           }
@@ -1325,6 +1355,11 @@
               "methods": [
                 "Search"
               ]
+            },
+            "SearchLite": {
+              "methods": [
+                "SearchLite"
+              ]
             }
           }
         },
@@ -1349,6 +1384,11 @@
             "Search": {
               "methods": [
                 "Search"
+              ]
+            },
+            "SearchLite": {
+              "methods": [
+                "SearchLite"
               ]
             }
           }
@@ -1513,9 +1553,19 @@
                 "CancelOperation"
               ]
             },
+            "CreateSitemap": {
+              "methods": [
+                "CreateSitemap"
+              ]
+            },
             "CreateTargetSite": {
               "methods": [
                 "CreateTargetSite"
+              ]
+            },
+            "DeleteSitemap": {
+              "methods": [
+                "DeleteSitemap"
               ]
             },
             "DeleteTargetSite": {
@@ -1536,6 +1586,11 @@
             "FetchDomainVerificationStatus": {
               "methods": [
                 "FetchDomainVerificationStatus"
+              ]
+            },
+            "FetchSitemaps": {
+              "methods": [
+                "FetchSitemaps"
               ]
             },
             "GetOperation": {
@@ -1593,9 +1648,19 @@
                 "CancelOperation"
               ]
             },
+            "CreateSitemap": {
+              "methods": [
+                "CreateSitemap"
+              ]
+            },
             "CreateTargetSite": {
               "methods": [
                 "CreateTargetSite"
+              ]
+            },
+            "DeleteSitemap": {
+              "methods": [
+                "DeleteSitemap"
               ]
             },
             "DeleteTargetSite": {
@@ -1616,6 +1681,11 @@
             "FetchDomainVerificationStatus": {
               "methods": [
                 "FetchDomainVerificationStatus"
+              ]
+            },
+            "FetchSitemaps": {
+              "methods": [
+                "FetchSitemaps"
               ]
             },
             "GetOperation": {

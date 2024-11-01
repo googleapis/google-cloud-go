@@ -4501,6 +4501,67 @@ func (op *StartNotebookRuntimeOperation) Name() string {
 	return op.lro.Name()
 }
 
+// StopNotebookRuntimeOperation manages a long-running operation from StopNotebookRuntime.
+type StopNotebookRuntimeOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *StopNotebookRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.StopNotebookRuntimeResponse, error) {
+	var resp aiplatformpb.StopNotebookRuntimeResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *StopNotebookRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.StopNotebookRuntimeResponse, error) {
+	var resp aiplatformpb.StopNotebookRuntimeResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *StopNotebookRuntimeOperation) Metadata() (*aiplatformpb.StopNotebookRuntimeOperationMetadata, error) {
+	var meta aiplatformpb.StopNotebookRuntimeOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *StopNotebookRuntimeOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *StopNotebookRuntimeOperation) Name() string {
+	return op.lro.Name()
+}
+
 // SuggestTrialsOperation manages a long-running operation from SuggestTrials.
 type SuggestTrialsOperation struct {
 	lro *longrunning.Operation

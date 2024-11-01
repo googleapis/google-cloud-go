@@ -753,6 +753,9 @@ service-configs:
   - input-directory: google/cloud/oslogin/common
     service-config:
     import-path: cloud.google.com/go/oslogin/common
+  - input-directory: google/cloud/parallelstore/v1
+    service-config: parallelstore_v1.yaml
+    import-path: cloud.google.com/go/parallelstore/apiv1
   - input-directory: google/cloud/parallelstore/v1beta
     service-config: parallelstore_v1beta.yaml
     import-path: cloud.google.com/go/parallelstore/apiv1beta
