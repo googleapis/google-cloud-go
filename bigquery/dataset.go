@@ -306,6 +306,13 @@ func (d *Dataset) Metadata(ctx context.Context) (md *DatasetMetadata, err error)
 	return bqToDatasetMetadata(ds, d.c)
 }
 
+type DatasetMetadataOption func()
+
+// TODO description and option type
+func (d *Dataset) MetadataWithOptions(ctx context.Context, opts ...DatasetMetadataOption) (md *DatasetMetadata, err error) {
+	return nil, fmt.Errorf("unimplemented")
+}
+
 func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 	dm := &DatasetMetadata{
 		CreationTime:               unixMillisToTime(d.CreationTime),
@@ -811,6 +818,50 @@ type AccessEntry struct {
 	View       *Table              // The view granted access (EntityType must be ViewEntity)
 	Routine    *Routine            // The routine granted access (only UDF currently supported)
 	Dataset    *DatasetAccessEntry // The resources within a dataset granted access.
+	Condition  *Expr               // Condition for the access binding.
+}
+
+// Expr represents the conditional information related to dataset access policies.
+type Expr struct {
+	//Textual representation of an expression in Common Expression Language syntax.
+	Expression string
+
+	// Optional. Title for the expression, i.e. a short string describing
+	// its purpose. This can be used e.g. in UIs which allow to enter the
+	// expression.
+	Title string
+
+	// Optional. Description of the expression. This is a longer text which
+	// describes the expression, e.g. when hovered over it in a UI.
+	Description string
+
+	// Optional. String indicating the location of the expression for error
+	// reporting, e.g. a file name and a position in the file.
+	Location string
+}
+
+func (ex *Expr) ToBQ() *bq.Expr {
+	if ex == nil {
+		return nil
+	}
+	return &bq.Expr{
+		Expression:  ex.Expression,
+		Title:       ex.Title,
+		Description: ex.Description,
+		Location:    ex.Location,
+	}
+}
+
+func bqToExpr(bq *bq.Expr) *Expr {
+	if bq == nil {
+		return nil
+	}
+	return &Expr{
+		Expression:  bq.Expression,
+		Title:       bq.Title,
+		Description: bq.Description,
+		Location:    bq.Location,
+	}
 }
 
 // AccessRole is the level of access to grant to a dataset.
@@ -857,7 +908,10 @@ const (
 )
 
 func (e *AccessEntry) toBQ() (*bq.DatasetAccess, error) {
-	q := &bq.DatasetAccess{Role: string(e.Role)}
+	q := &bq.DatasetAccess{
+		Role:      string(e.Role),
+		Condition: e.Condition.ToBQ(),
+	}
 	switch e.EntityType {
 	case DomainEntity:
 		q.Domain = e.Entity
