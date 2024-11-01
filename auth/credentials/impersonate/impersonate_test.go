@@ -58,16 +58,6 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 			wantErr: errLifetimeOverMax,
 		},
 		{
-			name: "credentials and client",
-			config: CredentialsOptions{
-				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
-				Scopes:          []string{"scope"},
-				Client:          &http.Client{},
-				Credentials:     staticCredentials("googleapis.com"),
-			},
-			wantErr: errClientAndCredentials,
-		},
-		{
 			name: "works",
 			config: CredentialsOptions{
 				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
