@@ -22,11 +22,11 @@ package idtoken
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"os"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/compute/metadata"
@@ -113,13 +113,20 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
-	if b := opts.jsonBytes(); b != nil {
+	b := opts.jsonBytes()
+	if b == nil && metadata.OnGCE() {
+		return computeCredentials(opts)
+	} else if b == nil {
+		creds, err := credentials.DetectDefault(&credentials.DetectOptions{
+			Audience: opts.Audience,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return credsFromBytes(creds.JSON(), opts)
+	} else {
 		return credsFromBytes(b, opts)
 	}
-	if metadata.OnGCE() {
-		return computeCredentials(opts)
-	}
-	return nil, fmt.Errorf("idtoken: couldn't find any credentials")
 }
 
 func (o *Options) jsonBytes() []byte {
