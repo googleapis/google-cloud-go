@@ -124,7 +124,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// Allow non-default service account in DirectPath.
 	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
 	o = append(o, opts...)
-	o = append(o, internaloption.EnableAsyncRefreshDryRun(metricsTracerFactory.connErrCount, metricsTracerFactory.clientAttributes))
+	o = append(o, internaloption.EnableAsyncRefreshDryRun(func() {
+		metricsTracerFactory.connErrCount.Add(context.Background(), 1, metric.WithAttributes(metricsTracerFactory.clientAttributes...))
+	}))
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
