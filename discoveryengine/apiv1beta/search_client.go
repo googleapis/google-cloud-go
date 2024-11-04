@@ -46,6 +46,7 @@ var newSearchClientHook clientHook
 // SearchCallOptions contains the retry settings for each method of SearchClient.
 type SearchCallOptions struct {
 	Search          []gax.CallOption
+	SearchLite      []gax.CallOption
 	CancelOperation []gax.CallOption
 	GetOperation    []gax.CallOption
 	ListOperations  []gax.CallOption
@@ -69,6 +70,18 @@ func defaultSearchGRPCClientOptions() []option.ClientOption {
 func defaultSearchCallOptions() *SearchCallOptions {
 	return &SearchCallOptions{
 		Search: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		SearchLite: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -132,6 +145,17 @@ func defaultSearchRESTCallOptions() *SearchCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		SearchLite: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		CancelOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -174,6 +198,7 @@ type internalSearchClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	Search(context.Context, *discoveryenginepb.SearchRequest, ...gax.CallOption) *SearchResponse_SearchResultIterator
+	SearchLite(context.Context, *discoveryenginepb.SearchRequest, ...gax.CallOption) *SearchResponse_SearchResultIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
@@ -217,6 +242,23 @@ func (c *SearchClient) Connection() *grpc.ClientConn {
 // Search performs a search.
 func (c *SearchClient) Search(ctx context.Context, req *discoveryenginepb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
 	return c.internalClient.Search(ctx, req, opts...)
+}
+
+// SearchLite performs a search. Similar to the
+// SearchService.Search
+// method, but a lite version that allows API key for authentication, where
+// OAuth and IAM checks are not required.
+//
+// Only public website search is supported by this method. If data stores and
+// engines not associated with public website search are specified, a
+// FAILED_PRECONDITION error is returned.
+//
+// This method can be used for easy onboarding without having to implement an
+// authentication backend. However, it is strongly recommended to use
+// SearchService.Search
+// instead with required OAuth and IAM checks to provide better data security.
+func (c *SearchClient) SearchLite(ctx context.Context, req *discoveryenginepb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
+	return c.internalClient.SearchLite(ctx, req, opts...)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -430,6 +472,52 @@ func (c *searchGRPCClient) Search(ctx context.Context, req *discoveryenginepb.Se
 	return it
 }
 
+func (c *searchGRPCClient) SearchLite(ctx context.Context, req *discoveryenginepb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "serving_config", url.QueryEscape(req.GetServingConfig()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SearchLite[0:len((*c.CallOptions).SearchLite):len((*c.CallOptions).SearchLite)], opts...)
+	it := &SearchResponse_SearchResultIterator{}
+	req = proto.Clone(req).(*discoveryenginepb.SearchRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.SearchResponse_SearchResult, string, error) {
+		resp := &discoveryenginepb.SearchResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.searchClient.SearchLite(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetResults(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *searchGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -534,6 +622,107 @@ func (c *searchRESTClient) Search(ctx context.Context, req *discoveryenginepb.Se
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v:search", req.GetServingConfig())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetResults(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// SearchLite performs a search. Similar to the
+// SearchService.Search
+// method, but a lite version that allows API key for authentication, where
+// OAuth and IAM checks are not required.
+//
+// Only public website search is supported by this method. If data stores and
+// engines not associated with public website search are specified, a
+// FAILED_PRECONDITION error is returned.
+//
+// This method can be used for easy onboarding without having to implement an
+// authentication backend. However, it is strongly recommended to use
+// SearchService.Search
+// instead with required OAuth and IAM checks to provide better data security.
+func (c *searchRESTClient) SearchLite(ctx context.Context, req *discoveryenginepb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
+	it := &SearchResponse_SearchResultIterator{}
+	req = proto.Clone(req).(*discoveryenginepb.SearchRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.SearchResponse_SearchResult, string, error) {
+		resp := &discoveryenginepb.SearchResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta/%v:searchLite", req.GetServingConfig())
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
