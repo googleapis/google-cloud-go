@@ -262,6 +262,16 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("The number of additional RPCs sent after the initial attempt."),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
+
+	// Create connectivity_error_count
+	tf.connErrCount, err = meter.Int64Counter(
+		metricNameConnErrCount,
+		metric.WithDescription("The number of additional RPCs sent after the initial attempt."),
+		metric.WithUnit(metricUnitCount),
+	)
 	return err
 }
 
