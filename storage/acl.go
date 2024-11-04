@@ -77,8 +77,13 @@ type ACLHandle struct {
 
 // Delete permanently deletes the ACL entry for the given entity.
 func (a *ACLHandle) Delete(ctx context.Context, entity ACLEntity) (err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.ACL.Delete")
-	defer func() { trace.EndSpan(ctx, err) }()
+	if isOTelTracingDevEnabled() {
+		ctx, _ = startSpan(ctx, "storage.ACL.Delete")
+		defer func() { endSpan(ctx, err) }()
+	} else {
+		ctx = trace.StartSpan(ctx, "storage.ACL.Delete")
+		defer func() { trace.EndSpan(ctx, err) }()
+	}
 
 	if a.object != "" {
 		return a.objectDelete(ctx, entity)
@@ -91,8 +96,13 @@ func (a *ACLHandle) Delete(ctx context.Context, entity ACLEntity) (err error) {
 
 // Set sets the role for the given entity.
 func (a *ACLHandle) Set(ctx context.Context, entity ACLEntity, role ACLRole) (err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.ACL.Set")
-	defer func() { trace.EndSpan(ctx, err) }()
+	if isOTelTracingDevEnabled() {
+		ctx, _ = startSpan(ctx, "storage.ACL.Set")
+		defer func() { endSpan(ctx, err) }()
+	} else {
+		ctx = trace.StartSpan(ctx, "storage.ACL.Set")
+		defer func() { trace.EndSpan(ctx, err) }()
+	}
 
 	if a.object != "" {
 		return a.objectSet(ctx, entity, role, false)
@@ -105,8 +115,13 @@ func (a *ACLHandle) Set(ctx context.Context, entity ACLEntity, role ACLRole) (er
 
 // List retrieves ACL entries.
 func (a *ACLHandle) List(ctx context.Context) (rules []ACLRule, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.ACL.List")
-	defer func() { trace.EndSpan(ctx, err) }()
+	if isOTelTracingDevEnabled() {
+		ctx, _ = startSpan(ctx, "storage.ACL.List")
+		defer func() { endSpan(ctx, err) }()
+	} else {
+		ctx = trace.StartSpan(ctx, "storage.ACL.List")
+		defer func() { trace.EndSpan(ctx, err) }()
+	}
 
 	if a.object != "" {
 		return a.objectList(ctx)

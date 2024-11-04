@@ -1235,8 +1235,13 @@ func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, project string, a
 // Note: This API does not support pagination. However, entity limits cap the number of notifications on a single bucket,
 // so all results will be returned in the first response. See https://cloud.google.com/storage/quotas#buckets.
 func (c *httpStorageClient) ListNotifications(ctx context.Context, bucket string, opts ...storageOption) (n map[string]*Notification, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.ListNotifications")
-	defer func() { trace.EndSpan(ctx, err) }()
+	if isOTelTracingDevEnabled() {
+		ctx, _ = startSpan(ctx, "storage.httpStorageClient.ListNotifications")
+		defer func() { endSpan(ctx, err) }()
+	} else {
+		ctx = trace.StartSpan(ctx, "storage.httpStorageClient.ListNotifications")
+		defer func() { trace.EndSpan(ctx, err) }()
+	}
 
 	s := callSettings(c.settings, opts...)
 	call := c.raw.Notifications.List(bucket)
@@ -1255,8 +1260,13 @@ func (c *httpStorageClient) ListNotifications(ctx context.Context, bucket string
 }
 
 func (c *httpStorageClient) CreateNotification(ctx context.Context, bucket string, n *Notification, opts ...storageOption) (ret *Notification, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.CreateNotification")
-	defer func() { trace.EndSpan(ctx, err) }()
+	if isOTelTracingDevEnabled() {
+		ctx, _ = startSpan(ctx, "storage.httpStorageClient.CreateNotification")
+		defer func() { endSpan(ctx, err) }()
+	} else {
+		ctx = trace.StartSpan(ctx, "storage.httpStorageClient.CreateNotification")
+		defer func() { trace.EndSpan(ctx, err) }()
+	}
 
 	s := callSettings(c.settings, opts...)
 	call := c.raw.Notifications.Insert(bucket, toRawNotification(n))
@@ -1275,8 +1285,13 @@ func (c *httpStorageClient) CreateNotification(ctx context.Context, bucket strin
 }
 
 func (c *httpStorageClient) DeleteNotification(ctx context.Context, bucket string, id string, opts ...storageOption) (err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.DeleteNotification")
-	defer func() { trace.EndSpan(ctx, err) }()
+	if isOTelTracingDevEnabled() {
+		ctx, _ = startSpan(ctx, "storage.httpStorageClient.DeleteNotification")
+		defer func() { endSpan(ctx, err) }()
+	} else {
+		ctx = trace.StartSpan(ctx, "storage.httpStorageClient.DeleteNotification")
+		defer func() { trace.EndSpan(ctx, err) }()
+	}
 
 	s := callSettings(c.settings, opts...)
 	call := c.raw.Notifications.Delete(bucket, id)
