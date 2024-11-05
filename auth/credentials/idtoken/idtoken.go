@@ -52,6 +52,11 @@ const (
 )
 
 var (
+	defaultScopes = []string{
+		"https://iamcredentials.googleapis.com/",
+		"https://www.googleapis.com/auth/cloud-platform",
+	}
+
 	errMissingOpts     = errors.New("idtoken: opts must be provided")
 	errMissingAudience = errors.New("idtoken: Audience must be provided")
 	errBothFileAndJSON = errors.New("idtoken: CredentialsFile and CredentialsJSON must not both be provided")
@@ -118,13 +123,15 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 		return computeCredentials(opts)
 	}
 	creds, err := credentials.DetectDefault(&credentials.DetectOptions{
-		Scopes:          defaultScopes,
-		CredentialsJSON: b,
+		Scopes:           defaultScopes,
+		CredentialsJSON:  b,
+		Client:           opts.client(),
+		UseSelfSignedJWT: true,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return credsFromBytes(creds.JSON(), opts)
+	return credsFromDefault(creds, opts)
 }
 
 func (o *Options) jsonBytes() []byte {
