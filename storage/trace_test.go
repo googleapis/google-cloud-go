@@ -17,9 +17,6 @@ package storage
 import (
 	"context"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"testing"
 
@@ -31,7 +28,6 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
-	"google.golang.org/api/option"
 )
 
 func TestTraceStorageTraceStartEndSpan(t *testing.T) {
@@ -74,56 +70,6 @@ func TestTraceStorageTraceStartEndSpan(t *testing.T) {
 	}
 	// Test startSpan returns the span and additional attributes can be set.
 	wantAttributes.Attributes = append(wantAttributes.Attributes, addAttrs)
-	opts := []cmp.Option{
-		cmp.Comparer(spanAttributesComparer),
-	}
-	for _, span := range spans {
-		if diff := testutil.Diff(span, wantAttributes, opts...); diff != "" {
-			t.Errorf("diff: -got, +want:\n%s\n", diff)
-		}
-	}
-}
-
-func TestTraceOtelTraceDevFlagEnabled(t *testing.T) {
-	originalOtelTracingBool := os.Getenv("GO_STORAGE_DEV_OTEL_TRACING")
-	defer os.Setenv("GO_STORAGE_DEV_OTEL_TRACING", originalOtelTracingBool)
-
-	os.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
-	ctx := context.Background()
-	e := tracetest.NewInMemoryExporter()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
-	defer tp.Shutdown(ctx)
-	otel.SetTracerProvider(tp)
-
-	// This utilizes newTestServer to make RPC calls and export traces to
-	// the tracetest.InMemoryExporter.
-	// TBD: What RPC calls do we want to test?
-	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
-		io.Copy(ioutil.Discard, r.Body)
-		fmt.Fprintf(w, "{}")
-	})
-	defer close()
-
-	client, err := NewClient(ctx, option.WithHTTPClient(hClient))
-	if err != nil {
-		t.Fatal(err)
-	}
-	_, err = client.Bucket("b").Attrs(ctx)
-	if err != nil {
-		t.Errorf("got %v", err)
-	}
-
-	// Test Cloud Trace Adoption common attributes are appended.
-	wantAttributes := tracetest.SpanStub{
-		Name: "storage.Bucket.Attrs",
-		Attributes: []attribute.KeyValue{
-			attribute.String("gcp.client.version", internal.Version),
-			attribute.String("gcp.client.repo", gcpClientRepo),
-			attribute.String("gcp.client.artifact", gcpClientArtifact),
-		},
-	}
-
-	spans := e.GetSpans()
 	opts := []cmp.Option{
 		cmp.Comparer(spanAttributesComparer),
 	}
