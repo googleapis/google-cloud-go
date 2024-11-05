@@ -21,12 +21,9 @@
 package runpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	api "google.golang.org/genproto/googleapis/api"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -563,7 +562,9 @@ type Service struct {
 	// Optional. Specifies service-level scaling settings
 	Scaling *ServiceScaling `protobuf:"bytes,20,opt,name=scaling,proto3" json:"scaling,omitempty"`
 	// Optional. Disables IAM permission check for run.routes.invoke for callers
-	// of this service. This setting should not be used with external ingress.
+	// of this service. This feature is available by invitation only. For more
+	// information, visit
+	// https://cloud.google.com/run/docs/securing/managing-access#invoker_check.
 	InvokerIamDisabled bool `protobuf:"varint,21,opt,name=invoker_iam_disabled,json=invokerIamDisabled,proto3" json:"invoker_iam_disabled,omitempty"`
 	// Optional. Disables public resolution of the default URI of this service.
 	DefaultUriDisabled bool `protobuf:"varint,22,opt,name=default_uri_disabled,json=defaultUriDisabled,proto3" json:"default_uri_disabled,omitempty"`

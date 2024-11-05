@@ -1505,12 +1505,6 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 // CancelOperation is a utility method from google.longrunning.Operations.
 func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return err
-	}
-
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return err
@@ -1532,7 +1526,7 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}
