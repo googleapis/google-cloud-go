@@ -116,17 +116,15 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 	b := opts.jsonBytes()
 	if b == nil && metadata.OnGCE() {
 		return computeCredentials(opts)
-	} else if b == nil {
-		creds, err := credentials.DetectDefault(&credentials.DetectOptions{
-			Audience: opts.Audience,
-		})
-		if err != nil {
-			return nil, err
-		}
-		return credsFromBytes(creds.JSON(), opts)
-	} else {
-		return credsFromBytes(b, opts)
 	}
+	creds, err := credentials.DetectDefault(&credentials.DetectOptions{
+		Scopes:          defaultScopes,
+		CredentialsJSON: b,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return credsFromBytes(creds.JSON(), opts)
 }
 
 func (o *Options) jsonBytes() []byte {
