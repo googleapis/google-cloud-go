@@ -91,6 +91,7 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 			base:                 trans,
 			creds:                creds,
 			clientUniverseDomain: opts.UniverseDomain,
+			skipUniverseDomainValidation: opts.InternalOptions.SkipUniverseDomainValidation,
 		}
 	}
 	return trans, nil
@@ -185,9 +186,10 @@ func addOCTransport(trans http.RoundTripper, opts *Options) http.RoundTripper {
 }
 
 type authTransport struct {
-	creds                *auth.Credentials
-	base                 http.RoundTripper
-	clientUniverseDomain string
+	creds                        *auth.Credentials
+	base                         http.RoundTripper
+	clientUniverseDomain         string
+	skipUniverseDomainValidation bool
 }
 
 // getClientUniverseDomain returns the default service domain for a given Cloud
@@ -226,7 +228,7 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	if token.MetadataString("auth.google.tokenSource") != "compute-metadata" {
+	if !t.skipUniverseDomainValidation && token.MetadataString("auth.google.tokenSource") != "compute-metadata" {
 		credentialsUniverseDomain, err := t.creds.UniverseDomain(req.Context())
 		if err != nil {
 			return nil, err
