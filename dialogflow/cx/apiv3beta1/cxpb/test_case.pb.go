@@ -338,8 +338,7 @@ type TestCase struct {
 	// The unique identifier of the test case.
 	// [TestCases.CreateTestCase][google.cloud.dialogflow.cx.v3beta1.TestCases.CreateTestCase]
 	// will populate the name automatically. Otherwise use format:
-	// `projects/<Project ID>/locations/<LocationID>/agents/
-	// <AgentID>/testCases/<TestCase ID>`.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/testCases/<TestCaseID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Tags are short descriptions that users may apply to test cases for
 	// organizational and filtering purposes. Each tag should start with "#" and
@@ -457,8 +456,7 @@ type TestCaseResult struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The resource name for the test case result. Format:
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>/testCases/
-	// <TestCase ID>/results/<TestCaseResult ID>`.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/testCases/<TestCaseID>/results/<TestCaseResultID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Environment where the test was run. If not set, it indicates the draft
 	// environment.
@@ -548,16 +546,16 @@ type TestConfig struct {
 	// Session parameters to be compared when calculating differences.
 	TrackingParameters []string `protobuf:"bytes,1,rep,name=tracking_parameters,json=trackingParameters,proto3" json:"tracking_parameters,omitempty"`
 	// Flow name to start the test case with.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	//
 	// Only one of `flow` and `page` should be set to indicate the starting point
 	// of the test case. If neither is set, the test case will start with start
 	// page on the default start flow.
 	Flow string `protobuf:"bytes,2,opt,name=flow,proto3" json:"flow,omitempty"`
 	// The [page][google.cloud.dialogflow.cx.v3beta1.Page] to start the test case
-	// with. Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/pages/<Page ID>`.
+	// with. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/pages/<PageID>`.
 	//
 	// Only one of `flow` and `page` should be set to indicate the starting point
 	// of the test case. If neither is set, the test case will start with start
@@ -924,7 +922,7 @@ type CalculateCoverageRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to calculate coverage for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Agent string `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
 	// Required. The type of coverage requested.
 	Type CalculateCoverageRequest_CoverageType `protobuf:"varint,2,opt,name=type,proto3,enum=google.cloud.dialogflow.cx.v3beta1.CalculateCoverageRequest_CoverageType" json:"type,omitempty"`
@@ -984,7 +982,7 @@ type CalculateCoverageResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The agent to calculate coverage for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Agent string `protobuf:"bytes,5,opt,name=agent,proto3" json:"agent,omitempty"`
 	// The type of coverage requested.
 	//
@@ -1096,7 +1094,7 @@ type ListTestCasesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to list all pages for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return in a single page. By default 20.
 	// Note that when TestCaseView = FULL, the maximum page size allowed is 20.
@@ -1237,10 +1235,10 @@ type BatchDeleteTestCasesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to delete test cases from.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. Format of test case names: `projects/<Project ID>/locations/
-	// <Location ID>/agents/<AgentID>/testCases/<TestCase ID>`.
+	// Required. Format of test case names:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/testCases/<TestCaseID>`.
 	Names []string `protobuf:"bytes,3,rep,name=names,proto3" json:"names,omitempty"`
 }
 
@@ -1298,7 +1296,7 @@ type CreateTestCaseRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to create the test case for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The test case to create.
 	TestCase *TestCase `protobuf:"bytes,2,opt,name=test_case,json=testCase,proto3" json:"test_case,omitempty"`
@@ -1421,8 +1419,8 @@ type GetTestCaseRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the testcase.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/testCases/<TestCase ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/testCases/<TestCaseID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -1472,12 +1470,12 @@ type RunTestCaseRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Format of test case name to run: `projects/<Project
-	// ID>/locations/ <Location ID>/agents/<AgentID>/testCases/<TestCase ID>`.
+	// Required. Format of test case name to run:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/testCases/<TestCaseID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Environment name. If not set, draft environment is assumed.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>`.
 	Environment string `protobuf:"bytes,2,opt,name=environment,proto3" json:"environment,omitempty"`
 }
 
@@ -1625,15 +1623,14 @@ type BatchRunTestCasesRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Agent name. Format: `projects/<Project ID>/locations/<Location
-	// ID>/agents/ <AgentID>`.
+	// Required. Agent name. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. If not set, draft environment is assumed. Format:
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>`.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>`.
 	Environment string `protobuf:"bytes,2,opt,name=environment,proto3" json:"environment,omitempty"`
-	// Required. Format: `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/testCases/<TestCase ID>`.
+	// Required. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/testCases/<TestCaseID>`.
 	TestCases []string `protobuf:"bytes,3,rep,name=test_cases,json=testCases,proto3" json:"test_cases,omitempty"`
 }
 
@@ -1869,7 +1866,7 @@ type ImportTestCasesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to import test cases to.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The source to import.
 	//
@@ -1974,8 +1971,8 @@ type ImportTestCasesResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The unique identifiers of the new test cases.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/testCases/<TestCase ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/testCases/<TestCaseID>`.
 	Names []string `protobuf:"bytes,1,rep,name=names,proto3" json:"names,omitempty"`
 }
 
@@ -2135,7 +2132,7 @@ type ExportTestCasesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent where to export test cases from.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The destination to export.
 	//
@@ -2321,7 +2318,9 @@ type isExportTestCasesResponse_Destination interface {
 
 type ExportTestCasesResponse_GcsUri struct {
 	// The URI to a file containing the exported test cases. This field is
-	// populated only if `gcs_uri` is specified in
+	//
+	//	populated only if `gcs_uri` is specified in
+	//
 	// [ExportTestCasesRequest][google.cloud.dialogflow.cx.v3beta1.ExportTestCasesRequest].
 	GcsUri string `protobuf:"bytes,1,opt,name=gcs_uri,json=gcsUri,proto3,oneof"`
 }
@@ -2384,9 +2383,11 @@ type ListTestCaseResultsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The test case to list results for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>/
-	// testCases/<TestCase ID>`. Specify a `-` as a wildcard for TestCase ID to
-	// list results across multiple test cases.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/testCases/<TestCaseID>`.
+	// Specify a `-` as a wildcard for TestCase ID to
+	//
+	//	list results across multiple test cases.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return in a single page. By default 100 and
 	// at most 1000.
@@ -2548,8 +2549,8 @@ type GetTestCaseResultRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the testcase.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/testCases/<TestCase ID>/results/<TestCaseResult ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/testCases/<TestCaseID>/results/<TestCaseResultID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -3934,20 +3935,19 @@ var file_google_cloud_dialogflow_cx_v3beta1_test_case_proto_rawDesc = []byte{
 	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77,
 	0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d,
 	0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77,
-	0x42, 0xc7, 0x01, 0x0a, 0x26, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x42, 0xc4, 0x01, 0x0a, 0x26, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
 	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77,
 	0x2e, 0x63, 0x78, 0x2e, 0x76, 0x33, 0x62, 0x65, 0x74, 0x61, 0x31, 0x42, 0x0d, 0x54, 0x65, 0x73,
 	0x74, 0x43, 0x61, 0x73, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x36, 0x63, 0x6c,
 	0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67,
 	0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x63, 0x78, 0x2f,
 	0x61, 0x70, 0x69, 0x76, 0x33, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x63, 0x78, 0x70, 0x62, 0x3b,
-	0x63, 0x78, 0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x22, 0x47,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c,
-	0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0x42, 0x65, 0x74, 0x61,
-	0x31, 0xea, 0x02, 0x26, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75,
-	0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43,
-	0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x63, 0x78, 0x70, 0x62, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x22, 0x47, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66,
+	0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0x42, 0x65, 0x74, 0x61, 0x31, 0xea, 0x02,
+	0x26, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a,
+	0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a, 0x3a,
+	0x56, 0x33, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
