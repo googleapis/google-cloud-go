@@ -124,11 +124,11 @@ type SessionEntityType struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The unique identifier of the session entity type.
-	// Format: `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/sessions/<Session ID>/entityTypes/<Entity Type
-	// ID>` or `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/sessions/<Session ID>/entityTypes/<Entity
-	// Type ID>`. If `Environment ID` is not specified, we assume default 'draft'
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`.
+	// If `Environment ID` is not specified, we assume default 'draft'
 	// environment.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Indicates whether the additional data should override or
@@ -200,11 +200,13 @@ type ListSessionEntityTypesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The session to list all session entity types from.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>` or `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/environments/<Environment ID>/sessions/<Session ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>`.
 	// If `Environment ID` is not specified, we assume default 'draft'
-	// environment.
+	//
+	//	environment.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return in a single page. By default 100 and
 	// at most 1000.
@@ -335,11 +337,11 @@ type GetSessionEntityTypeRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the session entity type.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>/entityTypes/<Entity Type ID>` or
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/sessions/<Session ID>/entityTypes/<Entity
-	// Type ID>`. If `Environment ID` is not specified, we assume default 'draft'
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`.
+	// If `Environment ID` is not specified, we assume default 'draft'
 	// environment.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -391,9 +393,10 @@ type CreateSessionEntityTypeRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The session to create a session entity type for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>` or `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/environments/<Environment ID>/sessions/<Session ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>`.
 	// If `Environment ID` is not specified, we assume default 'draft'
 	// environment.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
@@ -455,11 +458,11 @@ type UpdateSessionEntityTypeRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The session entity type to update.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>/entityTypes/<Entity Type ID>` or
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/sessions/<Session ID>/entityTypes/<Entity
-	// Type ID>`. If `Environment ID` is not specified, we assume default 'draft'
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`.
+	// If `Environment ID` is not specified, we assume default 'draft'
 	// environment.
 	SessionEntityType *SessionEntityType `protobuf:"bytes,1,opt,name=session_entity_type,json=sessionEntityType,proto3" json:"session_entity_type,omitempty"`
 	// The mask to control which fields get updated.
@@ -520,11 +523,11 @@ type DeleteSessionEntityTypeRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the session entity type to delete.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>/entityTypes/<Entity Type ID>` or
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/sessions/<Session ID>/entityTypes/<Entity
-	// Type ID>`. If `Environment ID` is not specified, we assume default 'draft'
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`.
+	// If `Environment ID` is not specified, we assume default 'draft'
 	// environment.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -818,20 +821,20 @@ var file_google_cloud_dialogflow_cx_v3beta1_session_entity_type_proto_rawDesc = 
 	0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f,
 	0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63,
 	0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c,
-	0x6f, 0x77, 0x42, 0xd0, 0x01, 0x0a, 0x26, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x6f, 0x77, 0x42, 0xcd, 0x01, 0x0a, 0x26, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
 	0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c,
 	0x6f, 0x77, 0x2e, 0x63, 0x78, 0x2e, 0x76, 0x33, 0x62, 0x65, 0x74, 0x61, 0x31, 0x42, 0x16, 0x53,
 	0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x54, 0x79, 0x70, 0x65,
 	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x36, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67,
 	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69, 0x61,
 	0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x63, 0x78, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x33,
-	0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x63, 0x78, 0x70, 0x62, 0x3b, 0x63, 0x78, 0x70, 0x62, 0xf8,
-	0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x22, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f,
-	0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0x42, 0x65, 0x74, 0x61, 0x31, 0xea, 0x02, 0x26, 0x47,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69,
-	0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33,
-	0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x63, 0x78, 0x70, 0x62, 0x3b, 0x63, 0x78, 0x70, 0x62, 0xa2,
+	0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x22, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c,
+	0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43,
+	0x78, 0x2e, 0x56, 0x33, 0x42, 0x65, 0x74, 0x61, 0x31, 0xea, 0x02, 0x26, 0x47, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f,
+	0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x65, 0x74,
+	0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

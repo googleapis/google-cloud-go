@@ -309,8 +309,8 @@ type GetSecuritySettingsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Resource name of the settings.
-	// Format: `projects/<Project ID>/locations/<Location
-	// ID>/securitySettings/<security settings ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/securitySettings/<securitysettingsID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -421,7 +421,7 @@ type ListSecuritySettingsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The location to list all security settings for.
-	// Format: `projects/<Project ID>/locations/<Location ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return in a single page. By default 20 and
 	// at most 100.
@@ -550,7 +550,7 @@ type CreateSecuritySettingsRequest struct {
 
 	// Required. The location to create an
 	// [SecuritySettings][google.cloud.dialogflow.cx.v3.SecuritySettings] for.
-	// Format: `projects/<Project ID>/locations/<Location ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The security settings to create.
 	SecuritySettings *SecuritySettings `protobuf:"bytes,2,opt,name=security_settings,json=securitySettings,proto3" json:"security_settings,omitempty"`
@@ -610,8 +610,8 @@ type DeleteSecuritySettingsRequest struct {
 
 	// Required. The name of the
 	// [SecuritySettings][google.cloud.dialogflow.cx.v3.SecuritySettings] to
-	// delete. Format: `projects/<Project ID>/locations/<Location
-	// ID>/securitySettings/<Security Settings ID>`.
+	// delete. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/securitySettings/<SecuritySettingsID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -667,8 +667,8 @@ type SecuritySettings struct {
 	// [SecuritySettingsService.UpdateSecuritySettings][google.cloud.dialogflow.cx.v3.SecuritySettingsService.UpdateSecuritySettings]
 	// method.
 	// [SecuritySettingsService.CreateSecuritySettings][google.cloud.dialogflow.cx.v3.SecuritySettingsService.CreateSecuritySettings]
-	// populates the name automatically. Format: `projects/<Project
-	// ID>/locations/<Location ID>/securitySettings/<Security Settings ID>`.
+	// populates the name automatically. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/securitySettings/<SecuritySettingsID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The human-readable name of the security settings, unique within
 	// the location.
@@ -690,9 +690,9 @@ type SecuritySettings struct {
 	// If empty, we use the default DLP inspect config.
 	//
 	// The template name will have one of the following formats:
-	// `projects/<Project ID>/locations/<Location ID>/inspectTemplates/<Template
-	// ID>` OR `organizations/<Organization ID>/locations/<Location
-	// ID>/inspectTemplates/<Template ID>`
+	// `projects/<ProjectID>/locations/<LocationID>/inspectTemplates/<TemplateID>`
+	// OR
+	// `organizations/<OrganizationID>/locations/<LocationID>/inspectTemplates/<TemplateID>`
 	//
 	// Note: `inspect_template` must be located in the same region as the
 	// `SecuritySettings`.
@@ -708,9 +708,9 @@ type SecuritySettings struct {
 	// If empty, Dialogflow replaces sensitive info with `[redacted]` text.
 	//
 	// The template name will have one of the following formats:
-	// `projects/<Project ID>/locations/<Location
-	// ID>/deidentifyTemplates/<Template ID>` OR `organizations/<Organization
-	// ID>/locations/<Location ID>/deidentifyTemplates/<Template ID>`
+	// `projects/<ProjectID>/locations/<LocationID>/deidentifyTemplates/<TemplateID>`
+	// OR
+	// `organizations/<OrganizationID>/locations/<LocationID>/deidentifyTemplates/<TemplateID>`
 	//
 	// Note: `deidentify_template` must be located in the same region as the
 	// `SecuritySettings`.

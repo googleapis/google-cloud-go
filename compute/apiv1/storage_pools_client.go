@@ -232,7 +232,7 @@ func (c *StoragePoolsClient) TestIamPermissions(ctx context.Context, req *comput
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: size_tb and provisioned_iops.
+// Update updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: pool_provisioned_capacity_gb, pool_provisioned_iops and pool_provisioned_throughput.
 func (c *StoragePoolsClient) Update(ctx context.Context, req *computepb.UpdateStoragePoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -1019,7 +1019,7 @@ func (c *storagePoolsRESTClient) TestIamPermissions(ctx context.Context, req *co
 	return resp, nil
 }
 
-// Update updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: size_tb and provisioned_iops.
+// Update updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: pool_provisioned_capacity_gb, pool_provisioned_iops and pool_provisioned_throughput.
 func (c *storagePoolsRESTClient) Update(ctx context.Context, req *computepb.UpdateStoragePoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetStoragePoolResource()
