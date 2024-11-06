@@ -89,7 +89,7 @@ func TestNextPageWithVersionEmulated(t *testing.T) {
 }
 
 func TestNextPageWithoutGenerationEmulated(t *testing.T) {
-	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
+	transportClientTest(skipGRPC("SetAttrSelection not supported"), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
 
 		attrs := &storage.BucketAttrs{
 			Name:              bucket,

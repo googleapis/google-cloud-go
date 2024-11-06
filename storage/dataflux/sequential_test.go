@@ -32,7 +32,7 @@ func TestDoSeqListingEmulated(t *testing.T) {
 			t.Fatal(err)
 		}
 		wantObjects := 10
-		if err := createObject(ctx, bucketHandle, wantObjects, "object/"); err != nil {
+		if err := createObject(ctx, bucketHandle, wantObjects, ""); err != nil {
 			t.Fatalf("unable to create objects: %v", err)
 		}
 		objectIterator := bucketHandle.Objects(ctx, nil)

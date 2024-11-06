@@ -320,8 +320,8 @@ func initEmulatorClients() func() error {
 	}
 
 	emulatorClients = map[string]*storage.Client{
-		"http": httpClient,
-		"grpc": grpcClient,
+		HTTP: httpClient,
+		GRPC: grpcClient,
 	}
 
 	return func() error {
@@ -351,6 +351,10 @@ func transportClientTest(ctx context.Context, t *testing.T, test func(*testing.T
 			test(t, ctx, project, bucket, client)
 		})
 	}
+}
+
+func skipGRPC(reason string) context.Context {
+	return context.WithValue(context.Background(), skipTransportTestKey(GRPC), reason)
 }
 
 // checkEmulatorEnvironment skips the test if the emulator environment variables
