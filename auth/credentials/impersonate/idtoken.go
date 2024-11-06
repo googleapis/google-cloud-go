@@ -44,13 +44,13 @@ type IDTokenOptions struct {
 	// chain. Optional.
 	Delegates []string
 
-	// Credentials used to fetch the ID token. If not provided, and a Client is
-	// also not provided, base credentials will try to be detected from the
-	// environment. Optional.
+	// Credentials used in generating the impersonated ID token. If empty, an
+	// attempt will be made to detect credentials from the environment (see
+	// [cloud.google.com/go/auth/credentials.DetectDefault]). Optional.
 	Credentials *auth.Credentials
 	// Client configures the underlying client used to make network requests
-	// when fetching tokens. If provided the client should provide it's own
-	// base credentials at call time. Optional.
+	// when fetching tokens. If provided this should be a fully-authenticated
+	// client. Optional.
 	Client *http.Client
 	// UniverseDomain is the default service domain for a given Cloud universe.
 	// The default value is "googleapis.com". This is the universe domain
