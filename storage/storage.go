@@ -43,6 +43,10 @@ import (
 	"cloud.google.com/go/storage/internal"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
+	"go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
@@ -50,6 +54,8 @@ import (
 	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
+	"google.golang.org/grpc/experimental/stats"
+	"google.golang.org/grpc/stats/opentelemetry"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -231,6 +237,64 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 	}
 
 	return &Client{tc: tc}, nil
+}
+
+// Check if Direct Connectivity is available
+// Implementation currently uses client-side metrics for gRPC
+func GRPCDirectConnectivitySupported(ctx context.Context, bucket string, opts ...option.ClientOption) (bool, error) {
+	buf := new(bytes.Buffer)
+	exp, err := stdoutmetric.New(
+		stdoutmetric.WithWriter(buf),
+		stdoutmetric.WithoutTimestamps(),
+	)
+	if err != nil {
+		return false, err
+	}
+	defer exp.Shutdown(ctx)
+	view := metric.NewView(
+		metric.Instrument{
+			Name: "grpc.client.attempt.duration",
+			Kind: metric.InstrumentKindHistogram,
+		},
+		metric.Stream{AttributeFilter: attribute.NewAllowKeysFilter("grpc.lb.locality")},
+	)
+	mr := metric.NewManualReader()
+	provider := metric.NewMeterProvider(metric.WithReader(mr), metric.WithView(view))
+	mo := opentelemetry.MetricsOptions{
+		MeterProvider:  provider,
+		Metrics:        stats.NewMetrics("grpc.client.attempt.duration"),
+		OptionalLabels: []string{"grpc.lb.locality"},
+	}
+	combinedOpts := append(opts, WithDisabledClientMetrics(), option.WithGRPCDialOption(opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo})))
+	client, err := NewGRPCClient(ctx, combinedOpts...)
+	if err != nil {
+		return false, err
+	}
+	defer client.Close()
+	_, err = client.Bucket(bucket).Attrs(ctx)
+	if err != nil {
+		return false, err
+	}
+	rm := metricdata.ResourceMetrics{}
+	err = mr.Collect(context.Background(), &rm)
+	if err != nil {
+		return false, err
+	}
+	err = exp.Export(ctx, &rm)
+	if err != nil {
+		return false, err
+	}
+	hasLocality := regexp.MustCompile(`grpc.lb.locality`)
+	lidx := hasLocality.FindIndex(buf.Bytes())
+	if lidx == nil {
+		return false, errors.New("grpc.lb.locality attribute not found")
+	}
+	usingDirectConnectivity := regexp.MustCompile(`{"Key":"grpc.lb.locality","Value":{"Type":"STRING","Value":"{\\\"subZone\\\":\\\"\w+\\\"}`)
+	didx := usingDirectConnectivity.FindIndex(buf.Bytes())
+	if didx == nil {
+		return false, nil
+	}
+	return true, nil
 }
 
 // Close closes the Client.
