@@ -27,6 +27,45 @@ import (
 	"cloud.google.com/go/auth/internal/credsfile"
 )
 
+func TestNewCredentials_Validate(t *testing.T) {
+	tests := []struct {
+		name    string
+		opts    *Options
+		wantErr error
+	}{
+		{
+			name:    "missing opts",
+			wantErr: errMissingOpts,
+		},
+		{
+			name:    "missing audience",
+			opts:    &Options{},
+			wantErr: errMissingAudience,
+		},
+		{
+			name: "both credentials",
+			opts: &Options{
+				Audience:        "aud",
+				CredentialsFile: "creds.json",
+				CredentialsJSON: []byte{0, 1},
+			},
+			wantErr: errBothFileAndJSON,
+		},
+	}
+	for _, tt := range tests {
+		name := tt.name
+		t.Run(name, func(t *testing.T) {
+			err := tt.opts.validate()
+			if err == nil {
+				t.Fatalf("error expected: %s", tt.wantErr)
+			}
+			if err != tt.wantErr {
+				t.Errorf("got %v, want %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
 func TestNewCredentials_ServiceAccount(t *testing.T) {
 	wantTok, _ := createRS256JWT(t)
 	b, err := os.ReadFile("../../internal/testdata/sa.json")

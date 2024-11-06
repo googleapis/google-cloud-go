@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/apps/meet/apiv2beta",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "language": "GO",
     "apis": [
       {

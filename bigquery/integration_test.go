@@ -2167,6 +2167,7 @@ func initQueryParameterTestCases() {
 	dtm := civil.DateTime{Date: d, Time: tm}
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	rat := big.NewRat(13, 10)
+	nrat := big.NewRat(-13, 10)
 	bigRat := big.NewRat(12345, 10e10)
 	rangeTimestamp1 := &RangeValue{
 		Start: time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC),
@@ -2207,6 +2208,13 @@ func initQueryParameterTestCases() {
 			[]QueryParameter{{Name: "val", Value: rat}},
 			[]Value{rat},
 			rat,
+		},
+		{
+			"NegativeBigRatParam",
+			"SELECT @val",
+			[]QueryParameter{{Name: "val", Value: nrat}},
+			[]Value{nrat},
+			nrat,
 		},
 		{
 			"BoolParam",

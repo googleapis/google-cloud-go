@@ -1,5 +1,18 @@
 # Changes
 
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/essentialcontacts/v1.7.1...essentialcontacts/v1.7.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **essentialcontacts:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **essentialcontacts:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+
+### Documentation
+
+* **essentialcontacts:** Marks the `google.cloud.essentialcontacts.v1.Contact.validation_state` field as `output_only` ([0544c0a](https://github.com/googleapis/google-cloud-go/commit/0544c0a920d853a90e0f7115a96389cd06067830))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/essentialcontacts/v1.7.0...essentialcontacts/v1.7.1) (2024-09-12)
 
 

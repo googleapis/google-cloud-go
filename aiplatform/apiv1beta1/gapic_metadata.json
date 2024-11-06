@@ -573,6 +573,11 @@
                 "UpdateEndpoint"
               ]
             },
+            "UpdateEndpointLongRunning": {
+              "methods": [
+                "UpdateEndpointLongRunning"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -666,6 +671,11 @@
             "UpdateEndpoint": {
               "methods": [
                 "UpdateEndpoint"
+              ]
+            },
+            "UpdateEndpointLongRunning": {
+              "methods": [
+                "UpdateEndpointLongRunning"
               ]
             },
             "WaitOperation": {
