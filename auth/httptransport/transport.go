@@ -86,12 +86,16 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 				headers.Set(quotaProjectHeaderKey, qp)
 			}
 		}
+		var skipUD bool
+		if iOpts := opts.InternalOptions; iOpts != nil {
+			skipUD = iOpts.SkipUniverseDomainValidation
+		}
 		creds.TokenProvider = auth.NewCachedTokenProvider(creds.TokenProvider, nil)
 		trans = &authTransport{
-			base:                 trans,
-			creds:                creds,
-			clientUniverseDomain: opts.UniverseDomain,
-			skipUniverseDomainValidation: opts.InternalOptions.SkipUniverseDomainValidation,
+			base:                         trans,
+			creds:                        creds,
+			clientUniverseDomain:         opts.UniverseDomain,
+			skipUniverseDomainValidation: skipUD,
 		}
 	}
 	return trans, nil
