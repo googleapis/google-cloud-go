@@ -88,7 +88,7 @@ func TestNextPageWithVersionEmulated(t *testing.T) {
 	})
 }
 
-func TestNextPageWithGenerationDiabledEmulated(t *testing.T) {
+func TestNextPageWithoutGenerationEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
 
 		attrs := &storage.BucketAttrs{
@@ -106,7 +106,7 @@ func TestNextPageWithGenerationDiabledEmulated(t *testing.T) {
 		}
 		query := storage.Query{Versions: true}
 		// nextPage lists multiple versions of the same object when generation value is disabled.
-		if err := query.SetAttrSelection([]string{"name", "size"}); err != nil {
+		if err := query.SetAttrSelection([]string{"Name", "Size"}); err != nil {
 			t.Fatalf("failed to call SetAttrSelection() : %v", err)
 		}
 		pageResult, err := nextPage(ctx, nextPageOpts{
