@@ -1115,12 +1115,28 @@ func TestUpdateRetryPolicy(t *testing.T) {
 	}
 }
 
-func TestUpdateFilter(t *testing.T) {
+func TestSubscriptionFilter(t *testing.T) {
 	ctx := context.Background()
 	pclient, sclient, _, cleanup := newFake(ctx, t)
 	defer cleanup()
 
 	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+
+	// Creating a subscription with invalid filter should return an error.
+	_, err := sclient.CreateSubscription(ctx, &pb.Subscription{
+		Name:                  "projects/p/subscriptions/s",
+		Topic:                 top.Name,
+		AckDeadlineSeconds:    30,
+		EnableMessageOrdering: true,
+		Filter:                "bad filter",
+	})
+	if err == nil {
+		t.Fatal("expected bad filter error, got nil")
+	}
+	if st := status.Convert(err); st.Code() != codes.InvalidArgument {
+		t.Fatalf("got err status: %v, want: %v", st.Code(), codes.InvalidArgument)
+	}
+
 	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
 		AckDeadlineSeconds: minAckDeadlineSecs,
 		Name:               "projects/P/subscriptions/S",
@@ -1142,6 +1158,19 @@ func TestUpdateFilter(t *testing.T) {
 
 	if got, want := updated.Filter, update.Filter; got != want {
 		t.Fatalf("got %v, want %v", got, want)
+	}
+
+	// Updating a subscription with bad filter should return an error.
+	update.Filter = "bad filter"
+	updated, err = sclient.UpdateSubscription(ctx, &pb.UpdateSubscriptionRequest{
+		Subscription: update,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"filter"}},
+	})
+	if err == nil {
+		t.Fatal("expected bad filter error, got nil")
+	}
+	if st := status.Convert(err); st.Code() != codes.InvalidArgument {
+		t.Fatalf("got err status: %v, want: %v", st.Code(), codes.InvalidArgument)
 	}
 }
 
