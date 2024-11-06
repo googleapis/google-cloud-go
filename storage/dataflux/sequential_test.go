@@ -32,7 +32,7 @@ func TestDoSeqListingEmulated(t *testing.T) {
 			t.Fatal(err)
 		}
 		wantObjects := 10
-		if err := createObject(ctx, bucketHandle, wantObjects, ""); err != nil {
+		if err := createObject(ctx, bucketHandle, wantObjects, "object/"); err != nil {
 			t.Fatalf("unable to create objects: %v", err)
 		}
 		objectIterator := bucketHandle.Objects(ctx, nil)
@@ -83,6 +83,86 @@ func TestSequentialListingEmulated(t *testing.T) {
 		}
 		if nextToken != "" {
 			t.Errorf("sequentialListing() expected to receive empty token, got %q", nextToken)
+		}
+	})
+}
+
+func TestSequentialWithQueryEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
+
+		bucketHandle := client.Bucket(bucket)
+		if err := bucketHandle.Create(ctx, project, &storage.BucketAttrs{
+			Name:              bucket,
+			VersioningEnabled: true,
+		}); err != nil {
+			t.Fatal(err)
+		}
+		numObject := 10
+		prefixa := "pre/a/"
+		prefix := "pre/"
+		// Create a "prefix/" object.
+		if err := createObjectWithVersion(ctx, bucketHandle, 1, prefix); err != nil {
+			t.Fatalf("unable to create objects: %v", err)
+		}
+		// Create 10 objects with "prefix/a/" prefix.
+		if err := createObject(ctx, bucketHandle, numObject, prefixa); err != nil {
+			t.Fatalf("unable to create objects: %v", err)
+		}
+		// Create 10 objects with "prefix/" prefix.
+		if err := createObject(ctx, bucketHandle, numObject, prefix); err != nil {
+			t.Fatalf("unable to create objects: %v", err)
+		}
+		testcase := []struct {
+			desc                 string
+			skipDirectoryObjects bool
+			query                storage.Query
+			want                 int
+		}{
+			{
+				desc:                 "list all objects using worksteal",
+				skipDirectoryObjects: false,
+				query:                storage.Query{Prefix: "", Delimiter: ""},
+				want:                 21,
+			},
+			{
+				desc:                 "skip /prefix object  with worksteal",
+				skipDirectoryObjects: true,
+				query:                storage.Query{Prefix: "", Delimiter: ""},
+				want:                 20,
+			},
+			{
+				desc:                 "objects in prefix/",
+				skipDirectoryObjects: false,
+				query:                storage.Query{Prefix: prefix, Delimiter: "/"},
+				// List all objects in pre/, prefix: pre/, object: pre/.
+				want: 12,
+			},
+			{
+				desc:                 "objects in prefix/, skipDirectoryObjects ",
+				skipDirectoryObjects: true,
+				query:                storage.Query{Prefix: prefix, Delimiter: "/"},
+				// List all objects in pre/, prefix: pre/ and skip object : pre/.
+				want: 11,
+			},
+		}
+		for _, tc := range testcase {
+			t.Run(tc.desc, func(t *testing.T) {
+				c := &Lister{
+					method:               sequential,
+					bucket:               bucketHandle,
+					query:                tc.query,
+					skipDirectoryObjects: tc.skipDirectoryObjects,
+				}
+
+				objects, nextToken, err := c.sequentialListing(ctx)
+				if err != nil {
+					t.Fatalf("failed to call doSeqListing() : %v", err)
+				}
+				if len(objects) != tc.want || nextToken != "" {
+					t.Errorf("sequentialListing() got = (%d, %q), want (%d, empty string)", len(objects), nextToken, tc.want)
+				}
+				c.Close()
+			})
 		}
 	})
 }

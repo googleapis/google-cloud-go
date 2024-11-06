@@ -93,8 +93,17 @@ func TestIntegration_NextBatch_All(t *testing.T) {
 	if len(objects) != len(httpTestBucket.objects) {
 		t.Errorf("expected to receive %d results, got %d results", len(httpTestBucket.objects), len(objects))
 	}
+	if df.method != sequential {
+		t.Errorf("expected df.method to be %v, got %v", worksteal, df.method)
+	}
 }
 
+// TestIntegration_NextBatch lists all objects in the given bucket for given query.
+// For first batch of objects sequential and worksteal listing runs in parallel.
+//
+//	For subsequent batch worksteal listing completes first as it is faster for
+//
+// large number of files.
 func TestIntegration_NextBatch(t *testing.T) {
 	// Accessing public bucket to list large number of files in batches.
 	// See https://cloud.google.com/storage/docs/public-datasets/landsat
@@ -102,7 +111,7 @@ func TestIntegration_NextBatch(t *testing.T) {
 		t.Skip("Integration tests skipped in short mode")
 	}
 	const landsatBucket = "gcp-public-data-landsat"
-	const landsatPrefix = "LC08/01/001/00"
+	const landsatPrefix = "LC08/01/001"
 
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
@@ -110,11 +119,12 @@ func TestIntegration_NextBatch(t *testing.T) {
 		t.Fatalf("NewClient: %v", err)
 	}
 
-	numObjectsPrefix := 17225
+	numObjectsPrefix := 314391
 	in := &ListerInput{
-		BucketName: landsatBucket,
-		Query:      storage.Query{Prefix: landsatPrefix},
-		BatchSize:  6000,
+		BucketName:  landsatBucket,
+		Query:       storage.Query{Prefix: landsatPrefix},
+		BatchSize:   50000,
+		Parallelism: 100,
 	}
 
 	df := NewLister(c, in)
@@ -136,6 +146,9 @@ func TestIntegration_NextBatch(t *testing.T) {
 	}
 	if totalObjects != numObjectsPrefix {
 		t.Errorf("expected to receive %d objects in results, got %d objects in results", numObjectsPrefix, totalObjects)
+	}
+	if df.method != worksteal {
+		t.Errorf("expected df.method to be %v, got %v", worksteal, df.method)
 	}
 	if counter <= 1 {
 		t.Errorf("expected df.NextBatch to be called more than once, got %d times", counter)

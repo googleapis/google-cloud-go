@@ -211,3 +211,79 @@ func TestNextPageErrorEmulated(t *testing.T) {
 		}
 	})
 }
+
+func TestNextPageWithQueryEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
+
+		bucketHandle := client.Bucket(bucket)
+		if err := bucketHandle.Create(ctx, project, &storage.BucketAttrs{
+			Name:              bucket,
+			VersioningEnabled: true,
+		}); err != nil {
+			t.Fatal(err)
+		}
+		numObject := 10
+		prefixa := "pre/a/"
+		prefix := "pre/"
+		// Create a "prefix/" object.
+		if err := createObjectWithVersion(ctx, bucketHandle, 1, prefix); err != nil {
+			t.Fatalf("unable to create objects: %v", err)
+		}
+		// Create 10 objects with "prefix/a/" prefix.
+		if err := createObject(ctx, bucketHandle, numObject, prefixa); err != nil {
+			t.Fatalf("unable to create objects: %v", err)
+		}
+		// Create 10 objects with "prefix/" prefix.
+		if err := createObject(ctx, bucketHandle, numObject, prefix); err != nil {
+			t.Fatalf("unable to create objects: %v", err)
+		}
+		testcase := []struct {
+			desc                 string
+			skipDirectoryObjects bool
+			query                storage.Query
+			want                 int
+		}{
+			{
+				desc:                 "list all objects",
+				skipDirectoryObjects: false,
+				query:                storage.Query{Prefix: "", Delimiter: ""},
+				want:                 21,
+			},
+			{
+				desc:                 "skip directory object",
+				skipDirectoryObjects: true,
+				query:                storage.Query{Prefix: "", Delimiter: ""},
+				// Skip directory object "pre/"
+				want: 20,
+			},
+			{
+				desc:                 "objects in prefix and delimiter /",
+				skipDirectoryObjects: false,
+				query:                storage.Query{Prefix: prefix, Delimiter: "/"},
+				// List all objects in pre/, prefix: pre/, object: pre/.
+				want: 12,
+			},
+			{
+				desc:                 "objects in prefix",
+				skipDirectoryObjects: false,
+				query:                storage.Query{Prefix: prefix, Delimiter: ""},
+				want:                 21,
+			},
+		}
+		for _, tc := range testcase {
+			t.Run(tc.desc, func(t *testing.T) {
+				pageResult, err := nextPage(ctx, nextPageOpts{
+					bucketHandle:         bucketHandle,
+					query:                tc.query,
+					skipDirectoryObjects: tc.skipDirectoryObjects,
+				})
+				if err != nil {
+					t.Fatalf("NextBatch() failed: %v", err)
+				}
+				if len(pageResult.items) != tc.want || !pageResult.doneListing {
+					t.Errorf("NextBatch() got = (%d, %v), want (%d, true)", len(pageResult.items), pageResult.doneListing, tc.want)
+				}
+			})
+		}
+	})
+}
