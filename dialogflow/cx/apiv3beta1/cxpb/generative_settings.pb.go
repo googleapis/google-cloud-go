@@ -21,12 +21,11 @@
 package cxpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -42,8 +41,8 @@ type GenerativeSettings struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/generativeSettings`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/generativeSettings`.
 	Name string `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
 	// Settings for Generative Fallback.
 	FallbackSettings *GenerativeSettings_FallbackSettings `protobuf:"bytes,1,opt,name=fallback_settings,json=fallbackSettings,proto3" json:"fallback_settings,omitempty"`

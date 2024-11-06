@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -49,7 +48,7 @@ type ListChangelogsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent containing the changelogs.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The filter string. Supports filter by user_email, resource, type and
 	// create_time. Some examples:
@@ -209,8 +208,8 @@ type GetChangelogRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the changelog to get.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/changelogs/<Changelog ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/changelogs/<ChangelogID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -260,8 +259,8 @@ type Changelog struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The unique identifier of the changelog.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/changelogs/<Changelog ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/changelogs/<ChangelogID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Email address of the authenticated user.
 	UserEmail string `protobuf:"bytes,2,opt,name=user_email,json=userEmail,proto3" json:"user_email,omitempty"`
