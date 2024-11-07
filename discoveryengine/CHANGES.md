@@ -1,6 +1,34 @@
 # Changelog
 
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.15.0...discoveryengine/v1.16.0) (2024-11-06)
+
+
+### Features
+
+* **discoveryengine:** Add AdvancedCompleteQuery API ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **discoveryengine:** Add BillingEstimation in data store ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **discoveryengine:** Add GroundedGenerationService API ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **discoveryengine:** Add lite search API to allow public website search with API key ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **discoveryengine:** Add lite search API to allow public website search with API key ([ecf1cf6](https://github.com/googleapis/google-cloud-go/commit/ecf1cf68aabe32e131bfc66b7c4575c63ad41a22))
+* **discoveryengine:** Add LOW_GROUNDED_ANSWER in answer skip reasons ([ecf1cf6](https://github.com/googleapis/google-cloud-go/commit/ecf1cf68aabe32e131bfc66b7c4575c63ad41a22))
+* **discoveryengine:** Add one_box_page_size on search ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **discoveryengine:** Add Sitemap APIs to preview channel ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **discoveryengine:** Support advanced boost search ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **discoveryengine:** Support Google Workspace search ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **discoveryengine:** Support natural language understanding search ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **discoveryengine:** Support query regex in control match rules ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **discoveryengine:** Support query regex in control match rules ([ecf1cf6](https://github.com/googleapis/google-cloud-go/commit/ecf1cf68aabe32e131bfc66b7c4575c63ad41a22))
+* **discoveryengine:** Support search personalization to preview channel ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+
+
+### Documentation
+
+* **discoveryengine:** Deprecate asynchronous mode in answer generation ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **discoveryengine:** Deprecate extractive_answers in answer generation ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([f307078](https://github.com/googleapis/google-cloud-go/commit/f307078bc14758671e43ac401efb855089b27752))
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([ecf1cf6](https://github.com/googleapis/google-cloud-go/commit/ecf1cf68aabe32e131bfc66b7c4575c63ad41a22))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.14.0...discoveryengine/v1.15.0) (2024-10-23)
 
 

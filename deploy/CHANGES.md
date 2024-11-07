@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.23.1...deploy/v1.24.0) (2024-11-06)
+
+
+### Features
+
+* **deploy:** Added new fields for the Automation Repair rule ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+* **deploy:** Added route destination related fields to Gateway service mesh message ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+
 ## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.23.0...deploy/v1.23.1) (2024-10-23)
 
 
