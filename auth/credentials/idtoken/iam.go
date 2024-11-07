@@ -20,7 +20,6 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
-	"cloud.google.com/go/auth/internal"
 )
 
 // iamIDTokenProvider performs an authenticated RPC with the IAM service to
@@ -33,7 +32,7 @@ import (
 type iamIDTokenProvider struct {
 	client *http.Client
 	// universeDomain is used for endpoint construction.
-	universeDomain string
+	universeDomain auth.CredentialsPropertyProvider
 	// signerEmail is the service account client email used to form the IAM generateIdToken endpoint.
 	signerEmail string
 	audience    string
@@ -42,7 +41,7 @@ type iamIDTokenProvider struct {
 func (i iamIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	opts := impersonate.IDTokenOptions{
 		Client:              i.client,
-		UniverseDomain:      internal.StaticCredentialsProperty(i.universeDomain),
+		UniverseDomain:      i.universeDomain,
 		ServiceAccountEmail: i.signerEmail,
 		GenerateIDTokenRequest: impersonate.GenerateIDTokenRequest{
 			Audience:     i.audience,

@@ -22,7 +22,6 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials/impersonate"
-	"cloud.google.com/go/auth/httptransport"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
 )
@@ -47,18 +46,25 @@ func credsFromDefault(creds *auth.Credentials, opts *Options) (*auth.Credentials
 		var tp auth.TokenProvider
 		if resolveUniverseDomain(f) == internal.DefaultUniverseDomain {
 			tp, err = new2LOTokenProvider(f, opts)
+			if err != nil {
+				return nil, err
+			}
 		} else {
-			tp, err = newIAMIDTokenProvider(b, f, opts)
-		}
-		if err != nil {
-			return nil, err
+			// In case of non-GDU universe domain, use IAM.
+			tp = iamIDTokenProvider{
+				client: opts.client(),
+				// Pass the credentials universe domain to configure the endpoint.
+				universeDomain: auth.CredentialsPropertyFunc(creds.UniverseDomain),
+				signerEmail:    f.ClientEmail,
+				audience:       opts.Audience,
+			}
 		}
 		tp = auth.NewCachedTokenProvider(tp, nil)
 		return auth.NewCredentials(&auth.CredentialsOptions{
 			TokenProvider:          tp,
 			JSON:                   b,
-			ProjectIDProvider:      internal.StaticCredentialsProperty(f.ProjectID),
-			UniverseDomainProvider: internal.StaticCredentialsProperty(f.UniverseDomain),
+			ProjectIDProvider:      auth.CredentialsPropertyFunc(creds.ProjectID),
+			UniverseDomainProvider: auth.CredentialsPropertyFunc(creds.UniverseDomain),
 		}), nil
 	case credsfile.ImpersonatedServiceAccountKey, credsfile.ExternalAccountKey:
 		type url struct {
@@ -117,44 +123,6 @@ func new2LOTokenProvider(f *credsfile.ServiceAccountFile, opts *Options) (auth.T
 
 	opts2LO.PrivateClaims = customClaims
 	return auth.New2LOTokenProvider(opts2LO)
-}
-
-// newIAMIDTokenProvider creates a TokenProvider that performs an authenticated
-// RPC with the IAM service to obtain an ID token. The provided service account
-// must have the iam.serviceAccountTokenCreator role. If a fully-authenticated
-// client is not provided, the service account must support a self-signed JWT.
-// This TokenProvider is primarily intended for use in non-GDU universes, which
-// do not have access to the oauth2.googleapis.com/token endpoint, and thus must
-// use IAM generateIdToken instead.
-func newIAMIDTokenProvider(b []byte, f *credsfile.ServiceAccountFile, opts *Options) (auth.TokenProvider, error) {
-	client := opts.Client
-	var creds *auth.Credentials
-	var err error
-	if client == nil {
-		creds, err = credentials.DetectDefault(&credentials.DetectOptions{
-			CredentialsJSON:  b,
-			Scopes:           []string{"https://www.googleapis.com/auth/iam"},
-			UseSelfSignedJWT: true,
-		})
-		if err != nil {
-			return nil, err
-		}
-		client, err = httptransport.NewClient(&httptransport.Options{
-			Credentials:    creds,
-			UniverseDomain: opts.UniverseDomain,
-		})
-		if err != nil {
-			return nil, err
-		}
-	}
-	its := iamIDTokenProvider{
-		client: client,
-		// Pass the credentials universe domain to configure the endpoint.
-		universeDomain: resolveUniverseDomain(f),
-		signerEmail:    f.ClientEmail,
-		audience:       opts.Audience,
-	}
-	return its, nil
 }
 
 // resolveUniverseDomain returns the default service domain for a given
