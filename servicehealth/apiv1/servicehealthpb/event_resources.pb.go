@@ -21,13 +21,12 @@
 package servicehealthpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1458,6 +1457,7 @@ func (x *Asset) GetAssetType() string {
 	return ""
 }
 
+// Message for requesting list of events.
 type ListEventsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1487,7 +1487,8 @@ type ListEventsRequest struct {
 	// response. The expression takes the following forms: <br>
 	// *   field=value for `category` and `state`<br>
 	// *   field &lt;, >, &lt;=, or >= value for `update_time` <br>
-	// Examples: `category=INCIDENT`, `update_time>=2000-01-01T11:30:00-04:00`
+	// Examples: `category=INCIDENT`, `update_time>="2000-01-01T11:30:00-04:00"`,
+	// `event_impacts.product.product_name:"Eventarc"`
 	// <br>
 	//
 	// Multiple filter queries are separated by spaces. Example:
@@ -1497,7 +1498,7 @@ type ListEventsRequest struct {
 	// AND and OR expressions explicitly.
 	//
 	// Filter is supported for the following fields: `category`, `state`,
-	// `update_time`
+	// `update_time`, `event_impacts.product.product_name`
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. Event fields to include in response.
 	View EventView `protobuf:"varint,6,opt,name=view,proto3,enum=google.cloud.servicehealth.v1.EventView" json:"view,omitempty"`
@@ -1570,6 +1571,7 @@ func (x *ListEventsRequest) GetView() EventView {
 	return EventView_EVENT_VIEW_UNSPECIFIED
 }
 
+// Message for response to listing events.
 type ListEventsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1640,7 +1642,7 @@ func (x *ListEventsResponse) GetUnreachable() []string {
 	return nil
 }
 
-// Message for getting an event
+// Message for getting an event.
 type GetEventRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1695,6 +1697,7 @@ func (x *GetEventRequest) GetName() string {
 	return ""
 }
 
+// Message for requesting list of organization events.
 type ListOrganizationEventsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1731,7 +1734,7 @@ type ListOrganizationEventsRequest struct {
 	// *   field=value for `category` and `state`
 	// *   field &lt;, >, &lt;=, or >= value for `update_time`
 	//
-	// Examples: `category=INCIDENT`, `update_time>=2000-01-01T11:30:00-04:00`
+	// Examples: `category=INCIDENT`, `update_time>="2000-01-01T11:30:00-04:00"`
 	//
 	// Multiple filter queries are space-separated. Example:
 	// `category=INCIDENT state=ACTIVE`.
@@ -1813,6 +1816,7 @@ func (x *ListOrganizationEventsRequest) GetView() OrganizationEventView {
 	return OrganizationEventView_ORGANIZATION_EVENT_VIEW_UNSPECIFIED
 }
 
+// Message for response to listing organization events.
 type ListOrganizationEventsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1883,6 +1887,7 @@ func (x *ListOrganizationEventsResponse) GetUnreachable() []string {
 	return nil
 }
 
+// Message for getting an organization event.
 type GetOrganizationEventRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1939,7 +1944,7 @@ func (x *GetOrganizationEventRequest) GetName() string {
 	return ""
 }
 
-// Message for requesting list of OrganizationImpacts
+// Message for requesting list of organization impacts.
 type ListOrganizationImpactsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2050,6 +2055,7 @@ func (x *ListOrganizationImpactsRequest) GetFilter() string {
 	return ""
 }
 
+// Message for response to listing organization impacts.
 type ListOrganizationImpactsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2122,6 +2128,7 @@ func (x *ListOrganizationImpactsResponse) GetUnreachable() []string {
 	return nil
 }
 
+// Message for getting an organization impact.
 type GetOrganizationImpactRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
