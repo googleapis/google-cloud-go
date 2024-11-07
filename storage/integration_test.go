@@ -327,9 +327,9 @@ var readCases = []readCase{
 func TestIntegration_DetectDirectConnectivity(t *testing.T) {
 	ctx := skipHTTP("direct connectivity isn't available for json")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, _ *Client) {
-		_, err := GRPCDirectConnectivitySupported(ctx, bucket)
+		_, err := CheckDirectConnectivitySupported(ctx, bucket)
 		if err != nil {
-			t.Fatalf("GRPCDirectConnectivitySupported: %v", err)
+			t.Fatalf("CheckDirectConnectivitySupported: %v", err)
 		}
 	})
 }
