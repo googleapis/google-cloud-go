@@ -275,11 +275,14 @@ func GRPCDirectConnectivitySupported(ctx context.Context, bucket string, opts ..
 	if err != nil {
 		return false, err
 	}
+	// Call manual reader to collect metric
 	rm := metricdata.ResourceMetrics{}
 	err = mr.Collect(context.Background(), &rm)
 	if err != nil {
 		return false, err
 	}
+	// Pass collected metrics to stdoutmetric exporter to write into buf
+	// TODO: Inspect ResourceMetrics{} without having to export before checking locality label. Currently this isn't clear how to do.
 	err = exp.Export(ctx, &rm)
 	if err != nil {
 		return false, err
