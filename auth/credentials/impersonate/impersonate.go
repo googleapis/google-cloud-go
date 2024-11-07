@@ -76,10 +76,8 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 				return nil, err
 			}
 		}
-		client, err = httptransport.NewClient(&httptransport.Options{
-			Credentials:    creds,
-			UniverseDomain: opts.UniverseDomain,
-		})
+
+		client, err = httptransport.NewClient(transportOpts(opts, creds))
 		if err != nil {
 			return nil, err
 		}
@@ -122,6 +120,24 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 		TokenProvider:          auth.NewCachedTokenProvider(its, tpo),
 		UniverseDomainProvider: universeDomainProvider,
 	}), nil
+}
+
+// transportOpts returns options for httptransport.NewClient. If opts.UniverseDomain
+// is provided, it will be used in the transport for a validation ensuring that it
+// matches the universe domain in the base credentials. If opts.UniverseDomain
+// is not provided, this validation will be skipped.
+func transportOpts(opts *CredentialsOptions, creds *auth.Credentials) *httptransport.Options {
+	tOpts := &httptransport.Options{
+		Credentials: creds,
+	}
+	if opts.UniverseDomain == "" {
+		tOpts.InternalOptions = &httptransport.InternalOptions{
+			SkipUniverseDomainValidation: true,
+		}
+	} else {
+		tOpts.UniverseDomain = opts.UniverseDomain
+	}
+	return tOpts
 }
 
 // resolveUniverseDomainProvider returns the default service domain for a given

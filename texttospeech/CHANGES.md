@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.9.0...texttospeech/v1.10.0) (2024-11-06)
+
+
+### Features
+
+* **texttospeech:** Add multi-speaker markup, which allows generating dialogue between multiple speakers ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.8.1...texttospeech/v1.9.0) (2024-10-23)
 
 
