@@ -239,8 +239,13 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 	return &Client{tc: tc}, nil
 }
 
-// Check if Direct Connectivity is available
-// Implementation currently uses client-side metrics for gRPC
+// Check if Direct Connectivity is available for a specific bucket
+//
+// Implementation currently uses client-side metrics for gRPC to detect
+// Direct Connectivity using grpc.lb.locality label.
+//
+// You may configure the client by passing in options from the [google.golang.org/api/option]
+// package.
 func GRPCDirectConnectivitySupported(ctx context.Context, bucket string, opts ...option.ClientOption) (bool, error) {
 	buf := new(bytes.Buffer)
 	exp, err := stdoutmetric.New(
