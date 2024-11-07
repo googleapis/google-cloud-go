@@ -112,8 +112,8 @@ type Environment struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the environment.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The human-readable name of the environment (unique in an agent).
 	// Limit of 64 characters.
@@ -223,8 +223,8 @@ type ListEnvironmentsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The [Agent][google.cloud.dialogflow.cx.v3.Agent] to list all
-	// environments for. Format: `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>`.
+	// environments for. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return in a single page. By default 20 and
 	// at most 100.
@@ -358,8 +358,7 @@ type GetEnvironmentRequest struct {
 
 	// Required. The name of the
 	// [Environment][google.cloud.dialogflow.cx.v3.Environment]. Format:
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>`.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -411,7 +410,7 @@ type CreateEnvironmentRequest struct {
 
 	// Required. The [Agent][google.cloud.dialogflow.cx.v3.Agent] to create an
 	// [Environment][google.cloud.dialogflow.cx.v3.Environment] for. Format:
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The environment to create.
 	Environment *Environment `protobuf:"bytes,2,opt,name=environment,proto3" json:"environment,omitempty"`
@@ -531,8 +530,7 @@ type DeleteEnvironmentRequest struct {
 
 	// Required. The name of the
 	// [Environment][google.cloud.dialogflow.cx.v3.Environment] to delete. Format:
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>`.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -583,8 +581,8 @@ type LookupEnvironmentHistoryRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Resource name of the environment to look up the history for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The maximum number of items to return in a single page. By default 100 and
 	// at most 1000.
@@ -715,9 +713,7 @@ type ContinuousTestResult struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The resource name for the continuous test result. Format:
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment
-	// ID>/continuousTestResults/<ContinuousTestResult ID>`.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/continuousTestResults/<ContinuousTestResultID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The result of this continuous test run, i.e. whether all the tests in this
 	// continuous test run pass or not.
@@ -795,8 +791,8 @@ type RunContinuousTestRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Format: `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/environments/<Environment ID>`.
+	// Required. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>`.
 	Environment string `protobuf:"bytes,1,opt,name=environment,proto3" json:"environment,omitempty"`
 }
 
@@ -948,8 +944,8 @@ type ListContinuousTestResultsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The environment to list results for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>/
-	// environments/<Environment ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return in a single page. By default 100 and
 	// at most 1000.
@@ -1078,12 +1074,12 @@ type DeployFlowRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The environment to deploy the flow to.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>/
-	// environments/<Environment ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>`.
 	Environment string `protobuf:"bytes,1,opt,name=environment,proto3" json:"environment,omitempty"`
 	// Required. The flow version to deploy.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>/
-	// flows/<Flow ID>/versions/<Version ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/versions/<VersionID>`.
 	FlowVersion string `protobuf:"bytes,2,opt,name=flow_version,json=flowVersion,proto3" json:"flow_version,omitempty"`
 }
 
@@ -1144,8 +1140,7 @@ type DeployFlowResponse struct {
 	Environment *Environment `protobuf:"bytes,1,opt,name=environment,proto3" json:"environment,omitempty"`
 	// The name of the flow version
 	// [Deployment][google.cloud.dialogflow.cx.v3.Deployment]. Format:
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>/
-	// environments/<Environment ID>/deployments/<Deployment ID>`.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/deployments/<DeploymentID>`.
 	Deployment string `protobuf:"bytes,2,opt,name=deployment,proto3" json:"deployment,omitempty"`
 }
 
@@ -1252,8 +1247,11 @@ type Environment_VersionConfig struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Format: projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/flows/<Flow ID>/versions/<Version ID>.
+	// Required. Both flow and playbook versions are supported.
+	// Format for flow version:
+	// projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/versions/<VersionID>.
+	// Format for playbook version:
+	// projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>/versions/<VersionID>.
 	Version string `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
 }
 
@@ -1303,8 +1301,8 @@ type Environment_TestCasesConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// A list of test case names to run. They should be under the same agent.
-	// Format of each test case name: `projects/<Project ID>/locations/
-	// <Location ID>/agents/<AgentID>/testCases/<TestCase ID>`
+	// Format of each test case name:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/testCases/<TestCaseID>`
 	TestCases []string `protobuf:"bytes,1,rep,name=test_cases,json=testCases,proto3" json:"test_cases,omitempty"`
 	// Whether to run test cases in
 	// [TestCasesConfig.test_cases][google.cloud.dialogflow.cx.v3.Environment.TestCasesConfig.test_cases]
@@ -1834,19 +1832,18 @@ var file_google_cloud_dialogflow_cx_v3_environment_proto_rawDesc = []byte{
 	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77,
 	0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f,
 	0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f,
-	0x77, 0x42, 0xb6, 0x01, 0x0a, 0x21, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x77, 0x42, 0xb3, 0x01, 0x0a, 0x21, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
 	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f,
 	0x77, 0x2e, 0x63, 0x78, 0x2e, 0x76, 0x33, 0x42, 0x10, 0x45, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e,
 	0x6d, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x31, 0x63, 0x6c, 0x6f,
 	0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f,
 	0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x63, 0x78, 0x2f, 0x61,
-	0x70, 0x69, 0x76, 0x33, 0x2f, 0x63, 0x78, 0x70, 0x62, 0x3b, 0x63, 0x78, 0x70, 0x62, 0xf8, 0x01,
-	0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
-	0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77,
-	0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0xea, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a,
-	0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c,
-	0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x70, 0x69, 0x76, 0x33, 0x2f, 0x63, 0x78, 0x70, 0x62, 0x3b, 0x63, 0x78, 0x70, 0x62, 0xa2, 0x02,
+	0x02, 0x44, 0x46, 0xaa, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f,
+	0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78,
+	0x2e, 0x56, 0x33, 0xea, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c,
+	0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a,
+	0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

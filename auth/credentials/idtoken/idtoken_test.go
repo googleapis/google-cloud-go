@@ -66,7 +66,7 @@ func TestNewCredentials_Validate(t *testing.T) {
 	}
 }
 
-func TestNewCredentials_ServiceAccount(t *testing.T) {
+func TestNewCredentials_ServiceAccount_NoClient(t *testing.T) {
 	wantTok, _ := createRS256JWT(t)
 	b, err := os.ReadFile("../../internal/testdata/sa.json")
 	if err != nil {
@@ -116,30 +116,57 @@ func (m mockTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return rw.Result(), nil
 }
 
-func TestNewCredentials_ImpersonatedServiceAccount(t *testing.T) {
-	wantTok, _ := createRS256JWT(t)
-	client := internal.DefaultClient()
-	client.Transport = mockTransport{
-		handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte(fmt.Sprintf(`{"token": %q}`, wantTok)))
-		}),
-	}
-	creds, err := NewCredentials(&Options{
-		Audience:        "aud",
-		CredentialsFile: "../../internal/testdata/imp.json",
-		CustomClaims: map[string]interface{}{
-			"foo": "bar",
+func TestNewCredentials_ImpersonatedAndExternal(t *testing.T) {
+	tests := []struct {
+		name string
+		adc  string
+		file string
+	}{
+		{
+			name: "ADC external account",
+			adc:  "../../internal/testdata/exaccount_url.json",
 		},
-		Client: client,
-	})
-	if err != nil {
-		t.Fatal(err)
+		{
+			name: "CredentialsFile impersonated service account",
+			file: "../../internal/testdata/imp.json",
+		},
 	}
-	tok, err := creds.Token(context.Background())
-	if err != nil {
-		t.Fatalf("tp.Token() = %v", err)
-	}
-	if tok.Value != wantTok {
-		t.Errorf("got %q, want %q", tok.Value, wantTok)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			wantTok, _ := createRS256JWT(t)
+			client := internal.DefaultClient()
+			client.Transport = mockTransport{
+				handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Write([]byte(fmt.Sprintf(`{"token": %q}`, wantTok)))
+				}),
+			}
+
+			opts := &Options{
+				Audience: "aud",
+				CustomClaims: map[string]interface{}{
+					"foo": "bar",
+				},
+				Client: client,
+			}
+			if tt.file != "" {
+				opts.CredentialsFile = tt.file
+			} else if tt.adc != "" {
+				t.Setenv(credsfile.GoogleAppCredsEnvVar, tt.adc)
+			} else {
+				t.Fatal("test fixture must have adc or file")
+			}
+
+			creds, err := NewCredentials(opts)
+			if err != nil {
+				t.Fatal(err)
+			}
+			tok, err := creds.Token(context.Background())
+			if err != nil {
+				t.Fatalf("tp.Token() = %v", err)
+			}
+			if tok.Value != wantTok {
+				t.Errorf("got %q, want %q", tok.Value, wantTok)
+			}
+		})
 	}
 }

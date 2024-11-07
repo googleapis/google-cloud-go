@@ -22,11 +22,11 @@ package idtoken
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"os"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/compute/metadata"
@@ -52,6 +52,11 @@ const (
 )
 
 var (
+	defaultScopes = []string{
+		"https://iamcredentials.googleapis.com/",
+		"https://www.googleapis.com/auth/cloud-platform",
+	}
+
 	errMissingOpts     = errors.New("idtoken: opts must be provided")
 	errMissingAudience = errors.New("idtoken: Audience must be provided")
 	errBothFileAndJSON = errors.New("idtoken: CredentialsFile and CredentialsJSON must not both be provided")
@@ -113,13 +118,20 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
-	if b := opts.jsonBytes(); b != nil {
-		return credsFromBytes(b, opts)
-	}
-	if metadata.OnGCE() {
+	b := opts.jsonBytes()
+	if b == nil && metadata.OnGCE() {
 		return computeCredentials(opts)
 	}
-	return nil, fmt.Errorf("idtoken: couldn't find any credentials")
+	creds, err := credentials.DetectDefault(&credentials.DetectOptions{
+		Scopes:           defaultScopes,
+		CredentialsJSON:  b,
+		Client:           opts.client(),
+		UseSelfSignedJWT: true,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return credsFromDefault(creds, opts)
 }
 
 func (o *Options) jsonBytes() []byte {
