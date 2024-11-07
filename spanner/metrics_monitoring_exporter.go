@@ -36,6 +36,8 @@ import (
 	"google.golang.org/genproto/googleapis/api/distribution"
 	googlemetricpb "google.golang.org/genproto/googleapis/api/metric"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -145,7 +147,14 @@ func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetr
 			Name:       name,
 			TimeSeries: tss[i:j],
 		}
-		errs = append(errs, me.client.CreateServiceTimeSeries(ctx, req))
+		err = me.client.CreateServiceTimeSeries(ctx, req)
+		if err != nil {
+			if status.Code(err) == codes.PermissionDenied {
+				err = fmt.Errorf("%w Need monitoring metric writer permission on project=%s. Follow https://cloud.google.com/spanner/docs/view-manage-client-side-metrics#access-client-side-metrics to set up permissions",
+					err, me.projectID)
+			}
+		}
+		errs = append(errs, err)
 	}
 
 	return errors.Join(errs...)
