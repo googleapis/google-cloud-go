@@ -248,15 +248,6 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 // You may configure the client by passing in options from the [google.golang.org/api/option]
 // package.
 func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts ...option.ClientOption) (bool, error) {
-	buf := new(bytes.Buffer)
-	exp, err := stdoutmetric.New(
-		stdoutmetric.WithWriter(buf),
-		stdoutmetric.WithoutTimestamps(),
-	)
-	if err != nil {
-		return false, err
-	}
-	defer exp.Shutdown(ctx)
 	view := metric.NewView(
 		metric.Instrument{
 			Name: "grpc.client.attempt.duration",
@@ -289,6 +280,15 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 	}
 	// Pass collected metrics to stdoutmetric exporter to write into buf
 	// TODO: Inspect ResourceMetrics{} without having to export before checking locality label. Currently this isn't clear how to do.
+	buf := new(bytes.Buffer)
+	exp, err := stdoutmetric.New(
+		stdoutmetric.WithWriter(buf),
+		stdoutmetric.WithoutTimestamps(),
+	)
+	if err != nil {
+		return false, err
+	}
+	defer exp.Shutdown(ctx)
 	err = exp.Export(ctx, &rm)
 	if err != nil {
 		return false, err
