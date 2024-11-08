@@ -1,5 +1,17 @@
 # Changes
 
+## [1.72.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.71.0...spanner/v1.72.0) (2024-11-07)
+
+
+### Features
+
+* **spanner/spansql:** Add support for protobuf column types & Proto bundles ([#10945](https://github.com/googleapis/google-cloud-go/issues/10945)) ([91c6f0f](https://github.com/googleapis/google-cloud-go/commit/91c6f0fcaadfb7bd983e070e6ceffc8aeba7d5a2)), refs [#10944](https://github.com/googleapis/google-cloud-go/issues/10944)
+
+
+### Bug Fixes
+
+* **spanner:** Skip exporting metrics if attempt or operation is not captured. ([#11095](https://github.com/googleapis/google-cloud-go/issues/11095)) ([1d074b5](https://github.com/googleapis/google-cloud-go/commit/1d074b520c7a368fb8a7a27574ef56a120665c64))
+
 ## [1.71.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.70.0...spanner/v1.71.0) (2024-11-01)
 
 
