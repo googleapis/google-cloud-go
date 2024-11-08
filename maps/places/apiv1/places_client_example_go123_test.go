@@ -17,7 +17,3 @@
 //go:build go1.23
 
 package places_test
-
-import (
-	places "cloud.google.com/go/maps/places/apiv1"
-)
