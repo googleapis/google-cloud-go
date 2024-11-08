@@ -33,6 +33,15 @@ import (
 	"google.golang.org/api/option"
 )
 
+type emulatedTraceTest struct {
+	*testing.T
+	name            string
+	resources       resources
+	transportClient *Client
+}
+
+type traceFunc func(ctx context.Context, c *Client, fs *resources) error
+
 func TestTraceStorageTraceStartEndSpan(t *testing.T) {
 	ctx := context.Background()
 	e := tracetest.NewInMemoryExporter()
@@ -41,15 +50,14 @@ func TestTraceStorageTraceStartEndSpan(t *testing.T) {
 	otel.SetTracerProvider(tp)
 
 	spanName := "storage.TestTrace.TestStorageTraceStartEndSpan"
+	addAttrs := attribute.String("foo", "bar")
 	spanStartOpts := []trace.SpanStartOption{
-		trace.WithAttributes(
-			attribute.String("foo", "bar"),
-		),
+		trace.WithAttributes(addAttrs),
 	}
-	addAttrs := attribute.String("fakeKey", "fakeVal")
+	newAttrs := attribute.Int("fakeKey", 800)
 
 	ctx, span := startSpan(ctx, spanName, spanStartOpts...)
-	span.SetAttributes(addAttrs)
+	span.SetAttributes(newAttrs)
 	endSpan(ctx, nil)
 
 	spans := e.GetSpans()
@@ -57,50 +65,24 @@ func TestTraceStorageTraceStartEndSpan(t *testing.T) {
 		t.Errorf("expected one span, got %d", len(spans))
 	}
 
-	// Test StartSpanOption and Cloud Trace Adoption common attributes are appended.
-	wantAttributes := tracetest.SpanStub{
-		Name: spanName,
-		Attributes: []attribute.KeyValue{
-			attribute.String("foo", "bar"),
-			attribute.String("gcp.client.version", internal.Version),
-			attribute.String("gcp.client.repo", gcpClientRepo),
-			attribute.String("gcp.client.artifact", gcpClientArtifact),
-		},
-	}
+	// Test StartSpanOption and Cloud Trace adoption common attributes are appended.
 	// Test startSpan returns the span and additional attributes can be set.
-	wantAttributes.Attributes = append(wantAttributes.Attributes, addAttrs)
+	wantSpan := createWantSpanStub(spanName)
+	wantSpan.Attributes = append(wantSpan.Attributes, addAttrs)
+	wantSpan.Attributes = append(wantSpan.Attributes, newAttrs)
 	opts := []cmp.Option{
 		cmp.Comparer(spanAttributesComparer),
 	}
 	for _, span := range spans {
-		if diff := testutil.Diff(span, wantAttributes, opts...); diff != "" {
+		if diff := testutil.Diff(span, wantSpan, opts...); diff != "" {
 			t.Errorf("diff: -got, +want:\n%s\n", diff)
 		}
 	}
-}
-
-func spanAttributesComparer(a, b tracetest.SpanStub) bool {
-	if a.Name != b.Name {
-		return false
-	}
-	if len(a.Attributes) != len(b.Attributes) {
-		return false
-	}
-	return true
-}
-
-type emulatedTraceTest struct {
-	*testing.T
-	name            string
-	resources       resources
-	transportClient *Client
+	e.Reset()
 }
 
 func TestTraceSpans(t *testing.T) {
-	host := os.Getenv("STORAGE_EMULATOR_HOST")
-	if host == "" {
-		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
-	}
+	checkEmulatorEnvironment(t)
 
 	// Create non-wrapped client to use for setup steps.
 	ctx := context.Background()
@@ -118,6 +100,7 @@ func TestTraceSpans(t *testing.T) {
 				if transport == "grpc" && slices.Contains(skippedTraceMethods, spanName) {
 					t.Skip("not supported")
 				}
+
 				// Setup: Create the trace subtest, transport client and test resources.
 				subtest := &emulatedTraceTest{T: t, name: testName}
 				subtest.initTransportClient(transport)
@@ -127,7 +110,11 @@ func TestTraceSpans(t *testing.T) {
 				// TODO: Remove setting development env var upon launch.
 				t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
 				// Configure the tracer provider and in-memory exporter.
-				e, _ := enableOTelTraceInTests2()
+				ctx := context.Background()
+				e := tracetest.NewInMemoryExporter()
+				tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+				defer tp.Shutdown(ctx)
+				otel.SetTracerProvider(tp)
 
 				// Run the library method that has trace instrumentation.
 				err = fn(ctx, subtest.transportClient, &subtest.resources)
@@ -136,8 +123,9 @@ func TestTraceSpans(t *testing.T) {
 				}
 
 				// Verify trace spans.
-				wantedSpan := createWantSpanStub(spanName)
-				subtest.checkOTelTraceSpans(e, wantedSpan)
+				wantSpan := createWantSpanStub(spanName)
+				subtest.checkOTelTraceSpans(e, wantSpan)
+				e.Reset()
 			})
 		}
 	}
@@ -165,6 +153,42 @@ func (et *emulatedTraceTest) initTransportClient(transport string) {
 	// Reduce backoff to get faster test execution.
 	transportClient.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
 	et.transportClient = transportClient
+}
+
+func createWantSpanStub(spanName string) tracetest.SpanStub {
+	return tracetest.SpanStub{
+		Name: spanName,
+		Attributes: []attribute.KeyValue{
+			attribute.String("gcp.client.version", internal.Version),
+			attribute.String("gcp.client.repo", gcpClientRepo),
+			attribute.String("gcp.client.artifact", gcpClientArtifact),
+		},
+	}
+}
+
+func (et *emulatedTraceTest) checkOTelTraceSpans(e *tracetest.InMemoryExporter, wantSpan tracetest.SpanStub) {
+	spans := e.GetSpans()
+	if len(spans) == 0 {
+		et.Errorf("Wanted trace spans, got none")
+	}
+	opts := []cmp.Option{
+		cmp.Comparer(spanAttributesComparer),
+	}
+	for _, span := range spans {
+		if diff := testutil.Diff(span, wantSpan, opts...); diff != "" {
+			et.Errorf("diff: -got, +want:\n%s\n", diff)
+		}
+	}
+}
+
+func spanAttributesComparer(a, b tracetest.SpanStub) bool {
+	if a.Name != b.Name {
+		return false
+	}
+	if len(a.Attributes) != len(b.Attributes) {
+		return false
+	}
+	return true
 }
 
 // Creates test resources.
@@ -211,44 +235,9 @@ func (et *emulatedTraceTest) populateResources(ctx context.Context, c *Client, r
 	}
 }
 
-func createWantSpanStub(spanName string) tracetest.SpanStub {
-	return tracetest.SpanStub{
-		Name: spanName,
-		Attributes: []attribute.KeyValue{
-			attribute.String("gcp.client.version", internal.Version),
-			attribute.String("gcp.client.repo", gcpClientRepo),
-			attribute.String("gcp.client.artifact", gcpClientArtifact),
-		},
-	}
-}
-
-func enableOTelTraceInTests2() (*tracetest.InMemoryExporter, context.Context) {
-	span_context := context.Background()
-	e := tracetest.NewInMemoryExporter()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
-	otel.SetTracerProvider(tp)
-
-	return e, span_context
-}
-
-// Tests trace span instrumentation on the veneer library.
-func (et *emulatedTraceTest) checkOTelTraceSpans(e *tracetest.InMemoryExporter, wantSpan tracetest.SpanStub) {
-	spans := e.GetSpans()
-	if len(spans) == 0 {
-		et.Errorf("Wanted trace spans, got none")
-	}
-	opts := []cmp.Option{
-		cmp.Comparer(spanAttributesComparer),
-	}
-	for _, span := range spans {
-		if diff := testutil.Diff(span, wantSpan, opts...); diff != "" {
-			et.Errorf("diff: -got, +want:\n%s\n", diff)
-		}
-	}
-}
-
-type traceFunc func(ctx context.Context, c *Client, fs *resources) error
-
+// traceMethods are library methods that have trace instrumentation. This is a map whose keys are
+// a string describing the spanName (e.g. storage.Bucket.Attrs) and values are functions which
+// wrap library methods that implement the API calls.
 var traceMethods = map[string]traceFunc{
 	// Bucket module
 	"storage.Bucket.Attrs": func(ctx context.Context, c *Client, fs *resources) error {
