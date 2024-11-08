@@ -16,8 +16,6 @@ package storage
 
 import (
 	"context"
-	"fmt"
-	"os"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
@@ -46,7 +44,7 @@ func TestTraceStorageTraceStartEndSpan(t *testing.T) {
 	}
 	addAttrs := attribute.String("fakeKey", "fakeVal")
 
-	ctx, span := startSpan(ctx, spanName, spanStartopts...)
+	ctx, span := startSpan(ctx, spanName, spanStartOpts...)
 	span.SetAttributes(addAttrs)
 	endSpan(ctx, nil)
 
@@ -79,11 +77,9 @@ func TestTraceStorageTraceStartEndSpan(t *testing.T) {
 
 func spanAttributesComparer(a, b tracetest.SpanStub) bool {
 	if a.Name != b.Name {
-		fmt.Printf("name mismatch: a.Name: %v, b.Name: %v\n", a.Name, b.Name)
 		return false
 	}
 	if len(a.Attributes) != len(b.Attributes) {
-		fmt.Printf("len mismatch: a.Attributes: %d, b.Attributes: %d\n", len(a.Attributes), len(b.Attributes))
 		return false
 	}
 	return true
