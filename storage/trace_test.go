@@ -31,10 +31,7 @@ import (
 )
 
 func TestTraceStorageTraceStartEndSpan(t *testing.T) {
-	originalOtelTracingBool := os.Getenv("GO_STORAGE_DEV_OTEL_TRACING")
-	defer os.Setenv("GO_STORAGE_DEV_OTEL_TRACING", originalOtelTracingBool)
-
-	os.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
 	ctx := context.Background()
 	e := tracetest.NewInMemoryExporter()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
@@ -42,7 +39,7 @@ func TestTraceStorageTraceStartEndSpan(t *testing.T) {
 	otel.SetTracerProvider(tp)
 
 	spanName := "storage.TestTrace.TestStorageTraceStartEndSpan"
-	spanStartopts := []trace.SpanStartOption{
+	spanStartOpts := []trace.SpanStartOption{
 		trace.WithAttributes(
 			attribute.String("foo", "bar"),
 		),
