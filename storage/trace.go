@@ -16,7 +16,6 @@ package storage
 
 import (
 	"context"
-	"os"
 
 	"cloud.google.com/go/storage/internal"
 	"go.opentelemetry.io/otel"
@@ -31,11 +30,6 @@ const (
 	gcpClientRepo            = "googleapis/google-cloud-go"
 	gcpClientArtifact        = "storage"
 )
-
-// isOTelTracingDevEnabled checks the development flag until experimental feature is launched.
-func isOTelTracingDevEnabled() bool {
-	return os.Getenv(storageOtelTracingDevVar) == "true"
-}
 
 func tracer() trace.Tracer {
 	return otel.Tracer(defaultTracerName, trace.WithInstrumentationVersion(internal.Version))

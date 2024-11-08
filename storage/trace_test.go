@@ -29,7 +29,6 @@ import (
 )
 
 func TestTraceStorageTraceStartEndSpan(t *testing.T) {
-	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
 	ctx := context.Background()
 	e := tracetest.NewInMemoryExporter()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
