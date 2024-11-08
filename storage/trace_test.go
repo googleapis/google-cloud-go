@@ -81,7 +81,7 @@ func TestTraceStorageTraceStartEndSpan(t *testing.T) {
 	e.Reset()
 }
 
-func TestTraceSpans(t *testing.T) {
+func TestTraceSpansEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 
 	// Create non-wrapped client to use for setup steps.
