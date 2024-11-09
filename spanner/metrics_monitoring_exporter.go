@@ -29,6 +29,7 @@ import (
 
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
 	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
+	"cloud.google.com/go/spanner/internal"
 	"go.opentelemetry.io/otel/attribute"
 	otelmetric "go.opentelemetry.io/otel/sdk/metric"
 	otelmetricdata "go.opentelemetry.io/otel/sdk/metric/metricdata"
@@ -37,6 +38,7 @@ import (
 	googlemetricpb "google.golang.org/genproto/googleapis/api/metric"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -147,7 +149,7 @@ func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetr
 			Name:       name,
 			TimeSeries: tss[i:j],
 		}
-		err = me.client.CreateServiceTimeSeries(ctx, req)
+		err = me.client.CreateServiceTimeSeries(metadata.NewOutgoingContext(ctx, metadata.Pairs("x-goog-api-client", "gccl/"+internal.Version)), req)
 		if err != nil {
 			if status.Code(err) == codes.PermissionDenied {
 				err = fmt.Errorf("%w Need monitoring metric writer permission on project=%s. Follow https://cloud.google.com/spanner/docs/view-manage-client-side-metrics#access-client-side-metrics to set up permissions",
