@@ -508,7 +508,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 
 	// Create a OpenTelemetry metrics configuration
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider)
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider, opts...)
 	if err != nil {
 		return nil, err
 	}
