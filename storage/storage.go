@@ -239,15 +239,12 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 	return &Client{tc: tc}, nil
 }
 
-// CheckDirectConnectivitySupported checks if Direct Connectivity is available
-// for a specific bucket.
+// CheckDirectConnectivitySupported checks if gRPC direct connectivity
+// is available for a specific bucket from the environment where the client
+// is running.
 //
-// Implementation currently uses client-side metrics for gRPC to detect
-// Direct Connectivity using grpc.lb.locality label.
-//
-// You may configure the client by passing in options from the [google.golang.org/api/option]
-// package.
-func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts ...option.ClientOption) (bool, error) {
+// You can pass in [option.ClientOption] you plan on passing to [NewGRPCClient]
+func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts ...option.ClientOption) error {
 	view := metric.NewView(
 		metric.Instrument{
 			Name: "grpc.client.attempt.duration",
@@ -265,18 +262,18 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 	combinedOpts := append(opts, WithDisabledClientMetrics(), option.WithGRPCDialOption(opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo})))
 	client, err := NewGRPCClient(ctx, combinedOpts...)
 	if err != nil {
-		return false, err
+		return fmt.Errorf("checkDirectConnectivitySupported: %v", err)
 	}
 	defer client.Close()
 	_, err = client.Bucket(bucket).Attrs(ctx)
 	if err != nil {
-		return false, err
+		return fmt.Errorf("checkDirectConnectivitySupported: %v", err)
 	}
 	// Call manual reader to collect metric
 	rm := metricdata.ResourceMetrics{}
 	err = mr.Collect(context.Background(), &rm)
 	if err != nil {
-		return false, err
+		return fmt.Errorf("checkDirectConnectivitySupported: %v", err)
 	}
 	// Pass collected metrics to stdoutmetric exporter to write into buf
 	// TODO: Inspect ResourceMetrics{} without having to export before checking locality label. Currently this isn't clear how to do.
@@ -286,24 +283,24 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 		stdoutmetric.WithoutTimestamps(),
 	)
 	if err != nil {
-		return false, err
+		return fmt.Errorf("checkDirectConnectivitySupported: %v", err)
 	}
 	defer exp.Shutdown(ctx)
 	err = exp.Export(ctx, &rm)
 	if err != nil {
-		return false, err
+		return fmt.Errorf("checkDirectConnectivitySupported: %v", err)
 	}
 	hasLocality := regexp.MustCompile(`grpc.lb.locality`)
 	lidx := hasLocality.FindIndex(buf.Bytes())
 	if lidx == nil {
-		return false, errors.New("grpc.lb.locality attribute not found")
+		return errors.New("checkDirectConnectivitySupported: grpc.lb.locality attribute not found")
 	}
 	usingDirectConnectivity := regexp.MustCompile(`{"Key":"grpc.lb.locality","Value":{"Type":"STRING","Value":"{\\\"subZone\\\":\\\"\w+\\\"}`)
 	didx := usingDirectConnectivity.FindIndex(buf.Bytes())
 	if didx == nil {
-		return false, nil
+		return errors.New("checkDirectConnectivitySupported: direct connectivity not detected")
 	}
-	return true, nil
+	return nil
 }
 
 // Close closes the Client.

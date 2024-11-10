@@ -53,6 +53,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2/apierror"
+	"go.opentelemetry.io/contrib/detectors/gcp"
+	"go.opentelemetry.io/otel/sdk/resource"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -327,9 +329,24 @@ var readCases = []readCase{
 func TestIntegration_DetectDirectConnectivity(t *testing.T) {
 	ctx := skipHTTP("direct connectivity isn't available for json")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, _ *Client) {
-		_, err := CheckDirectConnectivitySupported(ctx, bucket)
+		// Using Resoource Detector to detect if test is being ran inside GCE
+		// if so, the test expects Direct Connectivity to be detected.
+		// Otherwise, it will only validate that Direct Connectivity was not
+		// detected.
+		detectedAttrs, err := resource.New(ctx, resource.WithDetectors(gcp.NewDetector()))
 		if err != nil {
-			t.Fatalf("CheckDirectConnectivitySupported: %v", err)
+			t.Fatalf("resource.New: %v", err)
+		}
+		if v, present := detectedAttrs.Set().Value("cloud.platform"); present && v.AsString() == "gcp_compute_engine" {
+			err := CheckDirectConnectivitySupported(ctx, bucket)
+			if err == nil {
+				t.Fatalf("CheckDirectConnectivitySupported: %v", err)
+			}
+		} else {
+			err := CheckDirectConnectivitySupported(ctx, bucket)
+			if err == nil {
+				t.Fatal("CheckDirectConnectivitySupported: expected error but none returned")
+			}
 		}
 	})
 }
