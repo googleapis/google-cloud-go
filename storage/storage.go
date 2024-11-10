@@ -44,7 +44,6 @@ import (
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"golang.org/x/oauth2/google"
@@ -265,42 +264,28 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 		return fmt.Errorf("checkDirectConnectivitySupported: %v", err)
 	}
 	defer client.Close()
-	_, err = client.Bucket(bucket).Attrs(ctx)
-	if err != nil {
+	if _, err = client.Bucket(bucket).Attrs(ctx); err != nil {
 		return fmt.Errorf("checkDirectConnectivitySupported: %v", err)
 	}
 	// Call manual reader to collect metric
 	rm := metricdata.ResourceMetrics{}
-	err = mr.Collect(context.Background(), &rm)
-	if err != nil {
+	if err = mr.Collect(context.Background(), &rm); err != nil {
 		return fmt.Errorf("checkDirectConnectivitySupported: %v", err)
 	}
-	// Pass collected metrics to stdoutmetric exporter to write into buf
-	// TODO: Inspect ResourceMetrics{} without having to export before checking locality label. Currently this isn't clear how to do.
-	buf := new(bytes.Buffer)
-	exp, err := stdoutmetric.New(
-		stdoutmetric.WithWriter(buf),
-		stdoutmetric.WithoutTimestamps(),
-	)
-	if err != nil {
-		return fmt.Errorf("checkDirectConnectivitySupported: %v", err)
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			if m.Name == "grpc.client.attempt.duration" {
+				hist := m.Data.(metricdata.Histogram[float64])
+				for _, d := range hist.DataPoints {
+					v, present := d.Attributes.Value("grpc.lb.locality")
+					if present && v.AsString() != "" {
+						return nil
+					}
+				}
+			}
+		}
 	}
-	defer exp.Shutdown(ctx)
-	err = exp.Export(ctx, &rm)
-	if err != nil {
-		return fmt.Errorf("checkDirectConnectivitySupported: %v", err)
-	}
-	hasLocality := regexp.MustCompile(`grpc.lb.locality`)
-	lidx := hasLocality.FindIndex(buf.Bytes())
-	if lidx == nil {
-		return errors.New("checkDirectConnectivitySupported: grpc.lb.locality attribute not found")
-	}
-	usingDirectConnectivity := regexp.MustCompile(`{"Key":"grpc.lb.locality","Value":{"Type":"STRING","Value":"{\\\"subZone\\\":\\\"\w+\\\"}`)
-	didx := usingDirectConnectivity.FindIndex(buf.Bytes())
-	if didx == nil {
-		return errors.New("checkDirectConnectivitySupported: direct connectivity not detected")
-	}
-	return nil
+	return errors.New("checkDirectConnectivitySupported: direct connectivity not detected")
 }
 
 // Close closes the Client.

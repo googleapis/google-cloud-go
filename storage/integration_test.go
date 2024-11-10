@@ -339,13 +339,16 @@ func TestIntegration_DetectDirectConnectivity(t *testing.T) {
 		}
 		if v, present := detectedAttrs.Set().Value("cloud.platform"); present && v.AsString() == "gcp_compute_engine" {
 			err := CheckDirectConnectivitySupported(ctx, bucket)
-			if err == nil {
+			if err != nil {
 				t.Fatalf("CheckDirectConnectivitySupported: %v", err)
 			}
 		} else {
 			err := CheckDirectConnectivitySupported(ctx, bucket)
 			if err == nil {
 				t.Fatal("CheckDirectConnectivitySupported: expected error but none returned")
+			}
+			if err != nil && !strings.Contains(err.Error(), "direct connectivity not detected") {
+				t.Fatalf("CheckDirectConnectivitySupported: failed on a different error %v", err)
 			}
 		}
 	})
