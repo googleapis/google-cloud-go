@@ -18,6 +18,7 @@ package discoveryengine_test
 
 import (
 	"context"
+	"io"
 
 	discoveryengine "cloud.google.com/go/discoveryengine/apiv1beta"
 	discoveryenginepb "cloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb"
@@ -82,6 +83,71 @@ func ExampleGroundedGenerationClient_CheckGrounding() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleGroundedGenerationClient_GenerateGroundedContent() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := discoveryengine.NewGroundedGenerationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &discoveryenginepb.GenerateGroundedContentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb#GenerateGroundedContentRequest.
+	}
+	resp, err := c.GenerateGroundedContent(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleGroundedGenerationClient_StreamGenerateGroundedContent() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := discoveryengine.NewGroundedGenerationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+	stream, err := c.StreamGenerateGroundedContent(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	go func() {
+		reqs := []*discoveryenginepb.GenerateGroundedContentRequest{
+			// TODO: Create requests.
+		}
+		for _, req := range reqs {
+			if err := stream.Send(req); err != nil {
+				// TODO: Handle error.
+			}
+		}
+		stream.CloseSend()
+	}()
+	for {
+		resp, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
 
 func ExampleGroundedGenerationClient_CancelOperation() {

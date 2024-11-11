@@ -349,6 +349,12 @@ type ClientConfig struct {
 	//
 	// Default: false
 	EnableEndToEndTracing bool
+
+	// DisableNativeMetrics indicates whether native metrics should be disabled or not.
+	// If true, native metrics will not be emitted.
+	//
+	// Default: false
+	DisableNativeMetrics bool
 }
 
 type openTelemetryConfig struct {
@@ -492,13 +498,12 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		// Do not emit native metrics when emulator is being used
 		metricsProvider = noop.NewMeterProvider()
 	}
-
-	// SPANNER_ENABLE_BUILTIN_METRICS environment variable is used to enable
-	// native metrics for the Spanner client, which overrides the default.
-	//
-	// This is an EXPERIMENTAL feature and may be changed or removed in the future.
-	if os.Getenv("SPANNER_ENABLE_BUILTIN_METRICS") != "true" {
-		// Do not emit native metrics when SPANNER_ENABLE_BUILTIN_METRICS is not set to true
+	// Check if native metrics are disabled via env.
+	if disableNativeMetrics, _ := strconv.ParseBool(os.Getenv("SPANNER_DISABLE_BUILTIN_METRICS")); disableNativeMetrics {
+		config.DisableNativeMetrics = true
+	}
+	if config.DisableNativeMetrics {
+		// Do not emit native metrics when DisableNativeMetrics is set
 		metricsProvider = noop.NewMeterProvider()
 	}
 

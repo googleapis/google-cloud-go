@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.11.1...shopping/v0.12.0) (2024-11-06)
+
+
+### Features
+
+* **shopping/css:** A new enum `SubscriptionPeriod` is added ([706ecb2](https://github.com/googleapis/google-cloud-go/commit/706ecb2c813da3109035b986a642ca891a33847f))
+* **shopping/css:** A new field `headline_offer_installment` is added to message `.google.shopping.css.v1.Attributes` ([706ecb2](https://github.com/googleapis/google-cloud-go/commit/706ecb2c813da3109035b986a642ca891a33847f))
+* **shopping/css:** A new field `headline_offer_subscription_cost` is added to message `.google.shopping.css.v1.Attributes` ([706ecb2](https://github.com/googleapis/google-cloud-go/commit/706ecb2c813da3109035b986a642ca891a33847f))
+* **shopping/css:** A new message `HeadlineOfferInstallment` is added ([706ecb2](https://github.com/googleapis/google-cloud-go/commit/706ecb2c813da3109035b986a642ca891a33847f))
+* **shopping/css:** A new message `HeadlineOfferSubscriptionCost` is added ([706ecb2](https://github.com/googleapis/google-cloud-go/commit/706ecb2c813da3109035b986a642ca891a33847f))
+
 ## [0.11.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.11.0...shopping/v0.11.1) (2024-10-23)
 
 

@@ -409,6 +409,9 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 // to OpenTelemetry attributes format,
 // - combines these with common client attributes and returns
 func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribute.KeyValue, error) {
+	if mt.currOp == nil || mt.currOp.currAttempt == nil {
+		return nil, fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
+	}
 	// Create attribute key value pairs for attributes common to all metricss
 	attrKeyValues := []attribute.KeyValue{
 		attribute.String(metricLabelKeyMethod, strings.ReplaceAll(strings.TrimPrefix(mt.method, "/google.spanner.v1."), "/", ".")),
@@ -471,7 +474,10 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	elapsedTime := convertToMs(time.Since(mt.currOp.currAttempt.startTime))
 
 	// Record attempt_latencies
-	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
+	attemptLatAttrs, err := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
+	if err != nil {
+		return
+	}
 	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributes(attemptLatAttrs...))
 }
 
@@ -487,15 +493,24 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 	elapsedTimeMs := convertToMs(time.Since(mt.currOp.startTime))
 
 	// Record operation_count
-	opCntAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationCount)
+	opCntAttrs, err := mt.toOtelMetricAttrs(metricNameOperationCount)
+	if err != nil {
+		return
+	}
 	mt.instrumentOperationCount.Add(mt.ctx, 1, metric.WithAttributes(opCntAttrs...))
 
 	// Record operation_latencies
-	opLatAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationLatencies)
+	opLatAttrs, err := mt.toOtelMetricAttrs(metricNameOperationLatencies)
+	if err != nil {
+		return
+	}
 	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributes(opLatAttrs...))
 
 	// Record attempt_count
-	attemptCntAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptCount)
+	attemptCntAttrs, err := mt.toOtelMetricAttrs(metricNameAttemptCount)
+	if err != nil {
+		return
+	}
 	mt.instrumentAttemptCount.Add(mt.ctx, mt.currOp.attemptCount, metric.WithAttributes(attemptCntAttrs...))
 }
 

@@ -213,6 +213,119 @@ func (StreamingRecognitionResult_MessageType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_dialogflow_cx_v3beta1_session_proto_rawDescGZIP(), []int{7, 0}
 }
 
+// The attribute(or function) for which the custom ranking is to be
+// applied.
+type BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType int32
+
+const (
+	// Unspecified AttributeType.
+	BoostSpec_ConditionBoostSpec_BoostControlSpec_ATTRIBUTE_TYPE_UNSPECIFIED BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType = 0
+	// The value of the numerical field will be used to dynamically update
+	// the boost amount. In this case, the attribute_value (the x value)
+	// of the control point will be the actual value of the numerical
+	// field for which the boost_amount is specified.
+	BoostSpec_ConditionBoostSpec_BoostControlSpec_NUMERICAL BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType = 1
+	// For the freshness use case the attribute value will be the duration
+	// between the current time and the date in the datetime field
+	// specified. The value must be formatted as an XSD `dayTimeDuration`
+	// value (a restricted subset of an ISO 8601 duration value). The
+	// pattern for this is: `[nD][T[nH][nM][nS]]`.
+	// E.g. `5D`, `3DT12H30M`, `T24H`.
+	BoostSpec_ConditionBoostSpec_BoostControlSpec_FRESHNESS BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType = 2
+)
+
+// Enum value maps for BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType.
+var (
+	BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType_name = map[int32]string{
+		0: "ATTRIBUTE_TYPE_UNSPECIFIED",
+		1: "NUMERICAL",
+		2: "FRESHNESS",
+	}
+	BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType_value = map[string]int32{
+		"ATTRIBUTE_TYPE_UNSPECIFIED": 0,
+		"NUMERICAL":                  1,
+		"FRESHNESS":                  2,
+	}
+)
+
+func (x BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType) Enum() *BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType {
+	p := new(BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType)
+	*p = x
+	return p
+}
+
+func (x BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_dialogflow_cx_v3beta1_session_proto_enumTypes[3].Descriptor()
+}
+
+func (BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType) Type() protoreflect.EnumType {
+	return &file_google_cloud_dialogflow_cx_v3beta1_session_proto_enumTypes[3]
+}
+
+func (x BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType.Descriptor instead.
+func (BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_cx_v3beta1_session_proto_rawDescGZIP(), []int{10, 0, 0, 0}
+}
+
+// The interpolation type to be applied. Default will be linear
+// (Piecewise Linear).
+type BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType int32
+
+const (
+	// Interpolation type is unspecified. In this case, it defaults to
+	// Linear.
+	BoostSpec_ConditionBoostSpec_BoostControlSpec_INTERPOLATION_TYPE_UNSPECIFIED BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType = 0
+	// Piecewise linear interpolation will be applied.
+	BoostSpec_ConditionBoostSpec_BoostControlSpec_LINEAR BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType = 1
+)
+
+// Enum value maps for BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType.
+var (
+	BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType_name = map[int32]string{
+		0: "INTERPOLATION_TYPE_UNSPECIFIED",
+		1: "LINEAR",
+	}
+	BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType_value = map[string]int32{
+		"INTERPOLATION_TYPE_UNSPECIFIED": 0,
+		"LINEAR":                         1,
+	}
+)
+
+func (x BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType) Enum() *BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType {
+	p := new(BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType)
+	*p = x
+	return p
+}
+
+func (x BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_dialogflow_cx_v3beta1_session_proto_enumTypes[4].Descriptor()
+}
+
+func (BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType) Type() protoreflect.EnumType {
+	return &file_google_cloud_dialogflow_cx_v3beta1_session_proto_enumTypes[4]
+}
+
+func (x BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType.Descriptor instead.
+func (BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_cx_v3beta1_session_proto_rawDescGZIP(), []int{10, 0, 0, 1}
+}
+
 // Type of a Match.
 type Match_MatchType int32
 
@@ -275,11 +388,11 @@ func (x Match_MatchType) String() string {
 }
 
 func (Match_MatchType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_dialogflow_cx_v3beta1_session_proto_enumTypes[3].Descriptor()
+	return file_google_cloud_dialogflow_cx_v3beta1_session_proto_enumTypes[5].Descriptor()
 }
 
 func (Match_MatchType) Type() protoreflect.EnumType {
-	return &file_google_cloud_dialogflow_cx_v3beta1_session_proto_enumTypes[3]
+	return &file_google_cloud_dialogflow_cx_v3beta1_session_proto_enumTypes[5]
 }
 
 func (x Match_MatchType) Number() protoreflect.EnumNumber {
@@ -446,14 +559,15 @@ type DetectIntentRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the session this query is sent to.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>` or `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/environments/<Environment ID>/sessions/<Session ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>`.
 	// If `Environment ID` is not specified, we assume default 'draft'
-	// environment.
-	// It's up to the API caller to choose an appropriate `Session ID`. It can be
-	// a random number or some type of session identifiers (preferably hashed).
-	// The length of the `Session ID` must not exceed 36 characters.
+	// environment. It's up to the API caller to choose an appropriate `Session
+	// ID`. It can be a random number or some type of session identifiers
+	// (preferably hashed). The length of the `Session ID` must not exceed 36
+	// characters.
 	//
 	// For more information, see the [sessions
 	// guide](https://cloud.google.com/dialogflow/cx/docs/concept/session).
@@ -677,22 +791,24 @@ type StreamingDetectIntentRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the session this query is sent to.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>` or `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/environments/<Environment ID>/sessions/<Session ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>`.
 	// If `Environment ID` is not specified, we assume default 'draft'
-	// environment.
-	// It's up to the API caller to choose an appropriate `Session ID`. It can be
-	// a random number or some type of session identifiers (preferably hashed).
-	// The length of the `Session ID` must not exceed 36 characters.
-	// Note: session must be set in the first request.
 	//
-	// For more information, see the [sessions
-	// guide](https://cloud.google.com/dialogflow/cx/docs/concept/session).
+	//	environment.
+	//	It's up to the API caller to choose an appropriate `Session ID`. It can be
+	//	a random number or some type of session identifiers (preferably hashed).
+	//	The length of the `Session ID` must not exceed 36 characters.
+	//	Note: session must be set in the first request.
 	//
-	// Note: Always use agent versions for production traffic.
-	// See [Versions and
-	// environments](https://cloud.google.com/dialogflow/cx/docs/concept/version).
+	//	For more information, see the [sessions
+	//	guide](https://cloud.google.com/dialogflow/cx/docs/concept/session).
+	//
+	//	Note: Always use agent versions for production traffic.
+	//	See [Versions and
+	//	environments](https://cloud.google.com/dialogflow/cx/docs/concept/version).
 	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	// The parameters of this query.
 	QueryParams *QueryParameters `protobuf:"bytes,2,opt,name=query_params,json=queryParams,proto3" json:"query_params,omitempty"`
@@ -1346,18 +1462,18 @@ type QueryParameters struct {
 	// The unique identifier of the
 	// [page][google.cloud.dialogflow.cx.v3beta1.Page] to override the [current
 	// page][QueryResult.current_page] in the session.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/pages/<Page ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/pages/<PageID>`.
 	//
-	// If `current_page` is specified, the previous state of the session will be
-	// ignored by Dialogflow, including the [previous
-	// page][QueryResult.current_page] and the [previous session
-	// parameters][QueryResult.parameters].
-	// In most cases,
-	// [current_page][google.cloud.dialogflow.cx.v3beta1.QueryParameters.current_page]
-	// and
-	// [parameters][google.cloud.dialogflow.cx.v3beta1.QueryParameters.parameters]
-	// should be configured together to direct a session to a specific state.
+	//	If `current_page` is specified, the previous state of the session will be
+	//	ignored by Dialogflow, including the [previous
+	//	page][QueryResult.current_page] and the [previous session
+	//	parameters][QueryResult.parameters].
+	//	In most cases,
+	//	[current_page][google.cloud.dialogflow.cx.v3beta1.QueryParameters.current_page]
+	//	and
+	//	[parameters][google.cloud.dialogflow.cx.v3beta1.QueryParameters.parameters]
+	//	should be configured together to direct a session to a specific state.
 	CurrentPage string `protobuf:"bytes,6,opt,name=current_page,json=currentPage,proto3" json:"current_page,omitempty"`
 	// Whether to disable webhook calls for this request.
 	DisableWebhook bool `protobuf:"varint,7,opt,name=disable_webhook,json=disableWebhook,proto3" json:"disable_webhook,omitempty"`
@@ -1374,21 +1490,21 @@ type QueryParameters struct {
 	// "If-Modified-Since", "If-None-Match", "X-Forwarded-For", etc.
 	WebhookHeaders map[string]string `protobuf:"bytes,10,rep,name=webhook_headers,json=webhookHeaders,proto3" json:"webhook_headers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// A list of flow versions to override for the request.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/versions/<Version ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/versions/<VersionID>`.
 	//
-	// If version 1 of flow X is included in this list, the traffic of
-	// flow X will go through version 1 regardless of the version configuration in
-	// the environment. Each flow can have at most one version specified in this
-	// list.
+	//	If version 1 of flow X is included in this list, the traffic of
+	//	flow X will go through version 1 regardless of the version configuration
+	//	in the environment. Each flow can have at most one version specified in
+	//	this list.
 	FlowVersions []string `protobuf:"bytes,14,rep,name=flow_versions,json=flowVersions,proto3" json:"flow_versions,omitempty"`
 	// Optional. Start the session with the specified
 	// [playbook][google.cloud.dialogflow.cx.v3beta1.Playbook]. You can only
 	// specify the playbook at the beginning of the session. Otherwise, an error
 	// will be thrown.
 	//
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>`.
 	CurrentPlaybook string `protobuf:"bytes,19,opt,name=current_playbook,json=currentPlaybook,proto3" json:"current_playbook,omitempty"`
 	// Optional. Use the specified LLM model settings for processing the request.
 	LlmModelSettings *LlmModelSettings `protobuf:"bytes,21,opt,name=llm_model_settings,json=llmModelSettings,proto3" json:"llm_model_settings,omitempty"`
@@ -2183,8 +2299,8 @@ type QueryResult struct {
 	AllowAnswerFeedback bool `protobuf:"varint,32,opt,name=allow_answer_feedback,json=allowAnswerFeedback,proto3" json:"allow_answer_feedback,omitempty"`
 	// Optional. Data store connection feature output signals.
 	// Filled only when data stores are involved in serving the query and
-	// DetectIntentRequest.populate data_store_connection_quality_signals is set
-	// to true in the request.
+	// DetectIntentRequest.populate_data_store_connection_signals is set to true
+	// in the request.
 	DataStoreConnectionSignals *DataStoreConnectionSignals `protobuf:"bytes,35,opt,name=data_store_connection_signals,json=dataStoreConnectionSignals,proto3" json:"data_store_connection_signals,omitempty"`
 }
 
@@ -2417,8 +2533,8 @@ type QueryResult_Text struct {
 type QueryResult_TriggerIntent struct {
 	// If an [intent][google.cloud.dialogflow.cx.v3beta1.IntentInput] was
 	// provided as input, this field will contain a copy of the intent
-	// identifier. Format: `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/intents/<Intent ID>`.
+	// identifier. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/intents/<IntentID>`.
 	TriggerIntent string `protobuf:"bytes,11,opt,name=trigger_intent,json=triggerIntent,proto3,oneof"`
 }
 
@@ -2509,8 +2625,8 @@ type IntentInput struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The unique identifier of the intent.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/intents/<Intent ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/intents/<IntentID>`.
 	Intent string `protobuf:"bytes,1,opt,name=intent,proto3" json:"intent,omitempty"`
 }
 
@@ -2855,17 +2971,19 @@ type MatchIntentRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the session this query is sent to.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>` or `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/environments/<Environment ID>/sessions/<Session ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>`.
 	// If `Environment ID` is not specified, we assume default 'draft'
-	// environment.
-	// It's up to the API caller to choose an appropriate `Session ID`. It can be
-	// a random number or some type of session identifiers (preferably hashed).
-	// The length of the `Session ID` must not exceed 36 characters.
 	//
-	// For more information, see the [sessions
-	// guide](https://cloud.google.com/dialogflow/cx/docs/concept/session).
+	//	environment.
+	//	It's up to the API caller to choose an appropriate `Session ID`. It can be
+	//	a random number or some type of session identifiers (preferably hashed).
+	//	The length of the `Session ID` must not exceed 36 characters.
+	//
+	//	For more information, see the [sessions
+	//	guide](https://cloud.google.com/dialogflow/cx/docs/concept/session).
 	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	// The parameters of this query.
 	QueryParams *QueryParameters `protobuf:"bytes,2,opt,name=query_params,json=queryParams,proto3" json:"query_params,omitempty"`
@@ -3053,8 +3171,8 @@ type MatchIntentResponse_Text struct {
 type MatchIntentResponse_TriggerIntent struct {
 	// If an [intent][google.cloud.dialogflow.cx.v3beta1.IntentInput] was
 	// provided as input, this field will contain a copy of the intent
-	// identifier. Format: `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/intents/<Intent ID>`.
+	// identifier. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/intents/<IntentID>`.
 	TriggerIntent string `protobuf:"bytes,2,opt,name=trigger_intent,json=triggerIntent,proto3,oneof"`
 }
 
@@ -3391,6 +3509,9 @@ type BoostSpec_ConditionBoostSpec struct {
 	// Setting to 0.0 means no boost applied. The boosting condition is
 	// ignored.
 	Boost float32 `protobuf:"fixed32,2,opt,name=boost,proto3" json:"boost,omitempty"`
+	// Optional. Complex specification for custom ranking based on customer
+	// defined attribute value.
+	BoostControlSpec *BoostSpec_ConditionBoostSpec_BoostControlSpec `protobuf:"bytes,4,opt,name=boost_control_spec,json=boostControlSpec,proto3" json:"boost_control_spec,omitempty"`
 }
 
 func (x *BoostSpec_ConditionBoostSpec) Reset() {
@@ -3435,6 +3556,165 @@ func (x *BoostSpec_ConditionBoostSpec) GetCondition() string {
 func (x *BoostSpec_ConditionBoostSpec) GetBoost() float32 {
 	if x != nil {
 		return x.Boost
+	}
+	return 0
+}
+
+func (x *BoostSpec_ConditionBoostSpec) GetBoostControlSpec() *BoostSpec_ConditionBoostSpec_BoostControlSpec {
+	if x != nil {
+		return x.BoostControlSpec
+	}
+	return nil
+}
+
+// Specification for custom ranking based on customer specified attribute
+// value. It provides more controls for customized ranking than the simple
+// (condition, boost) combination above.
+type BoostSpec_ConditionBoostSpec_BoostControlSpec struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Optional. The name of the field whose value will be used to determine
+	// the boost amount.
+	FieldName string `protobuf:"bytes,1,opt,name=field_name,json=fieldName,proto3" json:"field_name,omitempty"`
+	// Optional. The attribute type to be used to determine the boost amount.
+	// The attribute value can be derived from the field value of the
+	// specified field_name. In the case of numerical it is straightforward
+	// i.e. attribute_value = numerical_field_value. In the case of freshness
+	// however, attribute_value = (time.now() - datetime_field_value).
+	AttributeType BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType `protobuf:"varint,2,opt,name=attribute_type,json=attributeType,proto3,enum=google.cloud.dialogflow.cx.v3beta1.BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType" json:"attribute_type,omitempty"`
+	// Optional. The interpolation type to be applied to connect the control
+	// points listed below.
+	InterpolationType BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType `protobuf:"varint,3,opt,name=interpolation_type,json=interpolationType,proto3,enum=google.cloud.dialogflow.cx.v3beta1.BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType" json:"interpolation_type,omitempty"`
+	// Optional. The control points used to define the curve. The monotonic
+	// function (defined through the interpolation_type above) passes through
+	// the control points listed here.
+	ControlPoints []*BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint `protobuf:"bytes,4,rep,name=control_points,json=controlPoints,proto3" json:"control_points,omitempty"`
+}
+
+func (x *BoostSpec_ConditionBoostSpec_BoostControlSpec) Reset() {
+	*x = BoostSpec_ConditionBoostSpec_BoostControlSpec{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_dialogflow_cx_v3beta1_session_proto_msgTypes[30]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *BoostSpec_ConditionBoostSpec_BoostControlSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BoostSpec_ConditionBoostSpec_BoostControlSpec) ProtoMessage() {}
+
+func (x *BoostSpec_ConditionBoostSpec_BoostControlSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dialogflow_cx_v3beta1_session_proto_msgTypes[30]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BoostSpec_ConditionBoostSpec_BoostControlSpec.ProtoReflect.Descriptor instead.
+func (*BoostSpec_ConditionBoostSpec_BoostControlSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_cx_v3beta1_session_proto_rawDescGZIP(), []int{10, 0, 0}
+}
+
+func (x *BoostSpec_ConditionBoostSpec_BoostControlSpec) GetFieldName() string {
+	if x != nil {
+		return x.FieldName
+	}
+	return ""
+}
+
+func (x *BoostSpec_ConditionBoostSpec_BoostControlSpec) GetAttributeType() BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType {
+	if x != nil {
+		return x.AttributeType
+	}
+	return BoostSpec_ConditionBoostSpec_BoostControlSpec_ATTRIBUTE_TYPE_UNSPECIFIED
+}
+
+func (x *BoostSpec_ConditionBoostSpec_BoostControlSpec) GetInterpolationType() BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType {
+	if x != nil {
+		return x.InterpolationType
+	}
+	return BoostSpec_ConditionBoostSpec_BoostControlSpec_INTERPOLATION_TYPE_UNSPECIFIED
+}
+
+func (x *BoostSpec_ConditionBoostSpec_BoostControlSpec) GetControlPoints() []*BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint {
+	if x != nil {
+		return x.ControlPoints
+	}
+	return nil
+}
+
+// The control points used to define the curve. The curve defined
+// through these control points can only be monotonically increasing
+// or decreasing(constant values are acceptable).
+type BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Optional. Can be one of:
+	// 1. The numerical field value.
+	// 2. The duration spec for freshness:
+	// The value must be formatted as an XSD `dayTimeDuration` value (a
+	// restricted subset of an ISO 8601 duration value). The pattern for
+	// this is: `[nD][T[nH][nM][nS]]`.
+	AttributeValue string `protobuf:"bytes,1,opt,name=attribute_value,json=attributeValue,proto3" json:"attribute_value,omitempty"`
+	// Optional. The value between -1 to 1 by which to boost the score if
+	// the attribute_value evaluates to the value specified above.
+	BoostAmount float32 `protobuf:"fixed32,2,opt,name=boost_amount,json=boostAmount,proto3" json:"boost_amount,omitempty"`
+}
+
+func (x *BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint) Reset() {
+	*x = BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_dialogflow_cx_v3beta1_session_proto_msgTypes[31]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint) ProtoMessage() {}
+
+func (x *BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dialogflow_cx_v3beta1_session_proto_msgTypes[31]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint.ProtoReflect.Descriptor instead.
+func (*BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_cx_v3beta1_session_proto_rawDescGZIP(), []int{10, 0, 0, 0}
+}
+
+func (x *BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint) GetAttributeValue() string {
+	if x != nil {
+		return x.AttributeValue
+	}
+	return ""
+}
+
+func (x *BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint) GetBoostAmount() float32 {
+	if x != nil {
+		return x.BoostAmount
 	}
 	return 0
 }
@@ -3868,7 +4148,7 @@ var file_google_cloud_dialogflow_cx_v3beta1_session_proto_rawDesc = []byte{
 	0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x63, 0x78, 0x2e, 0x76, 0x33, 0x62,
 	0x65, 0x74, 0x61, 0x31, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x53, 0x70, 0x65, 0x63, 0x73,
 	0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0b, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x53, 0x70, 0x65,
-	0x63, 0x73, 0x22, 0xda, 0x01, 0x0a, 0x09, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65, 0x63,
+	0x63, 0x73, 0x22, 0xca, 0x08, 0x0a, 0x09, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65, 0x63,
 	0x12, 0x79, 0x0a, 0x15, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x62, 0x6f,
 	0x6f, 0x73, 0x74, 0x5f, 0x73, 0x70, 0x65, 0x63, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
 	0x40, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64,
@@ -3876,12 +4156,67 @@ var file_google_cloud_dialogflow_cx_v3beta1_session_proto_rawDesc = []byte{
 	0x65, 0x74, 0x61, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65, 0x63, 0x2e, 0x43,
 	0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65,
 	0x63, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x13, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f,
-	0x6e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65, 0x63, 0x73, 0x1a, 0x52, 0x0a, 0x12, 0x43,
-	0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65,
-	0x63, 0x12, 0x21, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x09, 0x63, 0x6f, 0x6e, 0x64, 0x69,
-	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x19, 0x0a, 0x05, 0x62, 0x6f, 0x6f, 0x73, 0x74, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x02, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x05, 0x62, 0x6f, 0x6f, 0x73, 0x74, 0x22,
+	0x6e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65, 0x63, 0x73, 0x1a, 0xc1, 0x07, 0x0a, 0x12,
+	0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70,
+	0x65, 0x63, 0x12, 0x21, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x09, 0x63, 0x6f, 0x6e, 0x64,
+	0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x19, 0x0a, 0x05, 0x62, 0x6f, 0x6f, 0x73, 0x74, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x02, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x05, 0x62, 0x6f, 0x6f, 0x73, 0x74,
+	0x12, 0x84, 0x01, 0x0a, 0x12, 0x62, 0x6f, 0x6f, 0x73, 0x74, 0x5f, 0x63, 0x6f, 0x6e, 0x74, 0x72,
+	0x6f, 0x6c, 0x5f, 0x73, 0x70, 0x65, 0x63, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x51, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61,
+	0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x63, 0x78, 0x2e, 0x76, 0x33, 0x62, 0x65, 0x74,
+	0x61, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65, 0x63, 0x2e, 0x43, 0x6f, 0x6e,
+	0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65, 0x63, 0x2e,
+	0x42, 0x6f, 0x6f, 0x73, 0x74, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x53, 0x70, 0x65, 0x63,
+	0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x10, 0x62, 0x6f, 0x6f, 0x73, 0x74, 0x43, 0x6f, 0x6e, 0x74,
+	0x72, 0x6f, 0x6c, 0x53, 0x70, 0x65, 0x63, 0x1a, 0xe5, 0x05, 0x0a, 0x10, 0x42, 0x6f, 0x6f, 0x73,
+	0x74, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x53, 0x70, 0x65, 0x63, 0x12, 0x22, 0x0a, 0x0a,
+	0x66, 0x69, 0x65, 0x6c, 0x64, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x09, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x4e, 0x61, 0x6d, 0x65,
+	0x12, 0x8b, 0x01, 0x0a, 0x0e, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x5f, 0x74,
+	0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x5f, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66,
+	0x6c, 0x6f, 0x77, 0x2e, 0x63, 0x78, 0x2e, 0x76, 0x33, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x42,
+	0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65, 0x63, 0x2e, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69,
+	0x6f, 0x6e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65, 0x63, 0x2e, 0x42, 0x6f, 0x6f, 0x73,
+	0x74, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x53, 0x70, 0x65, 0x63, 0x2e, 0x41, 0x74, 0x74,
+	0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x54, 0x79, 0x70, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52,
+	0x0d, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x97,
+	0x01, 0x0a, 0x12, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x70, 0x6f, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x63, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f,
+	0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x63, 0x78, 0x2e, 0x76, 0x33, 0x62, 0x65, 0x74, 0x61, 0x31,
+	0x2e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65, 0x63, 0x2e, 0x43, 0x6f, 0x6e, 0x64, 0x69,
+	0x74, 0x69, 0x6f, 0x6e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65, 0x63, 0x2e, 0x42, 0x6f,
+	0x6f, 0x73, 0x74, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x53, 0x70, 0x65, 0x63, 0x2e, 0x49,
+	0x6e, 0x74, 0x65, 0x72, 0x70, 0x6f, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65,
+	0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x11, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x70, 0x6f, 0x6c, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x8a, 0x01, 0x0a, 0x0e, 0x63, 0x6f, 0x6e,
+	0x74, 0x72, 0x6f, 0x6c, 0x5f, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x5e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
+	0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x63, 0x78, 0x2e, 0x76,
+	0x33, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65, 0x63,
+	0x2e, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53,
+	0x70, 0x65, 0x63, 0x2e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c,
+	0x53, 0x70, 0x65, 0x63, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x50, 0x6f, 0x69, 0x6e,
+	0x74, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0d, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x50,
+	0x6f, 0x69, 0x6e, 0x74, 0x73, 0x1a, 0x64, 0x0a, 0x0c, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c,
+	0x50, 0x6f, 0x69, 0x6e, 0x74, 0x12, 0x2c, 0x0a, 0x0f, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75,
+	0x74, 0x65, 0x5f, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03,
+	0xe0, 0x41, 0x01, 0x52, 0x0e, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x56, 0x61,
+	0x6c, 0x75, 0x65, 0x12, 0x26, 0x0a, 0x0c, 0x62, 0x6f, 0x6f, 0x73, 0x74, 0x5f, 0x61, 0x6d, 0x6f,
+	0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x02, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0b,
+	0x62, 0x6f, 0x6f, 0x73, 0x74, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x4d, 0x0a, 0x0d, 0x41,
+	0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1e, 0x0a, 0x1a,
+	0x41, 0x54, 0x54, 0x52, 0x49, 0x42, 0x55, 0x54, 0x45, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55,
+	0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0d, 0x0a, 0x09,
+	0x4e, 0x55, 0x4d, 0x45, 0x52, 0x49, 0x43, 0x41, 0x4c, 0x10, 0x01, 0x12, 0x0d, 0x0a, 0x09, 0x46,
+	0x52, 0x45, 0x53, 0x48, 0x4e, 0x45, 0x53, 0x53, 0x10, 0x02, 0x22, 0x43, 0x0a, 0x11, 0x49, 0x6e,
+	0x74, 0x65, 0x72, 0x70, 0x6f, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12,
+	0x22, 0x0a, 0x1e, 0x49, 0x4e, 0x54, 0x45, 0x52, 0x50, 0x4f, 0x4c, 0x41, 0x54, 0x49, 0x4f, 0x4e,
+	0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45,
+	0x44, 0x10, 0x00, 0x12, 0x0a, 0x0a, 0x06, 0x4c, 0x49, 0x4e, 0x45, 0x41, 0x52, 0x10, 0x01, 0x22,
 	0xa7, 0x01, 0x0a, 0x0a, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x53, 0x70, 0x65, 0x63, 0x73, 0x12, 0x51,
 	0x0a, 0x0b, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x73, 0x18, 0x01, 0x20,
 	0x03, 0x28, 0x09, 0x42, 0x30, 0xe0, 0x41, 0x01, 0xfa, 0x41, 0x2a, 0x0a, 0x28, 0x64, 0x69, 0x73,
@@ -4357,158 +4692,166 @@ func file_google_cloud_dialogflow_cx_v3beta1_session_proto_rawDescGZIP() []byte 
 	return file_google_cloud_dialogflow_cx_v3beta1_session_proto_rawDescData
 }
 
-var file_google_cloud_dialogflow_cx_v3beta1_session_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_cloud_dialogflow_cx_v3beta1_session_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
+var file_google_cloud_dialogflow_cx_v3beta1_session_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_google_cloud_dialogflow_cx_v3beta1_session_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
 var file_google_cloud_dialogflow_cx_v3beta1_session_proto_goTypes = []any{
-	(AnswerFeedback_Rating)(0),                  // 0: google.cloud.dialogflow.cx.v3beta1.AnswerFeedback.Rating
-	(DetectIntentResponse_ResponseType)(0),      // 1: google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse.ResponseType
-	(StreamingRecognitionResult_MessageType)(0), // 2: google.cloud.dialogflow.cx.v3beta1.StreamingRecognitionResult.MessageType
-	(Match_MatchType)(0),                        // 3: google.cloud.dialogflow.cx.v3beta1.Match.MatchType
-	(*AnswerFeedback)(nil),                      // 4: google.cloud.dialogflow.cx.v3beta1.AnswerFeedback
-	(*SubmitAnswerFeedbackRequest)(nil),         // 5: google.cloud.dialogflow.cx.v3beta1.SubmitAnswerFeedbackRequest
-	(*DetectIntentRequest)(nil),                 // 6: google.cloud.dialogflow.cx.v3beta1.DetectIntentRequest
-	(*DetectIntentResponse)(nil),                // 7: google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse
-	(*StreamingDetectIntentRequest)(nil),        // 8: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentRequest
-	(*CloudConversationDebuggingInfo)(nil),      // 9: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo
-	(*StreamingDetectIntentResponse)(nil),       // 10: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentResponse
-	(*StreamingRecognitionResult)(nil),          // 11: google.cloud.dialogflow.cx.v3beta1.StreamingRecognitionResult
-	(*QueryParameters)(nil),                     // 12: google.cloud.dialogflow.cx.v3beta1.QueryParameters
-	(*SearchConfig)(nil),                        // 13: google.cloud.dialogflow.cx.v3beta1.SearchConfig
-	(*BoostSpec)(nil),                           // 14: google.cloud.dialogflow.cx.v3beta1.BoostSpec
-	(*BoostSpecs)(nil),                          // 15: google.cloud.dialogflow.cx.v3beta1.BoostSpecs
-	(*FilterSpecs)(nil),                         // 16: google.cloud.dialogflow.cx.v3beta1.FilterSpecs
-	(*QueryInput)(nil),                          // 17: google.cloud.dialogflow.cx.v3beta1.QueryInput
-	(*GenerativeInfo)(nil),                      // 18: google.cloud.dialogflow.cx.v3beta1.GenerativeInfo
-	(*QueryResult)(nil),                         // 19: google.cloud.dialogflow.cx.v3beta1.QueryResult
-	(*TextInput)(nil),                           // 20: google.cloud.dialogflow.cx.v3beta1.TextInput
-	(*IntentInput)(nil),                         // 21: google.cloud.dialogflow.cx.v3beta1.IntentInput
-	(*AudioInput)(nil),                          // 22: google.cloud.dialogflow.cx.v3beta1.AudioInput
-	(*EventInput)(nil),                          // 23: google.cloud.dialogflow.cx.v3beta1.EventInput
-	(*DtmfInput)(nil),                           // 24: google.cloud.dialogflow.cx.v3beta1.DtmfInput
-	(*Match)(nil),                               // 25: google.cloud.dialogflow.cx.v3beta1.Match
-	(*MatchIntentRequest)(nil),                  // 26: google.cloud.dialogflow.cx.v3beta1.MatchIntentRequest
-	(*MatchIntentResponse)(nil),                 // 27: google.cloud.dialogflow.cx.v3beta1.MatchIntentResponse
-	(*FulfillIntentRequest)(nil),                // 28: google.cloud.dialogflow.cx.v3beta1.FulfillIntentRequest
-	(*FulfillIntentResponse)(nil),               // 29: google.cloud.dialogflow.cx.v3beta1.FulfillIntentResponse
-	(*SentimentAnalysisResult)(nil),             // 30: google.cloud.dialogflow.cx.v3beta1.SentimentAnalysisResult
-	(*AnswerFeedback_RatingReason)(nil),         // 31: google.cloud.dialogflow.cx.v3beta1.AnswerFeedback.RatingReason
-	nil,                                         // 32: google.cloud.dialogflow.cx.v3beta1.QueryParameters.WebhookHeadersEntry
-	(*BoostSpec_ConditionBoostSpec)(nil),        // 33: google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec
-	(*fieldmaskpb.FieldMask)(nil),               // 34: google.protobuf.FieldMask
-	(*OutputAudioConfig)(nil),                   // 35: google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig
-	(*durationpb.Duration)(nil),                 // 36: google.protobuf.Duration
-	(*SpeechWordInfo)(nil),                      // 37: google.cloud.dialogflow.cx.v3beta1.SpeechWordInfo
-	(*latlng.LatLng)(nil),                       // 38: google.type.LatLng
-	(*SessionEntityType)(nil),                   // 39: google.cloud.dialogflow.cx.v3beta1.SessionEntityType
-	(*structpb.Struct)(nil),                     // 40: google.protobuf.Struct
-	(*LlmModelSettings)(nil),                    // 41: google.cloud.dialogflow.cx.v3beta1.LlmModelSettings
-	(*ToolCallResult)(nil),                      // 42: google.cloud.dialogflow.cx.v3beta1.ToolCallResult
-	(*Example)(nil),                             // 43: google.cloud.dialogflow.cx.v3beta1.Example
-	(*ResponseMessage)(nil),                     // 44: google.cloud.dialogflow.cx.v3beta1.ResponseMessage
-	(*status.Status)(nil),                       // 45: google.rpc.Status
-	(*Page)(nil),                                // 46: google.cloud.dialogflow.cx.v3beta1.Page
-	(*Flow)(nil),                                // 47: google.cloud.dialogflow.cx.v3beta1.Flow
-	(*Intent)(nil),                              // 48: google.cloud.dialogflow.cx.v3beta1.Intent
-	(*AdvancedSettings)(nil),                    // 49: google.cloud.dialogflow.cx.v3beta1.AdvancedSettings
-	(*DataStoreConnectionSignals)(nil),          // 50: google.cloud.dialogflow.cx.v3beta1.DataStoreConnectionSignals
-	(*InputAudioConfig)(nil),                    // 51: google.cloud.dialogflow.cx.v3beta1.InputAudioConfig
+	(AnswerFeedback_Rating)(0),                                           // 0: google.cloud.dialogflow.cx.v3beta1.AnswerFeedback.Rating
+	(DetectIntentResponse_ResponseType)(0),                               // 1: google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse.ResponseType
+	(StreamingRecognitionResult_MessageType)(0),                          // 2: google.cloud.dialogflow.cx.v3beta1.StreamingRecognitionResult.MessageType
+	(BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType)(0),     // 3: google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeType
+	(BoostSpec_ConditionBoostSpec_BoostControlSpec_InterpolationType)(0), // 4: google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationType
+	(Match_MatchType)(0),                                                 // 5: google.cloud.dialogflow.cx.v3beta1.Match.MatchType
+	(*AnswerFeedback)(nil),                                               // 6: google.cloud.dialogflow.cx.v3beta1.AnswerFeedback
+	(*SubmitAnswerFeedbackRequest)(nil),                                  // 7: google.cloud.dialogflow.cx.v3beta1.SubmitAnswerFeedbackRequest
+	(*DetectIntentRequest)(nil),                                          // 8: google.cloud.dialogflow.cx.v3beta1.DetectIntentRequest
+	(*DetectIntentResponse)(nil),                                         // 9: google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse
+	(*StreamingDetectIntentRequest)(nil),                                 // 10: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentRequest
+	(*CloudConversationDebuggingInfo)(nil),                               // 11: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo
+	(*StreamingDetectIntentResponse)(nil),                                // 12: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentResponse
+	(*StreamingRecognitionResult)(nil),                                   // 13: google.cloud.dialogflow.cx.v3beta1.StreamingRecognitionResult
+	(*QueryParameters)(nil),                                              // 14: google.cloud.dialogflow.cx.v3beta1.QueryParameters
+	(*SearchConfig)(nil),                                                 // 15: google.cloud.dialogflow.cx.v3beta1.SearchConfig
+	(*BoostSpec)(nil),                                                    // 16: google.cloud.dialogflow.cx.v3beta1.BoostSpec
+	(*BoostSpecs)(nil),                                                   // 17: google.cloud.dialogflow.cx.v3beta1.BoostSpecs
+	(*FilterSpecs)(nil),                                                  // 18: google.cloud.dialogflow.cx.v3beta1.FilterSpecs
+	(*QueryInput)(nil),                                                   // 19: google.cloud.dialogflow.cx.v3beta1.QueryInput
+	(*GenerativeInfo)(nil),                                               // 20: google.cloud.dialogflow.cx.v3beta1.GenerativeInfo
+	(*QueryResult)(nil),                                                  // 21: google.cloud.dialogflow.cx.v3beta1.QueryResult
+	(*TextInput)(nil),                                                    // 22: google.cloud.dialogflow.cx.v3beta1.TextInput
+	(*IntentInput)(nil),                                                  // 23: google.cloud.dialogflow.cx.v3beta1.IntentInput
+	(*AudioInput)(nil),                                                   // 24: google.cloud.dialogflow.cx.v3beta1.AudioInput
+	(*EventInput)(nil),                                                   // 25: google.cloud.dialogflow.cx.v3beta1.EventInput
+	(*DtmfInput)(nil),                                                    // 26: google.cloud.dialogflow.cx.v3beta1.DtmfInput
+	(*Match)(nil),                                                        // 27: google.cloud.dialogflow.cx.v3beta1.Match
+	(*MatchIntentRequest)(nil),                                           // 28: google.cloud.dialogflow.cx.v3beta1.MatchIntentRequest
+	(*MatchIntentResponse)(nil),                                          // 29: google.cloud.dialogflow.cx.v3beta1.MatchIntentResponse
+	(*FulfillIntentRequest)(nil),                                         // 30: google.cloud.dialogflow.cx.v3beta1.FulfillIntentRequest
+	(*FulfillIntentResponse)(nil),                                        // 31: google.cloud.dialogflow.cx.v3beta1.FulfillIntentResponse
+	(*SentimentAnalysisResult)(nil),                                      // 32: google.cloud.dialogflow.cx.v3beta1.SentimentAnalysisResult
+	(*AnswerFeedback_RatingReason)(nil),                                  // 33: google.cloud.dialogflow.cx.v3beta1.AnswerFeedback.RatingReason
+	nil,                                                                  // 34: google.cloud.dialogflow.cx.v3beta1.QueryParameters.WebhookHeadersEntry
+	(*BoostSpec_ConditionBoostSpec)(nil),                                 // 35: google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec
+	(*BoostSpec_ConditionBoostSpec_BoostControlSpec)(nil),                // 36: google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec.BoostControlSpec
+	(*BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint)(nil), // 37: google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPoint
+	(*fieldmaskpb.FieldMask)(nil),                                      // 38: google.protobuf.FieldMask
+	(*OutputAudioConfig)(nil),                                          // 39: google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig
+	(*durationpb.Duration)(nil),                                        // 40: google.protobuf.Duration
+	(*SpeechWordInfo)(nil),                                             // 41: google.cloud.dialogflow.cx.v3beta1.SpeechWordInfo
+	(*latlng.LatLng)(nil),                                              // 42: google.type.LatLng
+	(*SessionEntityType)(nil),                                          // 43: google.cloud.dialogflow.cx.v3beta1.SessionEntityType
+	(*structpb.Struct)(nil),                                            // 44: google.protobuf.Struct
+	(*LlmModelSettings)(nil),                                           // 45: google.cloud.dialogflow.cx.v3beta1.LlmModelSettings
+	(*ToolCallResult)(nil),                                             // 46: google.cloud.dialogflow.cx.v3beta1.ToolCallResult
+	(*Example)(nil),                                                    // 47: google.cloud.dialogflow.cx.v3beta1.Example
+	(*ResponseMessage)(nil),                                            // 48: google.cloud.dialogflow.cx.v3beta1.ResponseMessage
+	(*status.Status)(nil),                                              // 49: google.rpc.Status
+	(*Page)(nil),                                                       // 50: google.cloud.dialogflow.cx.v3beta1.Page
+	(*Flow)(nil),                                                       // 51: google.cloud.dialogflow.cx.v3beta1.Flow
+	(*Intent)(nil),                                                     // 52: google.cloud.dialogflow.cx.v3beta1.Intent
+	(*AdvancedSettings)(nil),                                           // 53: google.cloud.dialogflow.cx.v3beta1.AdvancedSettings
+	(*DataStoreConnectionSignals)(nil),                                 // 54: google.cloud.dialogflow.cx.v3beta1.DataStoreConnectionSignals
+	(*InputAudioConfig)(nil),                                           // 55: google.cloud.dialogflow.cx.v3beta1.InputAudioConfig
 }
 var file_google_cloud_dialogflow_cx_v3beta1_session_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.dialogflow.cx.v3beta1.AnswerFeedback.rating:type_name -> google.cloud.dialogflow.cx.v3beta1.AnswerFeedback.Rating
-	31, // 1: google.cloud.dialogflow.cx.v3beta1.AnswerFeedback.rating_reason:type_name -> google.cloud.dialogflow.cx.v3beta1.AnswerFeedback.RatingReason
-	4,  // 2: google.cloud.dialogflow.cx.v3beta1.SubmitAnswerFeedbackRequest.answer_feedback:type_name -> google.cloud.dialogflow.cx.v3beta1.AnswerFeedback
-	34, // 3: google.cloud.dialogflow.cx.v3beta1.SubmitAnswerFeedbackRequest.update_mask:type_name -> google.protobuf.FieldMask
-	12, // 4: google.cloud.dialogflow.cx.v3beta1.DetectIntentRequest.query_params:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryParameters
-	17, // 5: google.cloud.dialogflow.cx.v3beta1.DetectIntentRequest.query_input:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryInput
-	35, // 6: google.cloud.dialogflow.cx.v3beta1.DetectIntentRequest.output_audio_config:type_name -> google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig
-	19, // 7: google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse.query_result:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryResult
-	35, // 8: google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse.output_audio_config:type_name -> google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig
+	33, // 1: google.cloud.dialogflow.cx.v3beta1.AnswerFeedback.rating_reason:type_name -> google.cloud.dialogflow.cx.v3beta1.AnswerFeedback.RatingReason
+	6,  // 2: google.cloud.dialogflow.cx.v3beta1.SubmitAnswerFeedbackRequest.answer_feedback:type_name -> google.cloud.dialogflow.cx.v3beta1.AnswerFeedback
+	38, // 3: google.cloud.dialogflow.cx.v3beta1.SubmitAnswerFeedbackRequest.update_mask:type_name -> google.protobuf.FieldMask
+	14, // 4: google.cloud.dialogflow.cx.v3beta1.DetectIntentRequest.query_params:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryParameters
+	19, // 5: google.cloud.dialogflow.cx.v3beta1.DetectIntentRequest.query_input:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryInput
+	39, // 6: google.cloud.dialogflow.cx.v3beta1.DetectIntentRequest.output_audio_config:type_name -> google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig
+	21, // 7: google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse.query_result:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryResult
+	39, // 8: google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse.output_audio_config:type_name -> google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig
 	1,  // 9: google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse.response_type:type_name -> google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse.ResponseType
-	12, // 10: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentRequest.query_params:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryParameters
-	17, // 11: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentRequest.query_input:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryInput
-	35, // 12: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentRequest.output_audio_config:type_name -> google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig
-	36, // 13: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.result_end_time_offset:type_name -> google.protobuf.Duration
-	36, // 14: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.first_audio_duration:type_name -> google.protobuf.Duration
-	36, // 15: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.speech_partial_results_end_times:type_name -> google.protobuf.Duration
-	36, // 16: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.speech_final_results_end_times:type_name -> google.protobuf.Duration
-	36, // 17: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.dtmf_partial_results_times:type_name -> google.protobuf.Duration
-	36, // 18: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.dtmf_final_results_times:type_name -> google.protobuf.Duration
-	36, // 19: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.single_utterance_end_time_offset:type_name -> google.protobuf.Duration
-	36, // 20: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.no_speech_timeout:type_name -> google.protobuf.Duration
-	36, // 21: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.endpointing_timeout:type_name -> google.protobuf.Duration
-	36, // 22: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.client_half_close_time_offset:type_name -> google.protobuf.Duration
-	36, // 23: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.client_half_close_streaming_time_offset:type_name -> google.protobuf.Duration
-	11, // 24: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentResponse.recognition_result:type_name -> google.cloud.dialogflow.cx.v3beta1.StreamingRecognitionResult
-	7,  // 25: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentResponse.detect_intent_response:type_name -> google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse
-	9,  // 26: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentResponse.debugging_info:type_name -> google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo
+	14, // 10: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentRequest.query_params:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryParameters
+	19, // 11: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentRequest.query_input:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryInput
+	39, // 12: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentRequest.output_audio_config:type_name -> google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig
+	40, // 13: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.result_end_time_offset:type_name -> google.protobuf.Duration
+	40, // 14: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.first_audio_duration:type_name -> google.protobuf.Duration
+	40, // 15: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.speech_partial_results_end_times:type_name -> google.protobuf.Duration
+	40, // 16: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.speech_final_results_end_times:type_name -> google.protobuf.Duration
+	40, // 17: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.dtmf_partial_results_times:type_name -> google.protobuf.Duration
+	40, // 18: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.dtmf_final_results_times:type_name -> google.protobuf.Duration
+	40, // 19: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.single_utterance_end_time_offset:type_name -> google.protobuf.Duration
+	40, // 20: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.no_speech_timeout:type_name -> google.protobuf.Duration
+	40, // 21: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.endpointing_timeout:type_name -> google.protobuf.Duration
+	40, // 22: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.client_half_close_time_offset:type_name -> google.protobuf.Duration
+	40, // 23: google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo.client_half_close_streaming_time_offset:type_name -> google.protobuf.Duration
+	13, // 24: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentResponse.recognition_result:type_name -> google.cloud.dialogflow.cx.v3beta1.StreamingRecognitionResult
+	9,  // 25: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentResponse.detect_intent_response:type_name -> google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse
+	11, // 26: google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentResponse.debugging_info:type_name -> google.cloud.dialogflow.cx.v3beta1.CloudConversationDebuggingInfo
 	2,  // 27: google.cloud.dialogflow.cx.v3beta1.StreamingRecognitionResult.message_type:type_name -> google.cloud.dialogflow.cx.v3beta1.StreamingRecognitionResult.MessageType
-	37, // 28: google.cloud.dialogflow.cx.v3beta1.StreamingRecognitionResult.speech_word_info:type_name -> google.cloud.dialogflow.cx.v3beta1.SpeechWordInfo
-	36, // 29: google.cloud.dialogflow.cx.v3beta1.StreamingRecognitionResult.speech_end_offset:type_name -> google.protobuf.Duration
-	38, // 30: google.cloud.dialogflow.cx.v3beta1.QueryParameters.geo_location:type_name -> google.type.LatLng
-	39, // 31: google.cloud.dialogflow.cx.v3beta1.QueryParameters.session_entity_types:type_name -> google.cloud.dialogflow.cx.v3beta1.SessionEntityType
-	40, // 32: google.cloud.dialogflow.cx.v3beta1.QueryParameters.payload:type_name -> google.protobuf.Struct
-	40, // 33: google.cloud.dialogflow.cx.v3beta1.QueryParameters.parameters:type_name -> google.protobuf.Struct
-	32, // 34: google.cloud.dialogflow.cx.v3beta1.QueryParameters.webhook_headers:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryParameters.WebhookHeadersEntry
-	41, // 35: google.cloud.dialogflow.cx.v3beta1.QueryParameters.llm_model_settings:type_name -> google.cloud.dialogflow.cx.v3beta1.LlmModelSettings
-	36, // 36: google.cloud.dialogflow.cx.v3beta1.QueryParameters.session_ttl:type_name -> google.protobuf.Duration
-	40, // 37: google.cloud.dialogflow.cx.v3beta1.QueryParameters.end_user_metadata:type_name -> google.protobuf.Struct
-	13, // 38: google.cloud.dialogflow.cx.v3beta1.QueryParameters.search_config:type_name -> google.cloud.dialogflow.cx.v3beta1.SearchConfig
-	15, // 39: google.cloud.dialogflow.cx.v3beta1.SearchConfig.boost_specs:type_name -> google.cloud.dialogflow.cx.v3beta1.BoostSpecs
-	16, // 40: google.cloud.dialogflow.cx.v3beta1.SearchConfig.filter_specs:type_name -> google.cloud.dialogflow.cx.v3beta1.FilterSpecs
-	33, // 41: google.cloud.dialogflow.cx.v3beta1.BoostSpec.condition_boost_specs:type_name -> google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec
-	14, // 42: google.cloud.dialogflow.cx.v3beta1.BoostSpecs.spec:type_name -> google.cloud.dialogflow.cx.v3beta1.BoostSpec
-	20, // 43: google.cloud.dialogflow.cx.v3beta1.QueryInput.text:type_name -> google.cloud.dialogflow.cx.v3beta1.TextInput
-	21, // 44: google.cloud.dialogflow.cx.v3beta1.QueryInput.intent:type_name -> google.cloud.dialogflow.cx.v3beta1.IntentInput
-	22, // 45: google.cloud.dialogflow.cx.v3beta1.QueryInput.audio:type_name -> google.cloud.dialogflow.cx.v3beta1.AudioInput
-	23, // 46: google.cloud.dialogflow.cx.v3beta1.QueryInput.event:type_name -> google.cloud.dialogflow.cx.v3beta1.EventInput
-	24, // 47: google.cloud.dialogflow.cx.v3beta1.QueryInput.dtmf:type_name -> google.cloud.dialogflow.cx.v3beta1.DtmfInput
-	42, // 48: google.cloud.dialogflow.cx.v3beta1.QueryInput.tool_call_result:type_name -> google.cloud.dialogflow.cx.v3beta1.ToolCallResult
-	43, // 49: google.cloud.dialogflow.cx.v3beta1.GenerativeInfo.action_tracing_info:type_name -> google.cloud.dialogflow.cx.v3beta1.Example
-	24, // 50: google.cloud.dialogflow.cx.v3beta1.QueryResult.dtmf:type_name -> google.cloud.dialogflow.cx.v3beta1.DtmfInput
-	40, // 51: google.cloud.dialogflow.cx.v3beta1.QueryResult.parameters:type_name -> google.protobuf.Struct
-	44, // 52: google.cloud.dialogflow.cx.v3beta1.QueryResult.response_messages:type_name -> google.cloud.dialogflow.cx.v3beta1.ResponseMessage
-	36, // 53: google.cloud.dialogflow.cx.v3beta1.QueryResult.webhook_latencies:type_name -> google.protobuf.Duration
-	45, // 54: google.cloud.dialogflow.cx.v3beta1.QueryResult.webhook_statuses:type_name -> google.rpc.Status
-	40, // 55: google.cloud.dialogflow.cx.v3beta1.QueryResult.webhook_payloads:type_name -> google.protobuf.Struct
-	46, // 56: google.cloud.dialogflow.cx.v3beta1.QueryResult.current_page:type_name -> google.cloud.dialogflow.cx.v3beta1.Page
-	47, // 57: google.cloud.dialogflow.cx.v3beta1.QueryResult.current_flow:type_name -> google.cloud.dialogflow.cx.v3beta1.Flow
-	48, // 58: google.cloud.dialogflow.cx.v3beta1.QueryResult.intent:type_name -> google.cloud.dialogflow.cx.v3beta1.Intent
-	25, // 59: google.cloud.dialogflow.cx.v3beta1.QueryResult.match:type_name -> google.cloud.dialogflow.cx.v3beta1.Match
-	40, // 60: google.cloud.dialogflow.cx.v3beta1.QueryResult.diagnostic_info:type_name -> google.protobuf.Struct
-	18, // 61: google.cloud.dialogflow.cx.v3beta1.QueryResult.generative_info:type_name -> google.cloud.dialogflow.cx.v3beta1.GenerativeInfo
-	30, // 62: google.cloud.dialogflow.cx.v3beta1.QueryResult.sentiment_analysis_result:type_name -> google.cloud.dialogflow.cx.v3beta1.SentimentAnalysisResult
-	49, // 63: google.cloud.dialogflow.cx.v3beta1.QueryResult.advanced_settings:type_name -> google.cloud.dialogflow.cx.v3beta1.AdvancedSettings
-	50, // 64: google.cloud.dialogflow.cx.v3beta1.QueryResult.data_store_connection_signals:type_name -> google.cloud.dialogflow.cx.v3beta1.DataStoreConnectionSignals
-	51, // 65: google.cloud.dialogflow.cx.v3beta1.AudioInput.config:type_name -> google.cloud.dialogflow.cx.v3beta1.InputAudioConfig
-	48, // 66: google.cloud.dialogflow.cx.v3beta1.Match.intent:type_name -> google.cloud.dialogflow.cx.v3beta1.Intent
-	40, // 67: google.cloud.dialogflow.cx.v3beta1.Match.parameters:type_name -> google.protobuf.Struct
-	3,  // 68: google.cloud.dialogflow.cx.v3beta1.Match.match_type:type_name -> google.cloud.dialogflow.cx.v3beta1.Match.MatchType
-	12, // 69: google.cloud.dialogflow.cx.v3beta1.MatchIntentRequest.query_params:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryParameters
-	17, // 70: google.cloud.dialogflow.cx.v3beta1.MatchIntentRequest.query_input:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryInput
-	25, // 71: google.cloud.dialogflow.cx.v3beta1.MatchIntentResponse.matches:type_name -> google.cloud.dialogflow.cx.v3beta1.Match
-	46, // 72: google.cloud.dialogflow.cx.v3beta1.MatchIntentResponse.current_page:type_name -> google.cloud.dialogflow.cx.v3beta1.Page
-	26, // 73: google.cloud.dialogflow.cx.v3beta1.FulfillIntentRequest.match_intent_request:type_name -> google.cloud.dialogflow.cx.v3beta1.MatchIntentRequest
-	25, // 74: google.cloud.dialogflow.cx.v3beta1.FulfillIntentRequest.match:type_name -> google.cloud.dialogflow.cx.v3beta1.Match
-	35, // 75: google.cloud.dialogflow.cx.v3beta1.FulfillIntentRequest.output_audio_config:type_name -> google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig
-	19, // 76: google.cloud.dialogflow.cx.v3beta1.FulfillIntentResponse.query_result:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryResult
-	35, // 77: google.cloud.dialogflow.cx.v3beta1.FulfillIntentResponse.output_audio_config:type_name -> google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig
-	6,  // 78: google.cloud.dialogflow.cx.v3beta1.Sessions.DetectIntent:input_type -> google.cloud.dialogflow.cx.v3beta1.DetectIntentRequest
-	6,  // 79: google.cloud.dialogflow.cx.v3beta1.Sessions.ServerStreamingDetectIntent:input_type -> google.cloud.dialogflow.cx.v3beta1.DetectIntentRequest
-	8,  // 80: google.cloud.dialogflow.cx.v3beta1.Sessions.StreamingDetectIntent:input_type -> google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentRequest
-	26, // 81: google.cloud.dialogflow.cx.v3beta1.Sessions.MatchIntent:input_type -> google.cloud.dialogflow.cx.v3beta1.MatchIntentRequest
-	28, // 82: google.cloud.dialogflow.cx.v3beta1.Sessions.FulfillIntent:input_type -> google.cloud.dialogflow.cx.v3beta1.FulfillIntentRequest
-	5,  // 83: google.cloud.dialogflow.cx.v3beta1.Sessions.SubmitAnswerFeedback:input_type -> google.cloud.dialogflow.cx.v3beta1.SubmitAnswerFeedbackRequest
-	7,  // 84: google.cloud.dialogflow.cx.v3beta1.Sessions.DetectIntent:output_type -> google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse
-	7,  // 85: google.cloud.dialogflow.cx.v3beta1.Sessions.ServerStreamingDetectIntent:output_type -> google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse
-	10, // 86: google.cloud.dialogflow.cx.v3beta1.Sessions.StreamingDetectIntent:output_type -> google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentResponse
-	27, // 87: google.cloud.dialogflow.cx.v3beta1.Sessions.MatchIntent:output_type -> google.cloud.dialogflow.cx.v3beta1.MatchIntentResponse
-	29, // 88: google.cloud.dialogflow.cx.v3beta1.Sessions.FulfillIntent:output_type -> google.cloud.dialogflow.cx.v3beta1.FulfillIntentResponse
-	4,  // 89: google.cloud.dialogflow.cx.v3beta1.Sessions.SubmitAnswerFeedback:output_type -> google.cloud.dialogflow.cx.v3beta1.AnswerFeedback
-	84, // [84:90] is the sub-list for method output_type
-	78, // [78:84] is the sub-list for method input_type
-	78, // [78:78] is the sub-list for extension type_name
-	78, // [78:78] is the sub-list for extension extendee
-	0,  // [0:78] is the sub-list for field type_name
+	41, // 28: google.cloud.dialogflow.cx.v3beta1.StreamingRecognitionResult.speech_word_info:type_name -> google.cloud.dialogflow.cx.v3beta1.SpeechWordInfo
+	40, // 29: google.cloud.dialogflow.cx.v3beta1.StreamingRecognitionResult.speech_end_offset:type_name -> google.protobuf.Duration
+	42, // 30: google.cloud.dialogflow.cx.v3beta1.QueryParameters.geo_location:type_name -> google.type.LatLng
+	43, // 31: google.cloud.dialogflow.cx.v3beta1.QueryParameters.session_entity_types:type_name -> google.cloud.dialogflow.cx.v3beta1.SessionEntityType
+	44, // 32: google.cloud.dialogflow.cx.v3beta1.QueryParameters.payload:type_name -> google.protobuf.Struct
+	44, // 33: google.cloud.dialogflow.cx.v3beta1.QueryParameters.parameters:type_name -> google.protobuf.Struct
+	34, // 34: google.cloud.dialogflow.cx.v3beta1.QueryParameters.webhook_headers:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryParameters.WebhookHeadersEntry
+	45, // 35: google.cloud.dialogflow.cx.v3beta1.QueryParameters.llm_model_settings:type_name -> google.cloud.dialogflow.cx.v3beta1.LlmModelSettings
+	40, // 36: google.cloud.dialogflow.cx.v3beta1.QueryParameters.session_ttl:type_name -> google.protobuf.Duration
+	44, // 37: google.cloud.dialogflow.cx.v3beta1.QueryParameters.end_user_metadata:type_name -> google.protobuf.Struct
+	15, // 38: google.cloud.dialogflow.cx.v3beta1.QueryParameters.search_config:type_name -> google.cloud.dialogflow.cx.v3beta1.SearchConfig
+	17, // 39: google.cloud.dialogflow.cx.v3beta1.SearchConfig.boost_specs:type_name -> google.cloud.dialogflow.cx.v3beta1.BoostSpecs
+	18, // 40: google.cloud.dialogflow.cx.v3beta1.SearchConfig.filter_specs:type_name -> google.cloud.dialogflow.cx.v3beta1.FilterSpecs
+	35, // 41: google.cloud.dialogflow.cx.v3beta1.BoostSpec.condition_boost_specs:type_name -> google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec
+	16, // 42: google.cloud.dialogflow.cx.v3beta1.BoostSpecs.spec:type_name -> google.cloud.dialogflow.cx.v3beta1.BoostSpec
+	22, // 43: google.cloud.dialogflow.cx.v3beta1.QueryInput.text:type_name -> google.cloud.dialogflow.cx.v3beta1.TextInput
+	23, // 44: google.cloud.dialogflow.cx.v3beta1.QueryInput.intent:type_name -> google.cloud.dialogflow.cx.v3beta1.IntentInput
+	24, // 45: google.cloud.dialogflow.cx.v3beta1.QueryInput.audio:type_name -> google.cloud.dialogflow.cx.v3beta1.AudioInput
+	25, // 46: google.cloud.dialogflow.cx.v3beta1.QueryInput.event:type_name -> google.cloud.dialogflow.cx.v3beta1.EventInput
+	26, // 47: google.cloud.dialogflow.cx.v3beta1.QueryInput.dtmf:type_name -> google.cloud.dialogflow.cx.v3beta1.DtmfInput
+	46, // 48: google.cloud.dialogflow.cx.v3beta1.QueryInput.tool_call_result:type_name -> google.cloud.dialogflow.cx.v3beta1.ToolCallResult
+	47, // 49: google.cloud.dialogflow.cx.v3beta1.GenerativeInfo.action_tracing_info:type_name -> google.cloud.dialogflow.cx.v3beta1.Example
+	26, // 50: google.cloud.dialogflow.cx.v3beta1.QueryResult.dtmf:type_name -> google.cloud.dialogflow.cx.v3beta1.DtmfInput
+	44, // 51: google.cloud.dialogflow.cx.v3beta1.QueryResult.parameters:type_name -> google.protobuf.Struct
+	48, // 52: google.cloud.dialogflow.cx.v3beta1.QueryResult.response_messages:type_name -> google.cloud.dialogflow.cx.v3beta1.ResponseMessage
+	40, // 53: google.cloud.dialogflow.cx.v3beta1.QueryResult.webhook_latencies:type_name -> google.protobuf.Duration
+	49, // 54: google.cloud.dialogflow.cx.v3beta1.QueryResult.webhook_statuses:type_name -> google.rpc.Status
+	44, // 55: google.cloud.dialogflow.cx.v3beta1.QueryResult.webhook_payloads:type_name -> google.protobuf.Struct
+	50, // 56: google.cloud.dialogflow.cx.v3beta1.QueryResult.current_page:type_name -> google.cloud.dialogflow.cx.v3beta1.Page
+	51, // 57: google.cloud.dialogflow.cx.v3beta1.QueryResult.current_flow:type_name -> google.cloud.dialogflow.cx.v3beta1.Flow
+	52, // 58: google.cloud.dialogflow.cx.v3beta1.QueryResult.intent:type_name -> google.cloud.dialogflow.cx.v3beta1.Intent
+	27, // 59: google.cloud.dialogflow.cx.v3beta1.QueryResult.match:type_name -> google.cloud.dialogflow.cx.v3beta1.Match
+	44, // 60: google.cloud.dialogflow.cx.v3beta1.QueryResult.diagnostic_info:type_name -> google.protobuf.Struct
+	20, // 61: google.cloud.dialogflow.cx.v3beta1.QueryResult.generative_info:type_name -> google.cloud.dialogflow.cx.v3beta1.GenerativeInfo
+	32, // 62: google.cloud.dialogflow.cx.v3beta1.QueryResult.sentiment_analysis_result:type_name -> google.cloud.dialogflow.cx.v3beta1.SentimentAnalysisResult
+	53, // 63: google.cloud.dialogflow.cx.v3beta1.QueryResult.advanced_settings:type_name -> google.cloud.dialogflow.cx.v3beta1.AdvancedSettings
+	54, // 64: google.cloud.dialogflow.cx.v3beta1.QueryResult.data_store_connection_signals:type_name -> google.cloud.dialogflow.cx.v3beta1.DataStoreConnectionSignals
+	55, // 65: google.cloud.dialogflow.cx.v3beta1.AudioInput.config:type_name -> google.cloud.dialogflow.cx.v3beta1.InputAudioConfig
+	52, // 66: google.cloud.dialogflow.cx.v3beta1.Match.intent:type_name -> google.cloud.dialogflow.cx.v3beta1.Intent
+	44, // 67: google.cloud.dialogflow.cx.v3beta1.Match.parameters:type_name -> google.protobuf.Struct
+	5,  // 68: google.cloud.dialogflow.cx.v3beta1.Match.match_type:type_name -> google.cloud.dialogflow.cx.v3beta1.Match.MatchType
+	14, // 69: google.cloud.dialogflow.cx.v3beta1.MatchIntentRequest.query_params:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryParameters
+	19, // 70: google.cloud.dialogflow.cx.v3beta1.MatchIntentRequest.query_input:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryInput
+	27, // 71: google.cloud.dialogflow.cx.v3beta1.MatchIntentResponse.matches:type_name -> google.cloud.dialogflow.cx.v3beta1.Match
+	50, // 72: google.cloud.dialogflow.cx.v3beta1.MatchIntentResponse.current_page:type_name -> google.cloud.dialogflow.cx.v3beta1.Page
+	28, // 73: google.cloud.dialogflow.cx.v3beta1.FulfillIntentRequest.match_intent_request:type_name -> google.cloud.dialogflow.cx.v3beta1.MatchIntentRequest
+	27, // 74: google.cloud.dialogflow.cx.v3beta1.FulfillIntentRequest.match:type_name -> google.cloud.dialogflow.cx.v3beta1.Match
+	39, // 75: google.cloud.dialogflow.cx.v3beta1.FulfillIntentRequest.output_audio_config:type_name -> google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig
+	21, // 76: google.cloud.dialogflow.cx.v3beta1.FulfillIntentResponse.query_result:type_name -> google.cloud.dialogflow.cx.v3beta1.QueryResult
+	39, // 77: google.cloud.dialogflow.cx.v3beta1.FulfillIntentResponse.output_audio_config:type_name -> google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig
+	36, // 78: google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec.boost_control_spec:type_name -> google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec.BoostControlSpec
+	3,  // 79: google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec.BoostControlSpec.attribute_type:type_name -> google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeType
+	4,  // 80: google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec.BoostControlSpec.interpolation_type:type_name -> google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationType
+	37, // 81: google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec.BoostControlSpec.control_points:type_name -> google.cloud.dialogflow.cx.v3beta1.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPoint
+	8,  // 82: google.cloud.dialogflow.cx.v3beta1.Sessions.DetectIntent:input_type -> google.cloud.dialogflow.cx.v3beta1.DetectIntentRequest
+	8,  // 83: google.cloud.dialogflow.cx.v3beta1.Sessions.ServerStreamingDetectIntent:input_type -> google.cloud.dialogflow.cx.v3beta1.DetectIntentRequest
+	10, // 84: google.cloud.dialogflow.cx.v3beta1.Sessions.StreamingDetectIntent:input_type -> google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentRequest
+	28, // 85: google.cloud.dialogflow.cx.v3beta1.Sessions.MatchIntent:input_type -> google.cloud.dialogflow.cx.v3beta1.MatchIntentRequest
+	30, // 86: google.cloud.dialogflow.cx.v3beta1.Sessions.FulfillIntent:input_type -> google.cloud.dialogflow.cx.v3beta1.FulfillIntentRequest
+	7,  // 87: google.cloud.dialogflow.cx.v3beta1.Sessions.SubmitAnswerFeedback:input_type -> google.cloud.dialogflow.cx.v3beta1.SubmitAnswerFeedbackRequest
+	9,  // 88: google.cloud.dialogflow.cx.v3beta1.Sessions.DetectIntent:output_type -> google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse
+	9,  // 89: google.cloud.dialogflow.cx.v3beta1.Sessions.ServerStreamingDetectIntent:output_type -> google.cloud.dialogflow.cx.v3beta1.DetectIntentResponse
+	12, // 90: google.cloud.dialogflow.cx.v3beta1.Sessions.StreamingDetectIntent:output_type -> google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentResponse
+	29, // 91: google.cloud.dialogflow.cx.v3beta1.Sessions.MatchIntent:output_type -> google.cloud.dialogflow.cx.v3beta1.MatchIntentResponse
+	31, // 92: google.cloud.dialogflow.cx.v3beta1.Sessions.FulfillIntent:output_type -> google.cloud.dialogflow.cx.v3beta1.FulfillIntentResponse
+	6,  // 93: google.cloud.dialogflow.cx.v3beta1.Sessions.SubmitAnswerFeedback:output_type -> google.cloud.dialogflow.cx.v3beta1.AnswerFeedback
+	88, // [88:94] is the sub-list for method output_type
+	82, // [82:88] is the sub-list for method input_type
+	82, // [82:82] is the sub-list for extension type_name
+	82, // [82:82] is the sub-list for extension extendee
+	0,  // [0:82] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dialogflow_cx_v3beta1_session_proto_init() }
@@ -4876,6 +5219,30 @@ func file_google_cloud_dialogflow_cx_v3beta1_session_proto_init() {
 				return nil
 			}
 		}
+		file_google_cloud_dialogflow_cx_v3beta1_session_proto_msgTypes[30].Exporter = func(v any, i int) any {
+			switch v := v.(*BoostSpec_ConditionBoostSpec_BoostControlSpec); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_dialogflow_cx_v3beta1_session_proto_msgTypes[31].Exporter = func(v any, i int) any {
+			switch v := v.(*BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_google_cloud_dialogflow_cx_v3beta1_session_proto_msgTypes[6].OneofWrappers = []any{
 		(*StreamingDetectIntentResponse_RecognitionResult)(nil),
@@ -4907,8 +5274,8 @@ func file_google_cloud_dialogflow_cx_v3beta1_session_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_dialogflow_cx_v3beta1_session_proto_rawDesc,
-			NumEnums:      4,
-			NumMessages:   30,
+			NumEnums:      6,
+			NumMessages:   32,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
