@@ -240,7 +240,7 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 
 // CheckDirectConnectivitySupported checks if gRPC direct connectivity
 // is available for a specific bucket from the environment where the client
-// is running.
+// is running. A `nil` error represents Direct Connectivity was detected.
 //
 // You can pass in [option.ClientOption] you plan on passing to [NewGRPCClient]
 func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts ...option.ClientOption) error {
@@ -253,13 +253,13 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 	)
 	mr := metric.NewManualReader()
 	provider := metric.NewMeterProvider(metric.WithReader(mr), metric.WithView(view))
+	// Provider handles shutting down ManualReader
+	defer provider.Shutdown(ctx)
 	mo := opentelemetry.MetricsOptions{
 		MeterProvider:  provider,
 		Metrics:        stats.NewMetrics("grpc.client.attempt.duration"),
 		OptionalLabels: []string{"grpc.lb.locality"},
 	}
-	// Provider handles shutting down ManualReader
-	defer provider.Shutdown(ctx)
 	combinedOpts := append(opts, WithDisabledClientMetrics(), option.WithGRPCDialOption(opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo})))
 	client, err := NewGRPCClient(ctx, combinedOpts...)
 	if err != nil {
