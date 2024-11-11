@@ -1394,6 +1394,7 @@ func TestIntegration_QueryUnary(t *testing.T) {
 		want map[string]interface{}
 	}{
 		{base.Where("q", "==", nil), wantNull},
+		{base.Where("q", "!=", nil), wantNull},
 		{base.Where("q", "==", math.NaN()), wantNaN},
 	} {
 		got, err := test.q.Documents(ctx).GetAll()
