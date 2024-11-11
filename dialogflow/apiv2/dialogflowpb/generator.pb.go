@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -781,7 +780,6 @@ func (x *SummarizationSectionList) GetSummarizationSections() []*SummarizationSe
 
 // Providing examples in the generator (i.e. building a few-shot generator)
 // helps convey the desired format of the LLM response.
-// NEXT_ID: 10
 type FewShotExample struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
