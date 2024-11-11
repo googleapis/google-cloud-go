@@ -252,12 +252,14 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 		metric.Stream{AttributeFilter: attribute.NewAllowKeysFilter("grpc.lb.locality")},
 	)
 	mr := metric.NewManualReader()
+	defer mr.Shutdown(ctx)
 	provider := metric.NewMeterProvider(metric.WithReader(mr), metric.WithView(view))
 	mo := opentelemetry.MetricsOptions{
 		MeterProvider:  provider,
 		Metrics:        stats.NewMetrics("grpc.client.attempt.duration"),
 		OptionalLabels: []string{"grpc.lb.locality"},
 	}
+	defer provider.Shutdown(ctx)
 	combinedOpts := append(opts, WithDisabledClientMetrics(), option.WithGRPCDialOption(opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo})))
 	client, err := NewGRPCClient(ctx, combinedOpts...)
 	if err != nil {
