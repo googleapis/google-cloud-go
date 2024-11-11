@@ -328,22 +328,34 @@ var readCases = []readCase{
 
 func TestIntegration_DetectDirectConnectivity(t *testing.T) {
 	ctx := skipHTTP("direct connectivity isn't available for json")
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, _ *Client) {
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
 		// Using Resoource Detector to detect if test is being ran inside GCE
 		// if so, the test expects Direct Connectivity to be detected.
 		// Otherwise, it will only validate that Direct Connectivity was not
 		// detected.
+		// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourcedetectionprocessor/README.md
 		detectedAttrs, err := resource.New(ctx, resource.WithDetectors(gcp.NewDetector()))
 		if err != nil {
 			t.Fatalf("resource.New: %v", err)
 		}
-		if v, present := detectedAttrs.Set().Value("cloud.platform"); present && v.AsString() == "gcp_compute_engine" {
-			err := CheckDirectConnectivitySupported(ctx, bucket)
+		attrs := detectedAttrs.Set()
+		if v, exists := attrs.Value("cloud.platform"); exists && v.AsString() == "gcp_compute_engine" {
+			v, exists = attrs.Value("cloud.region")
+			if !exists {
+				t.Fatalf("CheckDirectConnectivitySupported: region not detected")
+			}
+			region := v.AsString()
+			newBucketName := "go-integration-dc-" + region + "-" + uidSpace.New()
+			newBucket := client.Bucket(newBucketName)
+			h.mustCreate(newBucket, testutil.ProjID(), &BucketAttrs{Location: region, LocationType: "region"})
+			defer h.mustDeleteBucket(newBucket)
+			err := CheckDirectConnectivitySupported(ctx, newBucketName)
 			if err != nil {
 				t.Fatalf("CheckDirectConnectivitySupported: %v", err)
 			}
 		} else {
-			err := CheckDirectConnectivitySupported(ctx, bucket)
+			err = CheckDirectConnectivitySupported(ctx, bucket)
 			if err == nil {
 				t.Fatal("CheckDirectConnectivitySupported: expected error but none returned")
 			}

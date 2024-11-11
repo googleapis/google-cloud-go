@@ -241,6 +241,8 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 // CheckDirectConnectivitySupported checks if gRPC direct connectivity
 // is available for a specific bucket from the environment where the client
 // is running. A `nil` error represents Direct Connectivity was detected.
+// Direct connectivity is expected to be available when running from inside
+// GCP and connecting to a bucket in the same region.
 //
 // You can pass in [option.ClientOption] you plan on passing to [NewGRPCClient]
 func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts ...option.ClientOption) error {
