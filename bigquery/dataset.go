@@ -192,9 +192,14 @@ func (d *Dataset) Identifier(f IdentifierFormat) (string, error) {
 
 // Create creates a dataset in the BigQuery service. An error will be returned if the
 // dataset already exists. Pass in a DatasetMetadata value to configure the dataset.
-func (d *Dataset) Create(ctx context.Context, md *DatasetMetadata) (err error) {
+func (d *Dataset) Create(ctx context.Context, md *DatasetMetadata, opts ...DatasetOption) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Dataset.Create")
 	defer func() { trace.EndSpan(ctx, err) }()
+
+	cOpt := &dsCallOption{}
+	for _, o := range opts {
+		o(cOpt)
+	}
 
 	ds, err := md.toBQ()
 	if err != nil {
@@ -207,6 +212,9 @@ func (d *Dataset) Create(ctx context.Context, md *DatasetMetadata) (err error) {
 	}
 	call := d.c.bqs.Datasets.Insert(d.ProjectID, ds).Context(ctx)
 	setClientHeader(call.Header())
+	if cOpt.accessPolicyVersion != nil {
+		call.AccessPolicyVersion(int64(optional.ToInt(cOpt.accessPolicyVersion)))
+	}
 	_, err = call.Do()
 	return err
 }
@@ -288,12 +296,20 @@ func (d *Dataset) deleteInternal(ctx context.Context, deleteContents bool) (err 
 }
 
 // Metadata fetches the metadata for the dataset.
-func (d *Dataset) Metadata(ctx context.Context) (md *DatasetMetadata, err error) {
+func (d *Dataset) Metadata(ctx context.Context, opts ...DatasetOption) (md *DatasetMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Dataset.Metadata")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	cOpt := &dsCallOption{}
+	for _, o := range opts {
+		o(cOpt)
+	}
+
 	call := d.c.bqs.Datasets.Get(d.ProjectID, d.DatasetID).Context(ctx)
 	setClientHeader(call.Header())
+	if cOpt.accessPolicyVersion != nil {
+		call.AccessPolicyVersion(int64(optional.ToInt(cOpt.accessPolicyVersion)))
+	}
 	var ds *bq.Dataset
 	if err := runWithRetry(ctx, func() (err error) {
 		sCtx := trace.StartSpan(ctx, "bigquery.datasets.get")
@@ -306,11 +322,19 @@ func (d *Dataset) Metadata(ctx context.Context) (md *DatasetMetadata, err error)
 	return bqToDatasetMetadata(ds, d.c)
 }
 
-type DatasetMetadataOption func()
+// dsCallOption provides a general option holder for dataset RPCs
+type dsCallOption struct {
+	accessPolicyVersion optional.Int
+}
 
-// TODO description and option type
-func (d *Dataset) MetadataWithOptions(ctx context.Context, opts ...DatasetMetadataOption) (md *DatasetMetadata, err error) {
-	return nil, fmt.Errorf("unimplemented")
+// DatasetOption provides an option type for customizing requests against the Dataset
+// service.
+type DatasetOption func(*dsCallOption)
+
+func WithAccessPolicyVersion(apv int) DatasetOption {
+	return func(o *dsCallOption) {
+		o.accessPolicyVersion = apv
+	}
 }
 
 func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
@@ -351,18 +375,26 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 // To perform a read-modify-write that protects against intervening reads,
 // set the etag argument to the DatasetMetadata.ETag field from the read.
 // Pass the empty string for etag for a "blind write" that will always succeed.
-func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag string) (md *DatasetMetadata, err error) {
+func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag string, opts ...DatasetOption) (md *DatasetMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Dataset.Update")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	cOpt := &dsCallOption{}
+	for _, o := range opts {
+		o(cOpt)
+	}
 	ds, err := dm.toBQ()
 	if err != nil {
 		return nil, err
 	}
+
 	call := d.c.bqs.Datasets.Patch(d.ProjectID, d.DatasetID, ds).Context(ctx)
 	setClientHeader(call.Header())
 	if etag != "" {
 		call.Header().Set("If-Match", etag)
+	}
+	if cOpt.accessPolicyVersion != nil {
+		call.AccessPolicyVersion(int64(optional.ToInt(cOpt.accessPolicyVersion)))
 	}
 	var ds2 *bq.Dataset
 	if err := runWithRetry(ctx, func() (err error) {
@@ -964,6 +996,9 @@ func bqToAccessEntry(q *bq.DatasetAccess, c *Client) (*AccessEntry, error) {
 		e.EntityType = DatasetEntity
 	default:
 		return nil, errors.New("bigquery: invalid access value")
+	}
+	if q.Condition != nil {
+		e.Condition = bqToExpr(q.Condition)
 	}
 	return e, nil
 }
