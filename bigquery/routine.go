@@ -97,9 +97,9 @@ func (r *Routine) Metadata(ctx context.Context) (rm *RoutineMetadata, err error)
 	setClientHeader(req.Header())
 	var routine *bq.Routine
 	err = runWithRetry(ctx, func() (err error) {
-		ctx = trace.StartSpan(ctx, "bigquery.routines.get")
+		sCtx := trace.StartSpan(ctx, "bigquery.routines.get")
 		routine, err = req.Do()
-		trace.EndSpan(ctx, err)
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 	if err != nil {
@@ -131,9 +131,9 @@ func (r *Routine) Update(ctx context.Context, upd *RoutineMetadataToUpdate, etag
 	}
 	var res *bq.Routine
 	if err := runWithRetry(ctx, func() (err error) {
-		ctx = trace.StartSpan(ctx, "bigquery.routines.update")
+		sCtx := trace.StartSpan(ctx, "bigquery.routines.update")
 		res, err = call.Do()
-		trace.EndSpan(ctx, err)
+		trace.EndSpan(sCtx, err)
 		return err
 	}); err != nil {
 		return nil, err
