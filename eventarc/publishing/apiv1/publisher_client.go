@@ -43,6 +43,7 @@ var newPublisherClientHook clientHook
 type PublisherCallOptions struct {
 	PublishChannelConnectionEvents []gax.CallOption
 	PublishEvents                  []gax.CallOption
+	Publish                        []gax.CallOption
 }
 
 func defaultPublisherGRPCClientOptions() []option.ClientOption {
@@ -66,6 +67,9 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		PublishEvents: []gax.CallOption{},
+		Publish: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -75,6 +79,9 @@ func defaultPublisherRESTCallOptions() *PublisherCallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		PublishEvents: []gax.CallOption{},
+		Publish: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -85,6 +92,7 @@ type internalPublisherClient interface {
 	Connection() *grpc.ClientConn
 	PublishChannelConnectionEvents(context.Context, *publishingpb.PublishChannelConnectionEventsRequest, ...gax.CallOption) (*publishingpb.PublishChannelConnectionEventsResponse, error)
 	PublishEvents(context.Context, *publishingpb.PublishEventsRequest, ...gax.CallOption) (*publishingpb.PublishEventsResponse, error)
+	Publish(context.Context, *publishingpb.PublishRequest, ...gax.CallOption) (*publishingpb.PublishResponse, error)
 }
 
 // PublisherClient is a client for interacting with Eventarc Publishing API.
@@ -153,6 +161,11 @@ func (c *PublisherClient) PublishChannelConnectionEvents(ctx context.Context, re
 // PublishEvents publish events to a subscriber’s channel.
 func (c *PublisherClient) PublishEvents(ctx context.Context, req *publishingpb.PublishEventsRequest, opts ...gax.CallOption) (*publishingpb.PublishEventsResponse, error) {
 	return c.internalClient.PublishEvents(ctx, req, opts...)
+}
+
+// Publish publish events to a message bus.
+func (c *PublisherClient) Publish(ctx context.Context, req *publishingpb.PublishRequest, opts ...gax.CallOption) (*publishingpb.PublishResponse, error) {
+	return c.internalClient.Publish(ctx, req, opts...)
 }
 
 // publisherGRPCClient is a client for interacting with Eventarc Publishing API over gRPC transport.
@@ -384,6 +397,24 @@ func (c *publisherGRPCClient) PublishEvents(ctx context.Context, req *publishing
 	return resp, nil
 }
 
+func (c *publisherGRPCClient) Publish(ctx context.Context, req *publishingpb.PublishRequest, opts ...gax.CallOption) (*publishingpb.PublishResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "message_bus", url.QueryEscape(req.GetMessageBus()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).Publish[0:len((*c.CallOptions).Publish):len((*c.CallOptions).Publish)], opts...)
+	var resp *publishingpb.PublishResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.publisherClient.Publish(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // PublishChannelConnectionEvents publish events to a ChannelConnection in a partner’s project.
 func (c *publisherRESTClient) PublishChannelConnectionEvents(ctx context.Context, req *publishingpb.PublishChannelConnectionEventsRequest, opts ...gax.CallOption) (*publishingpb.PublishChannelConnectionEventsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -478,6 +509,72 @@ func (c *publisherRESTClient) PublishEvents(ctx context.Context, req *publishing
 	opts = append((*c.CallOptions).PublishEvents[0:len((*c.CallOptions).PublishEvents):len((*c.CallOptions).PublishEvents)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishingpb.PublishEventsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// Publish publish events to a message bus.
+func (c *publisherRESTClient) Publish(ctx context.Context, req *publishingpb.PublishRequest, opts ...gax.CallOption) (*publishingpb.PublishResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:publish", req.GetMessageBus())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "message_bus", url.QueryEscape(req.GetMessageBus()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Publish[0:len((*c.CallOptions).Publish):len((*c.CallOptions).Publish)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &publishingpb.PublishResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

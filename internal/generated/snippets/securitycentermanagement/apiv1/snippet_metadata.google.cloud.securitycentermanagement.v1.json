@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/securitycentermanagement/apiv1",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_CreateEventThreatDetectionCustomModule_sync",
       "title": "securitycentermanagement CreateEventThreatDetectionCustomModule Sample",
-      "description": "CreateEventThreatDetectionCustomModule creates a resident Event Threat Detection custom module at the scope of the\ngiven Resource Manager parent, and also creates inherited custom modules\nfor all descendants of the given parent. These modules are enabled by\ndefault.",
+      "description": "CreateEventThreatDetectionCustomModule creates a resident Event Threat Detection custom module at the scope of the\ngiven organization, folder, or project, and creates inherited custom\nmodules for all descendants of the given parent. These modules are enabled\nby default.",
       "file": "Client/CreateEventThreatDetectionCustomModule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -60,7 +60,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_CreateSecurityHealthAnalyticsCustomModule_sync",
       "title": "securitycentermanagement CreateSecurityHealthAnalyticsCustomModule Sample",
-      "description": "CreateSecurityHealthAnalyticsCustomModule creates a resident SecurityHealthAnalyticsCustomModule at the scope of the\ngiven CRM parent, and also creates inherited\nSecurityHealthAnalyticsCustomModules for all CRM descendants of the given\nparent. These modules are enabled by default.",
+      "description": "CreateSecurityHealthAnalyticsCustomModule creates a resident\n[SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]\nat the scope of the given organization, folder, or project, and also\ncreates inherited `SecurityHealthAnalyticsCustomModule` resources for all\nfolders and projects that are descendants of the given parent. These\nmodules are enabled by default.",
       "file": "Client/CreateSecurityHealthAnalyticsCustomModule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_DeleteEventThreatDetectionCustomModule_sync",
       "title": "securitycentermanagement DeleteEventThreatDetectionCustomModule Sample",
-      "description": "DeleteEventThreatDetectionCustomModule deletes the specified Event Threat Detection custom module and all of its\ndescendants in the Resource Manager hierarchy. This method is only\nsupported for resident custom modules.",
+      "description": "DeleteEventThreatDetectionCustomModule deletes the specified Event Threat Detection custom module and all of its\ndescendants in the resource hierarchy. This method is only supported for\nresident custom modules.",
       "file": "Client/DeleteEventThreatDetectionCustomModule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -151,7 +151,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_DeleteSecurityHealthAnalyticsCustomModule_sync",
       "title": "securitycentermanagement DeleteSecurityHealthAnalyticsCustomModule Sample",
-      "description": "DeleteSecurityHealthAnalyticsCustomModule deletes the specified SecurityHealthAnalyticsCustomModule and all of its\ndescendants in the CRM hierarchy. This method is only supported for\nresident custom modules.",
+      "description": "DeleteSecurityHealthAnalyticsCustomModule deletes the specified\n[SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]\nand all of its descendants in the resource hierarchy. This method is only\nsupported for resident custom modules.",
       "file": "Client/DeleteSecurityHealthAnalyticsCustomModule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -196,7 +196,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_GetEffectiveEventThreatDetectionCustomModule_sync",
       "title": "securitycentermanagement GetEffectiveEventThreatDetectionCustomModule Sample",
-      "description": "GetEffectiveEventThreatDetectionCustomModule gets an effective ETD custom module. Retrieves the effective module at the\ngiven level. The difference between an EffectiveCustomModule and a\nCustomModule is that the fields for an EffectiveCustomModule are computed\nfrom ancestors if needed. For example, the enablement_state for a\nCustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the\nenablement_state for an EffectiveCustomModule is always computed to ENABLED\nor DISABLED (the effective enablement_state).",
+      "description": "GetEffectiveEventThreatDetectionCustomModule gets the effective Event Threat Detection custom module at the given level.\n\nThe difference between an\n[EffectiveEventThreatDetectionCustomModule][google.cloud.securitycentermanagement.v1.EffectiveEventThreatDetectionCustomModule]\nand an\n[EventThreatDetectionCustomModule][google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModule]\nis that the fields for an `EffectiveEventThreatDetectionCustomModule` are\ncomputed from ancestors if needed. For example, the enablement state for an\n`EventThreatDetectionCustomModule` can be `ENABLED`, `DISABLED`, or\n`INHERITED`. In contrast, the enablement state for an\n`EffectiveEventThreatDetectionCustomModule` is always computed as `ENABLED`\nor `DISABLED`.",
       "file": "Client/GetEffectiveEventThreatDetectionCustomModule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -242,7 +242,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_GetEffectiveSecurityHealthAnalyticsCustomModule_sync",
       "title": "securitycentermanagement GetEffectiveSecurityHealthAnalyticsCustomModule Sample",
-      "description": "GetEffectiveSecurityHealthAnalyticsCustomModule gets details of a single EffectiveSecurityHealthAnalyticsCustomModule.",
+      "description": "GetEffectiveSecurityHealthAnalyticsCustomModule gets details of a single\n[EffectiveSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.EffectiveSecurityHealthAnalyticsCustomModule].",
       "file": "Client/GetEffectiveSecurityHealthAnalyticsCustomModule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -426,7 +426,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_GetSecurityHealthAnalyticsCustomModule_sync",
       "title": "securitycentermanagement GetSecurityHealthAnalyticsCustomModule Sample",
-      "description": "GetSecurityHealthAnalyticsCustomModule retrieves a SecurityHealthAnalyticsCustomModule.",
+      "description": "GetSecurityHealthAnalyticsCustomModule retrieves a\n[SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule].",
       "file": "Client/GetSecurityHealthAnalyticsCustomModule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -472,7 +472,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListDescendantEventThreatDetectionCustomModules_sync",
       "title": "securitycentermanagement ListDescendantEventThreatDetectionCustomModules Sample",
-      "description": "ListDescendantEventThreatDetectionCustomModules lists all resident Event Threat Detection custom modules under the\ngiven Resource Manager parent and its descendants.",
+      "description": "ListDescendantEventThreatDetectionCustomModules lists all resident Event Threat Detection custom modules for the given\norganization, folder, or project and its descendants.",
       "file": "Client/ListDescendantEventThreatDetectionCustomModules/main.go",
       "language": "GO",
       "clientMethod": {
@@ -518,7 +518,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListDescendantSecurityHealthAnalyticsCustomModules_sync",
       "title": "securitycentermanagement ListDescendantSecurityHealthAnalyticsCustomModules Sample",
-      "description": "ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident SecurityHealthAnalyticsCustomModules under\nthe given CRM parent and all of the parent's CRM descendants.",
+      "description": "ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident\n[SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]\nresources under the given organization, folder, or project and all of its\ndescendants.",
       "file": "Client/ListDescendantSecurityHealthAnalyticsCustomModules/main.go",
       "language": "GO",
       "clientMethod": {
@@ -610,7 +610,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListEffectiveSecurityHealthAnalyticsCustomModules_sync",
       "title": "securitycentermanagement ListEffectiveSecurityHealthAnalyticsCustomModules Sample",
-      "description": "ListEffectiveSecurityHealthAnalyticsCustomModules returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the\ngiven parent. This includes resident modules defined at the scope of the\nparent, and inherited modules, inherited from CRM ancestors (no\ndescendants).",
+      "description": "ListEffectiveSecurityHealthAnalyticsCustomModules returns a list of all\n[EffectiveSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.EffectiveSecurityHealthAnalyticsCustomModule]\nresources for the given parent. This includes resident modules defined at\nthe scope of the parent, and inherited modules, inherited from ancestor\norganizations, folders, and projects (no descendants).",
       "file": "Client/ListEffectiveSecurityHealthAnalyticsCustomModules/main.go",
       "language": "GO",
       "clientMethod": {
@@ -656,7 +656,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListEventThreatDetectionCustomModules_sync",
       "title": "securitycentermanagement ListEventThreatDetectionCustomModules Sample",
-      "description": "ListEventThreatDetectionCustomModules lists all Event Threat Detection custom modules for the given\nResource Manager parent. This includes resident modules defined at the\nscope of the parent along with modules inherited from ancestors.",
+      "description": "ListEventThreatDetectionCustomModules lists all Event Threat Detection custom modules for the given organization,\nfolder, or project. This includes resident modules defined at the scope of\nthe parent along with modules inherited from ancestors.",
       "file": "Client/ListEventThreatDetectionCustomModules/main.go",
       "language": "GO",
       "clientMethod": {
@@ -794,7 +794,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListSecurityHealthAnalyticsCustomModules_sync",
       "title": "securitycentermanagement ListSecurityHealthAnalyticsCustomModules Sample",
-      "description": "ListSecurityHealthAnalyticsCustomModules returns a list of all SecurityHealthAnalyticsCustomModules for the given\nparent. This includes resident modules defined at the scope of the parent,\nand inherited modules, inherited from CRM ancestors (no descendants).",
+      "description": "ListSecurityHealthAnalyticsCustomModules returns a list of all\n[SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]\nresources for the given parent. This includes resident modules defined at\nthe scope of the parent, and inherited modules, inherited from ancestor\norganizations, folders, and projects (no descendants).",
       "file": "Client/ListSecurityHealthAnalyticsCustomModules/main.go",
       "language": "GO",
       "clientMethod": {
@@ -840,7 +840,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_SimulateSecurityHealthAnalyticsCustomModule_sync",
       "title": "securitycentermanagement SimulateSecurityHealthAnalyticsCustomModule Sample",
-      "description": "SimulateSecurityHealthAnalyticsCustomModule simulates a given SecurityHealthAnalyticsCustomModule and Resource.",
+      "description": "SimulateSecurityHealthAnalyticsCustomModule simulates the result of using a\n[SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]\nto check a resource.",
       "file": "Client/SimulateSecurityHealthAnalyticsCustomModule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -978,7 +978,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_UpdateSecurityHealthAnalyticsCustomModule_sync",
       "title": "securitycentermanagement UpdateSecurityHealthAnalyticsCustomModule Sample",
-      "description": "UpdateSecurityHealthAnalyticsCustomModule updates the SecurityHealthAnalyticsCustomModule under the given name based\non the given update mask. Updating the enablement state is supported on\nboth resident and inherited modules (though resident modules cannot have an\nenablement state of \"inherited\"). Updating the display name and custom\nconfig of a module is supported on resident modules only.",
+      "description": "UpdateSecurityHealthAnalyticsCustomModule updates the\n[SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]\nunder the given name based on the given update mask. Updating the\nenablement state is supported on both resident and inherited modules\n(though resident modules cannot have an enablement state of \"inherited\").\nUpdating the display name and custom configuration of a module is supported\non resident modules only.",
       "file": "Client/UpdateSecurityHealthAnalyticsCustomModule/main.go",
       "language": "GO",
       "clientMethod": {

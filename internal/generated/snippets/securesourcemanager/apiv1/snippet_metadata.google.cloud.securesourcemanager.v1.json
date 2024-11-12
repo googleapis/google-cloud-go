@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/securesourcemanager/apiv1",
-    "version": "1.2.1",
+    "version": "1.3.0",
     "language": "GO",
     "apis": [
       {
@@ -52,6 +52,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateBranchRule_sync",
+      "title": "securesourcemanager CreateBranchRule Sample",
+      "description": "CreateBranchRule createBranchRule creates a branch rule in a given repository.",
+      "file": "Client/CreateBranchRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBranchRule",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.CreateBranchRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.CreateBranchRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBranchRuleOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateBranchRule",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.CreateBranchRule",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -144,6 +190,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteBranchRule_sync",
+      "title": "securesourcemanager DeleteBranchRule Sample",
+      "description": "DeleteBranchRule deleteBranchRule deletes a branch rule.",
+      "file": "Client/DeleteBranchRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBranchRule",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.DeleteBranchRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.DeleteBranchRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteBranchRuleOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteBranchRule",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteBranchRule",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -281,6 +373,52 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetBranchRule_sync",
+      "title": "securesourcemanager GetBranchRule Sample",
+      "description": "GetBranchRule getBranchRule gets a branch rule.",
+      "file": "Client/GetBranchRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBranchRule",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.GetBranchRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.GetBranchRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securesourcemanagerpb.BranchRule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetBranchRule",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.GetBranchRule",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -557,6 +695,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListBranchRules_sync",
+      "title": "securesourcemanager ListBranchRules Sample",
+      "description": "ListBranchRules listBranchRules lists branch rules in a given repository.",
+      "file": "Client/ListBranchRules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBranchRules",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.ListBranchRules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.ListBranchRulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BranchRuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListBranchRules",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.ListBranchRules",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -925,6 +1109,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdateBranchRule_sync",
+      "title": "securesourcemanager UpdateBranchRule Sample",
+      "description": "UpdateBranchRule updateBranchRule updates a branch rule.",
+      "file": "Client/UpdateBranchRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBranchRule",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.UpdateBranchRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.UpdateBranchRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateBranchRuleOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateBranchRule",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateBranchRule",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

@@ -21,6 +21,7 @@ import (
 
 	"cloud.google.com/go/storage/experimental"
 	storageinternal "cloud.google.com/go/storage/internal"
+	"go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 )
@@ -35,7 +36,9 @@ const (
 )
 
 func init() {
-	// initialize experimental option.
+	// initialize experimental options
+	storageinternal.WithMetricExporter = withMetricExporter
+	storageinternal.WithMetricInterval = withMetricInterval
 	storageinternal.WithReadStallTimeout = withReadStallTimeout
 }
 
@@ -69,12 +72,13 @@ func getDynamicReadReqInitialTimeoutSecFromEnv(defaultVal time.Duration) time.Du
 	return val
 }
 
-// storageConfig contains the Storage client option configuration that can be
 // set through storageClientOptions.
 type storageConfig struct {
 	useJSONforReads        bool
 	readAPIWasSet          bool
 	disableClientMetrics   bool
+	metricExporter         *metric.Exporter
+	metricInterval         time.Duration
 	readStallTimeoutConfig *experimental.ReadStallTimeoutConfig
 }
 
@@ -158,6 +162,34 @@ func WithDisabledClientMetrics() option.ClientOption {
 
 func (w *withDisabledClientMetrics) ApplyStorageOpt(c *storageConfig) {
 	c.disableClientMetrics = w.disabledClientMetrics
+}
+
+type withMeterOptions struct {
+	internaloption.EmbeddableAdapter
+	// set sampling interval
+	interval time.Duration
+}
+
+func withMetricInterval(interval time.Duration) option.ClientOption {
+	return &withMeterOptions{interval: interval}
+}
+
+func (w *withMeterOptions) ApplyStorageOpt(c *storageConfig) {
+	c.metricInterval = w.interval
+}
+
+type withMetricExporterConfig struct {
+	internaloption.EmbeddableAdapter
+	// exporter override
+	metricExporter *metric.Exporter
+}
+
+func withMetricExporter(ex *metric.Exporter) option.ClientOption {
+	return &withMetricExporterConfig{metricExporter: ex}
+}
+
+func (w *withMetricExporterConfig) ApplyStorageOpt(c *storageConfig) {
+	c.metricExporter = w.metricExporter
 }
 
 // WithReadStallTimeout is an option that may be passed to [NewClient].

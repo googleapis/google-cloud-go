@@ -142,10 +142,7 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, *v
 		client, _, err = spanner.NewMultiEndpointClient(ctx, dbName(), gmeCfg, opts...)
 		os.Setenv("SPANNER_EMULATOR_HOST", old)
 	} else {
-		opts = append(opts,
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-			option.WithoutAuthentication(),
-			option.WithEndpoint(srv.Addr))
+		opts = append(opts, option.WithGRPCConn(conn))
 		client, err = spanner.NewClient(ctx, dbName(), opts...)
 	}
 	if err != nil {

@@ -270,7 +270,8 @@ type BatchDocumentsInputConfig struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The source.
+	// The source. Make sure that the caller of the API has storage.objects.get
+	// access to the buckets.
 	//
 	// Types that are assignable to Source:
 	//

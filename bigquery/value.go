@@ -1021,7 +1021,11 @@ var unboundedRangeSentinel = "UNBOUNDED"
 
 // convertRangeValue aids in parsing the compound RANGE api data representation.
 // The format for a range value is: "[startval, endval)"
-func convertRangeValue(val string, elementType FieldType) (Value, error) {
+func convertRangeValue(cellVal interface{}, elementType FieldType) (Value, error) {
+	if cellVal == nil {
+		return nil, nil
+	}
+	val := cellVal.(string)
 	supported := false
 	for _, t := range []FieldType{DateFieldType, DateTimeFieldType, TimestampFieldType} {
 		if elementType == t {
@@ -1066,7 +1070,7 @@ func convertRangeTableCell(cell *bq.TableCell, fs *FieldSchema) (Value, error) {
 		rangeValues := []Value{}
 		for _, val := range cell.V.([]interface{}) {
 			rawRangeValue := val.(map[string]interface{})["v"]
-			rangeVal, err := convertRangeValue(rawRangeValue.(string), fs.RangeElementType.Type)
+			rangeVal, err := convertRangeValue(rawRangeValue, fs.RangeElementType.Type)
 			if err != nil {
 				return nil, err
 			}
@@ -1074,5 +1078,5 @@ func convertRangeTableCell(cell *bq.TableCell, fs *FieldSchema) (Value, error) {
 		}
 		return rangeValues, nil
 	}
-	return convertRangeValue(cell.V.(string), fs.RangeElementType.Type)
+	return convertRangeValue(cell.V, fs.RangeElementType.Type)
 }

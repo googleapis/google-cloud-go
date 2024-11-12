@@ -217,7 +217,7 @@ func (c *NetworksClient) ListPeeringRoutes(ctx context.Context, req *computepb.L
 	return c.internalClient.ListPeeringRoutes(ctx, req, opts...)
 }
 
-// Patch patches the specified network with the data included in the request. Only the following fields can be modified: routingConfig.routingMode.
+// Patch patches the specified network with the data included in the request. Only routingConfig can be modified.
 func (c *NetworksClient) Patch(ctx context.Context, req *computepb.PatchNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -861,7 +861,7 @@ func (c *networksRESTClient) ListPeeringRoutes(ctx context.Context, req *compute
 	return it
 }
 
-// Patch patches the specified network with the data included in the request. Only the following fields can be modified: routingConfig.routingMode.
+// Patch patches the specified network with the data included in the request. Only routingConfig can be modified.
 func (c *networksRESTClient) Patch(ctx context.Context, req *computepb.PatchNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkResource()

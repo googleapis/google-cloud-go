@@ -42,10 +42,11 @@ type Provider struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. In `projects/{project}/locations/{location}/providers/{provider_id}`
-	// format.
+	// Output only. In
+	// `projects/{project}/locations/{location}/providers/{provider_id}` format.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. Human friendly name for the Provider. For example "Cloud Storage".
+	// Output only. Human friendly name for the Provider. For example "Cloud
+	// Storage".
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Output only. Event types for this provider.
 	EventTypes []*EventType `protobuf:"bytes,3,rep,name=event_types,json=eventTypes,proto3" json:"event_types,omitempty"`
@@ -199,11 +200,11 @@ type FilteringAttribute struct {
 	Attribute string `protobuf:"bytes,1,opt,name=attribute,proto3" json:"attribute,omitempty"`
 	// Output only. Description of the purpose of the attribute.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	// Output only. If true, the triggers for this provider should always specify a filter
-	// on these attributes. Trigger creation will fail otherwise.
+	// Output only. If true, the triggers for this provider should always specify
+	// a filter on these attributes. Trigger creation will fail otherwise.
 	Required bool `protobuf:"varint,3,opt,name=required,proto3" json:"required,omitempty"`
-	// Output only. If true, the attribute accepts matching expressions in the Eventarc
-	// PathPattern format.
+	// Output only. If true, the attribute accepts matching expressions in the
+	// Eventarc PathPattern format.
 	PathPatternSupported bool `protobuf:"varint,4,opt,name=path_pattern_supported,json=pathPatternSupported,proto3" json:"path_pattern_supported,omitempty"`
 }
 

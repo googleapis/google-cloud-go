@@ -3,6 +3,27 @@
 
 
 
+## [1.64.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.63.1...bigquery/v1.64.0) (2024-10-30)
+
+
+### Features
+
+* **bigquery/datatransfer:** Add scheduleOptionsV2 and Error fields for TransferConfig ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **bigquery/storage:** Add experimental ArrowData type and arrow_data field within AppendRowsRequest ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+
+
+### Bug Fixes
+
+* **bigquery:** Handle null RANGE ([#11058](https://github.com/googleapis/google-cloud-go/issues/11058)) ([9979e72](https://github.com/googleapis/google-cloud-go/commit/9979e72b57947ec1e11d3e0c4a7e1ec335a490cf)), refs [#11047](https://github.com/googleapis/google-cloud-go/issues/11047)
+* **bigquery:** Parse negative NUMERIC from arrow ([#11052](https://github.com/googleapis/google-cloud-go/issues/11052)) ([83352c4](https://github.com/googleapis/google-cloud-go/commit/83352c475681f596e0f1e811f8c2056aef6179b2))
+* **bigquery:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **bigquery:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+
+### Documentation
+
+* **bigquery:** Link types on package docs ([#11036](https://github.com/googleapis/google-cloud-go/issues/11036)) ([c4af6fe](https://github.com/googleapis/google-cloud-go/commit/c4af6fe0962e0e96223744a09fd7b5a638cd92fd))
+
 ## [1.63.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.63.0...bigquery/v1.63.1) (2024-10-01)
 
 
