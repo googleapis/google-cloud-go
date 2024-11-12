@@ -34,6 +34,7 @@ const (
 )
 
 // isOTelTracingDevEnabled checks the development flag until experimental feature is launched.
+// TODO: Remove development flag upon experimental launch.
 func isOTelTracingDevEnabled() bool {
 	return os.Getenv(storageOtelTracingDevVar) == "true"
 }
@@ -47,14 +48,13 @@ func tracer() trace.Tracer {
 // span will be a child of that span, otherwise it will be a root span.
 func startSpan(ctx context.Context, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
 	// TODO: Remove internalTrace upon experimental launch.
-	if isOTelTracingDevEnabled() {
-		opts = append(opts, getCommonTraceOptions()...)
-		ctx, span := tracer().Start(ctx, name, opts...)
-		return ctx, span
-	} else {
+	if !isOTelTracingDevEnabled() {
 		ctx = internalTrace.StartSpan(ctx, name)
 		return ctx, nil
 	}
+	opts = append(opts, getCommonTraceOptions()...)
+	ctx, span := tracer().Start(ctx, name, opts...)
+	return ctx, span
 }
 
 // endSpan retrieves the current span from ctx and completes the span.
@@ -62,15 +62,15 @@ func startSpan(ctx context.Context, name string, opts ...trace.SpanStartOption) 
 // and the span status is set in the form of a code and a description.
 func endSpan(ctx context.Context, err error) {
 	// TODO: Remove internalTrace upon experimental launch.
-	if isOTelTracingDevEnabled() {
+	if !isOTelTracingDevEnabled() {
+		internalTrace.EndSpan(ctx, err)
+	} else {
 		span := trace.SpanFromContext(ctx)
 		if err != nil {
 			span.SetStatus(otelcodes.Error, err.Error())
 			span.RecordError(err)
 		}
 		span.End()
-	} else {
-		internalTrace.EndSpan(ctx, err)
 	}
 }
 
