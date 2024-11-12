@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
@@ -433,6 +434,103 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries), cmpopts.IgnoreUnexported(Routine{}, Dataset{})); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
+}
+
+// This test validates behaviors related to IAM conditions in
+// dataset access control.
+func TestIntegration_DatasetConditions(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	// Use our test dataset for a base access policy.
+	md, err := dataset.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	wantEntry := &AccessEntry{
+
+		Role:       ReaderRole,
+		Entity:     "Joe@example.com",
+		EntityType: UserEmailEntity,
+		Condition: &Expr{
+			Expression:  "request.time < timestamp('2030-01-01T00:00:00Z')",
+			Description: "requests before the year 2030",
+			Title:       "test condition",
+		},
+	}
+	origAccess := append(md.Access, wantEntry)
+
+	ds := client.Dataset(datasetIDs.New())
+	wantMeta := &DatasetMetadata{
+		Access:      origAccess,
+		Description: "test dataset",
+	}
+
+	// First, attempt to create the dataset without specifying a policy access version.
+	err = ds.Create(ctx, wantMeta)
+	if err == nil {
+		t.Fatalf("expected Create failure, but succeeded")
+	}
+
+	err = ds.Create(ctx, wantMeta, WithAccessPolicyVersion(3))
+	if err != nil {
+		t.Fatalf("expected Create to succeed, but failed: %v", err)
+	}
+	defer func() {
+		if err := ds.Delete(ctx); err != nil {
+			t.Logf("defer deletion failed: %v", err)
+		}
+	}()
+
+	// Now, get the dataset without specifying policy version
+	md, err = ds.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("Metadata: %v", err)
+	}
+	for _, entry := range md.Access {
+		if entry.Entity == wantEntry.Entity &&
+			entry.Condition != nil {
+			t.Fatalf("got policy with condition without specifying access policy version")
+		}
+	}
+
+	// Re-fetch metadata with access policy specified.
+	md, err = ds.Metadata(ctx, WithAccessPolicyVersion(3))
+	if err != nil {
+		t.Fatalf("Metadata (WithAccessPolicy): %v", err)
+	}
+	var foundEntry bool
+	for _, entry := range md.Access {
+		if entry.Entity == wantEntry.Entity {
+			if cmp.Equal(entry.Condition, wantEntry.Condition) {
+				foundEntry = true
+				break
+			}
+		}
+	}
+	if !foundEntry {
+		t.Fatalf("failed to find wanted entry in access list")
+	}
+
+	newAccess := append(origAccess, &AccessEntry{
+		Role:       ReaderRole,
+		Entity:     "allUsers",
+		EntityType: IAMMemberEntity,
+	})
+
+	// append another entry.  Should fail without sending access policy version since we have conditions present.
+	md, err = ds.Update(ctx, DatasetMetadataToUpdate{Access: newAccess}, "")
+	if err == nil {
+		t.Fatalf("Update succeeded where failure expected: %v", err)
+	}
+
+	md, err = ds.Update(ctx, DatasetMetadataToUpdate{Access: newAccess}, "", WithAccessPolicyVersion(3))
+	if err != nil {
+		t.Fatalf("Update failed: %v", err)
+	}
+
 }
 
 // Comparison function for AccessEntries to enable order insensitive equality checking.
