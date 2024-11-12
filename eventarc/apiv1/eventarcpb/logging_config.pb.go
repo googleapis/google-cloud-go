@@ -21,12 +21,11 @@
 package eventarcpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -124,7 +123,7 @@ func (LoggingConfig_LogSeverity) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_eventarc_v1_logging_config_proto_rawDescGZIP(), []int{0, 0}
 }
 
-// The configuration for Platform Telemetry logging for Eventarc Avdvanced
+// The configuration for Platform Telemetry logging for Eventarc Advanced
 // resources.
 type LoggingConfig struct {
 	state         protoimpl.MessageState
