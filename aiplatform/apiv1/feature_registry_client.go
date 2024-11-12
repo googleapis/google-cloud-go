@@ -41,26 +41,27 @@ var newFeatureRegistryClientHook clientHook
 
 // FeatureRegistryCallOptions contains the retry settings for each method of FeatureRegistryClient.
 type FeatureRegistryCallOptions struct {
-	CreateFeatureGroup []gax.CallOption
-	GetFeatureGroup    []gax.CallOption
-	ListFeatureGroups  []gax.CallOption
-	UpdateFeatureGroup []gax.CallOption
-	DeleteFeatureGroup []gax.CallOption
-	CreateFeature      []gax.CallOption
-	GetFeature         []gax.CallOption
-	ListFeatures       []gax.CallOption
-	UpdateFeature      []gax.CallOption
-	DeleteFeature      []gax.CallOption
-	GetLocation        []gax.CallOption
-	ListLocations      []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
-	CancelOperation    []gax.CallOption
-	DeleteOperation    []gax.CallOption
-	GetOperation       []gax.CallOption
-	ListOperations     []gax.CallOption
-	WaitOperation      []gax.CallOption
+	CreateFeatureGroup  []gax.CallOption
+	GetFeatureGroup     []gax.CallOption
+	ListFeatureGroups   []gax.CallOption
+	UpdateFeatureGroup  []gax.CallOption
+	DeleteFeatureGroup  []gax.CallOption
+	CreateFeature       []gax.CallOption
+	BatchCreateFeatures []gax.CallOption
+	GetFeature          []gax.CallOption
+	ListFeatures        []gax.CallOption
+	UpdateFeature       []gax.CallOption
+	DeleteFeature       []gax.CallOption
+	GetLocation         []gax.CallOption
+	ListLocations       []gax.CallOption
+	GetIamPolicy        []gax.CallOption
+	SetIamPolicy        []gax.CallOption
+	TestIamPermissions  []gax.CallOption
+	CancelOperation     []gax.CallOption
+	DeleteOperation     []gax.CallOption
+	GetOperation        []gax.CallOption
+	ListOperations      []gax.CallOption
+	WaitOperation       []gax.CallOption
 }
 
 func defaultFeatureRegistryGRPCClientOptions() []option.ClientOption {
@@ -80,26 +81,27 @@ func defaultFeatureRegistryGRPCClientOptions() []option.ClientOption {
 
 func defaultFeatureRegistryCallOptions() *FeatureRegistryCallOptions {
 	return &FeatureRegistryCallOptions{
-		CreateFeatureGroup: []gax.CallOption{},
-		GetFeatureGroup:    []gax.CallOption{},
-		ListFeatureGroups:  []gax.CallOption{},
-		UpdateFeatureGroup: []gax.CallOption{},
-		DeleteFeatureGroup: []gax.CallOption{},
-		CreateFeature:      []gax.CallOption{},
-		GetFeature:         []gax.CallOption{},
-		ListFeatures:       []gax.CallOption{},
-		UpdateFeature:      []gax.CallOption{},
-		DeleteFeature:      []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		CreateFeatureGroup:  []gax.CallOption{},
+		GetFeatureGroup:     []gax.CallOption{},
+		ListFeatureGroups:   []gax.CallOption{},
+		UpdateFeatureGroup:  []gax.CallOption{},
+		DeleteFeatureGroup:  []gax.CallOption{},
+		CreateFeature:       []gax.CallOption{},
+		BatchCreateFeatures: []gax.CallOption{},
+		GetFeature:          []gax.CallOption{},
+		ListFeatures:        []gax.CallOption{},
+		UpdateFeature:       []gax.CallOption{},
+		DeleteFeature:       []gax.CallOption{},
+		GetLocation:         []gax.CallOption{},
+		ListLocations:       []gax.CallOption{},
+		GetIamPolicy:        []gax.CallOption{},
+		SetIamPolicy:        []gax.CallOption{},
+		TestIamPermissions:  []gax.CallOption{},
+		CancelOperation:     []gax.CallOption{},
+		DeleteOperation:     []gax.CallOption{},
+		GetOperation:        []gax.CallOption{},
+		ListOperations:      []gax.CallOption{},
+		WaitOperation:       []gax.CallOption{},
 	}
 }
 
@@ -118,6 +120,8 @@ type internalFeatureRegistryClient interface {
 	DeleteFeatureGroupOperation(name string) *DeleteFeatureGroupOperation
 	CreateFeature(context.Context, *aiplatformpb.CreateFeatureRequest, ...gax.CallOption) (*CreateFeatureOperation, error)
 	CreateFeatureOperation(name string) *CreateFeatureOperation
+	BatchCreateFeatures(context.Context, *aiplatformpb.BatchCreateFeaturesRequest, ...gax.CallOption) (*BatchCreateFeaturesOperation, error)
+	BatchCreateFeaturesOperation(name string) *BatchCreateFeaturesOperation
 	GetFeature(context.Context, *aiplatformpb.GetFeatureRequest, ...gax.CallOption) (*aiplatformpb.Feature, error)
 	ListFeatures(context.Context, *aiplatformpb.ListFeaturesRequest, ...gax.CallOption) *FeatureIterator
 	UpdateFeature(context.Context, *aiplatformpb.UpdateFeatureRequest, ...gax.CallOption) (*UpdateFeatureOperation, error)
@@ -229,6 +233,17 @@ func (c *FeatureRegistryClient) CreateFeature(ctx context.Context, req *aiplatfo
 // The name must be that of a previously created CreateFeatureOperation, possibly from a different process.
 func (c *FeatureRegistryClient) CreateFeatureOperation(name string) *CreateFeatureOperation {
 	return c.internalClient.CreateFeatureOperation(name)
+}
+
+// BatchCreateFeatures creates a batch of Features in a given FeatureGroup.
+func (c *FeatureRegistryClient) BatchCreateFeatures(ctx context.Context, req *aiplatformpb.BatchCreateFeaturesRequest, opts ...gax.CallOption) (*BatchCreateFeaturesOperation, error) {
+	return c.internalClient.BatchCreateFeatures(ctx, req, opts...)
+}
+
+// BatchCreateFeaturesOperation returns a new BatchCreateFeaturesOperation from a given name.
+// The name must be that of a previously created BatchCreateFeaturesOperation, possibly from a different process.
+func (c *FeatureRegistryClient) BatchCreateFeaturesOperation(name string) *BatchCreateFeaturesOperation {
+	return c.internalClient.BatchCreateFeaturesOperation(name)
 }
 
 // GetFeature gets details of a single Feature.
@@ -568,6 +583,26 @@ func (c *featureRegistryGRPCClient) CreateFeature(ctx context.Context, req *aipl
 	}, nil
 }
 
+func (c *featureRegistryGRPCClient) BatchCreateFeatures(ctx context.Context, req *aiplatformpb.BatchCreateFeaturesRequest, opts ...gax.CallOption) (*BatchCreateFeaturesOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchCreateFeatures[0:len((*c.CallOptions).BatchCreateFeatures):len((*c.CallOptions).BatchCreateFeatures)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.featureRegistryClient.BatchCreateFeatures(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchCreateFeaturesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *featureRegistryGRPCClient) GetFeature(ctx context.Context, req *aiplatformpb.GetFeatureRequest, opts ...gax.CallOption) (*aiplatformpb.Feature, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -898,6 +933,14 @@ func (c *featureRegistryGRPCClient) WaitOperation(ctx context.Context, req *long
 		return nil, err
 	}
 	return resp, nil
+}
+
+// BatchCreateFeaturesOperation returns a new BatchCreateFeaturesOperation from a given name.
+// The name must be that of a previously created BatchCreateFeaturesOperation, possibly from a different process.
+func (c *featureRegistryGRPCClient) BatchCreateFeaturesOperation(name string) *BatchCreateFeaturesOperation {
+	return &BatchCreateFeaturesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }
 
 // CreateFeatureOperation returns a new CreateFeatureOperation from a given name.

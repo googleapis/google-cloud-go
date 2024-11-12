@@ -28,6 +28,12 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *AttachmentIterator) All() iter.Seq2[*artifactregistrypb.Attachment, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *DockerImageIterator) All() iter.Seq2[*artifactregistrypb.DockerImage, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -71,6 +77,12 @@ func (it *PythonPackageIterator) All() iter.Seq2[*artifactregistrypb.PythonPacka
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *RepositoryIterator) All() iter.Seq2[*artifactregistrypb.Repository, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RuleIterator) All() iter.Seq2[*artifactregistrypb.Rule, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

@@ -62,8 +62,8 @@ type Fulfillment struct {
 	// The list of rich message responses to present to the user.
 	Messages []*ResponseMessage `protobuf:"bytes,1,rep,name=messages,proto3" json:"messages,omitempty"`
 	// The webhook to call.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/webhooks/<Webhook ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/webhooks/<WebhookID>`.
 	Webhook string `protobuf:"bytes,2,opt,name=webhook,proto3" json:"webhook,omitempty"`
 	// Whether Dialogflow should return currently queued fulfillment response
 	// messages in streaming APIs. If a webhook is specified, it happens before

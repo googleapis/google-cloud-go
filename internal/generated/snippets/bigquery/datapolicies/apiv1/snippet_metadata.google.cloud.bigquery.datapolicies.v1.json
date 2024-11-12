@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/datapolicies/apiv1",
-    "version": "1.63.1",
+    "version": "1.64.0",
     "language": "GO",
     "apis": [
       {

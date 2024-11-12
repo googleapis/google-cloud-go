@@ -609,6 +609,11 @@
         "grpc": {
           "libraryClient": "FeatureRegistryClient",
           "rpcs": {
+            "BatchCreateFeatures": {
+              "methods": [
+                "BatchCreateFeatures"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -2209,6 +2214,11 @@
             "StartNotebookRuntime": {
               "methods": [
                 "StartNotebookRuntime"
+              ]
+            },
+            "StopNotebookRuntime": {
+              "methods": [
+                "StopNotebookRuntime"
               ]
             },
             "TestIamPermissions": {
