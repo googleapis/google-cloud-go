@@ -52,7 +52,7 @@ func saveEntity(key *Key, src interface{}) (*pb.Entity, error) {
 // and tries to extract a Property that'll be appended to props.
 func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts, v reflect.Value) error {
 	switch x := v.Interface().(type) {
-	case *Key, time.Time, GeoPoint:
+	case *Key, time.Time, GeoPoint, Vector32, Vector64:
 		p.Value = x
 	case civil.Date:
 		p.Value = x.In(time.UTC)
@@ -450,6 +450,12 @@ func interfaceToProto(iv interface{}, noIndex bool) (*pb.Value, error) {
 			return nil, err
 		}
 		val.ValueType = &pb.Value_EntityValue{EntityValue: e}
+	case Vector32:
+		val = vectorToProtoValue(v)
+		val.ExcludeFromIndexes = noIndex
+	case Vector64:
+		val = vectorToProtoValue(v)
+		val.ExcludeFromIndexes = noIndex
 	case []interface{}:
 		arr := make([]*pb.Value, 0, len(v))
 		for i, v := range v {

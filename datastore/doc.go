@@ -44,6 +44,8 @@ Valid value types are:
   - Structs whose fields are all valid value types
   - Pointers to structs whose fields are all valid value types
   - Slices of any of the above
+  - Vector32
+  - Vector64
   - Pointers to a signed integer, bool, string, float32, or float64
 
 Slices of structs are valid, as are structs that contain slices.

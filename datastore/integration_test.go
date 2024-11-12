@@ -2468,3 +2468,191 @@ func TestIntegration_Project_TimestampStoreAndRetrieve(t *testing.T) {
 		t.Fatalf("got %v, want %v", got, want)
 	}
 }
+
+func TestIntegration_FindNearest(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	kind := "CoffeeBean"
+	qProp64 := "EmbeddedProperty64"
+	qProp32 := "EmbeddedProperty32"
+	resProp := "VectorDistance"
+	qVector := []float64{1, 2, 3}
+
+	type coffeeBean struct {
+		ID                 string
+		EmbeddedProperty64 Vector64
+		EmbeddedProperty32 Vector32
+		Float32s           []float32 // When querying, saving and retrieving, this should be retrieved as []float32 and not Vector32
+		VectorDistance     float64
+	}
+	type incorrectCoffeeBean struct {
+		ID                 string
+		EmbeddedProperty64 Vector64
+		EmbeddedProperty32 []float32
+		Float32s           []float32 // When querying, saving and retrieving, this should be retrieved as []float32 and not Vector32
+		VectorDistance     float64
+	}
+	beans := []coffeeBean{
+		{ // Euclidean Distance from {1, 2, 3} = 0.17
+			ID:                 "0",
+			EmbeddedProperty64: []float64{1.1, 2.1, 3.1},
+			EmbeddedProperty32: []float32{1.1, 2.1, 3.1},
+			Float32s:           []float32{1.1, 2.1, 3.1},
+		},
+		{ // Euclidean Distance from {1, 2, 3} = 5.19
+			ID:                 "1",
+			EmbeddedProperty64: []float64{4, 5, 6},
+			EmbeddedProperty32: []float32{4, 5, 6},
+			Float32s:           []float32{4, 5, 6},
+		},
+		{ // Euclidean Distance from {1, 2, 3} = 10.39
+			ID:                 "2",
+			EmbeddedProperty64: []float64{7, 8, 9},
+			EmbeddedProperty32: []float32{7, 8, 9},
+			Float32s:           []float32{7, 8, 9},
+		},
+		{ // Euclidean Distance from {1, 2, 3} = 15.58
+			ID:                 "3",
+			EmbeddedProperty64: []float64{10, 11, 12},
+			EmbeddedProperty32: []float32{10, 11, 12},
+			Float32s:           []float32{10, 11, 12},
+		},
+		{
+			// Euclidean Distance from {1, 2, 3} = 370.42
+			// too far from query vector. not within findNearest limit
+			ID:                 "4",
+			EmbeddedProperty64: []float64{100, 200, 300},
+			EmbeddedProperty32: []float32{100, 200, 300},
+			Float32s:           []float32{100, 200, 300},
+		},
+		{
+			// Not enough dimensions as compared to query vector.
+			ID:                 "5",
+			EmbeddedProperty64: []float64{1, 2},
+			EmbeddedProperty32: []float32{1, 2},
+			Float32s:           []float32{1, 2},
+		},
+	}
+
+	keys := make([]*Key, len(beans))
+	for i := 0; i < len(beans); i++ {
+		keys[i] = NameKey(kind, beans[i].ID, nil)
+	}
+
+	keys, err := client.PutMulti(ctx, keys, beans)
+	if err != nil {
+		t.Fatalf("put: %v", err)
+	}
+
+	q := NewQuery(kind)
+	for _, tc := range []struct {
+		desc            string
+		vq              VectorQuery
+		mismatchedField bool // Use incorrect field type to load the vector into
+		wantBeans       []coffeeBean
+		wantResProperty bool
+		wantErr         string
+	}{
+		{
+			desc:      "Vector32 property FindNearest without threshold without resultProperty",
+			vq:        q.FindNearest(qProp32, qVector, 2, DistanceMeasureEuclidean, nil),
+			wantBeans: beans[:2],
+		},
+		{
+			desc: "Vector32 property FindNearest threshold and resultProperty",
+			vq: q.FindNearest(qProp32, qVector, 3, DistanceMeasureEuclidean, &FindNearestOptions{
+				DistanceThreshold:      Ptr(20.0),
+				DistanceResultProperty: resProp,
+			}),
+			wantBeans:       beans[:3],
+			wantResProperty: true,
+		},
+		{
+			desc:      "Vector64 property FindNearest without threshold without resultProperty",
+			vq:        q.FindNearest(qProp64, qVector, 2, DistanceMeasureEuclidean, nil),
+			wantBeans: beans[:2],
+		},
+		{
+			desc: "Vector64 property FindNearest threshold and resultProperty",
+			vq: q.FindNearest(qProp64, qVector, 3, DistanceMeasureEuclidean, &FindNearestOptions{
+				DistanceThreshold:      Ptr(20.0),
+				DistanceResultProperty: resProp,
+			}),
+			wantBeans:       beans[:3],
+			wantResProperty: true,
+		},
+		{
+			desc:            "Load vector into incorrect field type",
+			mismatchedField: true,
+			vq: q.FindNearest(qProp64, qVector, 3, DistanceMeasureEuclidean, &FindNearestOptions{
+				DistanceThreshold:      Ptr(20.0),
+				DistanceResultProperty: resProp,
+			}),
+			wantErr: "type mismatch: Vector versus []float32",
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			// Run using RunQuery
+			iter := client.RunQuery(ctx, tc.vq)
+
+			if tc.mismatchedField {
+				var got incorrectCoffeeBean
+				_, err := iter.Next(&got)
+				if err == nil || !strings.Contains(err.Error(), tc.wantErr) {
+					t.Errorf("RunQuery: Expected %+v to contain %v", err, tc.wantErr)
+				}
+				return
+			}
+
+			var got coffeeBean
+			var gotLen = 0
+			for {
+				_, err := iter.Next(&got)
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					t.Fatalf("RunQuery: Next: %+v", err)
+				}
+				// Assert correct entity
+				if gotLen < len(tc.wantBeans) && tc.wantBeans[gotLen].ID != got.ID {
+					t.Errorf("RunQuery: #%v: want: %v, got: %v", gotLen, tc.wantBeans[gotLen].ID, got.ID)
+				}
+				// Assert result property
+				if tc.wantResProperty {
+					if got.VectorDistance == 0 {
+						t.Errorf("RunQuery: #%v: expected result field to be non-zero", gotLen)
+					}
+				}
+				gotLen++
+			}
+			// Assert correct number of entities
+			if gotLen != len(tc.wantBeans) {
+				t.Fatalf("RunQuery: Expected %v results, got %d", len(tc.wantBeans), gotLen)
+			}
+
+			// Run using RetrieveAll
+			var gots []coffeeBean
+			res, err := client.RetrieveAll(ctx, tc.vq, &gots, ExplainOptions{Analyze: true})
+			if err != nil {
+				t.Fatalf("RetrieveAll: %+v", err)
+			}
+			// Assert correct number of entities
+			if len(res.Keys) != len(tc.wantBeans) {
+				t.Fatalf("RetrieveAll: Expected %v results, got %d", len(tc.wantBeans), len(res.Keys))
+			}
+			// Assert correct entities
+			for i := 0; i < len(res.Keys); i++ {
+				if res.Keys[i].Name != tc.wantBeans[i].ID {
+					t.Errorf("RetrieveAll: #%v: want: %v, got: %v", i, tc.wantBeans[i].ID, res.Keys[i].Name)
+				}
+			}
+			// Assert explain metrics are retrieved
+			if res.ExplainMetrics == nil {
+				t.Fatal("RetrieveAll: Expected not nil ExplainMetrics, got nil")
+			}
+		})
+	}
+}

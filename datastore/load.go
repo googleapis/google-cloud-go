@@ -59,7 +59,9 @@ func typeMismatchReason(p Property, v reflect.Value) string {
 	case []byte:
 		entityType = "[]byte"
 	}
-
+	if p.Meaning == 31 {
+		entityType = "Vector"
+	}
 	return fmt.Sprintf("type mismatch: %s versus %v", entityType, v.Type())
 }
 
@@ -163,6 +165,12 @@ func (l *propertyLoader) loadOneElement(codec fields.List, structValue reflect.V
 
 		// If the element is a slice, we need to accommodate it.
 		if v.Kind() == reflect.Slice && v.Type() != typeOfByteSlice {
+			// Check whether Vector is being loaded into appropriate field type
+			if field.Type != reflect.TypeOf(Vector32{}) && field.Type != reflect.TypeOf(Vector64{}) &&
+				p.Meaning == meaningVector {
+				return typeMismatchReason(p, v)
+			}
+
 			if l.m == nil {
 				l.m = make(map[string]int)
 			}
@@ -523,6 +531,7 @@ func protoToEntity(src *pb.Entity) (*Entity, error) {
 			Name:    name,
 			Value:   v,
 			NoIndex: noIndex,
+			Meaning: val.Meaning,
 		})
 	}
 	var key *Key

@@ -29,6 +29,7 @@ import (
 	"cloud.google.com/go/internal/protostruct"
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/iterator"
+	"google.golang.org/protobuf/proto"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -263,8 +264,12 @@ type Query struct {
 
 	trans *Transaction
 
+	findNearest *pb.FindNearest
+
 	err error
 }
+
+func (q *Query) isQueryable() {}
 
 func (q *Query) clone() *Query {
 	x := *q
@@ -277,6 +282,7 @@ func (q *Query) clone() *Query {
 		x.order = make([]order, len(q.order))
 		copy(x.order, q.order)
 	}
+	x.findNearest = proto.Clone(q.findNearest).(*pb.FindNearest)
 	return &x
 }
 
@@ -588,7 +594,7 @@ func (q *Query) toProto() (*pb.Query, error) {
 	dst.Offset = q.offset
 	dst.StartCursor = q.start
 	dst.EndCursor = q.end
-
+	dst.FindNearest = q.findNearest
 	return dst, nil
 }
 
@@ -699,7 +705,7 @@ type PlanSummary struct {
 
 // ExecutionStats represents execution statistics for the query.
 type ExecutionStats struct {
-	// Total number of results returned, including documents, projections,
+	// Total number of results returned, including entities, projections,
 	// aggregation results, keys.
 	ResultsReturned int64
 	// Total time to execute the query in the backend.
@@ -828,6 +834,20 @@ func (c *Client) GetAllWithOptions(ctx context.Context, q *Query, dst interface{
 	return res, c.processFieldMismatchError(errFieldMismatch)
 }
 
+// RetrieveAll is similar to GetAll but runs the `Queryable` with provided options
+func (c *Client) RetrieveAll(ctx context.Context, query Queryable, dst interface{}, opts ...RunOption) (res GetAllWithOptionsResult, err error) {
+	var q *Query
+	switch typedQuery := query.(type) {
+	case VectorQuery:
+		q = &typedQuery.q
+	case *Query:
+		q = typedQuery
+	default:
+		return GetAllWithOptionsResult{}, errors.New("datastore: unsupported Queryable")
+	}
+	return c.GetAllWithOptions(ctx, q, dst, opts...)
+}
+
 // Run runs the given query in the given context
 func (c *Client) Run(ctx context.Context, q *Query) (it *Iterator) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Run")
@@ -842,8 +862,25 @@ func (c *Client) RunWithOptions(ctx context.Context, q *Query, opts ...RunOption
 	return c.run(ctx, q, opts...)
 }
 
+// RunQuery runs the given queryable in the given context with the provided options
+func (c *Client) RunQuery(ctx context.Context, query Queryable, opts ...RunOption) (it *Iterator) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Run")
+	defer func() { trace.EndSpan(ctx, it.err) }()
+	return c.run(ctx, query, opts...)
+}
+
 // run runs the given query in the given context with the provided options
-func (c *Client) run(ctx context.Context, q *Query, opts ...RunOption) *Iterator {
+func (c *Client) run(ctx context.Context, query Queryable, opts ...RunOption) *Iterator {
+	var q *Query
+	switch typedQuery := query.(type) {
+	case VectorQuery:
+		q = &typedQuery.q
+	case *Query:
+		q = typedQuery
+	default:
+		return &Iterator{ctx: ctx, err: fmt.Errorf("datastore: unsupported query type")}
+	}
+
 	if q.err != nil {
 		return &Iterator{ctx: ctx, err: q.err}
 	}
@@ -1365,4 +1402,126 @@ type AggregationWithOptionsResult struct {
 
 	// Query explain metrics. This is only present when ExplainOptions is provided.
 	ExplainMetrics *ExplainMetrics
+}
+
+var (
+	errInvalidVector = errors.New("datastore: queryVector must be Vector32 or Vector64")
+)
+
+// DistanceMeasure is the distance measure to use when comparing vectors with [Query.FindNearest]
+type DistanceMeasure int32
+
+const (
+	// DistanceMeasureEuclidean is used to measure the Euclidean distance between the vectors. See
+	// [Euclidean] to learn more.
+	//
+	// [Euclidean]: https://en.wikipedia.org/wiki/Euclidean_distance
+	DistanceMeasureEuclidean DistanceMeasure = DistanceMeasure(pb.FindNearest_EUCLIDEAN)
+
+	// DistanceMeasureCosine compares vectors based on the angle between them, which allows you to
+	// measure similarity that isn't based on the vector's magnitude.
+	// We recommend using dot product with unit normalized vectors instead of
+	// cosine distance, which is mathematically equivalent with better
+	// performance. See [Cosine Similarity] to learn more.
+	//
+	// [Cosine Similarity]: https://en.wikipedia.org/wiki/Cosine_similarity
+	DistanceMeasureCosine DistanceMeasure = DistanceMeasure(pb.FindNearest_COSINE)
+
+	// DistanceMeasureDotProduct is similar to cosine but is affected by the magnitude of the vectors. See
+	// [Dot Product] to learn more.
+	//
+	// [Dot Product]: https://en.wikipedia.org/wiki/Dot_product
+	DistanceMeasureDotProduct DistanceMeasure = DistanceMeasure(pb.FindNearest_DOT_PRODUCT)
+)
+
+// Ptr returns a pointer to its argument.
+// It can be used to initialize pointer properties:
+//
+//	findNearestOptions.DistanceThreshold = datastore.Ptr[float64](0.1)
+func Ptr[T any](t T) *T { return &t }
+
+// FindNearestOptions are options for a FindNearest vector query.
+type FindNearestOptions struct {
+	// DistanceThreshold specifies a threshold for which no less similar entities
+	// will be returned. The behavior of the specified [DistanceMeasure] will
+	// affect the meaning of the distance threshold. Since [DistanceMeasureDotProduct]
+	// distances increase when the vectors are more similar, the comparison is inverted.
+	// For [DistanceMeasureEuclidean], [DistanceMeasureCosine]: WHERE distance <= distanceThreshold
+	// For [DistanceMeasureDotProduct]:                         WHERE distance >= distance_threshold
+	DistanceThreshold *float64
+
+	// DistanceResultProperty specifies name of the entity property to output the result of
+	// the vector distance calculation.
+	// If the property already exists in the entity, its value is overwritten with the distance calculation.
+	// Otherwise, a new property gets added to the entity.
+	DistanceResultProperty string
+}
+
+// Queryable is an interface for types that can be used in a datastore query.
+type Queryable interface {
+	isQueryable()
+}
+
+// VectorQuery represents a query that uses [Query.FindNearest]
+type VectorQuery struct {
+	q Query
+}
+
+func (VectorQuery) isQueryable() {}
+
+// FindNearest returns a query that can perform vector distance (similarity) search.
+//
+// The returned query, when executed, performs a distance search on the specified
+// vectorProperty against the given queryVector and returns the top entities that are closest
+// to the queryVector according to measure. At most limit entities are returned.
+//
+// Only entities whose vectorProperty field is a Vector32 or Vector64 of the same dimension
+// as queryVector participate in the query; all other entities are ignored.
+// In particular, properties of type []float32 or []float64 are ignored.
+//
+// The queryVector argument can be any of the following types:
+//   - []float32
+//   - []float64
+//   - Vector32
+//   - Vector64
+func (q *Query) FindNearest(vectorProperty string, queryVector any, limit int,
+	measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
+	vq := VectorQuery{q: *q.clone()}
+
+	var fnvq *pb.Value
+	switch v := queryVector.(type) {
+	case Vector32:
+		fnvq = vectorToProtoValue([]float32(v))
+	case []float32:
+		fnvq = vectorToProtoValue(v)
+	case Vector64:
+		fnvq = vectorToProtoValue([]float64(v))
+	case []float64:
+		fnvq = vectorToProtoValue(v)
+	default:
+		vq.q.err = errInvalidVector
+		return vq
+	}
+
+	vq.q.findNearest = &pb.FindNearest{
+		VectorProperty:  &pb.PropertyReference{Name: vectorProperty},
+		QueryVector:     fnvq,
+		Limit:           &wrapperspb.Int32Value{Value: trunc32(limit)},
+		DistanceMeasure: pb.FindNearest_DistanceMeasure(measure),
+	}
+
+	if options != nil {
+		if options.DistanceThreshold != nil {
+			vq.q.findNearest.DistanceThreshold = &wrapperspb.DoubleValue{Value: *options.DistanceThreshold}
+		}
+		vq.q.findNearest.DistanceResultProperty = *&options.DistanceResultProperty
+	}
+	return vq
+}
+
+func trunc32(i int) int32 {
+	if i > math.MaxInt32 {
+		i = math.MaxInt32
+	}
+	return int32(i)
 }

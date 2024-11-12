@@ -44,6 +44,8 @@ type Property struct {
 	//	- *Entity (representing a nested struct)
 	// Value can also be:
 	//	- []interface{} where each element is one of the above types
+	//	- Vector32
+	//	- Vector64
 	// This set is smaller than the set of valid struct field types that the
 	// datastore can load and save. A Value's type must be explicitly on
 	// the list above; it is not sufficient for the underlying type to be
@@ -64,6 +66,8 @@ type Property struct {
 	// If NoIndex is set to false, []byte and string values are limited to
 	// 1500 bytes.
 	NoIndex bool
+
+	Meaning int32
 }
 
 // An Entity is the value type for a nested struct.
