@@ -1,5 +1,0 @@
-package golden
-
-import foo "example.com/new/foopb"
-
-func Bar1(foo foo.Baz) {}

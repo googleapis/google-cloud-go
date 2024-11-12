@@ -1,6 +1,0 @@
-{
-  "type":"record",
-  "name":"invalid",
-  "namespace":"utilities",
-  "doc":"A invalid avro schema definition",
-} 
