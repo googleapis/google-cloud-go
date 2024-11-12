@@ -1379,7 +1379,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				}
 
 				msgs, err := iter.receive(maxToPull)
-				if err == io.EOF {
+				if errors.Is(err, io.EOF) {
 					return nil
 				}
 				if err != nil {
