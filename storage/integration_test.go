@@ -43,6 +43,8 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/oauth2adapt"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -5537,7 +5539,7 @@ func TestIntegration_SignedURL_WithCreds(t *testing.T) {
 		if err := verifySignedURL(url, nil, contents); err != nil {
 			t.Fatalf("problem with the signed URL: %v", err)
 		}
-	}, option.WithCredentials(creds))
+	}, option.WithAuthCredentials(creds))
 }
 
 func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
@@ -5639,7 +5641,7 @@ func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
 				}
 			})
 		}
-	}, option.WithCredentials(creds))
+	}, option.WithAuthCredentials(creds))
 
 }
 
@@ -5880,7 +5882,7 @@ func verifyPostPolicy(pv4 *PostPolicyV4, obj *ObjectHandle, bytesToWrite []byte,
 		})
 }
 
-func findTestCredentials(ctx context.Context, envVar string, scopes ...string) (*google.Credentials, error) {
+func findTestCredentials(ctx context.Context, envVar string, scopes ...string) (*auth.Credentials, error) {
 	key := os.Getenv(envVar)
 	var opts []option.ClientOption
 	if len(scopes) > 0 {
@@ -5889,7 +5891,13 @@ func findTestCredentials(ctx context.Context, envVar string, scopes ...string) (
 	if key != "" {
 		opts = append(opts, option.WithCredentialsFile(key))
 	}
-	return transport.Creds(ctx, opts...)
+
+	c, err := transport.Creds(ctx, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return oauth2adapt.AuthCredentialsFromOauth2Credentials(c), nil
 }
 
 type testHelper struct {
