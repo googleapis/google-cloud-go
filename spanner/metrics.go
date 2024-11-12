@@ -21,11 +21,10 @@ import (
 	"errors"
 	"fmt"
 	"hash/fnv"
-	"strings"
-
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -198,7 +197,7 @@ type builtinMetricsTracerFactory struct {
 	attemptCount       metric.Int64Counter     // Counter for the number of attempts.
 }
 
-func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsProvider metric.MeterProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
+func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsProvider metric.MeterProvider, compression string, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
 		log.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric atteribute", err, metricLabelKeyClientUID)
@@ -229,7 +228,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 	var meterProvider *sdkmetric.MeterProvider
 	if metricsProvider == nil {
 		// Create default meter provider
-		mpOptions, err := builtInMeterProviderOptions(project, opts...)
+		mpOptions, err := builtInMeterProviderOptions(project, compression, opts...)
 		if err != nil {
 			return tracerFactory, err
 		}
@@ -252,9 +251,9 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 	return tracerFactory, err
 }
 
-func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
+func builtInMeterProviderOptions(project, compression string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
 	allOpts := createExporterOptions(opts...)
-	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
+	defaultExporter, err := newMonitoringExporter(context.Background(), project, compression, allOpts...)
 	if err != nil {
 		return nil, err
 	}
