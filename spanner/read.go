@@ -64,6 +64,9 @@ func stream(
 		rpc,
 		nil,
 		nil,
+		func(err error) error {
+			return err
+		},
 		setTimestamp,
 		release,
 	)
@@ -79,6 +82,7 @@ func streamWithReplaceSessionFunc(
 	rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error),
 	replaceSession func(ctx context.Context) error,
 	setTransactionID func(transactionID),
+	updateTxState func(err error) error,
 	setTimestamp func(time.Time),
 	release func(error),
 ) *RowIterator {
@@ -89,6 +93,7 @@ func streamWithReplaceSessionFunc(
 		streamd:            newResumableStreamDecoder(ctx, logger, rpc, replaceSession),
 		rowd:               &partialResultSetDecoder{},
 		setTransactionID:   setTransactionID,
+		updateTxState:      updateTxState,
 		setTimestamp:       setTimestamp,
 		release:            release,
 		cancel:             cancel,
@@ -127,6 +132,7 @@ type RowIterator struct {
 	streamd            *resumableStreamDecoder
 	rowd               *partialResultSetDecoder
 	setTransactionID   func(transactionID)
+	updateTxState      func(err error) error
 	setTimestamp       func(time.Time)
 	release            func(error)
 	cancel             func()
@@ -214,7 +220,7 @@ func (r *RowIterator) Next() (*Row, error) {
 		return row, nil
 	}
 	if err := r.streamd.lastErr(); err != nil {
-		r.err = ToSpannerError(err)
+		r.err = r.updateTxState(ToSpannerError(err))
 	} else if !r.rowd.done() {
 		r.err = errEarlyReadEnd()
 	} else {

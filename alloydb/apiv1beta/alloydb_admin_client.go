@@ -52,8 +52,10 @@ type AlloyDBAdminCallOptions struct {
 	GetCluster                 []gax.CallOption
 	CreateCluster              []gax.CallOption
 	UpdateCluster              []gax.CallOption
+	UpgradeCluster             []gax.CallOption
 	DeleteCluster              []gax.CallOption
 	PromoteCluster             []gax.CallOption
+	SwitchoverCluster          []gax.CallOption
 	RestoreCluster             []gax.CallOption
 	CreateSecondaryCluster     []gax.CallOption
 	ListInstances              []gax.CallOption
@@ -66,6 +68,7 @@ type AlloyDBAdminCallOptions struct {
 	FailoverInstance           []gax.CallOption
 	InjectFault                []gax.CallOption
 	RestartInstance            []gax.CallOption
+	ExecuteSql                 []gax.CallOption
 	ListBackups                []gax.CallOption
 	GetBackup                  []gax.CallOption
 	CreateBackup               []gax.CallOption
@@ -135,10 +138,16 @@ func defaultAlloyDBAdminCallOptions() *AlloyDBAdminCallOptions {
 		UpdateCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		UpgradeCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		PromoteCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SwitchoverCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		RestoreCluster: []gax.CallOption{
@@ -193,6 +202,9 @@ func defaultAlloyDBAdminCallOptions() *AlloyDBAdminCallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		RestartInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ExecuteSql: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListBackups: []gax.CallOption{
@@ -348,10 +360,16 @@ func defaultAlloyDBAdminRESTCallOptions() *AlloyDBAdminCallOptions {
 		UpdateCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		UpgradeCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		PromoteCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SwitchoverCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		RestoreCluster: []gax.CallOption{
@@ -404,6 +422,9 @@ func defaultAlloyDBAdminRESTCallOptions() *AlloyDBAdminCallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		RestartInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ExecuteSql: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListBackups: []gax.CallOption{
@@ -532,10 +553,14 @@ type internalAlloyDBAdminClient interface {
 	CreateClusterOperation(name string) *CreateClusterOperation
 	UpdateCluster(context.Context, *alloydbpb.UpdateClusterRequest, ...gax.CallOption) (*UpdateClusterOperation, error)
 	UpdateClusterOperation(name string) *UpdateClusterOperation
+	UpgradeCluster(context.Context, *alloydbpb.UpgradeClusterRequest, ...gax.CallOption) (*UpgradeClusterOperation, error)
+	UpgradeClusterOperation(name string) *UpgradeClusterOperation
 	DeleteCluster(context.Context, *alloydbpb.DeleteClusterRequest, ...gax.CallOption) (*DeleteClusterOperation, error)
 	DeleteClusterOperation(name string) *DeleteClusterOperation
 	PromoteCluster(context.Context, *alloydbpb.PromoteClusterRequest, ...gax.CallOption) (*PromoteClusterOperation, error)
 	PromoteClusterOperation(name string) *PromoteClusterOperation
+	SwitchoverCluster(context.Context, *alloydbpb.SwitchoverClusterRequest, ...gax.CallOption) (*SwitchoverClusterOperation, error)
+	SwitchoverClusterOperation(name string) *SwitchoverClusterOperation
 	RestoreCluster(context.Context, *alloydbpb.RestoreClusterRequest, ...gax.CallOption) (*RestoreClusterOperation, error)
 	RestoreClusterOperation(name string) *RestoreClusterOperation
 	CreateSecondaryCluster(context.Context, *alloydbpb.CreateSecondaryClusterRequest, ...gax.CallOption) (*CreateSecondaryClusterOperation, error)
@@ -558,6 +583,7 @@ type internalAlloyDBAdminClient interface {
 	InjectFaultOperation(name string) *InjectFaultOperation
 	RestartInstance(context.Context, *alloydbpb.RestartInstanceRequest, ...gax.CallOption) (*RestartInstanceOperation, error)
 	RestartInstanceOperation(name string) *RestartInstanceOperation
+	ExecuteSql(context.Context, *alloydbpb.ExecuteSqlRequest, ...gax.CallOption) (*alloydbpb.ExecuteSqlResponse, error)
 	ListBackups(context.Context, *alloydbpb.ListBackupsRequest, ...gax.CallOption) *BackupIterator
 	GetBackup(context.Context, *alloydbpb.GetBackupRequest, ...gax.CallOption) (*alloydbpb.Backup, error)
 	CreateBackup(context.Context, *alloydbpb.CreateBackupRequest, ...gax.CallOption) (*CreateBackupOperation, error)
@@ -655,6 +681,18 @@ func (c *AlloyDBAdminClient) UpdateClusterOperation(name string) *UpdateClusterO
 	return c.internalClient.UpdateClusterOperation(name)
 }
 
+// UpgradeCluster upgrades a single Cluster.
+// Imperative only.
+func (c *AlloyDBAdminClient) UpgradeCluster(ctx context.Context, req *alloydbpb.UpgradeClusterRequest, opts ...gax.CallOption) (*UpgradeClusterOperation, error) {
+	return c.internalClient.UpgradeCluster(ctx, req, opts...)
+}
+
+// UpgradeClusterOperation returns a new UpgradeClusterOperation from a given name.
+// The name must be that of a previously created UpgradeClusterOperation, possibly from a different process.
+func (c *AlloyDBAdminClient) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
+	return c.internalClient.UpgradeClusterOperation(name)
+}
+
 // DeleteCluster deletes a single Cluster.
 func (c *AlloyDBAdminClient) DeleteCluster(ctx context.Context, req *alloydbpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
 	return c.internalClient.DeleteCluster(ctx, req, opts...)
@@ -678,6 +716,19 @@ func (c *AlloyDBAdminClient) PromoteCluster(ctx context.Context, req *alloydbpb.
 // The name must be that of a previously created PromoteClusterOperation, possibly from a different process.
 func (c *AlloyDBAdminClient) PromoteClusterOperation(name string) *PromoteClusterOperation {
 	return c.internalClient.PromoteClusterOperation(name)
+}
+
+// SwitchoverCluster switches the roles of PRIMARY and SECONDARY clusters without any data loss.
+// This promotes the SECONDARY cluster to PRIMARY and sets up the original
+// PRIMARY cluster to replicate from this newly promoted cluster.
+func (c *AlloyDBAdminClient) SwitchoverCluster(ctx context.Context, req *alloydbpb.SwitchoverClusterRequest, opts ...gax.CallOption) (*SwitchoverClusterOperation, error) {
+	return c.internalClient.SwitchoverCluster(ctx, req, opts...)
+}
+
+// SwitchoverClusterOperation returns a new SwitchoverClusterOperation from a given name.
+// The name must be that of a previously created SwitchoverClusterOperation, possibly from a different process.
+func (c *AlloyDBAdminClient) SwitchoverClusterOperation(name string) *SwitchoverClusterOperation {
+	return c.internalClient.SwitchoverClusterOperation(name)
 }
 
 // RestoreCluster creates a new Cluster in a given project and location, with a volume
@@ -814,6 +865,11 @@ func (c *AlloyDBAdminClient) RestartInstance(ctx context.Context, req *alloydbpb
 // The name must be that of a previously created RestartInstanceOperation, possibly from a different process.
 func (c *AlloyDBAdminClient) RestartInstanceOperation(name string) *RestartInstanceOperation {
 	return c.internalClient.RestartInstanceOperation(name)
+}
+
+// ExecuteSql executes a SQL statement in a database inside an AlloyDB instance.
+func (c *AlloyDBAdminClient) ExecuteSql(ctx context.Context, req *alloydbpb.ExecuteSqlRequest, opts ...gax.CallOption) (*alloydbpb.ExecuteSqlResponse, error) {
+	return c.internalClient.ExecuteSql(ctx, req, opts...)
 }
 
 // ListBackups lists Backups in a given project and location.
@@ -1226,6 +1282,26 @@ func (c *alloyDBAdminGRPCClient) UpdateCluster(ctx context.Context, req *alloydb
 	}, nil
 }
 
+func (c *alloyDBAdminGRPCClient) UpgradeCluster(ctx context.Context, req *alloydbpb.UpgradeClusterRequest, opts ...gax.CallOption) (*UpgradeClusterOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpgradeCluster[0:len((*c.CallOptions).UpgradeCluster):len((*c.CallOptions).UpgradeCluster)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.alloyDBAdminClient.UpgradeCluster(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpgradeClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *alloyDBAdminGRPCClient) DeleteCluster(ctx context.Context, req *alloydbpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1262,6 +1338,26 @@ func (c *alloyDBAdminGRPCClient) PromoteCluster(ctx context.Context, req *alloyd
 		return nil, err
 	}
 	return &PromoteClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *alloyDBAdminGRPCClient) SwitchoverCluster(ctx context.Context, req *alloydbpb.SwitchoverClusterRequest, opts ...gax.CallOption) (*SwitchoverClusterOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SwitchoverCluster[0:len((*c.CallOptions).SwitchoverCluster):len((*c.CallOptions).SwitchoverCluster)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.alloyDBAdminClient.SwitchoverCluster(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SwitchoverClusterOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1528,6 +1624,24 @@ func (c *alloyDBAdminGRPCClient) RestartInstance(ctx context.Context, req *alloy
 	return &RestartInstanceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *alloyDBAdminGRPCClient) ExecuteSql(ctx context.Context, req *alloydbpb.ExecuteSqlRequest, opts ...gax.CallOption) (*alloydbpb.ExecuteSqlResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExecuteSql[0:len((*c.CallOptions).ExecuteSql):len((*c.CallOptions).ExecuteSql)], opts...)
+	var resp *alloydbpb.ExecuteSqlResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.alloyDBAdminClient.ExecuteSql(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *alloyDBAdminGRPCClient) ListBackups(ctx context.Context, req *alloydbpb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
@@ -2375,6 +2489,77 @@ func (c *alloyDBAdminRESTClient) UpdateCluster(ctx context.Context, req *alloydb
 	}, nil
 }
 
+// UpgradeCluster upgrades a single Cluster.
+// Imperative only.
+func (c *alloyDBAdminRESTClient) UpgradeCluster(ctx context.Context, req *alloydbpb.UpgradeClusterRequest, opts ...gax.CallOption) (*UpgradeClusterOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:upgrade", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &UpgradeClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // DeleteCluster deletes a single Cluster.
 func (c *alloyDBAdminRESTClient) DeleteCluster(ctx context.Context, req *alloydbpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2519,6 +2704,78 @@ func (c *alloyDBAdminRESTClient) PromoteCluster(ctx context.Context, req *alloyd
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
 	return &PromoteClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// SwitchoverCluster switches the roles of PRIMARY and SECONDARY clusters without any data loss.
+// This promotes the SECONDARY cluster to PRIMARY and sets up the original
+// PRIMARY cluster to replicate from this newly promoted cluster.
+func (c *alloyDBAdminRESTClient) SwitchoverCluster(ctx context.Context, req *alloydbpb.SwitchoverClusterRequest, opts ...gax.CallOption) (*SwitchoverClusterOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:switchover", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &SwitchoverClusterOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -3444,6 +3701,72 @@ func (c *alloyDBAdminRESTClient) RestartInstance(ctx context.Context, req *alloy
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// ExecuteSql executes a SQL statement in a database inside an AlloyDB instance.
+func (c *alloyDBAdminRESTClient) ExecuteSql(ctx context.Context, req *alloydbpb.ExecuteSqlRequest, opts ...gax.CallOption) (*alloydbpb.ExecuteSqlResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:executeSql", req.GetInstance())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ExecuteSql[0:len((*c.CallOptions).ExecuteSql):len((*c.CallOptions).ExecuteSql)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &alloydbpb.ExecuteSqlResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // ListBackups lists Backups in a given project and location.
@@ -5153,6 +5476,24 @@ func (c *alloyDBAdminRESTClient) RestoreClusterOperation(name string) *RestoreCl
 	}
 }
 
+// SwitchoverClusterOperation returns a new SwitchoverClusterOperation from a given name.
+// The name must be that of a previously created SwitchoverClusterOperation, possibly from a different process.
+func (c *alloyDBAdminGRPCClient) SwitchoverClusterOperation(name string) *SwitchoverClusterOperation {
+	return &SwitchoverClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// SwitchoverClusterOperation returns a new SwitchoverClusterOperation from a given name.
+// The name must be that of a previously created SwitchoverClusterOperation, possibly from a different process.
+func (c *alloyDBAdminRESTClient) SwitchoverClusterOperation(name string) *SwitchoverClusterOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &SwitchoverClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // UpdateBackupOperation returns a new UpdateBackupOperation from a given name.
 // The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
@@ -5202,6 +5543,24 @@ func (c *alloyDBAdminGRPCClient) UpdateInstanceOperation(name string) *UpdateIns
 func (c *alloyDBAdminRESTClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpgradeClusterOperation returns a new UpgradeClusterOperation from a given name.
+// The name must be that of a previously created UpgradeClusterOperation, possibly from a different process.
+func (c *alloyDBAdminGRPCClient) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
+	return &UpgradeClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpgradeClusterOperation returns a new UpgradeClusterOperation from a given name.
+// The name must be that of a previously created UpgradeClusterOperation, possibly from a different process.
+func (c *alloyDBAdminRESTClient) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &UpgradeClusterOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
