@@ -75,6 +75,11 @@
                 "DeleteUser"
               ]
             },
+            "ExecuteSql": {
+              "methods": [
+                "ExecuteSql"
+              ]
+            },
             "FailoverInstance": {
               "methods": [
                 "FailoverInstance"
@@ -180,6 +185,11 @@
                 "RestoreCluster"
               ]
             },
+            "SwitchoverCluster": {
+              "methods": [
+                "SwitchoverCluster"
+              ]
+            },
             "UpdateBackup": {
               "methods": [
                 "UpdateBackup"
@@ -198,6 +208,11 @@
             "UpdateUser": {
               "methods": [
                 "UpdateUser"
+              ]
+            },
+            "UpgradeCluster": {
+              "methods": [
+                "UpgradeCluster"
               ]
             }
           }
@@ -270,6 +285,11 @@
                 "DeleteUser"
               ]
             },
+            "ExecuteSql": {
+              "methods": [
+                "ExecuteSql"
+              ]
+            },
             "FailoverInstance": {
               "methods": [
                 "FailoverInstance"
@@ -375,6 +395,11 @@
                 "RestoreCluster"
               ]
             },
+            "SwitchoverCluster": {
+              "methods": [
+                "SwitchoverCluster"
+              ]
+            },
             "UpdateBackup": {
               "methods": [
                 "UpdateBackup"
@@ -393,6 +418,11 @@
             "UpdateUser": {
               "methods": [
                 "UpdateUser"
+              ]
+            },
+            "UpgradeCluster": {
+              "methods": [
+                "UpgradeCluster"
               ]
             }
           }
