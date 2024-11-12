@@ -21,15 +21,14 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -470,7 +469,7 @@ type Model struct {
 	// Stats of data used for training or evaluating the Model.
 	//
 	// Only populated when the Model is trained by a TrainingPipeline with
-	// [data_input_config][TrainingPipeline.data_input_config].
+	// [data_input_config][google.cloud.aiplatform.v1.TrainingPipeline.input_data_config].
 	DataStats *Model_DataStats `protobuf:"bytes,21,opt,name=data_stats,json=dataStats,proto3" json:"data_stats,omitempty"`
 	// Customer-managed encryption key spec for a Model. If set, this
 	// Model and all sub-resources of this Model will be secured by this key.

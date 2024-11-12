@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -457,7 +456,8 @@ type ExportDataConfig struct {
 	// [ListAnnotations][google.cloud.aiplatform.v1.DatasetService.ListAnnotations].
 	AnnotationsFilter string `protobuf:"bytes,2,opt,name=annotations_filter,json=annotationsFilter,proto3" json:"annotations_filter,omitempty"`
 	// The ID of a SavedQuery (annotation set) under the Dataset specified by
-	// [dataset_id][] used for filtering Annotations for training.
+	// [ExportDataRequest.name][google.cloud.aiplatform.v1.ExportDataRequest.name]
+	// used for filtering Annotations for training.
 	//
 	// Only used for custom training data export use cases.
 	// Only applicable to Datasets that have SavedQueries.
@@ -483,7 +483,8 @@ type ExportDataConfig struct {
 	// gs://google-cloud-aiplatform/schema/dataset/annotation/, note that the
 	// chosen schema must be consistent with
 	// [metadata][google.cloud.aiplatform.v1.Dataset.metadata_schema_uri] of the
-	// Dataset specified by [dataset_id][].
+	// Dataset specified by
+	// [ExportDataRequest.name][google.cloud.aiplatform.v1.ExportDataRequest.name].
 	//
 	// Only used for custom training data export use cases.
 	// Only applicable to Datasets that have DataItems and Annotations.

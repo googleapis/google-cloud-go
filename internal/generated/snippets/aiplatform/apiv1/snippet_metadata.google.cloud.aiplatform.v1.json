@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.68.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -22065,7 +22065,7 @@
     {
       "regionTag": "aiplatform_v1_generated_ScheduleService_ResumeSchedule_sync",
       "title": "aiplatform ResumeSchedule Sample",
-      "description": "ResumeSchedule resumes a paused Schedule to start scheduling new runs. Will mark\n[Schedule.state][google.cloud.aiplatform.v1.Schedule.state] to 'ACTIVE'.\nOnly paused Schedule can be resumed.\n\nWhen the Schedule is resumed, new runs will be scheduled starting from the\nnext execution time after the current time based on the time_specification\nin the Schedule. If [Schedule.catchUp][] is set up true, all\nmissed runs will be scheduled for backfill first.",
+      "description": "ResumeSchedule resumes a paused Schedule to start scheduling new runs. Will mark\n[Schedule.state][google.cloud.aiplatform.v1.Schedule.state] to 'ACTIVE'.\nOnly paused Schedule can be resumed.\n\nWhen the Schedule is resumed, new runs will be scheduled starting from the\nnext execution time after the current time based on the time_specification\nin the Schedule. If\n[Schedule.catch_up][google.cloud.aiplatform.v1.Schedule.catch_up] is set up\ntrue, all missed runs will be scheduled for backfill first.",
       "file": "ScheduleClient/ResumeSchedule/main.go",
       "language": "GO",
       "clientMethod": {

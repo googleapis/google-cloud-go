@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -275,8 +274,8 @@ type Explanation struct {
 	// If users set
 	// [ExplanationParameters.top_k][google.cloud.aiplatform.v1.ExplanationParameters.top_k],
 	// the attributions are sorted by
-	// [instance_output_value][Attributions.instance_output_value] in descending
-	// order. If
+	// [instance_output_value][google.cloud.aiplatform.v1.Attribution.instance_output_value]
+	// in descending order. If
 	// [ExplanationParameters.output_indices][google.cloud.aiplatform.v1.ExplanationParameters.output_indices]
 	// is specified, the attributions are stored by
 	// [Attribution.output_index][google.cloud.aiplatform.v1.Attribution.output_index]
