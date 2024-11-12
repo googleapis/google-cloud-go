@@ -77,10 +77,11 @@ func (e errUnexpectedAggregationKind) Error() string {
 // Google Cloud Monitoring.
 // Default exporter for built-in metrics
 type monitoringExporter struct {
-	shutdown               chan struct{}
-	client                 *monitoring.MetricClient
-	shutdownOnce           sync.Once
-	projectID, compression string
+	shutdown     chan struct{}
+	client       *monitoring.MetricClient
+	shutdownOnce sync.Once
+	projectID    string
+	compression  string
 }
 
 func newMonitoringExporter(ctx context.Context, project, compression string, opts ...option.ClientOption) (*monitoringExporter, error) {
