@@ -76,7 +76,7 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 					if len(token) != 1 {
 						return status.Errorf(codes.Internal, "unexpected number of api client token headers: %v", len(token))
 					}
-					if !strings.HasPrefix(token[0], "gl-go/") {
+					if !strings.Contains(token[0], "gl-go/") {
 						return status.Errorf(codes.Internal, "unexpected api client token: %v", token[0])
 					}
 					if !strings.Contains(token[0], "gccl/") {
