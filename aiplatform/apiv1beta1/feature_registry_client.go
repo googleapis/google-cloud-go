@@ -47,26 +47,34 @@ var newFeatureRegistryClientHook clientHook
 
 // FeatureRegistryCallOptions contains the retry settings for each method of FeatureRegistryClient.
 type FeatureRegistryCallOptions struct {
-	CreateFeatureGroup []gax.CallOption
-	GetFeatureGroup    []gax.CallOption
-	ListFeatureGroups  []gax.CallOption
-	UpdateFeatureGroup []gax.CallOption
-	DeleteFeatureGroup []gax.CallOption
-	CreateFeature      []gax.CallOption
-	GetFeature         []gax.CallOption
-	ListFeatures       []gax.CallOption
-	UpdateFeature      []gax.CallOption
-	DeleteFeature      []gax.CallOption
-	GetLocation        []gax.CallOption
-	ListLocations      []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
-	CancelOperation    []gax.CallOption
-	DeleteOperation    []gax.CallOption
-	GetOperation       []gax.CallOption
-	ListOperations     []gax.CallOption
-	WaitOperation      []gax.CallOption
+	CreateFeatureGroup      []gax.CallOption
+	GetFeatureGroup         []gax.CallOption
+	ListFeatureGroups       []gax.CallOption
+	UpdateFeatureGroup      []gax.CallOption
+	DeleteFeatureGroup      []gax.CallOption
+	CreateFeature           []gax.CallOption
+	BatchCreateFeatures     []gax.CallOption
+	GetFeature              []gax.CallOption
+	ListFeatures            []gax.CallOption
+	UpdateFeature           []gax.CallOption
+	DeleteFeature           []gax.CallOption
+	CreateFeatureMonitor    []gax.CallOption
+	GetFeatureMonitor       []gax.CallOption
+	ListFeatureMonitors     []gax.CallOption
+	DeleteFeatureMonitor    []gax.CallOption
+	CreateFeatureMonitorJob []gax.CallOption
+	GetFeatureMonitorJob    []gax.CallOption
+	ListFeatureMonitorJobs  []gax.CallOption
+	GetLocation             []gax.CallOption
+	ListLocations           []gax.CallOption
+	GetIamPolicy            []gax.CallOption
+	SetIamPolicy            []gax.CallOption
+	TestIamPermissions      []gax.CallOption
+	CancelOperation         []gax.CallOption
+	DeleteOperation         []gax.CallOption
+	GetOperation            []gax.CallOption
+	ListOperations          []gax.CallOption
+	WaitOperation           []gax.CallOption
 }
 
 func defaultFeatureRegistryGRPCClientOptions() []option.ClientOption {
@@ -86,51 +94,67 @@ func defaultFeatureRegistryGRPCClientOptions() []option.ClientOption {
 
 func defaultFeatureRegistryCallOptions() *FeatureRegistryCallOptions {
 	return &FeatureRegistryCallOptions{
-		CreateFeatureGroup: []gax.CallOption{},
-		GetFeatureGroup:    []gax.CallOption{},
-		ListFeatureGroups:  []gax.CallOption{},
-		UpdateFeatureGroup: []gax.CallOption{},
-		DeleteFeatureGroup: []gax.CallOption{},
-		CreateFeature:      []gax.CallOption{},
-		GetFeature:         []gax.CallOption{},
-		ListFeatures:       []gax.CallOption{},
-		UpdateFeature:      []gax.CallOption{},
-		DeleteFeature:      []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		CreateFeatureGroup:      []gax.CallOption{},
+		GetFeatureGroup:         []gax.CallOption{},
+		ListFeatureGroups:       []gax.CallOption{},
+		UpdateFeatureGroup:      []gax.CallOption{},
+		DeleteFeatureGroup:      []gax.CallOption{},
+		CreateFeature:           []gax.CallOption{},
+		BatchCreateFeatures:     []gax.CallOption{},
+		GetFeature:              []gax.CallOption{},
+		ListFeatures:            []gax.CallOption{},
+		UpdateFeature:           []gax.CallOption{},
+		DeleteFeature:           []gax.CallOption{},
+		CreateFeatureMonitor:    []gax.CallOption{},
+		GetFeatureMonitor:       []gax.CallOption{},
+		ListFeatureMonitors:     []gax.CallOption{},
+		DeleteFeatureMonitor:    []gax.CallOption{},
+		CreateFeatureMonitorJob: []gax.CallOption{},
+		GetFeatureMonitorJob:    []gax.CallOption{},
+		ListFeatureMonitorJobs:  []gax.CallOption{},
+		GetLocation:             []gax.CallOption{},
+		ListLocations:           []gax.CallOption{},
+		GetIamPolicy:            []gax.CallOption{},
+		SetIamPolicy:            []gax.CallOption{},
+		TestIamPermissions:      []gax.CallOption{},
+		CancelOperation:         []gax.CallOption{},
+		DeleteOperation:         []gax.CallOption{},
+		GetOperation:            []gax.CallOption{},
+		ListOperations:          []gax.CallOption{},
+		WaitOperation:           []gax.CallOption{},
 	}
 }
 
 func defaultFeatureRegistryRESTCallOptions() *FeatureRegistryCallOptions {
 	return &FeatureRegistryCallOptions{
-		CreateFeatureGroup: []gax.CallOption{},
-		GetFeatureGroup:    []gax.CallOption{},
-		ListFeatureGroups:  []gax.CallOption{},
-		UpdateFeatureGroup: []gax.CallOption{},
-		DeleteFeatureGroup: []gax.CallOption{},
-		CreateFeature:      []gax.CallOption{},
-		GetFeature:         []gax.CallOption{},
-		ListFeatures:       []gax.CallOption{},
-		UpdateFeature:      []gax.CallOption{},
-		DeleteFeature:      []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		CreateFeatureGroup:      []gax.CallOption{},
+		GetFeatureGroup:         []gax.CallOption{},
+		ListFeatureGroups:       []gax.CallOption{},
+		UpdateFeatureGroup:      []gax.CallOption{},
+		DeleteFeatureGroup:      []gax.CallOption{},
+		CreateFeature:           []gax.CallOption{},
+		BatchCreateFeatures:     []gax.CallOption{},
+		GetFeature:              []gax.CallOption{},
+		ListFeatures:            []gax.CallOption{},
+		UpdateFeature:           []gax.CallOption{},
+		DeleteFeature:           []gax.CallOption{},
+		CreateFeatureMonitor:    []gax.CallOption{},
+		GetFeatureMonitor:       []gax.CallOption{},
+		ListFeatureMonitors:     []gax.CallOption{},
+		DeleteFeatureMonitor:    []gax.CallOption{},
+		CreateFeatureMonitorJob: []gax.CallOption{},
+		GetFeatureMonitorJob:    []gax.CallOption{},
+		ListFeatureMonitorJobs:  []gax.CallOption{},
+		GetLocation:             []gax.CallOption{},
+		ListLocations:           []gax.CallOption{},
+		GetIamPolicy:            []gax.CallOption{},
+		SetIamPolicy:            []gax.CallOption{},
+		TestIamPermissions:      []gax.CallOption{},
+		CancelOperation:         []gax.CallOption{},
+		DeleteOperation:         []gax.CallOption{},
+		GetOperation:            []gax.CallOption{},
+		ListOperations:          []gax.CallOption{},
+		WaitOperation:           []gax.CallOption{},
 	}
 }
 
@@ -149,12 +173,23 @@ type internalFeatureRegistryClient interface {
 	DeleteFeatureGroupOperation(name string) *DeleteFeatureGroupOperation
 	CreateFeature(context.Context, *aiplatformpb.CreateFeatureRequest, ...gax.CallOption) (*CreateFeatureOperation, error)
 	CreateFeatureOperation(name string) *CreateFeatureOperation
+	BatchCreateFeatures(context.Context, *aiplatformpb.BatchCreateFeaturesRequest, ...gax.CallOption) (*BatchCreateFeaturesOperation, error)
+	BatchCreateFeaturesOperation(name string) *BatchCreateFeaturesOperation
 	GetFeature(context.Context, *aiplatformpb.GetFeatureRequest, ...gax.CallOption) (*aiplatformpb.Feature, error)
 	ListFeatures(context.Context, *aiplatformpb.ListFeaturesRequest, ...gax.CallOption) *FeatureIterator
 	UpdateFeature(context.Context, *aiplatformpb.UpdateFeatureRequest, ...gax.CallOption) (*UpdateFeatureOperation, error)
 	UpdateFeatureOperation(name string) *UpdateFeatureOperation
 	DeleteFeature(context.Context, *aiplatformpb.DeleteFeatureRequest, ...gax.CallOption) (*DeleteFeatureOperation, error)
 	DeleteFeatureOperation(name string) *DeleteFeatureOperation
+	CreateFeatureMonitor(context.Context, *aiplatformpb.CreateFeatureMonitorRequest, ...gax.CallOption) (*CreateFeatureMonitorOperation, error)
+	CreateFeatureMonitorOperation(name string) *CreateFeatureMonitorOperation
+	GetFeatureMonitor(context.Context, *aiplatformpb.GetFeatureMonitorRequest, ...gax.CallOption) (*aiplatformpb.FeatureMonitor, error)
+	ListFeatureMonitors(context.Context, *aiplatformpb.ListFeatureMonitorsRequest, ...gax.CallOption) *FeatureMonitorIterator
+	DeleteFeatureMonitor(context.Context, *aiplatformpb.DeleteFeatureMonitorRequest, ...gax.CallOption) (*DeleteFeatureMonitorOperation, error)
+	DeleteFeatureMonitorOperation(name string) *DeleteFeatureMonitorOperation
+	CreateFeatureMonitorJob(context.Context, *aiplatformpb.CreateFeatureMonitorJobRequest, ...gax.CallOption) (*aiplatformpb.FeatureMonitorJob, error)
+	GetFeatureMonitorJob(context.Context, *aiplatformpb.GetFeatureMonitorJobRequest, ...gax.CallOption) (*aiplatformpb.FeatureMonitorJob, error)
+	ListFeatureMonitorJobs(context.Context, *aiplatformpb.ListFeatureMonitorJobsRequest, ...gax.CallOption) *FeatureMonitorJobIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -262,6 +297,17 @@ func (c *FeatureRegistryClient) CreateFeatureOperation(name string) *CreateFeatu
 	return c.internalClient.CreateFeatureOperation(name)
 }
 
+// BatchCreateFeatures creates a batch of Features in a given FeatureGroup.
+func (c *FeatureRegistryClient) BatchCreateFeatures(ctx context.Context, req *aiplatformpb.BatchCreateFeaturesRequest, opts ...gax.CallOption) (*BatchCreateFeaturesOperation, error) {
+	return c.internalClient.BatchCreateFeatures(ctx, req, opts...)
+}
+
+// BatchCreateFeaturesOperation returns a new BatchCreateFeaturesOperation from a given name.
+// The name must be that of a previously created BatchCreateFeaturesOperation, possibly from a different process.
+func (c *FeatureRegistryClient) BatchCreateFeaturesOperation(name string) *BatchCreateFeaturesOperation {
+	return c.internalClient.BatchCreateFeaturesOperation(name)
+}
+
 // GetFeature gets details of a single Feature.
 func (c *FeatureRegistryClient) GetFeature(ctx context.Context, req *aiplatformpb.GetFeatureRequest, opts ...gax.CallOption) (*aiplatformpb.Feature, error) {
 	return c.internalClient.GetFeature(ctx, req, opts...)
@@ -292,6 +338,53 @@ func (c *FeatureRegistryClient) DeleteFeature(ctx context.Context, req *aiplatfo
 // The name must be that of a previously created DeleteFeatureOperation, possibly from a different process.
 func (c *FeatureRegistryClient) DeleteFeatureOperation(name string) *DeleteFeatureOperation {
 	return c.internalClient.DeleteFeatureOperation(name)
+}
+
+// CreateFeatureMonitor creates a new FeatureMonitor in a given project, location and FeatureGroup.
+func (c *FeatureRegistryClient) CreateFeatureMonitor(ctx context.Context, req *aiplatformpb.CreateFeatureMonitorRequest, opts ...gax.CallOption) (*CreateFeatureMonitorOperation, error) {
+	return c.internalClient.CreateFeatureMonitor(ctx, req, opts...)
+}
+
+// CreateFeatureMonitorOperation returns a new CreateFeatureMonitorOperation from a given name.
+// The name must be that of a previously created CreateFeatureMonitorOperation, possibly from a different process.
+func (c *FeatureRegistryClient) CreateFeatureMonitorOperation(name string) *CreateFeatureMonitorOperation {
+	return c.internalClient.CreateFeatureMonitorOperation(name)
+}
+
+// GetFeatureMonitor gets details of a single FeatureMonitor.
+func (c *FeatureRegistryClient) GetFeatureMonitor(ctx context.Context, req *aiplatformpb.GetFeatureMonitorRequest, opts ...gax.CallOption) (*aiplatformpb.FeatureMonitor, error) {
+	return c.internalClient.GetFeatureMonitor(ctx, req, opts...)
+}
+
+// ListFeatureMonitors lists FeatureGroups in a given project and location.
+func (c *FeatureRegistryClient) ListFeatureMonitors(ctx context.Context, req *aiplatformpb.ListFeatureMonitorsRequest, opts ...gax.CallOption) *FeatureMonitorIterator {
+	return c.internalClient.ListFeatureMonitors(ctx, req, opts...)
+}
+
+// DeleteFeatureMonitor deletes a single FeatureMonitor.
+func (c *FeatureRegistryClient) DeleteFeatureMonitor(ctx context.Context, req *aiplatformpb.DeleteFeatureMonitorRequest, opts ...gax.CallOption) (*DeleteFeatureMonitorOperation, error) {
+	return c.internalClient.DeleteFeatureMonitor(ctx, req, opts...)
+}
+
+// DeleteFeatureMonitorOperation returns a new DeleteFeatureMonitorOperation from a given name.
+// The name must be that of a previously created DeleteFeatureMonitorOperation, possibly from a different process.
+func (c *FeatureRegistryClient) DeleteFeatureMonitorOperation(name string) *DeleteFeatureMonitorOperation {
+	return c.internalClient.DeleteFeatureMonitorOperation(name)
+}
+
+// CreateFeatureMonitorJob creates a new feature monitor job.
+func (c *FeatureRegistryClient) CreateFeatureMonitorJob(ctx context.Context, req *aiplatformpb.CreateFeatureMonitorJobRequest, opts ...gax.CallOption) (*aiplatformpb.FeatureMonitorJob, error) {
+	return c.internalClient.CreateFeatureMonitorJob(ctx, req, opts...)
+}
+
+// GetFeatureMonitorJob get a feature monitor job.
+func (c *FeatureRegistryClient) GetFeatureMonitorJob(ctx context.Context, req *aiplatformpb.GetFeatureMonitorJobRequest, opts ...gax.CallOption) (*aiplatformpb.FeatureMonitorJob, error) {
+	return c.internalClient.GetFeatureMonitorJob(ctx, req, opts...)
+}
+
+// ListFeatureMonitorJobs list feature monitor jobs.
+func (c *FeatureRegistryClient) ListFeatureMonitorJobs(ctx context.Context, req *aiplatformpb.ListFeatureMonitorJobsRequest, opts ...gax.CallOption) *FeatureMonitorJobIterator {
+	return c.internalClient.ListFeatureMonitorJobs(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -688,6 +781,26 @@ func (c *featureRegistryGRPCClient) CreateFeature(ctx context.Context, req *aipl
 	}, nil
 }
 
+func (c *featureRegistryGRPCClient) BatchCreateFeatures(ctx context.Context, req *aiplatformpb.BatchCreateFeaturesRequest, opts ...gax.CallOption) (*BatchCreateFeaturesOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchCreateFeatures[0:len((*c.CallOptions).BatchCreateFeatures):len((*c.CallOptions).BatchCreateFeatures)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.featureRegistryClient.BatchCreateFeatures(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchCreateFeaturesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *featureRegistryGRPCClient) GetFeature(ctx context.Context, req *aiplatformpb.GetFeatureRequest, opts ...gax.CallOption) (*aiplatformpb.Feature, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -790,6 +903,192 @@ func (c *featureRegistryGRPCClient) DeleteFeature(ctx context.Context, req *aipl
 	return &DeleteFeatureOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *featureRegistryGRPCClient) CreateFeatureMonitor(ctx context.Context, req *aiplatformpb.CreateFeatureMonitorRequest, opts ...gax.CallOption) (*CreateFeatureMonitorOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateFeatureMonitor[0:len((*c.CallOptions).CreateFeatureMonitor):len((*c.CallOptions).CreateFeatureMonitor)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.featureRegistryClient.CreateFeatureMonitor(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateFeatureMonitorOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *featureRegistryGRPCClient) GetFeatureMonitor(ctx context.Context, req *aiplatformpb.GetFeatureMonitorRequest, opts ...gax.CallOption) (*aiplatformpb.FeatureMonitor, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetFeatureMonitor[0:len((*c.CallOptions).GetFeatureMonitor):len((*c.CallOptions).GetFeatureMonitor)], opts...)
+	var resp *aiplatformpb.FeatureMonitor
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.featureRegistryClient.GetFeatureMonitor(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *featureRegistryGRPCClient) ListFeatureMonitors(ctx context.Context, req *aiplatformpb.ListFeatureMonitorsRequest, opts ...gax.CallOption) *FeatureMonitorIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListFeatureMonitors[0:len((*c.CallOptions).ListFeatureMonitors):len((*c.CallOptions).ListFeatureMonitors)], opts...)
+	it := &FeatureMonitorIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListFeatureMonitorsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.FeatureMonitor, string, error) {
+		resp := &aiplatformpb.ListFeatureMonitorsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.featureRegistryClient.ListFeatureMonitors(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetFeatureMonitors(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *featureRegistryGRPCClient) DeleteFeatureMonitor(ctx context.Context, req *aiplatformpb.DeleteFeatureMonitorRequest, opts ...gax.CallOption) (*DeleteFeatureMonitorOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteFeatureMonitor[0:len((*c.CallOptions).DeleteFeatureMonitor):len((*c.CallOptions).DeleteFeatureMonitor)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.featureRegistryClient.DeleteFeatureMonitor(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteFeatureMonitorOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *featureRegistryGRPCClient) CreateFeatureMonitorJob(ctx context.Context, req *aiplatformpb.CreateFeatureMonitorJobRequest, opts ...gax.CallOption) (*aiplatformpb.FeatureMonitorJob, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateFeatureMonitorJob[0:len((*c.CallOptions).CreateFeatureMonitorJob):len((*c.CallOptions).CreateFeatureMonitorJob)], opts...)
+	var resp *aiplatformpb.FeatureMonitorJob
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.featureRegistryClient.CreateFeatureMonitorJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *featureRegistryGRPCClient) GetFeatureMonitorJob(ctx context.Context, req *aiplatformpb.GetFeatureMonitorJobRequest, opts ...gax.CallOption) (*aiplatformpb.FeatureMonitorJob, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetFeatureMonitorJob[0:len((*c.CallOptions).GetFeatureMonitorJob):len((*c.CallOptions).GetFeatureMonitorJob)], opts...)
+	var resp *aiplatformpb.FeatureMonitorJob
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.featureRegistryClient.GetFeatureMonitorJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *featureRegistryGRPCClient) ListFeatureMonitorJobs(ctx context.Context, req *aiplatformpb.ListFeatureMonitorJobsRequest, opts ...gax.CallOption) *FeatureMonitorJobIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListFeatureMonitorJobs[0:len((*c.CallOptions).ListFeatureMonitorJobs):len((*c.CallOptions).ListFeatureMonitorJobs)], opts...)
+	it := &FeatureMonitorJobIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListFeatureMonitorJobsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.FeatureMonitorJob, string, error) {
+		resp := &aiplatformpb.ListFeatureMonitorJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.featureRegistryClient.ListFeatureMonitorJobs(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetFeatureMonitorJobs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *featureRegistryGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1464,6 +1763,76 @@ func (c *featureRegistryRESTClient) CreateFeature(ctx context.Context, req *aipl
 	}, nil
 }
 
+// BatchCreateFeatures creates a batch of Features in a given FeatureGroup.
+func (c *featureRegistryRESTClient) BatchCreateFeatures(ctx context.Context, req *aiplatformpb.BatchCreateFeaturesRequest, opts ...gax.CallOption) (*BatchCreateFeaturesOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/features:batchCreate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &BatchCreateFeaturesOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetFeature gets details of a single Feature.
 func (c *featureRegistryRESTClient) GetFeature(ctx context.Context, req *aiplatformpb.GetFeatureRequest, opts ...gax.CallOption) (*aiplatformpb.Feature, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1474,6 +1843,23 @@ func (c *featureRegistryRESTClient) GetFeature(ctx context.Context, req *aiplatf
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetFeatureStatsAndAnomalySpec() != nil && req.GetFeatureStatsAndAnomalySpec().LatestStatsCount != nil {
+		params.Add("featureStatsAndAnomalySpec.latestStatsCount", fmt.Sprintf("%v", req.GetFeatureStatsAndAnomalySpec().GetLatestStatsCount()))
+	}
+	if req.GetFeatureStatsAndAnomalySpec().GetStatsTimeRange().GetEndTime() != nil {
+		field, err := protojson.Marshal(req.GetFeatureStatsAndAnomalySpec().GetStatsTimeRange().GetEndTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("featureStatsAndAnomalySpec.statsTimeRange.endTime", string(field[1:len(field)-1]))
+	}
+	if req.GetFeatureStatsAndAnomalySpec().GetStatsTimeRange().GetStartTime() != nil {
+		field, err := protojson.Marshal(req.GetFeatureStatsAndAnomalySpec().GetStatsTimeRange().GetStartTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("featureStatsAndAnomalySpec.statsTimeRange.startTime", string(field[1:len(field)-1]))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1769,6 +2155,522 @@ func (c *featureRegistryRESTClient) DeleteFeature(ctx context.Context, req *aipl
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// CreateFeatureMonitor creates a new FeatureMonitor in a given project, location and FeatureGroup.
+func (c *featureRegistryRESTClient) CreateFeatureMonitor(ctx context.Context, req *aiplatformpb.CreateFeatureMonitorRequest, opts ...gax.CallOption) (*CreateFeatureMonitorOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetFeatureMonitor()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featureMonitors", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("featureMonitorId", fmt.Sprintf("%v", req.GetFeatureMonitorId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &CreateFeatureMonitorOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetFeatureMonitor gets details of a single FeatureMonitor.
+func (c *featureRegistryRESTClient) GetFeatureMonitor(ctx context.Context, req *aiplatformpb.GetFeatureMonitorRequest, opts ...gax.CallOption) (*aiplatformpb.FeatureMonitor, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetFeatureMonitor[0:len((*c.CallOptions).GetFeatureMonitor):len((*c.CallOptions).GetFeatureMonitor)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.FeatureMonitor{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListFeatureMonitors lists FeatureGroups in a given project and location.
+func (c *featureRegistryRESTClient) ListFeatureMonitors(ctx context.Context, req *aiplatformpb.ListFeatureMonitorsRequest, opts ...gax.CallOption) *FeatureMonitorIterator {
+	it := &FeatureMonitorIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListFeatureMonitorsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.FeatureMonitor, string, error) {
+		resp := &aiplatformpb.ListFeatureMonitorsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featureMonitors", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetFeatureMonitors(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteFeatureMonitor deletes a single FeatureMonitor.
+func (c *featureRegistryRESTClient) DeleteFeatureMonitor(ctx context.Context, req *aiplatformpb.DeleteFeatureMonitorRequest, opts ...gax.CallOption) (*DeleteFeatureMonitorOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &DeleteFeatureMonitorOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateFeatureMonitorJob creates a new feature monitor job.
+func (c *featureRegistryRESTClient) CreateFeatureMonitorJob(ctx context.Context, req *aiplatformpb.CreateFeatureMonitorJobRequest, opts ...gax.CallOption) (*aiplatformpb.FeatureMonitorJob, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetFeatureMonitorJob()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featureMonitorJobs", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetFeatureMonitorJobId() != 0 {
+		params.Add("featureMonitorJobId", fmt.Sprintf("%v", req.GetFeatureMonitorJobId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateFeatureMonitorJob[0:len((*c.CallOptions).CreateFeatureMonitorJob):len((*c.CallOptions).CreateFeatureMonitorJob)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.FeatureMonitorJob{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetFeatureMonitorJob get a feature monitor job.
+func (c *featureRegistryRESTClient) GetFeatureMonitorJob(ctx context.Context, req *aiplatformpb.GetFeatureMonitorJobRequest, opts ...gax.CallOption) (*aiplatformpb.FeatureMonitorJob, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetFeatureMonitorJob[0:len((*c.CallOptions).GetFeatureMonitorJob):len((*c.CallOptions).GetFeatureMonitorJob)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.FeatureMonitorJob{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListFeatureMonitorJobs list feature monitor jobs.
+func (c *featureRegistryRESTClient) ListFeatureMonitorJobs(ctx context.Context, req *aiplatformpb.ListFeatureMonitorJobsRequest, opts ...gax.CallOption) *FeatureMonitorJobIterator {
+	it := &FeatureMonitorJobIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListFeatureMonitorJobsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.FeatureMonitorJob, string, error) {
+		resp := &aiplatformpb.ListFeatureMonitorJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featureMonitorJobs", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetFeatureMonitorJobs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // GetLocation gets information about a location.
@@ -2435,6 +3337,24 @@ func (c *featureRegistryRESTClient) WaitOperation(ctx context.Context, req *long
 	return resp, nil
 }
 
+// BatchCreateFeaturesOperation returns a new BatchCreateFeaturesOperation from a given name.
+// The name must be that of a previously created BatchCreateFeaturesOperation, possibly from a different process.
+func (c *featureRegistryGRPCClient) BatchCreateFeaturesOperation(name string) *BatchCreateFeaturesOperation {
+	return &BatchCreateFeaturesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchCreateFeaturesOperation returns a new BatchCreateFeaturesOperation from a given name.
+// The name must be that of a previously created BatchCreateFeaturesOperation, possibly from a different process.
+func (c *featureRegistryRESTClient) BatchCreateFeaturesOperation(name string) *BatchCreateFeaturesOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &BatchCreateFeaturesOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateFeatureOperation returns a new CreateFeatureOperation from a given name.
 // The name must be that of a previously created CreateFeatureOperation, possibly from a different process.
 func (c *featureRegistryGRPCClient) CreateFeatureOperation(name string) *CreateFeatureOperation {
@@ -2471,6 +3391,24 @@ func (c *featureRegistryRESTClient) CreateFeatureGroupOperation(name string) *Cr
 	}
 }
 
+// CreateFeatureMonitorOperation returns a new CreateFeatureMonitorOperation from a given name.
+// The name must be that of a previously created CreateFeatureMonitorOperation, possibly from a different process.
+func (c *featureRegistryGRPCClient) CreateFeatureMonitorOperation(name string) *CreateFeatureMonitorOperation {
+	return &CreateFeatureMonitorOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateFeatureMonitorOperation returns a new CreateFeatureMonitorOperation from a given name.
+// The name must be that of a previously created CreateFeatureMonitorOperation, possibly from a different process.
+func (c *featureRegistryRESTClient) CreateFeatureMonitorOperation(name string) *CreateFeatureMonitorOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &CreateFeatureMonitorOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteFeatureOperation returns a new DeleteFeatureOperation from a given name.
 // The name must be that of a previously created DeleteFeatureOperation, possibly from a different process.
 func (c *featureRegistryGRPCClient) DeleteFeatureOperation(name string) *DeleteFeatureOperation {
@@ -2502,6 +3440,24 @@ func (c *featureRegistryGRPCClient) DeleteFeatureGroupOperation(name string) *De
 func (c *featureRegistryRESTClient) DeleteFeatureGroupOperation(name string) *DeleteFeatureGroupOperation {
 	override := fmt.Sprintf("/ui/%s", name)
 	return &DeleteFeatureGroupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteFeatureMonitorOperation returns a new DeleteFeatureMonitorOperation from a given name.
+// The name must be that of a previously created DeleteFeatureMonitorOperation, possibly from a different process.
+func (c *featureRegistryGRPCClient) DeleteFeatureMonitorOperation(name string) *DeleteFeatureMonitorOperation {
+	return &DeleteFeatureMonitorOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteFeatureMonitorOperation returns a new DeleteFeatureMonitorOperation from a given name.
+// The name must be that of a previously created DeleteFeatureMonitorOperation, possibly from a different process.
+func (c *featureRegistryRESTClient) DeleteFeatureMonitorOperation(name string) *DeleteFeatureMonitorOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &DeleteFeatureMonitorOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

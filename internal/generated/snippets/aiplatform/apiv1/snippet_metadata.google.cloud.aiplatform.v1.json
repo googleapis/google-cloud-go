@@ -5014,6 +5014,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_FeatureRegistryService_BatchCreateFeatures_sync",
+      "title": "aiplatform BatchCreateFeatures Sample",
+      "description": "BatchCreateFeatures creates a batch of Features in a given FeatureGroup.",
+      "file": "FeatureRegistryClient/BatchCreateFeatures/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateFeatures",
+        "fullName": "google.cloud.aiplatform.v1.FeatureRegistryClient.BatchCreateFeatures",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchCreateFeaturesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchCreateFeaturesOperation",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "BatchCreateFeatures",
+          "fullName": "google.cloud.aiplatform.v1.FeatureRegistryService.BatchCreateFeatures",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_FeatureRegistryService_CancelOperation_sync",
       "title": "aiplatform CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -18578,6 +18624,52 @@
         "method": {
           "shortName": "StartNotebookRuntime",
           "fullName": "google.cloud.aiplatform.v1.NotebookService.StartNotebookRuntime",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_NotebookService_StopNotebookRuntime_sync",
+      "title": "aiplatform StopNotebookRuntime Sample",
+      "description": "StopNotebookRuntime stops a NotebookRuntime.",
+      "file": "NotebookClient/StopNotebookRuntime/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopNotebookRuntime",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.StopNotebookRuntime",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.StopNotebookRuntimeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StopNotebookRuntimeOperation",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "StopNotebookRuntime",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.StopNotebookRuntime",
           "service": {
             "shortName": "NotebookService",
             "fullName": "google.cloud.aiplatform.v1.NotebookService"

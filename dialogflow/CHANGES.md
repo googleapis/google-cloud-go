@@ -1,5 +1,15 @@
 # Changes
 
+## [1.59.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.58.1...dialogflow/v1.59.0) (2024-11-06)
+
+
+### Features
+
+* **dialogflow/cx:** Add options of client_certificate_settings, bigquery_export_settings, bearer_token_config and boost_control_spec; add support of ALAW encoding ([abf9cba](https://github.com/googleapis/google-cloud-go/commit/abf9cba74a78c0a909fa43e934f33bf0f59e83c1))
+* **dialogflow/cx:** Add options of client_certificate_settings, bigquery_export_settings, bearer_token_config and boost_control_spec; add support of ALAW encoding ([#11072](https://github.com/googleapis/google-cloud-go/issues/11072)) ([abf9cba](https://github.com/googleapis/google-cloud-go/commit/abf9cba74a78c0a909fa43e934f33bf0f59e83c1))
+* **dialogflow:** Add options of query_source, search_config and context_size ([2a2dbb8](https://github.com/googleapis/google-cloud-go/commit/2a2dbb82da6f50db5f5bd7b6692328918ced4da2))
+* **dialogflow:** Added support for ALAW encoding ([#11092](https://github.com/googleapis/google-cloud-go/issues/11092)) ([2a2dbb8](https://github.com/googleapis/google-cloud-go/commit/2a2dbb82da6f50db5f5bd7b6692328918ced4da2))
+
 ## [1.58.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.58.0...dialogflow/v1.58.1) (2024-10-23)
 
 

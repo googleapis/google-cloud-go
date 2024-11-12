@@ -47,23 +47,23 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Represents the possible intended states of enablement for a service or
-// module.
+// Represents the possible enablement states for a service or module.
 type SecurityCenterService_EnablementState int32
 
 const (
 	// Default value. This value is unused.
 	SecurityCenterService_ENABLEMENT_STATE_UNSPECIFIED SecurityCenterService_EnablementState = 0
-	// State is inherited from the parent resource. Not a valid effective
-	// enablement state.
+	// State is inherited from the parent resource. Valid as an intended
+	// enablement state, but not as an effective enablement state.
 	SecurityCenterService_INHERITED SecurityCenterService_EnablementState = 1
 	// State is enabled.
 	SecurityCenterService_ENABLED SecurityCenterService_EnablementState = 2
 	// State is disabled.
 	SecurityCenterService_DISABLED SecurityCenterService_EnablementState = 3
-	// SCC is configured to ingest findings from this service but not enable
-	// this service. Not a valid intended_enablement_state (that is, this is a
-	// readonly state).
+	// Security Command Center is configured to ingest findings from this
+	// service, but not to enable this service. This state indicates that
+	// Security Command Center is misconfigured. You can't set this state
+	// yourself.
 	SecurityCenterService_INGEST_ONLY SecurityCenterService_EnablementState = 4
 )
 
@@ -116,7 +116,7 @@ func (SecurityCenterService_EnablementState) EnumDescriptor() ([]byte, []int) {
 type EffectiveSecurityHealthAnalyticsCustomModule_EnablementState int32
 
 const (
-	// Unspecified enablement state.
+	// Default value. This value is unused.
 	EffectiveSecurityHealthAnalyticsCustomModule_ENABLEMENT_STATE_UNSPECIFIED EffectiveSecurityHealthAnalyticsCustomModule_EnablementState = 0
 	// The module is enabled at the given level.
 	EffectiveSecurityHealthAnalyticsCustomModule_ENABLED EffectiveSecurityHealthAnalyticsCustomModule_EnablementState = 1
@@ -169,17 +169,17 @@ func (EffectiveSecurityHealthAnalyticsCustomModule_EnablementState) EnumDescript
 type SecurityHealthAnalyticsCustomModule_EnablementState int32
 
 const (
-	// Unspecified enablement state.
+	// Default value. This value is unused.
 	SecurityHealthAnalyticsCustomModule_ENABLEMENT_STATE_UNSPECIFIED SecurityHealthAnalyticsCustomModule_EnablementState = 0
-	// The module is enabled at the given CRM resource.
+	// The module is enabled at the given organization, folder, or project.
 	SecurityHealthAnalyticsCustomModule_ENABLED SecurityHealthAnalyticsCustomModule_EnablementState = 1
-	// The module is disabled at the given CRM resource.
+	// The module is disabled at the given organization, folder, or project.
 	SecurityHealthAnalyticsCustomModule_DISABLED SecurityHealthAnalyticsCustomModule_EnablementState = 2
 	// State is inherited from an ancestor module. The module will either
-	// be effectively ENABLED or DISABLED based on its closest non-inherited
-	// ancestor module in the CRM hierarchy. Attempting to set a top level
-	// module (module with no parent) to the INHERITED state will result in an
-	// INVALID_ARGUMENT error.
+	// be effectively `ENABLED` or `DISABLED` based on its closest non-inherited
+	// ancestor module in the resource hierarchy. If you try to set a top-level
+	// module (a module with no parent) to the `INHERITED` state, you receive an
+	// `INVALID_ARGUMENT` error.
 	SecurityHealthAnalyticsCustomModule_INHERITED SecurityHealthAnalyticsCustomModule_EnablementState = 3
 )
 
@@ -230,7 +230,7 @@ func (SecurityHealthAnalyticsCustomModule_EnablementState) EnumDescriptor() ([]b
 type CustomConfig_Severity int32
 
 const (
-	// Unspecified severity.
+	// Default value. This value is unused.
 	CustomConfig_SEVERITY_UNSPECIFIED CustomConfig_Severity = 0
 	// Critical severity.
 	CustomConfig_CRITICAL CustomConfig_Severity = 1
@@ -291,12 +291,12 @@ func (CustomConfig_Severity) EnumDescriptor() ([]byte, []int) {
 type SimulatedFinding_State int32
 
 const (
-	// Unspecified state.
+	// Default value. This value is unused.
 	SimulatedFinding_STATE_UNSPECIFIED SimulatedFinding_State = 0
 	// The finding requires attention and has not been addressed yet.
 	SimulatedFinding_ACTIVE SimulatedFinding_State = 1
-	// The finding has been fixed, triaged as a non-issue or otherwise addressed
-	// and is no longer active.
+	// The finding has been fixed, triaged as a non-issue, or otherwise
+	// addressed and is no longer active.
 	SimulatedFinding_INACTIVE SimulatedFinding_State = 2
 )
 
@@ -345,57 +345,51 @@ func (SimulatedFinding_State) EnumDescriptor() ([]byte, []int) {
 type SimulatedFinding_Severity int32
 
 const (
-	// This value is used for findings when a source doesn't write a severity
-	// value.
+	// Default value. This value is unused.
 	SimulatedFinding_SEVERITY_UNSPECIFIED SimulatedFinding_Severity = 0
-	// Vulnerability:
-	// A critical vulnerability is easily discoverable by an external actor,
-	// exploitable, and results in the direct ability to execute arbitrary code,
-	// exfiltrate data, and otherwise gain additional access and privileges to
-	// cloud resources and workloads. Examples include publicly accessible
-	// unprotected user data and public SSH access with weak or no
-	// passwords.
+	// For vulnerabilities: A critical vulnerability is easily discoverable by
+	// an external actor, exploitable, and results in the direct ability to
+	// execute arbitrary code, exfiltrate data, and otherwise gain additional
+	// access and privileges to cloud resources and workloads. Examples include
+	// publicly accessible unprotected user data and public SSH access with weak
+	// or no passwords.
 	//
-	// Threat:
-	// Indicates a threat that is able to access, modify, or delete data or
-	// execute unauthorized code within existing resources.
+	// For threats: Indicates a threat that is able to access, modify, or delete
+	// data or execute unauthorized code within existing resources.
 	SimulatedFinding_CRITICAL SimulatedFinding_Severity = 1
-	// Vulnerability:
-	// A high risk vulnerability can be easily discovered and exploited in
-	// combination with other vulnerabilities in order to gain direct access and
-	// the ability to execute arbitrary code, exfiltrate data, and otherwise
-	// gain additional access and privileges to cloud resources and workloads.
-	// An example is a database with weak or no passwords that is only
-	// accessible internally. This database could easily be compromised by an
-	// actor that had access to the internal network.
+	// For vulnerabilities: A high-risk vulnerability can be easily discovered
+	// and exploited in combination with other vulnerabilities in order to gain
+	// direct access and the ability to execute arbitrary code, exfiltrate data,
+	// and otherwise gain additional access and privileges to cloud resources
+	// and workloads. An example is a database with weak or no passwords that is
+	// only accessible internally. This database could easily be compromised by
+	// an actor that had access to the internal network.
 	//
-	// Threat:
-	// Indicates a threat that is able to create new computational resources in
-	// an environment but not able to access data or execute code in existing
-	// resources.
+	// For threats: Indicates a threat that is able to create new computational
+	// resources in an environment but not able to access data or execute code
+	// in existing resources.
 	SimulatedFinding_HIGH SimulatedFinding_Severity = 2
-	// Vulnerability:
-	// A medium risk vulnerability could be used by an actor to gain access to
-	// resources or privileges that enable them to eventually (through multiple
-	// steps or a complex exploit) gain access and the ability to execute
-	// arbitrary code or exfiltrate data. An example is a service account with
-	// access to more projects than it should have. If an actor gains access to
-	// the service account, they could potentially use that access to manipulate
-	// a project the service account was not intended to.
+	// For vulnerabilities: A medium-risk vulnerability could be used by an
+	// actor to gain access to resources or privileges that enable them to
+	// eventually (through multiple steps or a complex exploit) gain access and
+	// the ability to execute arbitrary code or exfiltrate data. An example is a
+	// service account with access to more projects than it should have. If an
+	// actor gains access to the service account, they could potentially use
+	// that access to manipulate a project the service account was not intended
+	// to.
 	//
-	// Threat:
-	// Indicates a threat that is able to cause operational impact but may not
-	// access data or execute unauthorized code.
+	// For threats: Indicates a threat that is able to cause operational impact
+	// but may not access data or execute unauthorized code.
 	SimulatedFinding_MEDIUM SimulatedFinding_Severity = 3
-	// Vulnerability:
-	// A low risk vulnerability hampers a security organization's ability to
-	// detect vulnerabilities or active threats in their deployment, or prevents
-	// the root cause investigation of security issues. An example is monitoring
-	// and logs being disabled for resource configurations and access.
+	// For vulnerabilities: A low-risk vulnerability hampers a security
+	// organization's ability to detect vulnerabilities or active threats in
+	// their deployment, or prevents the root cause investigation of security
+	// issues. An example is monitoring and logs being disabled for resource
+	// configurations and access.
 	//
-	// Threat:
-	// Indicates a threat that has obtained minimal access to an environment but
-	// is not able to access data, execute code, or create resources.
+	// For threats: Indicates a threat that has obtained minimal access to an
+	// environment but is not able to access data, execute code, or create
+	// resources.
 	SimulatedFinding_LOW SimulatedFinding_Severity = 4
 )
 
@@ -444,23 +438,24 @@ func (SimulatedFinding_Severity) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_securitycentermanagement_v1_security_center_management_proto_rawDescGZIP(), []int{16, 1}
 }
 
-// Represents what kind of Finding it is.
+// Represents what kind of finding it is.
 type SimulatedFinding_FindingClass int32
 
 const (
-	// Unspecified finding class.
+	// Default value. This value is unused.
 	SimulatedFinding_FINDING_CLASS_UNSPECIFIED SimulatedFinding_FindingClass = 0
 	// Describes unwanted or malicious activity.
 	SimulatedFinding_THREAT SimulatedFinding_FindingClass = 1
 	// Describes a potential weakness in software that increases risk to
-	// Confidentiality & Integrity & Availability.
+	// confidentiality, integrity, and availability.
 	SimulatedFinding_VULNERABILITY SimulatedFinding_FindingClass = 2
-	// Describes a potential weakness in cloud resource/asset configuration that
-	// increases risk.
+	// Describes a potential weakness in cloud resource or asset configuration
+	// that increases risk.
 	SimulatedFinding_MISCONFIGURATION SimulatedFinding_FindingClass = 3
 	// Describes a security observation that is for informational purposes.
 	SimulatedFinding_OBSERVATION SimulatedFinding_FindingClass = 4
-	// Describes an error that prevents some SCC functionality.
+	// Describes an error that prevents Security Command Center from working
+	// correctly.
 	SimulatedFinding_SCC_ERROR SimulatedFinding_FindingClass = 5
 	// Describes a potential security risk due to a change in the security
 	// posture.
@@ -525,7 +520,7 @@ func (SimulatedFinding_FindingClass) EnumDescriptor() ([]byte, []int) {
 type EffectiveEventThreatDetectionCustomModule_EnablementState int32
 
 const (
-	// Unspecified enablement state.
+	// Default value. This value is unused.
 	EffectiveEventThreatDetectionCustomModule_ENABLEMENT_STATE_UNSPECIFIED EffectiveEventThreatDetectionCustomModule_EnablementState = 0
 	// The module is enabled at the given level.
 	EffectiveEventThreatDetectionCustomModule_ENABLED EffectiveEventThreatDetectionCustomModule_EnablementState = 1
@@ -584,11 +579,11 @@ const (
 	EventThreatDetectionCustomModule_ENABLED EventThreatDetectionCustomModule_EnablementState = 1
 	// The module is disabled at the given level.
 	EventThreatDetectionCustomModule_DISABLED EventThreatDetectionCustomModule_EnablementState = 2
-	// State is inherited from an ancestor module. The module will either
-	// be effectively ENABLED or DISABLED based on its closest non-inherited
-	// ancestor module in the CRM hierarchy. Attempting to set a top level
-	// module (module with no parent) to the INHERITED state will result in an
-	// error.
+	// State is inherited from an ancestor module. The module will either be
+	// effectively `ENABLED` or `DISABLED` based on its closest non-inherited
+	// ancestor module in the CRM hierarchy. If you try to set a top-level
+	// module (a module with no parent) to the `INHERITED` state, you receive an
+	// `INVALID_ARGUMENT` error.
 	EventThreatDetectionCustomModule_INHERITED EventThreatDetectionCustomModule_EnablementState = 3
 )
 
@@ -639,47 +634,45 @@ func (EventThreatDetectionCustomModule_EnablementState) EnumDescriptor() ([]byte
 // settings information such as top-level enablement in addition to individual
 // module settings. Service settings can be configured at the organization,
 // folder, or project level. Service settings at the organization or folder
-// level are inherited by those in child folders and projects.
+// level are inherited by those in descendant folders and projects.
 type SecurityCenterService struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Identifier. The name of the service.
+	// Identifier. The name of the service, in one of the following formats:
 	//
-	// Its format is:
+	// * `organizations/{organization}/locations/{location}/securityCenterServices/{service}`
+	// * `folders/{folder}/locations/{location}/securityCenterServices/{service}`
+	// * `projects/{project}/locations/{location}/securityCenterServices/{service}`
 	//
-	//   - organizations/{organization}/locations/{location}/securityCenterServices/{service}
-	//   - folders/{folder}/locations/{location}/securityCenterServices/{service}
-	//   - projects/{project}/locations/{location}/securityCenterServices/{service}
+	// The following values are valid for `{service}`:
 	//
-	// The possible values for id {service} are:
-	//
-	//   - container-threat-detection
-	//   - event-threat-detection
-	//   - security-health-analytics
-	//   - vm-threat-detection
-	//   - web-security-scanner
+	// * `container-threat-detection`
+	// * `event-threat-detection`
+	// * `security-health-analytics`
+	// * `vm-threat-detection`
+	// * `web-security-scanner`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. The intended state of enablement for the service at its level of
-	// the resource hierarchy. A DISABLED state will override all module
-	// enablement_states to DISABLED.
+	// Optional. The intended enablement state for the service at its level of the
+	// resource hierarchy. A `DISABLED` state will override all module enablement
+	// states to `DISABLED`.
 	IntendedEnablementState SecurityCenterService_EnablementState `protobuf:"varint,2,opt,name=intended_enablement_state,json=intendedEnablementState,proto3,enum=google.cloud.securitycentermanagement.v1.SecurityCenterService_EnablementState" json:"intended_enablement_state,omitempty"`
 	// Output only. The effective enablement state for the service at its level of
-	// the resource hierarchy. If the intended state is set to INHERITED, the
+	// the resource hierarchy. If the intended state is set to `INHERITED`, the
 	// effective state will be inherited from the enablement state of an ancestor.
 	// This state may differ from the intended enablement state due to billing
 	// eligibility or onboarding status.
 	EffectiveEnablementState SecurityCenterService_EnablementState `protobuf:"varint,3,opt,name=effective_enablement_state,json=effectiveEnablementState,proto3,enum=google.cloud.securitycentermanagement.v1.SecurityCenterService_EnablementState" json:"effective_enablement_state,omitempty"`
-	// Optional. The configurations including the state of enablement for the
-	// service's different modules. The absence of a module in the map implies its
+	// Optional. The module configurations, including the enablement state for the
+	// service's modules. The absence of a module in the map implies that its
 	// configuration is inherited from its parents.
 	Modules map[string]*SecurityCenterService_ModuleSettings `protobuf:"bytes,4,rep,name=modules,proto3" json:"modules,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Output only. The time the service was last updated. This could be due to an
-	// explicit user update or due to a side effect of another system change such
+	// explicit user update or due to a side effect of another system change, such
 	// as billing subscription expiry.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Optional. Additional service specific configuration. Not all services will
+	// Optional. Additional service-specific configuration. Not all services will
 	// utilize this field.
 	ServiceConfig *structpb.Struct `protobuf:"bytes,6,opt,name=service_config,json=serviceConfig,proto3" json:"service_config,omitempty"`
 }
@@ -758,30 +751,28 @@ func (x *SecurityCenterService) GetServiceConfig() *structpb.Struct {
 	return nil
 }
 
-// An EffectiveSecurityHealthAnalyticsCustomModule is the representation of
-// a Security Health Analytics custom module at a specified level of the
-// resource hierarchy: organization, folder, or project. If a custom module is
-// inherited from a parent organization or folder, the value of the
-// `enablementState` property in EffectiveSecurityHealthAnalyticsCustomModule is
-// set to the value that is effective in the parent, instead of  `INHERITED`.
-// For example, if the module is enabled in a parent organization or folder, the
-// effective enablement_state for the module in all child folders or projects is
-// also `enabled`. EffectiveSecurityHealthAnalyticsCustomModule is read-only.
+// The representation of a Security Health Analytics custom module at a
+// specified level of the resource hierarchy: organization, folder, or project.
+// If a custom module is inherited from an ancestor organization or folder, then
+// the enablement state is set to the value that is effective in the parent, not
+// to `INHERITED`. For example, if the module is enabled in an organization or
+// folder, then the effective enablement state for the module is `ENABLED` in
+// all descendant folders or projects.
 type EffectiveSecurityHealthAnalyticsCustomModule struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Identifier. The full resource name of the custom module, specified in one
-	// of the following formats:
+	// Identifier. The full resource name of the custom module, in one of the
+	// following formats:
 	//
-	// * `organizations/organization/{location}/effectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_analytics_custom_module}`
-	// * `folders/folder/{location}/effectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_analytics_custom_module}`
-	// * `projects/project/{location}/effectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_analytics_custom_module}`
+	// * `organizations/organization/{location}/effectiveSecurityHealthAnalyticsCustomModules/{custom_module}`
+	// * `folders/folder/{location}/effectiveSecurityHealthAnalyticsCustomModules/{custom_module}`
+	// * `projects/project/{location}/effectiveSecurityHealthAnalyticsCustomModules/{custom_module}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The user-specified configuration for the module.
 	CustomConfig *CustomConfig `protobuf:"bytes,2,opt,name=custom_config,json=customConfig,proto3" json:"custom_config,omitempty"`
-	// Output only. The effective state of enablement for the module at the given
+	// Output only. The effective enablement state for the module at the given
 	// level of the hierarchy.
 	EnablementState EffectiveSecurityHealthAnalyticsCustomModule_EnablementState `protobuf:"varint,3,opt,name=enablement_state,json=enablementState,proto3,enum=google.cloud.securitycentermanagement.v1.EffectiveSecurityHealthAnalyticsCustomModule_EnablementState" json:"enablement_state,omitempty"`
 	// Output only. The display name for the custom module. The name must be
@@ -850,24 +841,28 @@ func (x *EffectiveSecurityHealthAnalyticsCustomModule) GetDisplayName() string {
 	return ""
 }
 
-// Request message for listing effective Security Health Analytics custom
-// modules.
+// Request message for
+// [SecurityCenterManagement.ListEffectiveSecurityHealthAnalyticsCustomModules][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListEffectiveSecurityHealthAnalyticsCustomModules].
 type ListEffectiveSecurityHealthAnalyticsCustomModulesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of parent to list effective custom modules. specified in one
-	// of the following formats:
+	// Required. Name of parent to list effective custom modules, in one of the
+	// following formats:
+	//
 	// * `organizations/{organization}/locations/{location}`
 	// * `folders/{folder}/locations/{location}`
-	// or
-	// `projects/{project}/locations/{location}`
+	// * `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of results to return in a single response.
 	// Default is 10, minimum is 1, maximum is 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. The value returned by the last call indicating a continuation.
+	// Optional. A pagination token returned from a previous request. Provide this
+	// token to retrieve the next page of results.
+	//
+	// When paginating, the rest of the request must match the request that
+	// generated the page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -924,16 +919,17 @@ func (x *ListEffectiveSecurityHealthAnalyticsCustomModulesRequest) GetPageToken(
 	return ""
 }
 
-// Response message for listing effective Security Health Analytics custom
-// modules.
+// Response message for
+// [SecurityCenterManagement.ListEffectiveSecurityHealthAnalyticsCustomModules][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListEffectiveSecurityHealthAnalyticsCustomModules].
 type ListEffectiveSecurityHealthAnalyticsCustomModulesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The list of EffectiveSecurityHealthAnalyticsCustomModule
+	// The list of effective Security Health Analytics custom modules.
 	EffectiveSecurityHealthAnalyticsCustomModules []*EffectiveSecurityHealthAnalyticsCustomModule `protobuf:"bytes,1,rep,name=effective_security_health_analytics_custom_modules,json=effectiveSecurityHealthAnalyticsCustomModules,proto3" json:"effective_security_health_analytics_custom_modules,omitempty"`
-	// A token identifying a page of results the server should return.
+	// A pagination token. To retrieve the next page of results, call the method
+	// again with this token.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -983,7 +979,8 @@ func (x *ListEffectiveSecurityHealthAnalyticsCustomModulesResponse) GetNextPageT
 	return ""
 }
 
-// Message for getting a EffectiveSecurityHealthAnalyticsCustomModule
+// Request message for
+// [SecurityCenterManagement.GetEffectiveSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.GetEffectiveSecurityHealthAnalyticsCustomModule].
 type GetEffectiveSecurityHealthAnalyticsCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -992,9 +989,9 @@ type GetEffectiveSecurityHealthAnalyticsCustomModuleRequest struct {
 	// Required. The full resource name of the custom module, specified in one of
 	// the following formats:
 	//
-	// * `organizations/organization/{location}/effectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_analytics_custom_module}`
-	// * `folders/folder/{location}/effectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_analytics_custom_module}`
-	// * `projects/project/{location}/effectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_analytics_custom_module}`
+	// * `organizations/organization/{location}/effectiveSecurityHealthAnalyticsCustomModules/{custom_module}`
+	// * `folders/folder/{location}/effectiveSecurityHealthAnalyticsCustomModules/{custom_module}`
+	// * `projects/project/{location}/effectiveSecurityHealthAnalyticsCustomModules/{custom_module}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -1041,22 +1038,23 @@ func (x *GetEffectiveSecurityHealthAnalyticsCustomModuleRequest) GetName() strin
 // including its full module name, display name, enablement state, and last
 // updated time. You can create a custom module at the organization, folder, or
 // project level. Custom modules that you create at the organization or folder
-// level are inherited by the child folders and projects.
+// level are inherited by the descendant folders and projects.
 type SecurityHealthAnalyticsCustomModule struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Identifier. The full resource name of the custom module, specified in one
-	// of the following formats:
-	// * `organizations/{organization}/locations/{location}/securityHealthAnalyticsCustomModules/{security_health_analytics_custom_module}`
-	// * `folders/{folder}/locations/{location}/securityHealthAnalyticsCustomModules/{security_health_analytics_custom_module}`
-	// * `projects/{project}/locations/{location}/securityHealthAnalyticsCustomModules/{security_health_analytics_custom_module}`
+	// Identifier. The full resource name of the custom module, in one of the
+	// following formats:
+	//
+	// * `organizations/{organization}/locations/{location}/securityHealthAnalyticsCustomModules/{custom_module}`
+	// * `folders/{folder}/locations/{location}/securityHealthAnalyticsCustomModules/{custom_module}`
+	// * `projects/{project}/locations/{location}/securityHealthAnalyticsCustomModules/{custom_module}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The display name of the Security Health Analytics custom module.
 	// This display name becomes the finding category for all findings that are
-	// returned by this custom module. The display name must be between 1 and
-	// 128 characters, start with a lowercase letter, and contain alphanumeric
+	// returned by this custom module. The display name must be between 1 and 128
+	// characters, start with a lowercase letter, and contain alphanumeric
 	// characters or underscores only.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Optional. The enablement state of the custom module.
@@ -1070,7 +1068,7 @@ type SecurityHealthAnalyticsCustomModule struct {
 	// in the organization, folder, or project in which you are viewing the custom
 	// module.
 	AncestorModule string `protobuf:"bytes,6,opt,name=ancestor_module,json=ancestorModule,proto3" json:"ancestor_module,omitempty"`
-	// Optional. The user specified custom configuration for the module.
+	// Optional. The user-specified custom configuration for the module.
 	CustomConfig *CustomConfig `protobuf:"bytes,7,opt,name=custom_config,json=customConfig,proto3" json:"custom_config,omitempty"`
 }
 
@@ -1163,8 +1161,9 @@ type CustomConfig struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. The CEL expression to evaluate to produce findings. When the
-	// expression evaluates to true against a resource, a finding is generated.
+	// Optional. The Common Expression Language (CEL) expression to evaluate to
+	// produce findings. When the expression evaluates to `true` against a
+	// resource, a finding is generated.
 	Predicate *expr.Expr `protobuf:"bytes,1,opt,name=predicate,proto3" json:"predicate,omitempty"`
 	// Optional. Custom output properties.
 	CustomOutput *CustomConfig_CustomOutputSpec `protobuf:"bytes,2,opt,name=custom_output,json=customOutput,proto3" json:"custom_output,omitempty"`
@@ -1182,8 +1181,7 @@ type CustomConfig struct {
 	Description string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
 	// Optional. An explanation of the recommended steps that security teams can
 	// take to resolve the detected issue. This explanation is returned with each
-	// finding generated by this module in the `nextSteps` property of the finding
-	// JSON.
+	// finding generated by this module.
 	Recommendation string `protobuf:"bytes,6,opt,name=recommendation,proto3" json:"recommendation,omitempty"`
 }
 
@@ -1261,14 +1259,15 @@ func (x *CustomConfig) GetRecommendation() string {
 	return ""
 }
 
-// Request message for listing Security Health Analytics custom modules.
+// Request message for
+// [SecurityCenterManagement.ListSecurityHealthAnalyticsCustomModules][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListSecurityHealthAnalyticsCustomModules].
 type ListSecurityHealthAnalyticsCustomModulesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of parent organization, folder, or project in which to list
-	// custom modules, specified in one of the following formats:
+	// Required. Name of the parent organization, folder, or project in which to
+	// list custom modules, in one of the following formats:
 	//
 	// * `organizations/{organization}/locations/{location}`
 	// * `folders/{folder}/locations/{location}`
@@ -1277,7 +1276,11 @@ type ListSecurityHealthAnalyticsCustomModulesRequest struct {
 	// Optional. The maximum number of results to return in a single response.
 	// Default is 10, minimum is 1, maximum is 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. A token identifying a page of results the server should return.
+	// Optional. A pagination token returned from a previous request. Provide this
+	// token to retrieve the next page of results.
+	//
+	// When paginating, the rest of the request must match the request that
+	// generated the page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -1334,15 +1337,17 @@ func (x *ListSecurityHealthAnalyticsCustomModulesRequest) GetPageToken() string 
 	return ""
 }
 
-// Response message for listing Security Health Analytics custom modules.
+// Response message for
+// [SecurityCenterManagement.ListSecurityHealthAnalyticsCustomModules][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListSecurityHealthAnalyticsCustomModules].
 type ListSecurityHealthAnalyticsCustomModulesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The list of SecurityHealthAnalyticsCustomModules
+	// The list of Security Health Analytics custom modules.
 	SecurityHealthAnalyticsCustomModules []*SecurityHealthAnalyticsCustomModule `protobuf:"bytes,1,rep,name=security_health_analytics_custom_modules,json=securityHealthAnalyticsCustomModules,proto3" json:"security_health_analytics_custom_modules,omitempty"`
-	// A token identifying a page of results the server should return.
+	// A pagination token. To retrieve the next page of results, call the method
+	// again with this token.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -1392,15 +1397,15 @@ func (x *ListSecurityHealthAnalyticsCustomModulesResponse) GetNextPageToken() st
 	return ""
 }
 
-// Request message for listing descendant Security Health Analytics custom
-// modules.
+// Request message for
+// [SecurityCenterManagement.ListDescendantSecurityHealthAnalyticsCustomModules][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListDescendantSecurityHealthAnalyticsCustomModules].
 type ListDescendantSecurityHealthAnalyticsCustomModulesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Name of the parent organization, folder, or project in which to
-	// list custom modules, specified in one of the following formats:
+	// list custom modules, in one of the following formats:
 	//
 	// * `organizations/{organization}/locations/{location}`
 	// * `folders/{folder}/locations/{location}`
@@ -1409,7 +1414,11 @@ type ListDescendantSecurityHealthAnalyticsCustomModulesRequest struct {
 	// Optional. The maximum number of results to return in a single response.
 	// Default is 10, minimum is 1, maximum is 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. A token identifying a page of results the server should return.
+	// Optional. A pagination token returned from a previous request. Provide this
+	// token to retrieve the next page of results.
+	//
+	// When paginating, the rest of the request must match the request that
+	// generated the page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -1466,8 +1475,8 @@ func (x *ListDescendantSecurityHealthAnalyticsCustomModulesRequest) GetPageToken
 	return ""
 }
 
-// Response message for listing descendant Security Health Analytics custom
-// modules.
+// Response message for
+// [SecurityCenterManagement.ListDescendantSecurityHealthAnalyticsCustomModules][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListDescendantSecurityHealthAnalyticsCustomModules].
 type ListDescendantSecurityHealthAnalyticsCustomModulesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1475,7 +1484,8 @@ type ListDescendantSecurityHealthAnalyticsCustomModulesResponse struct {
 
 	// The list of SecurityHealthAnalyticsCustomModules
 	SecurityHealthAnalyticsCustomModules []*SecurityHealthAnalyticsCustomModule `protobuf:"bytes,1,rep,name=security_health_analytics_custom_modules,json=securityHealthAnalyticsCustomModules,proto3" json:"security_health_analytics_custom_modules,omitempty"`
-	// A token identifying a page of results the server should return.
+	// A pagination token. To retrieve the next page of results, call the method
+	// again with this token.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -1525,13 +1535,15 @@ func (x *ListDescendantSecurityHealthAnalyticsCustomModulesResponse) GetNextPage
 	return ""
 }
 
-// Message for getting a SecurityHealthAnalyticsCustomModule
+// Request message for
+// [SecurityCenterManagement.GetSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.GetSecurityHealthAnalyticsCustomModule].
 type GetSecurityHealthAnalyticsCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of the resource
+	// Required. Name of the resource, in the format
+	// `projects/{project}/locations/{location}/securityHealthAnalyticsCustomModules/{custom_module}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -1574,30 +1586,35 @@ func (x *GetSecurityHealthAnalyticsCustomModuleRequest) GetName() string {
 	return ""
 }
 
-// Message for creating a SecurityHealthAnalyticsCustomModule
+// Request message for
+// [SecurityCenterManagement.CreateSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.CreateSecurityHealthAnalyticsCustomModule].
 type CreateSecurityHealthAnalyticsCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Name of the parent organization, folder, or project of the
-	// module, specified in one of the following formats:
+	// module, in one of the following formats:
 	//
 	// * `organizations/{organization}/locations/{location}`
 	// * `folders/{folder}/locations/{location}`
 	// * `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The resource being created
+	// Required. The resource being created.
 	SecurityHealthAnalyticsCustomModule *SecurityHealthAnalyticsCustomModule `protobuf:"bytes,2,opt,name=security_health_analytics_custom_module,json=securityHealthAnalyticsCustomModule,proto3" json:"security_health_analytics_custom_module,omitempty"`
-	// Optional. When set to true, only validations (including IAM checks) will
-	// done for the request (no module will be created). An OK response indicates
-	// the request is valid while an error response indicates the request is
-	// invalid. Note that a subsequent request to actually create the module could
-	// still fail because:
-	//  1. the state could have changed (e.g. IAM permission lost) or
-	//  2. A failure occurred during creation of the module.
+	// Optional. When set to `true`, the request will be validated (including IAM
+	// checks), but no module will be created. An `OK` response indicates that the
+	// request is valid, while an error response indicates that the request is
+	// invalid.
 	//
-	// Defaults to false.
+	// If the request is valid, a subsequent request to create the module could
+	// still fail for one of the following reasons:
+	//
+	//   - The state of your cloud resources changed; for example, you lost a
+	//     required IAM permission
+	//   - An error occurred during creation of the module
+	//
+	// Defaults to `false`.
 	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 }
 
@@ -1654,26 +1671,36 @@ func (x *CreateSecurityHealthAnalyticsCustomModuleRequest) GetValidateOnly() boo
 	return false
 }
 
-// Message for updating a SecurityHealthAnalyticsCustomModule
+// Request message for
+// [SecurityCenterManagement.UpdateSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.UpdateSecurityHealthAnalyticsCustomModule].
 type UpdateSecurityHealthAnalyticsCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The list of fields to be updated. The only fields that can be
-	// updated are `enablement_state` and `custom_config`. If empty or set to the
-	// wildcard value `*`, both `enablement_state` and `custom_config` are
-	// updated.
+	// Required. The fields to update. The following values are valid:
+	//
+	// * `custom_config`
+	// * `enablement_state`
+	//
+	// If you omit this field or set it to the wildcard value `*`, then all
+	// eligible fields are updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,1,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	// Required. The resource being updated
+	// Required. The resource being updated.
 	SecurityHealthAnalyticsCustomModule *SecurityHealthAnalyticsCustomModule `protobuf:"bytes,2,opt,name=security_health_analytics_custom_module,json=securityHealthAnalyticsCustomModule,proto3" json:"security_health_analytics_custom_module,omitempty"`
-	// Optional. When set to true, only validations (including IAM checks) will
-	// done for the request (module will not be updated). An OK response indicates
-	// the request is valid while an error response indicates the request is
-	// invalid. Note that a subsequent request to actually update the module could
-	// still fail because 1. the state could have changed (e.g. IAM permission
-	// lost) or
-	// 2. A failure occurred while trying to update the module.
+	// Optional. When set to `true`, the request will be validated (including IAM
+	// checks), but no module will be updated. An `OK` response indicates that the
+	// request is valid, while an error response indicates that the request is
+	// invalid.
+	//
+	// If the request is valid, a subsequent request to update the module could
+	// still fail for one of the following reasons:
+	//
+	//   - The state of your cloud resources changed; for example, you lost a
+	//     required IAM permission
+	//   - An error occurred during creation of the module
+	//
+	// Defaults to `false`.
 	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 }
 
@@ -1730,27 +1757,33 @@ func (x *UpdateSecurityHealthAnalyticsCustomModuleRequest) GetValidateOnly() boo
 	return false
 }
 
-// Message for deleting a SecurityHealthAnalyticsCustomModule
+// Request message for
+// [SecurityCenterManagement.DeleteSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.DeleteSecurityHealthAnalyticsCustomModule].
 type DeleteSecurityHealthAnalyticsCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the SHA custom module.
+	// Required. The resource name of the SHA custom module, in one of the
+	// following formats:
 	//
-	// Its format is:
-	//
-	//   - `organizations/{organization}/locations/{location}/securityHealthAnalyticsCustomModules/{security_health_analytics_custom_module}`.
-	//   - `folders/{folder}/locations/{location}/securityHealthAnalyticsCustomModules/{security_health_analytics_custom_module}`.
-	//   - `projects/{project}/locations/{location}/securityHealthAnalyticsCustomModules/{security_health_analytics_custom_module}`.
+	//   - `organizations/{organization}/locations/{location}/securityHealthAnalyticsCustomModules/{custom_module}`
+	//   - `folders/{folder}/locations/{location}/securityHealthAnalyticsCustomModules/{custom_module}`
+	//   - `projects/{project}/locations/{location}/securityHealthAnalyticsCustomModules/{custom_module}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. When set to true, only validations (including IAM checks) will
-	// done for the request (module will not be deleted). An OK response indicates
-	// the request is valid while an error response indicates the request is
-	// invalid. Note that a subsequent request to actually delete the module could
-	// still fail because 1. the state could have changed (e.g. IAM permission
-	// lost) or
-	// 2. A failure occurred while trying to delete the module.
+	// Optional. When set to `true`, the request will be validated (including IAM
+	// checks), but no module will be deleted. An `OK` response indicates that the
+	// request is valid, while an error response indicates that the request is
+	// invalid.
+	//
+	// If the request is valid, a subsequent request to delete the module could
+	// still fail for one of the following reasons:
+	//
+	//   - The state of your cloud resources changed; for example, you lost a
+	//     required IAM permission
+	//   - An error occurred during deletion of the module
+	//
+	// Defaults to `false`.
 	ValidateOnly bool `protobuf:"varint,2,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 }
 
@@ -1800,18 +1833,18 @@ func (x *DeleteSecurityHealthAnalyticsCustomModuleRequest) GetValidateOnly() boo
 	return false
 }
 
-// Request message to simulate a CustomConfig against a given test resource.
-// Maximum size of the request is 4 MB by default.
+// Request message for
+// [SecurityCenterManagement.SimulateSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.SimulateSecurityHealthAnalyticsCustomModule].
+// The maximum size of the request is 4 MiB.
 type SimulateSecurityHealthAnalyticsCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The relative resource name of the organization, project, or
-	// folder. For more information about relative resource names, see [Relative
-	// Resource
-	// Name](https://cloud.google.com/apis/design/resource_names#relative_resource_name)
-	// Example: `organizations/{organization_id}`.
+	// folder. For more information about relative resource names, see [AIP-122:
+	// Resource names](https://google.aip.dev/122). Example:
+	// `organizations/{organization_id}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The custom configuration that you need to test.
 	CustomConfig *CustomConfig `protobuf:"bytes,2,opt,name=custom_config,json=customConfig,proto3" json:"custom_config,omitempty"`
@@ -1872,51 +1905,52 @@ func (x *SimulateSecurityHealthAnalyticsCustomModuleRequest) GetResource() *Simu
 	return nil
 }
 
-// A subset of the fields of the Security Center Finding proto. The minimum set
-// of fields needed to represent a simulated finding from a SHA custom module.
+// The minimum set of fields needed to represent a simulated finding from a
+// Security Health Analytics custom module.
 type SimulatedFinding struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Identifier. The [relative resource
-	// name](https://cloud.google.com/apis/design/resource_names#relative_resource_name)
-	// of the finding. Example:
-	// `organizations/{organization_id}/sources/{source_id}/findings/{finding_id}`,
-	// `folders/{folder_id}/sources/{source_id}/findings/{finding_id}`,
-	// `projects/{project_id}/sources/{source_id}/findings/{finding_id}`.
+	// Identifier. The [relative resource name](https://google.aip.dev/122) of the
+	// finding, in one of the following formats:
+	//
+	// * `organizations/{organization_id}/sources/{source_id}/findings/{finding_id}`
+	// * `folders/{folder_id}/sources/{source_id}/findings/{finding_id}`
+	// * `projects/{project_id}/sources/{source_id}/findings/{finding_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The relative resource name of the source the finding belongs to. See:
-	// https://cloud.google.com/apis/design/resource_names#relative_resource_name
-	// This field is immutable after creation time.
-	// For example:
-	// `organizations/{organization_id}/sources/{source_id}`
+	// The [relative resource name](https://google.aip.dev/122) of the source the
+	// finding belongs to. For example,
+	// `organizations/{organization_id}/sources/{source_id}`. This field is
+	// immutable after creation time.
 	Parent string `protobuf:"bytes,2,opt,name=parent,proto3" json:"parent,omitempty"`
-	// For findings on Google Cloud resources, the full resource
-	// name of the Google Cloud resource this finding is for. See:
-	// https://cloud.google.com/apis/design/resource_names#full_resource_name
-	// When the finding is for a non-Google Cloud resource, the resourceName can
-	// be a customer or partner defined string. This field is immutable after
-	// creation time.
+	// For findings on Google Cloud resources, the
+	// [full resource name](https://google.aip.dev/122#full-resource-names) of the
+	// Google Cloud resource this finding is for. When the finding is for a
+	// non-Google Cloud resource, the value can be a customer or partner defined
+	// string. This field is immutable after creation time.
 	ResourceName string `protobuf:"bytes,3,opt,name=resource_name,json=resourceName,proto3" json:"resource_name,omitempty"`
-	// The additional taxonomy group within findings from a given source.
-	// This field is immutable after creation time.
-	// Example: "XSS_FLASH_INJECTION"
+	// The additional taxonomy group within findings from a given source. For
+	// example, `XSS_FLASH_INJECTION`. This field is immutable after creation
+	// time.
 	Category string `protobuf:"bytes,4,opt,name=category,proto3" json:"category,omitempty"`
 	// Output only. The state of the finding.
 	State SimulatedFinding_State `protobuf:"varint,5,opt,name=state,proto3,enum=google.cloud.securitycentermanagement.v1.SimulatedFinding_State" json:"state,omitempty"`
-	// Source specific properties. These properties are managed by the source
-	// that writes the finding. The key names in the source_properties map must be
-	// between 1 and 255 characters, and must start with a letter and contain
-	// alphanumeric characters or underscores only.
+	// Source-specific properties. These properties are managed by the source
+	// that writes the finding. The key names must be between 1 and 255
+	// characters; they must start with a letter and contain alphanumeric
+	// characters or underscores only.
 	SourceProperties map[string]*structpb.Value `protobuf:"bytes,6,rep,name=source_properties,json=sourceProperties,proto3" json:"source_properties,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// The time the finding was first detected. If an existing finding is updated,
-	// then this is the time the update occurred.
+	// then this is the time the update occurred. If the finding is later
+	// resolved, then this time reflects when the finding was resolved.
+	//
 	// For example, if the finding represents an open firewall, this property
 	// captures the time the detector believes the firewall became open. The
-	// accuracy is determined by the detector. If the finding is later resolved,
-	// then this time reflects when the finding was resolved. This must not
-	// be set to a value greater than the current timestamp.
+	// accuracy is determined by the detector.
+	//
+	// The event time must not be set to a value greater than the current
+	// timestamp.
 	EventTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=event_time,json=eventTime,proto3" json:"event_time,omitempty"`
 	// The severity of the finding. This field is managed by the source that
 	// writes the finding.
@@ -2020,8 +2054,8 @@ func (x *SimulatedFinding) GetFindingClass() SimulatedFinding_FindingClass {
 	return SimulatedFinding_FINDING_CLASS_UNSPECIFIED
 }
 
-// Response message for simulating a `SecurityHealthAnalyticsCustomModule`
-// against a given resource.
+// Response message for
+// [SecurityCenterManagement.SimulateSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.SimulateSecurityHealthAnalyticsCustomModule].
 type SimulateSecurityHealthAnalyticsCustomModuleResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2070,36 +2104,35 @@ func (x *SimulateSecurityHealthAnalyticsCustomModuleResponse) GetResult() *Simul
 	return nil
 }
 
-// An EffectiveEventThreatDetectionCustomModule is the representation of
-// EventThreatDetectionCustomModule at a given level taking hierarchy into
-// account and resolving various fields accordingly. e.g. if the module is
-// enabled at the ancestor level, effective modules at all descendant levels
-// will have enablement_state set to ENABLED. Similarly, if module.inherited is
-// set, then effective module's config will contain the ancestor's config
-// details. EffectiveEventThreatDetectionCustomModule is read-only.
+// The representation of an
+// [EventThreatDetectionCustomModule][google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModule]
+// at a given level, taking hierarchy into account and resolving various fields
+// accordingly. For example, if the module is enabled at the ancestor level,
+// then effective modules at all descendant levels will have their enablement
+// state set to `ENABLED`. Similarly, if `module.inherited` is set, then the
+// effective module's configuration will reflect the ancestor's configuration.
 type EffectiveEventThreatDetectionCustomModule struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Identifier. The resource name of the ETD custom module.
+	// Identifier. The resource name of the Event Threat Detection custom module,
+	// in one of the following formats:
 	//
-	// Its format is:
-	//
-	//   - `organizations/{organization}/locations/{location}/effectiveEventThreatDetectionCustomModules/{effective_event_threat_detection_custom_module}`.
-	//   - `folders/{folder}/locations/{location}/effectiveEventThreatDetectionCustomModules/{effective_event_threat_detection_custom_module}`.
-	//   - `projects/{project}/locations/{location}/effectiveEventThreatDetectionCustomModules/{effective_event_threat_detection_custom_module}`.
+	// * `organizations/{organization}/locations/{location}/effectiveEventThreatDetectionCustomModules/{custom_module}`
+	// * `folders/{folder}/locations/{location}/effectiveEventThreatDetectionCustomModules/{custom_module}`
+	// * `projects/{project}/locations/{location}/effectiveEventThreatDetectionCustomModules/{custom_module}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. Config for the effective module.
+	// Output only. Configuration for the effective module.
 	Config *structpb.Struct `protobuf:"bytes,2,opt,name=config,proto3" json:"config,omitempty"`
 	// Output only. The effective state of enablement for the module at the given
 	// level of the hierarchy.
 	EnablementState EffectiveEventThreatDetectionCustomModule_EnablementState `protobuf:"varint,3,opt,name=enablement_state,json=enablementState,proto3,enum=google.cloud.securitycentermanagement.v1.EffectiveEventThreatDetectionCustomModule_EnablementState" json:"enablement_state,omitempty"`
-	// Output only. Type for the module. e.g. CONFIGURABLE_BAD_IP.
+	// Output only. Type for the module (for example, `CONFIGURABLE_BAD_IP`).
 	Type string `protobuf:"bytes,4,opt,name=type,proto3" json:"type,omitempty"`
-	// Output only. The human readable name to be displayed for the module.
+	// Output only. The human-readable name of the module.
 	DisplayName string `protobuf:"bytes,5,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// Output only. The description for the module.
+	// Output only. A description of the module.
 	Description string `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
 }
 
@@ -2177,23 +2210,28 @@ func (x *EffectiveEventThreatDetectionCustomModule) GetDescription() string {
 	return ""
 }
 
-// Request message for listing effective Event Threat Detection custom
-// modules.
+// Request message for
+// [SecurityCenterManagement.ListEffectiveEventThreatDetectionCustomModules][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListEffectiveEventThreatDetectionCustomModules].
 type ListEffectiveEventThreatDetectionCustomModulesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of parent to list effective custom modules. Its format is
-	// `organizations/{organization}/locations/{location}`,
-	// `folders/{folder}/locations/{location}`,
-	// or
-	// `projects/{project}/locations/{location}`
+	// Required. Name of parent to list effective custom modules, in one of the
+	// following formats:
+	//
+	// * `organizations/{organization}/locations/{location}`
+	// * `folders/{folder}/locations/{location}`
+	// * `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of results to return in a single response.
 	// Default is 10, minimum is 1, maximum is 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. The value returned by the last call indicating a continuation
+	// Optional. A pagination token returned from a previous request. Provide this
+	// token to retrieve the next page of results.
+	//
+	// When paginating, the rest of the request must match the request that
+	// generated the page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -2250,16 +2288,17 @@ func (x *ListEffectiveEventThreatDetectionCustomModulesRequest) GetPageToken() s
 	return ""
 }
 
-// Response message for listing effective Event Threat Detection custom
-// modules.
+// Response message for
+// [SecurityCenterManagement.ListEffectiveEventThreatDetectionCustomModules][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListEffectiveEventThreatDetectionCustomModules].
 type ListEffectiveEventThreatDetectionCustomModulesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The list of EffectiveEventThreatDetectionCustomModules
+	// The list of effective Event Threat Detection custom modules.
 	EffectiveEventThreatDetectionCustomModules []*EffectiveEventThreatDetectionCustomModule `protobuf:"bytes,1,rep,name=effective_event_threat_detection_custom_modules,json=effectiveEventThreatDetectionCustomModules,proto3" json:"effective_event_threat_detection_custom_modules,omitempty"`
-	// A token identifying a page of results the server should return.
+	// A pagination token. To retrieve the next page of results, call the method
+	// again with this token.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -2309,19 +2348,19 @@ func (x *ListEffectiveEventThreatDetectionCustomModulesResponse) GetNextPageToke
 	return ""
 }
 
-// Message for getting a EffectiveEventThreatDetectionCustomModule
+// Request message for
+// [SecurityCenterManagement.GetEffectiveEventThreatDetectionCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.GetEffectiveEventThreatDetectionCustomModule].
 type GetEffectiveEventThreatDetectionCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the ETD custom module.
+	// Required. The resource name of the Event Threat Detection custom module, in
+	// one of the following formats:
 	//
-	// Its format is:
-	//
-	//   - `organizations/{organization}/locations/{location}/effectiveEventThreatDetectionCustomModules/{effective_event_threat_detection_custom_module}`.
-	//   - `folders/{folder}/locations/{location}/effectiveEventThreatDetectionCustomModules/{effective_event_threat_detection_custom_module}`.
-	//   - `projects/{project}/locations/{location}/effectiveEventThreatDetectionCustomModules/{effective_event_threat_detection_custom_module}`.
+	// * `organizations/{organization}/locations/{location}/effectiveEventThreatDetectionCustomModules/{custom_module}`
+	// * `folders/{folder}/locations/{location}/effectiveEventThreatDetectionCustomModules/{custom_module}`
+	// * `projects/{project}/locations/{location}/effectiveEventThreatDetectionCustomModules/{custom_module}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -2364,39 +2403,38 @@ func (x *GetEffectiveEventThreatDetectionCustomModuleRequest) GetName() string {
 	return ""
 }
 
-// An event threat detection custom module is a Cloud SCC resource that contains
-// the configuration and enablement state of a custom module, which enables ETD
-// to write certain findings to Cloud SCC.
+// A Security Command Center resource that contains the configuration and
+// enablement state of a custom module, which enables Event Threat Detection to
+// write certain findings to Security Command Center.
 type EventThreatDetectionCustomModule struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Identifier. The resource name of the ETD custom module.
+	// Identifier. The resource name of the Event Threat Detection custom module,
+	// in one of the following formats:
 	//
-	// Its format is:
-	//
-	//   - `organizations/{organization}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}`.
-	//   - `folders/{folder}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}`.
-	//   - `projects/{project}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}`.
+	// * `organizations/{organization}/locations/{location}/eventThreatDetectionCustomModules/{custom_module}`
+	// * `folders/{folder}/locations/{location}/eventThreatDetectionCustomModules/{custom_module}`
+	// * `projects/{project}/locations/{location}/eventThreatDetectionCustomModules/{custom_module}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. Config for the module. For the resident module, its config value
-	// is defined at this level. For the inherited module, its config value is
-	// inherited from the ancestor module.
+	// Optional. Configuration for the module. For the resident module, its
+	// configuration value is defined at this level. For the inherited module, its
+	// configuration value is inherited from the ancestor module.
 	Config *structpb.Struct `protobuf:"bytes,2,opt,name=config,proto3" json:"config,omitempty"`
 	// Output only. The closest ancestor module that this module inherits the
 	// enablement state from. If empty, indicates that the custom module was
 	// created in the requesting parent organization, folder, or project. The
-	// format is the same as the EventThreatDetectionCustomModule resource name.
+	// format is the same as the custom module's resource name.
 	AncestorModule string `protobuf:"bytes,3,opt,name=ancestor_module,json=ancestorModule,proto3" json:"ancestor_module,omitempty"`
 	// Optional. The state of enablement for the module at the given level of the
 	// hierarchy.
 	EnablementState EventThreatDetectionCustomModule_EnablementState `protobuf:"varint,4,opt,name=enablement_state,json=enablementState,proto3,enum=google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModule_EnablementState" json:"enablement_state,omitempty"`
-	// Optional. Type for the module. e.g. CONFIGURABLE_BAD_IP.
+	// Optional. Type for the module. For example, `CONFIGURABLE_BAD_IP`.
 	Type string `protobuf:"bytes,5,opt,name=type,proto3" json:"type,omitempty"`
-	// Optional. The human readable name to be displayed for the module.
+	// Optional. The human-readable name of the module.
 	DisplayName string `protobuf:"bytes,6,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// Optional. The description for the module.
+	// Optional. A description of the module.
 	Description string `protobuf:"bytes,7,opt,name=description,proto3" json:"description,omitempty"`
 	// Output only. The time the module was last updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
@@ -2499,29 +2537,29 @@ func (x *EventThreatDetectionCustomModule) GetLastEditor() string {
 	return ""
 }
 
-// Request message for listing Event Threat Detection custom modules.
+// Request message for
+// [SecurityCenterManagement.ListEventThreatDetectionCustomModules][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListEventThreatDetectionCustomModules].
 type ListEventThreatDetectionCustomModulesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of parent to list custom modules. Its format is
-	// `organizations/{organization}/locations/{location}`,
-	// `folders/{folder}/locations/{location}`,
-	// or
-	// `projects/{project}/locations/{location}`
+	// Required. Name of parent to list custom modules, in one of the following
+	// formats:
+	//
+	// * `organizations/{organization}/locations/{location}`
+	// * `folders/{folder}/locations/{location}`
+	// * `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of modules to return. The service may return
-	// fewer than this value. If unspecified, at most 10 configs will be returned.
+	// fewer than this value. If unspecified, at most 10 modules will be returned.
 	// The maximum value is 1000; values above 1000 will be coerced to 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. A page token, received from a previous
-	// `ListEventThreatDetectionCustomModules` call. Provide this to retrieve the
-	// subsequent page.
+	// Optional. A pagination token returned from a previous request. Provide this
+	// token to retrieve the next page of results.
 	//
-	// When paginating, all other parameters provided to
-	// `ListEventThreatDetectionCustomModules` must match the call that provided
-	// the page token.
+	// When paginating, the rest of the request must match the request that
+	// generated the page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -2578,15 +2616,17 @@ func (x *ListEventThreatDetectionCustomModulesRequest) GetPageToken() string {
 	return ""
 }
 
-// Response message for listing Event Threat Detection custom modules.
+// Response message for
+// [SecurityCenterManagement.ListEventThreatDetectionCustomModules][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListEventThreatDetectionCustomModules].
 type ListEventThreatDetectionCustomModulesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The list of EventThreatDetectionCustomModules
+	// The list of custom modules.
 	EventThreatDetectionCustomModules []*EventThreatDetectionCustomModule `protobuf:"bytes,1,rep,name=event_threat_detection_custom_modules,json=eventThreatDetectionCustomModules,proto3" json:"event_threat_detection_custom_modules,omitempty"`
-	// A token identifying a page of results the server should return.
+	// A pagination token. To retrieve the next page of results, call the method
+	// again with this token.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -2636,24 +2676,29 @@ func (x *ListEventThreatDetectionCustomModulesResponse) GetNextPageToken() strin
 	return ""
 }
 
-// Request message for listing descendant Event Threat Detection custom
-// modules.
+// Request message for
+// [SecurityCenterManagement.ListDescendantEventThreatDetectionCustomModules][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListDescendantEventThreatDetectionCustomModules].
 type ListDescendantEventThreatDetectionCustomModulesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of parent to list custom modules. Its format is
-	// `organizations/{organization}/locations/{location}`,
-	// `folders/{folder}/locations/{location}`,
-	// or
-	// `projects/{project}/locations/{location}`
+	// Required. Name of parent to list custom modules, in one of the following
+	// formats:
+	//
+	// * `organizations/{organization}/locations/{location}`
+	// * `folders/{folder}/locations/{location}`
+	// * `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of modules to return. The service may return
 	// fewer than this value. If unspecified, at most 10 configs will be returned.
 	// The maximum value is 1000; values above 1000 will be coerced to 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. A token identifying a page of results the server should return.
+	// Optional. A pagination token returned from a previous request. Provide this
+	// token to retrieve the next page of results.
+	//
+	// When paginating, the rest of the request must match the request that
+	// generated the page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -2710,16 +2755,17 @@ func (x *ListDescendantEventThreatDetectionCustomModulesRequest) GetPageToken() 
 	return ""
 }
 
-// Response message for listing descendant Event Threat Detection custom
-// modules.
+// Response message for
+// [SecurityCenterManagement.ListDescendantEventThreatDetectionCustomModules][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListDescendantEventThreatDetectionCustomModules].
 type ListDescendantEventThreatDetectionCustomModulesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The list of EventThreatDetectionCustomModules
+	// The list of custom modules.
 	EventThreatDetectionCustomModules []*EventThreatDetectionCustomModule `protobuf:"bytes,1,rep,name=event_threat_detection_custom_modules,json=eventThreatDetectionCustomModules,proto3" json:"event_threat_detection_custom_modules,omitempty"`
-	// A token identifying a page of results the server should return.
+	// A pagination token. To retrieve the next page of results, call the method
+	// again with this token.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -2769,19 +2815,19 @@ func (x *ListDescendantEventThreatDetectionCustomModulesResponse) GetNextPageTok
 	return ""
 }
 
-// Message for getting a EventThreatDetectionCustomModule
+// Request message for
+// [SecurityCenterManagement.GetEventThreatDetectionCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.GetEventThreatDetectionCustomModule].
 type GetEventThreatDetectionCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the ETD custom module.
+	// Required. The resource name of the Event Threat Detection custom module, in
+	// one of the following formats:
 	//
-	// Its format is:
-	//
-	//   - `organizations/{organization}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}`.
-	//   - `folders/{folder}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}`.
-	//   - `projects/{project}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}`.
+	// * `organizations/{organization}/locations/{location}/eventThreatDetectionCustomModules/{custom_module}`
+	// * `folders/{folder}/locations/{location}/eventThreatDetectionCustomModules/{custom_module}`
+	// * `projects/{project}/locations/{location}/eventThreatDetectionCustomModules/{custom_module}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -2824,29 +2870,36 @@ func (x *GetEventThreatDetectionCustomModuleRequest) GetName() string {
 	return ""
 }
 
-// Message for creating a EventThreatDetectionCustomModule
+// Request message for
+// [SecurityCenterManagement.CreateEventThreatDetectionCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.CreateEventThreatDetectionCustomModule].
 type CreateEventThreatDetectionCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of parent for the module. Its format is
-	// `organizations/{organization}/locations/{location}`,
-	// `folders/{folder}/locations/{location}`,
-	// or
-	// `projects/{project}/locations/{location}`
+	// Required. Name of parent for the module, in one of the following formats:
+	//
+	// * `organizations/{organization}/locations/{location}`
+	// * `folders/{folder}/locations/{location}`
+	// * `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The module to create. The
-	// event_threat_detection_custom_module.name will be ignored and server
-	// generated.
+	// [EventThreatDetectionCustomModule.name][google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModule.name]
+	// field is ignored; Security Command Center generates the name.
 	EventThreatDetectionCustomModule *EventThreatDetectionCustomModule `protobuf:"bytes,3,opt,name=event_threat_detection_custom_module,json=eventThreatDetectionCustomModule,proto3" json:"event_threat_detection_custom_module,omitempty"`
-	// Optional. When set to true, only validations (including IAM checks) will
-	// done for the request (no module will be created). An OK response indicates
-	// the request is valid while an error response indicates the request is
-	// invalid. Note that a subsequent request to actually create the module could
-	// still fail because 1. the state could have changed (e.g. IAM permission
-	// lost) or
-	// 2. A failure occurred during creation of the module.
+	// Optional. When set to `true`, the request will be validated (including IAM
+	// checks), but no module will be created. An `OK` response indicates that the
+	// request is valid, while an error response indicates that the request is
+	// invalid.
+	//
+	// If the request is valid, a subsequent request to create the module could
+	// still fail for one of the following reasons:
+	//
+	//   - The state of your cloud resources changed; for example, you lost a
+	//     required IAM permission
+	//   - An error occurred during creation of the module
+	//
+	// Defaults to `false`.
 	ValidateOnly bool `protobuf:"varint,4,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 }
 
@@ -2909,21 +2962,23 @@ type UpdateEventThreatDetectionCustomModuleRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Field mask is used to specify the fields to be overwritten in the
-	// EventThreatDetectionCustomModule resource by the update.
-	// The fields specified in the update_mask are relative to the resource, not
-	// the full request. A field will be overwritten if it is in the mask. If the
-	// user does not provide a mask then all fields will be overwritten.
+	// Required. The fields to update. If omitted, then all fields are updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,1,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	// Required. The module being updated
+	// Required. The module being updated.
 	EventThreatDetectionCustomModule *EventThreatDetectionCustomModule `protobuf:"bytes,2,opt,name=event_threat_detection_custom_module,json=eventThreatDetectionCustomModule,proto3" json:"event_threat_detection_custom_module,omitempty"`
-	// Optional. When set to true, only validations (including IAM checks) will
-	// done for the request (module will not be updated). An OK response indicates
-	// the request is valid while an error response indicates the request is
-	// invalid. Note that a subsequent request to actually update the module could
-	// still fail because 1. the state could have changed (e.g. IAM permission
-	// lost) or
-	// 2. A failure occurred while trying to update the module.
+	// Optional. When set to `true`, the request will be validated (including IAM
+	// checks), but no module will be updated. An `OK` response indicates that the
+	// request is valid, while an error response indicates that the request is
+	// invalid.
+	//
+	// If the request is valid, a subsequent request to update the module could
+	// still fail for one of the following reasons:
+	//
+	//   - The state of your cloud resources changed; for example, you lost a
+	//     required IAM permission
+	//   - An error occurred during creation of the module
+	//
+	// Defaults to `false`.
 	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 }
 
@@ -2980,27 +3035,33 @@ func (x *UpdateEventThreatDetectionCustomModuleRequest) GetValidateOnly() bool {
 	return false
 }
 
-// Message for deleting a EventThreatDetectionCustomModule
+// Request message for
+// [SecurityCenterManagement.DeleteEventThreatDetectionCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.DeleteEventThreatDetectionCustomModule].
 type DeleteEventThreatDetectionCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the ETD custom module.
+	// Required. The resource name of the Event Threat Detection custom module, in
+	// one of the following formats:
 	//
-	// Its format is:
-	//
-	//   - `organizations/{organization}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}`.
-	//   - `folders/{folder}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}`.
-	//   - `projects/{project}/locations/{location}/eventThreatDetectionCustomModules/{event_threat_detection_custom_module}`.
+	// * `organizations/{organization}/locations/{location}/eventThreatDetectionCustomModules/{custom_module}`
+	// * `folders/{folder}/locations/{location}/eventThreatDetectionCustomModules/{custom_module}`
+	// * `projects/{project}/locations/{location}/eventThreatDetectionCustomModules/{custom_module}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. When set to true, only validations (including IAM checks) will
-	// done for the request (module will not be deleted). An OK response indicates
-	// the request is valid while an error response indicates the request is
-	// invalid. Note that a subsequent request to actually delete the module could
-	// still fail because 1. the state could have changed (e.g. IAM permission
-	// lost) or
-	// 2. A failure occurred while trying to delete the module.
+	// Optional. When set to `true`, the request will be validated (including IAM
+	// checks), but no module will be deleted. An `OK` response indicates that the
+	// request is valid, while an error response indicates that the request is
+	// invalid.
+	//
+	// If the request is valid, a subsequent request to delete the module could
+	// still fail for one of the following reasons:
+	//
+	//   - The state of your cloud resources changed; for example, you lost a
+	//     required IAM permission
+	//   - An error occurred during creation of the module
+	//
+	// Defaults to `false`.
 	ValidateOnly bool `protobuf:"varint,2,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 }
 
@@ -3050,22 +3111,22 @@ func (x *DeleteEventThreatDetectionCustomModuleRequest) GetValidateOnly() bool {
 	return false
 }
 
-// Request to validate an Event Threat Detection custom module.
+// Request message for
+// [SecurityCenterManagement.ValidateEventThreatDetectionCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ValidateEventThreatDetectionCustomModule].
 type ValidateEventThreatDetectionCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Resource name of the parent to validate the Custom Module under.
+	// Required. Resource name of the parent to validate the custom modules under,
+	// in one of the following formats:
 	//
-	// Its format is:
-	//
-	//   - `organizations/{organization}/locations/{location}`.
+	// * `organizations/{organization}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The raw text of the module's contents. Used to generate error
 	// messages.
 	RawText string `protobuf:"bytes,2,opt,name=raw_text,json=rawText,proto3" json:"raw_text,omitempty"`
-	// Required. The type of the module (e.g. CONFIGURABLE_BAD_IP).
+	// Required. The type of the module. For example, `CONFIGURABLE_BAD_IP`.
 	Type string `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
 }
 
@@ -3122,7 +3183,8 @@ func (x *ValidateEventThreatDetectionCustomModuleRequest) GetType() string {
 	return ""
 }
 
-// Response to validating an Event Threat Detection custom module.
+// Response message for
+// [SecurityCenterManagement.ValidateEventThreatDetectionCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ValidateEventThreatDetectionCustomModule].
 type ValidateEventThreatDetectionCustomModuleResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3172,30 +3234,30 @@ func (x *ValidateEventThreatDetectionCustomModuleResponse) GetErrors() []*Valida
 	return nil
 }
 
-// Request message for getting a Security Command Center service.
+// Request message for
+// [SecurityCenterManagement.GetSecurityCenterService][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.GetSecurityCenterService].
 type GetSecurityCenterServiceRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The Security Command Center service to retrieve.
+	// Required. The Security Command Center service to retrieve, in one of the
+	// following formats:
 	//
-	// Formats:
+	// * organizations/{organization}/locations/{location}/securityCenterServices/{service}
+	// * folders/{folder}/locations/{location}/securityCenterServices/{service}
+	// * projects/{project}/locations/{location}/securityCenterServices/{service}
 	//
-	//   - organizations/{organization}/locations/{location}/securityCenterServices/{service}
-	//   - folders/{folder}/locations/{location}/securityCenterServices/{service}
-	//   - projects/{project}/locations/{location}/securityCenterServices/{service}
+	// The following values are valid for `{service}`:
 	//
-	// The possible values for id {service} are:
-	//
-	//   - container-threat-detection
-	//   - event-threat-detection
-	//   - security-health-analytics
-	//   - vm-threat-detection
-	//   - web-security-scanner
+	// * `container-threat-detection`
+	// * `event-threat-detection`
+	// * `security-health-analytics`
+	// * `vm-threat-detection`
+	// * `web-security-scanner`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Flag that, when set, will be used to filter the ModuleSettings that are
-	// in scope. The default setting is that all modules will be shown.
+	// Set to `true` to show only modules that are in scope. By default, all
+	// modules are shown.
 	ShowEligibleModulesOnly bool `protobuf:"varint,2,opt,name=show_eligible_modules_only,json=showEligibleModulesOnly,proto3" json:"show_eligible_modules_only,omitempty"`
 }
 
@@ -3245,27 +3307,31 @@ func (x *GetSecurityCenterServiceRequest) GetShowEligibleModulesOnly() bool {
 	return false
 }
 
-// Request message for listing Security Command Center services.
+// Request message for
+// [SecurityCenterManagement.ListSecurityCenterServices][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListSecurityCenterServices].
 type ListSecurityCenterServicesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the parent to list Security Command Center services.
+	// Required. The name of the parent to list Security Command Center services,
+	// in one of the following formats:
 	//
-	// Formats:
-	//
-	//   - organizations/{organization}/locations/{location}
-	//   - folders/{folder}/locations/{location}
-	//   - projects/{project}/locations/{location}
+	// * `organizations/{organization}/locations/{location}`
+	// * `folders/{folder}/locations/{location}`
+	// * `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of results to return in a single response.
 	// Default is 10, minimum is 1, maximum is 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. The value returned by the last call indicating a continuation.
+	// Optional. A pagination token returned from a previous request. Provide this
+	// token to retrieve the next page of results.
+	//
+	// When paginating, the rest of the request must match the request that
+	// generated the page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Flag that, when set, will be used to filter the ModuleSettings that are
-	// in scope. The default setting is that all modules will be shown.
+	// Flag that, when set, is used to filter the module settings that are shown.
+	// The default setting is that all modules are shown.
 	ShowEligibleModulesOnly bool `protobuf:"varint,4,opt,name=show_eligible_modules_only,json=showEligibleModulesOnly,proto3" json:"show_eligible_modules_only,omitempty"`
 }
 
@@ -3329,7 +3395,8 @@ func (x *ListSecurityCenterServicesRequest) GetShowEligibleModulesOnly() bool {
 	return false
 }
 
-// Response message for listing Security Command Center services.
+// Response message for
+// [SecurityCenterManagement.ListSecurityCenterServices][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListSecurityCenterServices].
 type ListSecurityCenterServicesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3337,7 +3404,8 @@ type ListSecurityCenterServicesResponse struct {
 
 	// The list of services.
 	SecurityCenterServices []*SecurityCenterService `protobuf:"bytes,1,rep,name=security_center_services,json=securityCenterServices,proto3" json:"security_center_services,omitempty"`
-	// A token identifying a page of results the server should return.
+	// A pagination token. To retrieve the next page of results, call the method
+	// again with this token.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -3387,7 +3455,8 @@ func (x *ListSecurityCenterServicesResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for updating a Security Command Center service.
+// Request message for
+// [SecurityCenterManagement.UpdateSecurityCenterService][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.UpdateSecurityCenterService].
 type UpdateSecurityCenterServiceRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3395,18 +3464,26 @@ type UpdateSecurityCenterServiceRequest struct {
 
 	// Required. The updated service.
 	SecurityCenterService *SecurityCenterService `protobuf:"bytes,1,opt,name=security_center_service,json=securityCenterService,proto3" json:"security_center_service,omitempty"`
-	// Required. The list of fields to be updated. Possible values:
+	// Required. The fields to update. Accepts the following values:
 	//
-	//   - "intended_enablement_state"
-	//   - "modules"
+	// * `intended_enablement_state`
+	// * `modules`
+	//
+	// If omitted, then all eligible fields are updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	// Optional. When set to true, only validations (including IAM checks) will be
-	// done for the request (service will not be updated). An OK response
-	// indicates that the request is valid, while an error response indicates that
-	// the request is invalid. Note that a subsequent request to actually update
-	// the service could still fail for one of the following reasons:
-	// - The state could have changed (e.g. IAM permission lost).
-	// - A failure occurred while trying to delete the module.
+	// Optional. When set to `true`, the request will be validated (including IAM
+	// checks), but no service will be updated. An `OK` response indicates that
+	// the request is valid, while an error response indicates that the request is
+	// invalid.
+	//
+	// If the request is valid, a subsequent request to update the service could
+	// still fail for one of the following reasons:
+	//
+	//   - The state of your cloud resources changed; for example, you lost a
+	//     required IAM permission
+	//   - An error occurred during update of the service
+	//
+	// Defaults to `false`.
 	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 }
 
@@ -3469,15 +3546,14 @@ type SecurityCenterService_ModuleSettings struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. The intended state of enablement for the module at its level of
+	// Optional. The intended enablement state for the module at its level of
 	// the resource hierarchy.
 	IntendedEnablementState SecurityCenterService_EnablementState `protobuf:"varint,1,opt,name=intended_enablement_state,json=intendedEnablementState,proto3,enum=google.cloud.securitycentermanagement.v1.SecurityCenterService_EnablementState" json:"intended_enablement_state,omitempty"`
 	// Output only. The effective enablement state for the module at its level
-	// of the resource hierarchy. If the intended state is set to INHERITED, the
-	// effective state will be inherited from the enablement state of an
-	// ancestor. This state may
-	// differ from the intended enablement state due to billing eligibility or
-	// onboarding status.
+	// of the resource hierarchy. If the intended state is set to `INHERITED`,
+	// the effective state will be inherited from the enablement state of an
+	// ancestor. This state may differ from the intended enablement state due to
+	// billing eligibility or onboarding status.
 	EffectiveEnablementState SecurityCenterService_EnablementState `protobuf:"varint,2,opt,name=effective_enablement_state,json=effectiveEnablementState,proto3,enum=google.cloud.securitycentermanagement.v1.SecurityCenterService_EnablementState" json:"effective_enablement_state,omitempty"`
 }
 
@@ -3529,8 +3605,7 @@ func (x *SecurityCenterService_ModuleSettings) GetEffectiveEnablementState() Sec
 
 // A set of optional name-value pairs that define custom source properties to
 // return with each finding that is generated by the custom module. The custom
-// source properties that are defined here are included in the finding JSON
-// under `sourceProperties`.
+// source properties that are defined here are included in the finding.
 type CustomConfig_CustomOutputSpec struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3688,21 +3763,25 @@ func (x *CustomConfig_CustomOutputSpec_Property) GetValueExpression() *expr.Expr
 	return nil
 }
 
-// Manually constructed resource name. If the custom module evaluates against
-// only the resource data, you can omit the `iam_policy_data` field. If it
-// evaluates only the `iam_policy_data` field, you can omit the resource data.
+// Manually constructed information about a resource.
 type SimulateSecurityHealthAnalyticsCustomModuleRequest_SimulatedResource struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The type of the resource, for example,
+	// Required. The type of the resource. For example,
 	// `compute.googleapis.com/Disk`.
 	ResourceType string `protobuf:"bytes,1,opt,name=resource_type,json=resourceType,proto3" json:"resource_type,omitempty"`
 	// Optional. A representation of the Google Cloud resource. Should match the
 	// Google Cloud resource JSON format.
+	//
+	// If the custom module evaluates only the IAM allow policy, then you can
+	// omit this field.
 	ResourceData *structpb.Struct `protobuf:"bytes,2,opt,name=resource_data,json=resourceData,proto3" json:"resource_data,omitempty"`
-	// Optional. A representation of the IAM policy.
+	// Optional. A representation of the IAM allow policy.
+	//
+	// If the custom module evaluates only the resource data, then you can omit
+	// this field.
 	IamPolicyData *iampb.Policy `protobuf:"bytes,3,opt,name=iam_policy_data,json=iamPolicyData,proto3" json:"iam_policy_data,omitempty"`
 }
 
@@ -3765,6 +3844,8 @@ type SimulateSecurityHealthAnalyticsCustomModuleResponse_SimulatedResult struct 
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// The result of the simulation.
+	//
 	// Types that are assignable to Result:
 	//
 	//	*SimulateSecurityHealthAnalyticsCustomModuleResponse_SimulatedResult_Finding
@@ -3838,8 +3919,8 @@ type isSimulateSecurityHealthAnalyticsCustomModuleResponse_SimulatedResult_Resul
 }
 
 type SimulateSecurityHealthAnalyticsCustomModuleResponse_SimulatedResult_Finding struct {
-	// Finding that would be published for the test case,
-	// if a violation is detected.
+	// Finding that would be published for the test case if a violation is
+	// detected.
 	Finding *SimulatedFinding `protobuf:"bytes,1,opt,name=finding,proto3,oneof"`
 }
 
@@ -3863,24 +3944,25 @@ func (*SimulateSecurityHealthAnalyticsCustomModuleResponse_SimulatedResult_Error
 }
 
 // An error encountered while validating the uploaded configuration of an
-// Event Threat Detection Custom Module.
+// Event Threat Detection custom module.
 type ValidateEventThreatDetectionCustomModuleResponse_CustomModuleValidationError struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// A description of the error, suitable for human consumption. Required.
+	// A human-readable description of the error.
 	Description string `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
-	// The path, in RFC 8901 JSON Pointer format, to the field that failed
-	// validation. This may be left empty if no specific field is affected.
+	// The path, in [RFC 6901: JSON
+	// Pointer](https://datatracker.ietf.org/doc/html/rfc6901) format, to the
+	// field that failed validation. Omitted if no specific field is affected.
 	FieldPath string `protobuf:"bytes,2,opt,name=field_path,json=fieldPath,proto3" json:"field_path,omitempty"`
 	// The initial position of the error in the uploaded text version of the
-	// module. This field may be omitted if no specific position applies, or if
-	// one could not be computed.
+	// module. Omitted if no specific position applies, or if the position could
+	// not be computed.
 	Start *ValidateEventThreatDetectionCustomModuleResponse_Position `protobuf:"bytes,3,opt,name=start,proto3,oneof" json:"start,omitempty"`
-	// The end position of the error in the uploaded text version of the
-	// module. This field may be omitted if no specific position applies, or if
-	// one could not be computed..
+	// The end position of the error in the uploaded text version of the module.
+	// Omitted if no specific position applies, or if the position could not be
+	// computed.
 	End *ValidateEventThreatDetectionCustomModuleResponse_Position `protobuf:"bytes,4,opt,name=end,proto3,oneof" json:"end,omitempty"`
 }
 
@@ -3950,9 +4032,9 @@ type ValidateEventThreatDetectionCustomModuleResponse_Position struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The line position in the text
+	// The line position in the text.
 	LineNumber int32 `protobuf:"varint,1,opt,name=line_number,json=lineNumber,proto3" json:"line_number,omitempty"`
-	// The column position in the line
+	// The column position in the line.
 	ColumnNumber int32 `protobuf:"varint,2,opt,name=column_number,json=columnNumber,proto3" json:"column_number,omitempty"`
 }
 
@@ -6548,64 +6630,83 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type SecurityCenterManagementClient interface {
-	// Returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the
-	// given parent. This includes resident modules defined at the scope of the
-	// parent, and inherited modules, inherited from CRM ancestors (no
-	// descendants).
+	// Returns a list of all
+	// [EffectiveSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.EffectiveSecurityHealthAnalyticsCustomModule]
+	// resources for the given parent. This includes resident modules defined at
+	// the scope of the parent, and inherited modules, inherited from ancestor
+	// organizations, folders, and projects (no descendants).
 	ListEffectiveSecurityHealthAnalyticsCustomModules(ctx context.Context, in *ListEffectiveSecurityHealthAnalyticsCustomModulesRequest, opts ...grpc.CallOption) (*ListEffectiveSecurityHealthAnalyticsCustomModulesResponse, error)
-	// Gets details of a single EffectiveSecurityHealthAnalyticsCustomModule.
+	// Gets details of a single
+	// [EffectiveSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.EffectiveSecurityHealthAnalyticsCustomModule].
 	GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context.Context, in *GetEffectiveSecurityHealthAnalyticsCustomModuleRequest, opts ...grpc.CallOption) (*EffectiveSecurityHealthAnalyticsCustomModule, error)
-	// Returns a list of all SecurityHealthAnalyticsCustomModules for the given
-	// parent. This includes resident modules defined at the scope of the parent,
-	// and inherited modules, inherited from CRM ancestors (no descendants).
+	// Returns a list of all
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]
+	// resources for the given parent. This includes resident modules defined at
+	// the scope of the parent, and inherited modules, inherited from ancestor
+	// organizations, folders, and projects (no descendants).
 	ListSecurityHealthAnalyticsCustomModules(ctx context.Context, in *ListSecurityHealthAnalyticsCustomModulesRequest, opts ...grpc.CallOption) (*ListSecurityHealthAnalyticsCustomModulesResponse, error)
-	// Returns a list of all resident SecurityHealthAnalyticsCustomModules under
-	// the given CRM parent and all of the parent's CRM descendants.
+	// Returns a list of all resident
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]
+	// resources under the given organization, folder, or project and all of its
+	// descendants.
 	ListDescendantSecurityHealthAnalyticsCustomModules(ctx context.Context, in *ListDescendantSecurityHealthAnalyticsCustomModulesRequest, opts ...grpc.CallOption) (*ListDescendantSecurityHealthAnalyticsCustomModulesResponse, error)
-	// Retrieves a SecurityHealthAnalyticsCustomModule.
+	// Retrieves a
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule].
 	GetSecurityHealthAnalyticsCustomModule(ctx context.Context, in *GetSecurityHealthAnalyticsCustomModuleRequest, opts ...grpc.CallOption) (*SecurityHealthAnalyticsCustomModule, error)
-	// Creates a resident SecurityHealthAnalyticsCustomModule at the scope of the
-	// given CRM parent, and also creates inherited
-	// SecurityHealthAnalyticsCustomModules for all CRM descendants of the given
-	// parent. These modules are enabled by default.
+	// Creates a resident
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]
+	// at the scope of the given organization, folder, or project, and also
+	// creates inherited `SecurityHealthAnalyticsCustomModule` resources for all
+	// folders and projects that are descendants of the given parent. These
+	// modules are enabled by default.
 	CreateSecurityHealthAnalyticsCustomModule(ctx context.Context, in *CreateSecurityHealthAnalyticsCustomModuleRequest, opts ...grpc.CallOption) (*SecurityHealthAnalyticsCustomModule, error)
-	// Updates the SecurityHealthAnalyticsCustomModule under the given name based
-	// on the given update mask. Updating the enablement state is supported on
-	// both resident and inherited modules (though resident modules cannot have an
-	// enablement state of "inherited"). Updating the display name and custom
-	// config of a module is supported on resident modules only.
+	// Updates the
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]
+	// under the given name based on the given update mask. Updating the
+	// enablement state is supported on both resident and inherited modules
+	// (though resident modules cannot have an enablement state of "inherited").
+	// Updating the display name and custom configuration of a module is supported
+	// on resident modules only.
 	UpdateSecurityHealthAnalyticsCustomModule(ctx context.Context, in *UpdateSecurityHealthAnalyticsCustomModuleRequest, opts ...grpc.CallOption) (*SecurityHealthAnalyticsCustomModule, error)
-	// Deletes the specified SecurityHealthAnalyticsCustomModule and all of its
-	// descendants in the CRM hierarchy. This method is only supported for
-	// resident custom modules.
+	// Deletes the specified
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]
+	// and all of its descendants in the resource hierarchy. This method is only
+	// supported for resident custom modules.
 	DeleteSecurityHealthAnalyticsCustomModule(ctx context.Context, in *DeleteSecurityHealthAnalyticsCustomModuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+	// Simulates the result of using a
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]
+	// to check a resource.
 	SimulateSecurityHealthAnalyticsCustomModule(ctx context.Context, in *SimulateSecurityHealthAnalyticsCustomModuleRequest, opts ...grpc.CallOption) (*SimulateSecurityHealthAnalyticsCustomModuleResponse, error)
 	// Lists all effective Event Threat Detection custom modules for the
 	// given parent. This includes resident modules defined at the scope of the
 	// parent along with modules inherited from its ancestors.
 	ListEffectiveEventThreatDetectionCustomModules(ctx context.Context, in *ListEffectiveEventThreatDetectionCustomModulesRequest, opts ...grpc.CallOption) (*ListEffectiveEventThreatDetectionCustomModulesResponse, error)
-	// Gets an effective ETD custom module. Retrieves the effective module at the
-	// given level. The difference between an EffectiveCustomModule and a
-	// CustomModule is that the fields for an EffectiveCustomModule are computed
-	// from ancestors if needed. For example, the enablement_state for a
-	// CustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the
-	// enablement_state for an EffectiveCustomModule is always computed to ENABLED
-	// or DISABLED (the effective enablement_state).
+	// Gets the effective Event Threat Detection custom module at the given level.
+	//
+	// The difference between an
+	// [EffectiveEventThreatDetectionCustomModule][google.cloud.securitycentermanagement.v1.EffectiveEventThreatDetectionCustomModule]
+	// and an
+	// [EventThreatDetectionCustomModule][google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModule]
+	// is that the fields for an `EffectiveEventThreatDetectionCustomModule` are
+	// computed from ancestors if needed. For example, the enablement state for an
+	// `EventThreatDetectionCustomModule` can be `ENABLED`, `DISABLED`, or
+	// `INHERITED`. In contrast, the enablement state for an
+	// `EffectiveEventThreatDetectionCustomModule` is always computed as `ENABLED`
+	// or `DISABLED`.
 	GetEffectiveEventThreatDetectionCustomModule(ctx context.Context, in *GetEffectiveEventThreatDetectionCustomModuleRequest, opts ...grpc.CallOption) (*EffectiveEventThreatDetectionCustomModule, error)
-	// Lists all Event Threat Detection custom modules for the given
-	// Resource Manager parent. This includes resident modules defined at the
-	// scope of the parent along with modules inherited from ancestors.
+	// Lists all Event Threat Detection custom modules for the given organization,
+	// folder, or project. This includes resident modules defined at the scope of
+	// the parent along with modules inherited from ancestors.
 	ListEventThreatDetectionCustomModules(ctx context.Context, in *ListEventThreatDetectionCustomModulesRequest, opts ...grpc.CallOption) (*ListEventThreatDetectionCustomModulesResponse, error)
-	// Lists all resident Event Threat Detection custom modules under the
-	// given Resource Manager parent and its descendants.
+	// Lists all resident Event Threat Detection custom modules for the given
+	// organization, folder, or project and its descendants.
 	ListDescendantEventThreatDetectionCustomModules(ctx context.Context, in *ListDescendantEventThreatDetectionCustomModulesRequest, opts ...grpc.CallOption) (*ListDescendantEventThreatDetectionCustomModulesResponse, error)
 	// Gets an Event Threat Detection custom module.
 	GetEventThreatDetectionCustomModule(ctx context.Context, in *GetEventThreatDetectionCustomModuleRequest, opts ...grpc.CallOption) (*EventThreatDetectionCustomModule, error)
 	// Creates a resident Event Threat Detection custom module at the scope of the
-	// given Resource Manager parent, and also creates inherited custom modules
-	// for all descendants of the given parent. These modules are enabled by
-	// default.
+	// given organization, folder, or project, and creates inherited custom
+	// modules for all descendants of the given parent. These modules are enabled
+	// by default.
 	CreateEventThreatDetectionCustomModule(ctx context.Context, in *CreateEventThreatDetectionCustomModuleRequest, opts ...grpc.CallOption) (*EventThreatDetectionCustomModule, error)
 	// Updates the Event Threat Detection custom module with the given name based
 	// on the given update mask. Updating the enablement state is supported for
@@ -6615,8 +6716,8 @@ type SecurityCenterManagementClient interface {
 	// of a module cannot be changed.
 	UpdateEventThreatDetectionCustomModule(ctx context.Context, in *UpdateEventThreatDetectionCustomModuleRequest, opts ...grpc.CallOption) (*EventThreatDetectionCustomModule, error)
 	// Deletes the specified Event Threat Detection custom module and all of its
-	// descendants in the Resource Manager hierarchy. This method is only
-	// supported for resident custom modules.
+	// descendants in the resource hierarchy. This method is only supported for
+	// resident custom modules.
 	DeleteEventThreatDetectionCustomModule(ctx context.Context, in *DeleteEventThreatDetectionCustomModuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Validates the given Event Threat Detection custom module.
 	ValidateEventThreatDetectionCustomModule(ctx context.Context, in *ValidateEventThreatDetectionCustomModuleRequest, opts ...grpc.CallOption) (*ValidateEventThreatDetectionCustomModuleResponse, error)
@@ -6828,64 +6929,83 @@ func (c *securityCenterManagementClient) UpdateSecurityCenterService(ctx context
 
 // SecurityCenterManagementServer is the server API for SecurityCenterManagement service.
 type SecurityCenterManagementServer interface {
-	// Returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the
-	// given parent. This includes resident modules defined at the scope of the
-	// parent, and inherited modules, inherited from CRM ancestors (no
-	// descendants).
+	// Returns a list of all
+	// [EffectiveSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.EffectiveSecurityHealthAnalyticsCustomModule]
+	// resources for the given parent. This includes resident modules defined at
+	// the scope of the parent, and inherited modules, inherited from ancestor
+	// organizations, folders, and projects (no descendants).
 	ListEffectiveSecurityHealthAnalyticsCustomModules(context.Context, *ListEffectiveSecurityHealthAnalyticsCustomModulesRequest) (*ListEffectiveSecurityHealthAnalyticsCustomModulesResponse, error)
-	// Gets details of a single EffectiveSecurityHealthAnalyticsCustomModule.
+	// Gets details of a single
+	// [EffectiveSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.EffectiveSecurityHealthAnalyticsCustomModule].
 	GetEffectiveSecurityHealthAnalyticsCustomModule(context.Context, *GetEffectiveSecurityHealthAnalyticsCustomModuleRequest) (*EffectiveSecurityHealthAnalyticsCustomModule, error)
-	// Returns a list of all SecurityHealthAnalyticsCustomModules for the given
-	// parent. This includes resident modules defined at the scope of the parent,
-	// and inherited modules, inherited from CRM ancestors (no descendants).
+	// Returns a list of all
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]
+	// resources for the given parent. This includes resident modules defined at
+	// the scope of the parent, and inherited modules, inherited from ancestor
+	// organizations, folders, and projects (no descendants).
 	ListSecurityHealthAnalyticsCustomModules(context.Context, *ListSecurityHealthAnalyticsCustomModulesRequest) (*ListSecurityHealthAnalyticsCustomModulesResponse, error)
-	// Returns a list of all resident SecurityHealthAnalyticsCustomModules under
-	// the given CRM parent and all of the parent's CRM descendants.
+	// Returns a list of all resident
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]
+	// resources under the given organization, folder, or project and all of its
+	// descendants.
 	ListDescendantSecurityHealthAnalyticsCustomModules(context.Context, *ListDescendantSecurityHealthAnalyticsCustomModulesRequest) (*ListDescendantSecurityHealthAnalyticsCustomModulesResponse, error)
-	// Retrieves a SecurityHealthAnalyticsCustomModule.
+	// Retrieves a
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule].
 	GetSecurityHealthAnalyticsCustomModule(context.Context, *GetSecurityHealthAnalyticsCustomModuleRequest) (*SecurityHealthAnalyticsCustomModule, error)
-	// Creates a resident SecurityHealthAnalyticsCustomModule at the scope of the
-	// given CRM parent, and also creates inherited
-	// SecurityHealthAnalyticsCustomModules for all CRM descendants of the given
-	// parent. These modules are enabled by default.
+	// Creates a resident
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]
+	// at the scope of the given organization, folder, or project, and also
+	// creates inherited `SecurityHealthAnalyticsCustomModule` resources for all
+	// folders and projects that are descendants of the given parent. These
+	// modules are enabled by default.
 	CreateSecurityHealthAnalyticsCustomModule(context.Context, *CreateSecurityHealthAnalyticsCustomModuleRequest) (*SecurityHealthAnalyticsCustomModule, error)
-	// Updates the SecurityHealthAnalyticsCustomModule under the given name based
-	// on the given update mask. Updating the enablement state is supported on
-	// both resident and inherited modules (though resident modules cannot have an
-	// enablement state of "inherited"). Updating the display name and custom
-	// config of a module is supported on resident modules only.
+	// Updates the
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]
+	// under the given name based on the given update mask. Updating the
+	// enablement state is supported on both resident and inherited modules
+	// (though resident modules cannot have an enablement state of "inherited").
+	// Updating the display name and custom configuration of a module is supported
+	// on resident modules only.
 	UpdateSecurityHealthAnalyticsCustomModule(context.Context, *UpdateSecurityHealthAnalyticsCustomModuleRequest) (*SecurityHealthAnalyticsCustomModule, error)
-	// Deletes the specified SecurityHealthAnalyticsCustomModule and all of its
-	// descendants in the CRM hierarchy. This method is only supported for
-	// resident custom modules.
+	// Deletes the specified
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]
+	// and all of its descendants in the resource hierarchy. This method is only
+	// supported for resident custom modules.
 	DeleteSecurityHealthAnalyticsCustomModule(context.Context, *DeleteSecurityHealthAnalyticsCustomModuleRequest) (*emptypb.Empty, error)
-	// Simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+	// Simulates the result of using a
+	// [SecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule]
+	// to check a resource.
 	SimulateSecurityHealthAnalyticsCustomModule(context.Context, *SimulateSecurityHealthAnalyticsCustomModuleRequest) (*SimulateSecurityHealthAnalyticsCustomModuleResponse, error)
 	// Lists all effective Event Threat Detection custom modules for the
 	// given parent. This includes resident modules defined at the scope of the
 	// parent along with modules inherited from its ancestors.
 	ListEffectiveEventThreatDetectionCustomModules(context.Context, *ListEffectiveEventThreatDetectionCustomModulesRequest) (*ListEffectiveEventThreatDetectionCustomModulesResponse, error)
-	// Gets an effective ETD custom module. Retrieves the effective module at the
-	// given level. The difference between an EffectiveCustomModule and a
-	// CustomModule is that the fields for an EffectiveCustomModule are computed
-	// from ancestors if needed. For example, the enablement_state for a
-	// CustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the
-	// enablement_state for an EffectiveCustomModule is always computed to ENABLED
-	// or DISABLED (the effective enablement_state).
+	// Gets the effective Event Threat Detection custom module at the given level.
+	//
+	// The difference between an
+	// [EffectiveEventThreatDetectionCustomModule][google.cloud.securitycentermanagement.v1.EffectiveEventThreatDetectionCustomModule]
+	// and an
+	// [EventThreatDetectionCustomModule][google.cloud.securitycentermanagement.v1.EventThreatDetectionCustomModule]
+	// is that the fields for an `EffectiveEventThreatDetectionCustomModule` are
+	// computed from ancestors if needed. For example, the enablement state for an
+	// `EventThreatDetectionCustomModule` can be `ENABLED`, `DISABLED`, or
+	// `INHERITED`. In contrast, the enablement state for an
+	// `EffectiveEventThreatDetectionCustomModule` is always computed as `ENABLED`
+	// or `DISABLED`.
 	GetEffectiveEventThreatDetectionCustomModule(context.Context, *GetEffectiveEventThreatDetectionCustomModuleRequest) (*EffectiveEventThreatDetectionCustomModule, error)
-	// Lists all Event Threat Detection custom modules for the given
-	// Resource Manager parent. This includes resident modules defined at the
-	// scope of the parent along with modules inherited from ancestors.
+	// Lists all Event Threat Detection custom modules for the given organization,
+	// folder, or project. This includes resident modules defined at the scope of
+	// the parent along with modules inherited from ancestors.
 	ListEventThreatDetectionCustomModules(context.Context, *ListEventThreatDetectionCustomModulesRequest) (*ListEventThreatDetectionCustomModulesResponse, error)
-	// Lists all resident Event Threat Detection custom modules under the
-	// given Resource Manager parent and its descendants.
+	// Lists all resident Event Threat Detection custom modules for the given
+	// organization, folder, or project and its descendants.
 	ListDescendantEventThreatDetectionCustomModules(context.Context, *ListDescendantEventThreatDetectionCustomModulesRequest) (*ListDescendantEventThreatDetectionCustomModulesResponse, error)
 	// Gets an Event Threat Detection custom module.
 	GetEventThreatDetectionCustomModule(context.Context, *GetEventThreatDetectionCustomModuleRequest) (*EventThreatDetectionCustomModule, error)
 	// Creates a resident Event Threat Detection custom module at the scope of the
-	// given Resource Manager parent, and also creates inherited custom modules
-	// for all descendants of the given parent. These modules are enabled by
-	// default.
+	// given organization, folder, or project, and creates inherited custom
+	// modules for all descendants of the given parent. These modules are enabled
+	// by default.
 	CreateEventThreatDetectionCustomModule(context.Context, *CreateEventThreatDetectionCustomModuleRequest) (*EventThreatDetectionCustomModule, error)
 	// Updates the Event Threat Detection custom module with the given name based
 	// on the given update mask. Updating the enablement state is supported for
@@ -6895,8 +7015,8 @@ type SecurityCenterManagementServer interface {
 	// of a module cannot be changed.
 	UpdateEventThreatDetectionCustomModule(context.Context, *UpdateEventThreatDetectionCustomModuleRequest) (*EventThreatDetectionCustomModule, error)
 	// Deletes the specified Event Threat Detection custom module and all of its
-	// descendants in the Resource Manager hierarchy. This method is only
-	// supported for resident custom modules.
+	// descendants in the resource hierarchy. This method is only supported for
+	// resident custom modules.
 	DeleteEventThreatDetectionCustomModule(context.Context, *DeleteEventThreatDetectionCustomModuleRequest) (*emptypb.Empty, error)
 	// Validates the given Event Threat Detection custom module.
 	ValidateEventThreatDetectionCustomModule(context.Context, *ValidateEventThreatDetectionCustomModuleRequest) (*ValidateEventThreatDetectionCustomModuleResponse, error)

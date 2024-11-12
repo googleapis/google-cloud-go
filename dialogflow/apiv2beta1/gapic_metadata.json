@@ -2009,6 +2009,120 @@
         }
       }
     },
+    "SipTrunks": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SipTrunksClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSipTrunk": {
+              "methods": [
+                "CreateSipTrunk"
+              ]
+            },
+            "DeleteSipTrunk": {
+              "methods": [
+                "DeleteSipTrunk"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSipTrunk": {
+              "methods": [
+                "GetSipTrunk"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSipTrunks": {
+              "methods": [
+                "ListSipTrunks"
+              ]
+            },
+            "UpdateSipTrunk": {
+              "methods": [
+                "UpdateSipTrunk"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SipTrunksClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSipTrunk": {
+              "methods": [
+                "CreateSipTrunk"
+              ]
+            },
+            "DeleteSipTrunk": {
+              "methods": [
+                "DeleteSipTrunk"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSipTrunk": {
+              "methods": [
+                "GetSipTrunk"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSipTrunks": {
+              "methods": [
+                "ListSipTrunks"
+              ]
+            },
+            "UpdateSipTrunk": {
+              "methods": [
+                "UpdateSipTrunk"
+              ]
+            }
+          }
+        }
+      }
+    },
     "Versions": {
       "clients": {
         "grpc": {
