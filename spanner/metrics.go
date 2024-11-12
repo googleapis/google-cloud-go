@@ -167,7 +167,7 @@ var (
 		return "global"
 	}
 
-	// GCM exporter should use the same options as Bigtable client
+	// GCM exporter should use the same options as Spanner client
 	// createExporterOptions takes Spanner client options and returns exporter options
 	// Overwritten in tests
 	createExporterOptions = func(spannerOpts ...option.ClientOption) []option.ClientOption {
