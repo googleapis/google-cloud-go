@@ -1,0 +1,213 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.tpu.v2",
+  "libraryPackage": "cloud.google.com/go/tpu/apiv2",
+  "services": {
+    "Tpu": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateNode": {
+              "methods": [
+                "CreateNode"
+              ]
+            },
+            "DeleteNode": {
+              "methods": [
+                "DeleteNode"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GenerateServiceIdentity": {
+              "methods": [
+                "GenerateServiceIdentity"
+              ]
+            },
+            "GetAcceleratorType": {
+              "methods": [
+                "GetAcceleratorType"
+              ]
+            },
+            "GetGuestAttributes": {
+              "methods": [
+                "GetGuestAttributes"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetNode": {
+              "methods": [
+                "GetNode"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRuntimeVersion": {
+              "methods": [
+                "GetRuntimeVersion"
+              ]
+            },
+            "ListAcceleratorTypes": {
+              "methods": [
+                "ListAcceleratorTypes"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListNodes": {
+              "methods": [
+                "ListNodes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRuntimeVersions": {
+              "methods": [
+                "ListRuntimeVersions"
+              ]
+            },
+            "StartNode": {
+              "methods": [
+                "StartNode"
+              ]
+            },
+            "StopNode": {
+              "methods": [
+                "StopNode"
+              ]
+            },
+            "UpdateNode": {
+              "methods": [
+                "UpdateNode"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateNode": {
+              "methods": [
+                "CreateNode"
+              ]
+            },
+            "DeleteNode": {
+              "methods": [
+                "DeleteNode"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GenerateServiceIdentity": {
+              "methods": [
+                "GenerateServiceIdentity"
+              ]
+            },
+            "GetAcceleratorType": {
+              "methods": [
+                "GetAcceleratorType"
+              ]
+            },
+            "GetGuestAttributes": {
+              "methods": [
+                "GetGuestAttributes"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetNode": {
+              "methods": [
+                "GetNode"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRuntimeVersion": {
+              "methods": [
+                "GetRuntimeVersion"
+              ]
+            },
+            "ListAcceleratorTypes": {
+              "methods": [
+                "ListAcceleratorTypes"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListNodes": {
+              "methods": [
+                "ListNodes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRuntimeVersions": {
+              "methods": [
+                "ListRuntimeVersions"
+              ]
+            },
+            "StartNode": {
+              "methods": [
+                "StartNode"
+              ]
+            },
+            "StopNode": {
+              "methods": [
+                "StopNode"
+              ]
+            },
+            "UpdateNode": {
+              "methods": [
+                "UpdateNode"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

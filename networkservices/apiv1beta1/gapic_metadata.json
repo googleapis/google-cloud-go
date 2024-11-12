@@ -1,0 +1,187 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.networkservices.v1beta1",
+  "libraryPackage": "cloud.google.com/go/networkservices/apiv1beta1",
+  "services": {
+    "DepService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DepClient",
+          "rpcs": {
+            "CreateLbRouteExtension": {
+              "methods": [
+                "CreateLbRouteExtension"
+              ]
+            },
+            "CreateLbTrafficExtension": {
+              "methods": [
+                "CreateLbTrafficExtension"
+              ]
+            },
+            "DeleteLbRouteExtension": {
+              "methods": [
+                "DeleteLbRouteExtension"
+              ]
+            },
+            "DeleteLbTrafficExtension": {
+              "methods": [
+                "DeleteLbTrafficExtension"
+              ]
+            },
+            "GetLbRouteExtension": {
+              "methods": [
+                "GetLbRouteExtension"
+              ]
+            },
+            "GetLbTrafficExtension": {
+              "methods": [
+                "GetLbTrafficExtension"
+              ]
+            },
+            "ListLbRouteExtensions": {
+              "methods": [
+                "ListLbRouteExtensions"
+              ]
+            },
+            "ListLbTrafficExtensions": {
+              "methods": [
+                "ListLbTrafficExtensions"
+              ]
+            },
+            "UpdateLbRouteExtension": {
+              "methods": [
+                "UpdateLbRouteExtension"
+              ]
+            },
+            "UpdateLbTrafficExtension": {
+              "methods": [
+                "UpdateLbTrafficExtension"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DepClient",
+          "rpcs": {
+            "CreateLbRouteExtension": {
+              "methods": [
+                "CreateLbRouteExtension"
+              ]
+            },
+            "CreateLbTrafficExtension": {
+              "methods": [
+                "CreateLbTrafficExtension"
+              ]
+            },
+            "DeleteLbRouteExtension": {
+              "methods": [
+                "DeleteLbRouteExtension"
+              ]
+            },
+            "DeleteLbTrafficExtension": {
+              "methods": [
+                "DeleteLbTrafficExtension"
+              ]
+            },
+            "GetLbRouteExtension": {
+              "methods": [
+                "GetLbRouteExtension"
+              ]
+            },
+            "GetLbTrafficExtension": {
+              "methods": [
+                "GetLbTrafficExtension"
+              ]
+            },
+            "ListLbRouteExtensions": {
+              "methods": [
+                "ListLbRouteExtensions"
+              ]
+            },
+            "ListLbTrafficExtensions": {
+              "methods": [
+                "ListLbTrafficExtensions"
+              ]
+            },
+            "UpdateLbRouteExtension": {
+              "methods": [
+                "UpdateLbRouteExtension"
+              ]
+            },
+            "UpdateLbTrafficExtension": {
+              "methods": [
+                "UpdateLbTrafficExtension"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "NetworkServices": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateEndpointPolicy": {
+              "methods": [
+                "CreateEndpointPolicy"
+              ]
+            },
+            "DeleteEndpointPolicy": {
+              "methods": [
+                "DeleteEndpointPolicy"
+              ]
+            },
+            "GetEndpointPolicy": {
+              "methods": [
+                "GetEndpointPolicy"
+              ]
+            },
+            "ListEndpointPolicies": {
+              "methods": [
+                "ListEndpointPolicies"
+              ]
+            },
+            "UpdateEndpointPolicy": {
+              "methods": [
+                "UpdateEndpointPolicy"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateEndpointPolicy": {
+              "methods": [
+                "CreateEndpointPolicy"
+              ]
+            },
+            "DeleteEndpointPolicy": {
+              "methods": [
+                "DeleteEndpointPolicy"
+              ]
+            },
+            "GetEndpointPolicy": {
+              "methods": [
+                "GetEndpointPolicy"
+              ]
+            },
+            "ListEndpointPolicies": {
+              "methods": [
+                "ListEndpointPolicies"
+              ]
+            },
+            "UpdateEndpointPolicy": {
+              "methods": [
+                "UpdateEndpointPolicy"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

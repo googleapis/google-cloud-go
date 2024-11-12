@@ -1,0 +1,475 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/managedidentities/apiv1beta1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.managedidentities.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "managedidentities_v1beta1_generated_ManagedIdentitiesService_AttachTrust_sync",
+      "title": "managedidentities AttachTrust Sample",
+      "description": "AttachTrust adds an AD trust to a domain.",
+      "file": "Client/AttachTrust/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AttachTrust",
+        "fullName": "google.cloud.managedidentities.v1beta1.Client.AttachTrust",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedidentitiespb.AttachTrustRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AttachTrustOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedidentities.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "AttachTrust",
+          "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService.AttachTrust",
+          "service": {
+            "shortName": "ManagedIdentitiesService",
+            "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedidentities_v1beta1_generated_ManagedIdentitiesService_CreateMicrosoftAdDomain_sync",
+      "title": "managedidentities CreateMicrosoftAdDomain Sample",
+      "description": "CreateMicrosoftAdDomain creates a Microsoft AD domain.",
+      "file": "Client/CreateMicrosoftAdDomain/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMicrosoftAdDomain",
+        "fullName": "google.cloud.managedidentities.v1beta1.Client.CreateMicrosoftAdDomain",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedidentitiespb.CreateMicrosoftAdDomainRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateMicrosoftAdDomainOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedidentities.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CreateMicrosoftAdDomain",
+          "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService.CreateMicrosoftAdDomain",
+          "service": {
+            "shortName": "ManagedIdentitiesService",
+            "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedidentities_v1beta1_generated_ManagedIdentitiesService_DeleteDomain_sync",
+      "title": "managedidentities DeleteDomain Sample",
+      "description": "DeleteDomain deletes a domain.",
+      "file": "Client/DeleteDomain/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDomain",
+        "fullName": "google.cloud.managedidentities.v1beta1.Client.DeleteDomain",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedidentitiespb.DeleteDomainRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDomainOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedidentities.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteDomain",
+          "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService.DeleteDomain",
+          "service": {
+            "shortName": "ManagedIdentitiesService",
+            "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedidentities_v1beta1_generated_ManagedIdentitiesService_DetachTrust_sync",
+      "title": "managedidentities DetachTrust Sample",
+      "description": "DetachTrust removes an AD trust.",
+      "file": "Client/DetachTrust/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DetachTrust",
+        "fullName": "google.cloud.managedidentities.v1beta1.Client.DetachTrust",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedidentitiespb.DetachTrustRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DetachTrustOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedidentities.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DetachTrust",
+          "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService.DetachTrust",
+          "service": {
+            "shortName": "ManagedIdentitiesService",
+            "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedidentities_v1beta1_generated_ManagedIdentitiesService_GetDomain_sync",
+      "title": "managedidentities GetDomain Sample",
+      "description": "GetDomain gets information about a domain.",
+      "file": "Client/GetDomain/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDomain",
+        "fullName": "google.cloud.managedidentities.v1beta1.Client.GetDomain",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedidentitiespb.GetDomainRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*managedidentitiespb.Domain",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedidentities.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetDomain",
+          "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService.GetDomain",
+          "service": {
+            "shortName": "ManagedIdentitiesService",
+            "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedidentities_v1beta1_generated_ManagedIdentitiesService_ListDomains_sync",
+      "title": "managedidentities ListDomains Sample",
+      "description": "ListDomains lists domains in a project.",
+      "file": "Client/ListDomains/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDomains",
+        "fullName": "google.cloud.managedidentities.v1beta1.Client.ListDomains",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedidentitiespb.ListDomainsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DomainIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedidentities.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListDomains",
+          "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService.ListDomains",
+          "service": {
+            "shortName": "ManagedIdentitiesService",
+            "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedidentities_v1beta1_generated_ManagedIdentitiesService_ReconfigureTrust_sync",
+      "title": "managedidentities ReconfigureTrust Sample",
+      "description": "ReconfigureTrust updates the DNS conditional forwarder.",
+      "file": "Client/ReconfigureTrust/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReconfigureTrust",
+        "fullName": "google.cloud.managedidentities.v1beta1.Client.ReconfigureTrust",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedidentitiespb.ReconfigureTrustRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReconfigureTrustOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedidentities.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ReconfigureTrust",
+          "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService.ReconfigureTrust",
+          "service": {
+            "shortName": "ManagedIdentitiesService",
+            "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedidentities_v1beta1_generated_ManagedIdentitiesService_ResetAdminPassword_sync",
+      "title": "managedidentities ResetAdminPassword Sample",
+      "description": "ResetAdminPassword resets a domain's administrator password.",
+      "file": "Client/ResetAdminPassword/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResetAdminPassword",
+        "fullName": "google.cloud.managedidentities.v1beta1.Client.ResetAdminPassword",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedidentitiespb.ResetAdminPasswordRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*managedidentitiespb.ResetAdminPasswordResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedidentities.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ResetAdminPassword",
+          "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService.ResetAdminPassword",
+          "service": {
+            "shortName": "ManagedIdentitiesService",
+            "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedidentities_v1beta1_generated_ManagedIdentitiesService_UpdateDomain_sync",
+      "title": "managedidentities UpdateDomain Sample",
+      "description": "UpdateDomain updates the metadata and configuration of a domain.",
+      "file": "Client/UpdateDomain/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDomain",
+        "fullName": "google.cloud.managedidentities.v1beta1.Client.UpdateDomain",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedidentitiespb.UpdateDomainRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDomainOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedidentities.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "UpdateDomain",
+          "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService.UpdateDomain",
+          "service": {
+            "shortName": "ManagedIdentitiesService",
+            "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "managedidentities_v1beta1_generated_ManagedIdentitiesService_ValidateTrust_sync",
+      "title": "managedidentities ValidateTrust Sample",
+      "description": "ValidateTrust validates a trust state, that the target domain is reachable, and that the\ntarget domain is able to accept incoming trust requests.",
+      "file": "Client/ValidateTrust/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ValidateTrust",
+        "fullName": "google.cloud.managedidentities.v1beta1.Client.ValidateTrust",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "managedidentitiespb.ValidateTrustRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ValidateTrustOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.managedidentities.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ValidateTrust",
+          "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService.ValidateTrust",
+          "service": {
+            "shortName": "ManagedIdentitiesService",
+            "fullName": "google.cloud.managedidentities.v1beta1.ManagedIdentitiesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

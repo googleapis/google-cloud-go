@@ -1,0 +1,1761 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/security/privateca/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.security.privateca.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_ActivateCertificateAuthority_sync",
+      "title": "privateca ActivateCertificateAuthority Sample",
+      "description": "ActivateCertificateAuthority activate a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]\nthat is in state\n[AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]\nand is of type\n[SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].\nAfter the parent Certificate Authority signs a certificate signing request\nfrom\n[FetchCertificateAuthorityCsr][google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCertificateAuthorityCsr],\nthis method can complete the activation process.",
+      "file": "CertificateAuthorityClient/ActivateCertificateAuthority/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ActivateCertificateAuthority",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.ActivateCertificateAuthority",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.ActivateCertificateAuthorityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ActivateCertificateAuthorityOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "ActivateCertificateAuthority",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.ActivateCertificateAuthority",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_CancelOperation_sync",
+      "title": "privateca CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CertificateAuthorityClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_CreateCaPool_sync",
+      "title": "privateca CreateCaPool Sample",
+      "description": "CreateCaPool create a [CaPool][google.cloud.security.privateca.v1.CaPool].",
+      "file": "CertificateAuthorityClient/CreateCaPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCaPool",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.CreateCaPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.CreateCaPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateCaPoolOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "CreateCaPool",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.CreateCaPool",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_CreateCertificate_sync",
+      "title": "privateca CreateCertificate Sample",
+      "description": "CreateCertificate create a new [Certificate][google.cloud.security.privateca.v1.Certificate]\nin a given Project, Location from a particular\n[CaPool][google.cloud.security.privateca.v1.CaPool].",
+      "file": "CertificateAuthorityClient/CreateCertificate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCertificate",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.CreateCertificate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.CreateCertificateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privatecapb.Certificate",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "CreateCertificate",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.CreateCertificate",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_CreateCertificateAuthority_sync",
+      "title": "privateca CreateCertificateAuthority Sample",
+      "description": "CreateCertificateAuthority create a new\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]\nin a given Project and Location.",
+      "file": "CertificateAuthorityClient/CreateCertificateAuthority/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCertificateAuthority",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.CreateCertificateAuthority",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.CreateCertificateAuthorityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateCertificateAuthorityOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "CreateCertificateAuthority",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.CreateCertificateAuthority",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_CreateCertificateTemplate_sync",
+      "title": "privateca CreateCertificateTemplate Sample",
+      "description": "CreateCertificateTemplate create a new\n[CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate]\nin a given Project and Location.",
+      "file": "CertificateAuthorityClient/CreateCertificateTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCertificateTemplate",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.CreateCertificateTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.CreateCertificateTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateCertificateTemplateOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "CreateCertificateTemplate",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.CreateCertificateTemplate",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_DeleteCaPool_sync",
+      "title": "privateca DeleteCaPool Sample",
+      "description": "DeleteCaPool delete a [CaPool][google.cloud.security.privateca.v1.CaPool].",
+      "file": "CertificateAuthorityClient/DeleteCaPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCaPool",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.DeleteCaPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.DeleteCaPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteCaPoolOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "DeleteCaPool",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.DeleteCaPool",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_DeleteCertificateAuthority_sync",
+      "title": "privateca DeleteCertificateAuthority Sample",
+      "description": "DeleteCertificateAuthority delete a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].",
+      "file": "CertificateAuthorityClient/DeleteCertificateAuthority/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCertificateAuthority",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.DeleteCertificateAuthority",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.DeleteCertificateAuthorityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteCertificateAuthorityOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "DeleteCertificateAuthority",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.DeleteCertificateAuthority",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_DeleteCertificateTemplate_sync",
+      "title": "privateca DeleteCertificateTemplate Sample",
+      "description": "DeleteCertificateTemplate deleteCertificateTemplate deletes a\n[CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].",
+      "file": "CertificateAuthorityClient/DeleteCertificateTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCertificateTemplate",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.DeleteCertificateTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.DeleteCertificateTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteCertificateTemplateOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "DeleteCertificateTemplate",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.DeleteCertificateTemplate",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_DeleteOperation_sync",
+      "title": "privateca DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CertificateAuthorityClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_DisableCertificateAuthority_sync",
+      "title": "privateca DisableCertificateAuthority Sample",
+      "description": "DisableCertificateAuthority disable a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].",
+      "file": "CertificateAuthorityClient/DisableCertificateAuthority/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DisableCertificateAuthority",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.DisableCertificateAuthority",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.DisableCertificateAuthorityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DisableCertificateAuthorityOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "DisableCertificateAuthority",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.DisableCertificateAuthority",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_EnableCertificateAuthority_sync",
+      "title": "privateca EnableCertificateAuthority Sample",
+      "description": "EnableCertificateAuthority enable a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].",
+      "file": "CertificateAuthorityClient/EnableCertificateAuthority/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EnableCertificateAuthority",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.EnableCertificateAuthority",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.EnableCertificateAuthorityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EnableCertificateAuthorityOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "EnableCertificateAuthority",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.EnableCertificateAuthority",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_FetchCaCerts_sync",
+      "title": "privateca FetchCaCerts Sample",
+      "description": "FetchCaCerts fetchCaCerts returns the current trust anchor for the\n[CaPool][google.cloud.security.privateca.v1.CaPool]. This will include CA\ncertificate chains for all certificate authorities in the ENABLED,\nDISABLED, or STAGED states.",
+      "file": "CertificateAuthorityClient/FetchCaCerts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchCaCerts",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.FetchCaCerts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.FetchCaCertsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privatecapb.FetchCaCertsResponse",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "FetchCaCerts",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCaCerts",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_FetchCertificateAuthorityCsr_sync",
+      "title": "privateca FetchCertificateAuthorityCsr Sample",
+      "description": "FetchCertificateAuthorityCsr fetch a certificate signing request (CSR) from a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]\nthat is in state\n[AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]\nand is of type\n[SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].\nThe CSR must then be signed by the desired parent Certificate Authority,\nwhich could be another\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]\nresource, or could be an on-prem certificate authority. See also\n[ActivateCertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthorityService.ActivateCertificateAuthority].",
+      "file": "CertificateAuthorityClient/FetchCertificateAuthorityCsr/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchCertificateAuthorityCsr",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.FetchCertificateAuthorityCsr",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.FetchCertificateAuthorityCsrRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privatecapb.FetchCertificateAuthorityCsrResponse",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "FetchCertificateAuthorityCsr",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCertificateAuthorityCsr",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetCaPool_sync",
+      "title": "privateca GetCaPool Sample",
+      "description": "GetCaPool returns a [CaPool][google.cloud.security.privateca.v1.CaPool].",
+      "file": "CertificateAuthorityClient/GetCaPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCaPool",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.GetCaPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.GetCaPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privatecapb.CaPool",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "GetCaPool",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.GetCaPool",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetCertificate_sync",
+      "title": "privateca GetCertificate Sample",
+      "description": "GetCertificate returns a [Certificate][google.cloud.security.privateca.v1.Certificate].",
+      "file": "CertificateAuthorityClient/GetCertificate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCertificate",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.GetCertificate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.GetCertificateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privatecapb.Certificate",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "GetCertificate",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.GetCertificate",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetCertificateAuthority_sync",
+      "title": "privateca GetCertificateAuthority Sample",
+      "description": "GetCertificateAuthority returns a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].",
+      "file": "CertificateAuthorityClient/GetCertificateAuthority/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCertificateAuthority",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.GetCertificateAuthority",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.GetCertificateAuthorityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privatecapb.CertificateAuthority",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "GetCertificateAuthority",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.GetCertificateAuthority",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetCertificateRevocationList_sync",
+      "title": "privateca GetCertificateRevocationList Sample",
+      "description": "GetCertificateRevocationList returns a\n[CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].",
+      "file": "CertificateAuthorityClient/GetCertificateRevocationList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCertificateRevocationList",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.GetCertificateRevocationList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.GetCertificateRevocationListRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privatecapb.CertificateRevocationList",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "GetCertificateRevocationList",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.GetCertificateRevocationList",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetCertificateTemplate_sync",
+      "title": "privateca GetCertificateTemplate Sample",
+      "description": "GetCertificateTemplate returns a\n[CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].",
+      "file": "CertificateAuthorityClient/GetCertificateTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCertificateTemplate",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.GetCertificateTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.GetCertificateTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privatecapb.CertificateTemplate",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "GetCertificateTemplate",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.GetCertificateTemplate",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetIamPolicy_sync",
+      "title": "privateca GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "CertificateAuthorityClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetLocation_sync",
+      "title": "privateca GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "CertificateAuthorityClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetOperation_sync",
+      "title": "privateca GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CertificateAuthorityClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_ListCaPools_sync",
+      "title": "privateca ListCaPools Sample",
+      "description": "ListCaPools lists [CaPools][google.cloud.security.privateca.v1.CaPool].",
+      "file": "CertificateAuthorityClient/ListCaPools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCaPools",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.ListCaPools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.ListCaPoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CaPoolIterator",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "ListCaPools",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.ListCaPools",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_ListCertificateAuthorities_sync",
+      "title": "privateca ListCertificateAuthorities Sample",
+      "description": "ListCertificateAuthorities lists\n[CertificateAuthorities][google.cloud.security.privateca.v1.CertificateAuthority].",
+      "file": "CertificateAuthorityClient/ListCertificateAuthorities/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCertificateAuthorities",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.ListCertificateAuthorities",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.ListCertificateAuthoritiesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CertificateAuthorityIterator",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "ListCertificateAuthorities",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.ListCertificateAuthorities",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_ListCertificateRevocationLists_sync",
+      "title": "privateca ListCertificateRevocationLists Sample",
+      "description": "ListCertificateRevocationLists lists\n[CertificateRevocationLists][google.cloud.security.privateca.v1.CertificateRevocationList].",
+      "file": "CertificateAuthorityClient/ListCertificateRevocationLists/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCertificateRevocationLists",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.ListCertificateRevocationLists",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.ListCertificateRevocationListsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CertificateRevocationListIterator",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "ListCertificateRevocationLists",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.ListCertificateRevocationLists",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_ListCertificateTemplates_sync",
+      "title": "privateca ListCertificateTemplates Sample",
+      "description": "ListCertificateTemplates lists\n[CertificateTemplates][google.cloud.security.privateca.v1.CertificateTemplate].",
+      "file": "CertificateAuthorityClient/ListCertificateTemplates/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCertificateTemplates",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.ListCertificateTemplates",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.ListCertificateTemplatesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CertificateTemplateIterator",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "ListCertificateTemplates",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.ListCertificateTemplates",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_ListCertificates_sync",
+      "title": "privateca ListCertificates Sample",
+      "description": "ListCertificates lists [Certificates][google.cloud.security.privateca.v1.Certificate].",
+      "file": "CertificateAuthorityClient/ListCertificates/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCertificates",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.ListCertificates",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.ListCertificatesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CertificateIterator",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "ListCertificates",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.ListCertificates",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_ListLocations_sync",
+      "title": "privateca ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CertificateAuthorityClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_ListOperations_sync",
+      "title": "privateca ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CertificateAuthorityClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_RevokeCertificate_sync",
+      "title": "privateca RevokeCertificate Sample",
+      "description": "RevokeCertificate revoke a [Certificate][google.cloud.security.privateca.v1.Certificate].",
+      "file": "CertificateAuthorityClient/RevokeCertificate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RevokeCertificate",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.RevokeCertificate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.RevokeCertificateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privatecapb.Certificate",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "RevokeCertificate",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.RevokeCertificate",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_SetIamPolicy_sync",
+      "title": "privateca SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "CertificateAuthorityClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_TestIamPermissions_sync",
+      "title": "privateca TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "CertificateAuthorityClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_UndeleteCertificateAuthority_sync",
+      "title": "privateca UndeleteCertificateAuthority Sample",
+      "description": "UndeleteCertificateAuthority undelete a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]\nthat has been deleted.",
+      "file": "CertificateAuthorityClient/UndeleteCertificateAuthority/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeleteCertificateAuthority",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.UndeleteCertificateAuthority",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.UndeleteCertificateAuthorityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UndeleteCertificateAuthorityOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "UndeleteCertificateAuthority",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.UndeleteCertificateAuthority",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_UpdateCaPool_sync",
+      "title": "privateca UpdateCaPool Sample",
+      "description": "UpdateCaPool update a [CaPool][google.cloud.security.privateca.v1.CaPool].",
+      "file": "CertificateAuthorityClient/UpdateCaPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCaPool",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.UpdateCaPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.UpdateCaPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateCaPoolOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "UpdateCaPool",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.UpdateCaPool",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_UpdateCertificate_sync",
+      "title": "privateca UpdateCertificate Sample",
+      "description": "UpdateCertificate update a [Certificate][google.cloud.security.privateca.v1.Certificate].\nCurrently, the only field you can update is the\n[labels][google.cloud.security.privateca.v1.Certificate.labels] field.",
+      "file": "CertificateAuthorityClient/UpdateCertificate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCertificate",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.UpdateCertificate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.UpdateCertificateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*privatecapb.Certificate",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "UpdateCertificate",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.UpdateCertificate",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_UpdateCertificateAuthority_sync",
+      "title": "privateca UpdateCertificateAuthority Sample",
+      "description": "UpdateCertificateAuthority update a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].",
+      "file": "CertificateAuthorityClient/UpdateCertificateAuthority/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCertificateAuthority",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.UpdateCertificateAuthority",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.UpdateCertificateAuthorityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateCertificateAuthorityOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "UpdateCertificateAuthority",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.UpdateCertificateAuthority",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_UpdateCertificateRevocationList_sync",
+      "title": "privateca UpdateCertificateRevocationList Sample",
+      "description": "UpdateCertificateRevocationList update a\n[CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].",
+      "file": "CertificateAuthorityClient/UpdateCertificateRevocationList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCertificateRevocationList",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.UpdateCertificateRevocationList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.UpdateCertificateRevocationListRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateCertificateRevocationListOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "UpdateCertificateRevocationList",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.UpdateCertificateRevocationList",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_UpdateCertificateTemplate_sync",
+      "title": "privateca UpdateCertificateTemplate Sample",
+      "description": "UpdateCertificateTemplate update a\n[CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].",
+      "file": "CertificateAuthorityClient/UpdateCertificateTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCertificateTemplate",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.UpdateCertificateTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecapb.UpdateCertificateTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateCertificateTemplateOperation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "UpdateCertificateTemplate",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.UpdateCertificateTemplate",
+          "service": {
+            "shortName": "CertificateAuthorityService",
+            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

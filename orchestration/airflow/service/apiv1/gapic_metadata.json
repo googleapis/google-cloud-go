@@ -1,0 +1,347 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.orchestration.airflow.service.v1",
+  "libraryPackage": "cloud.google.com/go/orchestration/airflow/service/apiv1",
+  "services": {
+    "Environments": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "EnvironmentsClient",
+          "rpcs": {
+            "CheckUpgrade": {
+              "methods": [
+                "CheckUpgrade"
+              ]
+            },
+            "CreateEnvironment": {
+              "methods": [
+                "CreateEnvironment"
+              ]
+            },
+            "CreateUserWorkloadsConfigMap": {
+              "methods": [
+                "CreateUserWorkloadsConfigMap"
+              ]
+            },
+            "CreateUserWorkloadsSecret": {
+              "methods": [
+                "CreateUserWorkloadsSecret"
+              ]
+            },
+            "DatabaseFailover": {
+              "methods": [
+                "DatabaseFailover"
+              ]
+            },
+            "DeleteEnvironment": {
+              "methods": [
+                "DeleteEnvironment"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteUserWorkloadsConfigMap": {
+              "methods": [
+                "DeleteUserWorkloadsConfigMap"
+              ]
+            },
+            "DeleteUserWorkloadsSecret": {
+              "methods": [
+                "DeleteUserWorkloadsSecret"
+              ]
+            },
+            "ExecuteAirflowCommand": {
+              "methods": [
+                "ExecuteAirflowCommand"
+              ]
+            },
+            "FetchDatabaseProperties": {
+              "methods": [
+                "FetchDatabaseProperties"
+              ]
+            },
+            "GetEnvironment": {
+              "methods": [
+                "GetEnvironment"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetUserWorkloadsConfigMap": {
+              "methods": [
+                "GetUserWorkloadsConfigMap"
+              ]
+            },
+            "GetUserWorkloadsSecret": {
+              "methods": [
+                "GetUserWorkloadsSecret"
+              ]
+            },
+            "ListEnvironments": {
+              "methods": [
+                "ListEnvironments"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListUserWorkloadsConfigMaps": {
+              "methods": [
+                "ListUserWorkloadsConfigMaps"
+              ]
+            },
+            "ListUserWorkloadsSecrets": {
+              "methods": [
+                "ListUserWorkloadsSecrets"
+              ]
+            },
+            "ListWorkloads": {
+              "methods": [
+                "ListWorkloads"
+              ]
+            },
+            "LoadSnapshot": {
+              "methods": [
+                "LoadSnapshot"
+              ]
+            },
+            "PollAirflowCommand": {
+              "methods": [
+                "PollAirflowCommand"
+              ]
+            },
+            "SaveSnapshot": {
+              "methods": [
+                "SaveSnapshot"
+              ]
+            },
+            "StopAirflowCommand": {
+              "methods": [
+                "StopAirflowCommand"
+              ]
+            },
+            "UpdateEnvironment": {
+              "methods": [
+                "UpdateEnvironment"
+              ]
+            },
+            "UpdateUserWorkloadsConfigMap": {
+              "methods": [
+                "UpdateUserWorkloadsConfigMap"
+              ]
+            },
+            "UpdateUserWorkloadsSecret": {
+              "methods": [
+                "UpdateUserWorkloadsSecret"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "EnvironmentsClient",
+          "rpcs": {
+            "CheckUpgrade": {
+              "methods": [
+                "CheckUpgrade"
+              ]
+            },
+            "CreateEnvironment": {
+              "methods": [
+                "CreateEnvironment"
+              ]
+            },
+            "CreateUserWorkloadsConfigMap": {
+              "methods": [
+                "CreateUserWorkloadsConfigMap"
+              ]
+            },
+            "CreateUserWorkloadsSecret": {
+              "methods": [
+                "CreateUserWorkloadsSecret"
+              ]
+            },
+            "DatabaseFailover": {
+              "methods": [
+                "DatabaseFailover"
+              ]
+            },
+            "DeleteEnvironment": {
+              "methods": [
+                "DeleteEnvironment"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteUserWorkloadsConfigMap": {
+              "methods": [
+                "DeleteUserWorkloadsConfigMap"
+              ]
+            },
+            "DeleteUserWorkloadsSecret": {
+              "methods": [
+                "DeleteUserWorkloadsSecret"
+              ]
+            },
+            "ExecuteAirflowCommand": {
+              "methods": [
+                "ExecuteAirflowCommand"
+              ]
+            },
+            "FetchDatabaseProperties": {
+              "methods": [
+                "FetchDatabaseProperties"
+              ]
+            },
+            "GetEnvironment": {
+              "methods": [
+                "GetEnvironment"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetUserWorkloadsConfigMap": {
+              "methods": [
+                "GetUserWorkloadsConfigMap"
+              ]
+            },
+            "GetUserWorkloadsSecret": {
+              "methods": [
+                "GetUserWorkloadsSecret"
+              ]
+            },
+            "ListEnvironments": {
+              "methods": [
+                "ListEnvironments"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListUserWorkloadsConfigMaps": {
+              "methods": [
+                "ListUserWorkloadsConfigMaps"
+              ]
+            },
+            "ListUserWorkloadsSecrets": {
+              "methods": [
+                "ListUserWorkloadsSecrets"
+              ]
+            },
+            "ListWorkloads": {
+              "methods": [
+                "ListWorkloads"
+              ]
+            },
+            "LoadSnapshot": {
+              "methods": [
+                "LoadSnapshot"
+              ]
+            },
+            "PollAirflowCommand": {
+              "methods": [
+                "PollAirflowCommand"
+              ]
+            },
+            "SaveSnapshot": {
+              "methods": [
+                "SaveSnapshot"
+              ]
+            },
+            "StopAirflowCommand": {
+              "methods": [
+                "StopAirflowCommand"
+              ]
+            },
+            "UpdateEnvironment": {
+              "methods": [
+                "UpdateEnvironment"
+              ]
+            },
+            "UpdateUserWorkloadsConfigMap": {
+              "methods": [
+                "UpdateUserWorkloadsConfigMap"
+              ]
+            },
+            "UpdateUserWorkloadsSecret": {
+              "methods": [
+                "UpdateUserWorkloadsSecret"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ImageVersions": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ImageVersionsClient",
+          "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListImageVersions": {
+              "methods": [
+                "ListImageVersions"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ImageVersionsClient",
+          "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListImageVersions": {
+              "methods": [
+                "ListImageVersions"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.scheduler.v1",
+  "libraryPackage": "cloud.google.com/go/scheduler/apiv1",
+  "services": {
+    "CloudScheduler": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudSchedulerClient",
+          "rpcs": {
+            "CreateJob": {
+              "methods": [
+                "CreateJob"
+              ]
+            },
+            "DeleteJob": {
+              "methods": [
+                "DeleteJob"
+              ]
+            },
+            "GetJob": {
+              "methods": [
+                "GetJob"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "ListJobs": {
+              "methods": [
+                "ListJobs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "PauseJob": {
+              "methods": [
+                "PauseJob"
+              ]
+            },
+            "ResumeJob": {
+              "methods": [
+                "ResumeJob"
+              ]
+            },
+            "RunJob": {
+              "methods": [
+                "RunJob"
+              ]
+            },
+            "UpdateJob": {
+              "methods": [
+                "UpdateJob"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CloudSchedulerClient",
+          "rpcs": {
+            "CreateJob": {
+              "methods": [
+                "CreateJob"
+              ]
+            },
+            "DeleteJob": {
+              "methods": [
+                "DeleteJob"
+              ]
+            },
+            "GetJob": {
+              "methods": [
+                "GetJob"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "ListJobs": {
+              "methods": [
+                "ListJobs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "PauseJob": {
+              "methods": [
+                "PauseJob"
+              ]
+            },
+            "ResumeJob": {
+              "methods": [
+                "ResumeJob"
+              ]
+            },
+            "RunJob": {
+              "methods": [
+                "RunJob"
+              ]
+            },
+            "UpdateJob": {
+              "methods": [
+                "UpdateJob"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

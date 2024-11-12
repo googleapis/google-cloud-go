@@ -1,0 +1,233 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.datacatalog.lineage.v1",
+  "libraryPackage": "cloud.google.com/go/datacatalog/lineage/apiv1",
+  "services": {
+    "Lineage": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchSearchLinkProcesses": {
+              "methods": [
+                "BatchSearchLinkProcesses"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateLineageEvent": {
+              "methods": [
+                "CreateLineageEvent"
+              ]
+            },
+            "CreateProcess": {
+              "methods": [
+                "CreateProcess"
+              ]
+            },
+            "CreateRun": {
+              "methods": [
+                "CreateRun"
+              ]
+            },
+            "DeleteLineageEvent": {
+              "methods": [
+                "DeleteLineageEvent"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteProcess": {
+              "methods": [
+                "DeleteProcess"
+              ]
+            },
+            "DeleteRun": {
+              "methods": [
+                "DeleteRun"
+              ]
+            },
+            "GetLineageEvent": {
+              "methods": [
+                "GetLineageEvent"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProcess": {
+              "methods": [
+                "GetProcess"
+              ]
+            },
+            "GetRun": {
+              "methods": [
+                "GetRun"
+              ]
+            },
+            "ListLineageEvents": {
+              "methods": [
+                "ListLineageEvents"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListProcesses": {
+              "methods": [
+                "ListProcesses"
+              ]
+            },
+            "ListRuns": {
+              "methods": [
+                "ListRuns"
+              ]
+            },
+            "ProcessOpenLineageRunEvent": {
+              "methods": [
+                "ProcessOpenLineageRunEvent"
+              ]
+            },
+            "SearchLinks": {
+              "methods": [
+                "SearchLinks"
+              ]
+            },
+            "UpdateProcess": {
+              "methods": [
+                "UpdateProcess"
+              ]
+            },
+            "UpdateRun": {
+              "methods": [
+                "UpdateRun"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchSearchLinkProcesses": {
+              "methods": [
+                "BatchSearchLinkProcesses"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateLineageEvent": {
+              "methods": [
+                "CreateLineageEvent"
+              ]
+            },
+            "CreateProcess": {
+              "methods": [
+                "CreateProcess"
+              ]
+            },
+            "CreateRun": {
+              "methods": [
+                "CreateRun"
+              ]
+            },
+            "DeleteLineageEvent": {
+              "methods": [
+                "DeleteLineageEvent"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteProcess": {
+              "methods": [
+                "DeleteProcess"
+              ]
+            },
+            "DeleteRun": {
+              "methods": [
+                "DeleteRun"
+              ]
+            },
+            "GetLineageEvent": {
+              "methods": [
+                "GetLineageEvent"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProcess": {
+              "methods": [
+                "GetProcess"
+              ]
+            },
+            "GetRun": {
+              "methods": [
+                "GetRun"
+              ]
+            },
+            "ListLineageEvents": {
+              "methods": [
+                "ListLineageEvents"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListProcesses": {
+              "methods": [
+                "ListProcesses"
+              ]
+            },
+            "ListRuns": {
+              "methods": [
+                "ListRuns"
+              ]
+            },
+            "ProcessOpenLineageRunEvent": {
+              "methods": [
+                "ProcessOpenLineageRunEvent"
+              ]
+            },
+            "SearchLinks": {
+              "methods": [
+                "SearchLinks"
+              ]
+            },
+            "UpdateProcess": {
+              "methods": [
+                "UpdateProcess"
+              ]
+            },
+            "UpdateRun": {
+              "methods": [
+                "UpdateRun"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

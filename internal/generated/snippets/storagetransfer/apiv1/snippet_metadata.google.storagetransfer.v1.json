@@ -1,0 +1,792 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/storagetransfer/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.storagetransfer.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_CancelOperation_sync",
+      "title": "storagetransfer CancelOperation Sample",
+      "description": "CancelOperation cancels a transfer. Use\nthe [transferOperations.get][google.longrunning.Operations.GetOperation]\nmethod to check if the cancellation succeeded or if the operation\ncompleted despite the `cancel` request.\n\nWhen you cancel an operation, the currently running transfer is\ninterrupted.  For recurring transfer jobs, the next instance of the\ntransfer job will still run.  For example, if your job is configured\nto run every day at 1pm and you cancel Monday's operation at 1: 05pm,\nMonday's transfer\nwill stop. However, a transfer job will still be attempted on Tuesday.\n\nThis applies only to currently running operations. If an operation is\nnot currently running, `cancel` does nothing.\n\n<aside class=\"caution\">\n<b>Caution: </b> Canceling a transfer job can leave your data in an\nunknown state. We recommend that you restore the state at both the\ndestination and the source after the `cancel` request completes so\nthat your data is in a consistent state. </aside>\n\nWhen you cancel a job, the next job computes a delta of files and may\nrepair any inconsistent state. For instance, if you run a job every\nday, and today's job found 10 new files and transferred five files\nbefore you canceled the job, tomorrow's transfer operation will\ncompute a new delta with the five files that were not copied today\nplus any new files discovered tomorrow.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.storagetransfer.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_CreateAgentPool_sync",
+      "title": "storagetransfer CreateAgentPool Sample",
+      "description": "CreateAgentPool creates an agent pool resource.",
+      "file": "Client/CreateAgentPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAgentPool",
+        "fullName": "google.storagetransfer.v1.Client.CreateAgentPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.CreateAgentPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagetransferpb.AgentPool",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateAgentPool",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.CreateAgentPool",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_CreateTransferJob_sync",
+      "title": "storagetransfer CreateTransferJob Sample",
+      "description": "CreateTransferJob creates a transfer job that runs periodically.",
+      "file": "Client/CreateTransferJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTransferJob",
+        "fullName": "google.storagetransfer.v1.Client.CreateTransferJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.CreateTransferJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagetransferpb.TransferJob",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateTransferJob",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.CreateTransferJob",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_DeleteAgentPool_sync",
+      "title": "storagetransfer DeleteAgentPool Sample",
+      "description": "DeleteAgentPool deletes an agent pool.",
+      "file": "Client/DeleteAgentPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAgentPool",
+        "fullName": "google.storagetransfer.v1.Client.DeleteAgentPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.DeleteAgentPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteAgentPool",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.DeleteAgentPool",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_DeleteTransferJob_sync",
+      "title": "storagetransfer DeleteTransferJob Sample",
+      "description": "DeleteTransferJob deletes a transfer job. Deleting a transfer job sets its status to\n[DELETED][google.storagetransfer.v1.TransferJob.Status.DELETED].",
+      "file": "Client/DeleteTransferJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTransferJob",
+        "fullName": "google.storagetransfer.v1.Client.DeleteTransferJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.DeleteTransferJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteTransferJob",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.DeleteTransferJob",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_GetAgentPool_sync",
+      "title": "storagetransfer GetAgentPool Sample",
+      "description": "GetAgentPool gets an agent pool.",
+      "file": "Client/GetAgentPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAgentPool",
+        "fullName": "google.storagetransfer.v1.Client.GetAgentPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.GetAgentPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagetransferpb.AgentPool",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetAgentPool",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.GetAgentPool",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_GetGoogleServiceAccount_sync",
+      "title": "storagetransfer GetGoogleServiceAccount Sample",
+      "description": "GetGoogleServiceAccount returns the Google service account that is used by Storage Transfer\nService to access buckets in the project where transfers\nrun or in other projects. Each Google service account is associated\nwith one Google Cloud project. Users\nshould add this service account to the Google Cloud Storage bucket\nACLs to grant access to Storage Transfer Service. This service\naccount is created and owned by Storage Transfer Service and can\nonly be used by Storage Transfer Service.",
+      "file": "Client/GetGoogleServiceAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGoogleServiceAccount",
+        "fullName": "google.storagetransfer.v1.Client.GetGoogleServiceAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.GetGoogleServiceAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagetransferpb.GoogleServiceAccount",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetGoogleServiceAccount",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.GetGoogleServiceAccount",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_GetOperation_sync",
+      "title": "storagetransfer GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.storagetransfer.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_GetTransferJob_sync",
+      "title": "storagetransfer GetTransferJob Sample",
+      "description": "GetTransferJob gets a transfer job.",
+      "file": "Client/GetTransferJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTransferJob",
+        "fullName": "google.storagetransfer.v1.Client.GetTransferJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.GetTransferJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagetransferpb.TransferJob",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetTransferJob",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.GetTransferJob",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_ListAgentPools_sync",
+      "title": "storagetransfer ListAgentPools Sample",
+      "description": "ListAgentPools lists agent pools.",
+      "file": "Client/ListAgentPools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAgentPools",
+        "fullName": "google.storagetransfer.v1.Client.ListAgentPools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.ListAgentPoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AgentPoolIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListAgentPools",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.ListAgentPools",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_ListOperations_sync",
+      "title": "storagetransfer ListOperations Sample",
+      "description": "ListOperations lists transfer operations. Operations are ordered by their creation\ntime in reverse chronological order.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.storagetransfer.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_ListTransferJobs_sync",
+      "title": "storagetransfer ListTransferJobs Sample",
+      "description": "ListTransferJobs lists transfer jobs.",
+      "file": "Client/ListTransferJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTransferJobs",
+        "fullName": "google.storagetransfer.v1.Client.ListTransferJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.ListTransferJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TransferJobIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListTransferJobs",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.ListTransferJobs",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_PauseTransferOperation_sync",
+      "title": "storagetransfer PauseTransferOperation Sample",
+      "description": "PauseTransferOperation pauses a transfer operation.",
+      "file": "Client/PauseTransferOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PauseTransferOperation",
+        "fullName": "google.storagetransfer.v1.Client.PauseTransferOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.PauseTransferOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "PauseTransferOperation",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.PauseTransferOperation",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_ResumeTransferOperation_sync",
+      "title": "storagetransfer ResumeTransferOperation Sample",
+      "description": "ResumeTransferOperation resumes a transfer operation that is paused.",
+      "file": "Client/ResumeTransferOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResumeTransferOperation",
+        "fullName": "google.storagetransfer.v1.Client.ResumeTransferOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.ResumeTransferOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "ResumeTransferOperation",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.ResumeTransferOperation",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_RunTransferJob_sync",
+      "title": "storagetransfer RunTransferJob Sample",
+      "description": "RunTransferJob starts a new operation for the specified transfer job.\nA `TransferJob` has a maximum of one active `TransferOperation`. If this\nmethod is called while a `TransferOperation` is active, an error is\nreturned.",
+      "file": "Client/RunTransferJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunTransferJob",
+        "fullName": "google.storagetransfer.v1.Client.RunTransferJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.RunTransferJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RunTransferJobOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "RunTransferJob",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.RunTransferJob",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_UpdateAgentPool_sync",
+      "title": "storagetransfer UpdateAgentPool Sample",
+      "description": "UpdateAgentPool updates an existing agent pool resource.",
+      "file": "Client/UpdateAgentPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAgentPool",
+        "fullName": "google.storagetransfer.v1.Client.UpdateAgentPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.UpdateAgentPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagetransferpb.AgentPool",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateAgentPool",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.UpdateAgentPool",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storagetransfer_v1_generated_StorageTransferService_UpdateTransferJob_sync",
+      "title": "storagetransfer UpdateTransferJob Sample",
+      "description": "UpdateTransferJob updates a transfer job. Updating a job's transfer spec does not affect\ntransfer operations that are running already.\n\n**Note: ** The job's [status][google.storagetransfer.v1.TransferJob.status]\nfield can be modified using this RPC (for example, to set a job's status to\n[DELETED][google.storagetransfer.v1.TransferJob.Status.DELETED],\n[DISABLED][google.storagetransfer.v1.TransferJob.Status.DISABLED], or\n[ENABLED][google.storagetransfer.v1.TransferJob.Status.ENABLED]).",
+      "file": "Client/UpdateTransferJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTransferJob",
+        "fullName": "google.storagetransfer.v1.Client.UpdateTransferJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagetransferpb.UpdateTransferJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagetransferpb.TransferJob",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storagetransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateTransferJob",
+          "fullName": "google.storagetransfer.v1.StorageTransferService.UpdateTransferJob",
+          "service": {
+            "shortName": "StorageTransferService",
+            "fullName": "google.storagetransfer.v1.StorageTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.gkeconnect.gateway.v1beta1",
+  "libraryPackage": "cloud.google.com/go/gkeconnect/gateway/apiv1beta1",
+  "services": {
+    "GatewayControl": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GatewayControlClient",
+          "rpcs": {
+            "GenerateCredentials": {
+              "methods": [
+                "GenerateCredentials"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GatewayControlClient",
+          "rpcs": {
+            "GenerateCredentials": {
+              "methods": [
+                "GenerateCredentials"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,981 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/api/serviceusage/apiv1beta1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.api.serviceusage.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_BatchEnableServices_sync",
+      "title": "serviceusage BatchEnableServices Sample",
+      "description": "BatchEnableServices enables multiple services on a project. The operation is atomic: if\nenabling any service fails, then the entire batch fails, and no state\nchanges occur.\n\nOperation response type: `google.protobuf.Empty`\n\n\nDeprecated: BatchEnableServices may be removed in a future version.",
+      "file": "Client/BatchEnableServices/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchEnableServices",
+        "fullName": "google.api.serviceusage.v1beta1.Client.BatchEnableServices",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.BatchEnableServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchEnableServicesOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "BatchEnableServices",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.BatchEnableServices",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_CreateAdminOverride_sync",
+      "title": "serviceusage CreateAdminOverride Sample",
+      "description": "CreateAdminOverride creates an admin override.\nAn admin override is applied by an administrator of a parent folder or\nparent organization of the consumer receiving the override. An admin\noverride is intended to limit the amount of quota the consumer can use out\nof the total quota pool allocated to all children of the folder or\norganization.",
+      "file": "Client/CreateAdminOverride/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAdminOverride",
+        "fullName": "google.api.serviceusage.v1beta1.Client.CreateAdminOverride",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.CreateAdminOverrideRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAdminOverrideOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CreateAdminOverride",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.CreateAdminOverride",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_CreateConsumerOverride_sync",
+      "title": "serviceusage CreateConsumerOverride Sample",
+      "description": "CreateConsumerOverride creates a consumer override.\nA consumer override is applied to the consumer on its own authority to\nlimit its own quota usage. Consumer overrides cannot be used to grant more\nquota than would be allowed by admin overrides, producer overrides, or the\ndefault limit of the service.",
+      "file": "Client/CreateConsumerOverride/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConsumerOverride",
+        "fullName": "google.api.serviceusage.v1beta1.Client.CreateConsumerOverride",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.CreateConsumerOverrideRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateConsumerOverrideOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CreateConsumerOverride",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.CreateConsumerOverride",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_DeleteAdminOverride_sync",
+      "title": "serviceusage DeleteAdminOverride Sample",
+      "description": "DeleteAdminOverride deletes an admin override.",
+      "file": "Client/DeleteAdminOverride/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAdminOverride",
+        "fullName": "google.api.serviceusage.v1beta1.Client.DeleteAdminOverride",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.DeleteAdminOverrideRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteAdminOverrideOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteAdminOverride",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.DeleteAdminOverride",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_DeleteConsumerOverride_sync",
+      "title": "serviceusage DeleteConsumerOverride Sample",
+      "description": "DeleteConsumerOverride deletes a consumer override.",
+      "file": "Client/DeleteConsumerOverride/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConsumerOverride",
+        "fullName": "google.api.serviceusage.v1beta1.Client.DeleteConsumerOverride",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.DeleteConsumerOverrideRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteConsumerOverrideOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteConsumerOverride",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.DeleteConsumerOverride",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_DisableService_sync",
+      "title": "serviceusage DisableService Sample",
+      "description": "DisableService disables a service so that it can no longer be used with a project.\nThis prevents unintended usage that may cause unexpected billing\ncharges or security leaks.\n\nIt is not valid to call the disable method on a service that is not\ncurrently enabled. Callers will receive a `FAILED_PRECONDITION` status if\nthe target service is not currently enabled.\n\nOperation response type: `google.protobuf.Empty`\n\n\nDeprecated: DisableService may be removed in a future version.",
+      "file": "Client/DisableService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DisableService",
+        "fullName": "google.api.serviceusage.v1beta1.Client.DisableService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.DisableServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DisableServiceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DisableService",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.DisableService",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_EnableService_sync",
+      "title": "serviceusage EnableService Sample",
+      "description": "EnableService enables a service so that it can be used with a project.\n\nOperation response type: `google.protobuf.Empty`\n\n\nDeprecated: EnableService may be removed in a future version.",
+      "file": "Client/EnableService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EnableService",
+        "fullName": "google.api.serviceusage.v1beta1.Client.EnableService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.EnableServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EnableServiceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "EnableService",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.EnableService",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_GenerateServiceIdentity_sync",
+      "title": "serviceusage GenerateServiceIdentity Sample",
+      "description": "GenerateServiceIdentity generates service identity for service.",
+      "file": "Client/GenerateServiceIdentity/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateServiceIdentity",
+        "fullName": "google.api.serviceusage.v1beta1.Client.GenerateServiceIdentity",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.GenerateServiceIdentityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GenerateServiceIdentityOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GenerateServiceIdentity",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.GenerateServiceIdentity",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_GetConsumerQuotaLimit_sync",
+      "title": "serviceusage GetConsumerQuotaLimit Sample",
+      "description": "GetConsumerQuotaLimit retrieves a summary of quota information for a specific quota limit.",
+      "file": "Client/GetConsumerQuotaLimit/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConsumerQuotaLimit",
+        "fullName": "google.api.serviceusage.v1beta1.Client.GetConsumerQuotaLimit",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.GetConsumerQuotaLimitRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*serviceusagepb.ConsumerQuotaLimit",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetConsumerQuotaLimit",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.GetConsumerQuotaLimit",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_GetConsumerQuotaMetric_sync",
+      "title": "serviceusage GetConsumerQuotaMetric Sample",
+      "description": "GetConsumerQuotaMetric retrieves a summary of quota information for a specific quota metric",
+      "file": "Client/GetConsumerQuotaMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConsumerQuotaMetric",
+        "fullName": "google.api.serviceusage.v1beta1.Client.GetConsumerQuotaMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.GetConsumerQuotaMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*serviceusagepb.ConsumerQuotaMetric",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetConsumerQuotaMetric",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.GetConsumerQuotaMetric",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_GetOperation_sync",
+      "title": "serviceusage GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.api.serviceusage.v1beta1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_GetService_sync",
+      "title": "serviceusage GetService Sample",
+      "description": "GetService returns the service configuration and enabled state for a given service.\n\n\nDeprecated: GetService may be removed in a future version.",
+      "file": "Client/GetService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetService",
+        "fullName": "google.api.serviceusage.v1beta1.Client.GetService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.GetServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*serviceusagepb.Service",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetService",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.GetService",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_ImportAdminOverrides_sync",
+      "title": "serviceusage ImportAdminOverrides Sample",
+      "description": "ImportAdminOverrides creates or updates multiple admin overrides atomically, all on the\nsame consumer, but on many different metrics or limits.\nThe name field in the quota override message should not be set.",
+      "file": "Client/ImportAdminOverrides/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportAdminOverrides",
+        "fullName": "google.api.serviceusage.v1beta1.Client.ImportAdminOverrides",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.ImportAdminOverridesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportAdminOverridesOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ImportAdminOverrides",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.ImportAdminOverrides",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_ImportConsumerOverrides_sync",
+      "title": "serviceusage ImportConsumerOverrides Sample",
+      "description": "ImportConsumerOverrides creates or updates multiple consumer overrides atomically, all on the\nsame consumer, but on many different metrics or limits.\nThe name field in the quota override message should not be set.",
+      "file": "Client/ImportConsumerOverrides/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportConsumerOverrides",
+        "fullName": "google.api.serviceusage.v1beta1.Client.ImportConsumerOverrides",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.ImportConsumerOverridesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportConsumerOverridesOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ImportConsumerOverrides",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.ImportConsumerOverrides",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_ListAdminOverrides_sync",
+      "title": "serviceusage ListAdminOverrides Sample",
+      "description": "ListAdminOverrides lists all admin overrides on this limit.",
+      "file": "Client/ListAdminOverrides/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAdminOverrides",
+        "fullName": "google.api.serviceusage.v1beta1.Client.ListAdminOverrides",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.ListAdminOverridesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "QuotaOverrideIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListAdminOverrides",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.ListAdminOverrides",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_ListConsumerOverrides_sync",
+      "title": "serviceusage ListConsumerOverrides Sample",
+      "description": "ListConsumerOverrides lists all consumer overrides on this limit.",
+      "file": "Client/ListConsumerOverrides/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConsumerOverrides",
+        "fullName": "google.api.serviceusage.v1beta1.Client.ListConsumerOverrides",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.ListConsumerOverridesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "QuotaOverrideIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListConsumerOverrides",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.ListConsumerOverrides",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_ListConsumerQuotaMetrics_sync",
+      "title": "serviceusage ListConsumerQuotaMetrics Sample",
+      "description": "ListConsumerQuotaMetrics retrieves a summary of all quota information visible to the service\nconsumer, organized by service metric. Each metric includes information\nabout all of its defined limits. Each limit includes the limit\nconfiguration (quota unit, preciseness, default value), the current\neffective limit value, and all of the overrides applied to the limit.",
+      "file": "Client/ListConsumerQuotaMetrics/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConsumerQuotaMetrics",
+        "fullName": "google.api.serviceusage.v1beta1.Client.ListConsumerQuotaMetrics",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.ListConsumerQuotaMetricsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConsumerQuotaMetricIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListConsumerQuotaMetrics",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.ListConsumerQuotaMetrics",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_ListOperations_sync",
+      "title": "serviceusage ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.api.serviceusage.v1beta1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_ListServices_sync",
+      "title": "serviceusage ListServices Sample",
+      "description": "ListServices lists all services available to the specified project, and the current\nstate of those services with respect to the project. The list includes\nall public services, all services for which the calling user has the\n`servicemanagement.services.bind` permission, and all services that have\nalready been enabled on the project. The list can be filtered to\nonly include services in a specific state, for example to only include\nservices enabled on the project.\n\n\nDeprecated: ListServices may be removed in a future version.",
+      "file": "Client/ListServices/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServices",
+        "fullName": "google.api.serviceusage.v1beta1.Client.ListServices",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.ListServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ServiceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListServices",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.ListServices",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_UpdateAdminOverride_sync",
+      "title": "serviceusage UpdateAdminOverride Sample",
+      "description": "UpdateAdminOverride updates an admin override.",
+      "file": "Client/UpdateAdminOverride/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAdminOverride",
+        "fullName": "google.api.serviceusage.v1beta1.Client.UpdateAdminOverride",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.UpdateAdminOverrideRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateAdminOverrideOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "UpdateAdminOverride",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.UpdateAdminOverride",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "serviceusage_v1beta1_generated_ServiceUsage_UpdateConsumerOverride_sync",
+      "title": "serviceusage UpdateConsumerOverride Sample",
+      "description": "UpdateConsumerOverride updates a consumer override.",
+      "file": "Client/UpdateConsumerOverride/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConsumerOverride",
+        "fullName": "google.api.serviceusage.v1beta1.Client.UpdateConsumerOverride",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "serviceusagepb.UpdateConsumerOverrideRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateConsumerOverrideOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.api.serviceusage.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "UpdateConsumerOverride",
+          "fullName": "google.api.serviceusage.v1beta1.ServiceUsage.UpdateConsumerOverride",
+          "service": {
+            "shortName": "ServiceUsage",
+            "fullName": "google.api.serviceusage.v1beta1.ServiceUsage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

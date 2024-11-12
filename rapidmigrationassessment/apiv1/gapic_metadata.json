@@ -1,0 +1,183 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.rapidmigrationassessment.v1",
+  "libraryPackage": "cloud.google.com/go/rapidmigrationassessment/apiv1",
+  "services": {
+    "RapidMigrationAssessment": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAnnotation": {
+              "methods": [
+                "CreateAnnotation"
+              ]
+            },
+            "CreateCollector": {
+              "methods": [
+                "CreateCollector"
+              ]
+            },
+            "DeleteCollector": {
+              "methods": [
+                "DeleteCollector"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAnnotation": {
+              "methods": [
+                "GetAnnotation"
+              ]
+            },
+            "GetCollector": {
+              "methods": [
+                "GetCollector"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCollectors": {
+              "methods": [
+                "ListCollectors"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "PauseCollector": {
+              "methods": [
+                "PauseCollector"
+              ]
+            },
+            "RegisterCollector": {
+              "methods": [
+                "RegisterCollector"
+              ]
+            },
+            "ResumeCollector": {
+              "methods": [
+                "ResumeCollector"
+              ]
+            },
+            "UpdateCollector": {
+              "methods": [
+                "UpdateCollector"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAnnotation": {
+              "methods": [
+                "CreateAnnotation"
+              ]
+            },
+            "CreateCollector": {
+              "methods": [
+                "CreateCollector"
+              ]
+            },
+            "DeleteCollector": {
+              "methods": [
+                "DeleteCollector"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAnnotation": {
+              "methods": [
+                "GetAnnotation"
+              ]
+            },
+            "GetCollector": {
+              "methods": [
+                "GetCollector"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCollectors": {
+              "methods": [
+                "ListCollectors"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "PauseCollector": {
+              "methods": [
+                "PauseCollector"
+              ]
+            },
+            "RegisterCollector": {
+              "methods": [
+                "RegisterCollector"
+              ]
+            },
+            "ResumeCollector": {
+              "methods": [
+                "ResumeCollector"
+              ]
+            },
+            "UpdateCollector": {
+              "methods": [
+                "UpdateCollector"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

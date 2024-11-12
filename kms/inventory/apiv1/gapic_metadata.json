@@ -1,0 +1,67 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.kms.inventory.v1",
+  "libraryPackage": "cloud.google.com/go/kms/inventory/apiv1",
+  "services": {
+    "KeyDashboardService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "KeyDashboardClient",
+          "rpcs": {
+            "ListCryptoKeys": {
+              "methods": [
+                "ListCryptoKeys"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "KeyDashboardClient",
+          "rpcs": {
+            "ListCryptoKeys": {
+              "methods": [
+                "ListCryptoKeys"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "KeyTrackingService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "KeyTrackingClient",
+          "rpcs": {
+            "GetProtectedResourcesSummary": {
+              "methods": [
+                "GetProtectedResourcesSummary"
+              ]
+            },
+            "SearchProtectedResources": {
+              "methods": [
+                "SearchProtectedResources"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "KeyTrackingClient",
+          "rpcs": {
+            "GetProtectedResourcesSummary": {
+              "methods": [
+                "GetProtectedResourcesSummary"
+              ]
+            },
+            "SearchProtectedResources": {
+              "methods": [
+                "SearchProtectedResources"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

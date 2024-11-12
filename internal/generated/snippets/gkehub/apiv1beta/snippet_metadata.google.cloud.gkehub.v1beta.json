@@ -1,0 +1,245 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/gkehub/apiv1beta",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.gkehub.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "gkehub_v1beta_generated_GkeHub_CreateFeature_sync",
+      "title": "gkehub CreateFeature Sample",
+      "description": "CreateFeature adds a new Feature.",
+      "file": "Client/CreateFeature/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFeature",
+        "fullName": "google.cloud.gkehub.v1beta.Client.CreateFeature",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.CreateFeatureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateFeatureOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1beta.Client"
+        },
+        "method": {
+          "shortName": "CreateFeature",
+          "fullName": "google.cloud.gkehub.v1beta.GkeHub.CreateFeature",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1beta.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta_generated_GkeHub_DeleteFeature_sync",
+      "title": "gkehub DeleteFeature Sample",
+      "description": "DeleteFeature removes a Feature.",
+      "file": "Client/DeleteFeature/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFeature",
+        "fullName": "google.cloud.gkehub.v1beta.Client.DeleteFeature",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.DeleteFeatureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteFeatureOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1beta.Client"
+        },
+        "method": {
+          "shortName": "DeleteFeature",
+          "fullName": "google.cloud.gkehub.v1beta.GkeHub.DeleteFeature",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1beta.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta_generated_GkeHub_GetFeature_sync",
+      "title": "gkehub GetFeature Sample",
+      "description": "GetFeature gets details of a single Feature.",
+      "file": "Client/GetFeature/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFeature",
+        "fullName": "google.cloud.gkehub.v1beta.Client.GetFeature",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.GetFeatureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkehubpb.Feature",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1beta.Client"
+        },
+        "method": {
+          "shortName": "GetFeature",
+          "fullName": "google.cloud.gkehub.v1beta.GkeHub.GetFeature",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1beta.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta_generated_GkeHub_ListFeatures_sync",
+      "title": "gkehub ListFeatures Sample",
+      "description": "ListFeatures lists Features in a given project and location.",
+      "file": "Client/ListFeatures/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFeatures",
+        "fullName": "google.cloud.gkehub.v1beta.Client.ListFeatures",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.ListFeaturesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FeatureIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ListFeatures",
+          "fullName": "google.cloud.gkehub.v1beta.GkeHub.ListFeatures",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1beta.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta_generated_GkeHub_UpdateFeature_sync",
+      "title": "gkehub UpdateFeature Sample",
+      "description": "UpdateFeature updates an existing Feature.",
+      "file": "Client/UpdateFeature/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateFeature",
+        "fullName": "google.cloud.gkehub.v1beta.Client.UpdateFeature",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.UpdateFeatureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateFeatureOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1beta.Client"
+        },
+        "method": {
+          "shortName": "UpdateFeature",
+          "fullName": "google.cloud.gkehub.v1beta.GkeHub.UpdateFeature",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1beta.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

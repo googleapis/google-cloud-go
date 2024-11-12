@@ -1,0 +1,153 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/optimization/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.optimization.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudoptimization_v1_generated_FleetRouting_BatchOptimizeTours_sync",
+      "title": "cloudoptimization BatchOptimizeTours Sample",
+      "description": "BatchOptimizeTours optimizes vehicle tours for one or more `OptimizeToursRequest`\nmessages as a batch.\n\nThis method is a Long Running Operation (LRO). The inputs for optimization\n(`OptimizeToursRequest` messages) and outputs (`OptimizeToursResponse`\nmessages) are read/written from/to Cloud Storage in user-specified\nformat. Like the `OptimizeTours` method, each `OptimizeToursRequest`\ncontains a `ShipmentModel` and returns an `OptimizeToursResponse`\ncontaining `ShipmentRoute`s, which are a set of routes to be performed by\nvehicles minimizing the overall cost.",
+      "file": "FleetRoutingClient/BatchOptimizeTours/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchOptimizeTours",
+        "fullName": "google.cloud.optimization.v1.FleetRoutingClient.BatchOptimizeTours",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "optimizationpb.BatchOptimizeToursRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchOptimizeToursOperation",
+        "client": {
+          "shortName": "FleetRoutingClient",
+          "fullName": "google.cloud.optimization.v1.FleetRoutingClient"
+        },
+        "method": {
+          "shortName": "BatchOptimizeTours",
+          "fullName": "google.cloud.optimization.v1.FleetRouting.BatchOptimizeTours",
+          "service": {
+            "shortName": "FleetRouting",
+            "fullName": "google.cloud.optimization.v1.FleetRouting"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudoptimization_v1_generated_FleetRouting_GetOperation_sync",
+      "title": "cloudoptimization GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "FleetRoutingClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.optimization.v1.FleetRoutingClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "FleetRoutingClient",
+          "fullName": "google.cloud.optimization.v1.FleetRoutingClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudoptimization_v1_generated_FleetRouting_OptimizeTours_sync",
+      "title": "cloudoptimization OptimizeTours Sample",
+      "description": "OptimizeTours sends an `OptimizeToursRequest` containing a `ShipmentModel` and returns an\n`OptimizeToursResponse` containing `ShipmentRoute`s, which are a set of\nroutes to be performed by vehicles minimizing the overall cost.\n\nA `ShipmentModel` model consists mainly of `Shipment`s that need to be\ncarried out and `Vehicle`s that can be used to transport the `Shipment`s.\nThe `ShipmentRoute`s assign `Shipment`s to `Vehicle`s. More specifically,\nthey assign a series of `Visit`s to each vehicle, where a `Visit`\ncorresponds to a `VisitRequest`, which is a pickup or delivery for a\n`Shipment`.\n\nThe goal is to provide an assignment of `ShipmentRoute`s to `Vehicle`s that\nminimizes the total cost where cost has many components defined in the\n`ShipmentModel`.",
+      "file": "FleetRoutingClient/OptimizeTours/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "OptimizeTours",
+        "fullName": "google.cloud.optimization.v1.FleetRoutingClient.OptimizeTours",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "optimizationpb.OptimizeToursRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*optimizationpb.OptimizeToursResponse",
+        "client": {
+          "shortName": "FleetRoutingClient",
+          "fullName": "google.cloud.optimization.v1.FleetRoutingClient"
+        },
+        "method": {
+          "shortName": "OptimizeTours",
+          "fullName": "google.cloud.optimization.v1.FleetRouting.OptimizeTours",
+          "service": {
+            "shortName": "FleetRouting",
+            "fullName": "google.cloud.optimization.v1.FleetRouting"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

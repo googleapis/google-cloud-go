@@ -1,0 +1,433 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.contentwarehouse.v1",
+  "libraryPackage": "cloud.google.com/go/contentwarehouse/apiv1",
+  "services": {
+    "DocumentLinkService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DocumentLinkClient",
+          "rpcs": {
+            "CreateDocumentLink": {
+              "methods": [
+                "CreateDocumentLink"
+              ]
+            },
+            "DeleteDocumentLink": {
+              "methods": [
+                "DeleteDocumentLink"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLinkedSources": {
+              "methods": [
+                "ListLinkedSources"
+              ]
+            },
+            "ListLinkedTargets": {
+              "methods": [
+                "ListLinkedTargets"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DocumentLinkClient",
+          "rpcs": {
+            "CreateDocumentLink": {
+              "methods": [
+                "CreateDocumentLink"
+              ]
+            },
+            "DeleteDocumentLink": {
+              "methods": [
+                "DeleteDocumentLink"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLinkedSources": {
+              "methods": [
+                "ListLinkedSources"
+              ]
+            },
+            "ListLinkedTargets": {
+              "methods": [
+                "ListLinkedTargets"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DocumentSchemaService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DocumentSchemaClient",
+          "rpcs": {
+            "CreateDocumentSchema": {
+              "methods": [
+                "CreateDocumentSchema"
+              ]
+            },
+            "DeleteDocumentSchema": {
+              "methods": [
+                "DeleteDocumentSchema"
+              ]
+            },
+            "GetDocumentSchema": {
+              "methods": [
+                "GetDocumentSchema"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDocumentSchemas": {
+              "methods": [
+                "ListDocumentSchemas"
+              ]
+            },
+            "UpdateDocumentSchema": {
+              "methods": [
+                "UpdateDocumentSchema"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DocumentSchemaClient",
+          "rpcs": {
+            "CreateDocumentSchema": {
+              "methods": [
+                "CreateDocumentSchema"
+              ]
+            },
+            "DeleteDocumentSchema": {
+              "methods": [
+                "DeleteDocumentSchema"
+              ]
+            },
+            "GetDocumentSchema": {
+              "methods": [
+                "GetDocumentSchema"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDocumentSchemas": {
+              "methods": [
+                "ListDocumentSchemas"
+              ]
+            },
+            "UpdateDocumentSchema": {
+              "methods": [
+                "UpdateDocumentSchema"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DocumentService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DocumentClient",
+          "rpcs": {
+            "CreateDocument": {
+              "methods": [
+                "CreateDocument"
+              ]
+            },
+            "DeleteDocument": {
+              "methods": [
+                "DeleteDocument"
+              ]
+            },
+            "FetchAcl": {
+              "methods": [
+                "FetchAcl"
+              ]
+            },
+            "GetDocument": {
+              "methods": [
+                "GetDocument"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "LockDocument": {
+              "methods": [
+                "LockDocument"
+              ]
+            },
+            "SearchDocuments": {
+              "methods": [
+                "SearchDocuments"
+              ]
+            },
+            "SetAcl": {
+              "methods": [
+                "SetAcl"
+              ]
+            },
+            "UpdateDocument": {
+              "methods": [
+                "UpdateDocument"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DocumentClient",
+          "rpcs": {
+            "CreateDocument": {
+              "methods": [
+                "CreateDocument"
+              ]
+            },
+            "DeleteDocument": {
+              "methods": [
+                "DeleteDocument"
+              ]
+            },
+            "FetchAcl": {
+              "methods": [
+                "FetchAcl"
+              ]
+            },
+            "GetDocument": {
+              "methods": [
+                "GetDocument"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "LockDocument": {
+              "methods": [
+                "LockDocument"
+              ]
+            },
+            "SearchDocuments": {
+              "methods": [
+                "SearchDocuments"
+              ]
+            },
+            "SetAcl": {
+              "methods": [
+                "SetAcl"
+              ]
+            },
+            "UpdateDocument": {
+              "methods": [
+                "UpdateDocument"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PipelineService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PipelineClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "RunPipeline": {
+              "methods": [
+                "RunPipeline"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "PipelineClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "RunPipeline": {
+              "methods": [
+                "RunPipeline"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "RuleSetService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "RuleSetClient",
+          "rpcs": {
+            "CreateRuleSet": {
+              "methods": [
+                "CreateRuleSet"
+              ]
+            },
+            "DeleteRuleSet": {
+              "methods": [
+                "DeleteRuleSet"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRuleSet": {
+              "methods": [
+                "GetRuleSet"
+              ]
+            },
+            "ListRuleSets": {
+              "methods": [
+                "ListRuleSets"
+              ]
+            },
+            "UpdateRuleSet": {
+              "methods": [
+                "UpdateRuleSet"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "RuleSetClient",
+          "rpcs": {
+            "CreateRuleSet": {
+              "methods": [
+                "CreateRuleSet"
+              ]
+            },
+            "DeleteRuleSet": {
+              "methods": [
+                "DeleteRuleSet"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRuleSet": {
+              "methods": [
+                "GetRuleSet"
+              ]
+            },
+            "ListRuleSets": {
+              "methods": [
+                "ListRuleSets"
+              ]
+            },
+            "UpdateRuleSet": {
+              "methods": [
+                "UpdateRuleSet"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SynonymSetService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SynonymSetClient",
+          "rpcs": {
+            "CreateSynonymSet": {
+              "methods": [
+                "CreateSynonymSet"
+              ]
+            },
+            "DeleteSynonymSet": {
+              "methods": [
+                "DeleteSynonymSet"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSynonymSet": {
+              "methods": [
+                "GetSynonymSet"
+              ]
+            },
+            "ListSynonymSets": {
+              "methods": [
+                "ListSynonymSets"
+              ]
+            },
+            "UpdateSynonymSet": {
+              "methods": [
+                "UpdateSynonymSet"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SynonymSetClient",
+          "rpcs": {
+            "CreateSynonymSet": {
+              "methods": [
+                "CreateSynonymSet"
+              ]
+            },
+            "DeleteSynonymSet": {
+              "methods": [
+                "DeleteSynonymSet"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSynonymSet": {
+              "methods": [
+                "GetSynonymSet"
+              ]
+            },
+            "ListSynonymSets": {
+              "methods": [
+                "ListSynonymSets"
+              ]
+            },
+            "UpdateSynonymSet": {
+              "methods": [
+                "UpdateSynonymSet"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

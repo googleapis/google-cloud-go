@@ -1,0 +1,1409 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.visionai.v1alpha1",
+  "libraryPackage": "cloud.google.com/go/visionai/apiv1alpha1",
+  "services": {
+    "AppPlatform": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AppPlatformClient",
+          "rpcs": {
+            "AddApplicationStreamInput": {
+              "methods": [
+                "AddApplicationStreamInput"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateApplication": {
+              "methods": [
+                "CreateApplication"
+              ]
+            },
+            "CreateApplicationInstances": {
+              "methods": [
+                "CreateApplicationInstances"
+              ]
+            },
+            "CreateDraft": {
+              "methods": [
+                "CreateDraft"
+              ]
+            },
+            "CreateProcessor": {
+              "methods": [
+                "CreateProcessor"
+              ]
+            },
+            "DeleteApplication": {
+              "methods": [
+                "DeleteApplication"
+              ]
+            },
+            "DeleteApplicationInstances": {
+              "methods": [
+                "DeleteApplicationInstances"
+              ]
+            },
+            "DeleteDraft": {
+              "methods": [
+                "DeleteDraft"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteProcessor": {
+              "methods": [
+                "DeleteProcessor"
+              ]
+            },
+            "DeployApplication": {
+              "methods": [
+                "DeployApplication"
+              ]
+            },
+            "GetApplication": {
+              "methods": [
+                "GetApplication"
+              ]
+            },
+            "GetDraft": {
+              "methods": [
+                "GetDraft"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProcessor": {
+              "methods": [
+                "GetProcessor"
+              ]
+            },
+            "ListApplications": {
+              "methods": [
+                "ListApplications"
+              ]
+            },
+            "ListDrafts": {
+              "methods": [
+                "ListDrafts"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPrebuiltProcessors": {
+              "methods": [
+                "ListPrebuiltProcessors"
+              ]
+            },
+            "ListProcessors": {
+              "methods": [
+                "ListProcessors"
+              ]
+            },
+            "RemoveApplicationStreamInput": {
+              "methods": [
+                "RemoveApplicationStreamInput"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UndeployApplication": {
+              "methods": [
+                "UndeployApplication"
+              ]
+            },
+            "UpdateApplication": {
+              "methods": [
+                "UpdateApplication"
+              ]
+            },
+            "UpdateApplicationInstances": {
+              "methods": [
+                "UpdateApplicationInstances"
+              ]
+            },
+            "UpdateApplicationStreamInput": {
+              "methods": [
+                "UpdateApplicationStreamInput"
+              ]
+            },
+            "UpdateDraft": {
+              "methods": [
+                "UpdateDraft"
+              ]
+            },
+            "UpdateProcessor": {
+              "methods": [
+                "UpdateProcessor"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AppPlatformClient",
+          "rpcs": {
+            "AddApplicationStreamInput": {
+              "methods": [
+                "AddApplicationStreamInput"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateApplication": {
+              "methods": [
+                "CreateApplication"
+              ]
+            },
+            "CreateApplicationInstances": {
+              "methods": [
+                "CreateApplicationInstances"
+              ]
+            },
+            "CreateDraft": {
+              "methods": [
+                "CreateDraft"
+              ]
+            },
+            "CreateProcessor": {
+              "methods": [
+                "CreateProcessor"
+              ]
+            },
+            "DeleteApplication": {
+              "methods": [
+                "DeleteApplication"
+              ]
+            },
+            "DeleteApplicationInstances": {
+              "methods": [
+                "DeleteApplicationInstances"
+              ]
+            },
+            "DeleteDraft": {
+              "methods": [
+                "DeleteDraft"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteProcessor": {
+              "methods": [
+                "DeleteProcessor"
+              ]
+            },
+            "DeployApplication": {
+              "methods": [
+                "DeployApplication"
+              ]
+            },
+            "GetApplication": {
+              "methods": [
+                "GetApplication"
+              ]
+            },
+            "GetDraft": {
+              "methods": [
+                "GetDraft"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProcessor": {
+              "methods": [
+                "GetProcessor"
+              ]
+            },
+            "ListApplications": {
+              "methods": [
+                "ListApplications"
+              ]
+            },
+            "ListDrafts": {
+              "methods": [
+                "ListDrafts"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPrebuiltProcessors": {
+              "methods": [
+                "ListPrebuiltProcessors"
+              ]
+            },
+            "ListProcessors": {
+              "methods": [
+                "ListProcessors"
+              ]
+            },
+            "RemoveApplicationStreamInput": {
+              "methods": [
+                "RemoveApplicationStreamInput"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UndeployApplication": {
+              "methods": [
+                "UndeployApplication"
+              ]
+            },
+            "UpdateApplication": {
+              "methods": [
+                "UpdateApplication"
+              ]
+            },
+            "UpdateApplicationInstances": {
+              "methods": [
+                "UpdateApplicationInstances"
+              ]
+            },
+            "UpdateApplicationStreamInput": {
+              "methods": [
+                "UpdateApplicationStreamInput"
+              ]
+            },
+            "UpdateDraft": {
+              "methods": [
+                "UpdateDraft"
+              ]
+            },
+            "UpdateProcessor": {
+              "methods": [
+                "UpdateProcessor"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "LiveVideoAnalytics": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "LiveVideoAnalyticsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAnalysis": {
+              "methods": [
+                "CreateAnalysis"
+              ]
+            },
+            "DeleteAnalysis": {
+              "methods": [
+                "DeleteAnalysis"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAnalysis": {
+              "methods": [
+                "GetAnalysis"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAnalyses": {
+              "methods": [
+                "ListAnalyses"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAnalysis": {
+              "methods": [
+                "UpdateAnalysis"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LiveVideoAnalyticsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAnalysis": {
+              "methods": [
+                "CreateAnalysis"
+              ]
+            },
+            "DeleteAnalysis": {
+              "methods": [
+                "DeleteAnalysis"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAnalysis": {
+              "methods": [
+                "GetAnalysis"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAnalyses": {
+              "methods": [
+                "ListAnalyses"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAnalysis": {
+              "methods": [
+                "UpdateAnalysis"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "StreamingService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "StreamingClient",
+          "rpcs": {
+            "AcquireLease": {
+              "methods": [
+                "AcquireLease"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ReceiveEvents": {
+              "methods": [
+                "ReceiveEvents"
+              ]
+            },
+            "ReceivePackets": {
+              "methods": [
+                "ReceivePackets"
+              ]
+            },
+            "ReleaseLease": {
+              "methods": [
+                "ReleaseLease"
+              ]
+            },
+            "RenewLease": {
+              "methods": [
+                "RenewLease"
+              ]
+            },
+            "SendPackets": {
+              "methods": [
+                "SendPackets"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "StreamingClient",
+          "rpcs": {
+            "AcquireLease": {
+              "methods": [
+                "AcquireLease"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ReceiveEvents": {
+              "methods": [
+                "ReceiveEvents"
+              ]
+            },
+            "ReceivePackets": {
+              "methods": [
+                "ReceivePackets"
+              ]
+            },
+            "ReleaseLease": {
+              "methods": [
+                "ReleaseLease"
+              ]
+            },
+            "RenewLease": {
+              "methods": [
+                "RenewLease"
+              ]
+            },
+            "SendPackets": {
+              "methods": [
+                "SendPackets"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "StreamsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "StreamsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCluster": {
+              "methods": [
+                "CreateCluster"
+              ]
+            },
+            "CreateEvent": {
+              "methods": [
+                "CreateEvent"
+              ]
+            },
+            "CreateSeries": {
+              "methods": [
+                "CreateSeries"
+              ]
+            },
+            "CreateStream": {
+              "methods": [
+                "CreateStream"
+              ]
+            },
+            "DeleteCluster": {
+              "methods": [
+                "DeleteCluster"
+              ]
+            },
+            "DeleteEvent": {
+              "methods": [
+                "DeleteEvent"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSeries": {
+              "methods": [
+                "DeleteSeries"
+              ]
+            },
+            "DeleteStream": {
+              "methods": [
+                "DeleteStream"
+              ]
+            },
+            "GenerateStreamHlsToken": {
+              "methods": [
+                "GenerateStreamHlsToken"
+              ]
+            },
+            "GetCluster": {
+              "methods": [
+                "GetCluster"
+              ]
+            },
+            "GetEvent": {
+              "methods": [
+                "GetEvent"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSeries": {
+              "methods": [
+                "GetSeries"
+              ]
+            },
+            "GetStream": {
+              "methods": [
+                "GetStream"
+              ]
+            },
+            "ListClusters": {
+              "methods": [
+                "ListClusters"
+              ]
+            },
+            "ListEvents": {
+              "methods": [
+                "ListEvents"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSeries": {
+              "methods": [
+                "ListSeries"
+              ]
+            },
+            "ListStreams": {
+              "methods": [
+                "ListStreams"
+              ]
+            },
+            "MaterializeChannel": {
+              "methods": [
+                "MaterializeChannel"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateCluster": {
+              "methods": [
+                "UpdateCluster"
+              ]
+            },
+            "UpdateEvent": {
+              "methods": [
+                "UpdateEvent"
+              ]
+            },
+            "UpdateSeries": {
+              "methods": [
+                "UpdateSeries"
+              ]
+            },
+            "UpdateStream": {
+              "methods": [
+                "UpdateStream"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "StreamsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCluster": {
+              "methods": [
+                "CreateCluster"
+              ]
+            },
+            "CreateEvent": {
+              "methods": [
+                "CreateEvent"
+              ]
+            },
+            "CreateSeries": {
+              "methods": [
+                "CreateSeries"
+              ]
+            },
+            "CreateStream": {
+              "methods": [
+                "CreateStream"
+              ]
+            },
+            "DeleteCluster": {
+              "methods": [
+                "DeleteCluster"
+              ]
+            },
+            "DeleteEvent": {
+              "methods": [
+                "DeleteEvent"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSeries": {
+              "methods": [
+                "DeleteSeries"
+              ]
+            },
+            "DeleteStream": {
+              "methods": [
+                "DeleteStream"
+              ]
+            },
+            "GenerateStreamHlsToken": {
+              "methods": [
+                "GenerateStreamHlsToken"
+              ]
+            },
+            "GetCluster": {
+              "methods": [
+                "GetCluster"
+              ]
+            },
+            "GetEvent": {
+              "methods": [
+                "GetEvent"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSeries": {
+              "methods": [
+                "GetSeries"
+              ]
+            },
+            "GetStream": {
+              "methods": [
+                "GetStream"
+              ]
+            },
+            "ListClusters": {
+              "methods": [
+                "ListClusters"
+              ]
+            },
+            "ListEvents": {
+              "methods": [
+                "ListEvents"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSeries": {
+              "methods": [
+                "ListSeries"
+              ]
+            },
+            "ListStreams": {
+              "methods": [
+                "ListStreams"
+              ]
+            },
+            "MaterializeChannel": {
+              "methods": [
+                "MaterializeChannel"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateCluster": {
+              "methods": [
+                "UpdateCluster"
+              ]
+            },
+            "UpdateEvent": {
+              "methods": [
+                "UpdateEvent"
+              ]
+            },
+            "UpdateSeries": {
+              "methods": [
+                "UpdateSeries"
+              ]
+            },
+            "UpdateStream": {
+              "methods": [
+                "UpdateStream"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Warehouse": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "WarehouseClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ClipAsset": {
+              "methods": [
+                "ClipAsset"
+              ]
+            },
+            "CreateAnnotation": {
+              "methods": [
+                "CreateAnnotation"
+              ]
+            },
+            "CreateAsset": {
+              "methods": [
+                "CreateAsset"
+              ]
+            },
+            "CreateCorpus": {
+              "methods": [
+                "CreateCorpus"
+              ]
+            },
+            "CreateDataSchema": {
+              "methods": [
+                "CreateDataSchema"
+              ]
+            },
+            "CreateSearchConfig": {
+              "methods": [
+                "CreateSearchConfig"
+              ]
+            },
+            "DeleteAnnotation": {
+              "methods": [
+                "DeleteAnnotation"
+              ]
+            },
+            "DeleteAsset": {
+              "methods": [
+                "DeleteAsset"
+              ]
+            },
+            "DeleteCorpus": {
+              "methods": [
+                "DeleteCorpus"
+              ]
+            },
+            "DeleteDataSchema": {
+              "methods": [
+                "DeleteDataSchema"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSearchConfig": {
+              "methods": [
+                "DeleteSearchConfig"
+              ]
+            },
+            "GenerateHlsUri": {
+              "methods": [
+                "GenerateHlsUri"
+              ]
+            },
+            "GetAnnotation": {
+              "methods": [
+                "GetAnnotation"
+              ]
+            },
+            "GetAsset": {
+              "methods": [
+                "GetAsset"
+              ]
+            },
+            "GetCorpus": {
+              "methods": [
+                "GetCorpus"
+              ]
+            },
+            "GetDataSchema": {
+              "methods": [
+                "GetDataSchema"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSearchConfig": {
+              "methods": [
+                "GetSearchConfig"
+              ]
+            },
+            "IngestAsset": {
+              "methods": [
+                "IngestAsset"
+              ]
+            },
+            "ListAnnotations": {
+              "methods": [
+                "ListAnnotations"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
+            "ListCorpora": {
+              "methods": [
+                "ListCorpora"
+              ]
+            },
+            "ListDataSchemas": {
+              "methods": [
+                "ListDataSchemas"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSearchConfigs": {
+              "methods": [
+                "ListSearchConfigs"
+              ]
+            },
+            "SearchAssets": {
+              "methods": [
+                "SearchAssets"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAnnotation": {
+              "methods": [
+                "UpdateAnnotation"
+              ]
+            },
+            "UpdateAsset": {
+              "methods": [
+                "UpdateAsset"
+              ]
+            },
+            "UpdateCorpus": {
+              "methods": [
+                "UpdateCorpus"
+              ]
+            },
+            "UpdateDataSchema": {
+              "methods": [
+                "UpdateDataSchema"
+              ]
+            },
+            "UpdateSearchConfig": {
+              "methods": [
+                "UpdateSearchConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "WarehouseClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ClipAsset": {
+              "methods": [
+                "ClipAsset"
+              ]
+            },
+            "CreateAnnotation": {
+              "methods": [
+                "CreateAnnotation"
+              ]
+            },
+            "CreateAsset": {
+              "methods": [
+                "CreateAsset"
+              ]
+            },
+            "CreateCorpus": {
+              "methods": [
+                "CreateCorpus"
+              ]
+            },
+            "CreateDataSchema": {
+              "methods": [
+                "CreateDataSchema"
+              ]
+            },
+            "CreateSearchConfig": {
+              "methods": [
+                "CreateSearchConfig"
+              ]
+            },
+            "DeleteAnnotation": {
+              "methods": [
+                "DeleteAnnotation"
+              ]
+            },
+            "DeleteAsset": {
+              "methods": [
+                "DeleteAsset"
+              ]
+            },
+            "DeleteCorpus": {
+              "methods": [
+                "DeleteCorpus"
+              ]
+            },
+            "DeleteDataSchema": {
+              "methods": [
+                "DeleteDataSchema"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSearchConfig": {
+              "methods": [
+                "DeleteSearchConfig"
+              ]
+            },
+            "GenerateHlsUri": {
+              "methods": [
+                "GenerateHlsUri"
+              ]
+            },
+            "GetAnnotation": {
+              "methods": [
+                "GetAnnotation"
+              ]
+            },
+            "GetAsset": {
+              "methods": [
+                "GetAsset"
+              ]
+            },
+            "GetCorpus": {
+              "methods": [
+                "GetCorpus"
+              ]
+            },
+            "GetDataSchema": {
+              "methods": [
+                "GetDataSchema"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSearchConfig": {
+              "methods": [
+                "GetSearchConfig"
+              ]
+            },
+            "IngestAsset": {
+              "methods": [
+                "IngestAsset"
+              ]
+            },
+            "ListAnnotations": {
+              "methods": [
+                "ListAnnotations"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
+            "ListCorpora": {
+              "methods": [
+                "ListCorpora"
+              ]
+            },
+            "ListDataSchemas": {
+              "methods": [
+                "ListDataSchemas"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSearchConfigs": {
+              "methods": [
+                "ListSearchConfigs"
+              ]
+            },
+            "SearchAssets": {
+              "methods": [
+                "SearchAssets"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAnnotation": {
+              "methods": [
+                "UpdateAnnotation"
+              ]
+            },
+            "UpdateAsset": {
+              "methods": [
+                "UpdateAsset"
+              ]
+            },
+            "UpdateCorpus": {
+              "methods": [
+                "UpdateCorpus"
+              ]
+            },
+            "UpdateDataSchema": {
+              "methods": [
+                "UpdateDataSchema"
+              ]
+            },
+            "UpdateSearchConfig": {
+              "methods": [
+                "UpdateSearchConfig"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

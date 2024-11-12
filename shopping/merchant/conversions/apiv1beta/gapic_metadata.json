@@ -1,0 +1,83 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.shopping.merchant.conversions.v1beta",
+  "libraryPackage": "cloud.google.com/go/shopping/merchant/conversions/apiv1beta",
+  "services": {
+    "ConversionSourcesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ConversionSourcesClient",
+          "rpcs": {
+            "CreateConversionSource": {
+              "methods": [
+                "CreateConversionSource"
+              ]
+            },
+            "DeleteConversionSource": {
+              "methods": [
+                "DeleteConversionSource"
+              ]
+            },
+            "GetConversionSource": {
+              "methods": [
+                "GetConversionSource"
+              ]
+            },
+            "ListConversionSources": {
+              "methods": [
+                "ListConversionSources"
+              ]
+            },
+            "UndeleteConversionSource": {
+              "methods": [
+                "UndeleteConversionSource"
+              ]
+            },
+            "UpdateConversionSource": {
+              "methods": [
+                "UpdateConversionSource"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ConversionSourcesClient",
+          "rpcs": {
+            "CreateConversionSource": {
+              "methods": [
+                "CreateConversionSource"
+              ]
+            },
+            "DeleteConversionSource": {
+              "methods": [
+                "DeleteConversionSource"
+              ]
+            },
+            "GetConversionSource": {
+              "methods": [
+                "GetConversionSource"
+              ]
+            },
+            "ListConversionSources": {
+              "methods": [
+                "ListConversionSources"
+              ]
+            },
+            "UndeleteConversionSource": {
+              "methods": [
+                "UndeleteConversionSource"
+              ]
+            },
+            "UpdateConversionSource": {
+              "methods": [
+                "UpdateConversionSource"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/commerce/consumer/procurement/apiv1alpha1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.commerce.consumer.procurement.v1alpha1",
+        "version": "v1alpha1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudcommerceconsumerprocurement_v1alpha1_generated_ConsumerProcurementService_GetOperation_sync",
+      "title": "cloudcommerceconsumerprocurement GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ConsumerProcurementClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ConsumerProcurementClient",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcommerceconsumerprocurement_v1alpha1_generated_ConsumerProcurementService_GetOrder_sync",
+      "title": "cloudcommerceconsumerprocurement GetOrder Sample",
+      "description": "GetOrder returns the requested\n[Order][google.cloud.commerce.consumer.procurement.v1alpha1.Order]\nresource.",
+      "file": "ConsumerProcurementClient/GetOrder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOrder",
+        "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementClient.GetOrder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "procurementpb.GetOrderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*procurementpb.Order",
+        "client": {
+          "shortName": "ConsumerProcurementClient",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementClient"
+        },
+        "method": {
+          "shortName": "GetOrder",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementService.GetOrder",
+          "service": {
+            "shortName": "ConsumerProcurementService",
+            "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcommerceconsumerprocurement_v1alpha1_generated_ConsumerProcurementService_ListOrders_sync",
+      "title": "cloudcommerceconsumerprocurement ListOrders Sample",
+      "description": "ListOrders lists [Order][google.cloud.commerce.consumer.procurement.v1alpha1.Order]\nresources that the user has access to, within the scope of the parent\nresource.",
+      "file": "ConsumerProcurementClient/ListOrders/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOrders",
+        "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementClient.ListOrders",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "procurementpb.ListOrdersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OrderIterator",
+        "client": {
+          "shortName": "ConsumerProcurementClient",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementClient"
+        },
+        "method": {
+          "shortName": "ListOrders",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementService.ListOrders",
+          "service": {
+            "shortName": "ConsumerProcurementService",
+            "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcommerceconsumerprocurement_v1alpha1_generated_ConsumerProcurementService_PlaceOrder_sync",
+      "title": "cloudcommerceconsumerprocurement PlaceOrder Sample",
+      "description": "PlaceOrder creates a new\n[Order][google.cloud.commerce.consumer.procurement.v1alpha1.Order].\n\nThis API only supports GCP spend-based committed use\ndiscounts specified by GCP documentation.\n\nThe returned long-running operation is in-progress until the backend\ncompletes the creation of the resource. Once completed, the order is\nin\n[OrderState.ORDER_STATE_ACTIVE][google.cloud.commerce.consumer.procurement.v1alpha1.OrderState.ORDER_STATE_ACTIVE].\nIn case of failure, the order resource will be removed.",
+      "file": "ConsumerProcurementClient/PlaceOrder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PlaceOrder",
+        "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementClient.PlaceOrder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "procurementpb.PlaceOrderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PlaceOrderOperation",
+        "client": {
+          "shortName": "ConsumerProcurementClient",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementClient"
+        },
+        "method": {
+          "shortName": "PlaceOrder",
+          "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementService.PlaceOrder",
+          "service": {
+            "shortName": "ConsumerProcurementService",
+            "fullName": "google.cloud.commerce.consumer.procurement.v1alpha1.ConsumerProcurementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

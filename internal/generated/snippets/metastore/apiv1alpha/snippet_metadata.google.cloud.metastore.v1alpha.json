@@ -1,0 +1,1943 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/metastore/apiv1alpha",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.metastore.v1alpha",
+        "version": "v1alpha"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_AlterMetadataResourceLocation_sync",
+      "title": "metastore AlterMetadataResourceLocation Sample",
+      "description": "AlterMetadataResourceLocation alter metadata resource location. The metadata resource can be a database,\ntable, or partition. This functionality only updates the parent directory\nfor the respective metadata resource and does not transfer any existing\ndata to the new location.",
+      "file": "DataprocMetastoreClient/AlterMetadataResourceLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AlterMetadataResourceLocation",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.AlterMetadataResourceLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.AlterMetadataResourceLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AlterMetadataResourceLocationOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "AlterMetadataResourceLocation",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.AlterMetadataResourceLocation",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_CancelOperation_sync",
+      "title": "metastore CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataprocMetastoreClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_CreateBackup_sync",
+      "title": "metastore CreateBackup Sample",
+      "description": "CreateBackup creates a new backup in a given project and location.",
+      "file": "DataprocMetastoreClient/CreateBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBackup",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.CreateBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.CreateBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBackupOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "CreateBackup",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.CreateBackup",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_CreateMetadataImport_sync",
+      "title": "metastore CreateMetadataImport Sample",
+      "description": "CreateMetadataImport creates a new MetadataImport in a given project and location.",
+      "file": "DataprocMetastoreClient/CreateMetadataImport/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMetadataImport",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.CreateMetadataImport",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.CreateMetadataImportRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateMetadataImportOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "CreateMetadataImport",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.CreateMetadataImport",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_CreateService_sync",
+      "title": "metastore CreateService Sample",
+      "description": "CreateService creates a metastore service in a project and location.",
+      "file": "DataprocMetastoreClient/CreateService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateService",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.CreateService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.CreateServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateServiceOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "CreateService",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.CreateService",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_DeleteBackup_sync",
+      "title": "metastore DeleteBackup Sample",
+      "description": "DeleteBackup deletes a single backup.",
+      "file": "DataprocMetastoreClient/DeleteBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBackup",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.DeleteBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.DeleteBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteBackupOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "DeleteBackup",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.DeleteBackup",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_DeleteOperation_sync",
+      "title": "metastore DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataprocMetastoreClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_DeleteService_sync",
+      "title": "metastore DeleteService Sample",
+      "description": "DeleteService deletes a single service.",
+      "file": "DataprocMetastoreClient/DeleteService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteService",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.DeleteService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.DeleteServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteServiceOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "DeleteService",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.DeleteService",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_ExportMetadata_sync",
+      "title": "metastore ExportMetadata Sample",
+      "description": "ExportMetadata exports metadata from a service.",
+      "file": "DataprocMetastoreClient/ExportMetadata/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportMetadata",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.ExportMetadata",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.ExportMetadataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportMetadataOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "ExportMetadata",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.ExportMetadata",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_GetBackup_sync",
+      "title": "metastore GetBackup Sample",
+      "description": "GetBackup gets details of a single backup.",
+      "file": "DataprocMetastoreClient/GetBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackup",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.GetBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.GetBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*metastorepb.Backup",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "GetBackup",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.GetBackup",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_GetIamPolicy_sync",
+      "title": "metastore GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "DataprocMetastoreClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_GetLocation_sync",
+      "title": "metastore GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "DataprocMetastoreClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_GetMetadataImport_sync",
+      "title": "metastore GetMetadataImport Sample",
+      "description": "GetMetadataImport gets details of a single import.",
+      "file": "DataprocMetastoreClient/GetMetadataImport/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMetadataImport",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.GetMetadataImport",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.GetMetadataImportRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*metastorepb.MetadataImport",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "GetMetadataImport",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.GetMetadataImport",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_GetOperation_sync",
+      "title": "metastore GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataprocMetastoreClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_GetService_sync",
+      "title": "metastore GetService Sample",
+      "description": "GetService gets the details of a single service.",
+      "file": "DataprocMetastoreClient/GetService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetService",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.GetService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.GetServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*metastorepb.Service",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "GetService",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.GetService",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_ListBackups_sync",
+      "title": "metastore ListBackups Sample",
+      "description": "ListBackups lists backups in a service.",
+      "file": "DataprocMetastoreClient/ListBackups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackups",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.ListBackups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.ListBackupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupIterator",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "ListBackups",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.ListBackups",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_ListLocations_sync",
+      "title": "metastore ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "DataprocMetastoreClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_ListMetadataImports_sync",
+      "title": "metastore ListMetadataImports Sample",
+      "description": "ListMetadataImports lists imports in a service.",
+      "file": "DataprocMetastoreClient/ListMetadataImports/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMetadataImports",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.ListMetadataImports",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.ListMetadataImportsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MetadataImportIterator",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "ListMetadataImports",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.ListMetadataImports",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_ListOperations_sync",
+      "title": "metastore ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataprocMetastoreClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_ListServices_sync",
+      "title": "metastore ListServices Sample",
+      "description": "ListServices lists services in a project and location.",
+      "file": "DataprocMetastoreClient/ListServices/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServices",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.ListServices",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.ListServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ServiceIterator",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "ListServices",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.ListServices",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_MoveTableToDatabase_sync",
+      "title": "metastore MoveTableToDatabase Sample",
+      "description": "MoveTableToDatabase move a table to another database.",
+      "file": "DataprocMetastoreClient/MoveTableToDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "MoveTableToDatabase",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.MoveTableToDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.MoveTableToDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MoveTableToDatabaseOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "MoveTableToDatabase",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.MoveTableToDatabase",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_QueryMetadata_sync",
+      "title": "metastore QueryMetadata Sample",
+      "description": "QueryMetadata query DPMS metadata.",
+      "file": "DataprocMetastoreClient/QueryMetadata/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryMetadata",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.QueryMetadata",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.QueryMetadataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "QueryMetadataOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "QueryMetadata",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.QueryMetadata",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_RemoveIamPolicy_sync",
+      "title": "metastore RemoveIamPolicy Sample",
+      "description": "RemoveIamPolicy removes the attached IAM policies for a resource",
+      "file": "DataprocMetastoreClient/RemoveIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveIamPolicy",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.RemoveIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.RemoveIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*metastorepb.RemoveIamPolicyResponse",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "RemoveIamPolicy",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.RemoveIamPolicy",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_RestoreService_sync",
+      "title": "metastore RestoreService Sample",
+      "description": "RestoreService restores a service from a backup.",
+      "file": "DataprocMetastoreClient/RestoreService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestoreService",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.RestoreService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.RestoreServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestoreServiceOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "RestoreService",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.RestoreService",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_SetIamPolicy_sync",
+      "title": "metastore SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "DataprocMetastoreClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_TestIamPermissions_sync",
+      "title": "metastore TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "DataprocMetastoreClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_UpdateMetadataImport_sync",
+      "title": "metastore UpdateMetadataImport Sample",
+      "description": "UpdateMetadataImport updates a single import.\nOnly the description field of MetadataImport is supported to be updated.",
+      "file": "DataprocMetastoreClient/UpdateMetadataImport/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateMetadataImport",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.UpdateMetadataImport",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.UpdateMetadataImportRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateMetadataImportOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "UpdateMetadataImport",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.UpdateMetadataImport",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastore_UpdateService_sync",
+      "title": "metastore UpdateService Sample",
+      "description": "UpdateService updates the parameters of a single service.",
+      "file": "DataprocMetastoreClient/UpdateService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateService",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient.UpdateService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.UpdateServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateServiceOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "UpdateService",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore.UpdateService",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_CancelOperation_sync",
+      "title": "metastore CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataprocMetastoreFederationClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_CreateFederation_sync",
+      "title": "metastore CreateFederation Sample",
+      "description": "CreateFederation creates a metastore federation in a project and location.",
+      "file": "DataprocMetastoreFederationClient/CreateFederation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFederation",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.CreateFederation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.CreateFederationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateFederationOperation",
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "CreateFederation",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederation.CreateFederation",
+          "service": {
+            "shortName": "DataprocMetastoreFederation",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederation"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_DeleteFederation_sync",
+      "title": "metastore DeleteFederation Sample",
+      "description": "DeleteFederation deletes a single federation.",
+      "file": "DataprocMetastoreFederationClient/DeleteFederation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFederation",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.DeleteFederation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.DeleteFederationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteFederationOperation",
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "DeleteFederation",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederation.DeleteFederation",
+          "service": {
+            "shortName": "DataprocMetastoreFederation",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederation"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_DeleteOperation_sync",
+      "title": "metastore DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataprocMetastoreFederationClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_GetFederation_sync",
+      "title": "metastore GetFederation Sample",
+      "description": "GetFederation gets the details of a single federation.",
+      "file": "DataprocMetastoreFederationClient/GetFederation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFederation",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.GetFederation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.GetFederationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*metastorepb.Federation",
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "GetFederation",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederation.GetFederation",
+          "service": {
+            "shortName": "DataprocMetastoreFederation",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederation"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_GetIamPolicy_sync",
+      "title": "metastore GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "DataprocMetastoreFederationClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_GetLocation_sync",
+      "title": "metastore GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "DataprocMetastoreFederationClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_GetOperation_sync",
+      "title": "metastore GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataprocMetastoreFederationClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_ListFederations_sync",
+      "title": "metastore ListFederations Sample",
+      "description": "ListFederations lists federations in a project and location.",
+      "file": "DataprocMetastoreFederationClient/ListFederations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFederations",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.ListFederations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.ListFederationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FederationIterator",
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "ListFederations",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederation.ListFederations",
+          "service": {
+            "shortName": "DataprocMetastoreFederation",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederation"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_ListLocations_sync",
+      "title": "metastore ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "DataprocMetastoreFederationClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_ListOperations_sync",
+      "title": "metastore ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataprocMetastoreFederationClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_SetIamPolicy_sync",
+      "title": "metastore SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "DataprocMetastoreFederationClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_TestIamPermissions_sync",
+      "title": "metastore TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "DataprocMetastoreFederationClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1alpha_generated_DataprocMetastoreFederation_UpdateFederation_sync",
+      "title": "metastore UpdateFederation Sample",
+      "description": "UpdateFederation updates the fields of a federation.",
+      "file": "DataprocMetastoreFederationClient/UpdateFederation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateFederation",
+        "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient.UpdateFederation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.UpdateFederationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateFederationOperation",
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "UpdateFederation",
+          "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederation.UpdateFederation",
+          "service": {
+            "shortName": "DataprocMetastoreFederation",
+            "fullName": "google.cloud.metastore.v1alpha.DataprocMetastoreFederation"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

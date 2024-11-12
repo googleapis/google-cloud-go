@@ -1,0 +1,381 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/video/transcoder/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.video.transcoder.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "transcoder_v1_generated_TranscoderService_CreateJob_sync",
+      "title": "transcoder CreateJob Sample",
+      "description": "CreateJob creates a job in the specified region.",
+      "file": "Client/CreateJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateJob",
+        "fullName": "google.cloud.video.transcoder.v1.Client.CreateJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "transcoderpb.CreateJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*transcoderpb.Job",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.transcoder.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateJob",
+          "fullName": "google.cloud.video.transcoder.v1.TranscoderService.CreateJob",
+          "service": {
+            "shortName": "TranscoderService",
+            "fullName": "google.cloud.video.transcoder.v1.TranscoderService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "transcoder_v1_generated_TranscoderService_CreateJobTemplate_sync",
+      "title": "transcoder CreateJobTemplate Sample",
+      "description": "CreateJobTemplate creates a job template in the specified region.",
+      "file": "Client/CreateJobTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateJobTemplate",
+        "fullName": "google.cloud.video.transcoder.v1.Client.CreateJobTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "transcoderpb.CreateJobTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*transcoderpb.JobTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.transcoder.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateJobTemplate",
+          "fullName": "google.cloud.video.transcoder.v1.TranscoderService.CreateJobTemplate",
+          "service": {
+            "shortName": "TranscoderService",
+            "fullName": "google.cloud.video.transcoder.v1.TranscoderService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "transcoder_v1_generated_TranscoderService_DeleteJob_sync",
+      "title": "transcoder DeleteJob Sample",
+      "description": "DeleteJob deletes a job.",
+      "file": "Client/DeleteJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteJob",
+        "fullName": "google.cloud.video.transcoder.v1.Client.DeleteJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "transcoderpb.DeleteJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.transcoder.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteJob",
+          "fullName": "google.cloud.video.transcoder.v1.TranscoderService.DeleteJob",
+          "service": {
+            "shortName": "TranscoderService",
+            "fullName": "google.cloud.video.transcoder.v1.TranscoderService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "transcoder_v1_generated_TranscoderService_DeleteJobTemplate_sync",
+      "title": "transcoder DeleteJobTemplate Sample",
+      "description": "DeleteJobTemplate deletes a job template.",
+      "file": "Client/DeleteJobTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteJobTemplate",
+        "fullName": "google.cloud.video.transcoder.v1.Client.DeleteJobTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "transcoderpb.DeleteJobTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.transcoder.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteJobTemplate",
+          "fullName": "google.cloud.video.transcoder.v1.TranscoderService.DeleteJobTemplate",
+          "service": {
+            "shortName": "TranscoderService",
+            "fullName": "google.cloud.video.transcoder.v1.TranscoderService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "transcoder_v1_generated_TranscoderService_GetJob_sync",
+      "title": "transcoder GetJob Sample",
+      "description": "GetJob returns the job data.",
+      "file": "Client/GetJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetJob",
+        "fullName": "google.cloud.video.transcoder.v1.Client.GetJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "transcoderpb.GetJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*transcoderpb.Job",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.transcoder.v1.Client"
+        },
+        "method": {
+          "shortName": "GetJob",
+          "fullName": "google.cloud.video.transcoder.v1.TranscoderService.GetJob",
+          "service": {
+            "shortName": "TranscoderService",
+            "fullName": "google.cloud.video.transcoder.v1.TranscoderService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "transcoder_v1_generated_TranscoderService_GetJobTemplate_sync",
+      "title": "transcoder GetJobTemplate Sample",
+      "description": "GetJobTemplate returns the job template data.",
+      "file": "Client/GetJobTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetJobTemplate",
+        "fullName": "google.cloud.video.transcoder.v1.Client.GetJobTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "transcoderpb.GetJobTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*transcoderpb.JobTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.transcoder.v1.Client"
+        },
+        "method": {
+          "shortName": "GetJobTemplate",
+          "fullName": "google.cloud.video.transcoder.v1.TranscoderService.GetJobTemplate",
+          "service": {
+            "shortName": "TranscoderService",
+            "fullName": "google.cloud.video.transcoder.v1.TranscoderService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "transcoder_v1_generated_TranscoderService_ListJobTemplates_sync",
+      "title": "transcoder ListJobTemplates Sample",
+      "description": "ListJobTemplates lists job templates in the specified region.",
+      "file": "Client/ListJobTemplates/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListJobTemplates",
+        "fullName": "google.cloud.video.transcoder.v1.Client.ListJobTemplates",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "transcoderpb.ListJobTemplatesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "JobTemplateIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.transcoder.v1.Client"
+        },
+        "method": {
+          "shortName": "ListJobTemplates",
+          "fullName": "google.cloud.video.transcoder.v1.TranscoderService.ListJobTemplates",
+          "service": {
+            "shortName": "TranscoderService",
+            "fullName": "google.cloud.video.transcoder.v1.TranscoderService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "transcoder_v1_generated_TranscoderService_ListJobs_sync",
+      "title": "transcoder ListJobs Sample",
+      "description": "ListJobs lists jobs in the specified region.",
+      "file": "Client/ListJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListJobs",
+        "fullName": "google.cloud.video.transcoder.v1.Client.ListJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "transcoderpb.ListJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "JobIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.transcoder.v1.Client"
+        },
+        "method": {
+          "shortName": "ListJobs",
+          "fullName": "google.cloud.video.transcoder.v1.TranscoderService.ListJobs",
+          "service": {
+            "shortName": "TranscoderService",
+            "fullName": "google.cloud.video.transcoder.v1.TranscoderService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.storageinsights.v1",
+  "libraryPackage": "cloud.google.com/go/storageinsights/apiv1",
+  "services": {
+    "StorageInsights": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateReportConfig": {
+              "methods": [
+                "CreateReportConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteReportConfig": {
+              "methods": [
+                "DeleteReportConfig"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReportConfig": {
+              "methods": [
+                "GetReportConfig"
+              ]
+            },
+            "GetReportDetail": {
+              "methods": [
+                "GetReportDetail"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReportConfigs": {
+              "methods": [
+                "ListReportConfigs"
+              ]
+            },
+            "ListReportDetails": {
+              "methods": [
+                "ListReportDetails"
+              ]
+            },
+            "UpdateReportConfig": {
+              "methods": [
+                "UpdateReportConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateReportConfig": {
+              "methods": [
+                "CreateReportConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteReportConfig": {
+              "methods": [
+                "DeleteReportConfig"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReportConfig": {
+              "methods": [
+                "GetReportConfig"
+              ]
+            },
+            "GetReportDetail": {
+              "methods": [
+                "GetReportDetail"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReportConfigs": {
+              "methods": [
+                "ListReportConfigs"
+              ]
+            },
+            "ListReportDetails": {
+              "methods": [
+                "ListReportDetails"
+              ]
+            },
+            "UpdateReportConfig": {
+              "methods": [
+                "UpdateReportConfig"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

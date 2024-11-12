@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/videointelligence/apiv1p2beta1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.videointelligence.v1p2beta1",
+        "version": "v1p2beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "videointelligence_v1p2beta1_generated_VideoIntelligenceService_AnnotateVideo_sync",
+      "title": "videointelligence AnnotateVideo Sample",
+      "description": "AnnotateVideo performs asynchronous video annotation. Progress and results can be\nretrieved through the `google.longrunning.Operations` interface.\n`Operation.metadata` contains `AnnotateVideoProgress` (progress).\n`Operation.response` contains `AnnotateVideoResponse` (results).",
+      "file": "Client/AnnotateVideo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnnotateVideo",
+        "fullName": "google.cloud.videointelligence.v1p2beta1.Client.AnnotateVideo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "videointelligencepb.AnnotateVideoRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AnnotateVideoOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.videointelligence.v1p2beta1.Client"
+        },
+        "method": {
+          "shortName": "AnnotateVideo",
+          "fullName": "google.cloud.videointelligence.v1p2beta1.VideoIntelligenceService.AnnotateVideo",
+          "service": {
+            "shortName": "VideoIntelligenceService",
+            "fullName": "google.cloud.videointelligence.v1p2beta1.VideoIntelligenceService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

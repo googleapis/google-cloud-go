@@ -1,0 +1,153 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/maps/playablelocations/apiv3",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.maps.playablelocations.v3",
+        "version": "v3"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "playablelocations_v3_generated_PlayableLocations_LogImpressions_sync",
+      "title": "playablelocations LogImpressions Sample",
+      "description": "LogImpressions logs new events when playable locations are displayed, and when they are\ninteracted with.\n\nImpressions are not partially saved; either all impressions are saved and\nthis request succeeds, or no impressions are saved, and this request fails.",
+      "file": "Client/LogImpressions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LogImpressions",
+        "fullName": "google.maps.playablelocations.v3.Client.LogImpressions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "playablelocationspb.LogImpressionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*playablelocationspb.LogImpressionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.playablelocations.v3.Client"
+        },
+        "method": {
+          "shortName": "LogImpressions",
+          "fullName": "google.maps.playablelocations.v3.PlayableLocations.LogImpressions",
+          "service": {
+            "shortName": "PlayableLocations",
+            "fullName": "google.maps.playablelocations.v3.PlayableLocations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "playablelocations_v3_generated_PlayableLocations_LogPlayerReports_sync",
+      "title": "playablelocations LogPlayerReports Sample",
+      "description": "LogPlayerReports logs bad playable location reports submitted by players.\n\nReports are not partially saved; either all reports are saved and this\nrequest succeeds, or no reports are saved, and this request fails.",
+      "file": "Client/LogPlayerReports/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LogPlayerReports",
+        "fullName": "google.maps.playablelocations.v3.Client.LogPlayerReports",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "playablelocationspb.LogPlayerReportsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*playablelocationspb.LogPlayerReportsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.playablelocations.v3.Client"
+        },
+        "method": {
+          "shortName": "LogPlayerReports",
+          "fullName": "google.maps.playablelocations.v3.PlayableLocations.LogPlayerReports",
+          "service": {
+            "shortName": "PlayableLocations",
+            "fullName": "google.maps.playablelocations.v3.PlayableLocations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "playablelocations_v3_generated_PlayableLocations_SamplePlayableLocations_sync",
+      "title": "playablelocations SamplePlayableLocations Sample",
+      "description": "SamplePlayableLocations returns a set of playable locations that lie within a specified area,\nthat satisfy optional filter criteria.\n\nNote: Identical `SamplePlayableLocations` requests can return different\nresults as the state of the world changes over time.",
+      "file": "Client/SamplePlayableLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SamplePlayableLocations",
+        "fullName": "google.maps.playablelocations.v3.Client.SamplePlayableLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "playablelocationspb.SamplePlayableLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*playablelocationspb.SamplePlayableLocationsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.playablelocations.v3.Client"
+        },
+        "method": {
+          "shortName": "SamplePlayableLocations",
+          "fullName": "google.maps.playablelocations.v3.PlayableLocations.SamplePlayableLocations",
+          "service": {
+            "shortName": "PlayableLocations",
+            "fullName": "google.maps.playablelocations.v3.PlayableLocations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

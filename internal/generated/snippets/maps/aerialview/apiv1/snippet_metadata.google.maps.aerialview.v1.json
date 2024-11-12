@@ -1,0 +1,107 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/maps/aerialview/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.maps.aerialview.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "aerialview_v1_generated_AerialView_LookupVideo_sync",
+      "title": "aerialview LookupVideo Sample",
+      "description": "LookupVideo fetches a video given its address or videoId. The response will either be\na video with a set of playback URIs for ACTIVE videos, a PROCESSING state\nfor pending videos, or a 404 error if the video does not exist. Receiving a\nvideo is a billable event, so callers of this method should be ready to use\nthe returned URIs at the time of request.",
+      "file": "Client/LookupVideo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LookupVideo",
+        "fullName": "google.maps.aerialview.v1.Client.LookupVideo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aerialviewpb.LookupVideoRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aerialviewpb.Video",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.aerialview.v1.Client"
+        },
+        "method": {
+          "shortName": "LookupVideo",
+          "fullName": "google.maps.aerialview.v1.AerialView.LookupVideo",
+          "service": {
+            "shortName": "AerialView",
+            "fullName": "google.maps.aerialview.v1.AerialView"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aerialview_v1_generated_AerialView_RenderVideo_sync",
+      "title": "aerialview RenderVideo Sample",
+      "description": "RenderVideo adds an address to the renderer's queue if a video hasn't already been\nrendered. Otherwise, returns metadata about the video.",
+      "file": "Client/RenderVideo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RenderVideo",
+        "fullName": "google.maps.aerialview.v1.Client.RenderVideo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aerialviewpb.RenderVideoRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aerialviewpb.RenderVideoResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.aerialview.v1.Client"
+        },
+        "method": {
+          "shortName": "RenderVideo",
+          "fullName": "google.maps.aerialview.v1.AerialView.RenderVideo",
+          "service": {
+            "shortName": "AerialView",
+            "fullName": "google.maps.aerialview.v1.AerialView"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,567 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/iam/apiv1beta",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.iam.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "iam_v1beta_generated_WorkloadIdentityPools_CreateWorkloadIdentityPool_sync",
+      "title": "iam CreateWorkloadIdentityPool Sample",
+      "description": "CreateWorkloadIdentityPool creates a new\n[WorkloadIdentityPool][google.iam.v1beta.WorkloadIdentityPool].\n\nYou cannot reuse the name of a deleted pool until 30 days after deletion.",
+      "file": "WorkloadIdentityPoolsClient/CreateWorkloadIdentityPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateWorkloadIdentityPool",
+        "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient.CreateWorkloadIdentityPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.CreateWorkloadIdentityPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateWorkloadIdentityPoolOperation",
+        "client": {
+          "shortName": "WorkloadIdentityPoolsClient",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient"
+        },
+        "method": {
+          "shortName": "CreateWorkloadIdentityPool",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPools.CreateWorkloadIdentityPool",
+          "service": {
+            "shortName": "WorkloadIdentityPools",
+            "fullName": "google.iam.v1beta.WorkloadIdentityPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1beta_generated_WorkloadIdentityPools_CreateWorkloadIdentityPoolProvider_sync",
+      "title": "iam CreateWorkloadIdentityPoolProvider Sample",
+      "description": "CreateWorkloadIdentityPoolProvider creates a new\n[WorkloadIdentityPoolProvider][google.iam.v1beta.WorkloadIdentityProvider]\nin a [WorkloadIdentityPool][google.iam.v1beta.WorkloadIdentityPool].\n\nYou cannot reuse the name of a deleted provider until 30 days after\ndeletion.",
+      "file": "WorkloadIdentityPoolsClient/CreateWorkloadIdentityPoolProvider/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateWorkloadIdentityPoolProvider",
+        "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient.CreateWorkloadIdentityPoolProvider",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.CreateWorkloadIdentityPoolProviderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateWorkloadIdentityPoolProviderOperation",
+        "client": {
+          "shortName": "WorkloadIdentityPoolsClient",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient"
+        },
+        "method": {
+          "shortName": "CreateWorkloadIdentityPoolProvider",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPools.CreateWorkloadIdentityPoolProvider",
+          "service": {
+            "shortName": "WorkloadIdentityPools",
+            "fullName": "google.iam.v1beta.WorkloadIdentityPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1beta_generated_WorkloadIdentityPools_DeleteWorkloadIdentityPool_sync",
+      "title": "iam DeleteWorkloadIdentityPool Sample",
+      "description": "DeleteWorkloadIdentityPool deletes a\n[WorkloadIdentityPool][google.iam.v1beta.WorkloadIdentityPool].\n\nYou cannot use a deleted pool to exchange external\ncredentials for Google Cloud credentials. However, deletion does\nnot revoke credentials that have already been issued.\nCredentials issued for a deleted pool do not grant access to resources.\nIf the pool is undeleted, and the credentials are not expired, they\ngrant access again.\nYou can undelete a pool for 30 days. After 30 days, deletion is\npermanent.\nYou cannot update deleted pools. However, you can view and list them.",
+      "file": "WorkloadIdentityPoolsClient/DeleteWorkloadIdentityPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteWorkloadIdentityPool",
+        "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient.DeleteWorkloadIdentityPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.DeleteWorkloadIdentityPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteWorkloadIdentityPoolOperation",
+        "client": {
+          "shortName": "WorkloadIdentityPoolsClient",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient"
+        },
+        "method": {
+          "shortName": "DeleteWorkloadIdentityPool",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPools.DeleteWorkloadIdentityPool",
+          "service": {
+            "shortName": "WorkloadIdentityPools",
+            "fullName": "google.iam.v1beta.WorkloadIdentityPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1beta_generated_WorkloadIdentityPools_DeleteWorkloadIdentityPoolProvider_sync",
+      "title": "iam DeleteWorkloadIdentityPoolProvider Sample",
+      "description": "DeleteWorkloadIdentityPoolProvider deletes a\n[WorkloadIdentityPoolProvider][google.iam.v1beta.WorkloadIdentityProvider].\nDeleting a provider does not revoke credentials that have already been\nissued; they continue to grant access.\nYou can undelete a provider for 30 days. After 30 days, deletion is\npermanent.\nYou cannot update deleted providers. However, you can view and list them.",
+      "file": "WorkloadIdentityPoolsClient/DeleteWorkloadIdentityPoolProvider/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteWorkloadIdentityPoolProvider",
+        "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient.DeleteWorkloadIdentityPoolProvider",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.DeleteWorkloadIdentityPoolProviderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteWorkloadIdentityPoolProviderOperation",
+        "client": {
+          "shortName": "WorkloadIdentityPoolsClient",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient"
+        },
+        "method": {
+          "shortName": "DeleteWorkloadIdentityPoolProvider",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPools.DeleteWorkloadIdentityPoolProvider",
+          "service": {
+            "shortName": "WorkloadIdentityPools",
+            "fullName": "google.iam.v1beta.WorkloadIdentityPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1beta_generated_WorkloadIdentityPools_GetWorkloadIdentityPool_sync",
+      "title": "iam GetWorkloadIdentityPool Sample",
+      "description": "GetWorkloadIdentityPool gets an individual\n[WorkloadIdentityPool][google.iam.v1beta.WorkloadIdentityPool].",
+      "file": "WorkloadIdentityPoolsClient/GetWorkloadIdentityPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkloadIdentityPool",
+        "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient.GetWorkloadIdentityPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetWorkloadIdentityPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.WorkloadIdentityPool",
+        "client": {
+          "shortName": "WorkloadIdentityPoolsClient",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient"
+        },
+        "method": {
+          "shortName": "GetWorkloadIdentityPool",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPools.GetWorkloadIdentityPool",
+          "service": {
+            "shortName": "WorkloadIdentityPools",
+            "fullName": "google.iam.v1beta.WorkloadIdentityPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1beta_generated_WorkloadIdentityPools_GetWorkloadIdentityPoolProvider_sync",
+      "title": "iam GetWorkloadIdentityPoolProvider Sample",
+      "description": "GetWorkloadIdentityPoolProvider gets an individual\n[WorkloadIdentityPoolProvider][google.iam.v1beta.WorkloadIdentityPoolProvider].",
+      "file": "WorkloadIdentityPoolsClient/GetWorkloadIdentityPoolProvider/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkloadIdentityPoolProvider",
+        "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient.GetWorkloadIdentityPoolProvider",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetWorkloadIdentityPoolProviderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.WorkloadIdentityPoolProvider",
+        "client": {
+          "shortName": "WorkloadIdentityPoolsClient",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient"
+        },
+        "method": {
+          "shortName": "GetWorkloadIdentityPoolProvider",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPools.GetWorkloadIdentityPoolProvider",
+          "service": {
+            "shortName": "WorkloadIdentityPools",
+            "fullName": "google.iam.v1beta.WorkloadIdentityPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1beta_generated_WorkloadIdentityPools_ListWorkloadIdentityPoolProviders_sync",
+      "title": "iam ListWorkloadIdentityPoolProviders Sample",
+      "description": "ListWorkloadIdentityPoolProviders lists all non-deleted\n[WorkloadIdentityPoolProvider][google.iam.v1beta.WorkloadIdentityPoolProvider]s\nin a [WorkloadIdentityPool][google.iam.v1beta.WorkloadIdentityPool].\nIf `show_deleted` is set to `true`, then deleted providers are also listed.",
+      "file": "WorkloadIdentityPoolsClient/ListWorkloadIdentityPoolProviders/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkloadIdentityPoolProviders",
+        "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient.ListWorkloadIdentityPoolProviders",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.ListWorkloadIdentityPoolProvidersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkloadIdentityPoolProviderIterator",
+        "client": {
+          "shortName": "WorkloadIdentityPoolsClient",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient"
+        },
+        "method": {
+          "shortName": "ListWorkloadIdentityPoolProviders",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPools.ListWorkloadIdentityPoolProviders",
+          "service": {
+            "shortName": "WorkloadIdentityPools",
+            "fullName": "google.iam.v1beta.WorkloadIdentityPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1beta_generated_WorkloadIdentityPools_ListWorkloadIdentityPools_sync",
+      "title": "iam ListWorkloadIdentityPools Sample",
+      "description": "ListWorkloadIdentityPools lists all non-deleted\n[WorkloadIdentityPool][google.iam.v1beta.WorkloadIdentityPool]s in a\nproject. If `show_deleted` is set to `true`, then deleted pools are also\nlisted.",
+      "file": "WorkloadIdentityPoolsClient/ListWorkloadIdentityPools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkloadIdentityPools",
+        "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient.ListWorkloadIdentityPools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.ListWorkloadIdentityPoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkloadIdentityPoolIterator",
+        "client": {
+          "shortName": "WorkloadIdentityPoolsClient",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient"
+        },
+        "method": {
+          "shortName": "ListWorkloadIdentityPools",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPools.ListWorkloadIdentityPools",
+          "service": {
+            "shortName": "WorkloadIdentityPools",
+            "fullName": "google.iam.v1beta.WorkloadIdentityPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1beta_generated_WorkloadIdentityPools_UndeleteWorkloadIdentityPool_sync",
+      "title": "iam UndeleteWorkloadIdentityPool Sample",
+      "description": "UndeleteWorkloadIdentityPool undeletes a [WorkloadIdentityPool][google.iam.v1beta.WorkloadIdentityPool],\nas long as it was deleted fewer than 30 days ago.",
+      "file": "WorkloadIdentityPoolsClient/UndeleteWorkloadIdentityPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeleteWorkloadIdentityPool",
+        "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient.UndeleteWorkloadIdentityPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.UndeleteWorkloadIdentityPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UndeleteWorkloadIdentityPoolOperation",
+        "client": {
+          "shortName": "WorkloadIdentityPoolsClient",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient"
+        },
+        "method": {
+          "shortName": "UndeleteWorkloadIdentityPool",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPools.UndeleteWorkloadIdentityPool",
+          "service": {
+            "shortName": "WorkloadIdentityPools",
+            "fullName": "google.iam.v1beta.WorkloadIdentityPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1beta_generated_WorkloadIdentityPools_UndeleteWorkloadIdentityPoolProvider_sync",
+      "title": "iam UndeleteWorkloadIdentityPoolProvider Sample",
+      "description": "UndeleteWorkloadIdentityPoolProvider undeletes a\n[WorkloadIdentityPoolProvider][google.iam.v1beta.WorkloadIdentityProvider],\nas long as it was deleted fewer than 30 days ago.",
+      "file": "WorkloadIdentityPoolsClient/UndeleteWorkloadIdentityPoolProvider/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeleteWorkloadIdentityPoolProvider",
+        "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient.UndeleteWorkloadIdentityPoolProvider",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.UndeleteWorkloadIdentityPoolProviderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UndeleteWorkloadIdentityPoolProviderOperation",
+        "client": {
+          "shortName": "WorkloadIdentityPoolsClient",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient"
+        },
+        "method": {
+          "shortName": "UndeleteWorkloadIdentityPoolProvider",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPools.UndeleteWorkloadIdentityPoolProvider",
+          "service": {
+            "shortName": "WorkloadIdentityPools",
+            "fullName": "google.iam.v1beta.WorkloadIdentityPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1beta_generated_WorkloadIdentityPools_UpdateWorkloadIdentityPool_sync",
+      "title": "iam UpdateWorkloadIdentityPool Sample",
+      "description": "UpdateWorkloadIdentityPool updates an existing\n[WorkloadIdentityPool][google.iam.v1beta.WorkloadIdentityPool].",
+      "file": "WorkloadIdentityPoolsClient/UpdateWorkloadIdentityPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateWorkloadIdentityPool",
+        "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient.UpdateWorkloadIdentityPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.UpdateWorkloadIdentityPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateWorkloadIdentityPoolOperation",
+        "client": {
+          "shortName": "WorkloadIdentityPoolsClient",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient"
+        },
+        "method": {
+          "shortName": "UpdateWorkloadIdentityPool",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPools.UpdateWorkloadIdentityPool",
+          "service": {
+            "shortName": "WorkloadIdentityPools",
+            "fullName": "google.iam.v1beta.WorkloadIdentityPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1beta_generated_WorkloadIdentityPools_UpdateWorkloadIdentityPoolProvider_sync",
+      "title": "iam UpdateWorkloadIdentityPoolProvider Sample",
+      "description": "UpdateWorkloadIdentityPoolProvider updates an existing\n[WorkloadIdentityPoolProvider][google.iam.v1beta.WorkloadIdentityProvider].",
+      "file": "WorkloadIdentityPoolsClient/UpdateWorkloadIdentityPoolProvider/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateWorkloadIdentityPoolProvider",
+        "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient.UpdateWorkloadIdentityPoolProvider",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.UpdateWorkloadIdentityPoolProviderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateWorkloadIdentityPoolProviderOperation",
+        "client": {
+          "shortName": "WorkloadIdentityPoolsClient",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPoolsClient"
+        },
+        "method": {
+          "shortName": "UpdateWorkloadIdentityPoolProvider",
+          "fullName": "google.iam.v1beta.WorkloadIdentityPools.UpdateWorkloadIdentityPoolProvider",
+          "service": {
+            "shortName": "WorkloadIdentityPools",
+            "fullName": "google.iam.v1beta.WorkloadIdentityPools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

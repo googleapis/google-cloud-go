@@ -1,0 +1,519 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/blockchainnodeengine/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.blockchainnodeengine.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "blockchainnodeengine_v1_generated_BlockchainNodeEngine_CancelOperation_sync",
+      "title": "blockchainnodeengine CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.blockchainnodeengine.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.blockchainnodeengine.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "blockchainnodeengine_v1_generated_BlockchainNodeEngine_CreateBlockchainNode_sync",
+      "title": "blockchainnodeengine CreateBlockchainNode Sample",
+      "description": "CreateBlockchainNode creates a new blockchain node in a given project and location.",
+      "file": "Client/CreateBlockchainNode/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBlockchainNode",
+        "fullName": "google.cloud.blockchainnodeengine.v1.Client.CreateBlockchainNode",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "blockchainnodeenginepb.CreateBlockchainNodeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBlockchainNodeOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.blockchainnodeengine.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateBlockchainNode",
+          "fullName": "google.cloud.blockchainnodeengine.v1.BlockchainNodeEngine.CreateBlockchainNode",
+          "service": {
+            "shortName": "BlockchainNodeEngine",
+            "fullName": "google.cloud.blockchainnodeengine.v1.BlockchainNodeEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "blockchainnodeengine_v1_generated_BlockchainNodeEngine_DeleteBlockchainNode_sync",
+      "title": "blockchainnodeengine DeleteBlockchainNode Sample",
+      "description": "DeleteBlockchainNode deletes a single blockchain node.",
+      "file": "Client/DeleteBlockchainNode/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBlockchainNode",
+        "fullName": "google.cloud.blockchainnodeengine.v1.Client.DeleteBlockchainNode",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "blockchainnodeenginepb.DeleteBlockchainNodeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteBlockchainNodeOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.blockchainnodeengine.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteBlockchainNode",
+          "fullName": "google.cloud.blockchainnodeengine.v1.BlockchainNodeEngine.DeleteBlockchainNode",
+          "service": {
+            "shortName": "BlockchainNodeEngine",
+            "fullName": "google.cloud.blockchainnodeengine.v1.BlockchainNodeEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "blockchainnodeengine_v1_generated_BlockchainNodeEngine_DeleteOperation_sync",
+      "title": "blockchainnodeengine DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.blockchainnodeengine.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.blockchainnodeengine.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "blockchainnodeengine_v1_generated_BlockchainNodeEngine_GetBlockchainNode_sync",
+      "title": "blockchainnodeengine GetBlockchainNode Sample",
+      "description": "GetBlockchainNode gets details of a single blockchain node.",
+      "file": "Client/GetBlockchainNode/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBlockchainNode",
+        "fullName": "google.cloud.blockchainnodeengine.v1.Client.GetBlockchainNode",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "blockchainnodeenginepb.GetBlockchainNodeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*blockchainnodeenginepb.BlockchainNode",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.blockchainnodeengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GetBlockchainNode",
+          "fullName": "google.cloud.blockchainnodeengine.v1.BlockchainNodeEngine.GetBlockchainNode",
+          "service": {
+            "shortName": "BlockchainNodeEngine",
+            "fullName": "google.cloud.blockchainnodeengine.v1.BlockchainNodeEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "blockchainnodeengine_v1_generated_BlockchainNodeEngine_GetLocation_sync",
+      "title": "blockchainnodeengine GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.blockchainnodeengine.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.blockchainnodeengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "blockchainnodeengine_v1_generated_BlockchainNodeEngine_GetOperation_sync",
+      "title": "blockchainnodeengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.blockchainnodeengine.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.blockchainnodeengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "blockchainnodeengine_v1_generated_BlockchainNodeEngine_ListBlockchainNodes_sync",
+      "title": "blockchainnodeengine ListBlockchainNodes Sample",
+      "description": "ListBlockchainNodes lists blockchain nodes in a given project and location.",
+      "file": "Client/ListBlockchainNodes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBlockchainNodes",
+        "fullName": "google.cloud.blockchainnodeengine.v1.Client.ListBlockchainNodes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "blockchainnodeenginepb.ListBlockchainNodesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BlockchainNodeIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.blockchainnodeengine.v1.Client"
+        },
+        "method": {
+          "shortName": "ListBlockchainNodes",
+          "fullName": "google.cloud.blockchainnodeengine.v1.BlockchainNodeEngine.ListBlockchainNodes",
+          "service": {
+            "shortName": "BlockchainNodeEngine",
+            "fullName": "google.cloud.blockchainnodeengine.v1.BlockchainNodeEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "blockchainnodeengine_v1_generated_BlockchainNodeEngine_ListLocations_sync",
+      "title": "blockchainnodeengine ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.blockchainnodeengine.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.blockchainnodeengine.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "blockchainnodeengine_v1_generated_BlockchainNodeEngine_ListOperations_sync",
+      "title": "blockchainnodeengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.blockchainnodeengine.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.blockchainnodeengine.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "blockchainnodeengine_v1_generated_BlockchainNodeEngine_UpdateBlockchainNode_sync",
+      "title": "blockchainnodeengine UpdateBlockchainNode Sample",
+      "description": "UpdateBlockchainNode updates the parameters of a single blockchain node.",
+      "file": "Client/UpdateBlockchainNode/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBlockchainNode",
+        "fullName": "google.cloud.blockchainnodeengine.v1.Client.UpdateBlockchainNode",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "blockchainnodeenginepb.UpdateBlockchainNodeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateBlockchainNodeOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.blockchainnodeengine.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateBlockchainNode",
+          "fullName": "google.cloud.blockchainnodeengine.v1.BlockchainNodeEngine.UpdateBlockchainNode",
+          "service": {
+            "shortName": "BlockchainNodeEngine",
+            "fullName": "google.cloud.blockchainnodeengine.v1.BlockchainNodeEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

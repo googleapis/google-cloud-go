@@ -1,0 +1,153 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/kms/inventory/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.kms.inventory.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "kmsinventory_v1_generated_KeyDashboardService_ListCryptoKeys_sync",
+      "title": "kmsinventory ListCryptoKeys Sample",
+      "description": "ListCryptoKeys returns cryptographic keys managed by Cloud KMS in a given Cloud project.\nNote that this data is sourced from snapshots, meaning it may not\ncompletely reflect the actual state of key metadata at call time.",
+      "file": "KeyDashboardClient/ListCryptoKeys/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCryptoKeys",
+        "fullName": "google.cloud.kms.inventory.v1.KeyDashboardClient.ListCryptoKeys",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "inventorypb.ListCryptoKeysRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CryptoKeyIterator",
+        "client": {
+          "shortName": "KeyDashboardClient",
+          "fullName": "google.cloud.kms.inventory.v1.KeyDashboardClient"
+        },
+        "method": {
+          "shortName": "ListCryptoKeys",
+          "fullName": "google.cloud.kms.inventory.v1.KeyDashboardService.ListCryptoKeys",
+          "service": {
+            "shortName": "KeyDashboardService",
+            "fullName": "google.cloud.kms.inventory.v1.KeyDashboardService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "kmsinventory_v1_generated_KeyTrackingService_GetProtectedResourcesSummary_sync",
+      "title": "kmsinventory GetProtectedResourcesSummary Sample",
+      "description": "GetProtectedResourcesSummary returns aggregate information about the resources protected by the given\nCloud KMS [CryptoKey][google.cloud.kms.v1.CryptoKey]. Only resources within\nthe same Cloud organization as the key will be returned. The project that\nholds the key must be part of an organization in order for this call to\nsucceed.",
+      "file": "KeyTrackingClient/GetProtectedResourcesSummary/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProtectedResourcesSummary",
+        "fullName": "google.cloud.kms.inventory.v1.KeyTrackingClient.GetProtectedResourcesSummary",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "inventorypb.GetProtectedResourcesSummaryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*inventorypb.ProtectedResourcesSummary",
+        "client": {
+          "shortName": "KeyTrackingClient",
+          "fullName": "google.cloud.kms.inventory.v1.KeyTrackingClient"
+        },
+        "method": {
+          "shortName": "GetProtectedResourcesSummary",
+          "fullName": "google.cloud.kms.inventory.v1.KeyTrackingService.GetProtectedResourcesSummary",
+          "service": {
+            "shortName": "KeyTrackingService",
+            "fullName": "google.cloud.kms.inventory.v1.KeyTrackingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "kmsinventory_v1_generated_KeyTrackingService_SearchProtectedResources_sync",
+      "title": "kmsinventory SearchProtectedResources Sample",
+      "description": "SearchProtectedResources returns metadata about the resources protected by the given Cloud KMS\n[CryptoKey][google.cloud.kms.v1.CryptoKey] in the given Cloud organization.",
+      "file": "KeyTrackingClient/SearchProtectedResources/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchProtectedResources",
+        "fullName": "google.cloud.kms.inventory.v1.KeyTrackingClient.SearchProtectedResources",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "inventorypb.SearchProtectedResourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProtectedResourceIterator",
+        "client": {
+          "shortName": "KeyTrackingClient",
+          "fullName": "google.cloud.kms.inventory.v1.KeyTrackingClient"
+        },
+        "method": {
+          "shortName": "SearchProtectedResources",
+          "fullName": "google.cloud.kms.inventory.v1.KeyTrackingService.SearchProtectedResources",
+          "service": {
+            "shortName": "KeyTrackingService",
+            "fullName": "google.cloud.kms.inventory.v1.KeyTrackingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

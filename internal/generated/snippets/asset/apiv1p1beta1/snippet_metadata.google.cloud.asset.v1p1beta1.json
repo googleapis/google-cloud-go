@@ -1,0 +1,107 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/asset/apiv1p1beta1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.asset.v1p1beta1",
+        "version": "v1p1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudasset_v1p1beta1_generated_AssetService_SearchAllIamPolicies_sync",
+      "title": "cloudasset SearchAllIamPolicies Sample",
+      "description": "SearchAllIamPolicies searches all the IAM policies within a given accessible Resource Manager\nscope (project/folder/organization). This RPC gives callers especially\nadministrators the ability to search all the IAM policies within a scope,\neven if they don't have `.getIamPolicy` permission of all the IAM policies.\nCallers should have `cloudasset.assets.searchAllIamPolicies` permission on\nthe requested scope, otherwise the request will be rejected.",
+      "file": "Client/SearchAllIamPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchAllIamPolicies",
+        "fullName": "google.cloud.asset.v1p1beta1.Client.SearchAllIamPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.SearchAllIamPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "IamPolicySearchResultIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1p1beta1.Client"
+        },
+        "method": {
+          "shortName": "SearchAllIamPolicies",
+          "fullName": "google.cloud.asset.v1p1beta1.AssetService.SearchAllIamPolicies",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1p1beta1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1p1beta1_generated_AssetService_SearchAllResources_sync",
+      "title": "cloudasset SearchAllResources Sample",
+      "description": "SearchAllResources searches all the resources within a given accessible Resource Manager scope\n(project/folder/organization). This RPC gives callers especially\nadministrators the ability to search all the resources within a scope, even\nif they don't have `.get` permission of all the resources. Callers should\nhave `cloudasset.assets.searchAllResources` permission on the requested\nscope, otherwise the request will be rejected.",
+      "file": "Client/SearchAllResources/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchAllResources",
+        "fullName": "google.cloud.asset.v1p1beta1.Client.SearchAllResources",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.SearchAllResourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StandardResourceMetadataIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1p1beta1.Client"
+        },
+        "method": {
+          "shortName": "SearchAllResources",
+          "fullName": "google.cloud.asset.v1p1beta1.AssetService.SearchAllResources",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1p1beta1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

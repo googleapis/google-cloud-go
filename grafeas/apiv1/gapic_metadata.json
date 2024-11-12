@@ -1,0 +1,88 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "grafeas.v1",
+  "libraryPackage": "cloud.google.com/go/grafeas/apiv1",
+  "services": {
+    "Grafeas": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchCreateNotes": {
+              "methods": [
+                "BatchCreateNotes"
+              ]
+            },
+            "BatchCreateOccurrences": {
+              "methods": [
+                "BatchCreateOccurrences"
+              ]
+            },
+            "CreateNote": {
+              "methods": [
+                "CreateNote"
+              ]
+            },
+            "CreateOccurrence": {
+              "methods": [
+                "CreateOccurrence"
+              ]
+            },
+            "DeleteNote": {
+              "methods": [
+                "DeleteNote"
+              ]
+            },
+            "DeleteOccurrence": {
+              "methods": [
+                "DeleteOccurrence"
+              ]
+            },
+            "GetNote": {
+              "methods": [
+                "GetNote"
+              ]
+            },
+            "GetOccurrence": {
+              "methods": [
+                "GetOccurrence"
+              ]
+            },
+            "GetOccurrenceNote": {
+              "methods": [
+                "GetOccurrenceNote"
+              ]
+            },
+            "ListNoteOccurrences": {
+              "methods": [
+                "ListNoteOccurrences"
+              ]
+            },
+            "ListNotes": {
+              "methods": [
+                "ListNotes"
+              ]
+            },
+            "ListOccurrences": {
+              "methods": [
+                "ListOccurrences"
+              ]
+            },
+            "UpdateNote": {
+              "methods": [
+                "UpdateNote"
+              ]
+            },
+            "UpdateOccurrence": {
+              "methods": [
+                "UpdateOccurrence"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1394 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/paymentgateway/issuerswitch/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.paymentgateway.issuerswitch.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchParticipants_ActivateParticipant_sync",
+      "title": "issuerswitch ActivateParticipant Sample",
+      "description": "ActivateParticipant activate the issuer switch participant for UPI transactions. This API\nsets the state of the participant to\n[ACTIVE][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.ACTIVE].\nA participant in the `ACTIVE` state can perform all UPI operations\nnormally.\n\nThe behavior of this API varies based on the current state of the\nparticipant.\n\n*   Current state is\n[ACTIVE][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.ACTIVE]\n: This API will make no change to the participant's state and returns a\nsuccessful response.\n*    Current state is\n[INACTIVE][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.INACTIVE]\n: If an _MPIN_ has already been provisioned for the participant, then\nthis API will change the state of the participant to `ACTIVE`. Else,\nthis API will return an error.\n*   Current state is\n[MOBILE_NUMBER_CHANGED][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.MOBILE_NUMBER_CHANGED]\n: The state cannot be changed to `ACTIVE`. This API will return an\nerror.\n*   Current state is\n[NEW_REGISTRATION_INITIATED][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.NEW_REGISTRATION_INITIATED]\n: The state cannot be changed to `ACTIVE`. This API will return an\nerror.\n*   Current state is\n[RE_REGISTRATION_INITIATED][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.RE_REGISTRATION_INITIATED]\n: The state cannot be changed to `ACTIVE`. This API will return an\nerror.",
+      "file": "IssuerSwitchParticipantsClient/ActivateParticipant/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ActivateParticipant",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient.ActivateParticipant",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ParticipantStateChangeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*issuerswitchpb.IssuerParticipants",
+        "client": {
+          "shortName": "IssuerSwitchParticipantsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient"
+        },
+        "method": {
+          "shortName": "ActivateParticipant",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipants.ActivateParticipant",
+          "service": {
+            "shortName": "IssuerSwitchParticipants",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipants"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchParticipants_DeactivateParticipant_sync",
+      "title": "issuerswitch DeactivateParticipant Sample",
+      "description": "DeactivateParticipant deactivate the issuer switch participant for UPI transactions. This API\nsets the state of the participant to\n[INACTIVE][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.INACTIVE].\nAn `INACTIVE` participant cannot perform any UPI operation which involves\nMPIN verification.\n\nThe behavior of this API varies based on the current state of the\nparticipant.\n\n*   Current state is\n[ACTIVE][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.ACTIVE]\n: The state will change to `INACTIVE`. The user will be forced to\nre-register with UPI and reset their MPIN  to perform any UPI\noperations.\n*   Current state is\n[INACTIVE][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.INACTIVE]\n: This API will make no change to the participant's state and returns a\nsuccessful response.\n*   Current state is\n[MOBILE_NUMBER_CHANGED][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.MOBILE_NUMBER_CHANGED]\n: The state cannot be changed to `INACTIVE`. This API will return an\nerror.\n*   Current state is\n[NEW_REGISTRATION_INITIATED][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.NEW_REGISTRATION_INITIATED]\n: The state cannot be changed to `INACTIVE`. This API will return an\nerror.\n*   Current state is\n[RE_REGISTRATION_INITIATED][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.RE_REGISTRATION_INITIATED]\n: The state cannot be changed to `INACTIVE`. This API will return an\nerror.",
+      "file": "IssuerSwitchParticipantsClient/DeactivateParticipant/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeactivateParticipant",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient.DeactivateParticipant",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ParticipantStateChangeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*issuerswitchpb.IssuerParticipants",
+        "client": {
+          "shortName": "IssuerSwitchParticipantsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient"
+        },
+        "method": {
+          "shortName": "DeactivateParticipant",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipants.DeactivateParticipant",
+          "service": {
+            "shortName": "IssuerSwitchParticipants",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipants"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchParticipants_FetchParticipant_sync",
+      "title": "issuerswitch FetchParticipant Sample",
+      "description": "FetchParticipant fetch the issuer switch participant. This method can be used to retrieve\nall details of a participant in the issuer switch.\n\nIn UPI, the participant is identified by their account's IFSC and their\naccount number.",
+      "file": "IssuerSwitchParticipantsClient/FetchParticipant/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchParticipant",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient.FetchParticipant",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.FetchParticipantRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*issuerswitchpb.IssuerParticipant",
+        "client": {
+          "shortName": "IssuerSwitchParticipantsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient"
+        },
+        "method": {
+          "shortName": "FetchParticipant",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipants.FetchParticipant",
+          "service": {
+            "shortName": "IssuerSwitchParticipants",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipants"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchParticipants_GetOperation_sync",
+      "title": "issuerswitch GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "IssuerSwitchParticipantsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "IssuerSwitchParticipantsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchParticipants_ListOperations_sync",
+      "title": "issuerswitch ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "IssuerSwitchParticipantsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "IssuerSwitchParticipantsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchParticipants_MobileNumberChanged_sync",
+      "title": "issuerswitch MobileNumberChanged Sample",
+      "description": "MobileNumberChanged mark the state of the issuer switch participant as _mobile number changed_\nto prevent UPI transactions by the user. This API sets the state of the\nparticipant to\n[MOBILE_NUMBER_CHANGED][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.MOBILE_NUMBER_CHANGED].\n\nAny UPI operation for a participant in the `MOBILE_NUMBER_CHANGED` state\nwill cause the issuer switch to return a `B1` error to the UPI payments\norchestrator which would force the user to re-register with UPI.\n\nThe behavior of this API varies based on the current state of the\nparticipant.\n\n*   Current state is\n[ACTIVE][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.ACTIVE]\n: The state will change to `MOBILE_NUMBER_CHANGED`. Any operation\ninvolving MPIN verification of the participant will return a `B1` error\nto the UPI payments orchestrator. The user will be forced to\nre-register with their changed mobile number.\n*   Current state is\n[INACTIVE][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.INACTIVE]\n: The state will change to `MOBILE_NUMBER_CHANGED`. Any operation\ninvolving MPIN verification of the participant will return a `B1` error\nto the UPI payments orchestrator. The user will be forced to\nre-register with their changed mobile number.\n*   Current state is\n[MOBILE_NUMBER_CHANGED][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.MOBILE_NUMBER_CHANGED]\n: This API will make no change to the participant's state and returns a\nsuccessful response.\n*   Current state is\n[NEW_REGISTRATION_INITIATED][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.NEW_REGISTRATION_INITIATED]\n: The state cannot be changed to `MOBILE_NUMBER_CHANGED`. This API will\nreturn an error.\n*   Current state is\n[RE_REGISTRATION_INITIATED][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.State.RE_REGISTRATION_INITIATED]\n: The state will change to `MOBILE_NUMBER_CHANGED`. Any operation\ninvolving MPIN verification of the participant will return a `B1` error\nto the UPI payments orchestrator. The user will be forced to\nre-register with their changed mobile number.",
+      "file": "IssuerSwitchParticipantsClient/MobileNumberChanged/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "MobileNumberChanged",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient.MobileNumberChanged",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ParticipantStateChangeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*issuerswitchpb.IssuerParticipants",
+        "client": {
+          "shortName": "IssuerSwitchParticipantsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient"
+        },
+        "method": {
+          "shortName": "MobileNumberChanged",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipants.MobileNumberChanged",
+          "service": {
+            "shortName": "IssuerSwitchParticipants",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipants"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchParticipants_UpdateIssuerParticipant_sync",
+      "title": "issuerswitch UpdateIssuerParticipant Sample",
+      "description": "UpdateIssuerParticipant update the issuer switch participant. Currently, this API only allows for\nthe\n[metadata][google.cloud.paymentgateway.issuerswitch.v1.IssuerParticipant.metadata]\nfield to be updated.\n\nThe `number` of key-value pairs in the `metadata` field, the length of each\n`key` and the length of each `value` should be within the thresholds\ndefined for them in the issuer switch configuration. Any violation of these\nthresholds will cause this API to return an error. The default values for\nthese thresholds are: \n\n* `Maximum number` of key-value pairs - `5`\n* `Maximum length` of a key - `100`\n* `Maximum length` of a value - `500`\n\n**Note** that this method replaces any existing `metadata` field value in\nthe participant with the new value. Specifically, it does not do a merge.\nIf key-value pairs are to be added/removed from the metadata, then\ncallers must follow the following steps: \n\n1. Invoke the\n[FetchParticipant][google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipants.FetchParticipant]\nAPI to get the current value of the `metadata` field.\n1. Update the `metadata` map to add/remove key-value pairs from it.\n1. Update the `metadata` in the issuer switch using this method.",
+      "file": "IssuerSwitchParticipantsClient/UpdateIssuerParticipant/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateIssuerParticipant",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient.UpdateIssuerParticipant",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.UpdateIssuerParticipantRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*issuerswitchpb.IssuerParticipant",
+        "client": {
+          "shortName": "IssuerSwitchParticipantsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipantsClient"
+        },
+        "method": {
+          "shortName": "UpdateIssuerParticipant",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipants.UpdateIssuerParticipant",
+          "service": {
+            "shortName": "IssuerSwitchParticipants",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchParticipants"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchResolutions_CreateComplaint_sync",
+      "title": "issuerswitch CreateComplaint Sample",
+      "description": "CreateComplaint create a complaint. The returned `Operation` type has\nthe following method-specific fields: \n\n- `metadata`: \n[CreateComplaintMetadata][google.cloud.paymentgateway.issuerswitch.v1.CreateComplaintMetadata]\n- `response`: \n[Complaint][google.cloud.paymentgateway.issuerswitch.v1.Complaint]",
+      "file": "IssuerSwitchResolutionsClient/CreateComplaint/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateComplaint",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutionsClient.CreateComplaint",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.CreateComplaintRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateComplaintOperation",
+        "client": {
+          "shortName": "IssuerSwitchResolutionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutionsClient"
+        },
+        "method": {
+          "shortName": "CreateComplaint",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutions.CreateComplaint",
+          "service": {
+            "shortName": "IssuerSwitchResolutions",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchResolutions_CreateDispute_sync",
+      "title": "issuerswitch CreateDispute Sample",
+      "description": "CreateDispute create a dispute. The returned `Operation` type has\nthe following method-specific fields: \n\n- `metadata`: \n[CreateDisputeMetadata][google.cloud.paymentgateway.issuerswitch.v1.CreateDisputeMetadata]\n- `response`: \n[Dispute][google.cloud.paymentgateway.issuerswitch.v1.Dispute]",
+      "file": "IssuerSwitchResolutionsClient/CreateDispute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDispute",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutionsClient.CreateDispute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.CreateDisputeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDisputeOperation",
+        "client": {
+          "shortName": "IssuerSwitchResolutionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutionsClient"
+        },
+        "method": {
+          "shortName": "CreateDispute",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutions.CreateDispute",
+          "service": {
+            "shortName": "IssuerSwitchResolutions",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchResolutions_GetOperation_sync",
+      "title": "issuerswitch GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "IssuerSwitchResolutionsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutionsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "IssuerSwitchResolutionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutionsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchResolutions_ListOperations_sync",
+      "title": "issuerswitch ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "IssuerSwitchResolutionsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutionsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "IssuerSwitchResolutionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutionsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchResolutions_ResolveComplaint_sync",
+      "title": "issuerswitch ResolveComplaint Sample",
+      "description": "ResolveComplaint resolve a complaint. The returned `Operation` type has\nthe following method-specific fields: \n\n- `metadata`: \n[ResolveComplaintMetadata][google.cloud.paymentgateway.issuerswitch.v1.ResolveComplaintMetadata]\n- `response`: \n[Complaint][google.cloud.paymentgateway.issuerswitch.v1.Complaint]",
+      "file": "IssuerSwitchResolutionsClient/ResolveComplaint/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResolveComplaint",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutionsClient.ResolveComplaint",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ResolveComplaintRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResolveComplaintOperation",
+        "client": {
+          "shortName": "IssuerSwitchResolutionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutionsClient"
+        },
+        "method": {
+          "shortName": "ResolveComplaint",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutions.ResolveComplaint",
+          "service": {
+            "shortName": "IssuerSwitchResolutions",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchResolutions_ResolveDispute_sync",
+      "title": "issuerswitch ResolveDispute Sample",
+      "description": "ResolveDispute resolve a dispute. The returned `Operation` type has\nthe following method-specific fields: \n\n- `metadata`: \n[ResolveDisputeMetadata][google.cloud.paymentgateway.issuerswitch.v1.ResolveDisputeMetadata]\n- `response`: \n[Dispute][google.cloud.paymentgateway.issuerswitch.v1.Dispute]",
+      "file": "IssuerSwitchResolutionsClient/ResolveDispute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResolveDispute",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutionsClient.ResolveDispute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ResolveDisputeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResolveDisputeOperation",
+        "client": {
+          "shortName": "IssuerSwitchResolutionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutionsClient"
+        },
+        "method": {
+          "shortName": "ResolveDispute",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutions.ResolveDispute",
+          "service": {
+            "shortName": "IssuerSwitchResolutions",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchResolutions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchRules_BatchCreateRuleMetadataValues_sync",
+      "title": "issuerswitch BatchCreateRuleMetadataValues Sample",
+      "description": "BatchCreateRuleMetadataValues create (add) multiple values to the list of values under the specified rule\nmetadata resource.",
+      "file": "IssuerSwitchRulesClient/BatchCreateRuleMetadataValues/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateRuleMetadataValues",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient.BatchCreateRuleMetadataValues",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.BatchCreateRuleMetadataValuesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*issuerswitchpb.BatchCreateRuleMetadataValuesResponse",
+        "client": {
+          "shortName": "IssuerSwitchRulesClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient"
+        },
+        "method": {
+          "shortName": "BatchCreateRuleMetadataValues",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRules.BatchCreateRuleMetadataValues",
+          "service": {
+            "shortName": "IssuerSwitchRules",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRules"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchRules_BatchDeleteRuleMetadataValues_sync",
+      "title": "issuerswitch BatchDeleteRuleMetadataValues Sample",
+      "description": "BatchDeleteRuleMetadataValues delete (remove) multiple values from the list of values under the specified\nrules metadata resource.",
+      "file": "IssuerSwitchRulesClient/BatchDeleteRuleMetadataValues/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchDeleteRuleMetadataValues",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient.BatchDeleteRuleMetadataValues",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.BatchDeleteRuleMetadataValuesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "IssuerSwitchRulesClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient"
+        },
+        "method": {
+          "shortName": "BatchDeleteRuleMetadataValues",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRules.BatchDeleteRuleMetadataValues",
+          "service": {
+            "shortName": "IssuerSwitchRules",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRules"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchRules_GetOperation_sync",
+      "title": "issuerswitch GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "IssuerSwitchRulesClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "IssuerSwitchRulesClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchRules_ListOperations_sync",
+      "title": "issuerswitch ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "IssuerSwitchRulesClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "IssuerSwitchRulesClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchRules_ListRuleMetadata_sync",
+      "title": "issuerswitch ListRuleMetadata Sample",
+      "description": "ListRuleMetadata list all rule metadata for a given rule identifier.",
+      "file": "IssuerSwitchRulesClient/ListRuleMetadata/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRuleMetadata",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient.ListRuleMetadata",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ListRuleMetadataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RuleMetadataIterator",
+        "client": {
+          "shortName": "IssuerSwitchRulesClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient"
+        },
+        "method": {
+          "shortName": "ListRuleMetadata",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRules.ListRuleMetadata",
+          "service": {
+            "shortName": "IssuerSwitchRules",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRules"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchRules_ListRuleMetadataValues_sync",
+      "title": "issuerswitch ListRuleMetadataValues Sample",
+      "description": "ListRuleMetadataValues list all metadata values for a rule metadata identifier.",
+      "file": "IssuerSwitchRulesClient/ListRuleMetadataValues/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRuleMetadataValues",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient.ListRuleMetadataValues",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ListRuleMetadataValuesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RuleMetadataValueIterator",
+        "client": {
+          "shortName": "IssuerSwitchRulesClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient"
+        },
+        "method": {
+          "shortName": "ListRuleMetadataValues",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRules.ListRuleMetadataValues",
+          "service": {
+            "shortName": "IssuerSwitchRules",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRules"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchRules_ListRules_sync",
+      "title": "issuerswitch ListRules Sample",
+      "description": "ListRules list all rules that are applied on transactions by the issuer switch. Rules\ncan be filtered on API type and transaction type.",
+      "file": "IssuerSwitchRulesClient/ListRules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRules",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient.ListRules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ListRulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RuleIterator",
+        "client": {
+          "shortName": "IssuerSwitchRulesClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRulesClient"
+        },
+        "method": {
+          "shortName": "ListRules",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRules.ListRules",
+          "service": {
+            "shortName": "IssuerSwitchRules",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchRules"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchTransactions_ExportComplaintTransactions_sync",
+      "title": "issuerswitch ExportComplaintTransactions Sample",
+      "description": "ExportComplaintTransactions export complaint transactions received within the specified time range as a\nfile into a configured target location. The returned `Operation` type has\nthe following method-specific fields: \n\n- `metadata`: \n[ExportComplaintTransactionsMetadata][google.cloud.paymentgateway.issuerswitch.v1.ExportComplaintTransactionsMetadata]\n- `response`: \n[ExportComplaintTransactionsResponse][google.cloud.paymentgateway.issuerswitch.v1.ExportComplaintTransactionsResponse]\n\nThe exported file will be in the standard CSV format where each row in the\nfile represents a transaction. The file has the following fields in order: \n\n1. `TransactionID`\n* **Min Length** - 35 characters\n* **Max Length** - 35 characters\n* **Description** - UPI transaction ID.\n1. `TransactionType`\n* **Min Length** - 23 characters\n* **Max Length** - 30 characters\n* **Description** - Type of the transaction. This will be one of\n`TRANSACTION_TYPE_CHECK_STATUS`, `TRANSACTION_TYPE_COMPLAINT`,\n`TRANSACTION_TYPE_REVERSAL`, `TRANSACTION_TYPE_DISPUTE`,\n`TRANSACTION_TYPE_REFUND`, or `TRANSACTION_TYPE_STATUS_UPDATE`.\n1. `CreationTime`\n* **Min Length** - 20 characters\n* **Max Length** - 20 characters\n* **Description** - Timestamp (in UTC) indicating when the issuer\nswitch created the transaction resource for processing the transaction.\nThe format will be as per RFC-3339. Example : 2022-11-22T23: 00: 05Z\n1: `State`\n* **Min Length** - 6 characters\n* **Max Length** - 9 characters\n* **Description** - State of the transaction. This will be one of\n`FAILED`, `SUCCEEDED`, or `TIMED_OUT`.\n1. `OriginalRRN`\n* **Min Length** - 12 characters\n* **Max Length** - 12 characters\n* **Description** - Retrieval reference number of the original payment\ntransaction.\n1. `BankType`\n* **Min Length** - 8 characters\n* **Max Length** - 11 characters\n* **Description** - The subtype of the transaction based on the bank\ninvolved. This will be one of `BENEFICIARY`, or `REMITTER`.\n1. `OriginalTransactionID`\n* **Min Length** - 35 characters\n* **Max Length** - 35 characters\n* **Description** - Transaction ID of the original unresolved\ntransaction.\n1. `RaiseComplaintAdjFlag`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Indicates the type of action to raise the\ncomplaint.\n1. `RaiseComplaintAdjCode`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Indicates the reason of action to raise the\ncomplaint.\n1. `ResolveComplaintAdjFlag`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Indicates the type of action to resolve the\ncomplaint.\n1. `ResolveComplaintAdjCode`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Indicates the reason of action to resolve the\ncomplaint.\n1. `RaiseDisputeAdjFlag`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Indicates the type of action to raise the dispute.\n1. `RaiseDisputeAdjCode`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Indicates the reason of action to raise the\ndispute.\n1. `ResolveDisputeAdjFlag`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Indicates the type of action to resolve the\ndispute.\n1. `ResolveDisputeAdjCode`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Indicates the reason of action to resolve the\ndispute.\n1. `Amount`\n* **Description** - Amount to be resolved.\n1. `CurrentCycle`\n* **Min Length** - 4 characters\n* **Max Length** - 5 characters\n* **Description** - Boolean value specifying if the complaint / dispute\nbelongs to current settlement cycle or not.\n1. `CRN`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Defines the Complaint Reference number.\n1. `AdjTime`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Indicates the time when the resolution was done.\n1. `RespAdjFlag`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Indicates the response category type.\n1. `RespAdjCode`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Indicates the response reason used.\n1. `AdjRemarks`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Indicates the additional remarks for the complaint\n/ dispute.\n1. `AdapterRequestIDs`\n* **Min Length** - 0 characters\n* **Max Length** - 2,000 characters\n* **Description** - List of adapter request IDs (colon separated) used\nwhen invoking the Adapter APIs for fulfilling a transaction request.\n1. `ErrorCode`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Error code of the failed transaction.\n1. `ErrorMessage`\n* **Min Length** - 0 characters\n* **Max Length** - 10,000 characters\n* **Description** - Error description for the failed transaction.\n1. `UPIErrorCode`\n* **Min Length** - 0 characters\n* **Max Length** - 3 characters\n* **Description** - Error code as per the UPI specification. The issuer\nswitch service maps the ErrorCode to an appropriate error code that\ncomplies with the UPI specification.",
+      "file": "IssuerSwitchTransactionsClient/ExportComplaintTransactions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportComplaintTransactions",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient.ExportComplaintTransactions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ExportComplaintTransactionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportComplaintTransactionsOperation",
+        "client": {
+          "shortName": "IssuerSwitchTransactionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient"
+        },
+        "method": {
+          "shortName": "ExportComplaintTransactions",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions.ExportComplaintTransactions",
+          "service": {
+            "shortName": "IssuerSwitchTransactions",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchTransactions_ExportFinancialTransactions_sync",
+      "title": "issuerswitch ExportFinancialTransactions Sample",
+      "description": "ExportFinancialTransactions export financial transactions received within the specified time range as a\nfile into a configured target location. The returned `Operation` type has\nthe following method-specific fields: \n\n- `metadata`: \n[ExportFinancialTransactionsMetadata][google.cloud.paymentgateway.issuerswitch.v1.ExportFinancialTransactionsMetadata]\n- `response`: \n[ExportFinancialTransactionsResponse][google.cloud.paymentgateway.issuerswitch.v1.ExportFinancialTransactionsResponse]\n\nThe exported file will be in the standard CSV format where each row in the\nfile represents a transaction. The file has the following fields in order: \n\n1. `TransactionID`\n* **Min Length** - 35 characters\n* **Max Length** - 35 characters\n* **Description** - UPI transaction ID.\n1. `TransactionType`\n* **Min Length** - 22 characters\n* **Max Length** - 25 characters\n* **Description** - Type of the transaction. This will be one of\n`TRANSACTION_TYPE_CREDIT`, `TRANSACTION_TYPE_DEBIT` or\n`TRANSACTION_TYPE_REVERSAL`.\n1. `TransactionSubType`\n* **Min Length** - 3 characters\n* **Max Length** - 7 characters\n* **Description** - Subtype of the transaction. This will be one of\n`COLLECT`, or `PAY`.\n1. `CreationTime`\n* **Min Length** - 20 characters\n* **Max Length** - 20 characters\n* **Description** - Timestamp (in UTC) indicating when the issuer\nswitch created the transaction resource for processing the transaction.\nThe format will be as per RFC-3339. Example : 2022-11-22T23: 00: 05Z\n1. `State`\n* **Min Length** - 6 characters\n* **Max Length** - 9 characters\n* **Description** - State of the transaction. This will be one of\n`FAILED`, `SUCCEEDED`, or `TIMED_OUT`.\n1. `RRN`\n* **Min Length** - 12 characters\n* **Max Length** - 12 characters\n* **Description** - Retrieval reference number associated with the\ntransaction.\n1. `PayerVPA`\n* **Min Length** - 3 characters\n* **Max Length** - 255 characters\n* **Description** - Virtual Payment Address (VPA) of the payer.\n1. `PayerMobileNumber`\n* **Min Length** - 12 characters\n* **Max Length** - 12 characters\n* **Description** - Mobile number of the payer.\n1. `PayerIFSC`\n* **Min Length** - 11 characters\n* **Max Length** - 11 characters\n* **Description** - IFSC of the payer's bank account.\n1. `PayerAccountNumber`\n* **Min Length** - 1 characters\n* **Max Length** - 30 characters\n* **Description** - Payer's bank account number.\n1. `PayerAccountType`\n* **Min Length** - 3 characters\n* **Max Length** - 7 characters\n* **Description** - Payer's bank account type. This will be one of\n`SAVINGS`, `DEFAULT`, `CURRENT`, `NRE`, `NRO`, `PPIWALLET`,\n`BANKWALLET`, `CREDIT`, `SOD`, or `UOD`.\n1. `PayeeVPA`\n* **Min Length** - 3 characters\n* **Max Length** - 255 characters\n* **Description** - Virtual Payment Address (VPA) of the payee.\n1. `PayeeMobileNumber`\n* **Min Length** - 12 characters\n* **Max Length** - 12 characters\n* **Description** - Payee's mobile number.\n1. `PayeeIFSC`\n* **Min Length** - 11 characters\n* **Max Length** - 11 characters\n* **Description** - IFSC of the payee's bank account.\n1. `PayeeAccountNumber`\n* **Min Length** - 1 characters\n* **Max Length** - 30 characters\n* **Description** - Payee's bank account number.\n1. `PayeeAccountType`\n* **Min Length** - 3 characters\n* **Max Length** - 10 characters\n* **Description** - Payee's bank account type. This will be one of\n`SAVINGS`, `DEFAULT`, `CURRENT`, `NRE`, `NRO`, `PPIWALLET`,\n`BANKWALLET`, `CREDIT`, `SOD`, or `UOD`.\n1. `PayeeMerchantID`\n* **Min Length** - 1 characters\n* **Max Length** - 255 characters\n* **Description** - Payee's merchant ID, only if the payee is a\nmerchant.\n1. `PayeeMerchantName`\n* **Min Length** - 1 characters\n* **Max Length** - 99 characters\n* **Description** - Payee's merchant name, only if the payee is a\nmerchant.\n1. `PayeeMCC`\n* **Min Length** - 4 characters\n* **Max Length** - 4 characters\n* **Description** - Payee's Merchant Category Code (MCC), only if the\npayee is a merchant.\n1. `Currency`\n* **Min Length** - 3 characters\n* **Max Length** - 3 characters\n* **Description** - Currency of the amount involved in the transaction.\nThe currency codes are defined in ISO 4217.\n1. `Amount`\n* **Description** - Amount involved in the transaction.\n1. `AdapterRequestIDs`\n* **Min Length** - 0 characters\n* **Max Length** - 2,000 characters\n* **Description** - List of adapter request IDs (colon separated) used\nwhen invoking the Adapter APIs for fulfilling a transaction request.\n1. `ErrorCode`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Error code of a failed transaction.\n1. `ErrorMessage`\n* **Min Length** - 0 characters\n* **Max Length** - 10,000 characters\n* **Description** - Error description for a failed transaction.\n1. `UPIErrorCode`\n* **Min Length** - 0 characters\n* **Max Length** - 3 characters\n* **Description** - Error code as per the UPI specification. The issuer\nswitch maps the ErrorCode to an appropriate error code that complies\nwith the UPI specification.\n1. `PayerDeviceInfoTypeAppName`\n* **Min Length** - 0 characters\n* **Max Length** - 20 characters\n* **Description** - Payment application name on the payer's device.\n1. `PayerDeviceInfoTypeCapability`\n* **Min Length** - 0 characters\n* **Max Length** - 99 characters\n* **Description** - Capability of the payer's device.\n1. `PayerDeviceInfoTypeGeoCode`\n* **Min Length** - 0 characters\n* **Max Length** - 15 characters\n* **Description** - Geo code of the payer's device. This will include\nfloating point values for latitude and longitude (separated by colon).\n1. `PayerDeviceInfoTypeID`\n* **Min Length** - 0 characters\n* **Max Length** - 35 characters\n* **Description** - Device ID of the payer's device.\n1. `PayerDeviceInfoTypeIP`\n* **Min Length** - 0 characters\n* **Max Length** - 39 characters\n* **Description** - IP address of the payer's device.\n1. `PayerDeviceInfoTypeLocation`\n* **Min Length** - 0 characters\n* **Max Length** - 40 characters\n* **Description** - Coarse location of the payer's device.\n1. `PayerDeviceInfoTypeOS`\n* **Min Length** - 0 characters\n* **Max Length** - 20 characters\n* **Description** - Operating system on the payer's device.\n1. `PayerDeviceInfoTypeTelecomProvider`\n* **Min Length** - 0 characters\n* **Max Length** - 99 characters\n* **Description** - Telecom provider for the payer's device.\n1. `PayerDeviceInfoTypeDeviceType`\n* **Min Length** - 0 characters\n* **Max Length** - 9 characters\n* **Description** - Type of the payer's device. This will be one of\n'MOB', 'INET', 'USDC/USDB', 'POS'.\n1. `PayeeDeviceInfoTypeAppName`\n* **Min Length** - 0 characters\n* **Max Length** - 20 characters\n* **Description** - Payment application name on the payee's device.\n1. `PayeeDeviceInfoTypeCapability`\n* **Min Length** - 0 characters\n* **Max Length** - 99 characters\n* **Description** - Capability of the payee's device.\n1. `PayeeDeviceInfoTypeGeoCode`\n* **Min Length** - 0 characters\n* **Max Length** - 15 characters\n* **Description** - Geo code of the payee's device. This will include\nfloating point values for latitude and longitude (separated by colon).\n1. `PayeeDeviceInfoTypeID`\n* **Min Length** - 0 characters\n* **Max Length** - 35 characters\n* **Description** - Device ID of the payee's device.\n1. `PayeeDeviceInfoTypeIP`\n* **Min Length** - 0 characters\n* **Max Length** - 39 characters\n* **Description** - IP address of the payee's device.\n1. `PayeeDeviceInfoTypeLocation`\n* **Min Length** - 0 characters\n* **Max Length** - 40 characters\n* **Description** - Coarse location of the payee's device.\n1. `PayeeDeviceInfoTypeOS`\n* **Min Length** - 0 characters\n* **Max Length** - 20 characters\n* **Description** - Operating system on the payee's device.\n1. `PayeeDeviceInfoTypeTelecomProvider`\n* **Min Length** - 0 characters\n* **Max Length** - 99 characters\n* **Description** - Telecom provider for the payee's device.\n1. `PayeeDeviceInfoTypeDeviceType`\n* **Min Length** - 0 characters\n* **Max Length** - 9 characters\n* **Description** - Type of the payee's device. This will be one of\n'MOB', 'INET', 'USDC/USDB', 'POS'.\n1. `ReferenceID`\n* **Min Length** - 0 characters\n* **Max Length** - 35 characters\n* **Description** - Consumer reference number to identify loan number,\norder id etc.\n1. `ReferenceURI`\n* **Min Length** - 1 characters\n* **Max Length** - 35 characters\n* **Description** - URL for the  transaction.\n1. `ReferenceCategory`\n* **Min Length** - 2 characters\n* **Max Length** - 2 characters\n* **Description** - Reference category.",
+      "file": "IssuerSwitchTransactionsClient/ExportFinancialTransactions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportFinancialTransactions",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient.ExportFinancialTransactions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ExportFinancialTransactionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportFinancialTransactionsOperation",
+        "client": {
+          "shortName": "IssuerSwitchTransactionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient"
+        },
+        "method": {
+          "shortName": "ExportFinancialTransactions",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions.ExportFinancialTransactions",
+          "service": {
+            "shortName": "IssuerSwitchTransactions",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchTransactions_ExportMandateTransactions_sync",
+      "title": "issuerswitch ExportMandateTransactions Sample",
+      "description": "ExportMandateTransactions export mandate transactions received within the specified time range as a\nfile into a configured target location. The returned `Operation` type has\nthe following method-specific fields: \n\n- `metadata`: \n[ExportMandateTransactionsMetadata][google.cloud.paymentgateway.issuerswitch.v1.ExportMandateTransactionsMetadata]\n- `response`: \n[ExportMandateTransactionsResponse][google.cloud.paymentgateway.issuerswitch.v1.ExportMandateTransactionsResponse]\n\nThe exported file will be in the standard CSV format where each row in the\nfile represents a transaction. The file has the following fields in order: \n\n1. `TransactionID`\n* **Min Length** - 35 characters\n* **Max Length** - 35 characters\n* **Description** - UPI transaction ID.\n1. `UniqueMandateNumber`\n* **Min Length** - 3 characters\n* **Max Length** - 70 characters\n* **Description** - UPI Unique Mandate Number.\n1. `TransactionType`\n* **Min Length** - 23 characters\n* **Max Length** - 23 characters\n* **Description** - Type of the transaction. This will be one of\n`TRANSACTION_TYPE_CREATE`, `TRANSACTION_TYPE_REVOKE`,\n`TRANSACTION_TYPE_UPDATE`, `TRANSACTION_TYPE_PAUSE` or\n`TRANSACTION_TYPE_UNPAUSE`.\n1. `CreationTime`\n* **Min Length** - 20 characters\n* **Max Length** - 20 characters\n* **Description** - Timestamp (in UTC) indicating when the issuer\nswitch created the transaction resource for processing the transaction.\nThe format will be as per RFC-3339. Example : 2022-11-22T23: 00: 05Z\n1. `State`\n* **Min Length** - 6 characters\n* **Max Length** - 9 characters\n* **Description** - State of the transaction. This will be one of\n`FAILED`, `SUCCEEDED`, or `TIMED_OUT`.\n1. `PayerVPA`\n* **Min Length** - 3 characters\n* **Max Length** - 255 characters\n* **Description** - Virtual Payment Address (VPA) of the payer.\n1. `PayerMobileNumber`\n* **Min Length** - 12 characters\n* **Max Length** - 12 characters\n* **Description** - Mobile number of the payer.\n1. `PayerIFSC`\n* **Min Length** - 11 characters\n* **Max Length** - 11 characters\n* **Description** - IFSC of the payer's bank account.\n1. `PayerAccountNumber`\n* **Min Length** - 1 characters\n* **Max Length** - 30 characters\n* **Description** - Payer's bank account number.\n1. `PayerAccountType`\n* **Min Length** - 3 characters\n* **Max Length** - 7 characters\n* **Description** - Payer's bank account type. This will be one of\n`SAVINGS`, `DEFAULT`, `CURRENT`, `NRE`, `NRO`, `PPIWALLET`,\n`BANKWALLET`, `CREDIT`, `SOD`, or `UOD`.\n1. `PayeeVPA`\n* **Min Length** - 3 characters\n* **Max Length** - 255 characters\n* **Description** - Virtual Payment Address (VPA) of the payee.\n1. `PayeeMobileNumber`\n* **Min Length** - 12 characters\n* **Max Length** - 12 characters\n* **Description** - Mobile number of the payee.\n1. `PayeeIFSC`\n* **Min Length** - 11 characters\n* **Max Length** - 11 characters\n* **Description** - IFSC of the payee's bank account.\n1. `PayeeAccountNumber`\n* **Min Length** - 1 characters\n* **Max Length** - 30 characters\n* **Description** - Payee's bank account number.\n1. `PayeeAccountType`\n* **Min Length** - 3 characters\n* **Max Length** - 10 characters\n* **Description** - Payee's bank account type. This will be one of\n`SAVINGS`, `DEFAULT`, `CURRENT`, `NRE`, `NRO`, `PPIWALLET`,\n`BANKWALLET`, `CREDIT`, `SOD`, or `UOD`.\n1. `PayeeMerchantID`\n* **Min Length** - 1 characters\n* **Max Length** - 30 characters\n* **Description** - Payee's merchant ID, only if the payee is a\nmerchant\n1. `PayeeMerchantName`\n* **Min Length** - 1 characters\n* **Max Length** - 99 characters\n* **Description** - Payee's merchant name, only if the payee is a\nmerchant.\n1. `PayeeMCC`\n* **Min Length** - 4 characters\n* **Max Length** - 4 characters\n* **Description** - Payee's Merchant Category Code (MCC), only if the\npayee is a merchant.\n1. `Amount`\n* **Description** - Amount specified in the mandate.\n1. `RecurrencePattern`\n* **Description** - Reccurence pattern of the mandate. The value will\nbe of the\n[MandateTransaction.RecurrencePatternType][google.cloud.paymentgateway.issuerswitch.v1.MandateTransaction.RecurrencePatternType]\nenum.\n1. `RecurrenceRuleType`\n* **Description** - Reccurrence rule type of the mandate. The value\nwill be of the\n[MandateTransaction.RecurrenceRuleType][google.cloud.paymentgateway.issuerswitch.v1.MandateTransaction.RecurrenceRuleType]\nenum.\n1. `RecurrenceRuleValue`\n* **Min Length** - 0 characters\n* **Max Length** - 2 characters\n* **Description** - Recurrence rule value of the mandate. This will be\nan integer between 1 and 31.\n1. `Revokeable`\n* **Min Length** - 4 characters\n* **Max Length** - 5 characters\n* **Description** - Boolean value specifying if the mandate is\nrevokable.\n1. `StartDate`\n* **Min Length** - 10 characters\n* **Max Length** - 10 characters\n* **Description** - The start date of the mandate in `DD-MM-YYYY`\nformat.\n1. `EndDate`\n* **Min Length** - 10 characters\n* **Max Length** - 10 characters\n* **Description** - The end date of the mandate in `DD-MM-YYYY` format.\n1. `AmountRuleType`\n* **Description** - The amount rule of the mandate. The value will be\nof the\n[MandateTransaction.AmountRuleType][google.cloud.paymentgateway.issuerswitch.v1.MandateTransaction.AmountRuleType]\nenum.\n1. `ApprovalReference`\n* **Min Length** - 6 characters\n* **Max Length** - 9 characters\n* **Description** - The block funds reference generated by the bank, if\nfunds have been blocked for the mandate. This column will have a value\nonly when the RecurrencePattern is ONETIME.\n1. `BlockFunds`\n* **Min Length** - 4 characters\n* **Max Length** - 5 characters\n* **Description** - Boolean value specifying if the mandate transaction\nrequested to block funds.\n1. `LastUpdateTime`\n* **Min Length** - 20 characters\n* **Max Length** - 20 characters\n* **Description** - Timestamp (in UTC) indicating when was the last\nmodification made to the mandate. The format will be as per RFC-3339.\nExample : 2022-11-22T23: 00: 05Z\n1. `AdapterRequestIDs`\n* **Min Length** - 0 characters\n* **Max Length** - 2,000 characters\n* **Description** - List of adapter request IDs (colon separated) used\nwhen invoking the Adapter APIs for fulfilling a transaction request.\n1. `ErrorCode`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Error code of the failed transaction.\n1. `ErrorMessage`\n* **Min Length** - 0 characters\n* **Max Length** - 10,000 characters\n* **Description** - Error description for the failed transaction.\n1. `UPIErrorCode`\n* **Min Length** - 0 characters\n* **Max Length** - 3 characters\n* **Description** - Error code as per the UPI specification. The issuer\nswitch maps the ErrorCode to an appropriate error code that complies\nwith the UPI specification.\n1. `PayerDeviceInfoTypeAppName`\n* **Min Length** - 0 characters\n* **Max Length** - 20 characters\n* **Description** - Payment application name on the payer's device.\n1. `PayerDeviceInfoTypeCapability`\n* **Min Length** - 0 characters\n* **Max Length** - 99 characters\n* **Description** - Capability of the payer's device.\n1. `PayerDeviceInfoTypeGeoCode`\n* **Min Length** - 0 characters\n* **Max Length** - 15 characters\n* **Description** - Geo code of the payer's device. This will include\nfloating point values for latitude and longitude (separated by colon).\n1. `PayerDeviceInfoTypeID`\n* **Min Length** - 0 characters\n* **Max Length** - 35 characters\n* **Description** - Device ID of the payer's device.\n1. `PayerDeviceInfoTypeIP`\n* **Min Length** - 0 characters\n* **Max Length** - 39 characters\n* **Description** - IP address of the payer's device.\n1. `PayerDeviceInfoTypeLocation`\n* **Min Length** - 0 characters\n* **Max Length** - 40 characters\n* **Description** - Coarse location of the payer's device.\n1. `PayerDeviceInfoTypeOS`\n* **Min Length** - 0 characters\n* **Max Length** - 20 characters\n* **Description** - Operating system on the payer's device.\n1. `PayerDeviceInfoTypeTelecomProvider`\n* **Min Length** - 0 characters\n* **Max Length** - 99 characters\n* **Description** - Telecom provider for the payer's device.\n1. `PayerDeviceInfoTypeDeviceType`\n* **Min Length** - 0 characters\n* **Max Length** - 9 characters\n* **Description** - Type of the payer's device. This will be one of\n'MOB', 'INET', 'USDC/USDB', 'POS'.\n1. `PayeeDeviceInfoTypeAppName`\n* **Min Length** - 0 characters\n* **Max Length** - 20 characters\n* **Description** - Payment application name on the payee's device.\n1. `PayeeDeviceInfoTypeCapability`\n* **Min Length** - 0 characters\n* **Max Length** - 99 characters\n* **Description** - Capability of the payee's device.\n1. `PayeeDeviceInfoTypeGeoCode`\n* **Min Length** - 0 characters\n* **Max Length** - 15 characters\n* **Description** - Geo code of the payee's device. This will include\nfloating point values for latitude and longitude (separated by colon).\n1. `PayeeDeviceInfoTypeID`\n* **Min Length** - 0 characters\n* **Max Length** - 35 characters\n* **Description** - Device ID of the payee's device.\n1. `PayeeDeviceInfoTypeIP`\n* **Min Length** - 0 characters\n* **Max Length** - 39 characters\n* **Description** - IP address of the payee's device.\n1. `PayeeDeviceInfoTypeLocation`\n* **Min Length** - 0 characters\n* **Max Length** - 40 characters\n* **Description** - Coarse location of the payee's device.\n1. `PayeeDeviceInfoTypeOS`\n* **Min Length** - 0 characters\n* **Max Length** - 20 characters\n* **Description** - Operating system on the payee's device.\n1. `PayeeDeviceInfoTypeTelecomProvider`\n* **Min Length** - 0 characters\n* **Max Length** - 99 characters\n* **Description** - Telecom provider for the payee's device.\n1. `PayeeDeviceInfoTypeDeviceType`\n* **Min Length** - 0 characters\n* **Max Length** - 9 characters\n* **Description** - Type of the payee's device. This will be one of\n`MOB`, `INET`, `USDC/USDB`, `POS`.\n1. `ReferenceID`\n* **Min Length** - 0 characters\n* **Max Length** - 35 characters\n* **Description** - Consumer reference number to identify loan number,\norder id etc.\n1. `ReferenceURI`\n* **Min Length** - 1 characters\n* **Max Length** - 35 characters\n* **Description** - URL for the  transaction.\n1. `ReferenceCategory`\n* **Min Length** - 2 characters\n* **Max Length** - 2 characters\n* **Description** - Reference category.\n1. `MandateName`\n* **Min Length** - 1 characters\n* **Max Length** - 255 characters\n* **Description** - The mandate's name.",
+      "file": "IssuerSwitchTransactionsClient/ExportMandateTransactions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportMandateTransactions",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient.ExportMandateTransactions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ExportMandateTransactionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportMandateTransactionsOperation",
+        "client": {
+          "shortName": "IssuerSwitchTransactionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient"
+        },
+        "method": {
+          "shortName": "ExportMandateTransactions",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions.ExportMandateTransactions",
+          "service": {
+            "shortName": "IssuerSwitchTransactions",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchTransactions_ExportMetadataTransactions_sync",
+      "title": "issuerswitch ExportMetadataTransactions Sample",
+      "description": "ExportMetadataTransactions export metadata transactions received within the specified time range as a\nfile into a configured target location. The returned `Operation` type has\nthe following method-specific fields: \n\n- `metadata`: \n[ExportMetadataTransactionsMetadata][google.cloud.paymentgateway.issuerswitch.v1.ExportMetadataTransactionsMetadata]\n- `response`: \n[ExportMetadataTransactionsResponse][google.cloud.paymentgateway.issuerswitch.v1.ExportMetadataTransactionsResponse]\n\nThe exported file will be in the standard CSV format where each row in the\nfile represents a transaction. The file has the following fields in order: \n\n1. `TransactionID`\n* **Min Length** - 35 characters\n* **Max Length** - 35 characters\n* **Description** - UPI transaction ID.\n1. `APIType`\n* **Description** - The transaction's API type. The value will be of\nthe [ApiType][google.cloud.paymentgateway.issuerswitch.v1.ApiType]\nenum.\n1. `TransactionType`\n* **Description** - Type of the transaction. The value will be of the\n[TransactionType][google.cloud.paymentgateway.issuerswitch.v1.TransactionType]\nenum.\n1. `CreationTime`\n* **Min Length** - 20 characters\n* **Max Length** - 20 characters\n* **Description** - Timestamp (in UTC) indicating when the issuer\nswitch created the transaction resource for processing the transaction.\nThe format will be as per RFC-3339. Example : 2022-11-22T23: 00: 05Z\n1. `State`\n* **Min Length** - 6 characters\n* **Max Length** - 9 characters\n* **Description** - State of the transaction. This will be one of\n`FAILED`, `SUCCEEDED`, or `TIMED_OUT`.\n1. `OriginVPA`\n* **Min Length** - 3 characters\n* **Max Length** - 255 characters\n* **Description** - Virtual Payment Address (VPA) of the originator of\nthe transaction.\n1. `AdapterRequestIDs`\n* **Min Length** - 0 characters\n* **Max Length** - 2,000 characters\n* **Description** - List of adapter request IDs (colon separated) used\nwhen invoking the Adapter APIs for fulfilling a transaction request.\n1. `ErrorCode`\n* **Min Length** - 0 characters\n* **Max Length** - 255 characters\n* **Description** - Error code of the failed transaction.\n1. `ErrorMessage`\n* **Min Length** - 0 characters\n* **Max Length** - 10,000 characters\n* **Description** - Error description for the failed transaction.\n1. `UPIErrorCode`\n* **Min Length** - 0 characters\n* **Max Length** - 3 characters\n* **Description** - Error code as per the UPI specification. The issuer\nswitch maps the ErrorCode to an appropriate error code that complies\nwith the UPI specification.",
+      "file": "IssuerSwitchTransactionsClient/ExportMetadataTransactions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportMetadataTransactions",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient.ExportMetadataTransactions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ExportMetadataTransactionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportMetadataTransactionsOperation",
+        "client": {
+          "shortName": "IssuerSwitchTransactionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient"
+        },
+        "method": {
+          "shortName": "ExportMetadataTransactions",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions.ExportMetadataTransactions",
+          "service": {
+            "shortName": "IssuerSwitchTransactions",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchTransactions_GetOperation_sync",
+      "title": "issuerswitch GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "IssuerSwitchTransactionsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "IssuerSwitchTransactionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchTransactions_ListComplaintTransactions_sync",
+      "title": "issuerswitch ListComplaintTransactions Sample",
+      "description": "ListComplaintTransactions list complaint transactions that satisfy specified filter criteria.",
+      "file": "IssuerSwitchTransactionsClient/ListComplaintTransactions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListComplaintTransactions",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient.ListComplaintTransactions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ListComplaintTransactionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ComplaintTransactionIterator",
+        "client": {
+          "shortName": "IssuerSwitchTransactionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient"
+        },
+        "method": {
+          "shortName": "ListComplaintTransactions",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions.ListComplaintTransactions",
+          "service": {
+            "shortName": "IssuerSwitchTransactions",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchTransactions_ListFinancialTransactions_sync",
+      "title": "issuerswitch ListFinancialTransactions Sample",
+      "description": "ListFinancialTransactions list financial transactions that satisfy specified filter criteria.",
+      "file": "IssuerSwitchTransactionsClient/ListFinancialTransactions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFinancialTransactions",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient.ListFinancialTransactions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ListFinancialTransactionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FinancialTransactionIterator",
+        "client": {
+          "shortName": "IssuerSwitchTransactionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient"
+        },
+        "method": {
+          "shortName": "ListFinancialTransactions",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions.ListFinancialTransactions",
+          "service": {
+            "shortName": "IssuerSwitchTransactions",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchTransactions_ListMandateTransactions_sync",
+      "title": "issuerswitch ListMandateTransactions Sample",
+      "description": "ListMandateTransactions list mandate transactions that satisfy specified filter criteria.",
+      "file": "IssuerSwitchTransactionsClient/ListMandateTransactions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMandateTransactions",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient.ListMandateTransactions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ListMandateTransactionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MandateTransactionIterator",
+        "client": {
+          "shortName": "IssuerSwitchTransactionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient"
+        },
+        "method": {
+          "shortName": "ListMandateTransactions",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions.ListMandateTransactions",
+          "service": {
+            "shortName": "IssuerSwitchTransactions",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchTransactions_ListMetadataTransactions_sync",
+      "title": "issuerswitch ListMetadataTransactions Sample",
+      "description": "ListMetadataTransactions list metadata transactions that satisfy the specified filter criteria.",
+      "file": "IssuerSwitchTransactionsClient/ListMetadataTransactions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMetadataTransactions",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient.ListMetadataTransactions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "issuerswitchpb.ListMetadataTransactionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MetadataTransactionIterator",
+        "client": {
+          "shortName": "IssuerSwitchTransactionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient"
+        },
+        "method": {
+          "shortName": "ListMetadataTransactions",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions.ListMetadataTransactions",
+          "service": {
+            "shortName": "IssuerSwitchTransactions",
+            "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "issuerswitch_v1_generated_IssuerSwitchTransactions_ListOperations_sync",
+      "title": "issuerswitch ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "IssuerSwitchTransactionsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "IssuerSwitchTransactionsClient",
+          "fullName": "google.cloud.paymentgateway.issuerswitch.v1.IssuerSwitchTransactionsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

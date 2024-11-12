@@ -1,0 +1,2353 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/bigtable/admin/apiv2",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.bigtable.admin.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateAppProfile_sync",
+      "title": "bigtableadmin CreateAppProfile Sample",
+      "description": "CreateAppProfile creates an app profile within an instance.",
+      "file": "BigtableInstanceAdminClient/CreateAppProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAppProfile",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.CreateAppProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateAppProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.AppProfile",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "CreateAppProfile",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.CreateAppProfile",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateCluster_sync",
+      "title": "bigtableadmin CreateCluster Sample",
+      "description": "CreateCluster creates a cluster within an instance.\n\nNote that exactly one of Cluster.serve_nodes and\nCluster.cluster_config.cluster_autoscaling_config can be set. If\nserve_nodes is set to non-zero, then the cluster is manually scaled. If\ncluster_config.cluster_autoscaling_config is non-empty, then autoscaling is\nenabled.",
+      "file": "BigtableInstanceAdminClient/CreateCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCluster",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.CreateCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateClusterOperation",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "CreateCluster",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.CreateCluster",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateInstance_sync",
+      "title": "bigtableadmin CreateInstance Sample",
+      "description": "CreateInstance create an instance within a project.\n\nNote that exactly one of Cluster.serve_nodes and\nCluster.cluster_config.cluster_autoscaling_config can be set. If\nserve_nodes is set to non-zero, then the cluster is manually scaled. If\ncluster_config.cluster_autoscaling_config is non-empty, then autoscaling is\nenabled.",
+      "file": "BigtableInstanceAdminClient/CreateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateInstance",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.CreateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateInstanceOperation",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "CreateInstance",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.CreateInstance",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_DeleteAppProfile_sync",
+      "title": "bigtableadmin DeleteAppProfile Sample",
+      "description": "DeleteAppProfile deletes an app profile from an instance.",
+      "file": "BigtableInstanceAdminClient/DeleteAppProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAppProfile",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.DeleteAppProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteAppProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteAppProfile",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.DeleteAppProfile",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_DeleteCluster_sync",
+      "title": "bigtableadmin DeleteCluster Sample",
+      "description": "DeleteCluster deletes a cluster from an instance.",
+      "file": "BigtableInstanceAdminClient/DeleteCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCluster",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.DeleteCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteCluster",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.DeleteCluster",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_DeleteInstance_sync",
+      "title": "bigtableadmin DeleteInstance Sample",
+      "description": "DeleteInstance delete an instance from a project.",
+      "file": "BigtableInstanceAdminClient/DeleteInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteInstance",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.DeleteInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteInstance",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.DeleteInstance",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_GetAppProfile_sync",
+      "title": "bigtableadmin GetAppProfile Sample",
+      "description": "GetAppProfile gets information about an app profile.",
+      "file": "BigtableInstanceAdminClient/GetAppProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAppProfile",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.GetAppProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetAppProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.AppProfile",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "GetAppProfile",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.GetAppProfile",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_GetCluster_sync",
+      "title": "bigtableadmin GetCluster Sample",
+      "description": "GetCluster gets information about a cluster.",
+      "file": "BigtableInstanceAdminClient/GetCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCluster",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.GetCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Cluster",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "GetCluster",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.GetCluster",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_GetIamPolicy_sync",
+      "title": "bigtableadmin GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for an instance resource. Returns an empty\npolicy if an instance exists but does not have a policy set.",
+      "file": "BigtableInstanceAdminClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.GetIamPolicy",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_GetInstance_sync",
+      "title": "bigtableadmin GetInstance Sample",
+      "description": "GetInstance gets information about an instance.",
+      "file": "BigtableInstanceAdminClient/GetInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInstance",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.GetInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Instance",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "GetInstance",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.GetInstance",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_ListAppProfiles_sync",
+      "title": "bigtableadmin ListAppProfiles Sample",
+      "description": "ListAppProfiles lists information about app profiles in an instance.",
+      "file": "BigtableInstanceAdminClient/ListAppProfiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAppProfiles",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.ListAppProfiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListAppProfilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AppProfileIterator",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "ListAppProfiles",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.ListAppProfiles",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_ListClusters_sync",
+      "title": "bigtableadmin ListClusters Sample",
+      "description": "ListClusters lists information about clusters in an instance.",
+      "file": "BigtableInstanceAdminClient/ListClusters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListClusters",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.ListClusters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListClustersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ListClustersResponse",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "ListClusters",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.ListClusters",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_ListHotTablets_sync",
+      "title": "bigtableadmin ListHotTablets Sample",
+      "description": "ListHotTablets lists hot tablets in a cluster, within the time range provided. Hot\ntablets are ordered based on CPU usage.",
+      "file": "BigtableInstanceAdminClient/ListHotTablets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListHotTablets",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.ListHotTablets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListHotTabletsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HotTabletIterator",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "ListHotTablets",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.ListHotTablets",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_ListInstances_sync",
+      "title": "bigtableadmin ListInstances Sample",
+      "description": "ListInstances lists information about instances in a project.",
+      "file": "BigtableInstanceAdminClient/ListInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInstances",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.ListInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListInstancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ListInstancesResponse",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "ListInstances",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.ListInstances",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_PartialUpdateCluster_sync",
+      "title": "bigtableadmin PartialUpdateCluster Sample",
+      "description": "PartialUpdateCluster partially updates a cluster within a project. This method is the preferred\nway to update a Cluster.\n\nTo enable and update autoscaling, set\ncluster_config.cluster_autoscaling_config. When autoscaling is enabled,\nserve_nodes is treated as an OUTPUT_ONLY field, meaning that updates to it\nare ignored. Note that an update cannot simultaneously set serve_nodes to\nnon-zero and cluster_config.cluster_autoscaling_config to non-empty, and\nalso specify both in the update_mask.\n\nTo disable autoscaling, clear cluster_config.cluster_autoscaling_config,\nand explicitly set a serve_node count via the update_mask.",
+      "file": "BigtableInstanceAdminClient/PartialUpdateCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PartialUpdateCluster",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.PartialUpdateCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.PartialUpdateClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PartialUpdateClusterOperation",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "PartialUpdateCluster",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.PartialUpdateCluster",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_PartialUpdateInstance_sync",
+      "title": "bigtableadmin PartialUpdateInstance Sample",
+      "description": "PartialUpdateInstance partially updates an instance within a project. This method can modify all\nfields of an Instance and is the preferred way to update an Instance.",
+      "file": "BigtableInstanceAdminClient/PartialUpdateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PartialUpdateInstance",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.PartialUpdateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.PartialUpdateInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PartialUpdateInstanceOperation",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "PartialUpdateInstance",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.PartialUpdateInstance",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_SetIamPolicy_sync",
+      "title": "bigtableadmin SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on an instance resource. Replaces any\nexisting policy.",
+      "file": "BigtableInstanceAdminClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.SetIamPolicy",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_TestIamPermissions_sync",
+      "title": "bigtableadmin TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that the caller has on the specified instance resource.",
+      "file": "BigtableInstanceAdminClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.TestIamPermissions",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateAppProfile_sync",
+      "title": "bigtableadmin UpdateAppProfile Sample",
+      "description": "UpdateAppProfile updates an app profile within an instance.",
+      "file": "BigtableInstanceAdminClient/UpdateAppProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAppProfile",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.UpdateAppProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateAppProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateAppProfileOperation",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateAppProfile",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.UpdateAppProfile",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateCluster_sync",
+      "title": "bigtableadmin UpdateCluster Sample",
+      "description": "UpdateCluster updates a cluster within an instance.\n\nNote that UpdateCluster does not support updating\ncluster_config.cluster_autoscaling_config. In order to update it, you\nmust use PartialUpdateCluster.",
+      "file": "BigtableInstanceAdminClient/UpdateCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCluster",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.UpdateCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.Cluster",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateClusterOperation",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateCluster",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.UpdateCluster",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateInstance_sync",
+      "title": "bigtableadmin UpdateInstance Sample",
+      "description": "UpdateInstance updates an instance within a project. This method updates only the display\nname and type for an Instance. To update other Instance properties, such as\nlabels, use PartialUpdateInstance.",
+      "file": "BigtableInstanceAdminClient/UpdateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateInstance",
+        "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient.UpdateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.Instance",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Instance",
+        "client": {
+          "shortName": "BigtableInstanceAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateInstance",
+          "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin.UpdateInstance",
+          "service": {
+            "shortName": "BigtableInstanceAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableInstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CheckConsistency_sync",
+      "title": "bigtableadmin CheckConsistency Sample",
+      "description": "CheckConsistency checks replication consistency based on a consistency token, that is, if\nreplication has caught up based on the conditions specified in the token\nand the check request.",
+      "file": "BigtableTableAdminClient/CheckConsistency/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckConsistency",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.CheckConsistency",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CheckConsistencyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.CheckConsistencyResponse",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "CheckConsistency",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.CheckConsistency",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CopyBackup_sync",
+      "title": "bigtableadmin CopyBackup Sample",
+      "description": "CopyBackup copy a Cloud Bigtable backup to a new backup in the destination cluster\nlocated in the destination instance and project.",
+      "file": "BigtableTableAdminClient/CopyBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CopyBackup",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.CopyBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CopyBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CopyBackupOperation",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "CopyBackup",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.CopyBackup",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CreateAuthorizedView_sync",
+      "title": "bigtableadmin CreateAuthorizedView Sample",
+      "description": "CreateAuthorizedView creates a new AuthorizedView in a table.",
+      "file": "BigtableTableAdminClient/CreateAuthorizedView/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAuthorizedView",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.CreateAuthorizedView",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateAuthorizedViewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAuthorizedViewOperation",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "CreateAuthorizedView",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.CreateAuthorizedView",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CreateBackup_sync",
+      "title": "bigtableadmin CreateBackup Sample",
+      "description": "CreateBackup starts creating a new Cloud Bigtable Backup.  The returned backup\n[long-running operation][google.longrunning.Operation] can be used to\ntrack creation of the backup. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[CreateBackupMetadata][google.bigtable.admin.v2.CreateBackupMetadata]. The\n[response][google.longrunning.Operation.response] field type is\n[Backup][google.bigtable.admin.v2.Backup], if successful. Cancelling the\nreturned operation will stop the creation and delete the backup.",
+      "file": "BigtableTableAdminClient/CreateBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBackup",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.CreateBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBackupOperation",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "CreateBackup",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.CreateBackup",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CreateTable_sync",
+      "title": "bigtableadmin CreateTable Sample",
+      "description": "CreateTable creates a new table in the specified instance.\nThe table can be created with a full set of initial column families,\nspecified in the request.",
+      "file": "BigtableTableAdminClient/CreateTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTable",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.CreateTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Table",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "CreateTable",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.CreateTable",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CreateTableFromSnapshot_sync",
+      "title": "bigtableadmin CreateTableFromSnapshot Sample",
+      "description": "CreateTableFromSnapshot creates a new table from the specified snapshot. The target table must\nnot exist. The snapshot and the table must be in the same instance.\n\nNote: This is a private alpha release of Cloud Bigtable snapshots. This\nfeature is not currently available to most Cloud Bigtable customers. This\nfeature might be changed in backward-incompatible ways and is not\nrecommended for production use. It is not subject to any SLA or deprecation\npolicy.",
+      "file": "BigtableTableAdminClient/CreateTableFromSnapshot/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTableFromSnapshot",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.CreateTableFromSnapshot",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateTableFromSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateTableFromSnapshotOperation",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "CreateTableFromSnapshot",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.CreateTableFromSnapshot",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_DeleteAuthorizedView_sync",
+      "title": "bigtableadmin DeleteAuthorizedView Sample",
+      "description": "DeleteAuthorizedView permanently deletes a specified AuthorizedView.",
+      "file": "BigtableTableAdminClient/DeleteAuthorizedView/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAuthorizedView",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.DeleteAuthorizedView",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteAuthorizedViewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteAuthorizedView",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.DeleteAuthorizedView",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_DeleteBackup_sync",
+      "title": "bigtableadmin DeleteBackup Sample",
+      "description": "DeleteBackup deletes a pending or completed Cloud Bigtable backup.",
+      "file": "BigtableTableAdminClient/DeleteBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBackup",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.DeleteBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteBackup",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.DeleteBackup",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_DeleteSnapshot_sync",
+      "title": "bigtableadmin DeleteSnapshot Sample",
+      "description": "DeleteSnapshot permanently deletes the specified snapshot.\n\nNote: This is a private alpha release of Cloud Bigtable snapshots. This\nfeature is not currently available to most Cloud Bigtable customers. This\nfeature might be changed in backward-incompatible ways and is not\nrecommended for production use. It is not subject to any SLA or deprecation\npolicy.",
+      "file": "BigtableTableAdminClient/DeleteSnapshot/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSnapshot",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.DeleteSnapshot",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteSnapshot",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.DeleteSnapshot",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_DeleteTable_sync",
+      "title": "bigtableadmin DeleteTable Sample",
+      "description": "DeleteTable permanently deletes a specified table and all of its data.",
+      "file": "BigtableTableAdminClient/DeleteTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTable",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.DeleteTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteTable",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.DeleteTable",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_DropRowRange_sync",
+      "title": "bigtableadmin DropRowRange Sample",
+      "description": "DropRowRange permanently drop/delete a row range from a specified table. The request can\nspecify whether to delete all rows in a table, or only those that match a\nparticular prefix.",
+      "file": "BigtableTableAdminClient/DropRowRange/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DropRowRange",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.DropRowRange",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DropRowRangeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "DropRowRange",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.DropRowRange",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GenerateConsistencyToken_sync",
+      "title": "bigtableadmin GenerateConsistencyToken Sample",
+      "description": "GenerateConsistencyToken generates a consistency token for a Table, which can be used in\nCheckConsistency to check whether mutations to the table that finished\nbefore this call started have been replicated. The tokens will be available\nfor 90 days.",
+      "file": "BigtableTableAdminClient/GenerateConsistencyToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateConsistencyToken",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.GenerateConsistencyToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GenerateConsistencyTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.GenerateConsistencyTokenResponse",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "GenerateConsistencyToken",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GetAuthorizedView_sync",
+      "title": "bigtableadmin GetAuthorizedView Sample",
+      "description": "GetAuthorizedView gets information from a specified AuthorizedView.",
+      "file": "BigtableTableAdminClient/GetAuthorizedView/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAuthorizedView",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.GetAuthorizedView",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetAuthorizedViewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.AuthorizedView",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "GetAuthorizedView",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.GetAuthorizedView",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GetBackup_sync",
+      "title": "bigtableadmin GetBackup Sample",
+      "description": "GetBackup gets metadata on a pending or completed Cloud Bigtable Backup.",
+      "file": "BigtableTableAdminClient/GetBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackup",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.GetBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Backup",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "GetBackup",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.GetBackup",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GetIamPolicy_sync",
+      "title": "bigtableadmin GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a Table or Backup resource.\nReturns an empty policy if the resource exists but does not have a policy\nset.",
+      "file": "BigtableTableAdminClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.GetIamPolicy",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GetSnapshot_sync",
+      "title": "bigtableadmin GetSnapshot Sample",
+      "description": "GetSnapshot gets metadata information about the specified snapshot.\n\nNote: This is a private alpha release of Cloud Bigtable snapshots. This\nfeature is not currently available to most Cloud Bigtable customers. This\nfeature might be changed in backward-incompatible ways and is not\nrecommended for production use. It is not subject to any SLA or deprecation\npolicy.",
+      "file": "BigtableTableAdminClient/GetSnapshot/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSnapshot",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.GetSnapshot",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Snapshot",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "GetSnapshot",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.GetSnapshot",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GetTable_sync",
+      "title": "bigtableadmin GetTable Sample",
+      "description": "GetTable gets metadata information about the specified table.",
+      "file": "BigtableTableAdminClient/GetTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTable",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.GetTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Table",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "GetTable",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.GetTable",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_ListAuthorizedViews_sync",
+      "title": "bigtableadmin ListAuthorizedViews Sample",
+      "description": "ListAuthorizedViews lists all AuthorizedViews from a specific table.",
+      "file": "BigtableTableAdminClient/ListAuthorizedViews/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAuthorizedViews",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.ListAuthorizedViews",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListAuthorizedViewsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AuthorizedViewIterator",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "ListAuthorizedViews",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.ListAuthorizedViews",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_ListBackups_sync",
+      "title": "bigtableadmin ListBackups Sample",
+      "description": "ListBackups lists Cloud Bigtable backups. Returns both completed and pending\nbackups.",
+      "file": "BigtableTableAdminClient/ListBackups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackups",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.ListBackups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListBackupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BackupIterator",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "ListBackups",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.ListBackups",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_ListSnapshots_sync",
+      "title": "bigtableadmin ListSnapshots Sample",
+      "description": "ListSnapshots lists all snapshots associated with the specified cluster.\n\nNote: This is a private alpha release of Cloud Bigtable snapshots. This\nfeature is not currently available to most Cloud Bigtable customers. This\nfeature might be changed in backward-incompatible ways and is not\nrecommended for production use. It is not subject to any SLA or deprecation\npolicy.",
+      "file": "BigtableTableAdminClient/ListSnapshots/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSnapshots",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.ListSnapshots",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListSnapshotsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SnapshotIterator",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "ListSnapshots",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.ListSnapshots",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_ListTables_sync",
+      "title": "bigtableadmin ListTables Sample",
+      "description": "ListTables lists all tables served from a specified instance.",
+      "file": "BigtableTableAdminClient/ListTables/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTables",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.ListTables",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListTablesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TableIterator",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "ListTables",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.ListTables",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_ModifyColumnFamilies_sync",
+      "title": "bigtableadmin ModifyColumnFamilies Sample",
+      "description": "ModifyColumnFamilies performs a series of column family modifications on the specified table.\nEither all or none of the modifications will occur before this method\nreturns, but data requests received prior to that point may see a table\nwhere only some modifications have taken effect.",
+      "file": "BigtableTableAdminClient/ModifyColumnFamilies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ModifyColumnFamilies",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.ModifyColumnFamilies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ModifyColumnFamiliesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Table",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "ModifyColumnFamilies",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.ModifyColumnFamilies",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_sync",
+      "title": "bigtableadmin RestoreTable Sample",
+      "description": "RestoreTable create a new table by restoring from a completed backup.  The\nreturned table [long-running operation][google.longrunning.Operation] can\nbe used to track the progress of the operation, and to cancel it.  The\n[metadata][google.longrunning.Operation.metadata] field type is\n[RestoreTableMetadata][google.bigtable.admin.v2.RestoreTableMetadata].  The\n[response][google.longrunning.Operation.response] type is\n[Table][google.bigtable.admin.v2.Table], if successful.",
+      "file": "BigtableTableAdminClient/RestoreTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestoreTable",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.RestoreTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.RestoreTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestoreTableOperation",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "RestoreTable",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.RestoreTable",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_SetIamPolicy_sync",
+      "title": "bigtableadmin SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on a Table or Backup resource.\nReplaces any existing policy.",
+      "file": "BigtableTableAdminClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.SetIamPolicy",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_SnapshotTable_sync",
+      "title": "bigtableadmin SnapshotTable Sample",
+      "description": "SnapshotTable creates a new snapshot in the specified cluster from the specified\nsource table. The cluster and the table must be in the same instance.\n\nNote: This is a private alpha release of Cloud Bigtable snapshots. This\nfeature is not currently available to most Cloud Bigtable customers. This\nfeature might be changed in backward-incompatible ways and is not\nrecommended for production use. It is not subject to any SLA or deprecation\npolicy.",
+      "file": "BigtableTableAdminClient/SnapshotTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SnapshotTable",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.SnapshotTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.SnapshotTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SnapshotTableOperation",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "SnapshotTable",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.SnapshotTable",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_TestIamPermissions_sync",
+      "title": "bigtableadmin TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that the caller has on the specified Table or Backup\nresource.",
+      "file": "BigtableTableAdminClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.TestIamPermissions",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_UndeleteTable_sync",
+      "title": "bigtableadmin UndeleteTable Sample",
+      "description": "UndeleteTable restores a specified table which was accidentally deleted.",
+      "file": "BigtableTableAdminClient/UndeleteTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeleteTable",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.UndeleteTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UndeleteTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UndeleteTableOperation",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "UndeleteTable",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTable",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_UpdateAuthorizedView_sync",
+      "title": "bigtableadmin UpdateAuthorizedView Sample",
+      "description": "UpdateAuthorizedView updates an AuthorizedView in a table.",
+      "file": "BigtableTableAdminClient/UpdateAuthorizedView/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAuthorizedView",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.UpdateAuthorizedView",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateAuthorizedViewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateAuthorizedViewOperation",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateAuthorizedView",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.UpdateAuthorizedView",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_UpdateBackup_sync",
+      "title": "bigtableadmin UpdateBackup Sample",
+      "description": "UpdateBackup updates a pending or completed Cloud Bigtable Backup.",
+      "file": "BigtableTableAdminClient/UpdateBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBackup",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.UpdateBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Backup",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateBackup",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.UpdateBackup",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_UpdateTable_sync",
+      "title": "bigtableadmin UpdateTable Sample",
+      "description": "UpdateTable updates a specified table.",
+      "file": "BigtableTableAdminClient/UpdateTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTable",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient.UpdateTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateTableOperation",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateTable",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.UpdateTable",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.gkehub.v1",
+  "libraryPackage": "cloud.google.com/go/gkehub/apiv1",
+  "services": {
+    "GkeHub": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateFeature": {
+              "methods": [
+                "CreateFeature"
+              ]
+            },
+            "CreateMembership": {
+              "methods": [
+                "CreateMembership"
+              ]
+            },
+            "DeleteFeature": {
+              "methods": [
+                "DeleteFeature"
+              ]
+            },
+            "DeleteMembership": {
+              "methods": [
+                "DeleteMembership"
+              ]
+            },
+            "GenerateConnectManifest": {
+              "methods": [
+                "GenerateConnectManifest"
+              ]
+            },
+            "GetFeature": {
+              "methods": [
+                "GetFeature"
+              ]
+            },
+            "GetMembership": {
+              "methods": [
+                "GetMembership"
+              ]
+            },
+            "ListFeatures": {
+              "methods": [
+                "ListFeatures"
+              ]
+            },
+            "ListMemberships": {
+              "methods": [
+                "ListMemberships"
+              ]
+            },
+            "UpdateFeature": {
+              "methods": [
+                "UpdateFeature"
+              ]
+            },
+            "UpdateMembership": {
+              "methods": [
+                "UpdateMembership"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateFeature": {
+              "methods": [
+                "CreateFeature"
+              ]
+            },
+            "CreateMembership": {
+              "methods": [
+                "CreateMembership"
+              ]
+            },
+            "DeleteFeature": {
+              "methods": [
+                "DeleteFeature"
+              ]
+            },
+            "DeleteMembership": {
+              "methods": [
+                "DeleteMembership"
+              ]
+            },
+            "GenerateConnectManifest": {
+              "methods": [
+                "GenerateConnectManifest"
+              ]
+            },
+            "GetFeature": {
+              "methods": [
+                "GetFeature"
+              ]
+            },
+            "GetMembership": {
+              "methods": [
+                "GetMembership"
+              ]
+            },
+            "ListFeatures": {
+              "methods": [
+                "ListFeatures"
+              ]
+            },
+            "ListMemberships": {
+              "methods": [
+                "ListMemberships"
+              ]
+            },
+            "UpdateFeature": {
+              "methods": [
+                "UpdateFeature"
+              ]
+            },
+            "UpdateMembership": {
+              "methods": [
+                "UpdateMembership"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

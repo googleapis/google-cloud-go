@@ -1,0 +1,2351 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/monitoring/apiv3/v2",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.monitoring.v3",
+        "version": "v3"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "monitoring_v3_generated_AlertPolicyService_CreateAlertPolicy_sync",
+      "title": "monitoring CreateAlertPolicy Sample",
+      "description": "CreateAlertPolicy creates a new alerting policy.\n\nDesign your application to single-thread API calls that modify the state of\nalerting policies in a single project. This includes calls to\nCreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.",
+      "file": "AlertPolicyClient/CreateAlertPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAlertPolicy",
+        "fullName": "google.monitoring.v3.AlertPolicyClient.CreateAlertPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.CreateAlertPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.AlertPolicy",
+        "client": {
+          "shortName": "AlertPolicyClient",
+          "fullName": "google.monitoring.v3.AlertPolicyClient"
+        },
+        "method": {
+          "shortName": "CreateAlertPolicy",
+          "fullName": "google.monitoring.v3.AlertPolicyService.CreateAlertPolicy",
+          "service": {
+            "shortName": "AlertPolicyService",
+            "fullName": "google.monitoring.v3.AlertPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_AlertPolicyService_DeleteAlertPolicy_sync",
+      "title": "monitoring DeleteAlertPolicy Sample",
+      "description": "DeleteAlertPolicy deletes an alerting policy.\n\nDesign your application to single-thread API calls that modify the state of\nalerting policies in a single project. This includes calls to\nCreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.",
+      "file": "AlertPolicyClient/DeleteAlertPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAlertPolicy",
+        "fullName": "google.monitoring.v3.AlertPolicyClient.DeleteAlertPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.DeleteAlertPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AlertPolicyClient",
+          "fullName": "google.monitoring.v3.AlertPolicyClient"
+        },
+        "method": {
+          "shortName": "DeleteAlertPolicy",
+          "fullName": "google.monitoring.v3.AlertPolicyService.DeleteAlertPolicy",
+          "service": {
+            "shortName": "AlertPolicyService",
+            "fullName": "google.monitoring.v3.AlertPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_AlertPolicyService_GetAlertPolicy_sync",
+      "title": "monitoring GetAlertPolicy Sample",
+      "description": "GetAlertPolicy gets a single alerting policy.",
+      "file": "AlertPolicyClient/GetAlertPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAlertPolicy",
+        "fullName": "google.monitoring.v3.AlertPolicyClient.GetAlertPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.GetAlertPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.AlertPolicy",
+        "client": {
+          "shortName": "AlertPolicyClient",
+          "fullName": "google.monitoring.v3.AlertPolicyClient"
+        },
+        "method": {
+          "shortName": "GetAlertPolicy",
+          "fullName": "google.monitoring.v3.AlertPolicyService.GetAlertPolicy",
+          "service": {
+            "shortName": "AlertPolicyService",
+            "fullName": "google.monitoring.v3.AlertPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_AlertPolicyService_ListAlertPolicies_sync",
+      "title": "monitoring ListAlertPolicies Sample",
+      "description": "ListAlertPolicies lists the existing alerting policies for the workspace.",
+      "file": "AlertPolicyClient/ListAlertPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAlertPolicies",
+        "fullName": "google.monitoring.v3.AlertPolicyClient.ListAlertPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.ListAlertPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AlertPolicyIterator",
+        "client": {
+          "shortName": "AlertPolicyClient",
+          "fullName": "google.monitoring.v3.AlertPolicyClient"
+        },
+        "method": {
+          "shortName": "ListAlertPolicies",
+          "fullName": "google.monitoring.v3.AlertPolicyService.ListAlertPolicies",
+          "service": {
+            "shortName": "AlertPolicyService",
+            "fullName": "google.monitoring.v3.AlertPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_AlertPolicyService_UpdateAlertPolicy_sync",
+      "title": "monitoring UpdateAlertPolicy Sample",
+      "description": "UpdateAlertPolicy updates an alerting policy. You can either replace the entire policy with\na new one or replace only certain fields in the current alerting policy by\nspecifying the fields to be updated via `updateMask`. Returns the\nupdated alerting policy.\n\nDesign your application to single-thread API calls that modify the state of\nalerting policies in a single project. This includes calls to\nCreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.",
+      "file": "AlertPolicyClient/UpdateAlertPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAlertPolicy",
+        "fullName": "google.monitoring.v3.AlertPolicyClient.UpdateAlertPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.UpdateAlertPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.AlertPolicy",
+        "client": {
+          "shortName": "AlertPolicyClient",
+          "fullName": "google.monitoring.v3.AlertPolicyClient"
+        },
+        "method": {
+          "shortName": "UpdateAlertPolicy",
+          "fullName": "google.monitoring.v3.AlertPolicyService.UpdateAlertPolicy",
+          "service": {
+            "shortName": "AlertPolicyService",
+            "fullName": "google.monitoring.v3.AlertPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_GroupService_CreateGroup_sync",
+      "title": "monitoring CreateGroup Sample",
+      "description": "CreateGroup creates a new group.",
+      "file": "GroupClient/CreateGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateGroup",
+        "fullName": "google.monitoring.v3.GroupClient.CreateGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.CreateGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.Group",
+        "client": {
+          "shortName": "GroupClient",
+          "fullName": "google.monitoring.v3.GroupClient"
+        },
+        "method": {
+          "shortName": "CreateGroup",
+          "fullName": "google.monitoring.v3.GroupService.CreateGroup",
+          "service": {
+            "shortName": "GroupService",
+            "fullName": "google.monitoring.v3.GroupService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_GroupService_DeleteGroup_sync",
+      "title": "monitoring DeleteGroup Sample",
+      "description": "DeleteGroup deletes an existing group.",
+      "file": "GroupClient/DeleteGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteGroup",
+        "fullName": "google.monitoring.v3.GroupClient.DeleteGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.DeleteGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "GroupClient",
+          "fullName": "google.monitoring.v3.GroupClient"
+        },
+        "method": {
+          "shortName": "DeleteGroup",
+          "fullName": "google.monitoring.v3.GroupService.DeleteGroup",
+          "service": {
+            "shortName": "GroupService",
+            "fullName": "google.monitoring.v3.GroupService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_GroupService_GetGroup_sync",
+      "title": "monitoring GetGroup Sample",
+      "description": "GetGroup gets a single group.",
+      "file": "GroupClient/GetGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGroup",
+        "fullName": "google.monitoring.v3.GroupClient.GetGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.GetGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.Group",
+        "client": {
+          "shortName": "GroupClient",
+          "fullName": "google.monitoring.v3.GroupClient"
+        },
+        "method": {
+          "shortName": "GetGroup",
+          "fullName": "google.monitoring.v3.GroupService.GetGroup",
+          "service": {
+            "shortName": "GroupService",
+            "fullName": "google.monitoring.v3.GroupService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_GroupService_ListGroupMembers_sync",
+      "title": "monitoring ListGroupMembers Sample",
+      "description": "ListGroupMembers lists the monitored resources that are members of a group.",
+      "file": "GroupClient/ListGroupMembers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGroupMembers",
+        "fullName": "google.monitoring.v3.GroupClient.ListGroupMembers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.ListGroupMembersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MonitoredResourceIterator",
+        "client": {
+          "shortName": "GroupClient",
+          "fullName": "google.monitoring.v3.GroupClient"
+        },
+        "method": {
+          "shortName": "ListGroupMembers",
+          "fullName": "google.monitoring.v3.GroupService.ListGroupMembers",
+          "service": {
+            "shortName": "GroupService",
+            "fullName": "google.monitoring.v3.GroupService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_GroupService_ListGroups_sync",
+      "title": "monitoring ListGroups Sample",
+      "description": "ListGroups lists the existing groups.",
+      "file": "GroupClient/ListGroups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGroups",
+        "fullName": "google.monitoring.v3.GroupClient.ListGroups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.ListGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GroupIterator",
+        "client": {
+          "shortName": "GroupClient",
+          "fullName": "google.monitoring.v3.GroupClient"
+        },
+        "method": {
+          "shortName": "ListGroups",
+          "fullName": "google.monitoring.v3.GroupService.ListGroups",
+          "service": {
+            "shortName": "GroupService",
+            "fullName": "google.monitoring.v3.GroupService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_GroupService_UpdateGroup_sync",
+      "title": "monitoring UpdateGroup Sample",
+      "description": "UpdateGroup updates an existing group.\nYou can change any group attributes except `name`.",
+      "file": "GroupClient/UpdateGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGroup",
+        "fullName": "google.monitoring.v3.GroupClient.UpdateGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.UpdateGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.Group",
+        "client": {
+          "shortName": "GroupClient",
+          "fullName": "google.monitoring.v3.GroupClient"
+        },
+        "method": {
+          "shortName": "UpdateGroup",
+          "fullName": "google.monitoring.v3.GroupService.UpdateGroup",
+          "service": {
+            "shortName": "GroupService",
+            "fullName": "google.monitoring.v3.GroupService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_MetricService_CreateMetricDescriptor_sync",
+      "title": "monitoring CreateMetricDescriptor Sample",
+      "description": "CreateMetricDescriptor creates a new metric descriptor.\nThe creation is executed asynchronously.\nUser-created metric descriptors define\n[custom metrics](https: //cloud.google.com/monitoring/custom-metrics).\nThe metric descriptor is updated if it already exists,\nexcept that metric labels are never removed.",
+      "file": "MetricClient/CreateMetricDescriptor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMetricDescriptor",
+        "fullName": "google.monitoring.v3.MetricClient.CreateMetricDescriptor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.CreateMetricDescriptorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*metricpb.MetricDescriptor",
+        "client": {
+          "shortName": "MetricClient",
+          "fullName": "google.monitoring.v3.MetricClient"
+        },
+        "method": {
+          "shortName": "CreateMetricDescriptor",
+          "fullName": "google.monitoring.v3.MetricService.CreateMetricDescriptor",
+          "service": {
+            "shortName": "MetricService",
+            "fullName": "google.monitoring.v3.MetricService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_MetricService_CreateServiceTimeSeries_sync",
+      "title": "monitoring CreateServiceTimeSeries Sample",
+      "description": "CreateServiceTimeSeries creates or adds data to one or more service time series. A service time\nseries is a time series for a metric from a Google Cloud service. The\nresponse is empty if all time series in the request were written. If any\ntime series could not be written, a corresponding failure message is\nincluded in the error response. This endpoint rejects writes to\nuser-defined metrics.\nThis method is only for use by Google Cloud services. Use\n[projects.timeSeries.create][google.monitoring.v3.MetricService.CreateTimeSeries]\ninstead.",
+      "file": "MetricClient/CreateServiceTimeSeries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateServiceTimeSeries",
+        "fullName": "google.monitoring.v3.MetricClient.CreateServiceTimeSeries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.CreateTimeSeriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "MetricClient",
+          "fullName": "google.monitoring.v3.MetricClient"
+        },
+        "method": {
+          "shortName": "CreateServiceTimeSeries",
+          "fullName": "google.monitoring.v3.MetricService.CreateServiceTimeSeries",
+          "service": {
+            "shortName": "MetricService",
+            "fullName": "google.monitoring.v3.MetricService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_MetricService_CreateTimeSeries_sync",
+      "title": "monitoring CreateTimeSeries Sample",
+      "description": "CreateTimeSeries creates or adds data to one or more time series.\nThe response is empty if all time series in the request were written.\nIf any time series could not be written, a corresponding failure message is\nincluded in the error response.\nThis method does not support\n[resource locations constraint of an organization\npolicy](https: //cloud.google.com/resource-manager/docs/organization-policy/defining-locations#setting_the_organization_policy).",
+      "file": "MetricClient/CreateTimeSeries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTimeSeries",
+        "fullName": "google.monitoring.v3.MetricClient.CreateTimeSeries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.CreateTimeSeriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "MetricClient",
+          "fullName": "google.monitoring.v3.MetricClient"
+        },
+        "method": {
+          "shortName": "CreateTimeSeries",
+          "fullName": "google.monitoring.v3.MetricService.CreateTimeSeries",
+          "service": {
+            "shortName": "MetricService",
+            "fullName": "google.monitoring.v3.MetricService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_MetricService_DeleteMetricDescriptor_sync",
+      "title": "monitoring DeleteMetricDescriptor Sample",
+      "description": "DeleteMetricDescriptor deletes a metric descriptor. Only user-created\n[custom metrics](https: //cloud.google.com/monitoring/custom-metrics) can be\ndeleted.",
+      "file": "MetricClient/DeleteMetricDescriptor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMetricDescriptor",
+        "fullName": "google.monitoring.v3.MetricClient.DeleteMetricDescriptor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.DeleteMetricDescriptorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "MetricClient",
+          "fullName": "google.monitoring.v3.MetricClient"
+        },
+        "method": {
+          "shortName": "DeleteMetricDescriptor",
+          "fullName": "google.monitoring.v3.MetricService.DeleteMetricDescriptor",
+          "service": {
+            "shortName": "MetricService",
+            "fullName": "google.monitoring.v3.MetricService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_MetricService_GetMetricDescriptor_sync",
+      "title": "monitoring GetMetricDescriptor Sample",
+      "description": "GetMetricDescriptor gets a single metric descriptor.",
+      "file": "MetricClient/GetMetricDescriptor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMetricDescriptor",
+        "fullName": "google.monitoring.v3.MetricClient.GetMetricDescriptor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.GetMetricDescriptorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*metricpb.MetricDescriptor",
+        "client": {
+          "shortName": "MetricClient",
+          "fullName": "google.monitoring.v3.MetricClient"
+        },
+        "method": {
+          "shortName": "GetMetricDescriptor",
+          "fullName": "google.monitoring.v3.MetricService.GetMetricDescriptor",
+          "service": {
+            "shortName": "MetricService",
+            "fullName": "google.monitoring.v3.MetricService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_MetricService_GetMonitoredResourceDescriptor_sync",
+      "title": "monitoring GetMonitoredResourceDescriptor Sample",
+      "description": "GetMonitoredResourceDescriptor gets a single monitored resource descriptor.",
+      "file": "MetricClient/GetMonitoredResourceDescriptor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMonitoredResourceDescriptor",
+        "fullName": "google.monitoring.v3.MetricClient.GetMonitoredResourceDescriptor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.GetMonitoredResourceDescriptorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoredrespb.MonitoredResourceDescriptor",
+        "client": {
+          "shortName": "MetricClient",
+          "fullName": "google.monitoring.v3.MetricClient"
+        },
+        "method": {
+          "shortName": "GetMonitoredResourceDescriptor",
+          "fullName": "google.monitoring.v3.MetricService.GetMonitoredResourceDescriptor",
+          "service": {
+            "shortName": "MetricService",
+            "fullName": "google.monitoring.v3.MetricService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_MetricService_ListMetricDescriptors_sync",
+      "title": "monitoring ListMetricDescriptors Sample",
+      "description": "ListMetricDescriptors lists metric descriptors that match a filter.",
+      "file": "MetricClient/ListMetricDescriptors/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMetricDescriptors",
+        "fullName": "google.monitoring.v3.MetricClient.ListMetricDescriptors",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.ListMetricDescriptorsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MetricDescriptorIterator",
+        "client": {
+          "shortName": "MetricClient",
+          "fullName": "google.monitoring.v3.MetricClient"
+        },
+        "method": {
+          "shortName": "ListMetricDescriptors",
+          "fullName": "google.monitoring.v3.MetricService.ListMetricDescriptors",
+          "service": {
+            "shortName": "MetricService",
+            "fullName": "google.monitoring.v3.MetricService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_MetricService_ListMonitoredResourceDescriptors_sync",
+      "title": "monitoring ListMonitoredResourceDescriptors Sample",
+      "description": "ListMonitoredResourceDescriptors lists monitored resource descriptors that match a filter.",
+      "file": "MetricClient/ListMonitoredResourceDescriptors/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMonitoredResourceDescriptors",
+        "fullName": "google.monitoring.v3.MetricClient.ListMonitoredResourceDescriptors",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.ListMonitoredResourceDescriptorsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MonitoredResourceDescriptorIterator",
+        "client": {
+          "shortName": "MetricClient",
+          "fullName": "google.monitoring.v3.MetricClient"
+        },
+        "method": {
+          "shortName": "ListMonitoredResourceDescriptors",
+          "fullName": "google.monitoring.v3.MetricService.ListMonitoredResourceDescriptors",
+          "service": {
+            "shortName": "MetricService",
+            "fullName": "google.monitoring.v3.MetricService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_MetricService_ListTimeSeries_sync",
+      "title": "monitoring ListTimeSeries Sample",
+      "description": "ListTimeSeries lists time series that match a filter.",
+      "file": "MetricClient/ListTimeSeries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTimeSeries",
+        "fullName": "google.monitoring.v3.MetricClient.ListTimeSeries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.ListTimeSeriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TimeSeriesIterator",
+        "client": {
+          "shortName": "MetricClient",
+          "fullName": "google.monitoring.v3.MetricClient"
+        },
+        "method": {
+          "shortName": "ListTimeSeries",
+          "fullName": "google.monitoring.v3.MetricService.ListTimeSeries",
+          "service": {
+            "shortName": "MetricService",
+            "fullName": "google.monitoring.v3.MetricService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_NotificationChannelService_CreateNotificationChannel_sync",
+      "title": "monitoring CreateNotificationChannel Sample",
+      "description": "CreateNotificationChannel creates a new notification channel, representing a single notification\nendpoint such as an email address, SMS number, or PagerDuty service.\n\nDesign your application to single-thread API calls that modify the state of\nnotification channels in a single project. This includes calls to\nCreateNotificationChannel, DeleteNotificationChannel and\nUpdateNotificationChannel.",
+      "file": "NotificationChannelClient/CreateNotificationChannel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateNotificationChannel",
+        "fullName": "google.monitoring.v3.NotificationChannelClient.CreateNotificationChannel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.CreateNotificationChannelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.NotificationChannel",
+        "client": {
+          "shortName": "NotificationChannelClient",
+          "fullName": "google.monitoring.v3.NotificationChannelClient"
+        },
+        "method": {
+          "shortName": "CreateNotificationChannel",
+          "fullName": "google.monitoring.v3.NotificationChannelService.CreateNotificationChannel",
+          "service": {
+            "shortName": "NotificationChannelService",
+            "fullName": "google.monitoring.v3.NotificationChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_NotificationChannelService_DeleteNotificationChannel_sync",
+      "title": "monitoring DeleteNotificationChannel Sample",
+      "description": "DeleteNotificationChannel deletes a notification channel.\n\nDesign your application to single-thread API calls that modify the state of\nnotification channels in a single project. This includes calls to\nCreateNotificationChannel, DeleteNotificationChannel and\nUpdateNotificationChannel.",
+      "file": "NotificationChannelClient/DeleteNotificationChannel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteNotificationChannel",
+        "fullName": "google.monitoring.v3.NotificationChannelClient.DeleteNotificationChannel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.DeleteNotificationChannelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "NotificationChannelClient",
+          "fullName": "google.monitoring.v3.NotificationChannelClient"
+        },
+        "method": {
+          "shortName": "DeleteNotificationChannel",
+          "fullName": "google.monitoring.v3.NotificationChannelService.DeleteNotificationChannel",
+          "service": {
+            "shortName": "NotificationChannelService",
+            "fullName": "google.monitoring.v3.NotificationChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_NotificationChannelService_GetNotificationChannel_sync",
+      "title": "monitoring GetNotificationChannel Sample",
+      "description": "GetNotificationChannel gets a single notification channel. The channel includes the relevant\nconfiguration details with which the channel was created. However, the\nresponse may truncate or omit passwords, API keys, or other private key\nmatter and thus the response may not be 100% identical to the information\nthat was supplied in the call to the create method.",
+      "file": "NotificationChannelClient/GetNotificationChannel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNotificationChannel",
+        "fullName": "google.monitoring.v3.NotificationChannelClient.GetNotificationChannel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.GetNotificationChannelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.NotificationChannel",
+        "client": {
+          "shortName": "NotificationChannelClient",
+          "fullName": "google.monitoring.v3.NotificationChannelClient"
+        },
+        "method": {
+          "shortName": "GetNotificationChannel",
+          "fullName": "google.monitoring.v3.NotificationChannelService.GetNotificationChannel",
+          "service": {
+            "shortName": "NotificationChannelService",
+            "fullName": "google.monitoring.v3.NotificationChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_NotificationChannelService_GetNotificationChannelDescriptor_sync",
+      "title": "monitoring GetNotificationChannelDescriptor Sample",
+      "description": "GetNotificationChannelDescriptor gets a single channel descriptor. The descriptor indicates which fields\nare expected / permitted for a notification channel of the given type.",
+      "file": "NotificationChannelClient/GetNotificationChannelDescriptor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNotificationChannelDescriptor",
+        "fullName": "google.monitoring.v3.NotificationChannelClient.GetNotificationChannelDescriptor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.GetNotificationChannelDescriptorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.NotificationChannelDescriptor",
+        "client": {
+          "shortName": "NotificationChannelClient",
+          "fullName": "google.monitoring.v3.NotificationChannelClient"
+        },
+        "method": {
+          "shortName": "GetNotificationChannelDescriptor",
+          "fullName": "google.monitoring.v3.NotificationChannelService.GetNotificationChannelDescriptor",
+          "service": {
+            "shortName": "NotificationChannelService",
+            "fullName": "google.monitoring.v3.NotificationChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_NotificationChannelService_GetNotificationChannelVerificationCode_sync",
+      "title": "monitoring GetNotificationChannelVerificationCode Sample",
+      "description": "GetNotificationChannelVerificationCode requests a verification code for an already verified channel that can then\nbe used in a call to VerifyNotificationChannel() on a different channel\nwith an equivalent identity in the same or in a different project. This\nmakes it possible to copy a channel between projects without requiring\nmanual reverification of the channel. If the channel is not in the\nverified state, this method will fail (in other words, this may only be\nused if the SendNotificationChannelVerificationCode and\nVerifyNotificationChannel paths have already been used to put the given\nchannel into the verified state).\n\nThere is no guarantee that the verification codes returned by this method\nwill be of a similar structure or form as the ones that are delivered\nto the channel via SendNotificationChannelVerificationCode; while\nVerifyNotificationChannel() will recognize both the codes delivered via\nSendNotificationChannelVerificationCode() and returned from\nGetNotificationChannelVerificationCode(), it is typically the case that\nthe verification codes delivered via\nSendNotificationChannelVerificationCode() will be shorter and also\nhave a shorter expiration (e.g. codes such as \"G-123456\") whereas\nGetVerificationCode() will typically return a much longer, websafe base\n64 encoded string that has a longer expiration time.",
+      "file": "NotificationChannelClient/GetNotificationChannelVerificationCode/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNotificationChannelVerificationCode",
+        "fullName": "google.monitoring.v3.NotificationChannelClient.GetNotificationChannelVerificationCode",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.GetNotificationChannelVerificationCodeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.GetNotificationChannelVerificationCodeResponse",
+        "client": {
+          "shortName": "NotificationChannelClient",
+          "fullName": "google.monitoring.v3.NotificationChannelClient"
+        },
+        "method": {
+          "shortName": "GetNotificationChannelVerificationCode",
+          "fullName": "google.monitoring.v3.NotificationChannelService.GetNotificationChannelVerificationCode",
+          "service": {
+            "shortName": "NotificationChannelService",
+            "fullName": "google.monitoring.v3.NotificationChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_NotificationChannelService_ListNotificationChannelDescriptors_sync",
+      "title": "monitoring ListNotificationChannelDescriptors Sample",
+      "description": "ListNotificationChannelDescriptors lists the descriptors for supported channel types. The use of descriptors\nmakes it possible for new channel types to be dynamically added.",
+      "file": "NotificationChannelClient/ListNotificationChannelDescriptors/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNotificationChannelDescriptors",
+        "fullName": "google.monitoring.v3.NotificationChannelClient.ListNotificationChannelDescriptors",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.ListNotificationChannelDescriptorsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NotificationChannelDescriptorIterator",
+        "client": {
+          "shortName": "NotificationChannelClient",
+          "fullName": "google.monitoring.v3.NotificationChannelClient"
+        },
+        "method": {
+          "shortName": "ListNotificationChannelDescriptors",
+          "fullName": "google.monitoring.v3.NotificationChannelService.ListNotificationChannelDescriptors",
+          "service": {
+            "shortName": "NotificationChannelService",
+            "fullName": "google.monitoring.v3.NotificationChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_NotificationChannelService_ListNotificationChannels_sync",
+      "title": "monitoring ListNotificationChannels Sample",
+      "description": "ListNotificationChannels lists the notification channels that have been created for the project.\nTo list the types of notification channels that are supported, use\nthe `ListNotificationChannelDescriptors` method.",
+      "file": "NotificationChannelClient/ListNotificationChannels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNotificationChannels",
+        "fullName": "google.monitoring.v3.NotificationChannelClient.ListNotificationChannels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.ListNotificationChannelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NotificationChannelIterator",
+        "client": {
+          "shortName": "NotificationChannelClient",
+          "fullName": "google.monitoring.v3.NotificationChannelClient"
+        },
+        "method": {
+          "shortName": "ListNotificationChannels",
+          "fullName": "google.monitoring.v3.NotificationChannelService.ListNotificationChannels",
+          "service": {
+            "shortName": "NotificationChannelService",
+            "fullName": "google.monitoring.v3.NotificationChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_NotificationChannelService_SendNotificationChannelVerificationCode_sync",
+      "title": "monitoring SendNotificationChannelVerificationCode Sample",
+      "description": "SendNotificationChannelVerificationCode causes a verification code to be delivered to the channel. The code\ncan then be supplied in `VerifyNotificationChannel` to verify the channel.",
+      "file": "NotificationChannelClient/SendNotificationChannelVerificationCode/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SendNotificationChannelVerificationCode",
+        "fullName": "google.monitoring.v3.NotificationChannelClient.SendNotificationChannelVerificationCode",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.SendNotificationChannelVerificationCodeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "NotificationChannelClient",
+          "fullName": "google.monitoring.v3.NotificationChannelClient"
+        },
+        "method": {
+          "shortName": "SendNotificationChannelVerificationCode",
+          "fullName": "google.monitoring.v3.NotificationChannelService.SendNotificationChannelVerificationCode",
+          "service": {
+            "shortName": "NotificationChannelService",
+            "fullName": "google.monitoring.v3.NotificationChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_NotificationChannelService_UpdateNotificationChannel_sync",
+      "title": "monitoring UpdateNotificationChannel Sample",
+      "description": "UpdateNotificationChannel updates a notification channel. Fields not specified in the field mask\nremain unchanged.\n\nDesign your application to single-thread API calls that modify the state of\nnotification channels in a single project. This includes calls to\nCreateNotificationChannel, DeleteNotificationChannel and\nUpdateNotificationChannel.",
+      "file": "NotificationChannelClient/UpdateNotificationChannel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateNotificationChannel",
+        "fullName": "google.monitoring.v3.NotificationChannelClient.UpdateNotificationChannel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.UpdateNotificationChannelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.NotificationChannel",
+        "client": {
+          "shortName": "NotificationChannelClient",
+          "fullName": "google.monitoring.v3.NotificationChannelClient"
+        },
+        "method": {
+          "shortName": "UpdateNotificationChannel",
+          "fullName": "google.monitoring.v3.NotificationChannelService.UpdateNotificationChannel",
+          "service": {
+            "shortName": "NotificationChannelService",
+            "fullName": "google.monitoring.v3.NotificationChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_NotificationChannelService_VerifyNotificationChannel_sync",
+      "title": "monitoring VerifyNotificationChannel Sample",
+      "description": "VerifyNotificationChannel verifies a `NotificationChannel` by proving receipt of the code\ndelivered to the channel as a result of calling\n`SendNotificationChannelVerificationCode`.",
+      "file": "NotificationChannelClient/VerifyNotificationChannel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "VerifyNotificationChannel",
+        "fullName": "google.monitoring.v3.NotificationChannelClient.VerifyNotificationChannel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.VerifyNotificationChannelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.NotificationChannel",
+        "client": {
+          "shortName": "NotificationChannelClient",
+          "fullName": "google.monitoring.v3.NotificationChannelClient"
+        },
+        "method": {
+          "shortName": "VerifyNotificationChannel",
+          "fullName": "google.monitoring.v3.NotificationChannelService.VerifyNotificationChannel",
+          "service": {
+            "shortName": "NotificationChannelService",
+            "fullName": "google.monitoring.v3.NotificationChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_QueryService_QueryTimeSeries_sync",
+      "title": "monitoring QueryTimeSeries Sample",
+      "description": "QueryTimeSeries queries time series using Monitoring Query Language.",
+      "file": "QueryClient/QueryTimeSeries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryTimeSeries",
+        "fullName": "google.monitoring.v3.QueryClient.QueryTimeSeries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.QueryTimeSeriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TimeSeriesDataIterator",
+        "client": {
+          "shortName": "QueryClient",
+          "fullName": "google.monitoring.v3.QueryClient"
+        },
+        "method": {
+          "shortName": "QueryTimeSeries",
+          "fullName": "google.monitoring.v3.QueryService.QueryTimeSeries",
+          "service": {
+            "shortName": "QueryService",
+            "fullName": "google.monitoring.v3.QueryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_ServiceMonitoringService_CreateService_sync",
+      "title": "monitoring CreateService Sample",
+      "description": "CreateService create a `Service`.",
+      "file": "ServiceMonitoringClient/CreateService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateService",
+        "fullName": "google.monitoring.v3.ServiceMonitoringClient.CreateService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.CreateServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.Service",
+        "client": {
+          "shortName": "ServiceMonitoringClient",
+          "fullName": "google.monitoring.v3.ServiceMonitoringClient"
+        },
+        "method": {
+          "shortName": "CreateService",
+          "fullName": "google.monitoring.v3.ServiceMonitoringService.CreateService",
+          "service": {
+            "shortName": "ServiceMonitoringService",
+            "fullName": "google.monitoring.v3.ServiceMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_ServiceMonitoringService_CreateServiceLevelObjective_sync",
+      "title": "monitoring CreateServiceLevelObjective Sample",
+      "description": "CreateServiceLevelObjective create a `ServiceLevelObjective` for the given `Service`.",
+      "file": "ServiceMonitoringClient/CreateServiceLevelObjective/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateServiceLevelObjective",
+        "fullName": "google.monitoring.v3.ServiceMonitoringClient.CreateServiceLevelObjective",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.CreateServiceLevelObjectiveRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.ServiceLevelObjective",
+        "client": {
+          "shortName": "ServiceMonitoringClient",
+          "fullName": "google.monitoring.v3.ServiceMonitoringClient"
+        },
+        "method": {
+          "shortName": "CreateServiceLevelObjective",
+          "fullName": "google.monitoring.v3.ServiceMonitoringService.CreateServiceLevelObjective",
+          "service": {
+            "shortName": "ServiceMonitoringService",
+            "fullName": "google.monitoring.v3.ServiceMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_ServiceMonitoringService_DeleteService_sync",
+      "title": "monitoring DeleteService Sample",
+      "description": "DeleteService soft delete this `Service`.",
+      "file": "ServiceMonitoringClient/DeleteService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteService",
+        "fullName": "google.monitoring.v3.ServiceMonitoringClient.DeleteService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.DeleteServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ServiceMonitoringClient",
+          "fullName": "google.monitoring.v3.ServiceMonitoringClient"
+        },
+        "method": {
+          "shortName": "DeleteService",
+          "fullName": "google.monitoring.v3.ServiceMonitoringService.DeleteService",
+          "service": {
+            "shortName": "ServiceMonitoringService",
+            "fullName": "google.monitoring.v3.ServiceMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_ServiceMonitoringService_DeleteServiceLevelObjective_sync",
+      "title": "monitoring DeleteServiceLevelObjective Sample",
+      "description": "DeleteServiceLevelObjective delete the given `ServiceLevelObjective`.",
+      "file": "ServiceMonitoringClient/DeleteServiceLevelObjective/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteServiceLevelObjective",
+        "fullName": "google.monitoring.v3.ServiceMonitoringClient.DeleteServiceLevelObjective",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.DeleteServiceLevelObjectiveRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ServiceMonitoringClient",
+          "fullName": "google.monitoring.v3.ServiceMonitoringClient"
+        },
+        "method": {
+          "shortName": "DeleteServiceLevelObjective",
+          "fullName": "google.monitoring.v3.ServiceMonitoringService.DeleteServiceLevelObjective",
+          "service": {
+            "shortName": "ServiceMonitoringService",
+            "fullName": "google.monitoring.v3.ServiceMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_ServiceMonitoringService_GetService_sync",
+      "title": "monitoring GetService Sample",
+      "description": "GetService get the named `Service`.",
+      "file": "ServiceMonitoringClient/GetService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetService",
+        "fullName": "google.monitoring.v3.ServiceMonitoringClient.GetService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.GetServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.Service",
+        "client": {
+          "shortName": "ServiceMonitoringClient",
+          "fullName": "google.monitoring.v3.ServiceMonitoringClient"
+        },
+        "method": {
+          "shortName": "GetService",
+          "fullName": "google.monitoring.v3.ServiceMonitoringService.GetService",
+          "service": {
+            "shortName": "ServiceMonitoringService",
+            "fullName": "google.monitoring.v3.ServiceMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_ServiceMonitoringService_GetServiceLevelObjective_sync",
+      "title": "monitoring GetServiceLevelObjective Sample",
+      "description": "GetServiceLevelObjective get a `ServiceLevelObjective` by name.",
+      "file": "ServiceMonitoringClient/GetServiceLevelObjective/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetServiceLevelObjective",
+        "fullName": "google.monitoring.v3.ServiceMonitoringClient.GetServiceLevelObjective",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.GetServiceLevelObjectiveRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.ServiceLevelObjective",
+        "client": {
+          "shortName": "ServiceMonitoringClient",
+          "fullName": "google.monitoring.v3.ServiceMonitoringClient"
+        },
+        "method": {
+          "shortName": "GetServiceLevelObjective",
+          "fullName": "google.monitoring.v3.ServiceMonitoringService.GetServiceLevelObjective",
+          "service": {
+            "shortName": "ServiceMonitoringService",
+            "fullName": "google.monitoring.v3.ServiceMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_ServiceMonitoringService_ListServiceLevelObjectives_sync",
+      "title": "monitoring ListServiceLevelObjectives Sample",
+      "description": "ListServiceLevelObjectives list the `ServiceLevelObjective`s for the given `Service`.",
+      "file": "ServiceMonitoringClient/ListServiceLevelObjectives/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServiceLevelObjectives",
+        "fullName": "google.monitoring.v3.ServiceMonitoringClient.ListServiceLevelObjectives",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.ListServiceLevelObjectivesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ServiceLevelObjectiveIterator",
+        "client": {
+          "shortName": "ServiceMonitoringClient",
+          "fullName": "google.monitoring.v3.ServiceMonitoringClient"
+        },
+        "method": {
+          "shortName": "ListServiceLevelObjectives",
+          "fullName": "google.monitoring.v3.ServiceMonitoringService.ListServiceLevelObjectives",
+          "service": {
+            "shortName": "ServiceMonitoringService",
+            "fullName": "google.monitoring.v3.ServiceMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_ServiceMonitoringService_ListServices_sync",
+      "title": "monitoring ListServices Sample",
+      "description": "ListServices list `Service`s for this Metrics Scope.",
+      "file": "ServiceMonitoringClient/ListServices/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServices",
+        "fullName": "google.monitoring.v3.ServiceMonitoringClient.ListServices",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.ListServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ServiceIterator",
+        "client": {
+          "shortName": "ServiceMonitoringClient",
+          "fullName": "google.monitoring.v3.ServiceMonitoringClient"
+        },
+        "method": {
+          "shortName": "ListServices",
+          "fullName": "google.monitoring.v3.ServiceMonitoringService.ListServices",
+          "service": {
+            "shortName": "ServiceMonitoringService",
+            "fullName": "google.monitoring.v3.ServiceMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_ServiceMonitoringService_UpdateService_sync",
+      "title": "monitoring UpdateService Sample",
+      "description": "UpdateService update this `Service`.",
+      "file": "ServiceMonitoringClient/UpdateService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateService",
+        "fullName": "google.monitoring.v3.ServiceMonitoringClient.UpdateService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.UpdateServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.Service",
+        "client": {
+          "shortName": "ServiceMonitoringClient",
+          "fullName": "google.monitoring.v3.ServiceMonitoringClient"
+        },
+        "method": {
+          "shortName": "UpdateService",
+          "fullName": "google.monitoring.v3.ServiceMonitoringService.UpdateService",
+          "service": {
+            "shortName": "ServiceMonitoringService",
+            "fullName": "google.monitoring.v3.ServiceMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_ServiceMonitoringService_UpdateServiceLevelObjective_sync",
+      "title": "monitoring UpdateServiceLevelObjective Sample",
+      "description": "UpdateServiceLevelObjective update the given `ServiceLevelObjective`.",
+      "file": "ServiceMonitoringClient/UpdateServiceLevelObjective/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateServiceLevelObjective",
+        "fullName": "google.monitoring.v3.ServiceMonitoringClient.UpdateServiceLevelObjective",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.UpdateServiceLevelObjectiveRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.ServiceLevelObjective",
+        "client": {
+          "shortName": "ServiceMonitoringClient",
+          "fullName": "google.monitoring.v3.ServiceMonitoringClient"
+        },
+        "method": {
+          "shortName": "UpdateServiceLevelObjective",
+          "fullName": "google.monitoring.v3.ServiceMonitoringService.UpdateServiceLevelObjective",
+          "service": {
+            "shortName": "ServiceMonitoringService",
+            "fullName": "google.monitoring.v3.ServiceMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_SnoozeService_CreateSnooze_sync",
+      "title": "monitoring CreateSnooze Sample",
+      "description": "CreateSnooze creates a `Snooze` that will prevent alerts, which match the provided\ncriteria, from being opened. The `Snooze` applies for a specific time\ninterval.",
+      "file": "SnoozeClient/CreateSnooze/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSnooze",
+        "fullName": "google.monitoring.v3.SnoozeClient.CreateSnooze",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.CreateSnoozeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.Snooze",
+        "client": {
+          "shortName": "SnoozeClient",
+          "fullName": "google.monitoring.v3.SnoozeClient"
+        },
+        "method": {
+          "shortName": "CreateSnooze",
+          "fullName": "google.monitoring.v3.SnoozeService.CreateSnooze",
+          "service": {
+            "shortName": "SnoozeService",
+            "fullName": "google.monitoring.v3.SnoozeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_SnoozeService_GetSnooze_sync",
+      "title": "monitoring GetSnooze Sample",
+      "description": "GetSnooze retrieves a `Snooze` by `name`.",
+      "file": "SnoozeClient/GetSnooze/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSnooze",
+        "fullName": "google.monitoring.v3.SnoozeClient.GetSnooze",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.GetSnoozeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.Snooze",
+        "client": {
+          "shortName": "SnoozeClient",
+          "fullName": "google.monitoring.v3.SnoozeClient"
+        },
+        "method": {
+          "shortName": "GetSnooze",
+          "fullName": "google.monitoring.v3.SnoozeService.GetSnooze",
+          "service": {
+            "shortName": "SnoozeService",
+            "fullName": "google.monitoring.v3.SnoozeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_SnoozeService_ListSnoozes_sync",
+      "title": "monitoring ListSnoozes Sample",
+      "description": "ListSnoozes lists the `Snooze`s associated with a project. Can optionally pass in\n`filter`, which specifies predicates to match `Snooze`s.",
+      "file": "SnoozeClient/ListSnoozes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSnoozes",
+        "fullName": "google.monitoring.v3.SnoozeClient.ListSnoozes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.ListSnoozesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SnoozeIterator",
+        "client": {
+          "shortName": "SnoozeClient",
+          "fullName": "google.monitoring.v3.SnoozeClient"
+        },
+        "method": {
+          "shortName": "ListSnoozes",
+          "fullName": "google.monitoring.v3.SnoozeService.ListSnoozes",
+          "service": {
+            "shortName": "SnoozeService",
+            "fullName": "google.monitoring.v3.SnoozeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_SnoozeService_UpdateSnooze_sync",
+      "title": "monitoring UpdateSnooze Sample",
+      "description": "UpdateSnooze updates a `Snooze`, identified by its `name`, with the parameters in the\ngiven `Snooze` object.",
+      "file": "SnoozeClient/UpdateSnooze/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSnooze",
+        "fullName": "google.monitoring.v3.SnoozeClient.UpdateSnooze",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.UpdateSnoozeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.Snooze",
+        "client": {
+          "shortName": "SnoozeClient",
+          "fullName": "google.monitoring.v3.SnoozeClient"
+        },
+        "method": {
+          "shortName": "UpdateSnooze",
+          "fullName": "google.monitoring.v3.SnoozeService.UpdateSnooze",
+          "service": {
+            "shortName": "SnoozeService",
+            "fullName": "google.monitoring.v3.SnoozeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_UptimeCheckService_CreateUptimeCheckConfig_sync",
+      "title": "monitoring CreateUptimeCheckConfig Sample",
+      "description": "CreateUptimeCheckConfig creates a new Uptime check configuration.",
+      "file": "UptimeCheckClient/CreateUptimeCheckConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateUptimeCheckConfig",
+        "fullName": "google.monitoring.v3.UptimeCheckClient.CreateUptimeCheckConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.CreateUptimeCheckConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.UptimeCheckConfig",
+        "client": {
+          "shortName": "UptimeCheckClient",
+          "fullName": "google.monitoring.v3.UptimeCheckClient"
+        },
+        "method": {
+          "shortName": "CreateUptimeCheckConfig",
+          "fullName": "google.monitoring.v3.UptimeCheckService.CreateUptimeCheckConfig",
+          "service": {
+            "shortName": "UptimeCheckService",
+            "fullName": "google.monitoring.v3.UptimeCheckService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_UptimeCheckService_DeleteUptimeCheckConfig_sync",
+      "title": "monitoring DeleteUptimeCheckConfig Sample",
+      "description": "DeleteUptimeCheckConfig deletes an Uptime check configuration. Note that this method will fail\nif the Uptime check configuration is referenced by an alert policy or\nother dependent configs that would be rendered invalid by the deletion.",
+      "file": "UptimeCheckClient/DeleteUptimeCheckConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteUptimeCheckConfig",
+        "fullName": "google.monitoring.v3.UptimeCheckClient.DeleteUptimeCheckConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.DeleteUptimeCheckConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "UptimeCheckClient",
+          "fullName": "google.monitoring.v3.UptimeCheckClient"
+        },
+        "method": {
+          "shortName": "DeleteUptimeCheckConfig",
+          "fullName": "google.monitoring.v3.UptimeCheckService.DeleteUptimeCheckConfig",
+          "service": {
+            "shortName": "UptimeCheckService",
+            "fullName": "google.monitoring.v3.UptimeCheckService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_UptimeCheckService_GetUptimeCheckConfig_sync",
+      "title": "monitoring GetUptimeCheckConfig Sample",
+      "description": "GetUptimeCheckConfig gets a single Uptime check configuration.",
+      "file": "UptimeCheckClient/GetUptimeCheckConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetUptimeCheckConfig",
+        "fullName": "google.monitoring.v3.UptimeCheckClient.GetUptimeCheckConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.GetUptimeCheckConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.UptimeCheckConfig",
+        "client": {
+          "shortName": "UptimeCheckClient",
+          "fullName": "google.monitoring.v3.UptimeCheckClient"
+        },
+        "method": {
+          "shortName": "GetUptimeCheckConfig",
+          "fullName": "google.monitoring.v3.UptimeCheckService.GetUptimeCheckConfig",
+          "service": {
+            "shortName": "UptimeCheckService",
+            "fullName": "google.monitoring.v3.UptimeCheckService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_UptimeCheckService_ListUptimeCheckConfigs_sync",
+      "title": "monitoring ListUptimeCheckConfigs Sample",
+      "description": "ListUptimeCheckConfigs lists the existing valid Uptime check configurations for the project\n(leaving out any invalid configurations).",
+      "file": "UptimeCheckClient/ListUptimeCheckConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUptimeCheckConfigs",
+        "fullName": "google.monitoring.v3.UptimeCheckClient.ListUptimeCheckConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.ListUptimeCheckConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UptimeCheckConfigIterator",
+        "client": {
+          "shortName": "UptimeCheckClient",
+          "fullName": "google.monitoring.v3.UptimeCheckClient"
+        },
+        "method": {
+          "shortName": "ListUptimeCheckConfigs",
+          "fullName": "google.monitoring.v3.UptimeCheckService.ListUptimeCheckConfigs",
+          "service": {
+            "shortName": "UptimeCheckService",
+            "fullName": "google.monitoring.v3.UptimeCheckService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_UptimeCheckService_ListUptimeCheckIps_sync",
+      "title": "monitoring ListUptimeCheckIps Sample",
+      "description": "ListUptimeCheckIps returns the list of IP addresses that checkers run from",
+      "file": "UptimeCheckClient/ListUptimeCheckIps/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUptimeCheckIps",
+        "fullName": "google.monitoring.v3.UptimeCheckClient.ListUptimeCheckIps",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.ListUptimeCheckIpsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UptimeCheckIpIterator",
+        "client": {
+          "shortName": "UptimeCheckClient",
+          "fullName": "google.monitoring.v3.UptimeCheckClient"
+        },
+        "method": {
+          "shortName": "ListUptimeCheckIps",
+          "fullName": "google.monitoring.v3.UptimeCheckService.ListUptimeCheckIps",
+          "service": {
+            "shortName": "UptimeCheckService",
+            "fullName": "google.monitoring.v3.UptimeCheckService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "monitoring_v3_generated_UptimeCheckService_UpdateUptimeCheckConfig_sync",
+      "title": "monitoring UpdateUptimeCheckConfig Sample",
+      "description": "UpdateUptimeCheckConfig updates an Uptime check configuration. You can either replace the entire\nconfiguration with a new one or replace only certain fields in the current\nconfiguration by specifying the fields to be updated via `updateMask`.\nReturns the updated configuration.",
+      "file": "UptimeCheckClient/UpdateUptimeCheckConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateUptimeCheckConfig",
+        "fullName": "google.monitoring.v3.UptimeCheckClient.UpdateUptimeCheckConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "monitoringpb.UpdateUptimeCheckConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*monitoringpb.UptimeCheckConfig",
+        "client": {
+          "shortName": "UptimeCheckClient",
+          "fullName": "google.monitoring.v3.UptimeCheckClient"
+        },
+        "method": {
+          "shortName": "UpdateUptimeCheckConfig",
+          "fullName": "google.monitoring.v3.UptimeCheckService.UpdateUptimeCheckConfig",
+          "service": {
+            "shortName": "UptimeCheckService",
+            "fullName": "google.monitoring.v3.UptimeCheckService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,195 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.paymentgateway.issuerswitch.v1",
+  "libraryPackage": "cloud.google.com/go/paymentgateway/issuerswitch/apiv1",
+  "services": {
+    "IssuerSwitchParticipants": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "IssuerSwitchParticipantsClient",
+          "rpcs": {
+            "ActivateParticipant": {
+              "methods": [
+                "ActivateParticipant"
+              ]
+            },
+            "DeactivateParticipant": {
+              "methods": [
+                "DeactivateParticipant"
+              ]
+            },
+            "FetchParticipant": {
+              "methods": [
+                "FetchParticipant"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "MobileNumberChanged": {
+              "methods": [
+                "MobileNumberChanged"
+              ]
+            },
+            "UpdateIssuerParticipant": {
+              "methods": [
+                "UpdateIssuerParticipant"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "IssuerSwitchResolutions": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "IssuerSwitchResolutionsClient",
+          "rpcs": {
+            "CreateComplaint": {
+              "methods": [
+                "CreateComplaint"
+              ]
+            },
+            "CreateDispute": {
+              "methods": [
+                "CreateDispute"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ResolveComplaint": {
+              "methods": [
+                "ResolveComplaint"
+              ]
+            },
+            "ResolveDispute": {
+              "methods": [
+                "ResolveDispute"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "IssuerSwitchRules": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "IssuerSwitchRulesClient",
+          "rpcs": {
+            "BatchCreateRuleMetadataValues": {
+              "methods": [
+                "BatchCreateRuleMetadataValues"
+              ]
+            },
+            "BatchDeleteRuleMetadataValues": {
+              "methods": [
+                "BatchDeleteRuleMetadataValues"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRuleMetadata": {
+              "methods": [
+                "ListRuleMetadata"
+              ]
+            },
+            "ListRuleMetadataValues": {
+              "methods": [
+                "ListRuleMetadataValues"
+              ]
+            },
+            "ListRules": {
+              "methods": [
+                "ListRules"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "IssuerSwitchTransactions": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "IssuerSwitchTransactionsClient",
+          "rpcs": {
+            "ExportComplaintTransactions": {
+              "methods": [
+                "ExportComplaintTransactions"
+              ]
+            },
+            "ExportFinancialTransactions": {
+              "methods": [
+                "ExportFinancialTransactions"
+              ]
+            },
+            "ExportMandateTransactions": {
+              "methods": [
+                "ExportMandateTransactions"
+              ]
+            },
+            "ExportMetadataTransactions": {
+              "methods": [
+                "ExportMetadataTransactions"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListComplaintTransactions": {
+              "methods": [
+                "ListComplaintTransactions"
+              ]
+            },
+            "ListFinancialTransactions": {
+              "methods": [
+                "ListFinancialTransactions"
+              ]
+            },
+            "ListMandateTransactions": {
+              "methods": [
+                "ListMandateTransactions"
+              ]
+            },
+            "ListMetadataTransactions": {
+              "methods": [
+                "ListMetadataTransactions"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

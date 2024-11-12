@@ -1,0 +1,107 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/api/servicecontrol/apiv2",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.api.servicecontrol.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "servicecontrol_v2_generated_ServiceController_Check_sync",
+      "title": "servicecontrol Check Sample",
+      "description": "Check private Preview. This feature is only available for approved services.\n\nThis method provides admission control for services that are integrated\nwith [Service\nInfrastructure](https: //cloud.google.com/service-infrastructure). It checks\nwhether an operation should be allowed based on the service configuration\nand relevant policies. It must be called before the operation is executed.\nFor more information, see\n[Admission\nControl](https: //cloud.google.com/service-infrastructure/docs/admission-control).\n\nNOTE: The admission control has an expected policy propagation delay of\n60s. The caller **must** not depend on the most recent policy changes.\n\nNOTE: The admission control has a hard limit of 1 referenced resources\nper call. If an operation refers to more than 1 resources, the caller\nmust call the Check method multiple times.\n\nThis method requires the `servicemanagement.services.check` permission\non the specified service. For more information, see\n[Service Control API Access\nControl](https: //cloud.google.com/service-infrastructure/docs/service-control/access-control).",
+      "file": "ServiceControllerClient/Check/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Check",
+        "fullName": "google.api.servicecontrol.v2.ServiceControllerClient.Check",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicecontrolpb.CheckRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicecontrolpb.CheckResponse",
+        "client": {
+          "shortName": "ServiceControllerClient",
+          "fullName": "google.api.servicecontrol.v2.ServiceControllerClient"
+        },
+        "method": {
+          "shortName": "Check",
+          "fullName": "google.api.servicecontrol.v2.ServiceController.Check",
+          "service": {
+            "shortName": "ServiceController",
+            "fullName": "google.api.servicecontrol.v2.ServiceController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicecontrol_v2_generated_ServiceController_Report_sync",
+      "title": "servicecontrol Report Sample",
+      "description": "Report private Preview. This feature is only available for approved services.\n\nThis method provides telemetry reporting for services that are integrated\nwith [Service\nInfrastructure](https: //cloud.google.com/service-infrastructure). It\nreports a list of operations that have occurred on a service. It must be\ncalled after the operations have been executed. For more information, see\n[Telemetry\nReporting](https: //cloud.google.com/service-infrastructure/docs/telemetry-reporting).\n\nNOTE: The telemetry reporting has a hard limit of 1000 operations and 1MB\nper Report call. It is recommended to have no more than 100 operations per\ncall.\n\nThis method requires the `servicemanagement.services.report` permission\non the specified service. For more information, see\n[Service Control API Access\nControl](https: //cloud.google.com/service-infrastructure/docs/service-control/access-control).",
+      "file": "ServiceControllerClient/Report/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Report",
+        "fullName": "google.api.servicecontrol.v2.ServiceControllerClient.Report",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicecontrolpb.ReportRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicecontrolpb.ReportResponse",
+        "client": {
+          "shortName": "ServiceControllerClient",
+          "fullName": "google.api.servicecontrol.v2.ServiceControllerClient"
+        },
+        "method": {
+          "shortName": "Report",
+          "fullName": "google.api.servicecontrol.v2.ServiceController.Report",
+          "service": {
+            "shortName": "ServiceController",
+            "fullName": "google.api.servicecontrol.v2.ServiceController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

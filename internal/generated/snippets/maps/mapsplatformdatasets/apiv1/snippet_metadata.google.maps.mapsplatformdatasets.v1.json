@@ -1,0 +1,290 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/maps/mapsplatformdatasets/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.maps.mapsplatformdatasets.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "mapsplatformdatasets_v1_generated_MapsPlatformDatasets_CreateDataset_sync",
+      "title": "mapsplatformdatasets CreateDataset Sample",
+      "description": "CreateDataset creates a new dataset for the specified project.",
+      "file": "Client/CreateDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataset",
+        "fullName": "google.maps.mapsplatformdatasets.v1.Client.CreateDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "mapsplatformdatasetspb.CreateDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*mapsplatformdatasetspb.Dataset",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.mapsplatformdatasets.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateDataset",
+          "fullName": "google.maps.mapsplatformdatasets.v1.MapsPlatformDatasets.CreateDataset",
+          "service": {
+            "shortName": "MapsPlatformDatasets",
+            "fullName": "google.maps.mapsplatformdatasets.v1.MapsPlatformDatasets"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "mapsplatformdatasets_v1_generated_MapsPlatformDatasets_DeleteDataset_sync",
+      "title": "mapsplatformdatasets DeleteDataset Sample",
+      "description": "DeleteDataset deletes the specified dataset.",
+      "file": "Client/DeleteDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataset",
+        "fullName": "google.maps.mapsplatformdatasets.v1.Client.DeleteDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "mapsplatformdatasetspb.DeleteDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.mapsplatformdatasets.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteDataset",
+          "fullName": "google.maps.mapsplatformdatasets.v1.MapsPlatformDatasets.DeleteDataset",
+          "service": {
+            "shortName": "MapsPlatformDatasets",
+            "fullName": "google.maps.mapsplatformdatasets.v1.MapsPlatformDatasets"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "mapsplatformdatasets_v1_generated_MapsPlatformDatasets_FetchDatasetErrors_sync",
+      "title": "mapsplatformdatasets FetchDatasetErrors Sample",
+      "description": "FetchDatasetErrors gets all the errors of a dataset.",
+      "file": "Client/FetchDatasetErrors/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchDatasetErrors",
+        "fullName": "google.maps.mapsplatformdatasets.v1.Client.FetchDatasetErrors",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "mapsplatformdatasetspb.FetchDatasetErrorsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StatusIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.mapsplatformdatasets.v1.Client"
+        },
+        "method": {
+          "shortName": "FetchDatasetErrors",
+          "fullName": "google.maps.mapsplatformdatasets.v1.MapsPlatformDatasets.FetchDatasetErrors",
+          "service": {
+            "shortName": "MapsPlatformDatasets",
+            "fullName": "google.maps.mapsplatformdatasets.v1.MapsPlatformDatasets"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "mapsplatformdatasets_v1_generated_MapsPlatformDatasets_GetDataset_sync",
+      "title": "mapsplatformdatasets GetDataset Sample",
+      "description": "GetDataset gets the dataset.",
+      "file": "Client/GetDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataset",
+        "fullName": "google.maps.mapsplatformdatasets.v1.Client.GetDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "mapsplatformdatasetspb.GetDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*mapsplatformdatasetspb.Dataset",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.mapsplatformdatasets.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDataset",
+          "fullName": "google.maps.mapsplatformdatasets.v1.MapsPlatformDatasets.GetDataset",
+          "service": {
+            "shortName": "MapsPlatformDatasets",
+            "fullName": "google.maps.mapsplatformdatasets.v1.MapsPlatformDatasets"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "mapsplatformdatasets_v1_generated_MapsPlatformDatasets_ListDatasets_sync",
+      "title": "mapsplatformdatasets ListDatasets Sample",
+      "description": "ListDatasets lists all the datasets for the specified project.",
+      "file": "Client/ListDatasets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDatasets",
+        "fullName": "google.maps.mapsplatformdatasets.v1.Client.ListDatasets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "mapsplatformdatasetspb.ListDatasetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DatasetIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.mapsplatformdatasets.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDatasets",
+          "fullName": "google.maps.mapsplatformdatasets.v1.MapsPlatformDatasets.ListDatasets",
+          "service": {
+            "shortName": "MapsPlatformDatasets",
+            "fullName": "google.maps.mapsplatformdatasets.v1.MapsPlatformDatasets"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "mapsplatformdatasets_v1_generated_MapsPlatformDatasets_UpdateDatasetMetadata_sync",
+      "title": "mapsplatformdatasets UpdateDatasetMetadata Sample",
+      "description": "UpdateDatasetMetadata updates the metadata for the dataset.",
+      "file": "Client/UpdateDatasetMetadata/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDatasetMetadata",
+        "fullName": "google.maps.mapsplatformdatasets.v1.Client.UpdateDatasetMetadata",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "mapsplatformdatasetspb.UpdateDatasetMetadataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*mapsplatformdatasetspb.Dataset",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.mapsplatformdatasets.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateDatasetMetadata",
+          "fullName": "google.maps.mapsplatformdatasets.v1.MapsPlatformDatasets.UpdateDatasetMetadata",
+          "service": {
+            "shortName": "MapsPlatformDatasets",
+            "fullName": "google.maps.mapsplatformdatasets.v1.MapsPlatformDatasets"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

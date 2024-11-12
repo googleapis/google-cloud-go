@@ -1,0 +1,93 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.timeseriesinsights.v1",
+  "libraryPackage": "cloud.google.com/go/timeseriesinsights/apiv1",
+  "services": {
+    "TimeseriesInsightsController": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TimeseriesInsightsControllerClient",
+          "rpcs": {
+            "AppendEvents": {
+              "methods": [
+                "AppendEvents"
+              ]
+            },
+            "CreateDataSet": {
+              "methods": [
+                "CreateDataSet"
+              ]
+            },
+            "DeleteDataSet": {
+              "methods": [
+                "DeleteDataSet"
+              ]
+            },
+            "EvaluateSlice": {
+              "methods": [
+                "EvaluateSlice"
+              ]
+            },
+            "EvaluateTimeseries": {
+              "methods": [
+                "EvaluateTimeseries"
+              ]
+            },
+            "ListDataSets": {
+              "methods": [
+                "ListDataSets"
+              ]
+            },
+            "QueryDataSet": {
+              "methods": [
+                "QueryDataSet"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "TimeseriesInsightsControllerClient",
+          "rpcs": {
+            "AppendEvents": {
+              "methods": [
+                "AppendEvents"
+              ]
+            },
+            "CreateDataSet": {
+              "methods": [
+                "CreateDataSet"
+              ]
+            },
+            "DeleteDataSet": {
+              "methods": [
+                "DeleteDataSet"
+              ]
+            },
+            "EvaluateSlice": {
+              "methods": [
+                "EvaluateSlice"
+              ]
+            },
+            "EvaluateTimeseries": {
+              "methods": [
+                "EvaluateTimeseries"
+              ]
+            },
+            "ListDataSets": {
+              "methods": [
+                "ListDataSets"
+              ]
+            },
+            "QueryDataSet": {
+              "methods": [
+                "QueryDataSet"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

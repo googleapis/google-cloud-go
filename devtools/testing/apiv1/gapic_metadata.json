@@ -1,0 +1,175 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.devtools.testing.v1",
+  "libraryPackage": "cloud.google.com/go/devtools/testing/apiv1",
+  "services": {
+    "ApplicationDetailService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ApplicationDetailClient",
+          "rpcs": {
+            "GetApkDetails": {
+              "methods": [
+                "GetApkDetails"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ApplicationDetailClient",
+          "rpcs": {
+            "GetApkDetails": {
+              "methods": [
+                "GetApkDetails"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DirectAccessService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DirectAccessClient",
+          "rpcs": {
+            "AdbConnect": {
+              "methods": [
+                "AdbConnect"
+              ]
+            },
+            "CancelDeviceSession": {
+              "methods": [
+                "CancelDeviceSession"
+              ]
+            },
+            "CreateDeviceSession": {
+              "methods": [
+                "CreateDeviceSession"
+              ]
+            },
+            "GetDeviceSession": {
+              "methods": [
+                "GetDeviceSession"
+              ]
+            },
+            "ListDeviceSessions": {
+              "methods": [
+                "ListDeviceSessions"
+              ]
+            },
+            "UpdateDeviceSession": {
+              "methods": [
+                "UpdateDeviceSession"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DirectAccessClient",
+          "rpcs": {
+            "AdbConnect": {
+              "methods": [
+                "AdbConnect"
+              ]
+            },
+            "CancelDeviceSession": {
+              "methods": [
+                "CancelDeviceSession"
+              ]
+            },
+            "CreateDeviceSession": {
+              "methods": [
+                "CreateDeviceSession"
+              ]
+            },
+            "GetDeviceSession": {
+              "methods": [
+                "GetDeviceSession"
+              ]
+            },
+            "ListDeviceSessions": {
+              "methods": [
+                "ListDeviceSessions"
+              ]
+            },
+            "UpdateDeviceSession": {
+              "methods": [
+                "UpdateDeviceSession"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "TestEnvironmentDiscoveryService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TestEnvironmentDiscoveryClient",
+          "rpcs": {
+            "GetTestEnvironmentCatalog": {
+              "methods": [
+                "GetTestEnvironmentCatalog"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "TestEnvironmentDiscoveryClient",
+          "rpcs": {
+            "GetTestEnvironmentCatalog": {
+              "methods": [
+                "GetTestEnvironmentCatalog"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "TestExecutionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TestExecutionClient",
+          "rpcs": {
+            "CancelTestMatrix": {
+              "methods": [
+                "CancelTestMatrix"
+              ]
+            },
+            "CreateTestMatrix": {
+              "methods": [
+                "CreateTestMatrix"
+              ]
+            },
+            "GetTestMatrix": {
+              "methods": [
+                "GetTestMatrix"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "TestExecutionClient",
+          "rpcs": {
+            "CancelTestMatrix": {
+              "methods": [
+                "CancelTestMatrix"
+              ]
+            },
+            "CreateTestMatrix": {
+              "methods": [
+                "CreateTestMatrix"
+              ]
+            },
+            "GetTestMatrix": {
+              "methods": [
+                "GetTestMatrix"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

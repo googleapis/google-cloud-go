@@ -1,0 +1,107 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/maps/roads/apiv1op",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.maps.roads.v1op",
+        "version": "v1op"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "roads_v1op_generated_RoadsService_ListNearestRoads_sync",
+      "title": "roads ListNearestRoads Sample",
+      "description": "ListNearestRoads this method takes a list of latitude,longitude points and snaps them each\nto their nearest road. Also returns a place ID for each snapped point.",
+      "file": "Client/ListNearestRoads/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNearestRoads",
+        "fullName": "google.maps.roads.v1op.Client.ListNearestRoads",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "roadspb.ListNearestRoadsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*roadspb.ListNearestRoadsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.roads.v1op.Client"
+        },
+        "method": {
+          "shortName": "ListNearestRoads",
+          "fullName": "google.maps.roads.v1op.RoadsService.ListNearestRoads",
+          "service": {
+            "shortName": "RoadsService",
+            "fullName": "google.maps.roads.v1op.RoadsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "roads_v1op_generated_RoadsService_SnapToRoads_sync",
+      "title": "roads SnapToRoads Sample",
+      "description": "SnapToRoads this method takes a sequence of latitude,longitude points and snaps them to\nthe most likely road segments. Optionally returns additional points giving\nthe full road geometry. Also returns a place ID for each snapped point.",
+      "file": "Client/SnapToRoads/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SnapToRoads",
+        "fullName": "google.maps.roads.v1op.Client.SnapToRoads",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "roadspb.SnapToRoadsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*roadspb.SnapToRoadsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.roads.v1op.Client"
+        },
+        "method": {
+          "shortName": "SnapToRoads",
+          "fullName": "google.maps.roads.v1op.RoadsService.SnapToRoads",
+          "service": {
+            "shortName": "RoadsService",
+            "fullName": "google.maps.roads.v1op.RoadsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

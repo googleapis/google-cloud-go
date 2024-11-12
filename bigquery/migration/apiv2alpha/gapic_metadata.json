@@ -1,0 +1,117 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.bigquery.migration.v2alpha",
+  "libraryPackage": "cloud.google.com/go/bigquery/migration/apiv2alpha",
+  "services": {
+    "MigrationService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateMigrationWorkflow": {
+              "methods": [
+                "CreateMigrationWorkflow"
+              ]
+            },
+            "DeleteMigrationWorkflow": {
+              "methods": [
+                "DeleteMigrationWorkflow"
+              ]
+            },
+            "GetMigrationSubtask": {
+              "methods": [
+                "GetMigrationSubtask"
+              ]
+            },
+            "GetMigrationWorkflow": {
+              "methods": [
+                "GetMigrationWorkflow"
+              ]
+            },
+            "ListMigrationSubtasks": {
+              "methods": [
+                "ListMigrationSubtasks"
+              ]
+            },
+            "ListMigrationWorkflows": {
+              "methods": [
+                "ListMigrationWorkflows"
+              ]
+            },
+            "StartMigrationWorkflow": {
+              "methods": [
+                "StartMigrationWorkflow"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateMigrationWorkflow": {
+              "methods": [
+                "CreateMigrationWorkflow"
+              ]
+            },
+            "DeleteMigrationWorkflow": {
+              "methods": [
+                "DeleteMigrationWorkflow"
+              ]
+            },
+            "GetMigrationSubtask": {
+              "methods": [
+                "GetMigrationSubtask"
+              ]
+            },
+            "GetMigrationWorkflow": {
+              "methods": [
+                "GetMigrationWorkflow"
+              ]
+            },
+            "ListMigrationSubtasks": {
+              "methods": [
+                "ListMigrationSubtasks"
+              ]
+            },
+            "ListMigrationWorkflows": {
+              "methods": [
+                "ListMigrationWorkflows"
+              ]
+            },
+            "StartMigrationWorkflow": {
+              "methods": [
+                "StartMigrationWorkflow"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SqlTranslationService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SqlTranslationClient",
+          "rpcs": {
+            "TranslateQuery": {
+              "methods": [
+                "TranslateQuery"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SqlTranslationClient",
+          "rpcs": {
+            "TranslateQuery": {
+              "methods": [
+                "TranslateQuery"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,433 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.gdchardwaremanagement.v1alpha",
+  "libraryPackage": "cloud.google.com/go/gdchardwaremanagement/apiv1alpha",
+  "services": {
+    "GDCHardwareManagement": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateComment": {
+              "methods": [
+                "CreateComment"
+              ]
+            },
+            "CreateHardware": {
+              "methods": [
+                "CreateHardware"
+              ]
+            },
+            "CreateHardwareGroup": {
+              "methods": [
+                "CreateHardwareGroup"
+              ]
+            },
+            "CreateOrder": {
+              "methods": [
+                "CreateOrder"
+              ]
+            },
+            "CreateSite": {
+              "methods": [
+                "CreateSite"
+              ]
+            },
+            "CreateZone": {
+              "methods": [
+                "CreateZone"
+              ]
+            },
+            "DeleteHardware": {
+              "methods": [
+                "DeleteHardware"
+              ]
+            },
+            "DeleteHardwareGroup": {
+              "methods": [
+                "DeleteHardwareGroup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteOrder": {
+              "methods": [
+                "DeleteOrder"
+              ]
+            },
+            "DeleteSite": {
+              "methods": [
+                "DeleteSite"
+              ]
+            },
+            "DeleteZone": {
+              "methods": [
+                "DeleteZone"
+              ]
+            },
+            "GetChangeLogEntry": {
+              "methods": [
+                "GetChangeLogEntry"
+              ]
+            },
+            "GetComment": {
+              "methods": [
+                "GetComment"
+              ]
+            },
+            "GetHardware": {
+              "methods": [
+                "GetHardware"
+              ]
+            },
+            "GetHardwareGroup": {
+              "methods": [
+                "GetHardwareGroup"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetOrder": {
+              "methods": [
+                "GetOrder"
+              ]
+            },
+            "GetSite": {
+              "methods": [
+                "GetSite"
+              ]
+            },
+            "GetSku": {
+              "methods": [
+                "GetSku"
+              ]
+            },
+            "GetZone": {
+              "methods": [
+                "GetZone"
+              ]
+            },
+            "ListChangeLogEntries": {
+              "methods": [
+                "ListChangeLogEntries"
+              ]
+            },
+            "ListComments": {
+              "methods": [
+                "ListComments"
+              ]
+            },
+            "ListHardware": {
+              "methods": [
+                "ListHardware"
+              ]
+            },
+            "ListHardwareGroups": {
+              "methods": [
+                "ListHardwareGroups"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListOrders": {
+              "methods": [
+                "ListOrders"
+              ]
+            },
+            "ListSites": {
+              "methods": [
+                "ListSites"
+              ]
+            },
+            "ListSkus": {
+              "methods": [
+                "ListSkus"
+              ]
+            },
+            "ListZones": {
+              "methods": [
+                "ListZones"
+              ]
+            },
+            "RecordActionOnComment": {
+              "methods": [
+                "RecordActionOnComment"
+              ]
+            },
+            "SignalZoneState": {
+              "methods": [
+                "SignalZoneState"
+              ]
+            },
+            "SubmitOrder": {
+              "methods": [
+                "SubmitOrder"
+              ]
+            },
+            "UpdateHardware": {
+              "methods": [
+                "UpdateHardware"
+              ]
+            },
+            "UpdateHardwareGroup": {
+              "methods": [
+                "UpdateHardwareGroup"
+              ]
+            },
+            "UpdateOrder": {
+              "methods": [
+                "UpdateOrder"
+              ]
+            },
+            "UpdateSite": {
+              "methods": [
+                "UpdateSite"
+              ]
+            },
+            "UpdateZone": {
+              "methods": [
+                "UpdateZone"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateComment": {
+              "methods": [
+                "CreateComment"
+              ]
+            },
+            "CreateHardware": {
+              "methods": [
+                "CreateHardware"
+              ]
+            },
+            "CreateHardwareGroup": {
+              "methods": [
+                "CreateHardwareGroup"
+              ]
+            },
+            "CreateOrder": {
+              "methods": [
+                "CreateOrder"
+              ]
+            },
+            "CreateSite": {
+              "methods": [
+                "CreateSite"
+              ]
+            },
+            "CreateZone": {
+              "methods": [
+                "CreateZone"
+              ]
+            },
+            "DeleteHardware": {
+              "methods": [
+                "DeleteHardware"
+              ]
+            },
+            "DeleteHardwareGroup": {
+              "methods": [
+                "DeleteHardwareGroup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteOrder": {
+              "methods": [
+                "DeleteOrder"
+              ]
+            },
+            "DeleteSite": {
+              "methods": [
+                "DeleteSite"
+              ]
+            },
+            "DeleteZone": {
+              "methods": [
+                "DeleteZone"
+              ]
+            },
+            "GetChangeLogEntry": {
+              "methods": [
+                "GetChangeLogEntry"
+              ]
+            },
+            "GetComment": {
+              "methods": [
+                "GetComment"
+              ]
+            },
+            "GetHardware": {
+              "methods": [
+                "GetHardware"
+              ]
+            },
+            "GetHardwareGroup": {
+              "methods": [
+                "GetHardwareGroup"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetOrder": {
+              "methods": [
+                "GetOrder"
+              ]
+            },
+            "GetSite": {
+              "methods": [
+                "GetSite"
+              ]
+            },
+            "GetSku": {
+              "methods": [
+                "GetSku"
+              ]
+            },
+            "GetZone": {
+              "methods": [
+                "GetZone"
+              ]
+            },
+            "ListChangeLogEntries": {
+              "methods": [
+                "ListChangeLogEntries"
+              ]
+            },
+            "ListComments": {
+              "methods": [
+                "ListComments"
+              ]
+            },
+            "ListHardware": {
+              "methods": [
+                "ListHardware"
+              ]
+            },
+            "ListHardwareGroups": {
+              "methods": [
+                "ListHardwareGroups"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListOrders": {
+              "methods": [
+                "ListOrders"
+              ]
+            },
+            "ListSites": {
+              "methods": [
+                "ListSites"
+              ]
+            },
+            "ListSkus": {
+              "methods": [
+                "ListSkus"
+              ]
+            },
+            "ListZones": {
+              "methods": [
+                "ListZones"
+              ]
+            },
+            "RecordActionOnComment": {
+              "methods": [
+                "RecordActionOnComment"
+              ]
+            },
+            "SignalZoneState": {
+              "methods": [
+                "SignalZoneState"
+              ]
+            },
+            "SubmitOrder": {
+              "methods": [
+                "SubmitOrder"
+              ]
+            },
+            "UpdateHardware": {
+              "methods": [
+                "UpdateHardware"
+              ]
+            },
+            "UpdateHardwareGroup": {
+              "methods": [
+                "UpdateHardwareGroup"
+              ]
+            },
+            "UpdateOrder": {
+              "methods": [
+                "UpdateOrder"
+              ]
+            },
+            "UpdateSite": {
+              "methods": [
+                "UpdateSite"
+              ]
+            },
+            "UpdateZone": {
+              "methods": [
+                "UpdateZone"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

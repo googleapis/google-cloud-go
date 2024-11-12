@@ -1,0 +1,291 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/ai/generativelanguage/apiv1beta2",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.ai.generativelanguage.v1beta2",
+        "version": "v1beta2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "generativelanguage_v1beta2_generated_DiscussService_CountMessageTokens_sync",
+      "title": "generativelanguage CountMessageTokens Sample",
+      "description": "CountMessageTokens runs a model's tokenizer on a string and returns the token count.",
+      "file": "DiscussClient/CountMessageTokens/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CountMessageTokens",
+        "fullName": "google.ai.generativelanguage.v1beta2.DiscussClient.CountMessageTokens",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.CountMessageTokensRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.CountMessageTokensResponse",
+        "client": {
+          "shortName": "DiscussClient",
+          "fullName": "google.ai.generativelanguage.v1beta2.DiscussClient"
+        },
+        "method": {
+          "shortName": "CountMessageTokens",
+          "fullName": "google.ai.generativelanguage.v1beta2.DiscussService.CountMessageTokens",
+          "service": {
+            "shortName": "DiscussService",
+            "fullName": "google.ai.generativelanguage.v1beta2.DiscussService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta2_generated_DiscussService_GenerateMessage_sync",
+      "title": "generativelanguage GenerateMessage Sample",
+      "description": "GenerateMessage generates a response from the model given an input `MessagePrompt`.",
+      "file": "DiscussClient/GenerateMessage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateMessage",
+        "fullName": "google.ai.generativelanguage.v1beta2.DiscussClient.GenerateMessage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GenerateMessageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.GenerateMessageResponse",
+        "client": {
+          "shortName": "DiscussClient",
+          "fullName": "google.ai.generativelanguage.v1beta2.DiscussClient"
+        },
+        "method": {
+          "shortName": "GenerateMessage",
+          "fullName": "google.ai.generativelanguage.v1beta2.DiscussService.GenerateMessage",
+          "service": {
+            "shortName": "DiscussService",
+            "fullName": "google.ai.generativelanguage.v1beta2.DiscussService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta2_generated_ModelService_GetModel_sync",
+      "title": "generativelanguage GetModel Sample",
+      "description": "GetModel gets information about a specific Model.",
+      "file": "ModelClient/GetModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetModel",
+        "fullName": "google.ai.generativelanguage.v1beta2.ModelClient.GetModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GetModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Model",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1beta2.ModelClient"
+        },
+        "method": {
+          "shortName": "GetModel",
+          "fullName": "google.ai.generativelanguage.v1beta2.ModelService.GetModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.ai.generativelanguage.v1beta2.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta2_generated_ModelService_ListModels_sync",
+      "title": "generativelanguage ListModels Sample",
+      "description": "ListModels lists models available through the API.",
+      "file": "ModelClient/ListModels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListModels",
+        "fullName": "google.ai.generativelanguage.v1beta2.ModelClient.ListModels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.ListModelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelIterator",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1beta2.ModelClient"
+        },
+        "method": {
+          "shortName": "ListModels",
+          "fullName": "google.ai.generativelanguage.v1beta2.ModelService.ListModels",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.ai.generativelanguage.v1beta2.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta2_generated_TextService_EmbedText_sync",
+      "title": "generativelanguage EmbedText Sample",
+      "description": "EmbedText generates an embedding from the model given an input message.",
+      "file": "TextClient/EmbedText/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EmbedText",
+        "fullName": "google.ai.generativelanguage.v1beta2.TextClient.EmbedText",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.EmbedTextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.EmbedTextResponse",
+        "client": {
+          "shortName": "TextClient",
+          "fullName": "google.ai.generativelanguage.v1beta2.TextClient"
+        },
+        "method": {
+          "shortName": "EmbedText",
+          "fullName": "google.ai.generativelanguage.v1beta2.TextService.EmbedText",
+          "service": {
+            "shortName": "TextService",
+            "fullName": "google.ai.generativelanguage.v1beta2.TextService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta2_generated_TextService_GenerateText_sync",
+      "title": "generativelanguage GenerateText Sample",
+      "description": "GenerateText generates a response from the model given an input message.",
+      "file": "TextClient/GenerateText/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateText",
+        "fullName": "google.ai.generativelanguage.v1beta2.TextClient.GenerateText",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GenerateTextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.GenerateTextResponse",
+        "client": {
+          "shortName": "TextClient",
+          "fullName": "google.ai.generativelanguage.v1beta2.TextClient"
+        },
+        "method": {
+          "shortName": "GenerateText",
+          "fullName": "google.ai.generativelanguage.v1beta2.TextService.GenerateText",
+          "service": {
+            "shortName": "TextService",
+            "fullName": "google.ai.generativelanguage.v1beta2.TextService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1437 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/orchestration/airflow/service/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.orchestration.airflow.service.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "composer_v1_generated_Environments_CheckUpgrade_sync",
+      "title": "composer CheckUpgrade Sample",
+      "description": "CheckUpgrade check if an upgrade operation on the environment will succeed.\n\nIn case of problems detailed info can be found in the returned Operation.",
+      "file": "EnvironmentsClient/CheckUpgrade/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckUpgrade",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.CheckUpgrade",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.CheckUpgradeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CheckUpgradeOperation",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "CheckUpgrade",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.CheckUpgrade",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_CreateEnvironment_sync",
+      "title": "composer CreateEnvironment Sample",
+      "description": "CreateEnvironment create a new environment.",
+      "file": "EnvironmentsClient/CreateEnvironment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEnvironment",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.CreateEnvironment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.CreateEnvironmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateEnvironmentOperation",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "CreateEnvironment",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.CreateEnvironment",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_CreateUserWorkloadsConfigMap_sync",
+      "title": "composer CreateUserWorkloadsConfigMap Sample",
+      "description": "CreateUserWorkloadsConfigMap creates a user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/CreateUserWorkloadsConfigMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateUserWorkloadsConfigMap",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.CreateUserWorkloadsConfigMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.CreateUserWorkloadsConfigMapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.UserWorkloadsConfigMap",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "CreateUserWorkloadsConfigMap",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.CreateUserWorkloadsConfigMap",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_CreateUserWorkloadsSecret_sync",
+      "title": "composer CreateUserWorkloadsSecret Sample",
+      "description": "CreateUserWorkloadsSecret creates a user workloads Secret.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/CreateUserWorkloadsSecret/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateUserWorkloadsSecret",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.CreateUserWorkloadsSecret",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.CreateUserWorkloadsSecretRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.UserWorkloadsSecret",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "CreateUserWorkloadsSecret",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.CreateUserWorkloadsSecret",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_DatabaseFailover_sync",
+      "title": "composer DatabaseFailover Sample",
+      "description": "DatabaseFailover triggers database failover (only for highly resilient environments).",
+      "file": "EnvironmentsClient/DatabaseFailover/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DatabaseFailover",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.DatabaseFailover",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.DatabaseFailoverRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DatabaseFailoverOperation",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "DatabaseFailover",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.DatabaseFailover",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_DeleteEnvironment_sync",
+      "title": "composer DeleteEnvironment Sample",
+      "description": "DeleteEnvironment delete an environment.",
+      "file": "EnvironmentsClient/DeleteEnvironment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEnvironment",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.DeleteEnvironment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.DeleteEnvironmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteEnvironmentOperation",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "DeleteEnvironment",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.DeleteEnvironment",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_DeleteOperation_sync",
+      "title": "composer DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "EnvironmentsClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_DeleteUserWorkloadsConfigMap_sync",
+      "title": "composer DeleteUserWorkloadsConfigMap Sample",
+      "description": "DeleteUserWorkloadsConfigMap deletes a user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/DeleteUserWorkloadsConfigMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteUserWorkloadsConfigMap",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.DeleteUserWorkloadsConfigMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.DeleteUserWorkloadsConfigMapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "DeleteUserWorkloadsConfigMap",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.DeleteUserWorkloadsConfigMap",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_DeleteUserWorkloadsSecret_sync",
+      "title": "composer DeleteUserWorkloadsSecret Sample",
+      "description": "DeleteUserWorkloadsSecret deletes a user workloads Secret.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/DeleteUserWorkloadsSecret/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteUserWorkloadsSecret",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.DeleteUserWorkloadsSecret",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.DeleteUserWorkloadsSecretRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "DeleteUserWorkloadsSecret",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.DeleteUserWorkloadsSecret",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_ExecuteAirflowCommand_sync",
+      "title": "composer ExecuteAirflowCommand Sample",
+      "description": "ExecuteAirflowCommand executes Airflow CLI command.",
+      "file": "EnvironmentsClient/ExecuteAirflowCommand/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExecuteAirflowCommand",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.ExecuteAirflowCommand",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.ExecuteAirflowCommandRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.ExecuteAirflowCommandResponse",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "ExecuteAirflowCommand",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.ExecuteAirflowCommand",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_FetchDatabaseProperties_sync",
+      "title": "composer FetchDatabaseProperties Sample",
+      "description": "FetchDatabaseProperties fetches database properties.",
+      "file": "EnvironmentsClient/FetchDatabaseProperties/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchDatabaseProperties",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.FetchDatabaseProperties",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.FetchDatabasePropertiesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.FetchDatabasePropertiesResponse",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "FetchDatabaseProperties",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.FetchDatabaseProperties",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_GetEnvironment_sync",
+      "title": "composer GetEnvironment Sample",
+      "description": "GetEnvironment get an existing environment.",
+      "file": "EnvironmentsClient/GetEnvironment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEnvironment",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.GetEnvironment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.GetEnvironmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.Environment",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "GetEnvironment",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.GetEnvironment",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_GetOperation_sync",
+      "title": "composer GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "EnvironmentsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_GetUserWorkloadsConfigMap_sync",
+      "title": "composer GetUserWorkloadsConfigMap Sample",
+      "description": "GetUserWorkloadsConfigMap gets an existing user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/GetUserWorkloadsConfigMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetUserWorkloadsConfigMap",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.GetUserWorkloadsConfigMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.GetUserWorkloadsConfigMapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.UserWorkloadsConfigMap",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "GetUserWorkloadsConfigMap",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.GetUserWorkloadsConfigMap",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_GetUserWorkloadsSecret_sync",
+      "title": "composer GetUserWorkloadsSecret Sample",
+      "description": "GetUserWorkloadsSecret gets an existing user workloads Secret.\nValues of the \"data\" field in the response are cleared.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/GetUserWorkloadsSecret/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetUserWorkloadsSecret",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.GetUserWorkloadsSecret",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.GetUserWorkloadsSecretRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.UserWorkloadsSecret",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "GetUserWorkloadsSecret",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.GetUserWorkloadsSecret",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_ListEnvironments_sync",
+      "title": "composer ListEnvironments Sample",
+      "description": "ListEnvironments list environments.",
+      "file": "EnvironmentsClient/ListEnvironments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEnvironments",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.ListEnvironments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.ListEnvironmentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EnvironmentIterator",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "ListEnvironments",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.ListEnvironments",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_ListOperations_sync",
+      "title": "composer ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "EnvironmentsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_ListUserWorkloadsConfigMaps_sync",
+      "title": "composer ListUserWorkloadsConfigMaps Sample",
+      "description": "ListUserWorkloadsConfigMaps lists user workloads ConfigMaps.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/ListUserWorkloadsConfigMaps/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUserWorkloadsConfigMaps",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.ListUserWorkloadsConfigMaps",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.ListUserWorkloadsConfigMapsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UserWorkloadsConfigMapIterator",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "ListUserWorkloadsConfigMaps",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.ListUserWorkloadsConfigMaps",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_ListUserWorkloadsSecrets_sync",
+      "title": "composer ListUserWorkloadsSecrets Sample",
+      "description": "ListUserWorkloadsSecrets lists user workloads Secrets.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/ListUserWorkloadsSecrets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUserWorkloadsSecrets",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.ListUserWorkloadsSecrets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.ListUserWorkloadsSecretsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UserWorkloadsSecretIterator",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "ListUserWorkloadsSecrets",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.ListUserWorkloadsSecrets",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_ListWorkloads_sync",
+      "title": "composer ListWorkloads Sample",
+      "description": "ListWorkloads lists workloads in a Cloud Composer environment. Workload is a unit that\nruns a single Composer component.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/ListWorkloads/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkloads",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.ListWorkloads",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.ListWorkloadsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ListWorkloadsResponse_ComposerWorkloadIterator",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "ListWorkloads",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.ListWorkloads",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_LoadSnapshot_sync",
+      "title": "composer LoadSnapshot Sample",
+      "description": "LoadSnapshot loads a snapshot of a Cloud Composer environment.\n\nAs a result of this operation, a snapshot of environment's specified in\nLoadSnapshotRequest is loaded into the environment.",
+      "file": "EnvironmentsClient/LoadSnapshot/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LoadSnapshot",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.LoadSnapshot",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.LoadSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LoadSnapshotOperation",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "LoadSnapshot",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.LoadSnapshot",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_PollAirflowCommand_sync",
+      "title": "composer PollAirflowCommand Sample",
+      "description": "PollAirflowCommand polls Airflow CLI command execution and fetches logs.",
+      "file": "EnvironmentsClient/PollAirflowCommand/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PollAirflowCommand",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.PollAirflowCommand",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.PollAirflowCommandRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.PollAirflowCommandResponse",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "PollAirflowCommand",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.PollAirflowCommand",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_SaveSnapshot_sync",
+      "title": "composer SaveSnapshot Sample",
+      "description": "SaveSnapshot creates a snapshots of a Cloud Composer environment.\n\nAs a result of this operation, snapshot of environment's state is stored\nin a location specified in the SaveSnapshotRequest.",
+      "file": "EnvironmentsClient/SaveSnapshot/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SaveSnapshot",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.SaveSnapshot",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.SaveSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SaveSnapshotOperation",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "SaveSnapshot",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.SaveSnapshot",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_StopAirflowCommand_sync",
+      "title": "composer StopAirflowCommand Sample",
+      "description": "StopAirflowCommand stops Airflow CLI command execution.",
+      "file": "EnvironmentsClient/StopAirflowCommand/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopAirflowCommand",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.StopAirflowCommand",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.StopAirflowCommandRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.StopAirflowCommandResponse",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "StopAirflowCommand",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.StopAirflowCommand",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_UpdateEnvironment_sync",
+      "title": "composer UpdateEnvironment Sample",
+      "description": "UpdateEnvironment update an environment.",
+      "file": "EnvironmentsClient/UpdateEnvironment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEnvironment",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.UpdateEnvironment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.UpdateEnvironmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEnvironmentOperation",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "UpdateEnvironment",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.UpdateEnvironment",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_UpdateUserWorkloadsConfigMap_sync",
+      "title": "composer UpdateUserWorkloadsConfigMap Sample",
+      "description": "UpdateUserWorkloadsConfigMap updates a user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/UpdateUserWorkloadsConfigMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateUserWorkloadsConfigMap",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.UpdateUserWorkloadsConfigMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.UpdateUserWorkloadsConfigMapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.UserWorkloadsConfigMap",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "UpdateUserWorkloadsConfigMap",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.UpdateUserWorkloadsConfigMap",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_UpdateUserWorkloadsSecret_sync",
+      "title": "composer UpdateUserWorkloadsSecret Sample",
+      "description": "UpdateUserWorkloadsSecret updates a user workloads Secret.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/UpdateUserWorkloadsSecret/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateUserWorkloadsSecret",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.UpdateUserWorkloadsSecret",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.UpdateUserWorkloadsSecretRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.UserWorkloadsSecret",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "UpdateUserWorkloadsSecret",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.UpdateUserWorkloadsSecret",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_ImageVersions_DeleteOperation_sync",
+      "title": "composer DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ImageVersionsClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersionsClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ImageVersionsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersionsClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_ImageVersions_GetOperation_sync",
+      "title": "composer GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ImageVersionsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersionsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ImageVersionsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersionsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_ImageVersions_ListImageVersions_sync",
+      "title": "composer ListImageVersions Sample",
+      "description": "ListImageVersions list ImageVersions for provided location.",
+      "file": "ImageVersionsClient/ListImageVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListImageVersions",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersionsClient.ListImageVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.ListImageVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImageVersionIterator",
+        "client": {
+          "shortName": "ImageVersionsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersionsClient"
+        },
+        "method": {
+          "shortName": "ListImageVersions",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersions.ListImageVersions",
+          "service": {
+            "shortName": "ImageVersions",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_ImageVersions_ListOperations_sync",
+      "title": "composer ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ImageVersionsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersionsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ImageVersionsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersionsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/maps/regionlookup/apiv1alpha",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.maps.regionlookup.v1alpha",
+        "version": "v1alpha"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "regionlookup_v1alpha_generated_RegionLookup_LookupRegion_sync",
+      "title": "regionlookup LookupRegion Sample",
+      "description": "LookupRegion lookup region RPC.\n\nLooks up a set of region Place IDs of types related to geographic\nboundaries.\n\nThe API looks up a region Place ID using the `RegionIdentifier` proto. See\n`RegionIdentifier` for more details and examples.\n\nThe following region place types are supported for look up: postal_code,\nadministrative_area_level_1, administrative_area_level_2, locality,\nneighborhood, and country.",
+      "file": "Client/LookupRegion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LookupRegion",
+        "fullName": "google.maps.regionlookup.v1alpha.Client.LookupRegion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "regionlookuppb.LookupRegionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RegionMatchIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.regionlookup.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "LookupRegion",
+          "fullName": "google.maps.regionlookup.v1alpha.RegionLookup.LookupRegion",
+          "service": {
+            "shortName": "RegionLookup",
+            "fullName": "google.maps.regionlookup.v1alpha.RegionLookup"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "regionlookup_v1alpha_generated_RegionLookup_SearchRegion_sync",
+      "title": "regionlookup SearchRegion Sample",
+      "description": "SearchRegion search region RPC.\n\nSearches for a set of region Place IDs of types related to geographic\nboundaries.\n\nSimilar to `LookupRegion` RPC but instead of looking up Place IDs for the\ngiven `RegionIdentifier`, the API searches for Region Place IDs by\nconsidering all regions that are contained within a specified location. The\n`RegionSearchValue` is used to specify the search values. See\n`RegionSearchValue` for more details and examples.\n\nThe following region place types are supported for searching: postal_code,\nadministrative_area_level_1, administrative_area_level_2, locality,\nneighborhood, and country.",
+      "file": "Client/SearchRegion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchRegion",
+        "fullName": "google.maps.regionlookup.v1alpha.Client.SearchRegion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "regionlookuppb.SearchRegionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RegionMatchIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.regionlookup.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "SearchRegion",
+          "fullName": "google.maps.regionlookup.v1alpha.RegionLookup.SearchRegion",
+          "service": {
+            "shortName": "RegionLookup",
+            "fullName": "google.maps.regionlookup.v1alpha.RegionLookup"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

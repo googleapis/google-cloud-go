@@ -1,0 +1,153 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/privatecatalog/apiv1beta1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.privatecatalog.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudprivatecatalog_v1beta1_generated_PrivateCatalog_SearchCatalogs_sync",
+      "title": "cloudprivatecatalog SearchCatalogs Sample",
+      "description": "SearchCatalogs search [Catalog][google.cloud.privatecatalog.v1beta1.Catalog] resources that consumers have access to, within the\nscope of the consumer cloud resource hierarchy context.",
+      "file": "Client/SearchCatalogs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchCatalogs",
+        "fullName": "google.cloud.privatecatalog.v1beta1.Client.SearchCatalogs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecatalogpb.SearchCatalogsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CatalogIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privatecatalog.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "SearchCatalogs",
+          "fullName": "google.cloud.privatecatalog.v1beta1.PrivateCatalog.SearchCatalogs",
+          "service": {
+            "shortName": "PrivateCatalog",
+            "fullName": "google.cloud.privatecatalog.v1beta1.PrivateCatalog"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudprivatecatalog_v1beta1_generated_PrivateCatalog_SearchProducts_sync",
+      "title": "cloudprivatecatalog SearchProducts Sample",
+      "description": "SearchProducts search [Product][google.cloud.privatecatalog.v1beta1.Product] resources that consumers have access to, within the\nscope of the consumer cloud resource hierarchy context.",
+      "file": "Client/SearchProducts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchProducts",
+        "fullName": "google.cloud.privatecatalog.v1beta1.Client.SearchProducts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecatalogpb.SearchProductsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProductIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privatecatalog.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "SearchProducts",
+          "fullName": "google.cloud.privatecatalog.v1beta1.PrivateCatalog.SearchProducts",
+          "service": {
+            "shortName": "PrivateCatalog",
+            "fullName": "google.cloud.privatecatalog.v1beta1.PrivateCatalog"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudprivatecatalog_v1beta1_generated_PrivateCatalog_SearchVersions_sync",
+      "title": "cloudprivatecatalog SearchVersions Sample",
+      "description": "SearchVersions search [Version][google.cloud.privatecatalog.v1beta1.Version] resources that consumers have access to, within the\nscope of the consumer cloud resource hierarchy context.",
+      "file": "Client/SearchVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchVersions",
+        "fullName": "google.cloud.privatecatalog.v1beta1.Client.SearchVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "privatecatalogpb.SearchVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "VersionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.privatecatalog.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "SearchVersions",
+          "fullName": "google.cloud.privatecatalog.v1beta1.PrivateCatalog.SearchVersions",
+          "service": {
+            "shortName": "PrivateCatalog",
+            "fullName": "google.cloud.privatecatalog.v1beta1.PrivateCatalog"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

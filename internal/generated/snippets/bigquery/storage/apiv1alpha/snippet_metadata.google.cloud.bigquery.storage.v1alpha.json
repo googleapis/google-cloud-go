@@ -1,0 +1,240 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/bigquery/storage/apiv1alpha",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.bigquery.storage.v1alpha",
+        "version": "v1alpha"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "bigquerystorage_v1alpha_generated_MetastorePartitionService_BatchCreateMetastorePartitions_sync",
+      "title": "bigquerystorage BatchCreateMetastorePartitions Sample",
+      "description": "BatchCreateMetastorePartitions adds metastore partitions to a table.",
+      "file": "MetastorePartitionClient/BatchCreateMetastorePartitions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateMetastorePartitions",
+        "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionClient.BatchCreateMetastorePartitions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.BatchCreateMetastorePartitionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.BatchCreateMetastorePartitionsResponse",
+        "client": {
+          "shortName": "MetastorePartitionClient",
+          "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionClient"
+        },
+        "method": {
+          "shortName": "BatchCreateMetastorePartitions",
+          "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService.BatchCreateMetastorePartitions",
+          "service": {
+            "shortName": "MetastorePartitionService",
+            "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerystorage_v1alpha_generated_MetastorePartitionService_BatchDeleteMetastorePartitions_sync",
+      "title": "bigquerystorage BatchDeleteMetastorePartitions Sample",
+      "description": "BatchDeleteMetastorePartitions deletes metastore partitions from a table.",
+      "file": "MetastorePartitionClient/BatchDeleteMetastorePartitions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchDeleteMetastorePartitions",
+        "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionClient.BatchDeleteMetastorePartitions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.BatchDeleteMetastorePartitionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "MetastorePartitionClient",
+          "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionClient"
+        },
+        "method": {
+          "shortName": "BatchDeleteMetastorePartitions",
+          "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService.BatchDeleteMetastorePartitions",
+          "service": {
+            "shortName": "MetastorePartitionService",
+            "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerystorage_v1alpha_generated_MetastorePartitionService_BatchUpdateMetastorePartitions_sync",
+      "title": "bigquerystorage BatchUpdateMetastorePartitions Sample",
+      "description": "BatchUpdateMetastorePartitions updates metastore partitions in a table.",
+      "file": "MetastorePartitionClient/BatchUpdateMetastorePartitions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchUpdateMetastorePartitions",
+        "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionClient.BatchUpdateMetastorePartitions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.BatchUpdateMetastorePartitionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.BatchUpdateMetastorePartitionsResponse",
+        "client": {
+          "shortName": "MetastorePartitionClient",
+          "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionClient"
+        },
+        "method": {
+          "shortName": "BatchUpdateMetastorePartitions",
+          "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService.BatchUpdateMetastorePartitions",
+          "service": {
+            "shortName": "MetastorePartitionService",
+            "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerystorage_v1alpha_generated_MetastorePartitionService_ListMetastorePartitions_sync",
+      "title": "bigquerystorage ListMetastorePartitions Sample",
+      "description": "ListMetastorePartitions gets metastore partitions from a table.",
+      "file": "MetastorePartitionClient/ListMetastorePartitions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMetastorePartitions",
+        "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionClient.ListMetastorePartitions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.ListMetastorePartitionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.ListMetastorePartitionsResponse",
+        "client": {
+          "shortName": "MetastorePartitionClient",
+          "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionClient"
+        },
+        "method": {
+          "shortName": "ListMetastorePartitions",
+          "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService.ListMetastorePartitions",
+          "service": {
+            "shortName": "MetastorePartitionService",
+            "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerystorage_v1alpha_generated_MetastorePartitionService_StreamMetastorePartitions_sync",
+      "title": "bigquerystorage StreamMetastorePartitions Sample",
+      "description": "StreamMetastorePartitions this is a bi-di streaming rpc method that allows the client to send\na stream of partitions and commit all of them atomically at the end.\nIf the commit is successful, the server will return a\nresponse and close the stream. If the commit fails (due to duplicate\npartitions or other reason), the server will close the stream with an\nerror. This method is only available via the gRPC API (not REST).",
+      "file": "MetastorePartitionClient/StreamMetastorePartitions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamMetastorePartitions",
+        "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionClient.StreamMetastorePartitions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "storagepb.MetastorePartitionService_StreamMetastorePartitionsClient",
+        "client": {
+          "shortName": "MetastorePartitionClient",
+          "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionClient"
+        },
+        "method": {
+          "shortName": "StreamMetastorePartitions",
+          "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService.StreamMetastorePartitions",
+          "service": {
+            "shortName": "MetastorePartitionService",
+            "fullName": "google.cloud.bigquery.storage.v1alpha.MetastorePartitionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

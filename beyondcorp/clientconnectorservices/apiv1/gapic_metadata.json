@@ -1,0 +1,88 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.beyondcorp.clientconnectorservices.v1",
+  "libraryPackage": "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1",
+  "services": {
+    "ClientConnectorServicesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateClientConnectorService": {
+              "methods": [
+                "CreateClientConnectorService"
+              ]
+            },
+            "DeleteClientConnectorService": {
+              "methods": [
+                "DeleteClientConnectorService"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetClientConnectorService": {
+              "methods": [
+                "GetClientConnectorService"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListClientConnectorServices": {
+              "methods": [
+                "ListClientConnectorServices"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateClientConnectorService": {
+              "methods": [
+                "UpdateClientConnectorService"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

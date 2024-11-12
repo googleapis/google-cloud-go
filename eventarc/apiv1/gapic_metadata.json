@@ -1,0 +1,503 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.eventarc.v1",
+  "libraryPackage": "cloud.google.com/go/eventarc/apiv1",
+  "services": {
+    "Eventarc": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateChannel": {
+              "methods": [
+                "CreateChannel"
+              ]
+            },
+            "CreateChannelConnection": {
+              "methods": [
+                "CreateChannelConnection"
+              ]
+            },
+            "CreateEnrollment": {
+              "methods": [
+                "CreateEnrollment"
+              ]
+            },
+            "CreateGoogleApiSource": {
+              "methods": [
+                "CreateGoogleApiSource"
+              ]
+            },
+            "CreateMessageBus": {
+              "methods": [
+                "CreateMessageBus"
+              ]
+            },
+            "CreatePipeline": {
+              "methods": [
+                "CreatePipeline"
+              ]
+            },
+            "CreateTrigger": {
+              "methods": [
+                "CreateTrigger"
+              ]
+            },
+            "DeleteChannel": {
+              "methods": [
+                "DeleteChannel"
+              ]
+            },
+            "DeleteChannelConnection": {
+              "methods": [
+                "DeleteChannelConnection"
+              ]
+            },
+            "DeleteEnrollment": {
+              "methods": [
+                "DeleteEnrollment"
+              ]
+            },
+            "DeleteGoogleApiSource": {
+              "methods": [
+                "DeleteGoogleApiSource"
+              ]
+            },
+            "DeleteMessageBus": {
+              "methods": [
+                "DeleteMessageBus"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePipeline": {
+              "methods": [
+                "DeletePipeline"
+              ]
+            },
+            "DeleteTrigger": {
+              "methods": [
+                "DeleteTrigger"
+              ]
+            },
+            "GetChannel": {
+              "methods": [
+                "GetChannel"
+              ]
+            },
+            "GetChannelConnection": {
+              "methods": [
+                "GetChannelConnection"
+              ]
+            },
+            "GetEnrollment": {
+              "methods": [
+                "GetEnrollment"
+              ]
+            },
+            "GetGoogleApiSource": {
+              "methods": [
+                "GetGoogleApiSource"
+              ]
+            },
+            "GetGoogleChannelConfig": {
+              "methods": [
+                "GetGoogleChannelConfig"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetMessageBus": {
+              "methods": [
+                "GetMessageBus"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPipeline": {
+              "methods": [
+                "GetPipeline"
+              ]
+            },
+            "GetProvider": {
+              "methods": [
+                "GetProvider"
+              ]
+            },
+            "GetTrigger": {
+              "methods": [
+                "GetTrigger"
+              ]
+            },
+            "ListChannelConnections": {
+              "methods": [
+                "ListChannelConnections"
+              ]
+            },
+            "ListChannels": {
+              "methods": [
+                "ListChannels"
+              ]
+            },
+            "ListEnrollments": {
+              "methods": [
+                "ListEnrollments"
+              ]
+            },
+            "ListGoogleApiSources": {
+              "methods": [
+                "ListGoogleApiSources"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMessageBusEnrollments": {
+              "methods": [
+                "ListMessageBusEnrollments"
+              ]
+            },
+            "ListMessageBuses": {
+              "methods": [
+                "ListMessageBuses"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPipelines": {
+              "methods": [
+                "ListPipelines"
+              ]
+            },
+            "ListProviders": {
+              "methods": [
+                "ListProviders"
+              ]
+            },
+            "ListTriggers": {
+              "methods": [
+                "ListTriggers"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateChannel": {
+              "methods": [
+                "UpdateChannel"
+              ]
+            },
+            "UpdateEnrollment": {
+              "methods": [
+                "UpdateEnrollment"
+              ]
+            },
+            "UpdateGoogleApiSource": {
+              "methods": [
+                "UpdateGoogleApiSource"
+              ]
+            },
+            "UpdateGoogleChannelConfig": {
+              "methods": [
+                "UpdateGoogleChannelConfig"
+              ]
+            },
+            "UpdateMessageBus": {
+              "methods": [
+                "UpdateMessageBus"
+              ]
+            },
+            "UpdatePipeline": {
+              "methods": [
+                "UpdatePipeline"
+              ]
+            },
+            "UpdateTrigger": {
+              "methods": [
+                "UpdateTrigger"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateChannel": {
+              "methods": [
+                "CreateChannel"
+              ]
+            },
+            "CreateChannelConnection": {
+              "methods": [
+                "CreateChannelConnection"
+              ]
+            },
+            "CreateEnrollment": {
+              "methods": [
+                "CreateEnrollment"
+              ]
+            },
+            "CreateGoogleApiSource": {
+              "methods": [
+                "CreateGoogleApiSource"
+              ]
+            },
+            "CreateMessageBus": {
+              "methods": [
+                "CreateMessageBus"
+              ]
+            },
+            "CreatePipeline": {
+              "methods": [
+                "CreatePipeline"
+              ]
+            },
+            "CreateTrigger": {
+              "methods": [
+                "CreateTrigger"
+              ]
+            },
+            "DeleteChannel": {
+              "methods": [
+                "DeleteChannel"
+              ]
+            },
+            "DeleteChannelConnection": {
+              "methods": [
+                "DeleteChannelConnection"
+              ]
+            },
+            "DeleteEnrollment": {
+              "methods": [
+                "DeleteEnrollment"
+              ]
+            },
+            "DeleteGoogleApiSource": {
+              "methods": [
+                "DeleteGoogleApiSource"
+              ]
+            },
+            "DeleteMessageBus": {
+              "methods": [
+                "DeleteMessageBus"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePipeline": {
+              "methods": [
+                "DeletePipeline"
+              ]
+            },
+            "DeleteTrigger": {
+              "methods": [
+                "DeleteTrigger"
+              ]
+            },
+            "GetChannel": {
+              "methods": [
+                "GetChannel"
+              ]
+            },
+            "GetChannelConnection": {
+              "methods": [
+                "GetChannelConnection"
+              ]
+            },
+            "GetEnrollment": {
+              "methods": [
+                "GetEnrollment"
+              ]
+            },
+            "GetGoogleApiSource": {
+              "methods": [
+                "GetGoogleApiSource"
+              ]
+            },
+            "GetGoogleChannelConfig": {
+              "methods": [
+                "GetGoogleChannelConfig"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetMessageBus": {
+              "methods": [
+                "GetMessageBus"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPipeline": {
+              "methods": [
+                "GetPipeline"
+              ]
+            },
+            "GetProvider": {
+              "methods": [
+                "GetProvider"
+              ]
+            },
+            "GetTrigger": {
+              "methods": [
+                "GetTrigger"
+              ]
+            },
+            "ListChannelConnections": {
+              "methods": [
+                "ListChannelConnections"
+              ]
+            },
+            "ListChannels": {
+              "methods": [
+                "ListChannels"
+              ]
+            },
+            "ListEnrollments": {
+              "methods": [
+                "ListEnrollments"
+              ]
+            },
+            "ListGoogleApiSources": {
+              "methods": [
+                "ListGoogleApiSources"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMessageBusEnrollments": {
+              "methods": [
+                "ListMessageBusEnrollments"
+              ]
+            },
+            "ListMessageBuses": {
+              "methods": [
+                "ListMessageBuses"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPipelines": {
+              "methods": [
+                "ListPipelines"
+              ]
+            },
+            "ListProviders": {
+              "methods": [
+                "ListProviders"
+              ]
+            },
+            "ListTriggers": {
+              "methods": [
+                "ListTriggers"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateChannel": {
+              "methods": [
+                "UpdateChannel"
+              ]
+            },
+            "UpdateEnrollment": {
+              "methods": [
+                "UpdateEnrollment"
+              ]
+            },
+            "UpdateGoogleApiSource": {
+              "methods": [
+                "UpdateGoogleApiSource"
+              ]
+            },
+            "UpdateGoogleChannelConfig": {
+              "methods": [
+                "UpdateGoogleChannelConfig"
+              ]
+            },
+            "UpdateMessageBus": {
+              "methods": [
+                "UpdateMessageBus"
+              ]
+            },
+            "UpdatePipeline": {
+              "methods": [
+                "UpdatePipeline"
+              ]
+            },
+            "UpdateTrigger": {
+              "methods": [
+                "UpdateTrigger"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

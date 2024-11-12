@@ -1,0 +1,474 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/workflows/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.workflows.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "workflows_v1_generated_Workflows_CreateWorkflow_sync",
+      "title": "workflows CreateWorkflow Sample",
+      "description": "CreateWorkflow creates a new workflow. If a workflow with the specified name already\nexists in the specified project and location, the long running operation\nreturns a [ALREADY_EXISTS][google.rpc.Code.ALREADY_EXISTS] error.",
+      "file": "Client/CreateWorkflow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateWorkflow",
+        "fullName": "google.cloud.workflows.v1.Client.CreateWorkflow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workflowspb.CreateWorkflowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateWorkflowOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workflows.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateWorkflow",
+          "fullName": "google.cloud.workflows.v1.Workflows.CreateWorkflow",
+          "service": {
+            "shortName": "Workflows",
+            "fullName": "google.cloud.workflows.v1.Workflows"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workflows_v1_generated_Workflows_DeleteOperation_sync",
+      "title": "workflows DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.workflows.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workflows.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workflows_v1_generated_Workflows_DeleteWorkflow_sync",
+      "title": "workflows DeleteWorkflow Sample",
+      "description": "DeleteWorkflow deletes a workflow with the specified name.\nThis method also cancels and deletes all running executions of the\nworkflow.",
+      "file": "Client/DeleteWorkflow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteWorkflow",
+        "fullName": "google.cloud.workflows.v1.Client.DeleteWorkflow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workflowspb.DeleteWorkflowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteWorkflowOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workflows.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteWorkflow",
+          "fullName": "google.cloud.workflows.v1.Workflows.DeleteWorkflow",
+          "service": {
+            "shortName": "Workflows",
+            "fullName": "google.cloud.workflows.v1.Workflows"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workflows_v1_generated_Workflows_GetLocation_sync",
+      "title": "workflows GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.workflows.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workflows.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workflows_v1_generated_Workflows_GetOperation_sync",
+      "title": "workflows GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.workflows.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workflows.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workflows_v1_generated_Workflows_GetWorkflow_sync",
+      "title": "workflows GetWorkflow Sample",
+      "description": "GetWorkflow gets details of a single workflow.",
+      "file": "Client/GetWorkflow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkflow",
+        "fullName": "google.cloud.workflows.v1.Client.GetWorkflow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workflowspb.GetWorkflowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*workflowspb.Workflow",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workflows.v1.Client"
+        },
+        "method": {
+          "shortName": "GetWorkflow",
+          "fullName": "google.cloud.workflows.v1.Workflows.GetWorkflow",
+          "service": {
+            "shortName": "Workflows",
+            "fullName": "google.cloud.workflows.v1.Workflows"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workflows_v1_generated_Workflows_ListLocations_sync",
+      "title": "workflows ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.workflows.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workflows.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workflows_v1_generated_Workflows_ListOperations_sync",
+      "title": "workflows ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.workflows.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workflows.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workflows_v1_generated_Workflows_ListWorkflows_sync",
+      "title": "workflows ListWorkflows Sample",
+      "description": "ListWorkflows lists workflows in a given project and location.\nThe default order is not specified.",
+      "file": "Client/ListWorkflows/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkflows",
+        "fullName": "google.cloud.workflows.v1.Client.ListWorkflows",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workflowspb.ListWorkflowsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkflowIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workflows.v1.Client"
+        },
+        "method": {
+          "shortName": "ListWorkflows",
+          "fullName": "google.cloud.workflows.v1.Workflows.ListWorkflows",
+          "service": {
+            "shortName": "Workflows",
+            "fullName": "google.cloud.workflows.v1.Workflows"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workflows_v1_generated_Workflows_UpdateWorkflow_sync",
+      "title": "workflows UpdateWorkflow Sample",
+      "description": "UpdateWorkflow updates an existing workflow.\nRunning this method has no impact on already running executions of the\nworkflow. A new revision of the workflow might be created as a result of a\nsuccessful update operation. In that case, the new revision is used\nin new workflow executions.",
+      "file": "Client/UpdateWorkflow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateWorkflow",
+        "fullName": "google.cloud.workflows.v1.Client.UpdateWorkflow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workflowspb.UpdateWorkflowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateWorkflowOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workflows.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateWorkflow",
+          "fullName": "google.cloud.workflows.v1.Workflows.UpdateWorkflow",
+          "service": {
+            "shortName": "Workflows",
+            "fullName": "google.cloud.workflows.v1.Workflows"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

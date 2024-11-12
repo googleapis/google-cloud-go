@@ -1,0 +1,521 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/gkehub/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.gkehub.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "gkehub_v1_generated_GkeHub_CreateFeature_sync",
+      "title": "gkehub CreateFeature Sample",
+      "description": "CreateFeature adds a new Feature.",
+      "file": "Client/CreateFeature/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFeature",
+        "fullName": "google.cloud.gkehub.v1.Client.CreateFeature",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.CreateFeatureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateFeatureOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateFeature",
+          "fullName": "google.cloud.gkehub.v1.GkeHub.CreateFeature",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1_generated_GkeHub_CreateMembership_sync",
+      "title": "gkehub CreateMembership Sample",
+      "description": "CreateMembership creates a new Membership.\n\n**This is currently only supported for GKE clusters on Google Cloud**.\nTo register other clusters, follow the instructions at\nhttps: //cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster.",
+      "file": "Client/CreateMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMembership",
+        "fullName": "google.cloud.gkehub.v1.Client.CreateMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.CreateMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateMembershipOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateMembership",
+          "fullName": "google.cloud.gkehub.v1.GkeHub.CreateMembership",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1_generated_GkeHub_DeleteFeature_sync",
+      "title": "gkehub DeleteFeature Sample",
+      "description": "DeleteFeature removes a Feature.",
+      "file": "Client/DeleteFeature/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFeature",
+        "fullName": "google.cloud.gkehub.v1.Client.DeleteFeature",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.DeleteFeatureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteFeatureOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteFeature",
+          "fullName": "google.cloud.gkehub.v1.GkeHub.DeleteFeature",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1_generated_GkeHub_DeleteMembership_sync",
+      "title": "gkehub DeleteMembership Sample",
+      "description": "DeleteMembership removes a Membership.\n\n**This is currently only supported for GKE clusters on Google Cloud**.\nTo unregister other clusters, follow the instructions at\nhttps: //cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster.",
+      "file": "Client/DeleteMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMembership",
+        "fullName": "google.cloud.gkehub.v1.Client.DeleteMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.DeleteMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteMembershipOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteMembership",
+          "fullName": "google.cloud.gkehub.v1.GkeHub.DeleteMembership",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1_generated_GkeHub_GenerateConnectManifest_sync",
+      "title": "gkehub GenerateConnectManifest Sample",
+      "description": "GenerateConnectManifest generates the manifest for deployment of the GKE connect agent.\n\n**This method is used internally by Google-provided libraries.**\nMost clients should not need to call this method directly.",
+      "file": "Client/GenerateConnectManifest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateConnectManifest",
+        "fullName": "google.cloud.gkehub.v1.Client.GenerateConnectManifest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.GenerateConnectManifestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkehubpb.GenerateConnectManifestResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1.Client"
+        },
+        "method": {
+          "shortName": "GenerateConnectManifest",
+          "fullName": "google.cloud.gkehub.v1.GkeHub.GenerateConnectManifest",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1_generated_GkeHub_GetFeature_sync",
+      "title": "gkehub GetFeature Sample",
+      "description": "GetFeature gets details of a single Feature.",
+      "file": "Client/GetFeature/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFeature",
+        "fullName": "google.cloud.gkehub.v1.Client.GetFeature",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.GetFeatureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkehubpb.Feature",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1.Client"
+        },
+        "method": {
+          "shortName": "GetFeature",
+          "fullName": "google.cloud.gkehub.v1.GkeHub.GetFeature",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1_generated_GkeHub_GetMembership_sync",
+      "title": "gkehub GetMembership Sample",
+      "description": "GetMembership gets the details of a Membership.",
+      "file": "Client/GetMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMembership",
+        "fullName": "google.cloud.gkehub.v1.Client.GetMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.GetMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkehubpb.Membership",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1.Client"
+        },
+        "method": {
+          "shortName": "GetMembership",
+          "fullName": "google.cloud.gkehub.v1.GkeHub.GetMembership",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1_generated_GkeHub_ListFeatures_sync",
+      "title": "gkehub ListFeatures Sample",
+      "description": "ListFeatures lists Features in a given project and location.",
+      "file": "Client/ListFeatures/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFeatures",
+        "fullName": "google.cloud.gkehub.v1.Client.ListFeatures",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.ListFeaturesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FeatureIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1.Client"
+        },
+        "method": {
+          "shortName": "ListFeatures",
+          "fullName": "google.cloud.gkehub.v1.GkeHub.ListFeatures",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1_generated_GkeHub_ListMemberships_sync",
+      "title": "gkehub ListMemberships Sample",
+      "description": "ListMemberships lists Memberships in a given project and location.",
+      "file": "Client/ListMemberships/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMemberships",
+        "fullName": "google.cloud.gkehub.v1.Client.ListMemberships",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.ListMembershipsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MembershipIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1.Client"
+        },
+        "method": {
+          "shortName": "ListMemberships",
+          "fullName": "google.cloud.gkehub.v1.GkeHub.ListMemberships",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1_generated_GkeHub_UpdateFeature_sync",
+      "title": "gkehub UpdateFeature Sample",
+      "description": "UpdateFeature updates an existing Feature.",
+      "file": "Client/UpdateFeature/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateFeature",
+        "fullName": "google.cloud.gkehub.v1.Client.UpdateFeature",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.UpdateFeatureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateFeatureOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateFeature",
+          "fullName": "google.cloud.gkehub.v1.GkeHub.UpdateFeature",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1_generated_GkeHub_UpdateMembership_sync",
+      "title": "gkehub UpdateMembership Sample",
+      "description": "UpdateMembership updates an existing Membership.",
+      "file": "Client/UpdateMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateMembership",
+        "fullName": "google.cloud.gkehub.v1.Client.UpdateMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.UpdateMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateMembershipOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkehub.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateMembership",
+          "fullName": "google.cloud.gkehub.v1.GkeHub.UpdateMembership",
+          "service": {
+            "shortName": "GkeHub",
+            "fullName": "google.cloud.gkehub.v1.GkeHub"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

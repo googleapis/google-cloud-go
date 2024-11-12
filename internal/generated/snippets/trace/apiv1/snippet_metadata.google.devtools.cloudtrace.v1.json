@@ -1,0 +1,152 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/trace/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.devtools.cloudtrace.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudtrace_v1_generated_TraceService_GetTrace_sync",
+      "title": "cloudtrace GetTrace Sample",
+      "description": "GetTrace gets a single trace by its ID.",
+      "file": "Client/GetTrace/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTrace",
+        "fullName": "google.devtools.cloudtrace.v1.Client.GetTrace",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tracepb.GetTraceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*tracepb.Trace",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudtrace.v1.Client"
+        },
+        "method": {
+          "shortName": "GetTrace",
+          "fullName": "google.devtools.cloudtrace.v1.TraceService.GetTrace",
+          "service": {
+            "shortName": "TraceService",
+            "fullName": "google.devtools.cloudtrace.v1.TraceService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudtrace_v1_generated_TraceService_ListTraces_sync",
+      "title": "cloudtrace ListTraces Sample",
+      "description": "ListTraces returns of a list of traces that match the specified filter conditions.",
+      "file": "Client/ListTraces/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTraces",
+        "fullName": "google.devtools.cloudtrace.v1.Client.ListTraces",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tracepb.ListTracesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TraceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudtrace.v1.Client"
+        },
+        "method": {
+          "shortName": "ListTraces",
+          "fullName": "google.devtools.cloudtrace.v1.TraceService.ListTraces",
+          "service": {
+            "shortName": "TraceService",
+            "fullName": "google.devtools.cloudtrace.v1.TraceService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudtrace_v1_generated_TraceService_PatchTraces_sync",
+      "title": "cloudtrace PatchTraces Sample",
+      "description": "PatchTraces sends new traces to Stackdriver Trace or updates existing traces. If the ID\nof a trace that you send matches that of an existing trace, any fields\nin the existing trace and its spans are overwritten by the provided values,\nand any new fields provided are merged with the existing trace data. If the\nID does not match, a new trace is created.",
+      "file": "Client/PatchTraces/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchTraces",
+        "fullName": "google.devtools.cloudtrace.v1.Client.PatchTraces",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tracepb.PatchTracesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.cloudtrace.v1.Client"
+        },
+        "method": {
+          "shortName": "PatchTraces",
+          "fullName": "google.devtools.cloudtrace.v1.TraceService.PatchTraces",
+          "service": {
+            "shortName": "TraceService",
+            "fullName": "google.devtools.cloudtrace.v1.TraceService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

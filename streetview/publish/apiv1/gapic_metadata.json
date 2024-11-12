@@ -1,0 +1,163 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.streetview.publish.v1",
+  "libraryPackage": "cloud.google.com/go/streetview/publish/apiv1",
+  "services": {
+    "StreetViewPublishService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "StreetViewPublishClient",
+          "rpcs": {
+            "BatchDeletePhotos": {
+              "methods": [
+                "BatchDeletePhotos"
+              ]
+            },
+            "BatchGetPhotos": {
+              "methods": [
+                "BatchGetPhotos"
+              ]
+            },
+            "BatchUpdatePhotos": {
+              "methods": [
+                "BatchUpdatePhotos"
+              ]
+            },
+            "CreatePhoto": {
+              "methods": [
+                "CreatePhoto"
+              ]
+            },
+            "CreatePhotoSequence": {
+              "methods": [
+                "CreatePhotoSequence"
+              ]
+            },
+            "DeletePhoto": {
+              "methods": [
+                "DeletePhoto"
+              ]
+            },
+            "DeletePhotoSequence": {
+              "methods": [
+                "DeletePhotoSequence"
+              ]
+            },
+            "GetPhoto": {
+              "methods": [
+                "GetPhoto"
+              ]
+            },
+            "GetPhotoSequence": {
+              "methods": [
+                "GetPhotoSequence"
+              ]
+            },
+            "ListPhotoSequences": {
+              "methods": [
+                "ListPhotoSequences"
+              ]
+            },
+            "ListPhotos": {
+              "methods": [
+                "ListPhotos"
+              ]
+            },
+            "StartPhotoSequenceUpload": {
+              "methods": [
+                "StartPhotoSequenceUpload"
+              ]
+            },
+            "StartUpload": {
+              "methods": [
+                "StartUpload"
+              ]
+            },
+            "UpdatePhoto": {
+              "methods": [
+                "UpdatePhoto"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "StreetViewPublishClient",
+          "rpcs": {
+            "BatchDeletePhotos": {
+              "methods": [
+                "BatchDeletePhotos"
+              ]
+            },
+            "BatchGetPhotos": {
+              "methods": [
+                "BatchGetPhotos"
+              ]
+            },
+            "BatchUpdatePhotos": {
+              "methods": [
+                "BatchUpdatePhotos"
+              ]
+            },
+            "CreatePhoto": {
+              "methods": [
+                "CreatePhoto"
+              ]
+            },
+            "CreatePhotoSequence": {
+              "methods": [
+                "CreatePhotoSequence"
+              ]
+            },
+            "DeletePhoto": {
+              "methods": [
+                "DeletePhoto"
+              ]
+            },
+            "DeletePhotoSequence": {
+              "methods": [
+                "DeletePhotoSequence"
+              ]
+            },
+            "GetPhoto": {
+              "methods": [
+                "GetPhoto"
+              ]
+            },
+            "GetPhotoSequence": {
+              "methods": [
+                "GetPhotoSequence"
+              ]
+            },
+            "ListPhotoSequences": {
+              "methods": [
+                "ListPhotoSequences"
+              ]
+            },
+            "ListPhotos": {
+              "methods": [
+                "ListPhotos"
+              ]
+            },
+            "StartPhotoSequenceUpload": {
+              "methods": [
+                "StartPhotoSequenceUpload"
+              ]
+            },
+            "StartUpload": {
+              "methods": [
+                "StartUpload"
+              ]
+            },
+            "UpdatePhoto": {
+              "methods": [
+                "UpdatePhoto"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

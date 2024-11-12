@@ -1,0 +1,233 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.api.serviceusage.v1beta1",
+  "libraryPackage": "cloud.google.com/go/api/serviceusage/apiv1beta1",
+  "services": {
+    "ServiceUsage": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchEnableServices": {
+              "methods": [
+                "BatchEnableServices"
+              ]
+            },
+            "CreateAdminOverride": {
+              "methods": [
+                "CreateAdminOverride"
+              ]
+            },
+            "CreateConsumerOverride": {
+              "methods": [
+                "CreateConsumerOverride"
+              ]
+            },
+            "DeleteAdminOverride": {
+              "methods": [
+                "DeleteAdminOverride"
+              ]
+            },
+            "DeleteConsumerOverride": {
+              "methods": [
+                "DeleteConsumerOverride"
+              ]
+            },
+            "DisableService": {
+              "methods": [
+                "DisableService"
+              ]
+            },
+            "EnableService": {
+              "methods": [
+                "EnableService"
+              ]
+            },
+            "GenerateServiceIdentity": {
+              "methods": [
+                "GenerateServiceIdentity"
+              ]
+            },
+            "GetConsumerQuotaLimit": {
+              "methods": [
+                "GetConsumerQuotaLimit"
+              ]
+            },
+            "GetConsumerQuotaMetric": {
+              "methods": [
+                "GetConsumerQuotaMetric"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "ImportAdminOverrides": {
+              "methods": [
+                "ImportAdminOverrides"
+              ]
+            },
+            "ImportConsumerOverrides": {
+              "methods": [
+                "ImportConsumerOverrides"
+              ]
+            },
+            "ListAdminOverrides": {
+              "methods": [
+                "ListAdminOverrides"
+              ]
+            },
+            "ListConsumerOverrides": {
+              "methods": [
+                "ListConsumerOverrides"
+              ]
+            },
+            "ListConsumerQuotaMetrics": {
+              "methods": [
+                "ListConsumerQuotaMetrics"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "UpdateAdminOverride": {
+              "methods": [
+                "UpdateAdminOverride"
+              ]
+            },
+            "UpdateConsumerOverride": {
+              "methods": [
+                "UpdateConsumerOverride"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchEnableServices": {
+              "methods": [
+                "BatchEnableServices"
+              ]
+            },
+            "CreateAdminOverride": {
+              "methods": [
+                "CreateAdminOverride"
+              ]
+            },
+            "CreateConsumerOverride": {
+              "methods": [
+                "CreateConsumerOverride"
+              ]
+            },
+            "DeleteAdminOverride": {
+              "methods": [
+                "DeleteAdminOverride"
+              ]
+            },
+            "DeleteConsumerOverride": {
+              "methods": [
+                "DeleteConsumerOverride"
+              ]
+            },
+            "DisableService": {
+              "methods": [
+                "DisableService"
+              ]
+            },
+            "EnableService": {
+              "methods": [
+                "EnableService"
+              ]
+            },
+            "GenerateServiceIdentity": {
+              "methods": [
+                "GenerateServiceIdentity"
+              ]
+            },
+            "GetConsumerQuotaLimit": {
+              "methods": [
+                "GetConsumerQuotaLimit"
+              ]
+            },
+            "GetConsumerQuotaMetric": {
+              "methods": [
+                "GetConsumerQuotaMetric"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "ImportAdminOverrides": {
+              "methods": [
+                "ImportAdminOverrides"
+              ]
+            },
+            "ImportConsumerOverrides": {
+              "methods": [
+                "ImportConsumerOverrides"
+              ]
+            },
+            "ListAdminOverrides": {
+              "methods": [
+                "ListAdminOverrides"
+              ]
+            },
+            "ListConsumerOverrides": {
+              "methods": [
+                "ListConsumerOverrides"
+              ]
+            },
+            "ListConsumerQuotaMetrics": {
+              "methods": [
+                "ListConsumerQuotaMetrics"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "UpdateAdminOverride": {
+              "methods": [
+                "UpdateAdminOverride"
+              ]
+            },
+            "UpdateConsumerOverride": {
+              "methods": [
+                "UpdateConsumerOverride"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

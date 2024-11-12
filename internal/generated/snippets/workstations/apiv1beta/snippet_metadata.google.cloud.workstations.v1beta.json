@@ -1,0 +1,1255 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/workstations/apiv1beta",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.workstations.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_CancelOperation_sync",
+      "title": "workstations CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.workstations.v1beta.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_CreateWorkstation_sync",
+      "title": "workstations CreateWorkstation Sample",
+      "description": "CreateWorkstation creates a new workstation.",
+      "file": "Client/CreateWorkstation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateWorkstation",
+        "fullName": "google.cloud.workstations.v1beta.Client.CreateWorkstation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.CreateWorkstationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateWorkstationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "CreateWorkstation",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.CreateWorkstation",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_CreateWorkstationCluster_sync",
+      "title": "workstations CreateWorkstationCluster Sample",
+      "description": "CreateWorkstationCluster creates a new workstation cluster.",
+      "file": "Client/CreateWorkstationCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateWorkstationCluster",
+        "fullName": "google.cloud.workstations.v1beta.Client.CreateWorkstationCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.CreateWorkstationClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateWorkstationClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "CreateWorkstationCluster",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.CreateWorkstationCluster",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_CreateWorkstationConfig_sync",
+      "title": "workstations CreateWorkstationConfig Sample",
+      "description": "CreateWorkstationConfig creates a new workstation configuration.",
+      "file": "Client/CreateWorkstationConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateWorkstationConfig",
+        "fullName": "google.cloud.workstations.v1beta.Client.CreateWorkstationConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.CreateWorkstationConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateWorkstationConfigOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "CreateWorkstationConfig",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.CreateWorkstationConfig",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_DeleteOperation_sync",
+      "title": "workstations DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.workstations.v1beta.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_DeleteWorkstation_sync",
+      "title": "workstations DeleteWorkstation Sample",
+      "description": "DeleteWorkstation deletes the specified workstation.",
+      "file": "Client/DeleteWorkstation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteWorkstation",
+        "fullName": "google.cloud.workstations.v1beta.Client.DeleteWorkstation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.DeleteWorkstationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteWorkstationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "DeleteWorkstation",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.DeleteWorkstation",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_DeleteWorkstationCluster_sync",
+      "title": "workstations DeleteWorkstationCluster Sample",
+      "description": "DeleteWorkstationCluster deletes the specified workstation cluster.",
+      "file": "Client/DeleteWorkstationCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteWorkstationCluster",
+        "fullName": "google.cloud.workstations.v1beta.Client.DeleteWorkstationCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.DeleteWorkstationClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteWorkstationClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "DeleteWorkstationCluster",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.DeleteWorkstationCluster",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_DeleteWorkstationConfig_sync",
+      "title": "workstations DeleteWorkstationConfig Sample",
+      "description": "DeleteWorkstationConfig deletes the specified workstation configuration.",
+      "file": "Client/DeleteWorkstationConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteWorkstationConfig",
+        "fullName": "google.cloud.workstations.v1beta.Client.DeleteWorkstationConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.DeleteWorkstationConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteWorkstationConfigOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "DeleteWorkstationConfig",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.DeleteWorkstationConfig",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_GenerateAccessToken_sync",
+      "title": "workstations GenerateAccessToken Sample",
+      "description": "GenerateAccessToken returns a short-lived credential that can be used to send authenticated and\nauthorized traffic to a workstation.",
+      "file": "Client/GenerateAccessToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateAccessToken",
+        "fullName": "google.cloud.workstations.v1beta.Client.GenerateAccessToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.GenerateAccessTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*workstationspb.GenerateAccessTokenResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "GenerateAccessToken",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.GenerateAccessToken",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_GetIamPolicy_sync",
+      "title": "workstations GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.workstations.v1beta.Client.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_GetOperation_sync",
+      "title": "workstations GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.workstations.v1beta.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_GetWorkstation_sync",
+      "title": "workstations GetWorkstation Sample",
+      "description": "GetWorkstation returns the requested workstation.",
+      "file": "Client/GetWorkstation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkstation",
+        "fullName": "google.cloud.workstations.v1beta.Client.GetWorkstation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.GetWorkstationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*workstationspb.Workstation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "GetWorkstation",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.GetWorkstation",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_GetWorkstationCluster_sync",
+      "title": "workstations GetWorkstationCluster Sample",
+      "description": "GetWorkstationCluster returns the requested workstation cluster.",
+      "file": "Client/GetWorkstationCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkstationCluster",
+        "fullName": "google.cloud.workstations.v1beta.Client.GetWorkstationCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.GetWorkstationClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*workstationspb.WorkstationCluster",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "GetWorkstationCluster",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.GetWorkstationCluster",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_GetWorkstationConfig_sync",
+      "title": "workstations GetWorkstationConfig Sample",
+      "description": "GetWorkstationConfig returns the requested workstation configuration.",
+      "file": "Client/GetWorkstationConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkstationConfig",
+        "fullName": "google.cloud.workstations.v1beta.Client.GetWorkstationConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.GetWorkstationConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*workstationspb.WorkstationConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "GetWorkstationConfig",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.GetWorkstationConfig",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_ListOperations_sync",
+      "title": "workstations ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.workstations.v1beta.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_ListUsableWorkstationConfigs_sync",
+      "title": "workstations ListUsableWorkstationConfigs Sample",
+      "description": "ListUsableWorkstationConfigs returns all workstation configurations in the specified cluster on which\nthe caller has the \"workstations.workstation.create\" permission.",
+      "file": "Client/ListUsableWorkstationConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUsableWorkstationConfigs",
+        "fullName": "google.cloud.workstations.v1beta.Client.ListUsableWorkstationConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.ListUsableWorkstationConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkstationConfigIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ListUsableWorkstationConfigs",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.ListUsableWorkstationConfigs",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_ListUsableWorkstations_sync",
+      "title": "workstations ListUsableWorkstations Sample",
+      "description": "ListUsableWorkstations returns all workstations using the specified workstation configuration\non which the caller has the \"workstations.workstations.use\" permission.",
+      "file": "Client/ListUsableWorkstations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUsableWorkstations",
+        "fullName": "google.cloud.workstations.v1beta.Client.ListUsableWorkstations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.ListUsableWorkstationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkstationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ListUsableWorkstations",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.ListUsableWorkstations",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_ListWorkstationClusters_sync",
+      "title": "workstations ListWorkstationClusters Sample",
+      "description": "ListWorkstationClusters returns all workstation clusters in the specified location.",
+      "file": "Client/ListWorkstationClusters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkstationClusters",
+        "fullName": "google.cloud.workstations.v1beta.Client.ListWorkstationClusters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.ListWorkstationClustersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkstationClusterIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ListWorkstationClusters",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.ListWorkstationClusters",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_ListWorkstationConfigs_sync",
+      "title": "workstations ListWorkstationConfigs Sample",
+      "description": "ListWorkstationConfigs returns all workstation configurations in the specified cluster.",
+      "file": "Client/ListWorkstationConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkstationConfigs",
+        "fullName": "google.cloud.workstations.v1beta.Client.ListWorkstationConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.ListWorkstationConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkstationConfigIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ListWorkstationConfigs",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.ListWorkstationConfigs",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_ListWorkstations_sync",
+      "title": "workstations ListWorkstations Sample",
+      "description": "ListWorkstations returns all Workstations using the specified workstation configuration.",
+      "file": "Client/ListWorkstations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkstations",
+        "fullName": "google.cloud.workstations.v1beta.Client.ListWorkstations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.ListWorkstationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkstationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ListWorkstations",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.ListWorkstations",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_SetIamPolicy_sync",
+      "title": "workstations SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.workstations.v1beta.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_StartWorkstation_sync",
+      "title": "workstations StartWorkstation Sample",
+      "description": "StartWorkstation starts running a workstation so that users can connect to it.",
+      "file": "Client/StartWorkstation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartWorkstation",
+        "fullName": "google.cloud.workstations.v1beta.Client.StartWorkstation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.StartWorkstationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StartWorkstationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "StartWorkstation",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.StartWorkstation",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_StopWorkstation_sync",
+      "title": "workstations StopWorkstation Sample",
+      "description": "StopWorkstation stops running a workstation, reducing costs.",
+      "file": "Client/StopWorkstation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopWorkstation",
+        "fullName": "google.cloud.workstations.v1beta.Client.StopWorkstation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.StopWorkstationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StopWorkstationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "StopWorkstation",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.StopWorkstation",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_TestIamPermissions_sync",
+      "title": "workstations TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.workstations.v1beta.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_UpdateWorkstation_sync",
+      "title": "workstations UpdateWorkstation Sample",
+      "description": "UpdateWorkstation updates an existing workstation.",
+      "file": "Client/UpdateWorkstation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateWorkstation",
+        "fullName": "google.cloud.workstations.v1beta.Client.UpdateWorkstation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.UpdateWorkstationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateWorkstationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "UpdateWorkstation",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.UpdateWorkstation",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_UpdateWorkstationCluster_sync",
+      "title": "workstations UpdateWorkstationCluster Sample",
+      "description": "UpdateWorkstationCluster updates an existing workstation cluster.",
+      "file": "Client/UpdateWorkstationCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateWorkstationCluster",
+        "fullName": "google.cloud.workstations.v1beta.Client.UpdateWorkstationCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.UpdateWorkstationClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateWorkstationClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "UpdateWorkstationCluster",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.UpdateWorkstationCluster",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workstations_v1beta_generated_Workstations_UpdateWorkstationConfig_sync",
+      "title": "workstations UpdateWorkstationConfig Sample",
+      "description": "UpdateWorkstationConfig updates an existing workstation configuration.",
+      "file": "Client/UpdateWorkstationConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateWorkstationConfig",
+        "fullName": "google.cloud.workstations.v1beta.Client.UpdateWorkstationConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "workstationspb.UpdateWorkstationConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateWorkstationConfigOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.workstations.v1beta.Client"
+        },
+        "method": {
+          "shortName": "UpdateWorkstationConfig",
+          "fullName": "google.cloud.workstations.v1beta.Workstations.UpdateWorkstationConfig",
+          "service": {
+            "shortName": "Workstations",
+            "fullName": "google.cloud.workstations.v1beta.Workstations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

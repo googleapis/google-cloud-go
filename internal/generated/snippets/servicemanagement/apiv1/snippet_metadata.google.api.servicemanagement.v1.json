@@ -1,0 +1,797 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/servicemanagement/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.api.servicemanagement.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_CreateService_sync",
+      "title": "servicemanagement CreateService Sample",
+      "description": "CreateService creates a new managed service.\n\nA managed service is immutable, and is subject to mandatory 30-day\ndata retention. You cannot move a service or recreate it within 30 days\nafter deletion.\n\nOne producer project can own no more than 500 services. For security and\nreliability purposes, a production service should be hosted in a\ndedicated producer project.\n\nOperation<response: ManagedService>",
+      "file": "ServiceManagerClient/CreateService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateService",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.CreateService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicemanagementpb.CreateServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateServiceOperation",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "CreateService",
+          "fullName": "google.api.servicemanagement.v1.ServiceManager.CreateService",
+          "service": {
+            "shortName": "ServiceManager",
+            "fullName": "google.api.servicemanagement.v1.ServiceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_CreateServiceConfig_sync",
+      "title": "servicemanagement CreateServiceConfig Sample",
+      "description": "CreateServiceConfig creates a new service configuration (version) for a managed service.\nThis method only stores the service configuration. To roll out the service\nconfiguration to backend systems please call\n[CreateServiceRollout][google.api.servicemanagement.v1.ServiceManager.CreateServiceRollout].\n\nOnly the 100 most recent service configurations and ones referenced by\nexisting rollouts are kept for each service. The rest will be deleted\neventually.",
+      "file": "ServiceManagerClient/CreateServiceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateServiceConfig",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.CreateServiceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicemanagementpb.CreateServiceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*serviceconfigpb.Service",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "CreateServiceConfig",
+          "fullName": "google.api.servicemanagement.v1.ServiceManager.CreateServiceConfig",
+          "service": {
+            "shortName": "ServiceManager",
+            "fullName": "google.api.servicemanagement.v1.ServiceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_CreateServiceRollout_sync",
+      "title": "servicemanagement CreateServiceRollout Sample",
+      "description": "CreateServiceRollout creates a new service configuration rollout. Based on rollout, the\nGoogle Service Management will roll out the service configurations to\ndifferent backend services. For example, the logging configuration will be\npushed to Google Cloud Logging.\n\nPlease note that any previous pending and running Rollouts and associated\nOperations will be automatically cancelled so that the latest Rollout will\nnot be blocked by previous Rollouts.\n\nOnly the 100 most recent (in any state) and the last 10 successful (if not\nalready part of the set of 100 most recent) rollouts are kept for each\nservice. The rest will be deleted eventually.\n\nOperation<response: Rollout>",
+      "file": "ServiceManagerClient/CreateServiceRollout/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateServiceRollout",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.CreateServiceRollout",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicemanagementpb.CreateServiceRolloutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateServiceRolloutOperation",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "CreateServiceRollout",
+          "fullName": "google.api.servicemanagement.v1.ServiceManager.CreateServiceRollout",
+          "service": {
+            "shortName": "ServiceManager",
+            "fullName": "google.api.servicemanagement.v1.ServiceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_DeleteService_sync",
+      "title": "servicemanagement DeleteService Sample",
+      "description": "DeleteService deletes a managed service. This method will change the service to the\n`Soft-Delete` state for 30 days. Within this period, service producers may\ncall\n[UndeleteService][google.api.servicemanagement.v1.ServiceManager.UndeleteService]\nto restore the service. After 30 days, the service will be permanently\ndeleted.\n\nOperation<response: google.protobuf.Empty>",
+      "file": "ServiceManagerClient/DeleteService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteService",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.DeleteService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicemanagementpb.DeleteServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteServiceOperation",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "DeleteService",
+          "fullName": "google.api.servicemanagement.v1.ServiceManager.DeleteService",
+          "service": {
+            "shortName": "ServiceManager",
+            "fullName": "google.api.servicemanagement.v1.ServiceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_GenerateConfigReport_sync",
+      "title": "servicemanagement GenerateConfigReport Sample",
+      "description": "GenerateConfigReport generates and returns a report (errors, warnings and changes from\nexisting configurations) associated with\nGenerateConfigReportRequest.new_value\n\nIf GenerateConfigReportRequest.old_value is specified,\nGenerateConfigReportRequest will contain a single ChangeReport based on the\ncomparison between GenerateConfigReportRequest.new_value and\nGenerateConfigReportRequest.old_value.\nIf GenerateConfigReportRequest.old_value is not specified, this method\nwill compare GenerateConfigReportRequest.new_value with the last pushed\nservice configuration.",
+      "file": "ServiceManagerClient/GenerateConfigReport/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateConfigReport",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.GenerateConfigReport",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicemanagementpb.GenerateConfigReportRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicemanagementpb.GenerateConfigReportResponse",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "GenerateConfigReport",
+          "fullName": "google.api.servicemanagement.v1.ServiceManager.GenerateConfigReport",
+          "service": {
+            "shortName": "ServiceManager",
+            "fullName": "google.api.servicemanagement.v1.ServiceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_GetIamPolicy_sync",
+      "title": "servicemanagement GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "ServiceManagerClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_GetService_sync",
+      "title": "servicemanagement GetService Sample",
+      "description": "GetService gets a managed service. Authentication is required unless the service is\npublic.",
+      "file": "ServiceManagerClient/GetService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetService",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.GetService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicemanagementpb.GetServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicemanagementpb.ManagedService",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "GetService",
+          "fullName": "google.api.servicemanagement.v1.ServiceManager.GetService",
+          "service": {
+            "shortName": "ServiceManager",
+            "fullName": "google.api.servicemanagement.v1.ServiceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_GetServiceConfig_sync",
+      "title": "servicemanagement GetServiceConfig Sample",
+      "description": "GetServiceConfig gets a service configuration (version) for a managed service.",
+      "file": "ServiceManagerClient/GetServiceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetServiceConfig",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.GetServiceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicemanagementpb.GetServiceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*serviceconfigpb.Service",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "GetServiceConfig",
+          "fullName": "google.api.servicemanagement.v1.ServiceManager.GetServiceConfig",
+          "service": {
+            "shortName": "ServiceManager",
+            "fullName": "google.api.servicemanagement.v1.ServiceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_GetServiceRollout_sync",
+      "title": "servicemanagement GetServiceRollout Sample",
+      "description": "GetServiceRollout gets a service configuration\n[rollout][google.api.servicemanagement.v1.Rollout].",
+      "file": "ServiceManagerClient/GetServiceRollout/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetServiceRollout",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.GetServiceRollout",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicemanagementpb.GetServiceRolloutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicemanagementpb.Rollout",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "GetServiceRollout",
+          "fullName": "google.api.servicemanagement.v1.ServiceManager.GetServiceRollout",
+          "service": {
+            "shortName": "ServiceManager",
+            "fullName": "google.api.servicemanagement.v1.ServiceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_ListOperations_sync",
+      "title": "servicemanagement ListOperations Sample",
+      "description": "ListOperations lists service operations that match the specified filter in the request.",
+      "file": "ServiceManagerClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_ListServiceConfigs_sync",
+      "title": "servicemanagement ListServiceConfigs Sample",
+      "description": "ListServiceConfigs lists the history of the service configuration for a managed service,\nfrom the newest to the oldest.",
+      "file": "ServiceManagerClient/ListServiceConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServiceConfigs",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.ListServiceConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicemanagementpb.ListServiceConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ServiceIterator",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "ListServiceConfigs",
+          "fullName": "google.api.servicemanagement.v1.ServiceManager.ListServiceConfigs",
+          "service": {
+            "shortName": "ServiceManager",
+            "fullName": "google.api.servicemanagement.v1.ServiceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_ListServiceRollouts_sync",
+      "title": "servicemanagement ListServiceRollouts Sample",
+      "description": "ListServiceRollouts lists the history of the service configuration rollouts for a managed\nservice, from the newest to the oldest.",
+      "file": "ServiceManagerClient/ListServiceRollouts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServiceRollouts",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.ListServiceRollouts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicemanagementpb.ListServiceRolloutsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RolloutIterator",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "ListServiceRollouts",
+          "fullName": "google.api.servicemanagement.v1.ServiceManager.ListServiceRollouts",
+          "service": {
+            "shortName": "ServiceManager",
+            "fullName": "google.api.servicemanagement.v1.ServiceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_ListServices_sync",
+      "title": "servicemanagement ListServices Sample",
+      "description": "ListServices lists managed services.\n\nReturns all public services. For authenticated users, also returns all\nservices the calling user has \"servicemanagement.services.get\" permission\nfor.",
+      "file": "ServiceManagerClient/ListServices/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServices",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.ListServices",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicemanagementpb.ListServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ManagedServiceIterator",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "ListServices",
+          "fullName": "google.api.servicemanagement.v1.ServiceManager.ListServices",
+          "service": {
+            "shortName": "ServiceManager",
+            "fullName": "google.api.servicemanagement.v1.ServiceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_SetIamPolicy_sync",
+      "title": "servicemanagement SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "ServiceManagerClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_SubmitConfigSource_sync",
+      "title": "servicemanagement SubmitConfigSource Sample",
+      "description": "SubmitConfigSource creates a new service configuration (version) for a managed service based\non\nuser-supplied configuration source files (for example: OpenAPI\nSpecification). This method stores the source configurations as well as the\ngenerated service configuration. To rollout the service configuration to\nother services,\nplease call\n[CreateServiceRollout][google.api.servicemanagement.v1.ServiceManager.CreateServiceRollout].\n\nOnly the 100 most recent configuration sources and ones referenced by\nexisting service configurtions are kept for each service. The rest will be\ndeleted eventually.\n\nOperation<response: SubmitConfigSourceResponse>",
+      "file": "ServiceManagerClient/SubmitConfigSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SubmitConfigSource",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.SubmitConfigSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicemanagementpb.SubmitConfigSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SubmitConfigSourceOperation",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "SubmitConfigSource",
+          "fullName": "google.api.servicemanagement.v1.ServiceManager.SubmitConfigSource",
+          "service": {
+            "shortName": "ServiceManager",
+            "fullName": "google.api.servicemanagement.v1.ServiceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_TestIamPermissions_sync",
+      "title": "servicemanagement TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "ServiceManagerClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicemanagement_v1_generated_ServiceManager_UndeleteService_sync",
+      "title": "servicemanagement UndeleteService Sample",
+      "description": "UndeleteService revives a previously deleted managed service. The method restores the\nservice using the configuration at the time the service was deleted.\nThe target service must exist and must have been deleted within the\nlast 30 days.\n\nOperation<response: UndeleteServiceResponse>",
+      "file": "ServiceManagerClient/UndeleteService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeleteService",
+        "fullName": "google.api.servicemanagement.v1.ServiceManagerClient.UndeleteService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicemanagementpb.UndeleteServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UndeleteServiceOperation",
+        "client": {
+          "shortName": "ServiceManagerClient",
+          "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
+        },
+        "method": {
+          "shortName": "UndeleteService",
+          "fullName": "google.api.servicemanagement.v1.ServiceManager.UndeleteService",
+          "service": {
+            "shortName": "ServiceManager",
+            "fullName": "google.api.servicemanagement.v1.ServiceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

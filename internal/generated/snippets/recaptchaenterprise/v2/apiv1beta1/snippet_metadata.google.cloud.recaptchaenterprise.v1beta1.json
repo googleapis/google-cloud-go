@@ -1,0 +1,107 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.recaptchaenterprise.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "recaptchaenterprise_v1beta1_generated_RecaptchaEnterpriseServiceV1Beta1_AnnotateAssessment_sync",
+      "title": "recaptchaenterprise AnnotateAssessment Sample",
+      "description": "AnnotateAssessment annotates a previously created Assessment to provide additional information\non whether the event turned out to be authentic or fradulent.",
+      "file": "RecaptchaEnterpriseServiceV1Beta1Client/AnnotateAssessment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnnotateAssessment",
+        "fullName": "google.cloud.recaptchaenterprise.v1beta1.RecaptchaEnterpriseServiceV1Beta1Client.AnnotateAssessment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.AnnotateAssessmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.AnnotateAssessmentResponse",
+        "client": {
+          "shortName": "RecaptchaEnterpriseServiceV1Beta1Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1beta1.RecaptchaEnterpriseServiceV1Beta1Client"
+        },
+        "method": {
+          "shortName": "AnnotateAssessment",
+          "fullName": "google.cloud.recaptchaenterprise.v1beta1.RecaptchaEnterpriseServiceV1Beta1.AnnotateAssessment",
+          "service": {
+            "shortName": "RecaptchaEnterpriseServiceV1Beta1",
+            "fullName": "google.cloud.recaptchaenterprise.v1beta1.RecaptchaEnterpriseServiceV1Beta1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1beta1_generated_RecaptchaEnterpriseServiceV1Beta1_CreateAssessment_sync",
+      "title": "recaptchaenterprise CreateAssessment Sample",
+      "description": "CreateAssessment creates an Assessment of the likelihood an event is legitimate.",
+      "file": "RecaptchaEnterpriseServiceV1Beta1Client/CreateAssessment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAssessment",
+        "fullName": "google.cloud.recaptchaenterprise.v1beta1.RecaptchaEnterpriseServiceV1Beta1Client.CreateAssessment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.CreateAssessmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.Assessment",
+        "client": {
+          "shortName": "RecaptchaEnterpriseServiceV1Beta1Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1beta1.RecaptchaEnterpriseServiceV1Beta1Client"
+        },
+        "method": {
+          "shortName": "CreateAssessment",
+          "fullName": "google.cloud.recaptchaenterprise.v1beta1.RecaptchaEnterpriseServiceV1Beta1.CreateAssessment",
+          "service": {
+            "shortName": "RecaptchaEnterpriseServiceV1Beta1",
+            "fullName": "google.cloud.recaptchaenterprise.v1beta1.RecaptchaEnterpriseServiceV1Beta1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

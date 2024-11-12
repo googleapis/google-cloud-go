@@ -1,0 +1,123 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "maps.fleetengine.delivery.v1",
+  "libraryPackage": "cloud.google.com/go/maps/fleetengine/delivery/apiv1",
+  "services": {
+    "DeliveryService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchCreateTasks": {
+              "methods": [
+                "BatchCreateTasks"
+              ]
+            },
+            "CreateDeliveryVehicle": {
+              "methods": [
+                "CreateDeliveryVehicle"
+              ]
+            },
+            "CreateTask": {
+              "methods": [
+                "CreateTask"
+              ]
+            },
+            "GetDeliveryVehicle": {
+              "methods": [
+                "GetDeliveryVehicle"
+              ]
+            },
+            "GetTask": {
+              "methods": [
+                "GetTask"
+              ]
+            },
+            "GetTaskTrackingInfo": {
+              "methods": [
+                "GetTaskTrackingInfo"
+              ]
+            },
+            "ListDeliveryVehicles": {
+              "methods": [
+                "ListDeliveryVehicles"
+              ]
+            },
+            "ListTasks": {
+              "methods": [
+                "ListTasks"
+              ]
+            },
+            "UpdateDeliveryVehicle": {
+              "methods": [
+                "UpdateDeliveryVehicle"
+              ]
+            },
+            "UpdateTask": {
+              "methods": [
+                "UpdateTask"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchCreateTasks": {
+              "methods": [
+                "BatchCreateTasks"
+              ]
+            },
+            "CreateDeliveryVehicle": {
+              "methods": [
+                "CreateDeliveryVehicle"
+              ]
+            },
+            "CreateTask": {
+              "methods": [
+                "CreateTask"
+              ]
+            },
+            "GetDeliveryVehicle": {
+              "methods": [
+                "GetDeliveryVehicle"
+              ]
+            },
+            "GetTask": {
+              "methods": [
+                "GetTask"
+              ]
+            },
+            "GetTaskTrackingInfo": {
+              "methods": [
+                "GetTaskTrackingInfo"
+              ]
+            },
+            "ListDeliveryVehicles": {
+              "methods": [
+                "ListDeliveryVehicles"
+              ]
+            },
+            "ListTasks": {
+              "methods": [
+                "ListTasks"
+              ]
+            },
+            "UpdateDeliveryVehicle": {
+              "methods": [
+                "UpdateDeliveryVehicle"
+              ]
+            },
+            "UpdateTask": {
+              "methods": [
+                "UpdateTask"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,978 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/spanner/admin/instance/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.spanner.admin.instance.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_CreateInstance_sync",
+      "title": "spanner CreateInstance Sample",
+      "description": "CreateInstance creates an instance and begins preparing it to begin serving. The\nreturned [long-running operation][google.longrunning.Operation]\ncan be used to track the progress of preparing the new\ninstance. The instance name is assigned by the caller. If the\nnamed instance already exists, `CreateInstance` returns\n`ALREADY_EXISTS`.\n\nImmediately upon completion of this request: \n\n* The instance is readable via the API, with all requested attributes\nbut no allocated resources. Its state is `CREATING`.\n\nUntil completion of the returned operation: \n\n* Cancelling the operation renders the instance immediately unreadable\nvia the API.\n* The instance can be deleted.\n* All other attempts to modify the instance are rejected.\n\nUpon completion of the returned operation: \n\n* Billing for all successfully-allocated resources begins (some types\nmay have lower than the requested levels).\n* Databases can be created in the instance.\n* The instance's allocated resource levels are readable via the API.\n* The instance's state becomes `READY`.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format `<instance_name>/operations/<operation_id>` and\ncan be used to track creation of the instance.  The\n[metadata][google.longrunning.Operation.metadata] field type is\n[CreateInstanceMetadata][google.spanner.admin.instance.v1.CreateInstanceMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[Instance][google.spanner.admin.instance.v1.Instance], if successful.",
+      "file": "InstanceAdminClient/CreateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateInstance",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.CreateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.CreateInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateInstanceOperation",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "CreateInstance",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.CreateInstance",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_CreateInstanceConfig_sync",
+      "title": "spanner CreateInstanceConfig Sample",
+      "description": "CreateInstanceConfig creates an instance configuration and begins preparing it to be used. The\nreturned [long-running operation][google.longrunning.Operation]\ncan be used to track the progress of preparing the new\ninstance configuration. The instance configuration name is assigned by the\ncaller. If the named instance configuration already exists,\n`CreateInstanceConfig` returns `ALREADY_EXISTS`.\n\nImmediately after the request returns: \n\n* The instance configuration is readable via the API, with all requested\nattributes. The instance configuration's\n[reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]\nfield is set to true. Its state is `CREATING`.\n\nWhile the operation is pending: \n\n* Cancelling the operation renders the instance configuration immediately\nunreadable via the API.\n* Except for deleting the creating resource, all other attempts to modify\nthe instance configuration are rejected.\n\nUpon completion of the returned operation: \n\n* Instances can be created using the instance configuration.\n* The instance configuration's\n[reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]\nfield becomes false. Its state becomes `READY`.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format\n`<instance_config_name>/operations/<operation_id>` and can be used to track\ncreation of the instance configuration. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[CreateInstanceConfigMetadata][google.spanner.admin.instance.v1.CreateInstanceConfigMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[InstanceConfig][google.spanner.admin.instance.v1.InstanceConfig], if\nsuccessful.\n\nAuthorization requires `spanner.instanceConfigs.create` permission on\nthe resource\n[parent][google.spanner.admin.instance.v1.CreateInstanceConfigRequest.parent].",
+      "file": "InstanceAdminClient/CreateInstanceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateInstanceConfig",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.CreateInstanceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.CreateInstanceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateInstanceConfigOperation",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "CreateInstanceConfig",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.CreateInstanceConfig",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_CreateInstancePartition_sync",
+      "title": "spanner CreateInstancePartition Sample",
+      "description": "CreateInstancePartition creates an instance partition and begins preparing it to be used. The\nreturned [long-running operation][google.longrunning.Operation]\ncan be used to track the progress of preparing the new instance partition.\nThe instance partition name is assigned by the caller. If the named\ninstance partition already exists, `CreateInstancePartition` returns\n`ALREADY_EXISTS`.\n\nImmediately upon completion of this request: \n\n* The instance partition is readable via the API, with all requested\nattributes but no allocated resources. Its state is `CREATING`.\n\nUntil completion of the returned operation: \n\n* Cancelling the operation renders the instance partition immediately\nunreadable via the API.\n* The instance partition can be deleted.\n* All other attempts to modify the instance partition are rejected.\n\nUpon completion of the returned operation: \n\n* Billing for all successfully-allocated resources begins (some types\nmay have lower than the requested levels).\n* Databases can start using this instance partition.\n* The instance partition's allocated resource levels are readable via the\nAPI.\n* The instance partition's state becomes `READY`.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format\n`<instance_partition_name>/operations/<operation_id>` and can be used to\ntrack creation of the instance partition.  The\n[metadata][google.longrunning.Operation.metadata] field type is\n[CreateInstancePartitionMetadata][google.spanner.admin.instance.v1.CreateInstancePartitionMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[InstancePartition][google.spanner.admin.instance.v1.InstancePartition], if\nsuccessful.",
+      "file": "InstanceAdminClient/CreateInstancePartition/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateInstancePartition",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.CreateInstancePartition",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.CreateInstancePartitionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateInstancePartitionOperation",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "CreateInstancePartition",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.CreateInstancePartition",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_DeleteInstance_sync",
+      "title": "spanner DeleteInstance Sample",
+      "description": "DeleteInstance deletes an instance.\n\nImmediately upon completion of the request: \n\n* Billing ceases for all of the instance's reserved resources.\n\nSoon afterward: \n\n* The instance and *all of its databases* immediately and\nirrevocably disappear from the API. All data in the databases\nis permanently deleted.",
+      "file": "InstanceAdminClient/DeleteInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteInstance",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.DeleteInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.DeleteInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteInstance",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstance",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_DeleteInstanceConfig_sync",
+      "title": "spanner DeleteInstanceConfig Sample",
+      "description": "DeleteInstanceConfig deletes the instance configuration. Deletion is only allowed when no\ninstances are using the configuration. If any instances are using\nthe configuration, returns `FAILED_PRECONDITION`.\n\nOnly user-managed configurations can be deleted.\n\nAuthorization requires `spanner.instanceConfigs.delete` permission on\nthe resource [name][google.spanner.admin.instance.v1.InstanceConfig.name].",
+      "file": "InstanceAdminClient/DeleteInstanceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteInstanceConfig",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.DeleteInstanceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.DeleteInstanceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteInstanceConfig",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstanceConfig",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_DeleteInstancePartition_sync",
+      "title": "spanner DeleteInstancePartition Sample",
+      "description": "DeleteInstancePartition deletes an existing instance partition. Requires that the\ninstance partition is not used by any database or backup and is not the\ndefault instance partition of an instance.\n\nAuthorization requires `spanner.instancePartitions.delete` permission on\nthe resource\n[name][google.spanner.admin.instance.v1.InstancePartition.name].",
+      "file": "InstanceAdminClient/DeleteInstancePartition/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteInstancePartition",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.DeleteInstancePartition",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.DeleteInstancePartitionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteInstancePartition",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.DeleteInstancePartition",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_GetIamPolicy_sync",
+      "title": "spanner GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for an instance resource. Returns an empty\npolicy if an instance exists but does not have a policy set.\n\nAuthorization requires `spanner.instances.getIamPolicy` on\n[resource][google.iam.v1.GetIamPolicyRequest.resource].",
+      "file": "InstanceAdminClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.GetIamPolicy",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_GetInstance_sync",
+      "title": "spanner GetInstance Sample",
+      "description": "GetInstance gets information about a particular instance.",
+      "file": "InstanceAdminClient/GetInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInstance",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.GetInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.GetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*instancepb.Instance",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "GetInstance",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.GetInstance",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_GetInstanceConfig_sync",
+      "title": "spanner GetInstanceConfig Sample",
+      "description": "GetInstanceConfig gets information about a particular instance configuration.",
+      "file": "InstanceAdminClient/GetInstanceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInstanceConfig",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.GetInstanceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.GetInstanceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*instancepb.InstanceConfig",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "GetInstanceConfig",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.GetInstanceConfig",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_GetInstancePartition_sync",
+      "title": "spanner GetInstancePartition Sample",
+      "description": "GetInstancePartition gets information about a particular instance partition.",
+      "file": "InstanceAdminClient/GetInstancePartition/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInstancePartition",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.GetInstancePartition",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.GetInstancePartitionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*instancepb.InstancePartition",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "GetInstancePartition",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.GetInstancePartition",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_ListInstanceConfigOperations_sync",
+      "title": "spanner ListInstanceConfigOperations Sample",
+      "description": "ListInstanceConfigOperations lists the user-managed instance configuration [long-running\noperations][google.longrunning.Operation] in the given project. An instance\nconfiguration operation has a name of the form\n`projects/<project>/instanceConfigs/<instance_config>/operations/<operation>`.\nThe long-running operation\n[metadata][google.longrunning.Operation.metadata] field type\n`metadata.type_url` describes the type of the metadata. Operations returned\ninclude those that have completed/failed/canceled within the last 7 days,\nand pending operations. Operations returned are ordered by\n`operation.metadata.value.start_time` in descending order starting\nfrom the most recently started operation.",
+      "file": "InstanceAdminClient/ListInstanceConfigOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInstanceConfigOperations",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.ListInstanceConfigOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.ListInstanceConfigOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "ListInstanceConfigOperations",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.ListInstanceConfigOperations",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_ListInstanceConfigs_sync",
+      "title": "spanner ListInstanceConfigs Sample",
+      "description": "ListInstanceConfigs lists the supported instance configurations for a given project.",
+      "file": "InstanceAdminClient/ListInstanceConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInstanceConfigs",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.ListInstanceConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.ListInstanceConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstanceConfigIterator",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "ListInstanceConfigs",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.ListInstanceConfigs",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_ListInstancePartitionOperations_sync",
+      "title": "spanner ListInstancePartitionOperations Sample",
+      "description": "ListInstancePartitionOperations lists instance partition [long-running\noperations][google.longrunning.Operation] in the given instance.\nAn instance partition operation has a name of the form\n`projects/<project>/instances/<instance>/instancePartitions/<instance_partition>/operations/<operation>`.\nThe long-running operation\n[metadata][google.longrunning.Operation.metadata] field type\n`metadata.type_url` describes the type of the metadata. Operations returned\ninclude those that have completed/failed/canceled within the last 7 days,\nand pending operations. Operations returned are ordered by\n`operation.metadata.value.start_time` in descending order starting from the\nmost recently started operation.\n\nAuthorization requires `spanner.instancePartitionOperations.list`\npermission on the resource\n[parent][google.spanner.admin.instance.v1.ListInstancePartitionOperationsRequest.parent].",
+      "file": "InstanceAdminClient/ListInstancePartitionOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInstancePartitionOperations",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.ListInstancePartitionOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.ListInstancePartitionOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "ListInstancePartitionOperations",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.ListInstancePartitionOperations",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_ListInstancePartitions_sync",
+      "title": "spanner ListInstancePartitions Sample",
+      "description": "ListInstancePartitions lists all instance partitions for the given instance.",
+      "file": "InstanceAdminClient/ListInstancePartitions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInstancePartitions",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.ListInstancePartitions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.ListInstancePartitionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstancePartitionIterator",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "ListInstancePartitions",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.ListInstancePartitions",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_ListInstances_sync",
+      "title": "spanner ListInstances Sample",
+      "description": "ListInstances lists all instances in the given project.",
+      "file": "InstanceAdminClient/ListInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInstances",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.ListInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.ListInstancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstanceIterator",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "ListInstances",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.ListInstances",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_MoveInstance_sync",
+      "title": "spanner MoveInstance Sample",
+      "description": "MoveInstance moves an instance to the target instance configuration. You can use the\nreturned [long-running operation][google.longrunning.Operation] to track\nthe progress of moving the instance.\n\n`MoveInstance` returns `FAILED_PRECONDITION` if the instance meets any of\nthe following criteria: \n\n* Is undergoing a move to a different instance configuration\n* Has backups\n* Has an ongoing update\n* Contains any CMEK-enabled databases\n* Is a free trial instance\n\nWhile the operation is pending: \n\n* All other attempts to modify the instance, including changes to its\ncompute capacity, are rejected.\n* The following database and backup admin operations are rejected: \n\n* `DatabaseAdmin.CreateDatabase`\n* `DatabaseAdmin.UpdateDatabaseDdl` (disabled if default_leader is\nspecified in the request.)\n* `DatabaseAdmin.RestoreDatabase`\n* `DatabaseAdmin.CreateBackup`\n* `DatabaseAdmin.CopyBackup`\n\n* Both the source and target instance configurations are subject to\nhourly compute and storage charges.\n* The instance might experience higher read-write latencies and a higher\ntransaction abort rate. However, moving an instance doesn't cause any\ndowntime.\n\nThe returned [long-running operation][google.longrunning.Operation] has\na name of the format\n`<instance_name>/operations/<operation_id>` and can be used to track\nthe move instance operation. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[MoveInstanceMetadata][google.spanner.admin.instance.v1.MoveInstanceMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[Instance][google.spanner.admin.instance.v1.Instance],\nif successful.\nCancelling the operation sets its metadata's\n[cancel_time][google.spanner.admin.instance.v1.MoveInstanceMetadata.cancel_time].\nCancellation is not immediate because it involves moving any data\npreviously moved to the target instance configuration back to the original\ninstance configuration. You can use this operation to track the progress of\nthe cancellation. Upon successful completion of the cancellation, the\noperation terminates with `CANCELLED` status.\n\nIf not cancelled, upon completion of the returned operation: \n\n* The instance successfully moves to the target instance\nconfiguration.\n* You are billed for compute and storage in target instance\nconfiguration.\n\nAuthorization requires the `spanner.instances.update` permission on\nthe resource [instance][google.spanner.admin.instance.v1.Instance].\n\nFor more details, see\n[Move an instance](https: //cloud.google.com/spanner/docs/move-instance).",
+      "file": "InstanceAdminClient/MoveInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "MoveInstance",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.MoveInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.MoveInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MoveInstanceOperation",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "MoveInstance",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.MoveInstance",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_SetIamPolicy_sync",
+      "title": "spanner SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on an instance resource. Replaces any\nexisting policy.\n\nAuthorization requires `spanner.instances.setIamPolicy` on\n[resource][google.iam.v1.SetIamPolicyRequest.resource].",
+      "file": "InstanceAdminClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.SetIamPolicy",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_TestIamPermissions_sync",
+      "title": "spanner TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that the caller has on the specified instance resource.\n\nAttempting this RPC on a non-existent Cloud Spanner instance resource will\nresult in a NOT_FOUND error if the user has `spanner.instances.list`\npermission on the containing Google Cloud Project. Otherwise returns an\nempty set of permissions.",
+      "file": "InstanceAdminClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.TestIamPermissions",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_UpdateInstance_sync",
+      "title": "spanner UpdateInstance Sample",
+      "description": "UpdateInstance updates an instance, and begins allocating or releasing resources\nas requested. The returned [long-running\noperation][google.longrunning.Operation] can be used to track the\nprogress of updating the instance. If the named instance does not\nexist, returns `NOT_FOUND`.\n\nImmediately upon completion of this request: \n\n* For resource types for which a decrease in the instance's allocation\nhas been requested, billing is based on the newly-requested level.\n\nUntil completion of the returned operation: \n\n* Cancelling the operation sets its metadata's\n[cancel_time][google.spanner.admin.instance.v1.UpdateInstanceMetadata.cancel_time],\nand begins restoring resources to their pre-request values. The\noperation is guaranteed to succeed at undoing all resource changes,\nafter which point it terminates with a `CANCELLED` status.\n* All other attempts to modify the instance are rejected.\n* Reading the instance via the API continues to give the pre-request\nresource levels.\n\nUpon completion of the returned operation: \n\n* Billing begins for all successfully-allocated resources (some types\nmay have lower than the requested levels).\n* All newly-reserved resources are available for serving the instance's\ntables.\n* The instance's new resource levels are readable via the API.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format `<instance_name>/operations/<operation_id>` and\ncan be used to track the instance modification.  The\n[metadata][google.longrunning.Operation.metadata] field type is\n[UpdateInstanceMetadata][google.spanner.admin.instance.v1.UpdateInstanceMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[Instance][google.spanner.admin.instance.v1.Instance], if successful.\n\nAuthorization requires `spanner.instances.update` permission on\nthe resource [name][google.spanner.admin.instance.v1.Instance.name].",
+      "file": "InstanceAdminClient/UpdateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateInstance",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.UpdateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.UpdateInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateInstanceOperation",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateInstance",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstance",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_UpdateInstanceConfig_sync",
+      "title": "spanner UpdateInstanceConfig Sample",
+      "description": "UpdateInstanceConfig updates an instance configuration. The returned\n[long-running operation][google.longrunning.Operation] can be used to track\nthe progress of updating the instance. If the named instance configuration\ndoes not exist, returns `NOT_FOUND`.\n\nOnly user-managed configurations can be updated.\n\nImmediately after the request returns: \n\n* The instance configuration's\n[reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]\nfield is set to true.\n\nWhile the operation is pending: \n\n* Cancelling the operation sets its metadata's\n[cancel_time][google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata.cancel_time].\nThe operation is guaranteed to succeed at undoing all changes, after\nwhich point it terminates with a `CANCELLED` status.\n* All other attempts to modify the instance configuration are rejected.\n* Reading the instance configuration via the API continues to give the\npre-request values.\n\nUpon completion of the returned operation: \n\n* Creating instances using the instance configuration uses the new\nvalues.\n* The new values of the instance configuration are readable via the API.\n* The instance configuration's\n[reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]\nfield becomes false.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format\n`<instance_config_name>/operations/<operation_id>` and can be used to track\nthe instance configuration modification.  The\n[metadata][google.longrunning.Operation.metadata] field type is\n[UpdateInstanceConfigMetadata][google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[InstanceConfig][google.spanner.admin.instance.v1.InstanceConfig], if\nsuccessful.\n\nAuthorization requires `spanner.instanceConfigs.update` permission on\nthe resource [name][google.spanner.admin.instance.v1.InstanceConfig.name].",
+      "file": "InstanceAdminClient/UpdateInstanceConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateInstanceConfig",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.UpdateInstanceConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.UpdateInstanceConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateInstanceConfigOperation",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateInstanceConfig",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstanceConfig",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_InstanceAdmin_UpdateInstancePartition_sync",
+      "title": "spanner UpdateInstancePartition Sample",
+      "description": "UpdateInstancePartition updates an instance partition, and begins allocating or releasing resources\nas requested. The returned [long-running\noperation][google.longrunning.Operation] can be used to track the\nprogress of updating the instance partition. If the named instance\npartition does not exist, returns `NOT_FOUND`.\n\nImmediately upon completion of this request: \n\n* For resource types for which a decrease in the instance partition's\nallocation has been requested, billing is based on the newly-requested\nlevel.\n\nUntil completion of the returned operation: \n\n* Cancelling the operation sets its metadata's\n[cancel_time][google.spanner.admin.instance.v1.UpdateInstancePartitionMetadata.cancel_time],\nand begins restoring resources to their pre-request values. The\noperation is guaranteed to succeed at undoing all resource changes,\nafter which point it terminates with a `CANCELLED` status.\n* All other attempts to modify the instance partition are rejected.\n* Reading the instance partition via the API continues to give the\npre-request resource levels.\n\nUpon completion of the returned operation: \n\n* Billing begins for all successfully-allocated resources (some types\nmay have lower than the requested levels).\n* All newly-reserved resources are available for serving the instance\npartition's tables.\n* The instance partition's new resource levels are readable via the API.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format\n`<instance_partition_name>/operations/<operation_id>` and can be used to\ntrack the instance partition modification. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[UpdateInstancePartitionMetadata][google.spanner.admin.instance.v1.UpdateInstancePartitionMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[InstancePartition][google.spanner.admin.instance.v1.InstancePartition], if\nsuccessful.\n\nAuthorization requires `spanner.instancePartitions.update` permission on\nthe resource\n[name][google.spanner.admin.instance.v1.InstancePartition.name].",
+      "file": "InstanceAdminClient/UpdateInstancePartition/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateInstancePartition",
+        "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient.UpdateInstancePartition",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "instancepb.UpdateInstancePartitionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateInstancePartitionOperation",
+        "client": {
+          "shortName": "InstanceAdminClient",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateInstancePartition",
+          "fullName": "google.spanner.admin.instance.v1.InstanceAdmin.UpdateInstancePartition",
+          "service": {
+            "shortName": "InstanceAdmin",
+            "fullName": "google.spanner.admin.instance.v1.InstanceAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

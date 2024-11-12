@@ -1,0 +1,1574 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/contentwarehouse/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.contentwarehouse.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentLinkService_CreateDocumentLink_sync",
+      "title": "contentwarehouse CreateDocumentLink Sample",
+      "description": "CreateDocumentLink create a link between a source document and a target document.",
+      "file": "DocumentLinkClient/CreateDocumentLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDocumentLink",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkClient.CreateDocumentLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.CreateDocumentLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.DocumentLink",
+        "client": {
+          "shortName": "DocumentLinkClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkClient"
+        },
+        "method": {
+          "shortName": "CreateDocumentLink",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkService.CreateDocumentLink",
+          "service": {
+            "shortName": "DocumentLinkService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentLinkService_DeleteDocumentLink_sync",
+      "title": "contentwarehouse DeleteDocumentLink Sample",
+      "description": "DeleteDocumentLink remove the link between the source and target documents.",
+      "file": "DocumentLinkClient/DeleteDocumentLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDocumentLink",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkClient.DeleteDocumentLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.DeleteDocumentLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DocumentLinkClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkClient"
+        },
+        "method": {
+          "shortName": "DeleteDocumentLink",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkService.DeleteDocumentLink",
+          "service": {
+            "shortName": "DocumentLinkService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentLinkService_GetOperation_sync",
+      "title": "contentwarehouse GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DocumentLinkClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DocumentLinkClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentLinkService_ListLinkedSources_sync",
+      "title": "contentwarehouse ListLinkedSources Sample",
+      "description": "ListLinkedSources return all source document-links from the document.",
+      "file": "DocumentLinkClient/ListLinkedSources/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLinkedSources",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkClient.ListLinkedSources",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.ListLinkedSourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DocumentLinkIterator",
+        "client": {
+          "shortName": "DocumentLinkClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkClient"
+        },
+        "method": {
+          "shortName": "ListLinkedSources",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkService.ListLinkedSources",
+          "service": {
+            "shortName": "DocumentLinkService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentLinkService_ListLinkedTargets_sync",
+      "title": "contentwarehouse ListLinkedTargets Sample",
+      "description": "ListLinkedTargets return all target document-links from the document.",
+      "file": "DocumentLinkClient/ListLinkedTargets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLinkedTargets",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkClient.ListLinkedTargets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.ListLinkedTargetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.ListLinkedTargetsResponse",
+        "client": {
+          "shortName": "DocumentLinkClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkClient"
+        },
+        "method": {
+          "shortName": "ListLinkedTargets",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkService.ListLinkedTargets",
+          "service": {
+            "shortName": "DocumentLinkService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentLinkService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentSchemaService_CreateDocumentSchema_sync",
+      "title": "contentwarehouse CreateDocumentSchema Sample",
+      "description": "CreateDocumentSchema creates a document schema.",
+      "file": "DocumentSchemaClient/CreateDocumentSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDocumentSchema",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaClient.CreateDocumentSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.CreateDocumentSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.DocumentSchema",
+        "client": {
+          "shortName": "DocumentSchemaClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaClient"
+        },
+        "method": {
+          "shortName": "CreateDocumentSchema",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaService.CreateDocumentSchema",
+          "service": {
+            "shortName": "DocumentSchemaService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentSchemaService_DeleteDocumentSchema_sync",
+      "title": "contentwarehouse DeleteDocumentSchema Sample",
+      "description": "DeleteDocumentSchema deletes a document schema. Returns NOT_FOUND if the document schema does\nnot exist. Returns BAD_REQUEST if the document schema has documents\ndepending on it.",
+      "file": "DocumentSchemaClient/DeleteDocumentSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDocumentSchema",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaClient.DeleteDocumentSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.DeleteDocumentSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DocumentSchemaClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaClient"
+        },
+        "method": {
+          "shortName": "DeleteDocumentSchema",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaService.DeleteDocumentSchema",
+          "service": {
+            "shortName": "DocumentSchemaService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentSchemaService_GetDocumentSchema_sync",
+      "title": "contentwarehouse GetDocumentSchema Sample",
+      "description": "GetDocumentSchema gets a document schema. Returns NOT_FOUND if the document schema does not\nexist.",
+      "file": "DocumentSchemaClient/GetDocumentSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDocumentSchema",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaClient.GetDocumentSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.GetDocumentSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.DocumentSchema",
+        "client": {
+          "shortName": "DocumentSchemaClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaClient"
+        },
+        "method": {
+          "shortName": "GetDocumentSchema",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaService.GetDocumentSchema",
+          "service": {
+            "shortName": "DocumentSchemaService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentSchemaService_GetOperation_sync",
+      "title": "contentwarehouse GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DocumentSchemaClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DocumentSchemaClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentSchemaService_ListDocumentSchemas_sync",
+      "title": "contentwarehouse ListDocumentSchemas Sample",
+      "description": "ListDocumentSchemas lists document schemas.",
+      "file": "DocumentSchemaClient/ListDocumentSchemas/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDocumentSchemas",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaClient.ListDocumentSchemas",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.ListDocumentSchemasRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DocumentSchemaIterator",
+        "client": {
+          "shortName": "DocumentSchemaClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaClient"
+        },
+        "method": {
+          "shortName": "ListDocumentSchemas",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaService.ListDocumentSchemas",
+          "service": {
+            "shortName": "DocumentSchemaService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentSchemaService_UpdateDocumentSchema_sync",
+      "title": "contentwarehouse UpdateDocumentSchema Sample",
+      "description": "UpdateDocumentSchema updates a Document Schema. Returns INVALID_ARGUMENT if the name of the\nDocument Schema is non-empty and does not equal the existing name.\nSupports only appending new properties, adding new ENUM possible values,\nand updating the\n[EnumTypeOptions.validation_check_disabled][google.cloud.contentwarehouse.v1.EnumTypeOptions.validation_check_disabled]\nflag for ENUM possible values. Updating existing properties will result\ninto INVALID_ARGUMENT.",
+      "file": "DocumentSchemaClient/UpdateDocumentSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDocumentSchema",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaClient.UpdateDocumentSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.UpdateDocumentSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.DocumentSchema",
+        "client": {
+          "shortName": "DocumentSchemaClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaClient"
+        },
+        "method": {
+          "shortName": "UpdateDocumentSchema",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaService.UpdateDocumentSchema",
+          "service": {
+            "shortName": "DocumentSchemaService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentSchemaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentService_CreateDocument_sync",
+      "title": "contentwarehouse CreateDocument Sample",
+      "description": "CreateDocument creates a document.",
+      "file": "DocumentClient/CreateDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDocument",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentClient.CreateDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.CreateDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.CreateDocumentResponse",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentClient"
+        },
+        "method": {
+          "shortName": "CreateDocument",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentService.CreateDocument",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentService_DeleteDocument_sync",
+      "title": "contentwarehouse DeleteDocument Sample",
+      "description": "DeleteDocument deletes a document. Returns NOT_FOUND if the document does not exist.",
+      "file": "DocumentClient/DeleteDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDocument",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentClient.DeleteDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.DeleteDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentClient"
+        },
+        "method": {
+          "shortName": "DeleteDocument",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentService.DeleteDocument",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentService_FetchAcl_sync",
+      "title": "contentwarehouse FetchAcl Sample",
+      "description": "FetchAcl gets the access control policy for a resource. Returns NOT_FOUND error if\nthe resource does not exist. Returns an empty policy if the resource exists\nbut does not have a policy set.",
+      "file": "DocumentClient/FetchAcl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchAcl",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentClient.FetchAcl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.FetchAclRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.FetchAclResponse",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentClient"
+        },
+        "method": {
+          "shortName": "FetchAcl",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentService.FetchAcl",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentService_GetDocument_sync",
+      "title": "contentwarehouse GetDocument Sample",
+      "description": "GetDocument gets a document. Returns NOT_FOUND if the document does not exist.",
+      "file": "DocumentClient/GetDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDocument",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentClient.GetDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.GetDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.Document",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentClient"
+        },
+        "method": {
+          "shortName": "GetDocument",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentService.GetDocument",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentService_GetOperation_sync",
+      "title": "contentwarehouse GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DocumentClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentService_LockDocument_sync",
+      "title": "contentwarehouse LockDocument Sample",
+      "description": "LockDocument lock the document so the document cannot be updated by other users.",
+      "file": "DocumentClient/LockDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LockDocument",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentClient.LockDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.LockDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.Document",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentClient"
+        },
+        "method": {
+          "shortName": "LockDocument",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentService.LockDocument",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentService_SearchDocuments_sync",
+      "title": "contentwarehouse SearchDocuments Sample",
+      "description": "SearchDocuments searches for documents using provided\n[SearchDocumentsRequest][google.cloud.contentwarehouse.v1.SearchDocumentsRequest].\nThis call only returns documents that the caller has permission to search\nagainst.",
+      "file": "DocumentClient/SearchDocuments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchDocuments",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentClient.SearchDocuments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.SearchDocumentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SearchDocumentsResponse_MatchingDocumentIterator",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentClient"
+        },
+        "method": {
+          "shortName": "SearchDocuments",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentService.SearchDocuments",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentService_SetAcl_sync",
+      "title": "contentwarehouse SetAcl Sample",
+      "description": "SetAcl sets the access control policy for a resource. Replaces any existing\npolicy.",
+      "file": "DocumentClient/SetAcl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetAcl",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentClient.SetAcl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.SetAclRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.SetAclResponse",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentClient"
+        },
+        "method": {
+          "shortName": "SetAcl",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentService.SetAcl",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_DocumentService_UpdateDocument_sync",
+      "title": "contentwarehouse UpdateDocument Sample",
+      "description": "UpdateDocument updates a document. Returns INVALID_ARGUMENT if the name of the document\nis non-empty and does not equal the existing name.",
+      "file": "DocumentClient/UpdateDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDocument",
+        "fullName": "google.cloud.contentwarehouse.v1.DocumentClient.UpdateDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.UpdateDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.UpdateDocumentResponse",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentClient"
+        },
+        "method": {
+          "shortName": "UpdateDocument",
+          "fullName": "google.cloud.contentwarehouse.v1.DocumentService.UpdateDocument",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.contentwarehouse.v1.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_PipelineService_GetOperation_sync",
+      "title": "contentwarehouse GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "PipelineClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.contentwarehouse.v1.PipelineClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "PipelineClient",
+          "fullName": "google.cloud.contentwarehouse.v1.PipelineClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_PipelineService_RunPipeline_sync",
+      "title": "contentwarehouse RunPipeline Sample",
+      "description": "RunPipeline run a predefined pipeline.",
+      "file": "PipelineClient/RunPipeline/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunPipeline",
+        "fullName": "google.cloud.contentwarehouse.v1.PipelineClient.RunPipeline",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.RunPipelineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RunPipelineOperation",
+        "client": {
+          "shortName": "PipelineClient",
+          "fullName": "google.cloud.contentwarehouse.v1.PipelineClient"
+        },
+        "method": {
+          "shortName": "RunPipeline",
+          "fullName": "google.cloud.contentwarehouse.v1.PipelineService.RunPipeline",
+          "service": {
+            "shortName": "PipelineService",
+            "fullName": "google.cloud.contentwarehouse.v1.PipelineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_RuleSetService_CreateRuleSet_sync",
+      "title": "contentwarehouse CreateRuleSet Sample",
+      "description": "CreateRuleSet creates a ruleset.",
+      "file": "RuleSetClient/CreateRuleSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRuleSet",
+        "fullName": "google.cloud.contentwarehouse.v1.RuleSetClient.CreateRuleSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.CreateRuleSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.RuleSet",
+        "client": {
+          "shortName": "RuleSetClient",
+          "fullName": "google.cloud.contentwarehouse.v1.RuleSetClient"
+        },
+        "method": {
+          "shortName": "CreateRuleSet",
+          "fullName": "google.cloud.contentwarehouse.v1.RuleSetService.CreateRuleSet",
+          "service": {
+            "shortName": "RuleSetService",
+            "fullName": "google.cloud.contentwarehouse.v1.RuleSetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_RuleSetService_DeleteRuleSet_sync",
+      "title": "contentwarehouse DeleteRuleSet Sample",
+      "description": "DeleteRuleSet deletes a ruleset. Returns NOT_FOUND if the document does not exist.",
+      "file": "RuleSetClient/DeleteRuleSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRuleSet",
+        "fullName": "google.cloud.contentwarehouse.v1.RuleSetClient.DeleteRuleSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.DeleteRuleSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RuleSetClient",
+          "fullName": "google.cloud.contentwarehouse.v1.RuleSetClient"
+        },
+        "method": {
+          "shortName": "DeleteRuleSet",
+          "fullName": "google.cloud.contentwarehouse.v1.RuleSetService.DeleteRuleSet",
+          "service": {
+            "shortName": "RuleSetService",
+            "fullName": "google.cloud.contentwarehouse.v1.RuleSetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_RuleSetService_GetOperation_sync",
+      "title": "contentwarehouse GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "RuleSetClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.contentwarehouse.v1.RuleSetClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "RuleSetClient",
+          "fullName": "google.cloud.contentwarehouse.v1.RuleSetClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_RuleSetService_GetRuleSet_sync",
+      "title": "contentwarehouse GetRuleSet Sample",
+      "description": "GetRuleSet gets a ruleset. Returns NOT_FOUND if the ruleset does not exist.",
+      "file": "RuleSetClient/GetRuleSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRuleSet",
+        "fullName": "google.cloud.contentwarehouse.v1.RuleSetClient.GetRuleSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.GetRuleSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.RuleSet",
+        "client": {
+          "shortName": "RuleSetClient",
+          "fullName": "google.cloud.contentwarehouse.v1.RuleSetClient"
+        },
+        "method": {
+          "shortName": "GetRuleSet",
+          "fullName": "google.cloud.contentwarehouse.v1.RuleSetService.GetRuleSet",
+          "service": {
+            "shortName": "RuleSetService",
+            "fullName": "google.cloud.contentwarehouse.v1.RuleSetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_RuleSetService_ListRuleSets_sync",
+      "title": "contentwarehouse ListRuleSets Sample",
+      "description": "ListRuleSets lists rulesets.",
+      "file": "RuleSetClient/ListRuleSets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRuleSets",
+        "fullName": "google.cloud.contentwarehouse.v1.RuleSetClient.ListRuleSets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.ListRuleSetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RuleSetIterator",
+        "client": {
+          "shortName": "RuleSetClient",
+          "fullName": "google.cloud.contentwarehouse.v1.RuleSetClient"
+        },
+        "method": {
+          "shortName": "ListRuleSets",
+          "fullName": "google.cloud.contentwarehouse.v1.RuleSetService.ListRuleSets",
+          "service": {
+            "shortName": "RuleSetService",
+            "fullName": "google.cloud.contentwarehouse.v1.RuleSetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_RuleSetService_UpdateRuleSet_sync",
+      "title": "contentwarehouse UpdateRuleSet Sample",
+      "description": "UpdateRuleSet updates a ruleset. Returns INVALID_ARGUMENT if the name of the ruleset\nis non-empty and does not equal the existing name.",
+      "file": "RuleSetClient/UpdateRuleSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRuleSet",
+        "fullName": "google.cloud.contentwarehouse.v1.RuleSetClient.UpdateRuleSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.UpdateRuleSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.RuleSet",
+        "client": {
+          "shortName": "RuleSetClient",
+          "fullName": "google.cloud.contentwarehouse.v1.RuleSetClient"
+        },
+        "method": {
+          "shortName": "UpdateRuleSet",
+          "fullName": "google.cloud.contentwarehouse.v1.RuleSetService.UpdateRuleSet",
+          "service": {
+            "shortName": "RuleSetService",
+            "fullName": "google.cloud.contentwarehouse.v1.RuleSetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_SynonymSetService_CreateSynonymSet_sync",
+      "title": "contentwarehouse CreateSynonymSet Sample",
+      "description": "CreateSynonymSet creates a SynonymSet for a single context.\nThrows an ALREADY_EXISTS exception if a synonymset already exists\nfor the context.",
+      "file": "SynonymSetClient/CreateSynonymSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSynonymSet",
+        "fullName": "google.cloud.contentwarehouse.v1.SynonymSetClient.CreateSynonymSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.CreateSynonymSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.SynonymSet",
+        "client": {
+          "shortName": "SynonymSetClient",
+          "fullName": "google.cloud.contentwarehouse.v1.SynonymSetClient"
+        },
+        "method": {
+          "shortName": "CreateSynonymSet",
+          "fullName": "google.cloud.contentwarehouse.v1.SynonymSetService.CreateSynonymSet",
+          "service": {
+            "shortName": "SynonymSetService",
+            "fullName": "google.cloud.contentwarehouse.v1.SynonymSetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_SynonymSetService_DeleteSynonymSet_sync",
+      "title": "contentwarehouse DeleteSynonymSet Sample",
+      "description": "DeleteSynonymSet deletes a SynonymSet for a given context.\nThrows a NOT_FOUND exception if the SynonymSet is not found.",
+      "file": "SynonymSetClient/DeleteSynonymSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSynonymSet",
+        "fullName": "google.cloud.contentwarehouse.v1.SynonymSetClient.DeleteSynonymSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.DeleteSynonymSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SynonymSetClient",
+          "fullName": "google.cloud.contentwarehouse.v1.SynonymSetClient"
+        },
+        "method": {
+          "shortName": "DeleteSynonymSet",
+          "fullName": "google.cloud.contentwarehouse.v1.SynonymSetService.DeleteSynonymSet",
+          "service": {
+            "shortName": "SynonymSetService",
+            "fullName": "google.cloud.contentwarehouse.v1.SynonymSetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_SynonymSetService_GetOperation_sync",
+      "title": "contentwarehouse GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SynonymSetClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.contentwarehouse.v1.SynonymSetClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "SynonymSetClient",
+          "fullName": "google.cloud.contentwarehouse.v1.SynonymSetClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_SynonymSetService_GetSynonymSet_sync",
+      "title": "contentwarehouse GetSynonymSet Sample",
+      "description": "GetSynonymSet gets a SynonymSet for a particular context.\nThrows a NOT_FOUND exception if the Synonymset\ndoes not exist",
+      "file": "SynonymSetClient/GetSynonymSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSynonymSet",
+        "fullName": "google.cloud.contentwarehouse.v1.SynonymSetClient.GetSynonymSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.GetSynonymSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.SynonymSet",
+        "client": {
+          "shortName": "SynonymSetClient",
+          "fullName": "google.cloud.contentwarehouse.v1.SynonymSetClient"
+        },
+        "method": {
+          "shortName": "GetSynonymSet",
+          "fullName": "google.cloud.contentwarehouse.v1.SynonymSetService.GetSynonymSet",
+          "service": {
+            "shortName": "SynonymSetService",
+            "fullName": "google.cloud.contentwarehouse.v1.SynonymSetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_SynonymSetService_ListSynonymSets_sync",
+      "title": "contentwarehouse ListSynonymSets Sample",
+      "description": "ListSynonymSets returns all SynonymSets (for all contexts) for the specified location.",
+      "file": "SynonymSetClient/ListSynonymSets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSynonymSets",
+        "fullName": "google.cloud.contentwarehouse.v1.SynonymSetClient.ListSynonymSets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.ListSynonymSetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SynonymSetIterator",
+        "client": {
+          "shortName": "SynonymSetClient",
+          "fullName": "google.cloud.contentwarehouse.v1.SynonymSetClient"
+        },
+        "method": {
+          "shortName": "ListSynonymSets",
+          "fullName": "google.cloud.contentwarehouse.v1.SynonymSetService.ListSynonymSets",
+          "service": {
+            "shortName": "SynonymSetService",
+            "fullName": "google.cloud.contentwarehouse.v1.SynonymSetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contentwarehouse_v1_generated_SynonymSetService_UpdateSynonymSet_sync",
+      "title": "contentwarehouse UpdateSynonymSet Sample",
+      "description": "UpdateSynonymSet remove the existing SynonymSet for the context and replaces it\nwith a new one.\nThrows a NOT_FOUND exception if the SynonymSet is not found.",
+      "file": "SynonymSetClient/UpdateSynonymSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSynonymSet",
+        "fullName": "google.cloud.contentwarehouse.v1.SynonymSetClient.UpdateSynonymSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contentwarehousepb.UpdateSynonymSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*contentwarehousepb.SynonymSet",
+        "client": {
+          "shortName": "SynonymSetClient",
+          "fullName": "google.cloud.contentwarehouse.v1.SynonymSetClient"
+        },
+        "method": {
+          "shortName": "UpdateSynonymSet",
+          "fullName": "google.cloud.contentwarehouse.v1.SynonymSetService.UpdateSynonymSet",
+          "service": {
+            "shortName": "SynonymSetService",
+            "fullName": "google.cloud.contentwarehouse.v1.SynonymSetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

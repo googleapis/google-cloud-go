@@ -1,0 +1,475 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/partner/aistreams/apiv1alpha1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.partner.aistreams.v1alpha1",
+        "version": "v1alpha1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "aistreams_v1alpha1_generated_AIStreams_CreateCluster_sync",
+      "title": "aistreams CreateCluster Sample",
+      "description": "CreateCluster creates a new Cluster in a given project and location.",
+      "file": "Client/CreateCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCluster",
+        "fullName": "google.partner.aistreams.v1alpha1.Client.CreateCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aistreamspb.CreateClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.partner.aistreams.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "CreateCluster",
+          "fullName": "google.partner.aistreams.v1alpha1.AIStreams.CreateCluster",
+          "service": {
+            "shortName": "AIStreams",
+            "fullName": "google.partner.aistreams.v1alpha1.AIStreams"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aistreams_v1alpha1_generated_AIStreams_CreateStream_sync",
+      "title": "aistreams CreateStream Sample",
+      "description": "CreateStream creates a new Stream in a given project and location.",
+      "file": "Client/CreateStream/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateStream",
+        "fullName": "google.partner.aistreams.v1alpha1.Client.CreateStream",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aistreamspb.CreateStreamRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateStreamOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.partner.aistreams.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "CreateStream",
+          "fullName": "google.partner.aistreams.v1alpha1.AIStreams.CreateStream",
+          "service": {
+            "shortName": "AIStreams",
+            "fullName": "google.partner.aistreams.v1alpha1.AIStreams"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aistreams_v1alpha1_generated_AIStreams_DeleteCluster_sync",
+      "title": "aistreams DeleteCluster Sample",
+      "description": "DeleteCluster deletes a single Cluster.",
+      "file": "Client/DeleteCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCluster",
+        "fullName": "google.partner.aistreams.v1alpha1.Client.DeleteCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aistreamspb.DeleteClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.partner.aistreams.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "DeleteCluster",
+          "fullName": "google.partner.aistreams.v1alpha1.AIStreams.DeleteCluster",
+          "service": {
+            "shortName": "AIStreams",
+            "fullName": "google.partner.aistreams.v1alpha1.AIStreams"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aistreams_v1alpha1_generated_AIStreams_DeleteStream_sync",
+      "title": "aistreams DeleteStream Sample",
+      "description": "DeleteStream deletes a single Stream.",
+      "file": "Client/DeleteStream/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteStream",
+        "fullName": "google.partner.aistreams.v1alpha1.Client.DeleteStream",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aistreamspb.DeleteStreamRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteStreamOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.partner.aistreams.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "DeleteStream",
+          "fullName": "google.partner.aistreams.v1alpha1.AIStreams.DeleteStream",
+          "service": {
+            "shortName": "AIStreams",
+            "fullName": "google.partner.aistreams.v1alpha1.AIStreams"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aistreams_v1alpha1_generated_AIStreams_GetCluster_sync",
+      "title": "aistreams GetCluster Sample",
+      "description": "GetCluster gets details of a single Cluster.",
+      "file": "Client/GetCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCluster",
+        "fullName": "google.partner.aistreams.v1alpha1.Client.GetCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aistreamspb.GetClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aistreamspb.Cluster",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.partner.aistreams.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "GetCluster",
+          "fullName": "google.partner.aistreams.v1alpha1.AIStreams.GetCluster",
+          "service": {
+            "shortName": "AIStreams",
+            "fullName": "google.partner.aistreams.v1alpha1.AIStreams"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aistreams_v1alpha1_generated_AIStreams_GetStream_sync",
+      "title": "aistreams GetStream Sample",
+      "description": "GetStream gets details of a single Stream.",
+      "file": "Client/GetStream/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetStream",
+        "fullName": "google.partner.aistreams.v1alpha1.Client.GetStream",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aistreamspb.GetStreamRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aistreamspb.Stream",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.partner.aistreams.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "GetStream",
+          "fullName": "google.partner.aistreams.v1alpha1.AIStreams.GetStream",
+          "service": {
+            "shortName": "AIStreams",
+            "fullName": "google.partner.aistreams.v1alpha1.AIStreams"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aistreams_v1alpha1_generated_AIStreams_ListClusters_sync",
+      "title": "aistreams ListClusters Sample",
+      "description": "ListClusters lists Clusters in a given project and location.",
+      "file": "Client/ListClusters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListClusters",
+        "fullName": "google.partner.aistreams.v1alpha1.Client.ListClusters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aistreamspb.ListClustersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ClusterIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.partner.aistreams.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "ListClusters",
+          "fullName": "google.partner.aistreams.v1alpha1.AIStreams.ListClusters",
+          "service": {
+            "shortName": "AIStreams",
+            "fullName": "google.partner.aistreams.v1alpha1.AIStreams"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aistreams_v1alpha1_generated_AIStreams_ListStreams_sync",
+      "title": "aistreams ListStreams Sample",
+      "description": "ListStreams lists Streams in a given project, location and cluster.",
+      "file": "Client/ListStreams/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListStreams",
+        "fullName": "google.partner.aistreams.v1alpha1.Client.ListStreams",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aistreamspb.ListStreamsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StreamIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.partner.aistreams.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "ListStreams",
+          "fullName": "google.partner.aistreams.v1alpha1.AIStreams.ListStreams",
+          "service": {
+            "shortName": "AIStreams",
+            "fullName": "google.partner.aistreams.v1alpha1.AIStreams"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aistreams_v1alpha1_generated_AIStreams_UpdateCluster_sync",
+      "title": "aistreams UpdateCluster Sample",
+      "description": "UpdateCluster updates the parameters of a single Cluster.",
+      "file": "Client/UpdateCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCluster",
+        "fullName": "google.partner.aistreams.v1alpha1.Client.UpdateCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aistreamspb.UpdateClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.partner.aistreams.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "UpdateCluster",
+          "fullName": "google.partner.aistreams.v1alpha1.AIStreams.UpdateCluster",
+          "service": {
+            "shortName": "AIStreams",
+            "fullName": "google.partner.aistreams.v1alpha1.AIStreams"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aistreams_v1alpha1_generated_AIStreams_UpdateStream_sync",
+      "title": "aistreams UpdateStream Sample",
+      "description": "UpdateStream updates the parameters of a single Stream.",
+      "file": "Client/UpdateStream/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateStream",
+        "fullName": "google.partner.aistreams.v1alpha1.Client.UpdateStream",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aistreamspb.UpdateStreamRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateStreamOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.partner.aistreams.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "UpdateStream",
+          "fullName": "google.partner.aistreams.v1alpha1.AIStreams.UpdateStream",
+          "service": {
+            "shortName": "AIStreams",
+            "fullName": "google.partner.aistreams.v1alpha1.AIStreams"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/webrisk/apiv1beta1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.webrisk.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "webrisk_v1beta1_generated_WebRiskServiceV1Beta1_ComputeThreatListDiff_sync",
+      "title": "webrisk ComputeThreatListDiff Sample",
+      "description": "ComputeThreatListDiff gets the most recent threat list diffs.",
+      "file": "WebRiskServiceV1Beta1Client/ComputeThreatListDiff/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ComputeThreatListDiff",
+        "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1Client.ComputeThreatListDiff",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "webriskpb.ComputeThreatListDiffRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*webriskpb.ComputeThreatListDiffResponse",
+        "client": {
+          "shortName": "WebRiskServiceV1Beta1Client",
+          "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1Client"
+        },
+        "method": {
+          "shortName": "ComputeThreatListDiff",
+          "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1.ComputeThreatListDiff",
+          "service": {
+            "shortName": "WebRiskServiceV1Beta1",
+            "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "webrisk_v1beta1_generated_WebRiskServiceV1Beta1_SearchHashes_sync",
+      "title": "webrisk SearchHashes Sample",
+      "description": "SearchHashes gets the full hashes that match the requested hash prefix.\nThis is used after a hash prefix is looked up in a threatList\nand there is a match. The client side threatList only holds partial hashes\nso the client must query this method to determine if there is a full\nhash match of a threat.",
+      "file": "WebRiskServiceV1Beta1Client/SearchHashes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchHashes",
+        "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1Client.SearchHashes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "webriskpb.SearchHashesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*webriskpb.SearchHashesResponse",
+        "client": {
+          "shortName": "WebRiskServiceV1Beta1Client",
+          "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1Client"
+        },
+        "method": {
+          "shortName": "SearchHashes",
+          "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1.SearchHashes",
+          "service": {
+            "shortName": "WebRiskServiceV1Beta1",
+            "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "webrisk_v1beta1_generated_WebRiskServiceV1Beta1_SearchUris_sync",
+      "title": "webrisk SearchUris Sample",
+      "description": "SearchUris this method is used to check whether a URI is on a given threatList.",
+      "file": "WebRiskServiceV1Beta1Client/SearchUris/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchUris",
+        "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1Client.SearchUris",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "webriskpb.SearchUrisRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*webriskpb.SearchUrisResponse",
+        "client": {
+          "shortName": "WebRiskServiceV1Beta1Client",
+          "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1Client"
+        },
+        "method": {
+          "shortName": "SearchUris",
+          "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1.SearchUris",
+          "service": {
+            "shortName": "WebRiskServiceV1Beta1",
+            "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

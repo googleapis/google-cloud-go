@@ -1,0 +1,199 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/containeranalysis/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.devtools.containeranalysis.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "containeranalysis_v1_generated_ContainerAnalysis_GetIamPolicy_sync",
+      "title": "containeranalysis GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a note or an occurrence resource.\nRequires `containeranalysis.notes.setIamPolicy` or\n`containeranalysis.occurrences.setIamPolicy` permission if the resource is\na note or occurrence, respectively.\n\nThe resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for\nnotes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for\noccurrences.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.devtools.containeranalysis.v1.Client.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.containeranalysis.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.devtools.containeranalysis.v1.ContainerAnalysis.GetIamPolicy",
+          "service": {
+            "shortName": "ContainerAnalysis",
+            "fullName": "google.devtools.containeranalysis.v1.ContainerAnalysis"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "containeranalysis_v1_generated_ContainerAnalysis_GetVulnerabilityOccurrencesSummary_sync",
+      "title": "containeranalysis GetVulnerabilityOccurrencesSummary Sample",
+      "description": "GetVulnerabilityOccurrencesSummary gets a summary of the number and severity of occurrences.",
+      "file": "Client/GetVulnerabilityOccurrencesSummary/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVulnerabilityOccurrencesSummary",
+        "fullName": "google.devtools.containeranalysis.v1.Client.GetVulnerabilityOccurrencesSummary",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containeranalysispb.GetVulnerabilityOccurrencesSummaryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*containeranalysispb.VulnerabilityOccurrencesSummary",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.containeranalysis.v1.Client"
+        },
+        "method": {
+          "shortName": "GetVulnerabilityOccurrencesSummary",
+          "fullName": "google.devtools.containeranalysis.v1.ContainerAnalysis.GetVulnerabilityOccurrencesSummary",
+          "service": {
+            "shortName": "ContainerAnalysis",
+            "fullName": "google.devtools.containeranalysis.v1.ContainerAnalysis"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "containeranalysis_v1_generated_ContainerAnalysis_SetIamPolicy_sync",
+      "title": "containeranalysis SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified note or occurrence.\nRequires `containeranalysis.notes.setIamPolicy` or\n`containeranalysis.occurrences.setIamPolicy` permission if the resource is\na note or an occurrence, respectively.\n\nThe resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for\nnotes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for\noccurrences.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.devtools.containeranalysis.v1.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.containeranalysis.v1.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.devtools.containeranalysis.v1.ContainerAnalysis.SetIamPolicy",
+          "service": {
+            "shortName": "ContainerAnalysis",
+            "fullName": "google.devtools.containeranalysis.v1.ContainerAnalysis"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "containeranalysis_v1_generated_ContainerAnalysis_TestIamPermissions_sync",
+      "title": "containeranalysis TestIamPermissions Sample",
+      "description": "TestIamPermissions returns the permissions that a caller has on the specified note or\noccurrence. Requires list permission on the project (for example,\n`containeranalysis.notes.list`).\n\nThe resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for\nnotes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for\noccurrences.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.devtools.containeranalysis.v1.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.containeranalysis.v1.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.devtools.containeranalysis.v1.ContainerAnalysis.TestIamPermissions",
+          "service": {
+            "shortName": "ContainerAnalysis",
+            "fullName": "google.devtools.containeranalysis.v1.ContainerAnalysis"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

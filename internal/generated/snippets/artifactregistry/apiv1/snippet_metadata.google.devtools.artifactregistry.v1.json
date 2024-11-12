@@ -1,0 +1,2405 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/artifactregistry/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.devtools.artifactregistry.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_BatchDeleteVersions_sync",
+      "title": "artifactregistry BatchDeleteVersions Sample",
+      "description": "BatchDeleteVersions deletes multiple versions across a repository. The returned operation will\ncomplete once the versions have been deleted.",
+      "file": "Client/BatchDeleteVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchDeleteVersions",
+        "fullName": "google.devtools.artifactregistry.v1.Client.BatchDeleteVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.BatchDeleteVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchDeleteVersionsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "BatchDeleteVersions",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.BatchDeleteVersions",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_CreateAttachment_sync",
+      "title": "artifactregistry CreateAttachment Sample",
+      "description": "CreateAttachment creates an attachment. The returned Operation will finish once the\nattachment has been created. Its response will be the created attachment.",
+      "file": "Client/CreateAttachment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAttachment",
+        "fullName": "google.devtools.artifactregistry.v1.Client.CreateAttachment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.CreateAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAttachmentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateAttachment",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.CreateAttachment",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_CreateRepository_sync",
+      "title": "artifactregistry CreateRepository Sample",
+      "description": "CreateRepository creates a repository. The returned Operation will finish once the\nrepository has been created. Its response will be the created Repository.",
+      "file": "Client/CreateRepository/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRepository",
+        "fullName": "google.devtools.artifactregistry.v1.Client.CreateRepository",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.CreateRepositoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateRepositoryOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateRepository",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.CreateRepository",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_CreateRule_sync",
+      "title": "artifactregistry CreateRule Sample",
+      "description": "CreateRule creates a rule.",
+      "file": "Client/CreateRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRule",
+        "fullName": "google.devtools.artifactregistry.v1.Client.CreateRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.CreateRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.Rule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateRule",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.CreateRule",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_CreateTag_sync",
+      "title": "artifactregistry CreateTag Sample",
+      "description": "CreateTag creates a tag.",
+      "file": "Client/CreateTag/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTag",
+        "fullName": "google.devtools.artifactregistry.v1.Client.CreateTag",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.CreateTagRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.Tag",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateTag",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.CreateTag",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeleteAttachment_sync",
+      "title": "artifactregistry DeleteAttachment Sample",
+      "description": "DeleteAttachment deletes an attachment. The returned Operation will\nfinish once the attachments has been deleted. It will not have any\nOperation metadata and will return a `google.protobuf.Empty` response.",
+      "file": "Client/DeleteAttachment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAttachment",
+        "fullName": "google.devtools.artifactregistry.v1.Client.DeleteAttachment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.DeleteAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteAttachmentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteAttachment",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.DeleteAttachment",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeleteFile_sync",
+      "title": "artifactregistry DeleteFile Sample",
+      "description": "DeleteFile deletes a file and all of its content. It is only allowed on generic\nrepositories. The returned operation will complete once the file has been\ndeleted.",
+      "file": "Client/DeleteFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFile",
+        "fullName": "google.devtools.artifactregistry.v1.Client.DeleteFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.DeleteFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteFileOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteFile",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.DeleteFile",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeletePackage_sync",
+      "title": "artifactregistry DeletePackage Sample",
+      "description": "DeletePackage deletes a package and all of its versions and tags. The returned operation\nwill complete once the package has been deleted.",
+      "file": "Client/DeletePackage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePackage",
+        "fullName": "google.devtools.artifactregistry.v1.Client.DeletePackage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.DeletePackageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeletePackageOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "DeletePackage",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.DeletePackage",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeleteRepository_sync",
+      "title": "artifactregistry DeleteRepository Sample",
+      "description": "DeleteRepository deletes a repository and all of its contents. The returned Operation will\nfinish once the repository has been deleted. It will not have any Operation\nmetadata and will return a google.protobuf.Empty response.",
+      "file": "Client/DeleteRepository/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRepository",
+        "fullName": "google.devtools.artifactregistry.v1.Client.DeleteRepository",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.DeleteRepositoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteRepositoryOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteRepository",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.DeleteRepository",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeleteRule_sync",
+      "title": "artifactregistry DeleteRule Sample",
+      "description": "DeleteRule deletes a rule.",
+      "file": "Client/DeleteRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRule",
+        "fullName": "google.devtools.artifactregistry.v1.Client.DeleteRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.DeleteRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteRule",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.DeleteRule",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeleteTag_sync",
+      "title": "artifactregistry DeleteTag Sample",
+      "description": "DeleteTag deletes a tag.",
+      "file": "Client/DeleteTag/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTag",
+        "fullName": "google.devtools.artifactregistry.v1.Client.DeleteTag",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.DeleteTagRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteTag",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.DeleteTag",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeleteVersion_sync",
+      "title": "artifactregistry DeleteVersion Sample",
+      "description": "DeleteVersion deletes a version and all of its content. The returned operation will\ncomplete once the version has been deleted.",
+      "file": "Client/DeleteVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteVersion",
+        "fullName": "google.devtools.artifactregistry.v1.Client.DeleteVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.DeleteVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteVersionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteVersion",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.DeleteVersion",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetAttachment_sync",
+      "title": "artifactregistry GetAttachment Sample",
+      "description": "GetAttachment gets an attachment.",
+      "file": "Client/GetAttachment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAttachment",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetAttachment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.GetAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.Attachment",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetAttachment",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetAttachment",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetDockerImage_sync",
+      "title": "artifactregistry GetDockerImage Sample",
+      "description": "GetDockerImage gets a docker image.",
+      "file": "Client/GetDockerImage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDockerImage",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetDockerImage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.GetDockerImageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.DockerImage",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDockerImage",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetDockerImage",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetFile_sync",
+      "title": "artifactregistry GetFile Sample",
+      "description": "GetFile gets a file.",
+      "file": "Client/GetFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFile",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.GetFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.File",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetFile",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetFile",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetIamPolicy_sync",
+      "title": "artifactregistry GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the IAM policy for a given resource.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetIamPolicy",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetLocation_sync",
+      "title": "artifactregistry GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetMavenArtifact_sync",
+      "title": "artifactregistry GetMavenArtifact Sample",
+      "description": "GetMavenArtifact gets a maven artifact.",
+      "file": "Client/GetMavenArtifact/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMavenArtifact",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetMavenArtifact",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.GetMavenArtifactRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.MavenArtifact",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetMavenArtifact",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetMavenArtifact",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetNpmPackage_sync",
+      "title": "artifactregistry GetNpmPackage Sample",
+      "description": "GetNpmPackage gets a npm package.",
+      "file": "Client/GetNpmPackage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNpmPackage",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetNpmPackage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.GetNpmPackageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.NpmPackage",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetNpmPackage",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetNpmPackage",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetOperation_sync",
+      "title": "artifactregistry GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetPackage_sync",
+      "title": "artifactregistry GetPackage Sample",
+      "description": "GetPackage gets a package.",
+      "file": "Client/GetPackage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPackage",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetPackage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.GetPackageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.Package",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPackage",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetPackage",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetProjectSettings_sync",
+      "title": "artifactregistry GetProjectSettings Sample",
+      "description": "GetProjectSettings retrieves the Settings for the Project.",
+      "file": "Client/GetProjectSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProjectSettings",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetProjectSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.GetProjectSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.ProjectSettings",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetProjectSettings",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetProjectSettings",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetPythonPackage_sync",
+      "title": "artifactregistry GetPythonPackage Sample",
+      "description": "GetPythonPackage gets a python package.",
+      "file": "Client/GetPythonPackage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPythonPackage",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetPythonPackage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.GetPythonPackageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.PythonPackage",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPythonPackage",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetPythonPackage",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetRepository_sync",
+      "title": "artifactregistry GetRepository Sample",
+      "description": "GetRepository gets a repository.",
+      "file": "Client/GetRepository/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRepository",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetRepository",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.GetRepositoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.Repository",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetRepository",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetRepository",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetRule_sync",
+      "title": "artifactregistry GetRule Sample",
+      "description": "GetRule gets a rule.",
+      "file": "Client/GetRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRule",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.GetRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.Rule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetRule",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetRule",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetTag_sync",
+      "title": "artifactregistry GetTag Sample",
+      "description": "GetTag gets a tag.",
+      "file": "Client/GetTag/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTag",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetTag",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.GetTagRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.Tag",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetTag",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetTag",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetVPCSCConfig_sync",
+      "title": "artifactregistry GetVPCSCConfig Sample",
+      "description": "GetVPCSCConfig retrieves the VPCSC Config for the Project.",
+      "file": "Client/GetVPCSCConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVPCSCConfig",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetVPCSCConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.GetVPCSCConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.VPCSCConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetVPCSCConfig",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetVPCSCConfig",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetVersion_sync",
+      "title": "artifactregistry GetVersion Sample",
+      "description": "GetVersion gets a version",
+      "file": "Client/GetVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVersion",
+        "fullName": "google.devtools.artifactregistry.v1.Client.GetVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.GetVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.Version",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "GetVersion",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetVersion",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ImportAptArtifacts_sync",
+      "title": "artifactregistry ImportAptArtifacts Sample",
+      "description": "ImportAptArtifacts imports Apt artifacts. The returned Operation will complete once the\nresources are imported. Package, Version, and File resources are created\nbased on the imported artifacts. Imported artifacts that conflict with\nexisting resources are ignored.",
+      "file": "Client/ImportAptArtifacts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportAptArtifacts",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ImportAptArtifacts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ImportAptArtifactsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportAptArtifactsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ImportAptArtifacts",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ImportAptArtifacts",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ImportYumArtifacts_sync",
+      "title": "artifactregistry ImportYumArtifacts Sample",
+      "description": "ImportYumArtifacts imports Yum (RPM) artifacts. The returned Operation will complete once the\nresources are imported. Package, Version, and File resources are created\nbased on the imported artifacts. Imported artifacts that conflict with\nexisting resources are ignored.",
+      "file": "Client/ImportYumArtifacts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportYumArtifacts",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ImportYumArtifacts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ImportYumArtifactsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportYumArtifactsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ImportYumArtifacts",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ImportYumArtifacts",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListAttachments_sync",
+      "title": "artifactregistry ListAttachments Sample",
+      "description": "ListAttachments lists attachments.",
+      "file": "Client/ListAttachments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAttachments",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ListAttachments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ListAttachmentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AttachmentIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ListAttachments",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ListAttachments",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListDockerImages_sync",
+      "title": "artifactregistry ListDockerImages Sample",
+      "description": "ListDockerImages lists docker images.",
+      "file": "Client/ListDockerImages/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDockerImages",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ListDockerImages",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ListDockerImagesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DockerImageIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDockerImages",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ListDockerImages",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListFiles_sync",
+      "title": "artifactregistry ListFiles Sample",
+      "description": "ListFiles lists files.",
+      "file": "Client/ListFiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFiles",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ListFiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ListFilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FileIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ListFiles",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ListFiles",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListLocations_sync",
+      "title": "artifactregistry ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListMavenArtifacts_sync",
+      "title": "artifactregistry ListMavenArtifacts Sample",
+      "description": "ListMavenArtifacts lists maven artifacts.",
+      "file": "Client/ListMavenArtifacts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMavenArtifacts",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ListMavenArtifacts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ListMavenArtifactsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MavenArtifactIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ListMavenArtifacts",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ListMavenArtifacts",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListNpmPackages_sync",
+      "title": "artifactregistry ListNpmPackages Sample",
+      "description": "ListNpmPackages lists npm packages.",
+      "file": "Client/ListNpmPackages/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNpmPackages",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ListNpmPackages",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ListNpmPackagesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NpmPackageIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ListNpmPackages",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ListNpmPackages",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListPackages_sync",
+      "title": "artifactregistry ListPackages Sample",
+      "description": "ListPackages lists packages.",
+      "file": "Client/ListPackages/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPackages",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ListPackages",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ListPackagesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PackageIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPackages",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ListPackages",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListPythonPackages_sync",
+      "title": "artifactregistry ListPythonPackages Sample",
+      "description": "ListPythonPackages lists python packages.",
+      "file": "Client/ListPythonPackages/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPythonPackages",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ListPythonPackages",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ListPythonPackagesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PythonPackageIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPythonPackages",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ListPythonPackages",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListRepositories_sync",
+      "title": "artifactregistry ListRepositories Sample",
+      "description": "ListRepositories lists repositories.",
+      "file": "Client/ListRepositories/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRepositories",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ListRepositories",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ListRepositoriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RepositoryIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ListRepositories",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ListRepositories",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListRules_sync",
+      "title": "artifactregistry ListRules Sample",
+      "description": "ListRules lists rules.",
+      "file": "Client/ListRules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRules",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ListRules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ListRulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ListRules",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ListRules",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListTags_sync",
+      "title": "artifactregistry ListTags Sample",
+      "description": "ListTags lists tags.",
+      "file": "Client/ListTags/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTags",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ListTags",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ListTagsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TagIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ListTags",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ListTags",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListVersions_sync",
+      "title": "artifactregistry ListVersions Sample",
+      "description": "ListVersions lists versions.",
+      "file": "Client/ListVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListVersions",
+        "fullName": "google.devtools.artifactregistry.v1.Client.ListVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.ListVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "VersionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "ListVersions",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ListVersions",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_SetIamPolicy_sync",
+      "title": "artifactregistry SetIamPolicy Sample",
+      "description": "SetIamPolicy updates the IAM policy for a given resource.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.devtools.artifactregistry.v1.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.SetIamPolicy",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_TestIamPermissions_sync",
+      "title": "artifactregistry TestIamPermissions Sample",
+      "description": "TestIamPermissions tests if the caller has a list of permissions on a resource.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.devtools.artifactregistry.v1.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.TestIamPermissions",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateFile_sync",
+      "title": "artifactregistry UpdateFile Sample",
+      "description": "UpdateFile updates a file.",
+      "file": "Client/UpdateFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateFile",
+        "fullName": "google.devtools.artifactregistry.v1.Client.UpdateFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.UpdateFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.File",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateFile",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.UpdateFile",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdatePackage_sync",
+      "title": "artifactregistry UpdatePackage Sample",
+      "description": "UpdatePackage updates a package.",
+      "file": "Client/UpdatePackage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePackage",
+        "fullName": "google.devtools.artifactregistry.v1.Client.UpdatePackage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.UpdatePackageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.Package",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdatePackage",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.UpdatePackage",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateProjectSettings_sync",
+      "title": "artifactregistry UpdateProjectSettings Sample",
+      "description": "UpdateProjectSettings updates the Settings for the Project.",
+      "file": "Client/UpdateProjectSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateProjectSettings",
+        "fullName": "google.devtools.artifactregistry.v1.Client.UpdateProjectSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.UpdateProjectSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.ProjectSettings",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateProjectSettings",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.UpdateProjectSettings",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateRepository_sync",
+      "title": "artifactregistry UpdateRepository Sample",
+      "description": "UpdateRepository updates a repository.",
+      "file": "Client/UpdateRepository/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRepository",
+        "fullName": "google.devtools.artifactregistry.v1.Client.UpdateRepository",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.UpdateRepositoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.Repository",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateRepository",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.UpdateRepository",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateRule_sync",
+      "title": "artifactregistry UpdateRule Sample",
+      "description": "UpdateRule updates a rule.",
+      "file": "Client/UpdateRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRule",
+        "fullName": "google.devtools.artifactregistry.v1.Client.UpdateRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.UpdateRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.Rule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateRule",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.UpdateRule",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateTag_sync",
+      "title": "artifactregistry UpdateTag Sample",
+      "description": "UpdateTag updates a tag.",
+      "file": "Client/UpdateTag/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTag",
+        "fullName": "google.devtools.artifactregistry.v1.Client.UpdateTag",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.UpdateTagRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.Tag",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateTag",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.UpdateTag",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateVPCSCConfig_sync",
+      "title": "artifactregistry UpdateVPCSCConfig Sample",
+      "description": "UpdateVPCSCConfig updates the VPCSC Config for the Project.",
+      "file": "Client/UpdateVPCSCConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateVPCSCConfig",
+        "fullName": "google.devtools.artifactregistry.v1.Client.UpdateVPCSCConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.UpdateVPCSCConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.VPCSCConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateVPCSCConfig",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.UpdateVPCSCConfig",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateVersion_sync",
+      "title": "artifactregistry UpdateVersion Sample",
+      "description": "UpdateVersion updates a version.",
+      "file": "Client/UpdateVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateVersion",
+        "fullName": "google.devtools.artifactregistry.v1.Client.UpdateVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.UpdateVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*artifactregistrypb.Version",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateVersion",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.UpdateVersion",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

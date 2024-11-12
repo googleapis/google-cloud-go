@@ -1,0 +1,245 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shell/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.shell.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudshell_v1_generated_CloudShellService_AddPublicKey_sync",
+      "title": "cloudshell AddPublicKey Sample",
+      "description": "AddPublicKey adds a public SSH key to an environment, allowing clients with the\ncorresponding private key to connect to that environment via SSH. If a key\nwith the same content already exists, this will error with ALREADY_EXISTS.",
+      "file": "CloudShellClient/AddPublicKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AddPublicKey",
+        "fullName": "google.cloud.shell.v1.CloudShellClient.AddPublicKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "shellpb.AddPublicKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AddPublicKeyOperation",
+        "client": {
+          "shortName": "CloudShellClient",
+          "fullName": "google.cloud.shell.v1.CloudShellClient"
+        },
+        "method": {
+          "shortName": "AddPublicKey",
+          "fullName": "google.cloud.shell.v1.CloudShellService.AddPublicKey",
+          "service": {
+            "shortName": "CloudShellService",
+            "fullName": "google.cloud.shell.v1.CloudShellService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudshell_v1_generated_CloudShellService_AuthorizeEnvironment_sync",
+      "title": "cloudshell AuthorizeEnvironment Sample",
+      "description": "AuthorizeEnvironment sends OAuth credentials to a running environment on behalf of a user. When\nthis completes, the environment will be authorized to run various Google\nCloud command line tools without requiring the user to manually\nauthenticate.",
+      "file": "CloudShellClient/AuthorizeEnvironment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AuthorizeEnvironment",
+        "fullName": "google.cloud.shell.v1.CloudShellClient.AuthorizeEnvironment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "shellpb.AuthorizeEnvironmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AuthorizeEnvironmentOperation",
+        "client": {
+          "shortName": "CloudShellClient",
+          "fullName": "google.cloud.shell.v1.CloudShellClient"
+        },
+        "method": {
+          "shortName": "AuthorizeEnvironment",
+          "fullName": "google.cloud.shell.v1.CloudShellService.AuthorizeEnvironment",
+          "service": {
+            "shortName": "CloudShellService",
+            "fullName": "google.cloud.shell.v1.CloudShellService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudshell_v1_generated_CloudShellService_GetEnvironment_sync",
+      "title": "cloudshell GetEnvironment Sample",
+      "description": "GetEnvironment gets an environment. Returns NOT_FOUND if the environment does not exist.",
+      "file": "CloudShellClient/GetEnvironment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEnvironment",
+        "fullName": "google.cloud.shell.v1.CloudShellClient.GetEnvironment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "shellpb.GetEnvironmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*shellpb.Environment",
+        "client": {
+          "shortName": "CloudShellClient",
+          "fullName": "google.cloud.shell.v1.CloudShellClient"
+        },
+        "method": {
+          "shortName": "GetEnvironment",
+          "fullName": "google.cloud.shell.v1.CloudShellService.GetEnvironment",
+          "service": {
+            "shortName": "CloudShellService",
+            "fullName": "google.cloud.shell.v1.CloudShellService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudshell_v1_generated_CloudShellService_RemovePublicKey_sync",
+      "title": "cloudshell RemovePublicKey Sample",
+      "description": "RemovePublicKey removes a public SSH key from an environment. Clients will no longer be\nable to connect to the environment using the corresponding private key.\nIf a key with the same content is not present, this will error with\nNOT_FOUND.",
+      "file": "CloudShellClient/RemovePublicKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemovePublicKey",
+        "fullName": "google.cloud.shell.v1.CloudShellClient.RemovePublicKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "shellpb.RemovePublicKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RemovePublicKeyOperation",
+        "client": {
+          "shortName": "CloudShellClient",
+          "fullName": "google.cloud.shell.v1.CloudShellClient"
+        },
+        "method": {
+          "shortName": "RemovePublicKey",
+          "fullName": "google.cloud.shell.v1.CloudShellService.RemovePublicKey",
+          "service": {
+            "shortName": "CloudShellService",
+            "fullName": "google.cloud.shell.v1.CloudShellService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudshell_v1_generated_CloudShellService_StartEnvironment_sync",
+      "title": "cloudshell StartEnvironment Sample",
+      "description": "StartEnvironment starts an existing environment, allowing clients to connect to it. The\nreturned operation will contain an instance of StartEnvironmentMetadata in\nits metadata field. Users can wait for the environment to start by polling\nthis operation via GetOperation. Once the environment has finished starting\nand is ready to accept connections, the operation will contain a\nStartEnvironmentResponse in its response field.",
+      "file": "CloudShellClient/StartEnvironment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartEnvironment",
+        "fullName": "google.cloud.shell.v1.CloudShellClient.StartEnvironment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "shellpb.StartEnvironmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StartEnvironmentOperation",
+        "client": {
+          "shortName": "CloudShellClient",
+          "fullName": "google.cloud.shell.v1.CloudShellClient"
+        },
+        "method": {
+          "shortName": "StartEnvironment",
+          "fullName": "google.cloud.shell.v1.CloudShellService.StartEnvironment",
+          "service": {
+            "shortName": "CloudShellService",
+            "fullName": "google.cloud.shell.v1.CloudShellService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

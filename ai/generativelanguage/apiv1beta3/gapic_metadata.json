@@ -1,0 +1,255 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.ai.generativelanguage.v1beta3",
+  "libraryPackage": "cloud.google.com/go/ai/generativelanguage/apiv1beta3",
+  "services": {
+    "DiscussService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DiscussClient",
+          "rpcs": {
+            "CountMessageTokens": {
+              "methods": [
+                "CountMessageTokens"
+              ]
+            },
+            "GenerateMessage": {
+              "methods": [
+                "GenerateMessage"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DiscussClient",
+          "rpcs": {
+            "CountMessageTokens": {
+              "methods": [
+                "CountMessageTokens"
+              ]
+            },
+            "GenerateMessage": {
+              "methods": [
+                "GenerateMessage"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ModelService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ModelClient",
+          "rpcs": {
+            "CreateTunedModel": {
+              "methods": [
+                "CreateTunedModel"
+              ]
+            },
+            "DeleteTunedModel": {
+              "methods": [
+                "DeleteTunedModel"
+              ]
+            },
+            "GetModel": {
+              "methods": [
+                "GetModel"
+              ]
+            },
+            "GetTunedModel": {
+              "methods": [
+                "GetTunedModel"
+              ]
+            },
+            "ListModels": {
+              "methods": [
+                "ListModels"
+              ]
+            },
+            "ListTunedModels": {
+              "methods": [
+                "ListTunedModels"
+              ]
+            },
+            "UpdateTunedModel": {
+              "methods": [
+                "UpdateTunedModel"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ModelClient",
+          "rpcs": {
+            "CreateTunedModel": {
+              "methods": [
+                "CreateTunedModel"
+              ]
+            },
+            "DeleteTunedModel": {
+              "methods": [
+                "DeleteTunedModel"
+              ]
+            },
+            "GetModel": {
+              "methods": [
+                "GetModel"
+              ]
+            },
+            "GetTunedModel": {
+              "methods": [
+                "GetTunedModel"
+              ]
+            },
+            "ListModels": {
+              "methods": [
+                "ListModels"
+              ]
+            },
+            "ListTunedModels": {
+              "methods": [
+                "ListTunedModels"
+              ]
+            },
+            "UpdateTunedModel": {
+              "methods": [
+                "UpdateTunedModel"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PermissionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PermissionClient",
+          "rpcs": {
+            "CreatePermission": {
+              "methods": [
+                "CreatePermission"
+              ]
+            },
+            "DeletePermission": {
+              "methods": [
+                "DeletePermission"
+              ]
+            },
+            "GetPermission": {
+              "methods": [
+                "GetPermission"
+              ]
+            },
+            "ListPermissions": {
+              "methods": [
+                "ListPermissions"
+              ]
+            },
+            "TransferOwnership": {
+              "methods": [
+                "TransferOwnership"
+              ]
+            },
+            "UpdatePermission": {
+              "methods": [
+                "UpdatePermission"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "PermissionClient",
+          "rpcs": {
+            "CreatePermission": {
+              "methods": [
+                "CreatePermission"
+              ]
+            },
+            "DeletePermission": {
+              "methods": [
+                "DeletePermission"
+              ]
+            },
+            "GetPermission": {
+              "methods": [
+                "GetPermission"
+              ]
+            },
+            "ListPermissions": {
+              "methods": [
+                "ListPermissions"
+              ]
+            },
+            "TransferOwnership": {
+              "methods": [
+                "TransferOwnership"
+              ]
+            },
+            "UpdatePermission": {
+              "methods": [
+                "UpdatePermission"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "TextService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TextClient",
+          "rpcs": {
+            "BatchEmbedText": {
+              "methods": [
+                "BatchEmbedText"
+              ]
+            },
+            "CountTextTokens": {
+              "methods": [
+                "CountTextTokens"
+              ]
+            },
+            "EmbedText": {
+              "methods": [
+                "EmbedText"
+              ]
+            },
+            "GenerateText": {
+              "methods": [
+                "GenerateText"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "TextClient",
+          "rpcs": {
+            "BatchEmbedText": {
+              "methods": [
+                "BatchEmbedText"
+              ]
+            },
+            "CountTextTokens": {
+              "methods": [
+                "CountTextTokens"
+              ]
+            },
+            "EmbedText": {
+              "methods": [
+                "EmbedText"
+              ]
+            },
+            "GenerateText": {
+              "methods": [
+                "GenerateText"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

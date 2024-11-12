@@ -1,0 +1,153 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/servicecontrol/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.api.servicecontrol.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "servicecontrol_v1_generated_QuotaController_AllocateQuota_sync",
+      "title": "servicecontrol AllocateQuota Sample",
+      "description": "AllocateQuota attempts to allocate quota for the specified consumer. It should be called\nbefore the operation is executed.\n\nThis method requires the `servicemanagement.services.quota`\npermission on the specified service. For more information, see\n[Cloud IAM](https: //cloud.google.com/iam).\n\n**NOTE: ** The client **must** fail-open on server errors `INTERNAL`,\n`UNKNOWN`, `DEADLINE_EXCEEDED`, and `UNAVAILABLE`. To ensure system\nreliability, the server may inject these errors to prohibit any hard\ndependency on the quota functionality.",
+      "file": "QuotaControllerClient/AllocateQuota/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AllocateQuota",
+        "fullName": "google.api.servicecontrol.v1.QuotaControllerClient.AllocateQuota",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicecontrolpb.AllocateQuotaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicecontrolpb.AllocateQuotaResponse",
+        "client": {
+          "shortName": "QuotaControllerClient",
+          "fullName": "google.api.servicecontrol.v1.QuotaControllerClient"
+        },
+        "method": {
+          "shortName": "AllocateQuota",
+          "fullName": "google.api.servicecontrol.v1.QuotaController.AllocateQuota",
+          "service": {
+            "shortName": "QuotaController",
+            "fullName": "google.api.servicecontrol.v1.QuotaController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicecontrol_v1_generated_ServiceController_Check_sync",
+      "title": "servicecontrol Check Sample",
+      "description": "Check checks whether an operation on a service should be allowed to proceed\nbased on the configuration of the service and related policies. It must be\ncalled before the operation is executed.\n\nIf feasible, the client should cache the check results and reuse them for\n60 seconds. In case of any server errors, the client should rely on the\ncached results for much longer time to avoid outage.\nWARNING: There is general 60s delay for the configuration and policy\npropagation, therefore callers MUST NOT depend on the `Check` method having\nthe latest policy information.\n\nNOTE: the [CheckRequest][google.api.servicecontrol.v1.CheckRequest] has\nthe size limit (wire-format byte size) of 1MB.\n\nThis method requires the `servicemanagement.services.check` permission\non the specified service. For more information, see\n[Cloud IAM](https: //cloud.google.com/iam).",
+      "file": "ServiceControllerClient/Check/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Check",
+        "fullName": "google.api.servicecontrol.v1.ServiceControllerClient.Check",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicecontrolpb.CheckRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicecontrolpb.CheckResponse",
+        "client": {
+          "shortName": "ServiceControllerClient",
+          "fullName": "google.api.servicecontrol.v1.ServiceControllerClient"
+        },
+        "method": {
+          "shortName": "Check",
+          "fullName": "google.api.servicecontrol.v1.ServiceController.Check",
+          "service": {
+            "shortName": "ServiceController",
+            "fullName": "google.api.servicecontrol.v1.ServiceController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicecontrol_v1_generated_ServiceController_Report_sync",
+      "title": "servicecontrol Report Sample",
+      "description": "Report reports operation results to Google Service Control, such as logs and\nmetrics. It should be called after an operation is completed.\n\nIf feasible, the client should aggregate reporting data for up to 5\nseconds to reduce API traffic. Limiting aggregation to 5 seconds is to\nreduce data loss during client crashes. Clients should carefully choose\nthe aggregation time window to avoid data loss risk more than 0.01%\nfor business and compliance reasons.\n\nNOTE: the [ReportRequest][google.api.servicecontrol.v1.ReportRequest] has\nthe size limit (wire-format byte size) of 1MB.\n\nThis method requires the `servicemanagement.services.report` permission\non the specified service. For more information, see\n[Google Cloud IAM](https: //cloud.google.com/iam).",
+      "file": "ServiceControllerClient/Report/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Report",
+        "fullName": "google.api.servicecontrol.v1.ServiceControllerClient.Report",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicecontrolpb.ReportRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicecontrolpb.ReportResponse",
+        "client": {
+          "shortName": "ServiceControllerClient",
+          "fullName": "google.api.servicecontrol.v1.ServiceControllerClient"
+        },
+        "method": {
+          "shortName": "Report",
+          "fullName": "google.api.servicecontrol.v1.ServiceController.Report",
+          "service": {
+            "shortName": "ServiceController",
+            "fullName": "google.api.servicecontrol.v1.ServiceController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

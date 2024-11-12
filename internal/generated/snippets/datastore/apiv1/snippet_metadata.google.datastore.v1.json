@@ -1,0 +1,565 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/datastore/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.datastore.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "datastore_v1_generated_Datastore_AllocateIds_sync",
+      "title": "datastore AllocateIds Sample",
+      "description": "AllocateIds allocates IDs for the given keys, which is useful for referencing an entity\nbefore it is inserted.",
+      "file": "Client/AllocateIds/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AllocateIds",
+        "fullName": "google.datastore.v1.Client.AllocateIds",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datastorepb.AllocateIdsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datastorepb.AllocateIdsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.datastore.v1.Client"
+        },
+        "method": {
+          "shortName": "AllocateIds",
+          "fullName": "google.datastore.v1.Datastore.AllocateIds",
+          "service": {
+            "shortName": "Datastore",
+            "fullName": "google.datastore.v1.Datastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastore_v1_generated_Datastore_BeginTransaction_sync",
+      "title": "datastore BeginTransaction Sample",
+      "description": "BeginTransaction begins a new transaction.",
+      "file": "Client/BeginTransaction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BeginTransaction",
+        "fullName": "google.datastore.v1.Client.BeginTransaction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datastorepb.BeginTransactionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datastorepb.BeginTransactionResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.datastore.v1.Client"
+        },
+        "method": {
+          "shortName": "BeginTransaction",
+          "fullName": "google.datastore.v1.Datastore.BeginTransaction",
+          "service": {
+            "shortName": "Datastore",
+            "fullName": "google.datastore.v1.Datastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastore_v1_generated_Datastore_CancelOperation_sync",
+      "title": "datastore CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.datastore.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.datastore.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastore_v1_generated_Datastore_Commit_sync",
+      "title": "datastore Commit Sample",
+      "description": "Commit commits a transaction, optionally creating, deleting or modifying some\nentities.",
+      "file": "Client/Commit/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Commit",
+        "fullName": "google.datastore.v1.Client.Commit",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datastorepb.CommitRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datastorepb.CommitResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.datastore.v1.Client"
+        },
+        "method": {
+          "shortName": "Commit",
+          "fullName": "google.datastore.v1.Datastore.Commit",
+          "service": {
+            "shortName": "Datastore",
+            "fullName": "google.datastore.v1.Datastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastore_v1_generated_Datastore_DeleteOperation_sync",
+      "title": "datastore DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.datastore.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.datastore.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastore_v1_generated_Datastore_GetOperation_sync",
+      "title": "datastore GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.datastore.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.datastore.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastore_v1_generated_Datastore_ListOperations_sync",
+      "title": "datastore ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.datastore.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.datastore.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastore_v1_generated_Datastore_Lookup_sync",
+      "title": "datastore Lookup Sample",
+      "description": "Lookup looks up entities by key.",
+      "file": "Client/Lookup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Lookup",
+        "fullName": "google.datastore.v1.Client.Lookup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datastorepb.LookupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datastorepb.LookupResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.datastore.v1.Client"
+        },
+        "method": {
+          "shortName": "Lookup",
+          "fullName": "google.datastore.v1.Datastore.Lookup",
+          "service": {
+            "shortName": "Datastore",
+            "fullName": "google.datastore.v1.Datastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastore_v1_generated_Datastore_ReserveIds_sync",
+      "title": "datastore ReserveIds Sample",
+      "description": "ReserveIds prevents the supplied keys' IDs from being auto-allocated by Cloud\nDatastore.",
+      "file": "Client/ReserveIds/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReserveIds",
+        "fullName": "google.datastore.v1.Client.ReserveIds",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datastorepb.ReserveIdsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datastorepb.ReserveIdsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.datastore.v1.Client"
+        },
+        "method": {
+          "shortName": "ReserveIds",
+          "fullName": "google.datastore.v1.Datastore.ReserveIds",
+          "service": {
+            "shortName": "Datastore",
+            "fullName": "google.datastore.v1.Datastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastore_v1_generated_Datastore_Rollback_sync",
+      "title": "datastore Rollback Sample",
+      "description": "Rollback rolls back a transaction.",
+      "file": "Client/Rollback/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Rollback",
+        "fullName": "google.datastore.v1.Client.Rollback",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datastorepb.RollbackRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datastorepb.RollbackResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.datastore.v1.Client"
+        },
+        "method": {
+          "shortName": "Rollback",
+          "fullName": "google.datastore.v1.Datastore.Rollback",
+          "service": {
+            "shortName": "Datastore",
+            "fullName": "google.datastore.v1.Datastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastore_v1_generated_Datastore_RunAggregationQuery_sync",
+      "title": "datastore RunAggregationQuery Sample",
+      "description": "RunAggregationQuery runs an aggregation query.",
+      "file": "Client/RunAggregationQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunAggregationQuery",
+        "fullName": "google.datastore.v1.Client.RunAggregationQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datastorepb.RunAggregationQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datastorepb.RunAggregationQueryResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.datastore.v1.Client"
+        },
+        "method": {
+          "shortName": "RunAggregationQuery",
+          "fullName": "google.datastore.v1.Datastore.RunAggregationQuery",
+          "service": {
+            "shortName": "Datastore",
+            "fullName": "google.datastore.v1.Datastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastore_v1_generated_Datastore_RunQuery_sync",
+      "title": "datastore RunQuery Sample",
+      "description": "RunQuery queries for entities.",
+      "file": "Client/RunQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunQuery",
+        "fullName": "google.datastore.v1.Client.RunQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datastorepb.RunQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datastorepb.RunQueryResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.datastore.v1.Client"
+        },
+        "method": {
+          "shortName": "RunQuery",
+          "fullName": "google.datastore.v1.Datastore.RunQuery",
+          "service": {
+            "shortName": "Datastore",
+            "fullName": "google.datastore.v1.Datastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

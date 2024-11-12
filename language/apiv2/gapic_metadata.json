@@ -1,0 +1,73 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.language.v2",
+  "libraryPackage": "cloud.google.com/go/language/apiv2",
+  "services": {
+    "LanguageService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AnalyzeEntities": {
+              "methods": [
+                "AnalyzeEntities"
+              ]
+            },
+            "AnalyzeSentiment": {
+              "methods": [
+                "AnalyzeSentiment"
+              ]
+            },
+            "AnnotateText": {
+              "methods": [
+                "AnnotateText"
+              ]
+            },
+            "ClassifyText": {
+              "methods": [
+                "ClassifyText"
+              ]
+            },
+            "ModerateText": {
+              "methods": [
+                "ModerateText"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AnalyzeEntities": {
+              "methods": [
+                "AnalyzeEntities"
+              ]
+            },
+            "AnalyzeSentiment": {
+              "methods": [
+                "AnalyzeSentiment"
+              ]
+            },
+            "AnnotateText": {
+              "methods": [
+                "AnnotateText"
+              ]
+            },
+            "ClassifyText": {
+              "methods": [
+                "ClassifyText"
+              ]
+            },
+            "ModerateText": {
+              "methods": [
+                "ModerateText"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

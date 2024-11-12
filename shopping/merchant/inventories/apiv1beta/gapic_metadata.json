@@ -1,0 +1,97 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.shopping.merchant.inventories.v1beta",
+  "libraryPackage": "cloud.google.com/go/shopping/merchant/inventories/apiv1beta",
+  "services": {
+    "LocalInventoryService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "LocalInventoryClient",
+          "rpcs": {
+            "DeleteLocalInventory": {
+              "methods": [
+                "DeleteLocalInventory"
+              ]
+            },
+            "InsertLocalInventory": {
+              "methods": [
+                "InsertLocalInventory"
+              ]
+            },
+            "ListLocalInventories": {
+              "methods": [
+                "ListLocalInventories"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LocalInventoryClient",
+          "rpcs": {
+            "DeleteLocalInventory": {
+              "methods": [
+                "DeleteLocalInventory"
+              ]
+            },
+            "InsertLocalInventory": {
+              "methods": [
+                "InsertLocalInventory"
+              ]
+            },
+            "ListLocalInventories": {
+              "methods": [
+                "ListLocalInventories"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "RegionalInventoryService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "RegionalInventoryClient",
+          "rpcs": {
+            "DeleteRegionalInventory": {
+              "methods": [
+                "DeleteRegionalInventory"
+              ]
+            },
+            "InsertRegionalInventory": {
+              "methods": [
+                "InsertRegionalInventory"
+              ]
+            },
+            "ListRegionalInventories": {
+              "methods": [
+                "ListRegionalInventories"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "RegionalInventoryClient",
+          "rpcs": {
+            "DeleteRegionalInventory": {
+              "methods": [
+                "DeleteRegionalInventory"
+              ]
+            },
+            "InsertRegionalInventory": {
+              "methods": [
+                "InsertRegionalInventory"
+              ]
+            },
+            "ListRegionalInventories": {
+              "methods": [
+                "ListRegionalInventories"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

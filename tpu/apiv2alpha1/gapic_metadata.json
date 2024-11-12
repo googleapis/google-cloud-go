@@ -1,0 +1,143 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.tpu.v2alpha1",
+  "libraryPackage": "cloud.google.com/go/tpu/apiv2alpha1",
+  "services": {
+    "Tpu": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateNode": {
+              "methods": [
+                "CreateNode"
+              ]
+            },
+            "CreateQueuedResource": {
+              "methods": [
+                "CreateQueuedResource"
+              ]
+            },
+            "DeleteNode": {
+              "methods": [
+                "DeleteNode"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteQueuedResource": {
+              "methods": [
+                "DeleteQueuedResource"
+              ]
+            },
+            "GenerateServiceIdentity": {
+              "methods": [
+                "GenerateServiceIdentity"
+              ]
+            },
+            "GetAcceleratorType": {
+              "methods": [
+                "GetAcceleratorType"
+              ]
+            },
+            "GetGuestAttributes": {
+              "methods": [
+                "GetGuestAttributes"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetNode": {
+              "methods": [
+                "GetNode"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetQueuedResource": {
+              "methods": [
+                "GetQueuedResource"
+              ]
+            },
+            "GetRuntimeVersion": {
+              "methods": [
+                "GetRuntimeVersion"
+              ]
+            },
+            "ListAcceleratorTypes": {
+              "methods": [
+                "ListAcceleratorTypes"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListNodes": {
+              "methods": [
+                "ListNodes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListQueuedResources": {
+              "methods": [
+                "ListQueuedResources"
+              ]
+            },
+            "ListRuntimeVersions": {
+              "methods": [
+                "ListRuntimeVersions"
+              ]
+            },
+            "ResetQueuedResource": {
+              "methods": [
+                "ResetQueuedResource"
+              ]
+            },
+            "SimulateMaintenanceEvent": {
+              "methods": [
+                "SimulateMaintenanceEvent"
+              ]
+            },
+            "StartNode": {
+              "methods": [
+                "StartNode"
+              ]
+            },
+            "StopNode": {
+              "methods": [
+                "StopNode"
+              ]
+            },
+            "UpdateNode": {
+              "methods": [
+                "UpdateNode"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

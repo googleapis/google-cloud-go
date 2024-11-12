@@ -1,0 +1,243 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.bigquery.analyticshub.v1",
+  "libraryPackage": "cloud.google.com/go/bigquery/analyticshub/apiv1",
+  "services": {
+    "AnalyticsHubService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateDataExchange": {
+              "methods": [
+                "CreateDataExchange"
+              ]
+            },
+            "CreateListing": {
+              "methods": [
+                "CreateListing"
+              ]
+            },
+            "DeleteDataExchange": {
+              "methods": [
+                "DeleteDataExchange"
+              ]
+            },
+            "DeleteListing": {
+              "methods": [
+                "DeleteListing"
+              ]
+            },
+            "DeleteSubscription": {
+              "methods": [
+                "DeleteSubscription"
+              ]
+            },
+            "GetDataExchange": {
+              "methods": [
+                "GetDataExchange"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetListing": {
+              "methods": [
+                "GetListing"
+              ]
+            },
+            "GetSubscription": {
+              "methods": [
+                "GetSubscription"
+              ]
+            },
+            "ListDataExchanges": {
+              "methods": [
+                "ListDataExchanges"
+              ]
+            },
+            "ListListings": {
+              "methods": [
+                "ListListings"
+              ]
+            },
+            "ListOrgDataExchanges": {
+              "methods": [
+                "ListOrgDataExchanges"
+              ]
+            },
+            "ListSharedResourceSubscriptions": {
+              "methods": [
+                "ListSharedResourceSubscriptions"
+              ]
+            },
+            "ListSubscriptions": {
+              "methods": [
+                "ListSubscriptions"
+              ]
+            },
+            "RefreshSubscription": {
+              "methods": [
+                "RefreshSubscription"
+              ]
+            },
+            "RevokeSubscription": {
+              "methods": [
+                "RevokeSubscription"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "SubscribeDataExchange": {
+              "methods": [
+                "SubscribeDataExchange"
+              ]
+            },
+            "SubscribeListing": {
+              "methods": [
+                "SubscribeListing"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateDataExchange": {
+              "methods": [
+                "UpdateDataExchange"
+              ]
+            },
+            "UpdateListing": {
+              "methods": [
+                "UpdateListing"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateDataExchange": {
+              "methods": [
+                "CreateDataExchange"
+              ]
+            },
+            "CreateListing": {
+              "methods": [
+                "CreateListing"
+              ]
+            },
+            "DeleteDataExchange": {
+              "methods": [
+                "DeleteDataExchange"
+              ]
+            },
+            "DeleteListing": {
+              "methods": [
+                "DeleteListing"
+              ]
+            },
+            "DeleteSubscription": {
+              "methods": [
+                "DeleteSubscription"
+              ]
+            },
+            "GetDataExchange": {
+              "methods": [
+                "GetDataExchange"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetListing": {
+              "methods": [
+                "GetListing"
+              ]
+            },
+            "GetSubscription": {
+              "methods": [
+                "GetSubscription"
+              ]
+            },
+            "ListDataExchanges": {
+              "methods": [
+                "ListDataExchanges"
+              ]
+            },
+            "ListListings": {
+              "methods": [
+                "ListListings"
+              ]
+            },
+            "ListOrgDataExchanges": {
+              "methods": [
+                "ListOrgDataExchanges"
+              ]
+            },
+            "ListSharedResourceSubscriptions": {
+              "methods": [
+                "ListSharedResourceSubscriptions"
+              ]
+            },
+            "ListSubscriptions": {
+              "methods": [
+                "ListSubscriptions"
+              ]
+            },
+            "RefreshSubscription": {
+              "methods": [
+                "RefreshSubscription"
+              ]
+            },
+            "RevokeSubscription": {
+              "methods": [
+                "RevokeSubscription"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "SubscribeDataExchange": {
+              "methods": [
+                "SubscribeDataExchange"
+              ]
+            },
+            "SubscribeListing": {
+              "methods": [
+                "SubscribeListing"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateDataExchange": {
+              "methods": [
+                "UpdateDataExchange"
+              ]
+            },
+            "UpdateListing": {
+              "methods": [
+                "UpdateListing"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

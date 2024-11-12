@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/phishingprotection/apiv1beta1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.phishingprotection.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "phishingprotection_v1beta1_generated_PhishingProtectionServiceV1Beta1_ReportPhishing_sync",
+      "title": "phishingprotection ReportPhishing Sample",
+      "description": "ReportPhishing reports a URI suspected of containing phishing content to be reviewed. Once\nthe report review is complete, its result can be found in the Cloud\nSecurity Command Center findings dashboard for Phishing Protection. If the\nresult verifies the existence of malicious phishing content, the site will\nbe added the to [Google's Social Engineering\nlists](https: //support.google.com/webmasters/answer/6350487/) in order to\nprotect users that could get exposed to this threat in the future.",
+      "file": "PhishingProtectionServiceV1Beta1Client/ReportPhishing/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReportPhishing",
+        "fullName": "google.cloud.phishingprotection.v1beta1.PhishingProtectionServiceV1Beta1Client.ReportPhishing",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "phishingprotectionpb.ReportPhishingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*phishingprotectionpb.ReportPhishingResponse",
+        "client": {
+          "shortName": "PhishingProtectionServiceV1Beta1Client",
+          "fullName": "google.cloud.phishingprotection.v1beta1.PhishingProtectionServiceV1Beta1Client"
+        },
+        "method": {
+          "shortName": "ReportPhishing",
+          "fullName": "google.cloud.phishingprotection.v1beta1.PhishingProtectionServiceV1Beta1.ReportPhishing",
+          "service": {
+            "shortName": "PhishingProtectionServiceV1Beta1",
+            "fullName": "google.cloud.phishingprotection.v1beta1.PhishingProtectionServiceV1Beta1"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

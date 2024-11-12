@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/policytroubleshooter/apiv1",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.policytroubleshooter.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "policytroubleshooter_v1_generated_IamChecker_TroubleshootIamPolicy_sync",
+      "title": "policytroubleshooter TroubleshootIamPolicy Sample",
+      "description": "TroubleshootIamPolicy checks whether a principal has a specific permission for a specific\nresource, and explains why the principal does or does not have that\npermission.",
+      "file": "IamCheckerClient/TroubleshootIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TroubleshootIamPolicy",
+        "fullName": "google.cloud.policytroubleshooter.v1.IamCheckerClient.TroubleshootIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "policytroubleshooterpb.TroubleshootIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*policytroubleshooterpb.TroubleshootIamPolicyResponse",
+        "client": {
+          "shortName": "IamCheckerClient",
+          "fullName": "google.cloud.policytroubleshooter.v1.IamCheckerClient"
+        },
+        "method": {
+          "shortName": "TroubleshootIamPolicy",
+          "fullName": "google.cloud.policytroubleshooter.v1.IamChecker.TroubleshootIamPolicy",
+          "service": {
+            "shortName": "IamChecker",
+            "fullName": "google.cloud.policytroubleshooter.v1.IamChecker"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
