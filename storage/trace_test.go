@@ -27,6 +27,7 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/sdk/instrumentation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
@@ -48,6 +49,9 @@ func TestTraceStorageTraceStartEndSpan(t *testing.T) {
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
 	defer tp.Shutdown(ctx)
 	otel.SetTracerProvider(tp)
+
+	// TODO: Remove setting development env var upon launch.
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
 
 	spanName := "storage.TestTrace.TestStorageTraceStartEndSpan"
 	addAttrs := attribute.String("foo", "bar")
@@ -163,6 +167,10 @@ func createWantSpanStub(spanName string) tracetest.SpanStub {
 			attribute.String("gcp.client.repo", gcpClientRepo),
 			attribute.String("gcp.client.artifact", gcpClientArtifact),
 		},
+		InstrumentationLibrary: instrumentation.Scope{
+			Name:    "cloud.google.com/go/storage",
+			Version: internal.Version,
+		},
 	}
 }
 
@@ -186,6 +194,9 @@ func spanAttributesComparer(a, b tracetest.SpanStub) bool {
 		return false
 	}
 	if len(a.Attributes) != len(b.Attributes) {
+		return false
+	}
+	if a.InstrumentationLibrary != b.InstrumentationLibrary {
 		return false
 	}
 	return true
