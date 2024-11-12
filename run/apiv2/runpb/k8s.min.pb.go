@@ -21,12 +21,11 @@
 package runpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -830,10 +829,9 @@ type SecretVolumeSource struct {
 	// * Internally, a umask of 0222 will be applied to any non-zero value.
 	// * This is an integer representation of the mode bits. So, the octal
 	// integer value should look exactly as the chmod numeric notation with a
-	// leading zero. Some examples: for chmod 777 (a=rwx), set to 0777 (octal) or
-	// 511 (base-10). For chmod 640 (u=rw,g=r), set to 0640 (octal) or
-	// 416 (base-10). For chmod 755 (u=rwx,g=rx,o=rx), set to 0755 (octal) or 493
-	// (base-10).
+	// leading zero. Some examples: for chmod 640 (u=rw,g=r), set to 0640 (octal)
+	// or 416 (base-10). For chmod 755 (u=rwx,g=rx,o=rx), set to 0755 (octal) or
+	// 493 (base-10).
 	// * This might be in conflict with other options that affect the
 	// file mode, like fsGroup, and the result can be other mode bits set.
 	//
@@ -917,10 +915,9 @@ type VersionToPath struct {
 	// * Internally, a umask of 0222 will be applied to any non-zero value.
 	// * This is an integer representation of the mode bits. So, the octal
 	// integer value should look exactly as the chmod numeric notation with a
-	// leading zero. Some examples: for chmod 777 (a=rwx), set to 0777 (octal) or
-	// 511 (base-10). For chmod 640 (u=rw,g=r), set to 0640 (octal) or
-	// 416 (base-10). For chmod 755 (u=rwx,g=rx,o=rx), set to 0755 (octal) or 493
-	// (base-10).
+	// leading zero. Some examples: for chmod 640 (u=rw,g=r), set to 0640 (octal)
+	// or 416 (base-10). For chmod 755 (u=rwx,g=rx,o=rx), set to 0755 (octal) or
+	// 493 (base-10).
 	// * This might be in conflict with other options that affect the
 	// file mode, like fsGroup, and the result can be other mode bits set.
 	Mode int32 `protobuf:"varint,3,opt,name=mode,proto3" json:"mode,omitempty"`
