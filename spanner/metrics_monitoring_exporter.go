@@ -29,6 +29,8 @@ import (
 
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
 	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
+	"cloud.google.com/go/spanner/internal"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"go.opentelemetry.io/otel/attribute"
 	otelmetric "go.opentelemetry.io/otel/sdk/metric"
 	otelmetricdata "go.opentelemetry.io/otel/sdk/metric/metricdata"
@@ -36,6 +38,9 @@ import (
 	"google.golang.org/genproto/googleapis/api/distribution"
 	googlemetricpb "google.golang.org/genproto/googleapis/api/metric"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/encoding/gzip"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -76,17 +81,19 @@ type monitoringExporter struct {
 	client       *monitoring.MetricClient
 	shutdownOnce sync.Once
 	projectID    string
+	compression  string
 }
 
-func newMonitoringExporter(ctx context.Context, project string, opts ...option.ClientOption) (*monitoringExporter, error) {
+func newMonitoringExporter(ctx context.Context, project, compression string, opts ...option.ClientOption) (*monitoringExporter, error) {
 	client, err := monitoring.NewMetricClient(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &monitoringExporter{
-		client:    client,
-		shutdown:  make(chan struct{}),
-		projectID: project,
+		client:      client,
+		shutdown:    make(chan struct{}),
+		projectID:   project,
+		compression: compression,
 	}, nil
 }
 
@@ -133,19 +140,28 @@ func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetr
 	}
 
 	name := fmt.Sprintf("projects/%s", me.projectID)
-
+	ctx = callctx.SetHeaders(ctx, "x-goog-api-client", "gccl/"+internal.Version)
+	if me.compression == gzip.Name {
+		ctx = callctx.SetHeaders(ctx, requestsCompressionHeader, gzip.Name)
+	}
 	errs := []error{err}
 	for i := 0; i < len(tss); i += sendBatchSize {
 		j := i + sendBatchSize
 		if j >= len(tss) {
 			j = len(tss)
 		}
-
 		req := &monitoringpb.CreateTimeSeriesRequest{
 			Name:       name,
 			TimeSeries: tss[i:j],
 		}
-		errs = append(errs, me.client.CreateServiceTimeSeries(ctx, req))
+		err = me.client.CreateServiceTimeSeries(ctx, req)
+		if err != nil {
+			if status.Code(err) == codes.PermissionDenied {
+				err = fmt.Errorf("%w Need monitoring metric writer permission on project=%s. Follow https://cloud.google.com/spanner/docs/view-manage-client-side-metrics#access-client-side-metrics to set up permissions",
+					err, me.projectID)
+			}
+		}
+		errs = append(errs, err)
 	}
 
 	return errors.Join(errs...)

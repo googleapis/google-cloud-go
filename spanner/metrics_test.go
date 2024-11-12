@@ -89,14 +89,18 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 	go monitoringServer.Serve()
 	defer monitoringServer.Shutdown()
-	origExporterOpts := exporterOpts
-	exporterOpts = []option.ClientOption{
-		option.WithEndpoint(monitoringServer.Endpoint),
-		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+
+	// Override exporter options
+	origCreateExporterOptions := createExporterOptions
+	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+		return []option.ClientOption{
+			option.WithEndpoint(monitoringServer.Endpoint), // Connect to mock
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
 	}
 	defer func() {
-		exporterOpts = origExporterOpts
+		createExporterOptions = origCreateExporterOptions
 	}()
 
 	tests := []struct {

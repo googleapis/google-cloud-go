@@ -117,8 +117,8 @@ type CreateExampleRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The playbook to create an example for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The example to create.
 	Example *Example `protobuf:"bytes,2,opt,name=example,proto3" json:"example,omitempty"`
@@ -178,8 +178,8 @@ type DeleteExampleRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the example to delete.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>/examples/<Example ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>/examples/<ExampleID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -230,8 +230,8 @@ type ListExamplesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The playbook to list the examples from.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of items to return in a single page. By
 	// default 100 and at most 1000.
@@ -240,7 +240,7 @@ type ListExamplesRequest struct {
 	// returned from a previous list request.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. The language to list examples for.
-	// If not specified, the agent's default language is used.
+	// If not specified, list all examples under the playbook.
 	// Note: languages must be enabled in the agent before they can be used.
 	LanguageCode string `protobuf:"bytes,4,opt,name=language_code,json=languageCode,proto3" json:"language_code,omitempty"`
 }
@@ -376,8 +376,8 @@ type GetExampleRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the example.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>/examples/<Example ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>/examples/<ExampleID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -490,8 +490,8 @@ type Example struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The unique identifier of the playbook example.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>/examples/<Example ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>/examples/<ExampleID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The input to the playbook in the example.
 	PlaybookInput *PlaybookInput `protobuf:"bytes,3,opt,name=playbook_input,json=playbookInput,proto3" json:"playbook_input,omitempty"`
@@ -517,6 +517,7 @@ type Example struct {
 	// Optional. The language code of the example.
 	// If not specified, the agent's default language is used.
 	// Note: languages must be enabled in the agent before they can be used.
+	// Note: example's language code is not currently used in dialogflow agents.
 	LanguageCode string `protobuf:"bytes,13,opt,name=language_code,json=languageCode,proto3" json:"language_code,omitempty"`
 }
 
@@ -984,8 +985,8 @@ type ToolUse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The [tool][google.cloud.dialogflow.cx.v3beta1.Tool] that should
-	// be used. Format: `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/tools/<Tool ID>`.
+	// be used. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/tools/<ToolID>`.
 	Tool string `protobuf:"bytes,1,opt,name=tool,proto3" json:"tool,omitempty"`
 	// Optional. Name of the action to be called during the tool use.
 	Action string `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
@@ -1056,15 +1057,14 @@ func (x *ToolUse) GetOutputActionParameters() *structpb.Struct {
 }
 
 // Stores metadata of the invocation of a child playbook.
-// Next Id: 5
 type PlaybookInvocation struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The unique identifier of the playbook.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>`.
 	Playbook string `protobuf:"bytes,1,opt,name=playbook,proto3" json:"playbook,omitempty"`
 	// Optional. Input of the child playbook invocation.
 	PlaybookInput *PlaybookInput `protobuf:"bytes,2,opt,name=playbook_input,json=playbookInput,proto3" json:"playbook_input,omitempty"`
@@ -1135,15 +1135,14 @@ func (x *PlaybookInvocation) GetPlaybookState() OutputState {
 }
 
 // Stores metadata of the invocation of a CX flow.
-// Next Id: 7
 type FlowInvocation struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The unique identifier of the flow.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	Flow string `protobuf:"bytes,1,opt,name=flow,proto3" json:"flow,omitempty"`
 	// Optional. A list of input parameters for the flow.
 	InputActionParameters *structpb.Struct `protobuf:"bytes,5,opt,name=input_action_parameters,json=inputActionParameters,proto3" json:"input_action_parameters,omitempty"`
@@ -1547,7 +1546,7 @@ var file_google_cloud_dialogflow_cx_v3beta1_example_proto_rawDesc = []byte{
 	0x75, 0x74, 0x68, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f,
 	0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67,
 	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75,
-	0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0x9d, 0x01,
+	0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0x9a, 0x01,
 	0x0a, 0x26, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f,
 	0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x63, 0x78,
 	0x2e, 0x76, 0x33, 0x62, 0x65, 0x74, 0x61, 0x31, 0x42, 0x0c, 0x45, 0x78, 0x61, 0x6d, 0x70, 0x6c,
@@ -1555,10 +1554,10 @@ var file_google_cloud_dialogflow_cx_v3beta1_example_proto_rawDesc = []byte{
 	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69,
 	0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x63, 0x78, 0x2f, 0x61, 0x70, 0x69, 0x76,
 	0x33, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x63, 0x78, 0x70, 0x62, 0x3b, 0x63, 0x78, 0x70, 0x62,
-	0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x22, 0x47, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c,
-	0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0x42, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x22, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43,
+	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e,
+	0x43, 0x78, 0x2e, 0x56, 0x33, 0x42, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (

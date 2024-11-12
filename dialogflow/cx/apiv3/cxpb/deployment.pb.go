@@ -108,12 +108,12 @@ type Deployment struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the deployment.
-	// Format: projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/deployments/<Deployment ID>.
+	// Format:
+	// projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/deployments/<DeploymentID>.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The name of the flow version for this deployment.
-	// Format: projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/versions/<Verion ID>.
+	// Format:
+	// projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/versions/<VerionID>.
 	FlowVersion string `protobuf:"bytes,2,opt,name=flow_version,json=flowVersion,proto3" json:"flow_version,omitempty"`
 	// The current state of the deployment.
 	State Deployment_State `protobuf:"varint,3,opt,name=state,proto3,enum=google.cloud.dialogflow.cx.v3.Deployment_State" json:"state,omitempty"`
@@ -207,9 +207,8 @@ type ListDeploymentsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The [Environment][google.cloud.dialogflow.cx.v3.Environment] to
-	// list all environments for. Format: `projects/<Project
-	// ID>/locations/<Location ID>/agents/<Agent ID>/environments/<Environment
-	// ID>`.
+	// list all environments for. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return in a single page. By default 20 and
 	// at most 100.
@@ -343,8 +342,7 @@ type GetDeploymentRequest struct {
 
 	// Required. The name of the
 	// [Deployment][google.cloud.dialogflow.cx.v3.Deployment]. Format:
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/deployments/<Deployment ID>`.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/deployments/<DeploymentID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -394,12 +392,12 @@ type Deployment_Result struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Results of test cases running before the deployment.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/testCases/<TestCase ID>/results/<TestCaseResult ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/testCases/<TestCaseID>/results/<TestCaseResultID>`.
 	DeploymentTestResults []string `protobuf:"bytes,1,rep,name=deployment_test_results,json=deploymentTestResults,proto3" json:"deployment_test_results,omitempty"`
 	// The name of the experiment triggered by this deployment.
-	// Format: projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/experiments/<Experiment ID>.
+	// Format:
+	// projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/experiments/<ExperimentID>.
 	Experiment string `protobuf:"bytes,2,opt,name=experiment,proto3" json:"experiment,omitempty"`
 }
 

@@ -1,6 +1,21 @@
 # Changelog
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.3.2...edgecontainer/v1.4.0) (2024-11-06)
+
+
+### Features
+
+* **edgecontainer:** Add config data to zone metadata ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+* **edgecontainer:** Add connection state to cluster ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+* **edgecontainer:** Add maintenance exclusion window to maintenance policy ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+* **edgecontainer:** Add resource state to control plane encryption ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+* **edgecontainer:** Add resource state to local disk encryption ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+* **edgecontainer:** Add status reason to operation metadata ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+* **edgecontainer:** Add storage schema to local control plane config ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+* **edgecontainer:** Add storage schema to node config ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+* **edgecontainer:** Add VM service config to system addons config ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+
 ## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.3.1...edgecontainer/v1.3.2) (2024-10-23)
 
 

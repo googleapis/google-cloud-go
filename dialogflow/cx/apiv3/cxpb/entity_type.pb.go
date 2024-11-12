@@ -316,8 +316,8 @@ type EntityType struct {
 	// The unique identifier of the entity type.
 	// Required for
 	// [EntityTypes.UpdateEntityType][google.cloud.dialogflow.cx.v3.EntityTypes.UpdateEntityType].
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/entityTypes/<Entity Type ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/entityTypes/<EntityTypeID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The human-readable name of the entity type, unique within the
 	// agent.
@@ -438,12 +438,11 @@ type ExportEntityTypesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the parent agent to export entity types.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The name of the entity types to export.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/entityTypes/<EntityType ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/entityTypes/<EntityTypeID>`.
 	EntityTypes []string `protobuf:"bytes,2,rep,name=entity_types,json=entityTypes,proto3" json:"entity_types,omitempty"`
 	// The destination to export.
 	//
@@ -719,7 +718,7 @@ type ImportEntityTypesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to import the entity types into.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The entity types to import.
 	//
@@ -731,8 +730,8 @@ type ImportEntityTypesRequest struct {
 	// Required. Merge option for importing entity types.
 	MergeOption ImportEntityTypesRequest_MergeOption `protobuf:"varint,4,opt,name=merge_option,json=mergeOption,proto3,enum=google.cloud.dialogflow.cx.v3.ImportEntityTypesRequest_MergeOption" json:"merge_option,omitempty"`
 	// Optional. The target entity type to import into.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/entity_types/<EntityType ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/entity_types/<EntityTypeID>`.
 	// If set, there should be only one entity type included in
 	// [entity_types][google.cloud.dialogflow.cx.v3.ImportEntityTypesRequest.entity_types],
 	// of which the type should match the type of the target entity type. All
@@ -849,8 +848,8 @@ type ImportEntityTypesResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The unique identifier of the imported entity types.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/entity_types/<EntityType ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/entity_types/<EntityTypeID>`.
 	EntityTypes []string `protobuf:"bytes,1,rep,name=entity_types,json=entityTypes,proto3" json:"entity_types,omitempty"`
 	// Info which resources have conflicts when
 	// [REPORT_CONFLICT][ImportEntityTypesResponse.REPORT_CONFLICT] merge_option
@@ -953,7 +952,7 @@ type ListEntityTypesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to list all entity types for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The language to list entity types for. The following fields are language
 	// dependent:
@@ -1104,8 +1103,8 @@ type GetEntityTypeRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the entity type.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/entityTypes/<Entity Type ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/entityTypes/<EntityTypeID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The language to retrieve the entity type for. The following fields are
 	// language dependent:
@@ -1176,7 +1175,7 @@ type CreateEntityTypeRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to create a entity type for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The entity type to create.
 	EntityType *EntityType `protobuf:"bytes,2,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
@@ -1333,8 +1332,8 @@ type DeleteEntityTypeRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the entity type to delete.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/entityTypes/<Entity Type ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/entityTypes/<EntityTypeID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// This field has no effect for entity type not being used.
 	// For entity types that are used by intents or pages:
@@ -1934,19 +1933,19 @@ var file_google_cloud_dialogflow_cx_v3_entity_type_proto_rawDesc = []byte{
 	0x74, 0x68, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
 	0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74,
-	0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0xb5, 0x01, 0x0a,
+	0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0xb2, 0x01, 0x0a,
 	0x21, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75,
 	0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x63, 0x78, 0x2e,
 	0x76, 0x33, 0x42, 0x0f, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x54, 0x79, 0x70, 0x65, 0x50, 0x72,
 	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x31, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f,
 	0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x63, 0x78, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x33, 0x2f, 0x63,
-	0x78, 0x70, 0x62, 0x3b, 0x63, 0x78, 0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46,
-	0xaa, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
-	0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33,
-	0xea, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64,
-	0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58,
-	0x3a, 0x3a, 0x56, 0x33, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x78, 0x70, 0x62, 0x3b, 0x63, 0x78, 0x70, 0x62, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1d,
+	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61,
+	0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0xea, 0x02, 0x21,
+	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44,
+	0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56,
+	0x33, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
