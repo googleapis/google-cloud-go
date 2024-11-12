@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/errorreporting/apiv1beta1",
-    "version": "0.3.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "errorreportingpb.ErrorGroup",
+        "resultType": "*errorreportingpb.ErrorGroup",
         "client": {
           "shortName": "ErrorGroupClient",
           "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorGroupClient"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "errorreportingpb.ErrorGroup",
+        "resultType": "*errorreportingpb.ErrorGroup",
         "client": {
           "shortName": "ErrorGroupClient",
           "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorGroupClient"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "errorreportingpb.DeleteEventsResponse",
+        "resultType": "*errorreportingpb.DeleteEventsResponse",
         "client": {
           "shortName": "ErrorStatsClient",
           "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsClient"
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -244,7 +244,7 @@
     {
       "regionTag": "clouderrorreporting_v1beta1_generated_ReportErrorsService_ReportErrorEvent_sync",
       "title": "clouderrorreporting ReportErrorEvent Sample",
-      "description": "ReportErrorEvent report an individual error event and record the event to a log.\n\nThis endpoint accepts either an OAuth token,\nor an API key (at https: //support.google.com/cloud/answer/6158862)\nfor authentication. To use an API key, append it to the URL as the value of\na key parameter. For example: \n\nPOST https: //clouderrorreporting.googleapis.com/v1beta1/{projectName}/events: report?key=123ABC456\n\nNote: Error Reporting (at /error-reporting) is a global service built\non Cloud Logging and doesn’t analyze logs stored\nin regional log buckets or logs routed to other Google Cloud projects.",
+      "description": "ReportErrorEvent report an individual error event and record the event to a log.\n\nThis endpoint accepts **either** an OAuth token,\n**or** an [API key](https: //support.google.com/cloud/answer/6158862)\nfor authentication. To use an API key, append it to the URL as the value of\na `key` parameter. For example: \n\n`POST\nhttps: //clouderrorreporting.googleapis.com/v1beta1/{projectName}/events: report?key=123ABC456`\n\n**Note: ** [Error Reporting] (https: //cloud.google.com/error-reporting)\nis a service built on Cloud Logging and can analyze log entries when all of\nthe following are true: \n\n* Customer-managed encryption keys (CMEK) are disabled on the log bucket.\n* The log bucket satisfies one of the following: \n* The log bucket is stored in the same project where the logs\noriginated.\n* The logs were routed to a project, and then that project stored those\nlogs in a log bucket that it owns.",
       "file": "ReportErrorsClient/ReportErrorEvent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "errorreportingpb.ReportErrorEventResponse",
+        "resultType": "*errorreportingpb.ReportErrorEventResponse",
         "client": {
           "shortName": "ReportErrorsClient",
           "fullName": "google.devtools.clouderrorreporting.v1beta1.ReportErrorsClient"

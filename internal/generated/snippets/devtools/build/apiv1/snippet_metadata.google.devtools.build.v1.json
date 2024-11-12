@@ -1,0 +1,102 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/devtools/build/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.devtools.build.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "buildeventservice_v1_generated_PublishBuildEvent_PublishBuildToolEventStream_sync",
+      "title": "buildeventservice PublishBuildToolEventStream Sample",
+      "description": "PublishBuildToolEventStream publish build tool events belonging to the same stream to a backend job\nusing bidirectional streaming.",
+      "file": "PublishBuildEventClient/PublishBuildToolEventStream/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PublishBuildToolEventStream",
+        "fullName": "google.devtools.build.v1.PublishBuildEventClient.PublishBuildToolEventStream",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "buildpb.PublishBuildEvent_PublishBuildToolEventStreamClient",
+        "client": {
+          "shortName": "PublishBuildEventClient",
+          "fullName": "google.devtools.build.v1.PublishBuildEventClient"
+        },
+        "method": {
+          "shortName": "PublishBuildToolEventStream",
+          "fullName": "google.devtools.build.v1.PublishBuildEvent.PublishBuildToolEventStream",
+          "service": {
+            "shortName": "PublishBuildEvent",
+            "fullName": "google.devtools.build.v1.PublishBuildEvent"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "buildeventservice_v1_generated_PublishBuildEvent_PublishLifecycleEvent_sync",
+      "title": "buildeventservice PublishLifecycleEvent Sample",
+      "description": "PublishLifecycleEvent publish a build event stating the new state of a build (typically from the\nbuild queue). The BuildEnqueued event must be published before all other\nevents for the same build ID.\n\nThe backend will persist the event and deliver it to registered frontend\njobs immediately without batching.\n\nThe commit status of the request is reported by the RPC's util_status()\nfunction. The error code is the canonical error code defined in\n//util/task/codes.proto.",
+      "file": "PublishBuildEventClient/PublishLifecycleEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PublishLifecycleEvent",
+        "fullName": "google.devtools.build.v1.PublishBuildEventClient.PublishLifecycleEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "buildpb.PublishLifecycleEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PublishBuildEventClient",
+          "fullName": "google.devtools.build.v1.PublishBuildEventClient"
+        },
+        "method": {
+          "shortName": "PublishLifecycleEvent",
+          "fullName": "google.devtools.build.v1.PublishBuildEvent.PublishLifecycleEvent",
+          "service": {
+            "shortName": "PublishBuildEvent",
+            "fullName": "google.devtools.build.v1.PublishBuildEvent"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

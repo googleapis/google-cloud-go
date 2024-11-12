@@ -1,0 +1,1435 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/iam/admin/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.iam.admin.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "iam_v1_generated_IAM_CreateRole_sync",
+      "title": "iam CreateRole Sample",
+      "description": "CreateRole creates a new custom [Role][google.iam.admin.v1.Role].",
+      "file": "IamClient/CreateRole/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRole",
+        "fullName": "google.iam.admin.v1.IamClient.CreateRole",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateRoleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Role",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "CreateRole",
+          "fullName": "google.iam.admin.v1.IAM.CreateRole",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_CreateServiceAccount_sync",
+      "title": "iam CreateServiceAccount Sample",
+      "description": "CreateServiceAccount creates a [ServiceAccount][google.iam.admin.v1.ServiceAccount].",
+      "file": "IamClient/CreateServiceAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateServiceAccount",
+        "fullName": "google.iam.admin.v1.IamClient.CreateServiceAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateServiceAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ServiceAccount",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "CreateServiceAccount",
+          "fullName": "google.iam.admin.v1.IAM.CreateServiceAccount",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_CreateServiceAccountKey_sync",
+      "title": "iam CreateServiceAccountKey Sample",
+      "description": "CreateServiceAccountKey creates a [ServiceAccountKey][google.iam.admin.v1.ServiceAccountKey].",
+      "file": "IamClient/CreateServiceAccountKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateServiceAccountKey",
+        "fullName": "google.iam.admin.v1.IamClient.CreateServiceAccountKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateServiceAccountKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ServiceAccountKey",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "CreateServiceAccountKey",
+          "fullName": "google.iam.admin.v1.IAM.CreateServiceAccountKey",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_DeleteRole_sync",
+      "title": "iam DeleteRole Sample",
+      "description": "DeleteRole deletes a custom [Role][google.iam.admin.v1.Role].\n\nWhen you delete a custom role, the following changes occur immediately: \n\n* You cannot bind a principal to the custom role in an IAM\n[Policy][google.iam.v1.Policy].\n* Existing bindings to the custom role are not changed, but they have no\neffect.\n* By default, the response from [ListRoles][google.iam.admin.v1.IAM.ListRoles] does not include the custom\nrole.\n\nYou have 7 days to undelete the custom role. After 7 days, the following\nchanges occur: \n\n* The custom role is permanently deleted and cannot be recovered.\n* If an IAM policy contains a binding to the custom role, the binding is\npermanently removed.",
+      "file": "IamClient/DeleteRole/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRole",
+        "fullName": "google.iam.admin.v1.IamClient.DeleteRole",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteRoleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Role",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "DeleteRole",
+          "fullName": "google.iam.admin.v1.IAM.DeleteRole",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_DeleteServiceAccount_sync",
+      "title": "iam DeleteServiceAccount Sample",
+      "description": "DeleteServiceAccount deletes a [ServiceAccount][google.iam.admin.v1.ServiceAccount].\n\n**Warning: ** After you delete a service account, you might not be able to\nundelete it. If you know that you need to re-enable the service account in\nthe future, use [DisableServiceAccount][google.iam.admin.v1.IAM.DisableServiceAccount] instead.\n\nIf you delete a service account, IAM permanently removes the service\naccount 30 days later. Google Cloud cannot recover the service account\nafter it is permanently removed, even if you file a support request.\n\nTo help avoid unplanned outages, we recommend that you disable the service\naccount before you delete it. Use [DisableServiceAccount][google.iam.admin.v1.IAM.DisableServiceAccount] to disable the\nservice account, then wait at least 24 hours and watch for unintended\nconsequences. If there are no unintended consequences, you can delete the\nservice account.",
+      "file": "IamClient/DeleteServiceAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteServiceAccount",
+        "fullName": "google.iam.admin.v1.IamClient.DeleteServiceAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteServiceAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "DeleteServiceAccount",
+          "fullName": "google.iam.admin.v1.IAM.DeleteServiceAccount",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_DeleteServiceAccountKey_sync",
+      "title": "iam DeleteServiceAccountKey Sample",
+      "description": "DeleteServiceAccountKey deletes a [ServiceAccountKey][google.iam.admin.v1.ServiceAccountKey]. Deleting a service account key does not\nrevoke short-lived credentials that have been issued based on the service\naccount key.",
+      "file": "IamClient/DeleteServiceAccountKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteServiceAccountKey",
+        "fullName": "google.iam.admin.v1.IamClient.DeleteServiceAccountKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteServiceAccountKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "DeleteServiceAccountKey",
+          "fullName": "google.iam.admin.v1.IAM.DeleteServiceAccountKey",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_DisableServiceAccount_sync",
+      "title": "iam DisableServiceAccount Sample",
+      "description": "DisableServiceAccount disables a [ServiceAccount][google.iam.admin.v1.ServiceAccount] immediately.\n\nIf an application uses the service account to authenticate, that\napplication can no longer call Google APIs or access Google Cloud\nresources. Existing access tokens for the service account are rejected, and\nrequests for new access tokens will fail.\n\nTo re-enable the service account, use [EnableServiceAccount][google.iam.admin.v1.IAM.EnableServiceAccount]. After you\nre-enable the service account, its existing access tokens will be accepted,\nand you can request new access tokens.\n\nTo help avoid unplanned outages, we recommend that you disable the service\naccount before you delete it. Use this method to disable the service\naccount, then wait at least 24 hours and watch for unintended consequences.\nIf there are no unintended consequences, you can delete the service account\nwith [DeleteServiceAccount][google.iam.admin.v1.IAM.DeleteServiceAccount].",
+      "file": "IamClient/DisableServiceAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DisableServiceAccount",
+        "fullName": "google.iam.admin.v1.IamClient.DisableServiceAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DisableServiceAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "DisableServiceAccount",
+          "fullName": "google.iam.admin.v1.IAM.DisableServiceAccount",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_DisableServiceAccountKey_sync",
+      "title": "iam DisableServiceAccountKey Sample",
+      "description": "DisableServiceAccountKey disable a [ServiceAccountKey][google.iam.admin.v1.ServiceAccountKey]. A disabled service account key can be\nre-enabled with [EnableServiceAccountKey][google.iam.admin.v1.IAM.EnableServiceAccountKey].",
+      "file": "IamClient/DisableServiceAccountKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DisableServiceAccountKey",
+        "fullName": "google.iam.admin.v1.IamClient.DisableServiceAccountKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DisableServiceAccountKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "DisableServiceAccountKey",
+          "fullName": "google.iam.admin.v1.IAM.DisableServiceAccountKey",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_EnableServiceAccount_sync",
+      "title": "iam EnableServiceAccount Sample",
+      "description": "EnableServiceAccount enables a [ServiceAccount][google.iam.admin.v1.ServiceAccount] that was disabled by\n[DisableServiceAccount][google.iam.admin.v1.IAM.DisableServiceAccount].\n\nIf the service account is already enabled, then this method has no effect.\n\nIf the service account was disabled by other means—for example, if Google\ndisabled the service account because it was compromised—you cannot use this\nmethod to enable the service account.",
+      "file": "IamClient/EnableServiceAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EnableServiceAccount",
+        "fullName": "google.iam.admin.v1.IamClient.EnableServiceAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.EnableServiceAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "EnableServiceAccount",
+          "fullName": "google.iam.admin.v1.IAM.EnableServiceAccount",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_EnableServiceAccountKey_sync",
+      "title": "iam EnableServiceAccountKey Sample",
+      "description": "EnableServiceAccountKey enable a [ServiceAccountKey][google.iam.admin.v1.ServiceAccountKey].",
+      "file": "IamClient/EnableServiceAccountKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EnableServiceAccountKey",
+        "fullName": "google.iam.admin.v1.IamClient.EnableServiceAccountKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.EnableServiceAccountKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "EnableServiceAccountKey",
+          "fullName": "google.iam.admin.v1.IAM.EnableServiceAccountKey",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_GetIamPolicy_sync",
+      "title": "iam GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the IAM policy that is attached to a [ServiceAccount][google.iam.admin.v1.ServiceAccount]. This IAM\npolicy specifies which principals have access to the service account.\n\nThis method does not tell you whether the service account has been granted\nany roles on other resources. To check whether a service account has role\ngrants on a resource, use the `getIamPolicy` method for that resource. For\nexample, to view the role grants for a project, call the Resource Manager\nAPI's\n[`projects.getIamPolicy`](https: //cloud.google.com/resource-manager/reference/rest/v1/projects/getIamPolicy)\nmethod.",
+      "file": "IamClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.iam.admin.v1.IamClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.admin.v1.IAM.GetIamPolicy",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_GetRole_sync",
+      "title": "iam GetRole Sample",
+      "description": "GetRole gets the definition of a [Role][google.iam.admin.v1.Role].",
+      "file": "IamClient/GetRole/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRole",
+        "fullName": "google.iam.admin.v1.IamClient.GetRole",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetRoleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Role",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "GetRole",
+          "fullName": "google.iam.admin.v1.IAM.GetRole",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_GetServiceAccount_sync",
+      "title": "iam GetServiceAccount Sample",
+      "description": "GetServiceAccount gets a [ServiceAccount][google.iam.admin.v1.ServiceAccount].",
+      "file": "IamClient/GetServiceAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetServiceAccount",
+        "fullName": "google.iam.admin.v1.IamClient.GetServiceAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetServiceAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ServiceAccount",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "GetServiceAccount",
+          "fullName": "google.iam.admin.v1.IAM.GetServiceAccount",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_GetServiceAccountKey_sync",
+      "title": "iam GetServiceAccountKey Sample",
+      "description": "GetServiceAccountKey gets a [ServiceAccountKey][google.iam.admin.v1.ServiceAccountKey].",
+      "file": "IamClient/GetServiceAccountKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetServiceAccountKey",
+        "fullName": "google.iam.admin.v1.IamClient.GetServiceAccountKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetServiceAccountKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ServiceAccountKey",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "GetServiceAccountKey",
+          "fullName": "google.iam.admin.v1.IAM.GetServiceAccountKey",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_LintPolicy_sync",
+      "title": "iam LintPolicy Sample",
+      "description": "LintPolicy lints, or validates, an IAM policy. Currently checks the\n[google.iam.v1.Binding.condition][google.iam.v1.Binding.condition] field, which contains a condition\nexpression for a role binding.\n\nSuccessful calls to this method always return an HTTP `200 OK` status code,\neven if the linter detects an issue in the IAM policy.",
+      "file": "IamClient/LintPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LintPolicy",
+        "fullName": "google.iam.admin.v1.IamClient.LintPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.LintPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.LintPolicyResponse",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "LintPolicy",
+          "fullName": "google.iam.admin.v1.IAM.LintPolicy",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_ListRoles_sync",
+      "title": "iam ListRoles Sample",
+      "description": "ListRoles lists every predefined [Role][google.iam.admin.v1.Role] that IAM supports, or every custom role\nthat is defined for an organization or project.",
+      "file": "IamClient/ListRoles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRoles",
+        "fullName": "google.iam.admin.v1.IamClient.ListRoles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListRolesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RoleIterator",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "ListRoles",
+          "fullName": "google.iam.admin.v1.IAM.ListRoles",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_ListServiceAccountKeys_sync",
+      "title": "iam ListServiceAccountKeys Sample",
+      "description": "ListServiceAccountKeys lists every [ServiceAccountKey][google.iam.admin.v1.ServiceAccountKey] for a service account.",
+      "file": "IamClient/ListServiceAccountKeys/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServiceAccountKeys",
+        "fullName": "google.iam.admin.v1.IamClient.ListServiceAccountKeys",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListServiceAccountKeysRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ListServiceAccountKeysResponse",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "ListServiceAccountKeys",
+          "fullName": "google.iam.admin.v1.IAM.ListServiceAccountKeys",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_ListServiceAccounts_sync",
+      "title": "iam ListServiceAccounts Sample",
+      "description": "ListServiceAccounts lists every [ServiceAccount][google.iam.admin.v1.ServiceAccount] that belongs to a specific project.",
+      "file": "IamClient/ListServiceAccounts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServiceAccounts",
+        "fullName": "google.iam.admin.v1.IamClient.ListServiceAccounts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListServiceAccountsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ServiceAccountIterator",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "ListServiceAccounts",
+          "fullName": "google.iam.admin.v1.IAM.ListServiceAccounts",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_PatchServiceAccount_sync",
+      "title": "iam PatchServiceAccount Sample",
+      "description": "PatchServiceAccount patches a [ServiceAccount][google.iam.admin.v1.ServiceAccount].",
+      "file": "IamClient/PatchServiceAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchServiceAccount",
+        "fullName": "google.iam.admin.v1.IamClient.PatchServiceAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.PatchServiceAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ServiceAccount",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "PatchServiceAccount",
+          "fullName": "google.iam.admin.v1.IAM.PatchServiceAccount",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_QueryAuditableServices_sync",
+      "title": "iam QueryAuditableServices Sample",
+      "description": "QueryAuditableServices returns a list of services that allow you to opt into audit logs that are\nnot generated by default.\n\nTo learn more about audit logs, see the [Logging\ndocumentation](https: //cloud.google.com/logging/docs/audit).",
+      "file": "IamClient/QueryAuditableServices/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryAuditableServices",
+        "fullName": "google.iam.admin.v1.IamClient.QueryAuditableServices",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.QueryAuditableServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.QueryAuditableServicesResponse",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "QueryAuditableServices",
+          "fullName": "google.iam.admin.v1.IAM.QueryAuditableServices",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_QueryGrantableRoles_sync",
+      "title": "iam QueryGrantableRoles Sample",
+      "description": "QueryGrantableRoles lists roles that can be granted on a Google Cloud resource. A role is\ngrantable if the IAM policy for the resource can contain bindings to the\nrole.",
+      "file": "IamClient/QueryGrantableRoles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryGrantableRoles",
+        "fullName": "google.iam.admin.v1.IamClient.QueryGrantableRoles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.QueryGrantableRolesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RoleIterator",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "QueryGrantableRoles",
+          "fullName": "google.iam.admin.v1.IAM.QueryGrantableRoles",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_QueryTestablePermissions_sync",
+      "title": "iam QueryTestablePermissions Sample",
+      "description": "QueryTestablePermissions lists every permission that you can test on a resource. A permission is\ntestable if you can check whether a principal has that permission on the\nresource.",
+      "file": "IamClient/QueryTestablePermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryTestablePermissions",
+        "fullName": "google.iam.admin.v1.IamClient.QueryTestablePermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.QueryTestablePermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PermissionIterator",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "QueryTestablePermissions",
+          "fullName": "google.iam.admin.v1.IAM.QueryTestablePermissions",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_SetIamPolicy_sync",
+      "title": "iam SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the IAM policy that is attached to a [ServiceAccount][google.iam.admin.v1.ServiceAccount].\n\nUse this method to grant or revoke access to the service account. For\nexample, you could grant a principal the ability to impersonate the service\naccount.\n\nThis method does not enable the service account to access other resources.\nTo grant roles to a service account on a resource, follow these steps: \n\n1. Call the resource's `getIamPolicy` method to get its current IAM policy.\n2. Edit the policy so that it binds the service account to an IAM role for\nthe resource.\n3. Call the resource's `setIamPolicy` method to update its IAM policy.\n\nFor detailed instructions, see\n[Manage access to project, folders, and\norganizations](https: //cloud.google.com/iam/help/service-accounts/granting-access-to-service-accounts)\nor [Manage access to other\nresources](https: //cloud.google.com/iam/help/access/manage-other-resources).",
+      "file": "IamClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.iam.admin.v1.IamClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.admin.v1.IAM.SetIamPolicy",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_SignBlob_sync",
+      "title": "iam SignBlob Sample",
+      "description": "SignBlob **Note: ** This method is deprecated. Use the\n[`signBlob`](https: //cloud.google.com/iam/help/rest-credentials/v1/projects.serviceAccounts/signBlob)\nmethod in the IAM Service Account Credentials API instead. If you currently\nuse this method, see the [migration\nguide](https: //cloud.google.com/iam/help/credentials/migrate-api) for\ninstructions.\n\nSigns a blob using the system-managed private key for a [ServiceAccount][google.iam.admin.v1.ServiceAccount].\n\n\nDeprecated: SignBlob may be removed in a future version.",
+      "file": "IamClient/SignBlob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SignBlob",
+        "fullName": "google.iam.admin.v1.IamClient.SignBlob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.SignBlobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SignBlobResponse",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "SignBlob",
+          "fullName": "google.iam.admin.v1.IAM.SignBlob",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_SignJwt_sync",
+      "title": "iam SignJwt Sample",
+      "description": "SignJwt **Note: ** This method is deprecated. Use the\n[`signJwt`](https: //cloud.google.com/iam/help/rest-credentials/v1/projects.serviceAccounts/signJwt)\nmethod in the IAM Service Account Credentials API instead. If you currently\nuse this method, see the [migration\nguide](https: //cloud.google.com/iam/help/credentials/migrate-api) for\ninstructions.\n\nSigns a JSON Web Token (JWT) using the system-managed private key for a\n[ServiceAccount][google.iam.admin.v1.ServiceAccount].\n\n\nDeprecated: SignJwt may be removed in a future version.",
+      "file": "IamClient/SignJwt/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SignJwt",
+        "fullName": "google.iam.admin.v1.IamClient.SignJwt",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.SignJwtRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SignJwtResponse",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "SignJwt",
+          "fullName": "google.iam.admin.v1.IAM.SignJwt",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_TestIamPermissions_sync",
+      "title": "iam TestIamPermissions Sample",
+      "description": "TestIamPermissions tests whether the caller has the specified permissions on a\n[ServiceAccount][google.iam.admin.v1.ServiceAccount].",
+      "file": "IamClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.iam.admin.v1.IamClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.admin.v1.IAM.TestIamPermissions",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_UndeleteRole_sync",
+      "title": "iam UndeleteRole Sample",
+      "description": "UndeleteRole undeletes a custom [Role][google.iam.admin.v1.Role].",
+      "file": "IamClient/UndeleteRole/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeleteRole",
+        "fullName": "google.iam.admin.v1.IamClient.UndeleteRole",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UndeleteRoleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Role",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "UndeleteRole",
+          "fullName": "google.iam.admin.v1.IAM.UndeleteRole",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_UndeleteServiceAccount_sync",
+      "title": "iam UndeleteServiceAccount Sample",
+      "description": "UndeleteServiceAccount restores a deleted [ServiceAccount][google.iam.admin.v1.ServiceAccount].\n\n**Important: ** It is not always possible to restore a deleted service\naccount. Use this method only as a last resort.\n\nAfter you delete a service account, IAM permanently removes the service\naccount 30 days later. There is no way to restore a deleted service account\nthat has been permanently removed.",
+      "file": "IamClient/UndeleteServiceAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeleteServiceAccount",
+        "fullName": "google.iam.admin.v1.IamClient.UndeleteServiceAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UndeleteServiceAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.UndeleteServiceAccountResponse",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "UndeleteServiceAccount",
+          "fullName": "google.iam.admin.v1.IAM.UndeleteServiceAccount",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_UpdateRole_sync",
+      "title": "iam UpdateRole Sample",
+      "description": "UpdateRole updates the definition of a custom [Role][google.iam.admin.v1.Role].",
+      "file": "IamClient/UpdateRole/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRole",
+        "fullName": "google.iam.admin.v1.IamClient.UpdateRole",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateRoleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Role",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "UpdateRole",
+          "fullName": "google.iam.admin.v1.IAM.UpdateRole",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_UpdateServiceAccount_sync",
+      "title": "iam UpdateServiceAccount Sample",
+      "description": "UpdateServiceAccount **Note: ** We are in the process of deprecating this method. Use\n[PatchServiceAccount][google.iam.admin.v1.IAM.PatchServiceAccount] instead.\n\nUpdates a [ServiceAccount][google.iam.admin.v1.ServiceAccount].\n\nYou can update only the `display_name` field.",
+      "file": "IamClient/UpdateServiceAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateServiceAccount",
+        "fullName": "google.iam.admin.v1.IamClient.UpdateServiceAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ServiceAccount",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ServiceAccount",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "UpdateServiceAccount",
+          "fullName": "google.iam.admin.v1.IAM.UpdateServiceAccount",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "iam_v1_generated_IAM_UploadServiceAccountKey_sync",
+      "title": "iam UploadServiceAccountKey Sample",
+      "description": "UploadServiceAccountKey uploads the public key portion of a key pair that you manage, and\nassociates the public key with a [ServiceAccount][google.iam.admin.v1.ServiceAccount].\n\nAfter you upload the public key, you can use the private key from the key\npair as a service account key.",
+      "file": "IamClient/UploadServiceAccountKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UploadServiceAccountKey",
+        "fullName": "google.iam.admin.v1.IamClient.UploadServiceAccountKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UploadServiceAccountKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ServiceAccountKey",
+        "client": {
+          "shortName": "IamClient",
+          "fullName": "google.iam.admin.v1.IamClient"
+        },
+        "method": {
+          "shortName": "UploadServiceAccountKey",
+          "fullName": "google.iam.admin.v1.IAM.UploadServiceAccountKey",
+          "service": {
+            "shortName": "IAM",
+            "fullName": "google.iam.admin.v1.IAM"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

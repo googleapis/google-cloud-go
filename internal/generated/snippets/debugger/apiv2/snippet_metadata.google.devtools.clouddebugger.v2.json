@@ -26,7 +26,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouddebuggerpb.ListActiveBreakpointsRequest",
+            "type": "debuggerpb.ListActiveBreakpointsRequest",
             "name": "req"
           },
           {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "*clouddebuggerpb.ListActiveBreakpointsResponse",
+        "resultType": "*debuggerpb.ListActiveBreakpointsResponse",
         "client": {
           "shortName": "Controller2Client",
           "fullName": "google.devtools.clouddebugger.v2.Controller2Client"
@@ -72,7 +72,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouddebuggerpb.RegisterDebuggeeRequest",
+            "type": "debuggerpb.RegisterDebuggeeRequest",
             "name": "req"
           },
           {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "*clouddebuggerpb.RegisterDebuggeeResponse",
+        "resultType": "*debuggerpb.RegisterDebuggeeResponse",
         "client": {
           "shortName": "Controller2Client",
           "fullName": "google.devtools.clouddebugger.v2.Controller2Client"
@@ -118,7 +118,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouddebuggerpb.UpdateActiveBreakpointRequest",
+            "type": "debuggerpb.UpdateActiveBreakpointRequest",
             "name": "req"
           },
           {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "*clouddebuggerpb.UpdateActiveBreakpointResponse",
+        "resultType": "*debuggerpb.UpdateActiveBreakpointResponse",
         "client": {
           "shortName": "Controller2Client",
           "fullName": "google.devtools.clouddebugger.v2.Controller2Client"
@@ -164,7 +164,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouddebuggerpb.DeleteBreakpointRequest",
+            "type": "debuggerpb.DeleteBreakpointRequest",
             "name": "req"
           },
           {
@@ -209,7 +209,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouddebuggerpb.GetBreakpointRequest",
+            "type": "debuggerpb.GetBreakpointRequest",
             "name": "req"
           },
           {
@@ -217,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "*clouddebuggerpb.GetBreakpointResponse",
+        "resultType": "*debuggerpb.GetBreakpointResponse",
         "client": {
           "shortName": "Debugger2Client",
           "fullName": "google.devtools.clouddebugger.v2.Debugger2Client"
@@ -255,7 +255,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouddebuggerpb.ListBreakpointsRequest",
+            "type": "debuggerpb.ListBreakpointsRequest",
             "name": "req"
           },
           {
@@ -263,7 +263,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "*clouddebuggerpb.ListBreakpointsResponse",
+        "resultType": "*debuggerpb.ListBreakpointsResponse",
         "client": {
           "shortName": "Debugger2Client",
           "fullName": "google.devtools.clouddebugger.v2.Debugger2Client"
@@ -301,7 +301,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouddebuggerpb.ListDebuggeesRequest",
+            "type": "debuggerpb.ListDebuggeesRequest",
             "name": "req"
           },
           {
@@ -309,7 +309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "*clouddebuggerpb.ListDebuggeesResponse",
+        "resultType": "*debuggerpb.ListDebuggeesResponse",
         "client": {
           "shortName": "Debugger2Client",
           "fullName": "google.devtools.clouddebugger.v2.Debugger2Client"
@@ -347,7 +347,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouddebuggerpb.SetBreakpointRequest",
+            "type": "debuggerpb.SetBreakpointRequest",
             "name": "req"
           },
           {
@@ -355,7 +355,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "*clouddebuggerpb.SetBreakpointResponse",
+        "resultType": "*debuggerpb.SetBreakpointResponse",
         "client": {
           "shortName": "Debugger2Client",
           "fullName": "google.devtools.clouddebugger.v2.Debugger2Client"

@@ -1,0 +1,379 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/texttospeech/apiv1beta1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.texttospeech.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "texttospeech_v1beta1_generated_TextToSpeech_GetOperation_sync",
+      "title": "texttospeech GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.texttospeech.v1beta1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.texttospeech.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "texttospeech_v1beta1_generated_TextToSpeech_ListOperations_sync",
+      "title": "texttospeech ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.texttospeech.v1beta1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.texttospeech.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "texttospeech_v1beta1_generated_TextToSpeech_ListVoices_sync",
+      "title": "texttospeech ListVoices Sample",
+      "description": "ListVoices returns a list of Voice supported for synthesis.",
+      "file": "Client/ListVoices/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListVoices",
+        "fullName": "google.cloud.texttospeech.v1beta1.Client.ListVoices",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "texttospeechpb.ListVoicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*texttospeechpb.ListVoicesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.texttospeech.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListVoices",
+          "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeech.ListVoices",
+          "service": {
+            "shortName": "TextToSpeech",
+            "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeech"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "texttospeech_v1beta1_generated_TextToSpeech_StreamingSynthesize_sync",
+      "title": "texttospeech StreamingSynthesize Sample",
+      "description": "StreamingSynthesize performs bidirectional streaming speech synthesis: receive audio while\nsending text.\n\n\nThis method is not supported for the REST transport.",
+      "file": "Client/StreamingSynthesize/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamingSynthesize",
+        "fullName": "google.cloud.texttospeech.v1beta1.Client.StreamingSynthesize",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "texttospeechpb.TextToSpeech_StreamingSynthesizeClient",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.texttospeech.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "StreamingSynthesize",
+          "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeech.StreamingSynthesize",
+          "service": {
+            "shortName": "TextToSpeech",
+            "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeech"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "texttospeech_v1beta1_generated_TextToSpeech_SynthesizeSpeech_sync",
+      "title": "texttospeech SynthesizeSpeech Sample",
+      "description": "SynthesizeSpeech synthesizes speech synchronously: receive results after all text input\nhas been processed.",
+      "file": "Client/SynthesizeSpeech/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SynthesizeSpeech",
+        "fullName": "google.cloud.texttospeech.v1beta1.Client.SynthesizeSpeech",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "texttospeechpb.SynthesizeSpeechRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*texttospeechpb.SynthesizeSpeechResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.texttospeech.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "SynthesizeSpeech",
+          "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeech.SynthesizeSpeech",
+          "service": {
+            "shortName": "TextToSpeech",
+            "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeech"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "texttospeech_v1beta1_generated_TextToSpeechLongAudioSynthesize_GetOperation_sync",
+      "title": "texttospeech GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "TextToSpeechLongAudioSynthesizeClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeechLongAudioSynthesizeClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "TextToSpeechLongAudioSynthesizeClient",
+          "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeechLongAudioSynthesizeClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "texttospeech_v1beta1_generated_TextToSpeechLongAudioSynthesize_ListOperations_sync",
+      "title": "texttospeech ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "TextToSpeechLongAudioSynthesizeClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeechLongAudioSynthesizeClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "TextToSpeechLongAudioSynthesizeClient",
+          "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeechLongAudioSynthesizeClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "texttospeech_v1beta1_generated_TextToSpeechLongAudioSynthesize_SynthesizeLongAudio_sync",
+      "title": "texttospeech SynthesizeLongAudio Sample",
+      "description": "SynthesizeLongAudio synthesizes long form text asynchronously.",
+      "file": "TextToSpeechLongAudioSynthesizeClient/SynthesizeLongAudio/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SynthesizeLongAudio",
+        "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeechLongAudioSynthesizeClient.SynthesizeLongAudio",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "texttospeechpb.SynthesizeLongAudioRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SynthesizeLongAudioOperation",
+        "client": {
+          "shortName": "TextToSpeechLongAudioSynthesizeClient",
+          "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeechLongAudioSynthesizeClient"
+        },
+        "method": {
+          "shortName": "SynthesizeLongAudio",
+          "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeechLongAudioSynthesize.SynthesizeLongAudio",
+          "service": {
+            "shortName": "TextToSpeechLongAudioSynthesize",
+            "fullName": "google.cloud.texttospeech.v1beta1.TextToSpeechLongAudioSynthesize"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

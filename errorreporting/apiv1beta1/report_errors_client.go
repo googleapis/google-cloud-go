@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -34,7 +34,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -50,9 +49,11 @@ func defaultReportErrorsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultEndpoint("clouderrorreporting.googleapis.com:443"),
 		internaloption.WithDefaultEndpointTemplate("clouderrorreporting.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("clouderrorreporting.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouderrorreporting.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -60,13 +61,17 @@ func defaultReportErrorsGRPCClientOptions() []option.ClientOption {
 
 func defaultReportErrorsCallOptions() *ReportErrorsCallOptions {
 	return &ReportErrorsCallOptions{
-		ReportErrorEvent: []gax.CallOption{},
+		ReportErrorEvent: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultReportErrorsRESTCallOptions() *ReportErrorsCallOptions {
 	return &ReportErrorsCallOptions{
-		ReportErrorEvent: []gax.CallOption{},
+		ReportErrorEvent: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -122,9 +127,19 @@ func (c *ReportErrorsClient) Connection() *grpc.ClientConn {
 //
 // POST https://clouderrorreporting.googleapis.com/v1beta1/{projectName}/events:report?key=123ABC456
 //
-// Note: Error Reporting (at /error-reporting) is a global service built
-// on Cloud Logging and doesn’t analyze logs stored
-// in regional log buckets or logs routed to other Google Cloud projects.
+// Note: [Error Reporting] (https://cloud.google.com/error-reporting (at https://cloud.google.com/error-reporting))
+// is a service built on Cloud Logging and can analyze log entries when all of
+// the following are true:
+//
+//	Customer-managed encryption keys (CMEK) are disabled on the log bucket.
+//
+//	The log bucket satisfies one of the following:
+//
+//	  The log bucket is stored in the same project where the logs
+//	  originated.
+//
+//	  The logs were routed to a project, and then that project stored those
+//	  logs in a log bucket that it owns.
 func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	return c.internalClient.ReportErrorEvent(ctx, req, opts...)
 }
@@ -136,9 +151,6 @@ type reportErrorsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ReportErrorsClient
 	CallOptions **ReportErrorsCallOptions
 
@@ -146,7 +158,7 @@ type reportErrorsGRPCClient struct {
 	reportErrorsClient errorreportingpb.ReportErrorsServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewReportErrorsClient creates a new report errors service client based on gRPC.
@@ -163,11 +175,6 @@ func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*R
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -176,7 +183,6 @@ func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*R
 
 	c := &reportErrorsGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		reportErrorsClient: errorreportingpb.NewReportErrorsServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
 	}
@@ -201,7 +207,9 @@ func (c *reportErrorsGRPCClient) Connection() *grpc.ClientConn {
 func (c *reportErrorsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -218,8 +226,8 @@ type reportErrorsRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing ReportErrorsClient
 	CallOptions **ReportErrorsCallOptions
@@ -251,8 +259,10 @@ func defaultReportErrorsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultEndpoint("https://clouderrorreporting.googleapis.com"),
 		internaloption.WithDefaultEndpointTemplate("https://clouderrorreporting.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://clouderrorreporting.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouderrorreporting.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -262,7 +272,9 @@ func defaultReportErrorsRESTClientOptions() []option.ClientOption {
 func (c *reportErrorsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -280,14 +292,10 @@ func (c *reportErrorsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ReportErrorEvent[0:len((*c.CallOptions).ReportErrorEvent):len((*c.CallOptions).ReportErrorEvent)], opts...)
 	var resp *errorreportingpb.ReportErrorEventResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -310,9 +318,19 @@ func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *erro
 //
 // POST https://clouderrorreporting.googleapis.com/v1beta1/{projectName}/events:report?key=123ABC456
 //
-// Note: Error Reporting (at /error-reporting) is a global service built
-// on Cloud Logging and doesn’t analyze logs stored
-// in regional log buckets or logs routed to other Google Cloud projects.
+// Note: [Error Reporting] (https://cloud.google.com/error-reporting (at https://cloud.google.com/error-reporting))
+// is a service built on Cloud Logging and can analyze log entries when all of
+// the following are true:
+//
+//	Customer-managed encryption keys (CMEK) are disabled on the log bucket.
+//
+//	The log bucket satisfies one of the following:
+//
+//	  The log bucket is stored in the same project where the logs
+//	  originated.
+//
+//	  The logs were routed to a project, and then that project stored those
+//	  logs in a log bucket that it owns.
 func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEvent()
@@ -333,9 +351,11 @@ func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *erro
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ReportErrorEvent[0:len((*c.CallOptions).ReportErrorEvent):len((*c.CallOptions).ReportErrorEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &errorreportingpb.ReportErrorEventResponse{}
@@ -360,7 +380,7 @@ func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *erro
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}

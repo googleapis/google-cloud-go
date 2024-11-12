@@ -1,0 +1,929 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/storage/internal/apiv2",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.storage.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "storage_v2_generated_Storage_BidiWriteObject_sync",
+      "title": "storage BidiWriteObject Sample",
+      "description": "BidiWriteObject stores a new object and metadata.\n\nThis is similar to the WriteObject call with the added support for\nmanual flushing of persisted state, and the ability to determine current\npersisted size without closing the stream.\n\nThe client may specify one or both of the `state_lookup` and `flush` fields\nin each BidiWriteObjectRequest. If `flush` is specified, the data written\nso far will be persisted to storage. If `state_lookup` is specified, the\nservice will respond with a BidiWriteObjectResponse that contains the\npersisted size. If both `flush` and `state_lookup` are specified, the flush\nwill always occur before a `state_lookup`, so that both may be set in the\nsame request and the returned state will be the state of the object\npost-flush. When the stream is closed, a BidiWriteObjectResponse will\nalways be sent to the client, regardless of the value of `state_lookup`.",
+      "file": "Client/BidiWriteObject/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BidiWriteObject",
+        "fullName": "google.storage.v2.Client.BidiWriteObject",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "storagepb.Storage_BidiWriteObjectClient",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "BidiWriteObject",
+          "fullName": "google.storage.v2.Storage.BidiWriteObject",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_CancelResumableWrite_sync",
+      "title": "storage CancelResumableWrite Sample",
+      "description": "CancelResumableWrite cancels an in-progress resumable upload.\n\nAny attempts to write to the resumable upload after cancelling the upload\nwill fail.\n\nThe behavior for currently in progress write operations is not guaranteed -\nthey could either complete before the cancellation or fail if the\ncancellation completes first.",
+      "file": "Client/CancelResumableWrite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelResumableWrite",
+        "fullName": "google.storage.v2.Client.CancelResumableWrite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.CancelResumableWriteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.CancelResumableWriteResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "CancelResumableWrite",
+          "fullName": "google.storage.v2.Storage.CancelResumableWrite",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_ComposeObject_sync",
+      "title": "storage ComposeObject Sample",
+      "description": "ComposeObject concatenates a list of existing objects into a new object in the same\nbucket.",
+      "file": "Client/ComposeObject/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ComposeObject",
+        "fullName": "google.storage.v2.Client.ComposeObject",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.ComposeObjectRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.Object",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "ComposeObject",
+          "fullName": "google.storage.v2.Storage.ComposeObject",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_CreateBucket_sync",
+      "title": "storage CreateBucket Sample",
+      "description": "CreateBucket creates a new bucket.",
+      "file": "Client/CreateBucket/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBucket",
+        "fullName": "google.storage.v2.Client.CreateBucket",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.CreateBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.Bucket",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "CreateBucket",
+          "fullName": "google.storage.v2.Storage.CreateBucket",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_DeleteBucket_sync",
+      "title": "storage DeleteBucket Sample",
+      "description": "DeleteBucket permanently deletes an empty bucket.",
+      "file": "Client/DeleteBucket/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBucket",
+        "fullName": "google.storage.v2.Client.DeleteBucket",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.DeleteBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteBucket",
+          "fullName": "google.storage.v2.Storage.DeleteBucket",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_DeleteObject_sync",
+      "title": "storage DeleteObject Sample",
+      "description": "DeleteObject deletes an object and its metadata.\n\nDeletions are normally permanent when versioning is disabled or whenever\nthe generation parameter is used. However, if soft delete is enabled for\nthe bucket, deleted objects can be restored using RestoreObject until the\nsoft delete retention period has passed.",
+      "file": "Client/DeleteObject/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteObject",
+        "fullName": "google.storage.v2.Client.DeleteObject",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.DeleteObjectRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteObject",
+          "fullName": "google.storage.v2.Storage.DeleteObject",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_GetBucket_sync",
+      "title": "storage GetBucket Sample",
+      "description": "GetBucket returns metadata for the specified bucket.",
+      "file": "Client/GetBucket/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBucket",
+        "fullName": "google.storage.v2.Client.GetBucket",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.GetBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.Bucket",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "GetBucket",
+          "fullName": "google.storage.v2.Storage.GetBucket",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_GetIamPolicy_sync",
+      "title": "storage GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the IAM policy for a specified bucket.\nThe `resource` field in the request should be\n`projects/_/buckets/{bucket}`.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.storage.v2.Client.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.storage.v2.Storage.GetIamPolicy",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_GetObject_sync",
+      "title": "storage GetObject Sample",
+      "description": "GetObject retrieves an object's metadata.",
+      "file": "Client/GetObject/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetObject",
+        "fullName": "google.storage.v2.Client.GetObject",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.GetObjectRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.Object",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "GetObject",
+          "fullName": "google.storage.v2.Storage.GetObject",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_ListBuckets_sync",
+      "title": "storage ListBuckets Sample",
+      "description": "ListBuckets retrieves a list of buckets for a given project.",
+      "file": "Client/ListBuckets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBuckets",
+        "fullName": "google.storage.v2.Client.ListBuckets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.ListBucketsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BucketIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "ListBuckets",
+          "fullName": "google.storage.v2.Storage.ListBuckets",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_ListObjects_sync",
+      "title": "storage ListObjects Sample",
+      "description": "ListObjects retrieves a list of objects matching the criteria.",
+      "file": "Client/ListObjects/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListObjects",
+        "fullName": "google.storage.v2.Client.ListObjects",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.ListObjectsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ObjectIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "ListObjects",
+          "fullName": "google.storage.v2.Storage.ListObjects",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_LockBucketRetentionPolicy_sync",
+      "title": "storage LockBucketRetentionPolicy Sample",
+      "description": "LockBucketRetentionPolicy locks retention policy on a bucket.",
+      "file": "Client/LockBucketRetentionPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LockBucketRetentionPolicy",
+        "fullName": "google.storage.v2.Client.LockBucketRetentionPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.LockBucketRetentionPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.Bucket",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "LockBucketRetentionPolicy",
+          "fullName": "google.storage.v2.Storage.LockBucketRetentionPolicy",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_QueryWriteStatus_sync",
+      "title": "storage QueryWriteStatus Sample",
+      "description": "QueryWriteStatus determines the `persisted_size` for an object that is being written, which\ncan then be used as the `write_offset` for the next `Write()` call.\n\nIf the object does not exist (i.e., the object has been deleted, or the\nfirst `Write()` has not yet reached the service), this method returns the\nerror `NOT_FOUND`.\n\nThe client **may** call `QueryWriteStatus()` at any time to determine how\nmuch data has been processed for this object. This is useful if the\nclient is buffering data and needs to know which data can be safely\nevicted. For any sequence of `QueryWriteStatus()` calls for a given\nobject name, the sequence of returned `persisted_size` values will be\nnon-decreasing.",
+      "file": "Client/QueryWriteStatus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryWriteStatus",
+        "fullName": "google.storage.v2.Client.QueryWriteStatus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.QueryWriteStatusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.QueryWriteStatusResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "QueryWriteStatus",
+          "fullName": "google.storage.v2.Storage.QueryWriteStatus",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_RestoreObject_sync",
+      "title": "storage RestoreObject Sample",
+      "description": "RestoreObject restores a soft-deleted object.",
+      "file": "Client/RestoreObject/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestoreObject",
+        "fullName": "google.storage.v2.Client.RestoreObject",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.RestoreObjectRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.Object",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "RestoreObject",
+          "fullName": "google.storage.v2.Storage.RestoreObject",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_RewriteObject_sync",
+      "title": "storage RewriteObject Sample",
+      "description": "RewriteObject rewrites a source object to a destination object. Optionally overrides\nmetadata.",
+      "file": "Client/RewriteObject/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RewriteObject",
+        "fullName": "google.storage.v2.Client.RewriteObject",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.RewriteObjectRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.RewriteResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "RewriteObject",
+          "fullName": "google.storage.v2.Storage.RewriteObject",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_SetIamPolicy_sync",
+      "title": "storage SetIamPolicy Sample",
+      "description": "SetIamPolicy updates an IAM policy for the specified bucket.\nThe `resource` field in the request should be\n`projects/_/buckets/{bucket}`.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.storage.v2.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.storage.v2.Storage.SetIamPolicy",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_StartResumableWrite_sync",
+      "title": "storage StartResumableWrite Sample",
+      "description": "StartResumableWrite starts a resumable write. How long the write operation remains valid, and\nwhat happens when the write operation becomes invalid, are\nservice-dependent.",
+      "file": "Client/StartResumableWrite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartResumableWrite",
+        "fullName": "google.storage.v2.Client.StartResumableWrite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.StartResumableWriteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.StartResumableWriteResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "StartResumableWrite",
+          "fullName": "google.storage.v2.Storage.StartResumableWrite",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_TestIamPermissions_sync",
+      "title": "storage TestIamPermissions Sample",
+      "description": "TestIamPermissions tests a set of permissions on the given bucket, object, or managed folder\nto see which, if any, are held by the caller.\nThe `resource` field in the request should be\n`projects/_/buckets/{bucket}` for a bucket,\n`projects/_/buckets/{bucket}/objects/{object}` for an object, or\n`projects/_/buckets/{bucket}/managedFolders/{managedFolder}`\nfor a managed folder.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.storage.v2.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.storage.v2.Storage.TestIamPermissions",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_UpdateBucket_sync",
+      "title": "storage UpdateBucket Sample",
+      "description": "UpdateBucket updates a bucket. Equivalent to JSON API's storage.buckets.patch method.",
+      "file": "Client/UpdateBucket/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBucket",
+        "fullName": "google.storage.v2.Client.UpdateBucket",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.UpdateBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.Bucket",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateBucket",
+          "fullName": "google.storage.v2.Storage.UpdateBucket",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_Storage_UpdateObject_sync",
+      "title": "storage UpdateObject Sample",
+      "description": "UpdateObject updates an object's metadata.\nEquivalent to JSON API's storage.objects.patch.",
+      "file": "Client/UpdateObject/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateObject",
+        "fullName": "google.storage.v2.Client.UpdateObject",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "storagepb.UpdateObjectRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*storagepb.Object",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.storage.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateObject",
+          "fullName": "google.storage.v2.Storage.UpdateObject",
+          "service": {
+            "shortName": "Storage",
+            "fullName": "google.storage.v2.Storage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,8 +1,8 @@
-# Security Center Management API
+# Security Command Center Management API
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/securitycentermanagement.svg)](https://pkg.go.dev/cloud.google.com/go/securitycentermanagement)
 
-Go Client Library for Security Center Management API.
+Go Client Library for Security Command Center Management API.
 
 ## Install
 

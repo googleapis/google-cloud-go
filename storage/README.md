@@ -1,32 +1,55 @@
-## Cloud Storage [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/storage.svg)](https://pkg.go.dev/cloud.google.com/go/storage)
+# Storage Insights API
 
-- [About Cloud Storage](https://cloud.google.com/storage/)
-- [API documentation](https://cloud.google.com/storage/docs)
-- [Go client documentation](https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest)
-- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/main/storage)
+[![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/storage.svg)](https://pkg.go.dev/cloud.google.com/go/storage)
 
-### Example Usage
+Go Client Library for Storage Insights API.
 
-First create a `storage.Client` to use throughout your application:
+## Install
 
-[snip]:# (storage-1)
-```go
-client, err := storage.NewClient(ctx)
-if err != nil {
-	log.Fatal(err)
-}
+```bash
+go get cloud.google.com/go/storage
 ```
 
-[snip]:# (storage-2)
-```go
-// Read the object1 from bucket.
-rc, err := client.Bucket("bucket").Object("object1").NewReader(ctx)
-if err != nil {
-	log.Fatal(err)
-}
-defer rc.Close()
-body, err := io.ReadAll(rc)
-if err != nil {
-	log.Fatal(err)
-}
-```
+## Stability
+
+The stability of this module is indicated by SemVer.
+
+However, a `v1+` module may have breaking changes in two scenarios:
+
+* Packages with `alpha` or `beta` in the import path
+* The GoDoc has an explicit stability disclaimer (for example, for an experimental feature).
+
+### Which package to use?
+
+Generated client library surfaces can be found in packages who's import path
+ends in `.../apivXXX`. The `XXX` could be something like `1` or `2` in the case
+of a stable service backend or may be like `1beta2` or `2beta` in the case of a
+more experimental service backend. Because of this fact, a given module can have
+multiple clients for different service backends. In these cases it is generally
+recommend to use clients with stable service backends, with import suffixes like
+`apiv1`, unless you need to use features that are only present in a beta backend
+or there is not yet a stable backend available.
+
+## Google Cloud Samples
+
+To browse ready to use code samples check [Google Cloud Samples](https://cloud.google.com/docs/samples?l=go).
+
+## Go Version Support
+
+See the [Go Versions Supported](https://github.com/googleapis/google-cloud-go#go-versions-supported)
+section in the root directory's README.
+
+## Authorization
+
+See the [Authorization](https://github.com/googleapis/google-cloud-go#authorization)
+section in the root directory's README.
+
+## Contributing
+
+Contributions are welcome. Please, see the [CONTRIBUTING](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/main/CONTRIBUTING.md)
+document for details.
+
+Please note that this project is released with a Contributor Code of Conduct.
+By participating in this project you agree to abide by its terms. See
+[Contributor Code of Conduct](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/main/CONTRIBUTING.md#contributor-code-of-conduct)
+for more information.

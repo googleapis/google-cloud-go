@@ -1,0 +1,43 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.maps.regionlookup.v1alpha",
+  "libraryPackage": "cloud.google.com/go/maps/regionlookup/apiv1alpha",
+  "services": {
+    "RegionLookup": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "LookupRegion": {
+              "methods": [
+                "LookupRegion"
+              ]
+            },
+            "SearchRegion": {
+              "methods": [
+                "SearchRegion"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "LookupRegion": {
+              "methods": [
+                "LookupRegion"
+              ]
+            },
+            "SearchRegion": {
+              "methods": [
+                "SearchRegion"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/devtools/remoteworkers/apiv1test2",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.devtools.remoteworkers.v1test2",
+        "version": "v1test2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "remoteworkers_v1test2_generated_Bots_CreateBotSession_sync",
+      "title": "remoteworkers CreateBotSession Sample",
+      "description": "CreateBotSession createBotSession is called when the bot first joins the farm, and\nestablishes a session ID to ensure that multiple machines do not register\nusing the same name accidentally.",
+      "file": "BotsClient/CreateBotSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBotSession",
+        "fullName": "google.devtools.remoteworkers.v1test2.BotsClient.CreateBotSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "remoteworkerspb.CreateBotSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*remoteworkerspb.BotSession",
+        "client": {
+          "shortName": "BotsClient",
+          "fullName": "google.devtools.remoteworkers.v1test2.BotsClient"
+        },
+        "method": {
+          "shortName": "CreateBotSession",
+          "fullName": "google.devtools.remoteworkers.v1test2.Bots.CreateBotSession",
+          "service": {
+            "shortName": "Bots",
+            "fullName": "google.devtools.remoteworkers.v1test2.Bots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "remoteworkers_v1test2_generated_Bots_UpdateBotSession_sync",
+      "title": "remoteworkers UpdateBotSession Sample",
+      "description": "UpdateBotSession updateBotSession must be called periodically by the bot (on a schedule\ndetermined by the server) to let the server know about its status, and to\npick up new lease requests from the server.",
+      "file": "BotsClient/UpdateBotSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBotSession",
+        "fullName": "google.devtools.remoteworkers.v1test2.BotsClient.UpdateBotSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "remoteworkerspb.UpdateBotSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*remoteworkerspb.BotSession",
+        "client": {
+          "shortName": "BotsClient",
+          "fullName": "google.devtools.remoteworkers.v1test2.BotsClient"
+        },
+        "method": {
+          "shortName": "UpdateBotSession",
+          "fullName": "google.devtools.remoteworkers.v1test2.Bots.UpdateBotSession",
+          "service": {
+            "shortName": "Bots",
+            "fullName": "google.devtools.remoteworkers.v1test2.Bots"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1899 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/gdchardwaremanagement/apiv1alpha",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.gdchardwaremanagement.v1alpha",
+        "version": "v1alpha"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_CancelOperation_sync",
+      "title": "gdchardwaremanagement CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_CreateComment_sync",
+      "title": "gdchardwaremanagement CreateComment Sample",
+      "description": "CreateComment creates a new comment on an order.",
+      "file": "Client/CreateComment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateComment",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.CreateComment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.CreateCommentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateCommentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "CreateComment",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.CreateComment",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_CreateHardware_sync",
+      "title": "gdchardwaremanagement CreateHardware Sample",
+      "description": "CreateHardware creates new hardware in a given project and location.",
+      "file": "Client/CreateHardware/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateHardware",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.CreateHardware",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.CreateHardwareRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateHardwareOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "CreateHardware",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.CreateHardware",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_CreateHardwareGroup_sync",
+      "title": "gdchardwaremanagement CreateHardwareGroup Sample",
+      "description": "CreateHardwareGroup creates a new hardware group in a given order.",
+      "file": "Client/CreateHardwareGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateHardwareGroup",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.CreateHardwareGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.CreateHardwareGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateHardwareGroupOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "CreateHardwareGroup",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.CreateHardwareGroup",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_CreateOrder_sync",
+      "title": "gdchardwaremanagement CreateOrder Sample",
+      "description": "CreateOrder creates a new order in a given project and location.",
+      "file": "Client/CreateOrder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateOrder",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.CreateOrder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.CreateOrderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateOrderOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "CreateOrder",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.CreateOrder",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_CreateSite_sync",
+      "title": "gdchardwaremanagement CreateSite Sample",
+      "description": "CreateSite creates a new site in a given project and location.",
+      "file": "Client/CreateSite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSite",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.CreateSite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.CreateSiteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateSiteOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "CreateSite",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.CreateSite",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_CreateZone_sync",
+      "title": "gdchardwaremanagement CreateZone Sample",
+      "description": "CreateZone creates a new zone in a given project and location.",
+      "file": "Client/CreateZone/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateZone",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.CreateZone",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.CreateZoneRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateZoneOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "CreateZone",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.CreateZone",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_DeleteHardware_sync",
+      "title": "gdchardwaremanagement DeleteHardware Sample",
+      "description": "DeleteHardware deletes hardware.",
+      "file": "Client/DeleteHardware/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteHardware",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.DeleteHardware",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.DeleteHardwareRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteHardwareOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "DeleteHardware",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.DeleteHardware",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_DeleteHardwareGroup_sync",
+      "title": "gdchardwaremanagement DeleteHardwareGroup Sample",
+      "description": "DeleteHardwareGroup deletes a hardware group.",
+      "file": "Client/DeleteHardwareGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteHardwareGroup",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.DeleteHardwareGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.DeleteHardwareGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteHardwareGroupOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "DeleteHardwareGroup",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.DeleteHardwareGroup",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_DeleteOperation_sync",
+      "title": "gdchardwaremanagement DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_DeleteOrder_sync",
+      "title": "gdchardwaremanagement DeleteOrder Sample",
+      "description": "DeleteOrder deletes an order.",
+      "file": "Client/DeleteOrder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOrder",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.DeleteOrder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.DeleteOrderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteOrderOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "DeleteOrder",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.DeleteOrder",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_DeleteSite_sync",
+      "title": "gdchardwaremanagement DeleteSite Sample",
+      "description": "DeleteSite deletes a site.",
+      "file": "Client/DeleteSite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSite",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.DeleteSite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.DeleteSiteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteSiteOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "DeleteSite",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.DeleteSite",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_DeleteZone_sync",
+      "title": "gdchardwaremanagement DeleteZone Sample",
+      "description": "DeleteZone deletes a zone.",
+      "file": "Client/DeleteZone/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteZone",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.DeleteZone",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.DeleteZoneRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteZoneOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "DeleteZone",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.DeleteZone",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_GetChangeLogEntry_sync",
+      "title": "gdchardwaremanagement GetChangeLogEntry Sample",
+      "description": "GetChangeLogEntry gets details of a change to an order.",
+      "file": "Client/GetChangeLogEntry/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetChangeLogEntry",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.GetChangeLogEntry",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.GetChangeLogEntryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gdchardwaremanagementpb.ChangeLogEntry",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "GetChangeLogEntry",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.GetChangeLogEntry",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_GetComment_sync",
+      "title": "gdchardwaremanagement GetComment Sample",
+      "description": "GetComment gets the content of a comment.",
+      "file": "Client/GetComment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetComment",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.GetComment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.GetCommentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gdchardwaremanagementpb.Comment",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "GetComment",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.GetComment",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_GetHardware_sync",
+      "title": "gdchardwaremanagement GetHardware Sample",
+      "description": "GetHardware gets hardware details.",
+      "file": "Client/GetHardware/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetHardware",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.GetHardware",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.GetHardwareRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gdchardwaremanagementpb.Hardware",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "GetHardware",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.GetHardware",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_GetHardwareGroup_sync",
+      "title": "gdchardwaremanagement GetHardwareGroup Sample",
+      "description": "GetHardwareGroup gets details of a hardware group.",
+      "file": "Client/GetHardwareGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetHardwareGroup",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.GetHardwareGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.GetHardwareGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gdchardwaremanagementpb.HardwareGroup",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "GetHardwareGroup",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.GetHardwareGroup",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_GetLocation_sync",
+      "title": "gdchardwaremanagement GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_GetOperation_sync",
+      "title": "gdchardwaremanagement GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_GetOrder_sync",
+      "title": "gdchardwaremanagement GetOrder Sample",
+      "description": "GetOrder gets details of an order.",
+      "file": "Client/GetOrder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOrder",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.GetOrder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.GetOrderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gdchardwaremanagementpb.Order",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "GetOrder",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.GetOrder",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_GetSite_sync",
+      "title": "gdchardwaremanagement GetSite Sample",
+      "description": "GetSite gets details of a site.",
+      "file": "Client/GetSite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSite",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.GetSite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.GetSiteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gdchardwaremanagementpb.Site",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "GetSite",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.GetSite",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_GetSku_sync",
+      "title": "gdchardwaremanagement GetSku Sample",
+      "description": "GetSku gets details of an SKU.",
+      "file": "Client/GetSku/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSku",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.GetSku",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.GetSkuRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gdchardwaremanagementpb.Sku",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "GetSku",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.GetSku",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_GetZone_sync",
+      "title": "gdchardwaremanagement GetZone Sample",
+      "description": "GetZone gets details of a zone.",
+      "file": "Client/GetZone/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetZone",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.GetZone",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.GetZoneRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gdchardwaremanagementpb.Zone",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "GetZone",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.GetZone",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_ListChangeLogEntries_sync",
+      "title": "gdchardwaremanagement ListChangeLogEntries Sample",
+      "description": "ListChangeLogEntries lists the changes made to an order.",
+      "file": "Client/ListChangeLogEntries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListChangeLogEntries",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.ListChangeLogEntries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.ListChangeLogEntriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ChangeLogEntryIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "ListChangeLogEntries",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.ListChangeLogEntries",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_ListComments_sync",
+      "title": "gdchardwaremanagement ListComments Sample",
+      "description": "ListComments lists the comments on an order.",
+      "file": "Client/ListComments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListComments",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.ListComments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.ListCommentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CommentIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "ListComments",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.ListComments",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_ListHardware_sync",
+      "title": "gdchardwaremanagement ListHardware Sample",
+      "description": "ListHardware lists hardware in a given project and location.",
+      "file": "Client/ListHardware/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListHardware",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.ListHardware",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.ListHardwareRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HardwareIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "ListHardware",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.ListHardware",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_ListHardwareGroups_sync",
+      "title": "gdchardwaremanagement ListHardwareGroups Sample",
+      "description": "ListHardwareGroups lists hardware groups in a given order.",
+      "file": "Client/ListHardwareGroups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListHardwareGroups",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.ListHardwareGroups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.ListHardwareGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "HardwareGroupIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "ListHardwareGroups",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.ListHardwareGroups",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_ListLocations_sync",
+      "title": "gdchardwaremanagement ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_ListOperations_sync",
+      "title": "gdchardwaremanagement ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_ListOrders_sync",
+      "title": "gdchardwaremanagement ListOrders Sample",
+      "description": "ListOrders lists orders in a given project and location.",
+      "file": "Client/ListOrders/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOrders",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.ListOrders",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.ListOrdersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OrderIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "ListOrders",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.ListOrders",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_ListSites_sync",
+      "title": "gdchardwaremanagement ListSites Sample",
+      "description": "ListSites lists sites in a given project and location.",
+      "file": "Client/ListSites/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSites",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.ListSites",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.ListSitesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SiteIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "ListSites",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.ListSites",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_ListSkus_sync",
+      "title": "gdchardwaremanagement ListSkus Sample",
+      "description": "ListSkus lists SKUs for a given project and location.",
+      "file": "Client/ListSkus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSkus",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.ListSkus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.ListSkusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SkuIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "ListSkus",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.ListSkus",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_ListZones_sync",
+      "title": "gdchardwaremanagement ListZones Sample",
+      "description": "ListZones lists zones in a given project and location.",
+      "file": "Client/ListZones/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListZones",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.ListZones",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.ListZonesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ZoneIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "ListZones",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.ListZones",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_RecordActionOnComment_sync",
+      "title": "gdchardwaremanagement RecordActionOnComment Sample",
+      "description": "RecordActionOnComment record Action on a Comment. If the Action specified in the request is READ,\nthe viewed time in the comment is set to the time the request was received.\nIf the comment is already marked as read, subsequent calls will be ignored.\nIf the Action is UNREAD, the viewed time is cleared from the comment.",
+      "file": "Client/RecordActionOnComment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RecordActionOnComment",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.RecordActionOnComment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.RecordActionOnCommentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gdchardwaremanagementpb.Comment",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "RecordActionOnComment",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.RecordActionOnComment",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_SignalZoneState_sync",
+      "title": "gdchardwaremanagement SignalZoneState Sample",
+      "description": "SignalZoneState signals the state of a zone.",
+      "file": "Client/SignalZoneState/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SignalZoneState",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.SignalZoneState",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.SignalZoneStateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SignalZoneStateOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "SignalZoneState",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.SignalZoneState",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_SubmitOrder_sync",
+      "title": "gdchardwaremanagement SubmitOrder Sample",
+      "description": "SubmitOrder submits an order.",
+      "file": "Client/SubmitOrder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SubmitOrder",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.SubmitOrder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.SubmitOrderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SubmitOrderOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "SubmitOrder",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.SubmitOrder",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_UpdateHardware_sync",
+      "title": "gdchardwaremanagement UpdateHardware Sample",
+      "description": "UpdateHardware updates hardware parameters.",
+      "file": "Client/UpdateHardware/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateHardware",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.UpdateHardware",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.UpdateHardwareRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateHardwareOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "UpdateHardware",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.UpdateHardware",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_UpdateHardwareGroup_sync",
+      "title": "gdchardwaremanagement UpdateHardwareGroup Sample",
+      "description": "UpdateHardwareGroup updates the parameters of a hardware group.",
+      "file": "Client/UpdateHardwareGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateHardwareGroup",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.UpdateHardwareGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.UpdateHardwareGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateHardwareGroupOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "UpdateHardwareGroup",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.UpdateHardwareGroup",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_UpdateOrder_sync",
+      "title": "gdchardwaremanagement UpdateOrder Sample",
+      "description": "UpdateOrder updates the parameters of an order.",
+      "file": "Client/UpdateOrder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateOrder",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.UpdateOrder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.UpdateOrderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateOrderOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "UpdateOrder",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.UpdateOrder",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_UpdateSite_sync",
+      "title": "gdchardwaremanagement UpdateSite Sample",
+      "description": "UpdateSite updates the parameters of a site.",
+      "file": "Client/UpdateSite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSite",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.UpdateSite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.UpdateSiteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateSiteOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "UpdateSite",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.UpdateSite",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gdchardwaremanagement_v1alpha_generated_GDCHardwareManagement_UpdateZone_sync",
+      "title": "gdchardwaremanagement UpdateZone Sample",
+      "description": "UpdateZone updates the parameters of a zone.",
+      "file": "Client/UpdateZone/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateZone",
+        "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client.UpdateZone",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gdchardwaremanagementpb.UpdateZoneRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateZoneOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.Client"
+        },
+        "method": {
+          "shortName": "UpdateZone",
+          "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement.UpdateZone",
+          "service": {
+            "shortName": "GDCHardwareManagement",
+            "fullName": "google.cloud.gdchardwaremanagement.v1alpha.GDCHardwareManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

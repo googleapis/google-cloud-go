@@ -1,0 +1,83 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.maps.mapsplatformdatasets.v1",
+  "libraryPackage": "cloud.google.com/go/maps/mapsplatformdatasets/apiv1",
+  "services": {
+    "MapsPlatformDatasets": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateDataset": {
+              "methods": [
+                "CreateDataset"
+              ]
+            },
+            "DeleteDataset": {
+              "methods": [
+                "DeleteDataset"
+              ]
+            },
+            "FetchDatasetErrors": {
+              "methods": [
+                "FetchDatasetErrors"
+              ]
+            },
+            "GetDataset": {
+              "methods": [
+                "GetDataset"
+              ]
+            },
+            "ListDatasets": {
+              "methods": [
+                "ListDatasets"
+              ]
+            },
+            "UpdateDatasetMetadata": {
+              "methods": [
+                "UpdateDatasetMetadata"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateDataset": {
+              "methods": [
+                "CreateDataset"
+              ]
+            },
+            "DeleteDataset": {
+              "methods": [
+                "DeleteDataset"
+              ]
+            },
+            "FetchDatasetErrors": {
+              "methods": [
+                "FetchDatasetErrors"
+              ]
+            },
+            "GetDataset": {
+              "methods": [
+                "GetDataset"
+              ]
+            },
+            "ListDatasets": {
+              "methods": [
+                "ListDatasets"
+              ]
+            },
+            "UpdateDatasetMetadata": {
+              "methods": [
+                "UpdateDatasetMetadata"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

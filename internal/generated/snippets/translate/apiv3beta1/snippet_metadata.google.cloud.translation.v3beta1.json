@@ -1,0 +1,475 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/translate/apiv3beta1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.translation.v3beta1",
+        "version": "v3beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "translate_v3beta1_generated_TranslationService_BatchTranslateDocument_sync",
+      "title": "translate BatchTranslateDocument Sample",
+      "description": "BatchTranslateDocument translates a large volume of document in asynchronous batch mode.\nThis function provides real-time output as the inputs are being processed.\nIf caller cancels a request, the partial results (for an input file, it's\nall or nothing) may still be available on the specified output location.\n\nThis call returns immediately and you can use\ngoogle.longrunning.Operation.name to poll the status of the call.",
+      "file": "TranslationClient/BatchTranslateDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchTranslateDocument",
+        "fullName": "google.cloud.translation.v3beta1.TranslationClient.BatchTranslateDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translationpb.BatchTranslateDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchTranslateDocumentOperation",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3beta1.TranslationClient"
+        },
+        "method": {
+          "shortName": "BatchTranslateDocument",
+          "fullName": "google.cloud.translation.v3beta1.TranslationService.BatchTranslateDocument",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3beta1.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3beta1_generated_TranslationService_BatchTranslateText_sync",
+      "title": "translate BatchTranslateText Sample",
+      "description": "BatchTranslateText translates a large volume of text in asynchronous batch mode.\nThis function provides real-time output as the inputs are being processed.\nIf caller cancels a request, the partial results (for an input file, it's\nall or nothing) may still be available on the specified output location.\n\nThis call returns immediately and you can\nuse google.longrunning.Operation.name to poll the status of the call.",
+      "file": "TranslationClient/BatchTranslateText/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchTranslateText",
+        "fullName": "google.cloud.translation.v3beta1.TranslationClient.BatchTranslateText",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translationpb.BatchTranslateTextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchTranslateTextOperation",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3beta1.TranslationClient"
+        },
+        "method": {
+          "shortName": "BatchTranslateText",
+          "fullName": "google.cloud.translation.v3beta1.TranslationService.BatchTranslateText",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3beta1.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3beta1_generated_TranslationService_CreateGlossary_sync",
+      "title": "translate CreateGlossary Sample",
+      "description": "CreateGlossary creates a glossary and returns the long-running operation. Returns\nNOT_FOUND, if the project doesn't exist.",
+      "file": "TranslationClient/CreateGlossary/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateGlossary",
+        "fullName": "google.cloud.translation.v3beta1.TranslationClient.CreateGlossary",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translationpb.CreateGlossaryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateGlossaryOperation",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3beta1.TranslationClient"
+        },
+        "method": {
+          "shortName": "CreateGlossary",
+          "fullName": "google.cloud.translation.v3beta1.TranslationService.CreateGlossary",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3beta1.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3beta1_generated_TranslationService_DeleteGlossary_sync",
+      "title": "translate DeleteGlossary Sample",
+      "description": "DeleteGlossary deletes a glossary, or cancels glossary construction\nif the glossary isn't created yet.\nReturns NOT_FOUND, if the glossary doesn't exist.",
+      "file": "TranslationClient/DeleteGlossary/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteGlossary",
+        "fullName": "google.cloud.translation.v3beta1.TranslationClient.DeleteGlossary",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translationpb.DeleteGlossaryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteGlossaryOperation",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3beta1.TranslationClient"
+        },
+        "method": {
+          "shortName": "DeleteGlossary",
+          "fullName": "google.cloud.translation.v3beta1.TranslationService.DeleteGlossary",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3beta1.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3beta1_generated_TranslationService_DetectLanguage_sync",
+      "title": "translate DetectLanguage Sample",
+      "description": "DetectLanguage detects the language of text within a request.",
+      "file": "TranslationClient/DetectLanguage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DetectLanguage",
+        "fullName": "google.cloud.translation.v3beta1.TranslationClient.DetectLanguage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translationpb.DetectLanguageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*translationpb.DetectLanguageResponse",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3beta1.TranslationClient"
+        },
+        "method": {
+          "shortName": "DetectLanguage",
+          "fullName": "google.cloud.translation.v3beta1.TranslationService.DetectLanguage",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3beta1.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3beta1_generated_TranslationService_GetGlossary_sync",
+      "title": "translate GetGlossary Sample",
+      "description": "GetGlossary gets a glossary. Returns NOT_FOUND, if the glossary doesn't\nexist.",
+      "file": "TranslationClient/GetGlossary/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGlossary",
+        "fullName": "google.cloud.translation.v3beta1.TranslationClient.GetGlossary",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translationpb.GetGlossaryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*translationpb.Glossary",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3beta1.TranslationClient"
+        },
+        "method": {
+          "shortName": "GetGlossary",
+          "fullName": "google.cloud.translation.v3beta1.TranslationService.GetGlossary",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3beta1.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3beta1_generated_TranslationService_GetSupportedLanguages_sync",
+      "title": "translate GetSupportedLanguages Sample",
+      "description": "GetSupportedLanguages returns a list of supported languages for translation.",
+      "file": "TranslationClient/GetSupportedLanguages/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSupportedLanguages",
+        "fullName": "google.cloud.translation.v3beta1.TranslationClient.GetSupportedLanguages",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translationpb.GetSupportedLanguagesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*translationpb.SupportedLanguages",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3beta1.TranslationClient"
+        },
+        "method": {
+          "shortName": "GetSupportedLanguages",
+          "fullName": "google.cloud.translation.v3beta1.TranslationService.GetSupportedLanguages",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3beta1.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3beta1_generated_TranslationService_ListGlossaries_sync",
+      "title": "translate ListGlossaries Sample",
+      "description": "ListGlossaries lists glossaries in a project. Returns NOT_FOUND, if the project doesn't\nexist.",
+      "file": "TranslationClient/ListGlossaries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGlossaries",
+        "fullName": "google.cloud.translation.v3beta1.TranslationClient.ListGlossaries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translationpb.ListGlossariesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GlossaryIterator",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3beta1.TranslationClient"
+        },
+        "method": {
+          "shortName": "ListGlossaries",
+          "fullName": "google.cloud.translation.v3beta1.TranslationService.ListGlossaries",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3beta1.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3beta1_generated_TranslationService_TranslateDocument_sync",
+      "title": "translate TranslateDocument Sample",
+      "description": "TranslateDocument translates documents in synchronous mode.",
+      "file": "TranslationClient/TranslateDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TranslateDocument",
+        "fullName": "google.cloud.translation.v3beta1.TranslationClient.TranslateDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translationpb.TranslateDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*translationpb.TranslateDocumentResponse",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3beta1.TranslationClient"
+        },
+        "method": {
+          "shortName": "TranslateDocument",
+          "fullName": "google.cloud.translation.v3beta1.TranslationService.TranslateDocument",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3beta1.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3beta1_generated_TranslationService_TranslateText_sync",
+      "title": "translate TranslateText Sample",
+      "description": "TranslateText translates input text and returns translated text.",
+      "file": "TranslationClient/TranslateText/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TranslateText",
+        "fullName": "google.cloud.translation.v3beta1.TranslationClient.TranslateText",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translationpb.TranslateTextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*translationpb.TranslateTextResponse",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3beta1.TranslationClient"
+        },
+        "method": {
+          "shortName": "TranslateText",
+          "fullName": "google.cloud.translation.v3beta1.TranslationService.TranslateText",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3beta1.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

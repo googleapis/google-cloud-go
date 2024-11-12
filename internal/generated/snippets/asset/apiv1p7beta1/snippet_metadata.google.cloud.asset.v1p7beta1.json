@@ -1,0 +1,107 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/asset/apiv1p7beta1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.asset.v1p7beta1",
+        "version": "v1p7beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudasset_v1p7beta1_generated_AssetService_ExportAssets_sync",
+      "title": "cloudasset ExportAssets Sample",
+      "description": "ExportAssets exports assets with time and resource types to a given Cloud Storage\nlocation/BigQuery table. For Cloud Storage location destinations, the\noutput format is newline-delimited JSON. Each line represents a\n[google.cloud.asset.v1p7beta1.Asset][google.cloud.asset.v1p7beta1.Asset] in\nthe JSON format; for BigQuery table destinations, the output table stores\nthe fields in asset proto as columns. This API implements the\n[google.longrunning.Operation][google.longrunning.Operation] API , which\nallows you to keep track of the export. We recommend intervals of at least\n2 seconds with exponential retry to poll the export operation result. For\nregular-size resource parent, the export operation usually finishes within\n5 minutes.",
+      "file": "Client/ExportAssets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportAssets",
+        "fullName": "google.cloud.asset.v1p7beta1.Client.ExportAssets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.ExportAssetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportAssetsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1p7beta1.Client"
+        },
+        "method": {
+          "shortName": "ExportAssets",
+          "fullName": "google.cloud.asset.v1p7beta1.AssetService.ExportAssets",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1p7beta1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1p7beta1_generated_AssetService_GetOperation_sync",
+      "title": "cloudasset GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.asset.v1p7beta1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1p7beta1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

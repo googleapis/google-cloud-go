@@ -1,0 +1,43 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.maps.aerialview.v1",
+  "libraryPackage": "cloud.google.com/go/maps/aerialview/apiv1",
+  "services": {
+    "AerialView": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "LookupVideo": {
+              "methods": [
+                "LookupVideo"
+              ]
+            },
+            "RenderVideo": {
+              "methods": [
+                "RenderVideo"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "LookupVideo": {
+              "methods": [
+                "LookupVideo"
+              ]
+            },
+            "RenderVideo": {
+              "methods": [
+                "RenderVideo"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

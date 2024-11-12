@@ -1,0 +1,43 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.api.servicecontrol.v2",
+  "libraryPackage": "cloud.google.com/go/api/servicecontrol/apiv2",
+  "services": {
+    "ServiceController": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ServiceControllerClient",
+          "rpcs": {
+            "Check": {
+              "methods": [
+                "Check"
+              ]
+            },
+            "Report": {
+              "methods": [
+                "Report"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ServiceControllerClient",
+          "rpcs": {
+            "Check": {
+              "methods": [
+                "Check"
+              ]
+            },
+            "Report": {
+              "methods": [
+                "Report"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

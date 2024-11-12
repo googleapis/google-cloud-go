@@ -1,0 +1,199 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/bigtable/apiv2",
+    "version": "0.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.bigtable.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_CheckAndMutateRow_sync",
+      "title": "bigtable CheckAndMutateRow Sample",
+      "description": "CheckAndMutateRow mutates a row atomically based on the output of a predicate Reader filter.",
+      "file": "Client/CheckAndMutateRow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckAndMutateRow",
+        "fullName": "google.bigtable.v2.Client.CheckAndMutateRow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigtablepb.CheckAndMutateRowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigtablepb.CheckAndMutateRowResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.bigtable.v2.Client"
+        },
+        "method": {
+          "shortName": "CheckAndMutateRow",
+          "fullName": "google.bigtable.v2.Bigtable.CheckAndMutateRow",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_MutateRow_sync",
+      "title": "bigtable MutateRow Sample",
+      "description": "MutateRow mutates a row atomically. Cells already present in the row are left\nunchanged unless explicitly changed by `mutation`.",
+      "file": "Client/MutateRow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "MutateRow",
+        "fullName": "google.bigtable.v2.Client.MutateRow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigtablepb.MutateRowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigtablepb.MutateRowResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.bigtable.v2.Client"
+        },
+        "method": {
+          "shortName": "MutateRow",
+          "fullName": "google.bigtable.v2.Bigtable.MutateRow",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_PingAndWarm_sync",
+      "title": "bigtable PingAndWarm Sample",
+      "description": "PingAndWarm warm up associated instance metadata for this connection.\nThis call is not required but may be useful for connection keep-alive.",
+      "file": "Client/PingAndWarm/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PingAndWarm",
+        "fullName": "google.bigtable.v2.Client.PingAndWarm",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigtablepb.PingAndWarmRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigtablepb.PingAndWarmResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.bigtable.v2.Client"
+        },
+        "method": {
+          "shortName": "PingAndWarm",
+          "fullName": "google.bigtable.v2.Bigtable.PingAndWarm",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_ReadModifyWriteRow_sync",
+      "title": "bigtable ReadModifyWriteRow Sample",
+      "description": "ReadModifyWriteRow modifies a row atomically on the server. The method reads the latest\nexisting timestamp and value from the specified columns and writes a new\nentry based on pre-defined read/modify/write rules. The new value for the\ntimestamp is the greater of the existing timestamp or the current server\ntime. The method returns the new contents of all modified cells.",
+      "file": "Client/ReadModifyWriteRow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReadModifyWriteRow",
+        "fullName": "google.bigtable.v2.Client.ReadModifyWriteRow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigtablepb.ReadModifyWriteRowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigtablepb.ReadModifyWriteRowResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.bigtable.v2.Client"
+        },
+        "method": {
+          "shortName": "ReadModifyWriteRow",
+          "fullName": "google.bigtable.v2.Bigtable.ReadModifyWriteRow",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

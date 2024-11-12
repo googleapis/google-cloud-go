@@ -1,0 +1,1209 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/connectors/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.connectors.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "connectors_v1_generated_Connectors_CancelOperation_sync",
+      "title": "connectors CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.connectors.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_CreateConnection_sync",
+      "title": "connectors CreateConnection Sample",
+      "description": "CreateConnection creates a new Connection in a given project and location.",
+      "file": "Client/CreateConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConnection",
+        "fullName": "google.cloud.connectors.v1.Client.CreateConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.CreateConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateConnectionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateConnection",
+          "fullName": "google.cloud.connectors.v1.Connectors.CreateConnection",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_DeleteConnection_sync",
+      "title": "connectors DeleteConnection Sample",
+      "description": "DeleteConnection deletes a single Connection.",
+      "file": "Client/DeleteConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConnection",
+        "fullName": "google.cloud.connectors.v1.Client.DeleteConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.DeleteConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteConnectionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteConnection",
+          "fullName": "google.cloud.connectors.v1.Connectors.DeleteConnection",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_DeleteOperation_sync",
+      "title": "connectors DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.connectors.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_GetConnection_sync",
+      "title": "connectors GetConnection Sample",
+      "description": "GetConnection gets details of a single Connection.",
+      "file": "Client/GetConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConnection",
+        "fullName": "google.cloud.connectors.v1.Client.GetConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.GetConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*connectorspb.Connection",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "GetConnection",
+          "fullName": "google.cloud.connectors.v1.Connectors.GetConnection",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_GetConnectionSchemaMetadata_sync",
+      "title": "connectors GetConnectionSchemaMetadata Sample",
+      "description": "GetConnectionSchemaMetadata gets schema metadata of a connection.\nSchemaMetadata is a singleton resource for each connection.",
+      "file": "Client/GetConnectionSchemaMetadata/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConnectionSchemaMetadata",
+        "fullName": "google.cloud.connectors.v1.Client.GetConnectionSchemaMetadata",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.GetConnectionSchemaMetadataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*connectorspb.ConnectionSchemaMetadata",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "GetConnectionSchemaMetadata",
+          "fullName": "google.cloud.connectors.v1.Connectors.GetConnectionSchemaMetadata",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_GetConnector_sync",
+      "title": "connectors GetConnector Sample",
+      "description": "GetConnector gets details of a single Connector.",
+      "file": "Client/GetConnector/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConnector",
+        "fullName": "google.cloud.connectors.v1.Client.GetConnector",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.GetConnectorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*connectorspb.Connector",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "GetConnector",
+          "fullName": "google.cloud.connectors.v1.Connectors.GetConnector",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_GetConnectorVersion_sync",
+      "title": "connectors GetConnectorVersion Sample",
+      "description": "GetConnectorVersion gets details of a single connector version.",
+      "file": "Client/GetConnectorVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConnectorVersion",
+        "fullName": "google.cloud.connectors.v1.Client.GetConnectorVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.GetConnectorVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*connectorspb.ConnectorVersion",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "GetConnectorVersion",
+          "fullName": "google.cloud.connectors.v1.Connectors.GetConnectorVersion",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_GetGlobalSettings_sync",
+      "title": "connectors GetGlobalSettings Sample",
+      "description": "GetGlobalSettings getGlobalSettings gets settings of a project.\nGlobalSettings is a singleton resource.",
+      "file": "Client/GetGlobalSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGlobalSettings",
+        "fullName": "google.cloud.connectors.v1.Client.GetGlobalSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.GetGlobalSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*connectorspb.Settings",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "GetGlobalSettings",
+          "fullName": "google.cloud.connectors.v1.Connectors.GetGlobalSettings",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_GetIamPolicy_sync",
+      "title": "connectors GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.connectors.v1.Client.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_GetLocation_sync",
+      "title": "connectors GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.connectors.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_GetOperation_sync",
+      "title": "connectors GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.connectors.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_GetProvider_sync",
+      "title": "connectors GetProvider Sample",
+      "description": "GetProvider gets details of a provider.",
+      "file": "Client/GetProvider/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProvider",
+        "fullName": "google.cloud.connectors.v1.Client.GetProvider",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.GetProviderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*connectorspb.Provider",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "GetProvider",
+          "fullName": "google.cloud.connectors.v1.Connectors.GetProvider",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_GetRuntimeConfig_sync",
+      "title": "connectors GetRuntimeConfig Sample",
+      "description": "GetRuntimeConfig gets the runtimeConfig of a location.\nRuntimeConfig is a singleton resource for each location.",
+      "file": "Client/GetRuntimeConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRuntimeConfig",
+        "fullName": "google.cloud.connectors.v1.Client.GetRuntimeConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.GetRuntimeConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*connectorspb.RuntimeConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "GetRuntimeConfig",
+          "fullName": "google.cloud.connectors.v1.Connectors.GetRuntimeConfig",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_ListConnections_sync",
+      "title": "connectors ListConnections Sample",
+      "description": "ListConnections lists Connections in a given project and location.",
+      "file": "Client/ListConnections/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConnections",
+        "fullName": "google.cloud.connectors.v1.Client.ListConnections",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.ListConnectionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConnectionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "ListConnections",
+          "fullName": "google.cloud.connectors.v1.Connectors.ListConnections",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_ListConnectorVersions_sync",
+      "title": "connectors ListConnectorVersions Sample",
+      "description": "ListConnectorVersions lists Connector Versions in a given project and location.",
+      "file": "Client/ListConnectorVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConnectorVersions",
+        "fullName": "google.cloud.connectors.v1.Client.ListConnectorVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.ListConnectorVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConnectorVersionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "ListConnectorVersions",
+          "fullName": "google.cloud.connectors.v1.Connectors.ListConnectorVersions",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_ListConnectors_sync",
+      "title": "connectors ListConnectors Sample",
+      "description": "ListConnectors lists Connectors in a given project and location.",
+      "file": "Client/ListConnectors/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConnectors",
+        "fullName": "google.cloud.connectors.v1.Client.ListConnectors",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.ListConnectorsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConnectorIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "ListConnectors",
+          "fullName": "google.cloud.connectors.v1.Connectors.ListConnectors",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_ListLocations_sync",
+      "title": "connectors ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.connectors.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_ListOperations_sync",
+      "title": "connectors ListOperations Sample",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.connectors.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_ListProviders_sync",
+      "title": "connectors ListProviders Sample",
+      "description": "ListProviders lists Providers in a given project and location.",
+      "file": "Client/ListProviders/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProviders",
+        "fullName": "google.cloud.connectors.v1.Client.ListProviders",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.ListProvidersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProviderIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "ListProviders",
+          "fullName": "google.cloud.connectors.v1.Connectors.ListProviders",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_ListRuntimeActionSchemas_sync",
+      "title": "connectors ListRuntimeActionSchemas Sample",
+      "description": "ListRuntimeActionSchemas list schema of a runtime actions filtered by action name.",
+      "file": "Client/ListRuntimeActionSchemas/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRuntimeActionSchemas",
+        "fullName": "google.cloud.connectors.v1.Client.ListRuntimeActionSchemas",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.ListRuntimeActionSchemasRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RuntimeActionSchemaIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "ListRuntimeActionSchemas",
+          "fullName": "google.cloud.connectors.v1.Connectors.ListRuntimeActionSchemas",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_ListRuntimeEntitySchemas_sync",
+      "title": "connectors ListRuntimeEntitySchemas Sample",
+      "description": "ListRuntimeEntitySchemas list schema of a runtime entities filtered by entity name.",
+      "file": "Client/ListRuntimeEntitySchemas/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRuntimeEntitySchemas",
+        "fullName": "google.cloud.connectors.v1.Client.ListRuntimeEntitySchemas",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.ListRuntimeEntitySchemasRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RuntimeEntitySchemaIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "ListRuntimeEntitySchemas",
+          "fullName": "google.cloud.connectors.v1.Connectors.ListRuntimeEntitySchemas",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_RefreshConnectionSchemaMetadata_sync",
+      "title": "connectors RefreshConnectionSchemaMetadata Sample",
+      "description": "RefreshConnectionSchemaMetadata refresh runtime schema of a connection.",
+      "file": "Client/RefreshConnectionSchemaMetadata/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RefreshConnectionSchemaMetadata",
+        "fullName": "google.cloud.connectors.v1.Client.RefreshConnectionSchemaMetadata",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.RefreshConnectionSchemaMetadataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RefreshConnectionSchemaMetadataOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "RefreshConnectionSchemaMetadata",
+          "fullName": "google.cloud.connectors.v1.Connectors.RefreshConnectionSchemaMetadata",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_SetIamPolicy_sync",
+      "title": "connectors SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.connectors.v1.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_TestIamPermissions_sync",
+      "title": "connectors TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.connectors.v1.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectors_v1_generated_Connectors_UpdateConnection_sync",
+      "title": "connectors UpdateConnection Sample",
+      "description": "UpdateConnection updates the parameters of a single Connection.",
+      "file": "Client/UpdateConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConnection",
+        "fullName": "google.cloud.connectors.v1.Client.UpdateConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectorspb.UpdateConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateConnectionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.connectors.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateConnection",
+          "fullName": "google.cloud.connectors.v1.Connectors.UpdateConnection",
+          "service": {
+            "shortName": "Connectors",
+            "fullName": "google.cloud.connectors.v1.Connectors"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

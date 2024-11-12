@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -35,7 +35,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -53,9 +52,11 @@ func defaultController2GRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultEndpoint("clouddebugger.googleapis.com:443"),
 		internaloption.WithDefaultEndpointTemplate("clouddebugger.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("clouddebugger.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouddebugger.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -63,8 +64,11 @@ func defaultController2GRPCClientOptions() []option.ClientOption {
 
 func defaultController2CallOptions() *Controller2CallOptions {
 	return &Controller2CallOptions{
-		RegisterDebuggee: []gax.CallOption{},
+		RegisterDebuggee: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		ListActiveBreakpoints: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -77,6 +81,7 @@ func defaultController2CallOptions() *Controller2CallOptions {
 			}),
 		},
 		UpdateActiveBreakpoint: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -93,8 +98,11 @@ func defaultController2CallOptions() *Controller2CallOptions {
 
 func defaultController2RESTCallOptions() *Controller2CallOptions {
 	return &Controller2CallOptions{
-		RegisterDebuggee: []gax.CallOption{},
+		RegisterDebuggee: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		ListActiveBreakpoints: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -106,6 +114,7 @@ func defaultController2RESTCallOptions() *Controller2CallOptions {
 			}),
 		},
 		UpdateActiveBreakpoint: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -233,9 +242,6 @@ type controller2GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Controller2Client
 	CallOptions **Controller2CallOptions
 
@@ -243,7 +249,7 @@ type controller2GRPCClient struct {
 	controller2Client debuggerpb.Controller2Client
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewController2Client creates a new controller2 client based on gRPC.
@@ -279,11 +285,6 @@ func NewController2Client(ctx context.Context, opts ...option.ClientOption) (*Co
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -292,7 +293,6 @@ func NewController2Client(ctx context.Context, opts ...option.ClientOption) (*Co
 
 	c := &controller2GRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		controller2Client: debuggerpb.NewController2Client(connPool),
 		CallOptions:       &client.CallOptions,
 	}
@@ -317,7 +317,9 @@ func (c *controller2GRPCClient) Connection() *grpc.ClientConn {
 func (c *controller2GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -334,8 +336,8 @@ type controller2RESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing Controller2Client
 	CallOptions **Controller2CallOptions
@@ -386,8 +388,10 @@ func defaultController2RESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultEndpoint("https://clouddebugger.googleapis.com"),
 		internaloption.WithDefaultEndpointTemplate("https://clouddebugger.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://clouddebugger.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouddebugger.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -397,7 +401,9 @@ func defaultController2RESTClientOptions() []option.ClientOption {
 func (c *controller2RESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -415,12 +421,7 @@ func (c *controller2RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *controller2GRPCClient) RegisterDebuggee(ctx context.Context, req *debuggerpb.RegisterDebuggeeRequest, opts ...gax.CallOption) (*debuggerpb.RegisterDebuggeeResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).RegisterDebuggee[0:len((*c.CallOptions).RegisterDebuggee):len((*c.CallOptions).RegisterDebuggee)], opts...)
 	var resp *debuggerpb.RegisterDebuggeeResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -435,14 +436,10 @@ func (c *controller2GRPCClient) RegisterDebuggee(ctx context.Context, req *debug
 }
 
 func (c *controller2GRPCClient) ListActiveBreakpoints(ctx context.Context, req *debuggerpb.ListActiveBreakpointsRequest, opts ...gax.CallOption) (*debuggerpb.ListActiveBreakpointsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListActiveBreakpoints[0:len((*c.CallOptions).ListActiveBreakpoints):len((*c.CallOptions).ListActiveBreakpoints)], opts...)
 	var resp *debuggerpb.ListActiveBreakpointsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -457,14 +454,10 @@ func (c *controller2GRPCClient) ListActiveBreakpoints(ctx context.Context, req *
 }
 
 func (c *controller2GRPCClient) UpdateActiveBreakpoint(ctx context.Context, req *debuggerpb.UpdateActiveBreakpointRequest, opts ...gax.CallOption) (*debuggerpb.UpdateActiveBreakpointResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId()), "breakpoint.id", url.QueryEscape(req.GetBreakpoint().GetId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId()), "breakpoint.id", url.QueryEscape(req.GetBreakpoint().GetId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateActiveBreakpoint[0:len((*c.CallOptions).UpdateActiveBreakpoint):len((*c.CallOptions).UpdateActiveBreakpoint)], opts...)
 	var resp *debuggerpb.UpdateActiveBreakpointResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -507,7 +500,8 @@ func (c *controller2RESTClient) RegisterDebuggee(ctx context.Context, req *debug
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).RegisterDebuggee[0:len((*c.CallOptions).RegisterDebuggee):len((*c.CallOptions).RegisterDebuggee)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &debuggerpb.RegisterDebuggeeResponse{}
@@ -532,7 +526,7 @@ func (c *controller2RESTClient) RegisterDebuggee(ctx context.Context, req *debug
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
@@ -581,9 +575,11 @@ func (c *controller2RESTClient) ListActiveBreakpoints(ctx context.Context, req *
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ListActiveBreakpoints[0:len((*c.CallOptions).ListActiveBreakpoints):len((*c.CallOptions).ListActiveBreakpoints)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &debuggerpb.ListActiveBreakpointsResponse{}
@@ -608,7 +604,7 @@ func (c *controller2RESTClient) ListActiveBreakpoints(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
@@ -652,9 +648,11 @@ func (c *controller2RESTClient) UpdateActiveBreakpoint(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId()), "breakpoint.id", url.QueryEscape(req.GetBreakpoint().GetId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId()), "breakpoint.id", url.QueryEscape(req.GetBreakpoint().GetId()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateActiveBreakpoint[0:len((*c.CallOptions).UpdateActiveBreakpoint):len((*c.CallOptions).UpdateActiveBreakpoint)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &debuggerpb.UpdateActiveBreakpointResponse{}
@@ -679,7 +677,7 @@ func (c *controller2RESTClient) UpdateActiveBreakpoint(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}

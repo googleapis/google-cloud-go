@@ -1,67 +1,55 @@
-## Pub/Sub Lite [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/pubsublite.svg)](https://pkg.go.dev/cloud.google.com/go/pubsublite)
+# Pub/Sub Lite API
 
-- [About Pub/Sub Lite](https://cloud.google.com/pubsub/lite)
-- [Client library documentation](https://cloud.google.com/pubsub/lite/docs/reference/libraries)
-- [API documentation](https://cloud.google.com/pubsub/lite/docs/apis)
-- [Go client documentation](https://pkg.go.dev/cloud.google.com/go/pubsublite)
-- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/main/pubsublite)
+[![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/pubsublite.svg)](https://pkg.go.dev/cloud.google.com/go/pubsublite)
 
+Go Client Library for Pub/Sub Lite API.
 
-### Example Usage
+## Install
 
-[snip]:# (imports)
-```go
-import (
-	"cloud.google.com/go/pubsub"
-	"cloud.google.com/go/pubsublite/pscompat"
-)
+```bash
+go get cloud.google.com/go/pubsublite
 ```
 
-To publish messages to a topic:
+## Stability
 
-[snip]:# (publish)
-```go
-// Create a PublisherClient for topic1 in zone us-central1-b.
-// See https://cloud.google.com/pubsub/lite/docs/locations for available regions
-// and zones.
-const topic = "projects/project-id/locations/us-central1-b/topics/topic1"
-publisher, err := pscompat.NewPublisherClient(ctx, topic)
-if err != nil {
-	log.Fatal(err)
-}
+The stability of this module is indicated by SemVer.
 
-// Publish "hello world".
-res := publisher.Publish(ctx, &pubsub.Message{
-	Data: []byte("hello world"),
-})
-// The publish happens asynchronously.
-// Later, you can get the result from res:
-...
-msgID, err := res.Get(ctx)
-if err != nil {
-	log.Fatal(err)
-}
-```
+However, a `v1+` module may have breaking changes in two scenarios:
 
-To receive messages for a subscription:
+* Packages with `alpha` or `beta` in the import path
+* The GoDoc has an explicit stability disclaimer (for example, for an experimental feature).
 
-[snip]:# (subscribe)
-```go
-// Create a SubscriberClient for subscription1 in zone us-central1-b.
-const subscription = "projects/project-id/locations/us-central1-b/subscriptions/subscription1"
-subscriber, err := pscompat.NewSubscriberClient(ctx, subscription)
-if err != nil {
-	log.Fatal(err)
-}
+### Which package to use?
 
-// Use a callback to receive messages.
-// Call cancel() to stop receiving messages.
-cctx, cancel := context.WithCancel(ctx)
-err = subscriber.Receive(cctx, func(ctx context.Context, m *pubsub.Message) {
-	fmt.Println(m.Data)
-	m.Ack() // Acknowledge that we've consumed the message.
-})
-if err != nil {
-	log.Println(err)
-}
-```
+Generated client library surfaces can be found in packages who's import path
+ends in `.../apivXXX`. The `XXX` could be something like `1` or `2` in the case
+of a stable service backend or may be like `1beta2` or `2beta` in the case of a
+more experimental service backend. Because of this fact, a given module can have
+multiple clients for different service backends. In these cases it is generally
+recommend to use clients with stable service backends, with import suffixes like
+`apiv1`, unless you need to use features that are only present in a beta backend
+or there is not yet a stable backend available.
+
+## Google Cloud Samples
+
+To browse ready to use code samples check [Google Cloud Samples](https://cloud.google.com/docs/samples?l=go).
+
+## Go Version Support
+
+See the [Go Versions Supported](https://github.com/googleapis/google-cloud-go#go-versions-supported)
+section in the root directory's README.
+
+## Authorization
+
+See the [Authorization](https://github.com/googleapis/google-cloud-go#authorization)
+section in the root directory's README.
+
+## Contributing
+
+Contributions are welcome. Please, see the [CONTRIBUTING](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/main/CONTRIBUTING.md)
+document for details.
+
+Please note that this project is released with a Contributor Code of Conduct.
+By participating in this project you agree to abide by its terms. See
+[Contributor Code of Conduct](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/main/CONTRIBUTING.md#contributor-code-of-conduct)
+for more information.

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/certificatemanager/apiv1",
-    "version": "1.9.2",
+    "version": "0.0.0",
     "language": "GO",
     "apis": [
       {

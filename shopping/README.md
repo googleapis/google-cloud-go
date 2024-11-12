@@ -1,8 +1,8 @@
-# 
+# Merchant API
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/shopping.svg)](https://pkg.go.dev/cloud.google.com/go/shopping)
 
-Go Client Library for .
+Go Client Library for Merchant API.
 
 ## Install
 

@@ -1,0 +1,143 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.datastore.v1",
+  "libraryPackage": "cloud.google.com/go/datastore/apiv1",
+  "services": {
+    "Datastore": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AllocateIds": {
+              "methods": [
+                "AllocateIds"
+              ]
+            },
+            "BeginTransaction": {
+              "methods": [
+                "BeginTransaction"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "Commit": {
+              "methods": [
+                "Commit"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "Lookup": {
+              "methods": [
+                "Lookup"
+              ]
+            },
+            "ReserveIds": {
+              "methods": [
+                "ReserveIds"
+              ]
+            },
+            "Rollback": {
+              "methods": [
+                "Rollback"
+              ]
+            },
+            "RunAggregationQuery": {
+              "methods": [
+                "RunAggregationQuery"
+              ]
+            },
+            "RunQuery": {
+              "methods": [
+                "RunQuery"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AllocateIds": {
+              "methods": [
+                "AllocateIds"
+              ]
+            },
+            "BeginTransaction": {
+              "methods": [
+                "BeginTransaction"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "Commit": {
+              "methods": [
+                "Commit"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "Lookup": {
+              "methods": [
+                "Lookup"
+              ]
+            },
+            "ReserveIds": {
+              "methods": [
+                "ReserveIds"
+              ]
+            },
+            "Rollback": {
+              "methods": [
+                "Rollback"
+              ]
+            },
+            "RunAggregationQuery": {
+              "methods": [
+                "RunAggregationQuery"
+              ]
+            },
+            "RunQuery": {
+              "methods": [
+                "RunQuery"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

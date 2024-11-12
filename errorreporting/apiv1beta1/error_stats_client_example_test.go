@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ func ExampleNewErrorStatsRESTClient() {
 	_ = c
 }
 
-func ExampleErrorStatsClient_ListGroupStats() {
+func ExampleErrorStatsClient_DeleteEvents() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -71,22 +71,16 @@ func ExampleErrorStatsClient_ListGroupStats() {
 	}
 	defer c.Close()
 
-	req := &errorreportingpb.ListGroupStatsRequest{
+	req := &errorreportingpb.DeleteEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb#ListGroupStatsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb#DeleteEventsRequest.
 	}
-	it := c.ListGroupStats(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	resp, err := c.DeleteEvents(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleErrorStatsClient_ListEvents() {
@@ -117,10 +111,16 @@ func ExampleErrorStatsClient_ListEvents() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*errorreportingpb.ListEventsResponse)
 	}
 }
 
-func ExampleErrorStatsClient_DeleteEvents() {
+func ExampleErrorStatsClient_ListGroupStats() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -133,14 +133,26 @@ func ExampleErrorStatsClient_DeleteEvents() {
 	}
 	defer c.Close()
 
-	req := &errorreportingpb.DeleteEventsRequest{
+	req := &errorreportingpb.ListGroupStatsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb#DeleteEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb#ListGroupStatsRequest.
 	}
-	resp, err := c.DeleteEvents(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListGroupStats(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*errorreportingpb.ListGroupStatsResponse)
 	}
-	// TODO: Use resp.
-	_ = resp
 }

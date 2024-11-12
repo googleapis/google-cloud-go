@@ -1,0 +1,516 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/devtools/testing/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.devtools.testing.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "testing_v1_generated_ApplicationDetailService_GetApkDetails_sync",
+      "title": "testing GetApkDetails Sample",
+      "description": "GetApkDetails gets the details of an Android application APK.",
+      "file": "ApplicationDetailClient/GetApkDetails/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetApkDetails",
+        "fullName": "google.devtools.testing.v1.ApplicationDetailClient.GetApkDetails",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "testingpb.GetApkDetailsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*testingpb.GetApkDetailsResponse",
+        "client": {
+          "shortName": "ApplicationDetailClient",
+          "fullName": "google.devtools.testing.v1.ApplicationDetailClient"
+        },
+        "method": {
+          "shortName": "GetApkDetails",
+          "fullName": "google.devtools.testing.v1.ApplicationDetailService.GetApkDetails",
+          "service": {
+            "shortName": "ApplicationDetailService",
+            "fullName": "google.devtools.testing.v1.ApplicationDetailService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "testing_v1_generated_DirectAccessService_AdbConnect_sync",
+      "title": "testing AdbConnect Sample",
+      "description": "AdbConnect exposes ADB connection for use with the Adb Device Forwarder project\nif the reserved device supports ADB.\ngRPC headers are used to authenticate the Connect RPC, as well as\nassociate to a particular device session.\nIn particular, the user must specify the \"X-FTL-Session-Name\" header.\n\n\nThis method is not supported for the REST transport.",
+      "file": "DirectAccessClient/AdbConnect/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AdbConnect",
+        "fullName": "google.devtools.testing.v1.DirectAccessClient.AdbConnect",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "testingpb.DirectAccessService_AdbConnectClient",
+        "client": {
+          "shortName": "DirectAccessClient",
+          "fullName": "google.devtools.testing.v1.DirectAccessClient"
+        },
+        "method": {
+          "shortName": "AdbConnect",
+          "fullName": "google.devtools.testing.v1.DirectAccessService.AdbConnect",
+          "service": {
+            "shortName": "DirectAccessService",
+            "fullName": "google.devtools.testing.v1.DirectAccessService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "testing_v1_generated_DirectAccessService_CancelDeviceSession_sync",
+      "title": "testing CancelDeviceSession Sample",
+      "description": "CancelDeviceSession pOST\n/v1/projects/{project_id}/deviceSessions/{device_session_id}: cancel\nChanges the DeviceSession to state FINISHED and terminates all connections.\nCanceled sessions are not deleted and can be retrieved or\nlisted by the user until they expire based on the 28 day deletion policy.",
+      "file": "DirectAccessClient/CancelDeviceSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelDeviceSession",
+        "fullName": "google.devtools.testing.v1.DirectAccessClient.CancelDeviceSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "testingpb.CancelDeviceSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DirectAccessClient",
+          "fullName": "google.devtools.testing.v1.DirectAccessClient"
+        },
+        "method": {
+          "shortName": "CancelDeviceSession",
+          "fullName": "google.devtools.testing.v1.DirectAccessService.CancelDeviceSession",
+          "service": {
+            "shortName": "DirectAccessService",
+            "fullName": "google.devtools.testing.v1.DirectAccessService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "testing_v1_generated_DirectAccessService_CreateDeviceSession_sync",
+      "title": "testing CreateDeviceSession Sample",
+      "description": "CreateDeviceSession pOST /v1/projects/{project_id}/deviceSessions",
+      "file": "DirectAccessClient/CreateDeviceSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDeviceSession",
+        "fullName": "google.devtools.testing.v1.DirectAccessClient.CreateDeviceSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "testingpb.CreateDeviceSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*testingpb.DeviceSession",
+        "client": {
+          "shortName": "DirectAccessClient",
+          "fullName": "google.devtools.testing.v1.DirectAccessClient"
+        },
+        "method": {
+          "shortName": "CreateDeviceSession",
+          "fullName": "google.devtools.testing.v1.DirectAccessService.CreateDeviceSession",
+          "service": {
+            "shortName": "DirectAccessService",
+            "fullName": "google.devtools.testing.v1.DirectAccessService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "testing_v1_generated_DirectAccessService_GetDeviceSession_sync",
+      "title": "testing GetDeviceSession Sample",
+      "description": "GetDeviceSession gET /v1/projects/{project_id}/deviceSessions/{device_session_id}\nReturn a DeviceSession, which documents the allocation status and\nwhether the device is allocated. Clients making requests from this API\nmust poll GetDeviceSession.",
+      "file": "DirectAccessClient/GetDeviceSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDeviceSession",
+        "fullName": "google.devtools.testing.v1.DirectAccessClient.GetDeviceSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "testingpb.GetDeviceSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*testingpb.DeviceSession",
+        "client": {
+          "shortName": "DirectAccessClient",
+          "fullName": "google.devtools.testing.v1.DirectAccessClient"
+        },
+        "method": {
+          "shortName": "GetDeviceSession",
+          "fullName": "google.devtools.testing.v1.DirectAccessService.GetDeviceSession",
+          "service": {
+            "shortName": "DirectAccessService",
+            "fullName": "google.devtools.testing.v1.DirectAccessService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "testing_v1_generated_DirectAccessService_ListDeviceSessions_sync",
+      "title": "testing ListDeviceSessions Sample",
+      "description": "ListDeviceSessions gET /v1/projects/{project_id}/deviceSessions\nLists device Sessions owned by the project user.",
+      "file": "DirectAccessClient/ListDeviceSessions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDeviceSessions",
+        "fullName": "google.devtools.testing.v1.DirectAccessClient.ListDeviceSessions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "testingpb.ListDeviceSessionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeviceSessionIterator",
+        "client": {
+          "shortName": "DirectAccessClient",
+          "fullName": "google.devtools.testing.v1.DirectAccessClient"
+        },
+        "method": {
+          "shortName": "ListDeviceSessions",
+          "fullName": "google.devtools.testing.v1.DirectAccessService.ListDeviceSessions",
+          "service": {
+            "shortName": "DirectAccessService",
+            "fullName": "google.devtools.testing.v1.DirectAccessService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "testing_v1_generated_DirectAccessService_UpdateDeviceSession_sync",
+      "title": "testing UpdateDeviceSession Sample",
+      "description": "UpdateDeviceSession pATCH\n/v1/projects/{projectId}/deviceSessions/deviceSessionId}: updateDeviceSession\nUpdates the current device session to the fields described by the\nupdate_mask.",
+      "file": "DirectAccessClient/UpdateDeviceSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDeviceSession",
+        "fullName": "google.devtools.testing.v1.DirectAccessClient.UpdateDeviceSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "testingpb.UpdateDeviceSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*testingpb.DeviceSession",
+        "client": {
+          "shortName": "DirectAccessClient",
+          "fullName": "google.devtools.testing.v1.DirectAccessClient"
+        },
+        "method": {
+          "shortName": "UpdateDeviceSession",
+          "fullName": "google.devtools.testing.v1.DirectAccessService.UpdateDeviceSession",
+          "service": {
+            "shortName": "DirectAccessService",
+            "fullName": "google.devtools.testing.v1.DirectAccessService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "testing_v1_generated_TestEnvironmentDiscoveryService_GetTestEnvironmentCatalog_sync",
+      "title": "testing GetTestEnvironmentCatalog Sample",
+      "description": "GetTestEnvironmentCatalog gets the catalog of supported test environments.\n\nMay return any of the following canonical error codes: \n\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the environment type does not exist\n- INTERNAL - if an internal error occurred",
+      "file": "TestEnvironmentDiscoveryClient/GetTestEnvironmentCatalog/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTestEnvironmentCatalog",
+        "fullName": "google.devtools.testing.v1.TestEnvironmentDiscoveryClient.GetTestEnvironmentCatalog",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "testingpb.GetTestEnvironmentCatalogRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*testingpb.TestEnvironmentCatalog",
+        "client": {
+          "shortName": "TestEnvironmentDiscoveryClient",
+          "fullName": "google.devtools.testing.v1.TestEnvironmentDiscoveryClient"
+        },
+        "method": {
+          "shortName": "GetTestEnvironmentCatalog",
+          "fullName": "google.devtools.testing.v1.TestEnvironmentDiscoveryService.GetTestEnvironmentCatalog",
+          "service": {
+            "shortName": "TestEnvironmentDiscoveryService",
+            "fullName": "google.devtools.testing.v1.TestEnvironmentDiscoveryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "testing_v1_generated_TestExecutionService_CancelTestMatrix_sync",
+      "title": "testing CancelTestMatrix Sample",
+      "description": "CancelTestMatrix cancels unfinished test executions in a test matrix.\nThis call returns immediately and cancellation proceeds asynchronously.\nIf the matrix is already final, this operation will have no effect.\n\nMay return any of the following canonical error codes: \n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
+      "file": "TestExecutionClient/CancelTestMatrix/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelTestMatrix",
+        "fullName": "google.devtools.testing.v1.TestExecutionClient.CancelTestMatrix",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "testingpb.CancelTestMatrixRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*testingpb.CancelTestMatrixResponse",
+        "client": {
+          "shortName": "TestExecutionClient",
+          "fullName": "google.devtools.testing.v1.TestExecutionClient"
+        },
+        "method": {
+          "shortName": "CancelTestMatrix",
+          "fullName": "google.devtools.testing.v1.TestExecutionService.CancelTestMatrix",
+          "service": {
+            "shortName": "TestExecutionService",
+            "fullName": "google.devtools.testing.v1.TestExecutionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "testing_v1_generated_TestExecutionService_CreateTestMatrix_sync",
+      "title": "testing CreateTestMatrix Sample",
+      "description": "CreateTestMatrix creates and runs a matrix of tests according to the given specifications.\nUnsupported environments will be returned in the state UNSUPPORTED.\nA test matrix is limited to use at most 2000 devices in parallel.\n\nThe returned matrix will not yet contain the executions that will be\ncreated for this matrix. Execution creation happens later on and will\nrequire a call to GetTestMatrix.\n\nMay return any of the following canonical error codes: \n\n- PERMISSION_DENIED - if the user is not authorized to write to project\n- INVALID_ARGUMENT - if the request is malformed or if the matrix tries\nto use too many simultaneous devices.",
+      "file": "TestExecutionClient/CreateTestMatrix/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTestMatrix",
+        "fullName": "google.devtools.testing.v1.TestExecutionClient.CreateTestMatrix",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "testingpb.CreateTestMatrixRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*testingpb.TestMatrix",
+        "client": {
+          "shortName": "TestExecutionClient",
+          "fullName": "google.devtools.testing.v1.TestExecutionClient"
+        },
+        "method": {
+          "shortName": "CreateTestMatrix",
+          "fullName": "google.devtools.testing.v1.TestExecutionService.CreateTestMatrix",
+          "service": {
+            "shortName": "TestExecutionService",
+            "fullName": "google.devtools.testing.v1.TestExecutionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "testing_v1_generated_TestExecutionService_GetTestMatrix_sync",
+      "title": "testing GetTestMatrix Sample",
+      "description": "GetTestMatrix checks the status of a test matrix and the executions once they\nare created.\n\nThe test matrix will contain the list of test executions to run if and only\nif the resultStorage.toolResultsExecution fields have been populated.\n\nNote: Flaky test executions may be added to the matrix at a later stage.\n\nMay return any of the following canonical error codes: \n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist",
+      "file": "TestExecutionClient/GetTestMatrix/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTestMatrix",
+        "fullName": "google.devtools.testing.v1.TestExecutionClient.GetTestMatrix",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "testingpb.GetTestMatrixRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*testingpb.TestMatrix",
+        "client": {
+          "shortName": "TestExecutionClient",
+          "fullName": "google.devtools.testing.v1.TestExecutionClient"
+        },
+        "method": {
+          "shortName": "GetTestMatrix",
+          "fullName": "google.devtools.testing.v1.TestExecutionService.GetTestMatrix",
+          "service": {
+            "shortName": "TestExecutionService",
+            "fullName": "google.devtools.testing.v1.TestExecutionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

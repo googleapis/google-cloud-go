@@ -1,0 +1,283 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.connectors.v1",
+  "libraryPackage": "cloud.google.com/go/connectors/apiv1",
+  "services": {
+    "Connectors": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateConnection": {
+              "methods": [
+                "CreateConnection"
+              ]
+            },
+            "DeleteConnection": {
+              "methods": [
+                "DeleteConnection"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetConnection": {
+              "methods": [
+                "GetConnection"
+              ]
+            },
+            "GetConnectionSchemaMetadata": {
+              "methods": [
+                "GetConnectionSchemaMetadata"
+              ]
+            },
+            "GetConnector": {
+              "methods": [
+                "GetConnector"
+              ]
+            },
+            "GetConnectorVersion": {
+              "methods": [
+                "GetConnectorVersion"
+              ]
+            },
+            "GetGlobalSettings": {
+              "methods": [
+                "GetGlobalSettings"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProvider": {
+              "methods": [
+                "GetProvider"
+              ]
+            },
+            "GetRuntimeConfig": {
+              "methods": [
+                "GetRuntimeConfig"
+              ]
+            },
+            "ListConnections": {
+              "methods": [
+                "ListConnections"
+              ]
+            },
+            "ListConnectorVersions": {
+              "methods": [
+                "ListConnectorVersions"
+              ]
+            },
+            "ListConnectors": {
+              "methods": [
+                "ListConnectors"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListProviders": {
+              "methods": [
+                "ListProviders"
+              ]
+            },
+            "ListRuntimeActionSchemas": {
+              "methods": [
+                "ListRuntimeActionSchemas"
+              ]
+            },
+            "ListRuntimeEntitySchemas": {
+              "methods": [
+                "ListRuntimeEntitySchemas"
+              ]
+            },
+            "RefreshConnectionSchemaMetadata": {
+              "methods": [
+                "RefreshConnectionSchemaMetadata"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateConnection": {
+              "methods": [
+                "UpdateConnection"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateConnection": {
+              "methods": [
+                "CreateConnection"
+              ]
+            },
+            "DeleteConnection": {
+              "methods": [
+                "DeleteConnection"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetConnection": {
+              "methods": [
+                "GetConnection"
+              ]
+            },
+            "GetConnectionSchemaMetadata": {
+              "methods": [
+                "GetConnectionSchemaMetadata"
+              ]
+            },
+            "GetConnector": {
+              "methods": [
+                "GetConnector"
+              ]
+            },
+            "GetConnectorVersion": {
+              "methods": [
+                "GetConnectorVersion"
+              ]
+            },
+            "GetGlobalSettings": {
+              "methods": [
+                "GetGlobalSettings"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProvider": {
+              "methods": [
+                "GetProvider"
+              ]
+            },
+            "GetRuntimeConfig": {
+              "methods": [
+                "GetRuntimeConfig"
+              ]
+            },
+            "ListConnections": {
+              "methods": [
+                "ListConnections"
+              ]
+            },
+            "ListConnectorVersions": {
+              "methods": [
+                "ListConnectorVersions"
+              ]
+            },
+            "ListConnectors": {
+              "methods": [
+                "ListConnectors"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListProviders": {
+              "methods": [
+                "ListProviders"
+              ]
+            },
+            "ListRuntimeActionSchemas": {
+              "methods": [
+                "ListRuntimeActionSchemas"
+              ]
+            },
+            "ListRuntimeEntitySchemas": {
+              "methods": [
+                "ListRuntimeEntitySchemas"
+              ]
+            },
+            "RefreshConnectionSchemaMetadata": {
+              "methods": [
+                "RefreshConnectionSchemaMetadata"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateConnection": {
+              "methods": [
+                "UpdateConnection"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

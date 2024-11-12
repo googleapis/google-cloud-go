@@ -1,0 +1,336 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/timeseriesinsights/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.timeseriesinsights.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "timeseriesinsights_v1_generated_TimeseriesInsightsController_AppendEvents_sync",
+      "title": "timeseriesinsights AppendEvents Sample",
+      "description": "AppendEvents append events to a `LOADED` [DataSet][google.cloud.timeseriesinsights.v1.DataSet].",
+      "file": "TimeseriesInsightsControllerClient/AppendEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AppendEvents",
+        "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient.AppendEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "timeseriesinsightspb.AppendEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*timeseriesinsightspb.AppendEventsResponse",
+        "client": {
+          "shortName": "TimeseriesInsightsControllerClient",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient"
+        },
+        "method": {
+          "shortName": "AppendEvents",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController.AppendEvents",
+          "service": {
+            "shortName": "TimeseriesInsightsController",
+            "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "timeseriesinsights_v1_generated_TimeseriesInsightsController_CreateDataSet_sync",
+      "title": "timeseriesinsights CreateDataSet Sample",
+      "description": "CreateDataSet create a [DataSet][google.cloud.timeseriesinsights.v1.DataSet] from data stored on Cloud\nStorage.\n\nThe data must stay immutable while we process the\n[DataSet][google.cloud.timeseriesinsights.v1.DataSet] creation; otherwise, undefined outcomes\nmight result.  For more information, see [DataSet][google.cloud.timeseriesinsights.v1.DataSet].",
+      "file": "TimeseriesInsightsControllerClient/CreateDataSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataSet",
+        "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient.CreateDataSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "timeseriesinsightspb.CreateDataSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*timeseriesinsightspb.DataSet",
+        "client": {
+          "shortName": "TimeseriesInsightsControllerClient",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient"
+        },
+        "method": {
+          "shortName": "CreateDataSet",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController.CreateDataSet",
+          "service": {
+            "shortName": "TimeseriesInsightsController",
+            "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "timeseriesinsights_v1_generated_TimeseriesInsightsController_DeleteDataSet_sync",
+      "title": "timeseriesinsights DeleteDataSet Sample",
+      "description": "DeleteDataSet delete a [DataSet][google.cloud.timeseriesinsights.v1.DataSet] from the system.\n\n**NOTE**: If the [DataSet][google.cloud.timeseriesinsights.v1.DataSet] is still being\nprocessed, it will be aborted and deleted.",
+      "file": "TimeseriesInsightsControllerClient/DeleteDataSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataSet",
+        "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient.DeleteDataSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "timeseriesinsightspb.DeleteDataSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "TimeseriesInsightsControllerClient",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient"
+        },
+        "method": {
+          "shortName": "DeleteDataSet",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController.DeleteDataSet",
+          "service": {
+            "shortName": "TimeseriesInsightsController",
+            "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "timeseriesinsights_v1_generated_TimeseriesInsightsController_EvaluateSlice_sync",
+      "title": "timeseriesinsights EvaluateSlice Sample",
+      "description": "EvaluateSlice evaluate an explicit slice from a loaded [DataSet][google.cloud.timeseriesinsights.v1.DataSet].",
+      "file": "TimeseriesInsightsControllerClient/EvaluateSlice/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EvaluateSlice",
+        "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient.EvaluateSlice",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "timeseriesinsightspb.EvaluateSliceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*timeseriesinsightspb.EvaluatedSlice",
+        "client": {
+          "shortName": "TimeseriesInsightsControllerClient",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient"
+        },
+        "method": {
+          "shortName": "EvaluateSlice",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController.EvaluateSlice",
+          "service": {
+            "shortName": "TimeseriesInsightsController",
+            "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "timeseriesinsights_v1_generated_TimeseriesInsightsController_EvaluateTimeseries_sync",
+      "title": "timeseriesinsights EvaluateTimeseries Sample",
+      "description": "EvaluateTimeseries evaluate an explicit timeseries.",
+      "file": "TimeseriesInsightsControllerClient/EvaluateTimeseries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EvaluateTimeseries",
+        "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient.EvaluateTimeseries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "timeseriesinsightspb.EvaluateTimeseriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*timeseriesinsightspb.EvaluatedSlice",
+        "client": {
+          "shortName": "TimeseriesInsightsControllerClient",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient"
+        },
+        "method": {
+          "shortName": "EvaluateTimeseries",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController.EvaluateTimeseries",
+          "service": {
+            "shortName": "TimeseriesInsightsController",
+            "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "timeseriesinsights_v1_generated_TimeseriesInsightsController_ListDataSets_sync",
+      "title": "timeseriesinsights ListDataSets Sample",
+      "description": "ListDataSets lists [DataSets][google.cloud.timeseriesinsights.v1.DataSet] under the project.\n\nThe order of the results is unspecified but deterministic. Newly created\n[DataSets][google.cloud.timeseriesinsights.v1.DataSet] will not necessarily be added to the end\nof this list.",
+      "file": "TimeseriesInsightsControllerClient/ListDataSets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataSets",
+        "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient.ListDataSets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "timeseriesinsightspb.ListDataSetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataSetIterator",
+        "client": {
+          "shortName": "TimeseriesInsightsControllerClient",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient"
+        },
+        "method": {
+          "shortName": "ListDataSets",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController.ListDataSets",
+          "service": {
+            "shortName": "TimeseriesInsightsController",
+            "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "timeseriesinsights_v1_generated_TimeseriesInsightsController_QueryDataSet_sync",
+      "title": "timeseriesinsights QueryDataSet Sample",
+      "description": "QueryDataSet execute a Timeseries Insights query over a loaded\n[DataSet][google.cloud.timeseriesinsights.v1.DataSet].",
+      "file": "TimeseriesInsightsControllerClient/QueryDataSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryDataSet",
+        "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient.QueryDataSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "timeseriesinsightspb.QueryDataSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*timeseriesinsightspb.QueryDataSetResponse",
+        "client": {
+          "shortName": "TimeseriesInsightsControllerClient",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsControllerClient"
+        },
+        "method": {
+          "shortName": "QueryDataSet",
+          "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController.QueryDataSet",
+          "service": {
+            "shortName": "TimeseriesInsightsController",
+            "fullName": "google.cloud.timeseriesinsights.v1.TimeseriesInsightsController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

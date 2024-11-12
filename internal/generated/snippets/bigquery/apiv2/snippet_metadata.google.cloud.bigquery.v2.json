@@ -1,0 +1,1482 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/bigquery/apiv2",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.bigquery.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "bigquery_v2_generated_DatasetService_DeleteDataset_sync",
+      "title": "bigquery DeleteDataset Sample",
+      "description": "DeleteDataset deletes the dataset specified by the datasetId value. Before you can delete\na dataset, you must delete all its tables, either manually or by specifying\ndeleteContents. Immediately after deletion, you can create another dataset\nwith the same name.",
+      "file": "DatasetClient/DeleteDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataset",
+        "fullName": "google.cloud.bigquery.v2.DatasetClient.DeleteDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.DeleteDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.bigquery.v2.DatasetClient"
+        },
+        "method": {
+          "shortName": "DeleteDataset",
+          "fullName": "google.cloud.bigquery.v2.DatasetService.DeleteDataset",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.bigquery.v2.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_DatasetService_GetDataset_sync",
+      "title": "bigquery GetDataset Sample",
+      "description": "GetDataset returns the dataset specified by datasetID.",
+      "file": "DatasetClient/GetDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataset",
+        "fullName": "google.cloud.bigquery.v2.DatasetClient.GetDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.GetDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Dataset",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.bigquery.v2.DatasetClient"
+        },
+        "method": {
+          "shortName": "GetDataset",
+          "fullName": "google.cloud.bigquery.v2.DatasetService.GetDataset",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.bigquery.v2.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_DatasetService_InsertDataset_sync",
+      "title": "bigquery InsertDataset Sample",
+      "description": "InsertDataset creates a new empty dataset.",
+      "file": "DatasetClient/InsertDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InsertDataset",
+        "fullName": "google.cloud.bigquery.v2.DatasetClient.InsertDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.InsertDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Dataset",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.bigquery.v2.DatasetClient"
+        },
+        "method": {
+          "shortName": "InsertDataset",
+          "fullName": "google.cloud.bigquery.v2.DatasetService.InsertDataset",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.bigquery.v2.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_DatasetService_ListDatasets_sync",
+      "title": "bigquery ListDatasets Sample",
+      "description": "ListDatasets lists all datasets in the specified project to which the user has been\ngranted the READER dataset role.",
+      "file": "DatasetClient/ListDatasets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDatasets",
+        "fullName": "google.cloud.bigquery.v2.DatasetClient.ListDatasets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.ListDatasetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ListFormatDatasetIterator",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.bigquery.v2.DatasetClient"
+        },
+        "method": {
+          "shortName": "ListDatasets",
+          "fullName": "google.cloud.bigquery.v2.DatasetService.ListDatasets",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.bigquery.v2.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 67,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_DatasetService_PatchDataset_sync",
+      "title": "bigquery PatchDataset Sample",
+      "description": "PatchDataset updates information in an existing dataset. The update method replaces the\nentire dataset resource, whereas the patch method only replaces fields that\nare provided in the submitted dataset resource.\nThis method supports RFC5789 patch semantics.",
+      "file": "DatasetClient/PatchDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchDataset",
+        "fullName": "google.cloud.bigquery.v2.DatasetClient.PatchDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.UpdateOrPatchDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Dataset",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.bigquery.v2.DatasetClient"
+        },
+        "method": {
+          "shortName": "PatchDataset",
+          "fullName": "google.cloud.bigquery.v2.DatasetService.PatchDataset",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.bigquery.v2.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_DatasetService_UndeleteDataset_sync",
+      "title": "bigquery UndeleteDataset Sample",
+      "description": "UndeleteDataset undeletes a dataset which is within time travel window based on datasetId.\nIf a time is specified, the dataset version deleted at that time is\nundeleted, else the last live version is undeleted.",
+      "file": "DatasetClient/UndeleteDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeleteDataset",
+        "fullName": "google.cloud.bigquery.v2.DatasetClient.UndeleteDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.UndeleteDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Dataset",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.bigquery.v2.DatasetClient"
+        },
+        "method": {
+          "shortName": "UndeleteDataset",
+          "fullName": "google.cloud.bigquery.v2.DatasetService.UndeleteDataset",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.bigquery.v2.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_DatasetService_UpdateDataset_sync",
+      "title": "bigquery UpdateDataset Sample",
+      "description": "UpdateDataset updates information in an existing dataset. The update method replaces the\nentire dataset resource, whereas the patch method only replaces fields that\nare provided in the submitted dataset resource.",
+      "file": "DatasetClient/UpdateDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataset",
+        "fullName": "google.cloud.bigquery.v2.DatasetClient.UpdateDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.UpdateOrPatchDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Dataset",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.bigquery.v2.DatasetClient"
+        },
+        "method": {
+          "shortName": "UpdateDataset",
+          "fullName": "google.cloud.bigquery.v2.DatasetService.UpdateDataset",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.bigquery.v2.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_JobService_CancelJob_sync",
+      "title": "bigquery CancelJob Sample",
+      "description": "CancelJob requests that a job be cancelled. This call will return immediately, and\nthe client will need to poll for the job status to see if the cancel\ncompleted successfully. Cancelled jobs may still incur costs.",
+      "file": "JobClient/CancelJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelJob",
+        "fullName": "google.cloud.bigquery.v2.JobClient.CancelJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.CancelJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.JobCancelResponse",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.bigquery.v2.JobClient"
+        },
+        "method": {
+          "shortName": "CancelJob",
+          "fullName": "google.cloud.bigquery.v2.JobService.CancelJob",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.bigquery.v2.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_JobService_DeleteJob_sync",
+      "title": "bigquery DeleteJob Sample",
+      "description": "DeleteJob requests the deletion of the metadata of a job. This call returns when the\njob's metadata is deleted.",
+      "file": "JobClient/DeleteJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteJob",
+        "fullName": "google.cloud.bigquery.v2.JobClient.DeleteJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.DeleteJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.bigquery.v2.JobClient"
+        },
+        "method": {
+          "shortName": "DeleteJob",
+          "fullName": "google.cloud.bigquery.v2.JobService.DeleteJob",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.bigquery.v2.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_JobService_GetJob_sync",
+      "title": "bigquery GetJob Sample",
+      "description": "GetJob returns information about a specific job. Job information is available for\na six month period after creation. Requires that you're the person who ran\nthe job, or have the Is Owner project role.",
+      "file": "JobClient/GetJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetJob",
+        "fullName": "google.cloud.bigquery.v2.JobClient.GetJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.GetJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Job",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.bigquery.v2.JobClient"
+        },
+        "method": {
+          "shortName": "GetJob",
+          "fullName": "google.cloud.bigquery.v2.JobService.GetJob",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.bigquery.v2.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_JobService_GetQueryResults_sync",
+      "title": "bigquery GetQueryResults Sample",
+      "description": "GetQueryResults rPC to get the results of a query job.",
+      "file": "JobClient/GetQueryResults/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetQueryResults",
+        "fullName": "google.cloud.bigquery.v2.JobClient.GetQueryResults",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.GetQueryResultsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.GetQueryResultsResponse",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.bigquery.v2.JobClient"
+        },
+        "method": {
+          "shortName": "GetQueryResults",
+          "fullName": "google.cloud.bigquery.v2.JobService.GetQueryResults",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.bigquery.v2.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_JobService_InsertJob_sync",
+      "title": "bigquery InsertJob Sample",
+      "description": "InsertJob starts a new asynchronous job.\n\nThis API has two different kinds of endpoint URIs, as this method supports\na variety of use cases.\n\n* The *Metadata* URI is used for most interactions, as it accepts the job\nconfiguration directly.\n* The *Upload* URI is ONLY for the case when you're sending both a load job\nconfiguration and a data stream together.  In this case, the Upload URI\naccepts the job configuration and the data as two distinct multipart MIME\nparts.",
+      "file": "JobClient/InsertJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InsertJob",
+        "fullName": "google.cloud.bigquery.v2.JobClient.InsertJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.InsertJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Job",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.bigquery.v2.JobClient"
+        },
+        "method": {
+          "shortName": "InsertJob",
+          "fullName": "google.cloud.bigquery.v2.JobService.InsertJob",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.bigquery.v2.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_JobService_ListJobs_sync",
+      "title": "bigquery ListJobs Sample",
+      "description": "ListJobs lists all jobs that you started in the specified project. Job information\nis available for a six month period after creation. The job list is sorted\nin reverse chronological order, by job creation time. Requires the Can View\nproject role, or the Is Owner project role if you set the allUsers\nproperty.",
+      "file": "JobClient/ListJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListJobs",
+        "fullName": "google.cloud.bigquery.v2.JobClient.ListJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.ListJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ListFormatJobIterator",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.bigquery.v2.JobClient"
+        },
+        "method": {
+          "shortName": "ListJobs",
+          "fullName": "google.cloud.bigquery.v2.JobService.ListJobs",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.bigquery.v2.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 67,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_JobService_Query_sync",
+      "title": "bigquery Query Sample",
+      "description": "Query runs a BigQuery SQL query synchronously and returns query results if the\nquery completes within a specified timeout.",
+      "file": "JobClient/Query/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Query",
+        "fullName": "google.cloud.bigquery.v2.JobClient.Query",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.PostQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.QueryResponse",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.bigquery.v2.JobClient"
+        },
+        "method": {
+          "shortName": "Query",
+          "fullName": "google.cloud.bigquery.v2.JobService.Query",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.bigquery.v2.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_ModelService_DeleteModel_sync",
+      "title": "bigquery DeleteModel Sample",
+      "description": "DeleteModel deletes the model specified by modelId from the dataset.",
+      "file": "ModelClient/DeleteModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteModel",
+        "fullName": "google.cloud.bigquery.v2.ModelClient.DeleteModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.DeleteModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.bigquery.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "DeleteModel",
+          "fullName": "google.cloud.bigquery.v2.ModelService.DeleteModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.bigquery.v2.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_ModelService_GetModel_sync",
+      "title": "bigquery GetModel Sample",
+      "description": "GetModel gets the specified model resource by model ID.",
+      "file": "ModelClient/GetModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetModel",
+        "fullName": "google.cloud.bigquery.v2.ModelClient.GetModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.GetModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Model",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.bigquery.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "GetModel",
+          "fullName": "google.cloud.bigquery.v2.ModelService.GetModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.bigquery.v2.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_ModelService_ListModels_sync",
+      "title": "bigquery ListModels Sample",
+      "description": "ListModels lists all models in the specified dataset. Requires the READER dataset\nrole. After retrieving the list of models, you can get information about a\nparticular model by calling the models.get method.",
+      "file": "ModelClient/ListModels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListModels",
+        "fullName": "google.cloud.bigquery.v2.ModelClient.ListModels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.ListModelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelIterator",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.bigquery.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "ListModels",
+          "fullName": "google.cloud.bigquery.v2.ModelService.ListModels",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.bigquery.v2.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 67,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_ModelService_PatchModel_sync",
+      "title": "bigquery PatchModel Sample",
+      "description": "PatchModel patch specific fields in the specified model.",
+      "file": "ModelClient/PatchModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchModel",
+        "fullName": "google.cloud.bigquery.v2.ModelClient.PatchModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.PatchModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Model",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.bigquery.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "PatchModel",
+          "fullName": "google.cloud.bigquery.v2.ModelService.PatchModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.bigquery.v2.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_ProjectService_GetServiceAccount_sync",
+      "title": "bigquery GetServiceAccount Sample",
+      "description": "GetServiceAccount rPC to get the service account for a project used for interactions with\nGoogle Cloud KMS",
+      "file": "ProjectClient/GetServiceAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetServiceAccount",
+        "fullName": "google.cloud.bigquery.v2.ProjectClient.GetServiceAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.GetServiceAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.GetServiceAccountResponse",
+        "client": {
+          "shortName": "ProjectClient",
+          "fullName": "google.cloud.bigquery.v2.ProjectClient"
+        },
+        "method": {
+          "shortName": "GetServiceAccount",
+          "fullName": "google.cloud.bigquery.v2.ProjectService.GetServiceAccount",
+          "service": {
+            "shortName": "ProjectService",
+            "fullName": "google.cloud.bigquery.v2.ProjectService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_RoutineService_DeleteRoutine_sync",
+      "title": "bigquery DeleteRoutine Sample",
+      "description": "DeleteRoutine deletes the routine specified by routineId from the dataset.",
+      "file": "RoutineClient/DeleteRoutine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRoutine",
+        "fullName": "google.cloud.bigquery.v2.RoutineClient.DeleteRoutine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.DeleteRoutineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RoutineClient",
+          "fullName": "google.cloud.bigquery.v2.RoutineClient"
+        },
+        "method": {
+          "shortName": "DeleteRoutine",
+          "fullName": "google.cloud.bigquery.v2.RoutineService.DeleteRoutine",
+          "service": {
+            "shortName": "RoutineService",
+            "fullName": "google.cloud.bigquery.v2.RoutineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_RoutineService_GetRoutine_sync",
+      "title": "bigquery GetRoutine Sample",
+      "description": "GetRoutine gets the specified routine resource by routine ID.",
+      "file": "RoutineClient/GetRoutine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRoutine",
+        "fullName": "google.cloud.bigquery.v2.RoutineClient.GetRoutine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.GetRoutineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Routine",
+        "client": {
+          "shortName": "RoutineClient",
+          "fullName": "google.cloud.bigquery.v2.RoutineClient"
+        },
+        "method": {
+          "shortName": "GetRoutine",
+          "fullName": "google.cloud.bigquery.v2.RoutineService.GetRoutine",
+          "service": {
+            "shortName": "RoutineService",
+            "fullName": "google.cloud.bigquery.v2.RoutineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_RoutineService_InsertRoutine_sync",
+      "title": "bigquery InsertRoutine Sample",
+      "description": "InsertRoutine creates a new routine in the dataset.",
+      "file": "RoutineClient/InsertRoutine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InsertRoutine",
+        "fullName": "google.cloud.bigquery.v2.RoutineClient.InsertRoutine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.InsertRoutineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Routine",
+        "client": {
+          "shortName": "RoutineClient",
+          "fullName": "google.cloud.bigquery.v2.RoutineClient"
+        },
+        "method": {
+          "shortName": "InsertRoutine",
+          "fullName": "google.cloud.bigquery.v2.RoutineService.InsertRoutine",
+          "service": {
+            "shortName": "RoutineService",
+            "fullName": "google.cloud.bigquery.v2.RoutineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_RoutineService_ListRoutines_sync",
+      "title": "bigquery ListRoutines Sample",
+      "description": "ListRoutines lists all routines in the specified dataset. Requires the READER dataset\nrole.",
+      "file": "RoutineClient/ListRoutines/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRoutines",
+        "fullName": "google.cloud.bigquery.v2.RoutineClient.ListRoutines",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.ListRoutinesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RoutineIterator",
+        "client": {
+          "shortName": "RoutineClient",
+          "fullName": "google.cloud.bigquery.v2.RoutineClient"
+        },
+        "method": {
+          "shortName": "ListRoutines",
+          "fullName": "google.cloud.bigquery.v2.RoutineService.ListRoutines",
+          "service": {
+            "shortName": "RoutineService",
+            "fullName": "google.cloud.bigquery.v2.RoutineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 67,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_RoutineService_PatchRoutine_sync",
+      "title": "bigquery PatchRoutine Sample",
+      "description": "PatchRoutine patches information in an existing routine. The patch method does a partial\nupdate to an existing Routine resource.",
+      "file": "RoutineClient/PatchRoutine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchRoutine",
+        "fullName": "google.cloud.bigquery.v2.RoutineClient.PatchRoutine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.PatchRoutineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Routine",
+        "client": {
+          "shortName": "RoutineClient",
+          "fullName": "google.cloud.bigquery.v2.RoutineClient"
+        },
+        "method": {
+          "shortName": "PatchRoutine",
+          "fullName": "google.cloud.bigquery.v2.RoutineService.PatchRoutine",
+          "service": {
+            "shortName": "RoutineService",
+            "fullName": "google.cloud.bigquery.v2.RoutineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_RoutineService_UpdateRoutine_sync",
+      "title": "bigquery UpdateRoutine Sample",
+      "description": "UpdateRoutine updates information in an existing routine. The update method replaces the\nentire Routine resource.",
+      "file": "RoutineClient/UpdateRoutine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRoutine",
+        "fullName": "google.cloud.bigquery.v2.RoutineClient.UpdateRoutine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.UpdateRoutineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Routine",
+        "client": {
+          "shortName": "RoutineClient",
+          "fullName": "google.cloud.bigquery.v2.RoutineClient"
+        },
+        "method": {
+          "shortName": "UpdateRoutine",
+          "fullName": "google.cloud.bigquery.v2.RoutineService.UpdateRoutine",
+          "service": {
+            "shortName": "RoutineService",
+            "fullName": "google.cloud.bigquery.v2.RoutineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_RowAccessPolicyService_ListRowAccessPolicies_sync",
+      "title": "bigquery ListRowAccessPolicies Sample",
+      "description": "ListRowAccessPolicies lists all row access policies on the specified table.",
+      "file": "RowAccessPolicyClient/ListRowAccessPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRowAccessPolicies",
+        "fullName": "google.cloud.bigquery.v2.RowAccessPolicyClient.ListRowAccessPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.ListRowAccessPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RowAccessPolicyIterator",
+        "client": {
+          "shortName": "RowAccessPolicyClient",
+          "fullName": "google.cloud.bigquery.v2.RowAccessPolicyClient"
+        },
+        "method": {
+          "shortName": "ListRowAccessPolicies",
+          "fullName": "google.cloud.bigquery.v2.RowAccessPolicyService.ListRowAccessPolicies",
+          "service": {
+            "shortName": "RowAccessPolicyService",
+            "fullName": "google.cloud.bigquery.v2.RowAccessPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_TableService_DeleteTable_sync",
+      "title": "bigquery DeleteTable Sample",
+      "description": "DeleteTable deletes the table specified by tableId from the dataset.\nIf the table contains data, all the data will be deleted.",
+      "file": "TableClient/DeleteTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTable",
+        "fullName": "google.cloud.bigquery.v2.TableClient.DeleteTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.DeleteTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "TableClient",
+          "fullName": "google.cloud.bigquery.v2.TableClient"
+        },
+        "method": {
+          "shortName": "DeleteTable",
+          "fullName": "google.cloud.bigquery.v2.TableService.DeleteTable",
+          "service": {
+            "shortName": "TableService",
+            "fullName": "google.cloud.bigquery.v2.TableService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_TableService_GetTable_sync",
+      "title": "bigquery GetTable Sample",
+      "description": "GetTable gets the specified table resource by table ID.\nThis method does not return the data in the table, it only returns the\ntable resource, which describes the structure of this table.",
+      "file": "TableClient/GetTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTable",
+        "fullName": "google.cloud.bigquery.v2.TableClient.GetTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.GetTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Table",
+        "client": {
+          "shortName": "TableClient",
+          "fullName": "google.cloud.bigquery.v2.TableClient"
+        },
+        "method": {
+          "shortName": "GetTable",
+          "fullName": "google.cloud.bigquery.v2.TableService.GetTable",
+          "service": {
+            "shortName": "TableService",
+            "fullName": "google.cloud.bigquery.v2.TableService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_TableService_InsertTable_sync",
+      "title": "bigquery InsertTable Sample",
+      "description": "InsertTable creates a new, empty table in the dataset.",
+      "file": "TableClient/InsertTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InsertTable",
+        "fullName": "google.cloud.bigquery.v2.TableClient.InsertTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.InsertTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Table",
+        "client": {
+          "shortName": "TableClient",
+          "fullName": "google.cloud.bigquery.v2.TableClient"
+        },
+        "method": {
+          "shortName": "InsertTable",
+          "fullName": "google.cloud.bigquery.v2.TableService.InsertTable",
+          "service": {
+            "shortName": "TableService",
+            "fullName": "google.cloud.bigquery.v2.TableService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_TableService_ListTables_sync",
+      "title": "bigquery ListTables Sample",
+      "description": "ListTables lists all tables in the specified dataset. Requires the READER dataset\nrole.",
+      "file": "TableClient/ListTables/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTables",
+        "fullName": "google.cloud.bigquery.v2.TableClient.ListTables",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.ListTablesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ListFormatTableIterator",
+        "client": {
+          "shortName": "TableClient",
+          "fullName": "google.cloud.bigquery.v2.TableClient"
+        },
+        "method": {
+          "shortName": "ListTables",
+          "fullName": "google.cloud.bigquery.v2.TableService.ListTables",
+          "service": {
+            "shortName": "TableService",
+            "fullName": "google.cloud.bigquery.v2.TableService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 67,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_TableService_PatchTable_sync",
+      "title": "bigquery PatchTable Sample",
+      "description": "PatchTable updates information in an existing table. The update method replaces the\nentire table resource, whereas the patch method only replaces fields that\nare provided in the submitted table resource.\nThis method supports RFC5789 patch semantics.",
+      "file": "TableClient/PatchTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchTable",
+        "fullName": "google.cloud.bigquery.v2.TableClient.PatchTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.UpdateOrPatchTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Table",
+        "client": {
+          "shortName": "TableClient",
+          "fullName": "google.cloud.bigquery.v2.TableClient"
+        },
+        "method": {
+          "shortName": "PatchTable",
+          "fullName": "google.cloud.bigquery.v2.TableService.PatchTable",
+          "service": {
+            "shortName": "TableService",
+            "fullName": "google.cloud.bigquery.v2.TableService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquery_v2_generated_TableService_UpdateTable_sync",
+      "title": "bigquery UpdateTable Sample",
+      "description": "UpdateTable updates information in an existing table. The update method replaces the\nentire Table resource, whereas the patch method only replaces fields that\nare provided in the submitted Table resource.",
+      "file": "TableClient/UpdateTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTable",
+        "fullName": "google.cloud.bigquery.v2.TableClient.UpdateTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "bigquerypb.UpdateOrPatchTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*bigquerypb.Table",
+        "client": {
+          "shortName": "TableClient",
+          "fullName": "google.cloud.bigquery.v2.TableClient"
+        },
+        "method": {
+          "shortName": "UpdateTable",
+          "fullName": "google.cloud.bigquery.v2.TableService.UpdateTable",
+          "service": {
+            "shortName": "TableService",
+            "fullName": "google.cloud.bigquery.v2.TableService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
