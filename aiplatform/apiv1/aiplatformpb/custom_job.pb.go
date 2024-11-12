@@ -21,15 +21,14 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -865,9 +864,9 @@ type Scheduling struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The maximum job running time. The default is 7 days.
+	// Optional. The maximum job running time. The default is 7 days.
 	Timeout *durationpb.Duration `protobuf:"bytes,1,opt,name=timeout,proto3" json:"timeout,omitempty"`
-	// Restarts the entire CustomJob if a worker gets restarted.
+	// Optional. Restarts the entire CustomJob if a worker gets restarted.
 	// This feature can be used by distributed training jobs that are not
 	// resilient to workers leaving and joining a job.
 	RestartJobOnWorkerRestart bool `protobuf:"varint,3,opt,name=restart_job_on_worker_restart,json=restartJobOnWorkerRestart,proto3" json:"restart_job_on_worker_restart,omitempty"`

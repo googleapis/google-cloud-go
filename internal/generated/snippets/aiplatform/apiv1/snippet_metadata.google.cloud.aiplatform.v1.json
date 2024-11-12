@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.68.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -702,7 +702,7 @@
     {
       "regionTag": "aiplatform_v1_generated_DatasetService_ListAnnotations_sync",
       "title": "aiplatform ListAnnotations Sample",
-      "description": "ListAnnotations lists Annotations belongs to a dataitem",
+      "description": "ListAnnotations lists Annotations belongs to a dataitem\nThis RPC is only available in InternalDatasetService. It is only used for\nexporting conversation data to CCAI Insights.",
       "file": "DatasetClient/ListAnnotations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -8457,7 +8457,7 @@
     {
       "regionTag": "aiplatform_v1_generated_GenAiTuningService_RebaseTunedModel_sync",
       "title": "aiplatform RebaseTunedModel Sample",
-      "description": "RebaseTunedModel rebase a TunedModel.\nCreates a LongRunningOperation that takes a legacy Tuned GenAI model\nReference and creates a TuningJob based on newly available model.",
+      "description": "RebaseTunedModel rebase a TunedModel.",
       "file": "GenAiTuningClient/RebaseTunedModel/main.go",
       "language": "GO",
       "clientMethod": {

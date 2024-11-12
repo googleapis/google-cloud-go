@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -873,8 +872,6 @@ type GenAiTuningServiceClient interface {
 	// `CANCELLED`.
 	CancelTuningJob(ctx context.Context, in *CancelTuningJobRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Rebase a TunedModel.
-	// Creates a LongRunningOperation that takes a legacy Tuned GenAI model
-	// Reference and creates a TuningJob based on newly available model.
 	RebaseTunedModel(ctx context.Context, in *RebaseTunedModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
@@ -954,8 +951,6 @@ type GenAiTuningServiceServer interface {
 	// `CANCELLED`.
 	CancelTuningJob(context.Context, *CancelTuningJobRequest) (*emptypb.Empty, error)
 	// Rebase a TunedModel.
-	// Creates a LongRunningOperation that takes a legacy Tuned GenAI model
-	// Reference and creates a TuningJob based on newly available model.
 	RebaseTunedModel(context.Context, *RebaseTunedModelRequest) (*longrunningpb.Operation, error)
 }
 

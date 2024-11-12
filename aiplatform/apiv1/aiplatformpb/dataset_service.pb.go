@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -155,6 +154,7 @@ func (x *CreateDatasetOperationMetadata) GetGenericMetadata() *GenericOperationM
 
 // Request message for
 // [DatasetService.GetDataset][google.cloud.aiplatform.v1.DatasetService.GetDataset].
+// Next ID: 4
 type GetDatasetRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1070,6 +1070,7 @@ func (x *DeleteDatasetVersionRequest) GetName() string {
 
 // Request message for
 // [DatasetService.GetDatasetVersion][google.cloud.aiplatform.v1.DatasetService.GetDatasetVersion].
+// Next ID: 4
 type GetDatasetVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3763,6 +3764,8 @@ type DatasetServiceClient interface {
 	// Gets an AnnotationSpec.
 	GetAnnotationSpec(ctx context.Context, in *GetAnnotationSpecRequest, opts ...grpc.CallOption) (*AnnotationSpec, error)
 	// Lists Annotations belongs to a dataitem
+	// This RPC is only available in InternalDatasetService. It is only used for
+	// exporting conversation data to CCAI Insights.
 	ListAnnotations(ctx context.Context, in *ListAnnotationsRequest, opts ...grpc.CallOption) (*ListAnnotationsResponse, error)
 }
 
@@ -3984,6 +3987,8 @@ type DatasetServiceServer interface {
 	// Gets an AnnotationSpec.
 	GetAnnotationSpec(context.Context, *GetAnnotationSpecRequest) (*AnnotationSpec, error)
 	// Lists Annotations belongs to a dataitem
+	// This RPC is only available in InternalDatasetService. It is only used for
+	// exporting conversation data to CCAI Insights.
 	ListAnnotations(context.Context, *ListAnnotationsRequest) (*ListAnnotationsResponse, error)
 }
 
