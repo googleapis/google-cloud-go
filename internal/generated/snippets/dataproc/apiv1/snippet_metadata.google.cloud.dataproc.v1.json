@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataproc/v2/apiv1",
-    "version": "2.9.0",
+    "version": "2.10.0",
     "language": "GO",
     "apis": [
       {

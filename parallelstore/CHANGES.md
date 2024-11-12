@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.7.1...parallelstore/v0.8.0) (2024-11-06)
+
+
+### Features
+
+* **parallelstore:** New client(s) ([#11055](https://github.com/googleapis/google-cloud-go/issues/11055)) ([93d3f92](https://github.com/googleapis/google-cloud-go/commit/93d3f928afa6f5137b5f180dbdf6862896d43572))
+
 ## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.7.0...parallelstore/v0.7.1) (2024-10-23)
 
 
