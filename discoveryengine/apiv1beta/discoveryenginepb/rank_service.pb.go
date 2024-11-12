@@ -135,7 +135,7 @@ type RankRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the rank service config, such as
-	// `projects/{project_num}/locations/{location_id}/rankingConfigs/default_ranking_config`.
+	// `projects/{project_num}/locations/{location}/rankingConfigs/default_ranking_config`.
 	RankingConfig string `protobuf:"bytes,1,opt,name=ranking_config,json=rankingConfig,proto3" json:"ranking_config,omitempty"`
 	// The identifier of the model to use. It is one of:
 	//

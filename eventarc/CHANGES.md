@@ -1,5 +1,17 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.14.2...eventarc/v1.15.0) (2024-11-06)
+
+
+### Features
+
+* **eventarc:** Publish Eventarc Advanced protos ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+
+
+### Documentation
+
+* **eventarc:** Clarified multiple comments in Eventarc Standard protos ([2c83297](https://github.com/googleapis/google-cloud-go/commit/2c83297a569117b0252b5b2edaecb09e4924d979))
+
 ## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.14.1...eventarc/v1.14.2) (2024-10-23)
 
 

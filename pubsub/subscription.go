@@ -546,7 +546,7 @@ type SubscriptionConfig struct {
 	// When calling Subscription.Receive(), the client will check this
 	// value with a call to Subscription.Config(), which requires the
 	// roles/viewer or roles/pubsub.viewer role on your service account.
-	// If that call fails, mesages with ordering keys will be delivered in order.
+	// If that call fails, messages with ordering keys will be delivered in order.
 	EnableMessageOrdering bool
 
 	// DeadLetterPolicy specifies the conditions for dead lettering messages in

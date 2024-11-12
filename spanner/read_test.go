@@ -1778,7 +1778,7 @@ func TestIteratorStopEarly(t *testing.T) {
 }
 
 func TestIteratorWithError(t *testing.T) {
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/my-project/instances/my-instance/databases/my-database", noop.NewMeterProvider())
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/my-project/instances/my-instance/databases/my-database", noop.NewMeterProvider(), "identity")
 	if err != nil {
 		t.Fatalf("failed to create metrics tracer factory: %v", err)
 	}
