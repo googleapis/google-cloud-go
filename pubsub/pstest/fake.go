@@ -24,6 +24,7 @@ package pstest
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math/rand"
@@ -1381,7 +1382,7 @@ func (st *stream) pull(wg *sync.WaitGroup) error {
 	var err error
 	select {
 	case err = <-errc:
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			err = nil
 		}
 	case <-tchan:
