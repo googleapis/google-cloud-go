@@ -38,12 +38,13 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/oauth2adapt"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -112,7 +113,7 @@ type Client struct {
 	// xmlHost is the default host used for XML requests.
 	xmlHost string
 	// May be nil.
-	creds *google.Credentials
+	creds *auth.Credentials
 	retry *retryConfig
 
 	// tc is the transport-agnostic client implemented with either gRPC or HTTP.
@@ -129,7 +130,7 @@ type Client struct {
 // You may configure the client by passing in options from the [google.golang.org/api/option]
 // package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	var creds *google.Credentials
+	var creds *auth.Credentials
 
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
 	// since raw.NewService configures the correct default endpoints when initializing the
@@ -151,9 +152,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// client which does not auth with ADC or other common conventions.
 		c, err := transport.Creds(ctx, opts...)
 		if err == nil {
-			creds = c
-			opts = append(opts, internaloption.WithCredentials(creds))
+			creds = oauth2adapt.AuthCredentialsFromOauth2Credentials(c)
+			opts = append(opts, internaloption.WithCredentials(c))
 		}
+
 	} else {
 		var hostURL *url.URL
 
