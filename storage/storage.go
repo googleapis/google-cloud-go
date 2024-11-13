@@ -69,9 +69,6 @@ var (
 	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
 	// ErrObjectNotExist indicates that the object does not exist.
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
-	// ErrDirectConnectivityNotDetected indicates that Direct Connectivity was
-	// not detected when attempted.
-	ErrDirectConnectivityNotDetected = errors.New("storage: direct connectivity not detected")
 	// errMethodNotSupported indicates that the method called is not currently supported by the client.
 	// TODO: Export this error when launching the transport-agnostic client.
 	errMethodNotSupported = errors.New("storage: method is not currently supported")
@@ -292,7 +289,7 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 			}
 		}
 	}
-	return ErrDirectConnectivityNotDetected
+	return errors.New("storage: direct connectivity not detected")
 }
 
 // Close closes the Client.
