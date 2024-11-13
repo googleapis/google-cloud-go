@@ -17,6 +17,7 @@ package pstest
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math/rand"
@@ -175,7 +176,7 @@ func TestTopics(t *testing.T) {
 			Topic: topics[1].Name,
 		})
 		expectedErr := status.Errorf(codes.FailedPrecondition, "topic %q used as deadLetter for %s", topics[1].Name, s.Name)
-		if err == nil || err.Error() != expectedErr.Error() {
+		if err == nil || !errors.Is(err, expectedErr) {
 			t.Fatalf("returned a different error than the expected one. \nReceived '%s'; \nExpected: '%s'", err, expectedErr)
 		}
 	})
@@ -261,8 +262,8 @@ func TestSubscriptions(t *testing.T) {
 			},
 		})
 		expectedErr := status.Errorf(codes.NotFound, "deadLetter topic \"projects/P/topics/nonexisting\"")
-		if err == nil || err.Error() != expectedErr.Error() {
-			t.Fatalf("expected subscription creation to fail with a specific err but it didn't. \nError: %s \nExepcted err: %s", err, expectedErr)
+		if err == nil || !errors.Is(err, expectedErr) {
+			t.Fatalf("expected subscription creation to fail with a specific err but it didn't. \nError: %s \nExpected err: %s", err, expectedErr)
 		}
 		_, err = server.GServer.DeleteTopic(ctx, &pb.DeleteTopicRequest{
 			Topic: topic.Name,
@@ -666,7 +667,7 @@ func TestStreamingPullAck(t *testing.T) {
 
 	for i := 0; i < 4; i++ {
 		res, err := spc.Recv()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			break
 		}
 		if err != nil {
@@ -797,7 +798,7 @@ func TestAckDeadline(t *testing.T) {
 	})
 	for {
 		res, err := spc.Recv()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			break
 		}
 		if err != nil {

@@ -53,6 +53,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2/apierror"
+	"go.opentelemetry.io/contrib/detectors/gcp"
+	"go.opentelemetry.io/otel/sdk/resource"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -322,6 +324,46 @@ var readCases = []readCase{
 			return b.Bytes(), err
 		},
 	},
+}
+
+func TestIntegration_DetectDirectConnectivity(t *testing.T) {
+	ctx := skipHTTP("direct connectivity isn't available for json")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		h := testHelper{t}
+		// Using Resoource Detector to detect if test is being ran inside GCE
+		// if so, the test expects Direct Connectivity to be detected.
+		// Otherwise, it will only validate that Direct Connectivity was not
+		// detected.
+		// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourcedetectionprocessor/README.md
+		detectedAttrs, err := resource.New(ctx, resource.WithDetectors(gcp.NewDetector()))
+		if err != nil {
+			t.Fatalf("resource.New: %v", err)
+		}
+		attrs := detectedAttrs.Set()
+		if v, exists := attrs.Value("cloud.platform"); exists && v.AsString() == "gcp_compute_engine" {
+			v, exists = attrs.Value("cloud.region")
+			if !exists {
+				t.Fatalf("CheckDirectConnectivitySupported: region not detected")
+			}
+			region := v.AsString()
+			newBucketName := prefix + uidSpace.New()
+			newBucket := client.Bucket(newBucketName)
+			h.mustCreate(newBucket, testutil.ProjID(), &BucketAttrs{Location: region, LocationType: "region"})
+			defer h.mustDeleteBucket(newBucket)
+			err := CheckDirectConnectivitySupported(ctx, newBucketName)
+			if err != nil {
+				t.Fatalf("CheckDirectConnectivitySupported: %v", err)
+			}
+		} else {
+			err = CheckDirectConnectivitySupported(ctx, bucket)
+			if err == nil {
+				t.Fatal("CheckDirectConnectivitySupported: expected error but none returned")
+			}
+			if err != nil && !strings.Contains(err.Error(), "direct connectivity not detected") {
+				t.Fatalf("CheckDirectConnectivitySupported: failed on a different error %v", err)
+			}
+		}
+	})
 }
 
 func TestIntegration_BucketCreateDelete(t *testing.T) {
