@@ -18,6 +18,7 @@ package pubsub
 
 import (
 	"context"
+	"errors"
 	"io"
 	"sync"
 	"time"
@@ -128,7 +129,7 @@ func (s *mockServer) StreamingPull(stream pb.Subscriber_StreamingPullServer) err
 			s.mu.Unlock()
 			// Nothing to send, so wait for the client to shut down the stream.
 			err := <-errc // a real error, or at least EOF
-			if err == io.EOF {
+			if errors.Is(err, io.EOF) {
 				return nil
 			}
 			return err
@@ -142,7 +143,7 @@ func (s *mockServer) StreamingPull(stream pb.Subscriber_StreamingPullServer) err
 			// This reduces flakiness of tests involving retry.
 			time.Sleep(200 * time.Millisecond)
 		}
-		if pr.err == io.EOF {
+		if errors.Is(pr.err, io.EOF) {
 			return nil
 		}
 		if pr.err != nil {
