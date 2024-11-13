@@ -97,7 +97,7 @@ try3 go mod download
 
 curl -O https://github.com/GoogleCloudPlatform/grpc-gcp-tools/releases/download/v1.11/dp_check
 chmod +x dp_check
-./dp_check --service=storage.googleapis.com
+./dp_check --service storage.googleapis.com -check_grpclb=false -check_xds=true  --xds_expect_fallback_configured=false
 
 # runDirectoryTests runs all tests in the current directory.
 # If a PATH argument is specified, it runs `go test [PATH]`.
