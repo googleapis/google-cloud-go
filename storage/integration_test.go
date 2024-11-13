@@ -347,6 +347,7 @@ func TestIntegration_DetectDirectConnectivity(t *testing.T) {
 			}
 			region := v.AsString()
 			newBucketName := prefix + uidSpace.New()
+			log.Printf("Bucket name: %v", newBucketName)
 			newBucket := client.Bucket(newBucketName)
 			h.mustCreate(newBucket, testutil.ProjID(), &BucketAttrs{Location: region, LocationType: "region"})
 			defer h.mustDeleteBucket(newBucket)
