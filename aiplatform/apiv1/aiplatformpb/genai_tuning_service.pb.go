@@ -873,8 +873,6 @@ type GenAiTuningServiceClient interface {
 	// `CANCELLED`.
 	CancelTuningJob(ctx context.Context, in *CancelTuningJobRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Rebase a TunedModel.
-	// Creates a LongRunningOperation that takes a legacy Tuned GenAI model
-	// Reference and creates a TuningJob based on newly available model.
 	RebaseTunedModel(ctx context.Context, in *RebaseTunedModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
@@ -954,8 +952,6 @@ type GenAiTuningServiceServer interface {
 	// `CANCELLED`.
 	CancelTuningJob(context.Context, *CancelTuningJobRequest) (*emptypb.Empty, error)
 	// Rebase a TunedModel.
-	// Creates a LongRunningOperation that takes a legacy Tuned GenAI model
-	// Reference and creates a TuningJob based on newly available model.
 	RebaseTunedModel(context.Context, *RebaseTunedModelRequest) (*longrunningpb.Operation, error)
 }
 

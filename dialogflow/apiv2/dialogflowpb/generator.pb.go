@@ -781,7 +781,6 @@ func (x *SummarizationSectionList) GetSummarizationSections() []*SummarizationSe
 
 // Providing examples in the generator (i.e. building a few-shot generator)
 // helps convey the desired format of the LLM response.
-// NEXT_ID: 10
 type FewShotExample struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
