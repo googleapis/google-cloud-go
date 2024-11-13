@@ -69,6 +69,9 @@ var (
 	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
 	// ErrObjectNotExist indicates that the object does not exist.
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
+	// ErrDirectConnectivityNotDetected indicates that Direct Connectivity was
+	// not detected when attempted.
+	ErrDirectConnectivityNotDetected = errors.New("storage: direct connectivity not detected")
 	// errMethodNotSupported indicates that the method called is not currently supported by the client.
 	// TODO: Export this error when launching the transport-agnostic client.
 	errMethodNotSupported = errors.New("storage: method is not currently supported")
@@ -265,16 +268,16 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 	combinedOpts := append(opts, WithDisabledClientMetrics(), option.WithGRPCDialOption(opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo})))
 	client, err := NewGRPCClient(ctx, combinedOpts...)
 	if err != nil {
-		return fmt.Errorf("checkDirectConnectivitySupported: %v", err)
+		return fmt.Errorf("storage.NewGRPCClient: %w", err)
 	}
 	defer client.Close()
 	if _, err = client.Bucket(bucket).Attrs(ctx); err != nil {
-		return fmt.Errorf("checkDirectConnectivitySupported: %v", err)
+		return fmt.Errorf("Bucket.Attrs: %w", err)
 	}
 	// Call manual reader to collect metric
 	rm := metricdata.ResourceMetrics{}
 	if err = mr.Collect(context.Background(), &rm); err != nil {
-		return fmt.Errorf("checkDirectConnectivitySupported: %v", err)
+		return fmt.Errorf("ManualReader.Collect: %w", err)
 	}
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
@@ -289,7 +292,7 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 			}
 		}
 	}
-	return errors.New("checkDirectConnectivitySupported: direct connectivity not detected")
+	return ErrDirectConnectivityNotDetected
 }
 
 // Close closes the Client.

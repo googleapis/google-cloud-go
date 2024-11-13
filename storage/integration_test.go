@@ -328,7 +328,7 @@ var readCases = []readCase{
 
 func TestIntegration_DetectDirectConnectivity(t *testing.T) {
 	ctx := skipHTTP("direct connectivity isn't available for json")
-	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
 		h := testHelper{t}
 		// Using Resoource Detector to detect if test is being ran inside GCE
 		// if so, the test expects Direct Connectivity to be detected.
@@ -346,7 +346,7 @@ func TestIntegration_DetectDirectConnectivity(t *testing.T) {
 				t.Fatalf("CheckDirectConnectivitySupported: region not detected")
 			}
 			region := v.AsString()
-			newBucketName := "go-integration-dc-" + region + "-" + uidSpace.New()
+			newBucketName := prefix + uidSpace.New()
 			newBucket := client.Bucket(newBucketName)
 			h.mustCreate(newBucket, testutil.ProjID(), &BucketAttrs{Location: region, LocationType: "region"})
 			defer h.mustDeleteBucket(newBucket)
