@@ -94,6 +94,11 @@ try3() { eval "$*" || eval "$*" || eval "$*"; }
 # All packages, including +build tools, are fetched.
 try3 go mod download
 
+
+curl -O https://github.com/GoogleCloudPlatform/grpc-gcp-tools/releases/download/v1.11/dp_check
+chmod +x dp_check
+./dp_check --service=storage.googleapis.com
+
 # runDirectoryTests runs all tests in the current directory.
 # If a PATH argument is specified, it runs `go test [PATH]`.
 runDirectoryTests() {
