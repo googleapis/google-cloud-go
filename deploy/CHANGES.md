@@ -1,6 +1,23 @@
 # Changes
 
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.24.0...deploy/v1.25.0) (2024-11-14)
+
+
+### Features
+
+* **deploy:** A new field `timed_promote_release_condition` is added to message `.google.cloud.deploy.v1.AutomationRuleCondition` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new field `timed_promote_release_operation` is added to message `.google.cloud.deploy.v1.AutomationRun` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new field `timed_promote_release_rule` is added to message `.google.cloud.deploy.v1.AutomationRule` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new message `TimedPromoteReleaseCondition` is added ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new message `TimedPromoteReleaseOperation` is added ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **deploy:** A new message `TimedPromoteReleaseRule` is added ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
+
+### Documentation
+
+* **deploy:** A comment for field `target_id` in message `.google.cloud.deploy.v1.AutomationRun` is changed ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.23.1...deploy/v1.24.0) (2024-11-06)
 
 

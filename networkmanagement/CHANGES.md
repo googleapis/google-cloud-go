@@ -1,5 +1,18 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.15.0...networkmanagement/v1.16.0) (2024-11-14)
+
+
+### Features
+
+* **networkmanagement:** Add DNS endpoint of Google Kubernetes Engine cluster control plane ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+* **networkmanagement:** Add more detailed drop causes to corresponding enum ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+
+
+### Documentation
+
+* **networkmanagement:** Update outdated comments ([f072178](https://github.com/googleapis/google-cloud-go/commit/f072178f6fd90537a5782395f4229e4c8b30af7e))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.14.1...networkmanagement/v1.15.0) (2024-10-23)
 
 
