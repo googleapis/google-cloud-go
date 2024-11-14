@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.3](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.1.2...servicehealth/v1.1.3) (2024-11-14)
+
+
+### Documentation
+
+* **servicehealth:** Add missing doc comments ([ccbc882](https://github.com/googleapis/google-cloud-go/commit/ccbc882d47d8c42998b463860d7c183c86cb7b53))
+
 ## [1.1.2](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.1.1...servicehealth/v1.1.2) (2024-10-23)
 
 

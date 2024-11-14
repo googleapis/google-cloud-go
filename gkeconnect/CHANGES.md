@@ -1,5 +1,13 @@
 # Changes
 
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.11.2...gkeconnect/v0.12.0) (2024-11-14)
+
+
+### Features
+
+* **gkeconnect/gateway:** Update default transport type for Connect Gateway v1 client to "rest" ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **gkeconnect/gateway:** Update default transport type for Connect Gateway v1beta1 client to "rest" ([#11108](https://github.com/googleapis/google-cloud-go/issues/11108)) ([380e7d2](https://github.com/googleapis/google-cloud-go/commit/380e7d23e69b22ab46cc6e3be58902accee2f26a))
+
 ## [0.11.2](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.11.1...gkeconnect/v0.11.2) (2024-10-23)
 
 
