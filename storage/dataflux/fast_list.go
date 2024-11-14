@@ -141,7 +141,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 
 	// Errgroup takes care of running both methods in parallel. As soon as one of
 	// the method is complete, the running method also stops.
-	g, childCtx := errgroup.WithContext(ctx)
+	g, ctx := errgroup.WithContext(ctx)
 
 	// To start listing method is Open and runs both worksteal and sequential listing
 	// in parallel. The method which completes first is used for all subsequent runs.
@@ -150,7 +150,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 	if c.method != sequential {
 
 		g.Go(func() error {
-			objects, err := c.workstealListing(childCtx)
+			objects, err := c.workstealListing(ctx)
 			if err != nil {
 				countErr.increment()
 				return fmt.Errorf("error in running worksteal_lister: %w", err)
@@ -167,7 +167,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 	if c.method != worksteal {
 
 		g.Go(func() error {
-			objects, token, err := c.sequentialListing(childCtx)
+			objects, token, err := c.sequentialListing(ctx)
 			if err != nil {
 				countErr.increment()
 				return fmt.Errorf("error in running sequential listing: %w", err)
