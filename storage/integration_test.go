@@ -346,6 +346,7 @@ func TestIntegration_DetectDirectConnectivity(t *testing.T) {
 				t.Fatalf("CheckDirectConnectivitySupported: region not detected")
 			}
 			region := v.AsString()
+			log.Printf("region: %v", region)
 			newBucketName := prefix + uidSpace.New()
 			log.Printf("Bucket name: %v", newBucketName)
 			newBucket := client.Bucket(newBucketName)
