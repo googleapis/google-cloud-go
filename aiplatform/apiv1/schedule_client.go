@@ -203,8 +203,9 @@ func (c *ScheduleClient) PauseSchedule(ctx context.Context, req *aiplatformpb.Pa
 //
 // When the Schedule is resumed, new runs will be scheduled starting from the
 // next execution time after the current time based on the time_specification
-// in the Schedule. If Schedule.catchUp is set up true, all
-// missed runs will be scheduled for backfill first.
+// in the Schedule. If
+// Schedule.catch_up is set up
+// true, all missed runs will be scheduled for backfill first.
 func (c *ScheduleClient) ResumeSchedule(ctx context.Context, req *aiplatformpb.ResumeScheduleRequest, opts ...gax.CallOption) error {
 	return c.internalClient.ResumeSchedule(ctx, req, opts...)
 }

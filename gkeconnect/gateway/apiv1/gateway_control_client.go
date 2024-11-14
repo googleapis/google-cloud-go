@@ -20,7 +20,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"math"
 	"net/http"
 	"net/url"
 	"time"
@@ -30,10 +29,8 @@ import (
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
-	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -42,38 +39,6 @@ var newGatewayControlClientHook clientHook
 // GatewayControlCallOptions contains the retry settings for each method of GatewayControlClient.
 type GatewayControlCallOptions struct {
 	GenerateCredentials []gax.CallOption
-}
-
-func defaultGatewayControlGRPCClientOptions() []option.ClientOption {
-	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("connectgateway.googleapis.com:443"),
-		internaloption.WithDefaultEndpointTemplate("connectgateway.UNIVERSE_DOMAIN:443"),
-		internaloption.WithDefaultMTLSEndpoint("connectgateway.mtls.googleapis.com:443"),
-		internaloption.WithDefaultUniverseDomain("googleapis.com"),
-		internaloption.WithDefaultAudience("https://connectgateway.googleapis.com/"),
-		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		internaloption.EnableJwtWithScope(),
-		internaloption.EnableNewAuthLibrary(),
-		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
-			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
-	}
-}
-
-func defaultGatewayControlCallOptions() *GatewayControlCallOptions {
-	return &GatewayControlCallOptions{
-		GenerateCredentials: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-	}
 }
 
 func defaultGatewayControlRESTCallOptions() *GatewayControlCallOptions {
@@ -139,80 +104,6 @@ func (c *GatewayControlClient) Connection() *grpc.ClientConn {
 // access the specified membership using Connect Gateway.
 func (c *GatewayControlClient) GenerateCredentials(ctx context.Context, req *gatewaypb.GenerateCredentialsRequest, opts ...gax.CallOption) (*gatewaypb.GenerateCredentialsResponse, error) {
 	return c.internalClient.GenerateCredentials(ctx, req, opts...)
-}
-
-// gatewayControlGRPCClient is a client for interacting with Connect Gateway API over gRPC transport.
-//
-// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type gatewayControlGRPCClient struct {
-	// Connection pool of gRPC connections to the service.
-	connPool gtransport.ConnPool
-
-	// Points back to the CallOptions field of the containing GatewayControlClient
-	CallOptions **GatewayControlCallOptions
-
-	// The gRPC API client.
-	gatewayControlClient gatewaypb.GatewayControlClient
-
-	// The x-goog-* metadata to be sent with each request.
-	xGoogHeaders []string
-}
-
-// NewGatewayControlClient creates a new gateway control client based on gRPC.
-// The returned client must be Closed when it is done being used to clean up its underlying connections.
-//
-// GatewayControl is the control plane API for Connect Gateway.
-func NewGatewayControlClient(ctx context.Context, opts ...option.ClientOption) (*GatewayControlClient, error) {
-	clientOpts := defaultGatewayControlGRPCClientOptions()
-	if newGatewayControlClientHook != nil {
-		hookOpts, err := newGatewayControlClientHook(ctx, clientHookParams{})
-		if err != nil {
-			return nil, err
-		}
-		clientOpts = append(clientOpts, hookOpts...)
-	}
-
-	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
-	if err != nil {
-		return nil, err
-	}
-	client := GatewayControlClient{CallOptions: defaultGatewayControlCallOptions()}
-
-	c := &gatewayControlGRPCClient{
-		connPool:             connPool,
-		gatewayControlClient: gatewaypb.NewGatewayControlClient(connPool),
-		CallOptions:          &client.CallOptions,
-	}
-	c.setGoogleClientInfo()
-
-	client.internalClient = c
-
-	return &client, nil
-}
-
-// Connection returns a connection to the API service.
-//
-// Deprecated: Connections are now pooled so this method does not always
-// return the same resource.
-func (c *gatewayControlGRPCClient) Connection() *grpc.ClientConn {
-	return c.connPool.Conn()
-}
-
-// setGoogleClientInfo sets the name and version of the application in
-// the `x-goog-api-client` header passed on each request. Intended for
-// use by Google-written clients.
-func (c *gatewayControlGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{
-		"x-goog-api-client", gax.XGoogHeader(kv...),
-	}
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *gatewayControlGRPCClient) Close() error {
-	return c.connPool.Close()
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -287,23 +178,6 @@ func (c *gatewayControlRESTClient) Close() error {
 // Deprecated: This method always returns nil.
 func (c *gatewayControlRESTClient) Connection() *grpc.ClientConn {
 	return nil
-}
-func (c *gatewayControlGRPCClient) GenerateCredentials(ctx context.Context, req *gatewaypb.GenerateCredentialsRequest, opts ...gax.CallOption) (*gatewaypb.GenerateCredentialsResponse, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).GenerateCredentials[0:len((*c.CallOptions).GenerateCredentials):len((*c.CallOptions).GenerateCredentials)], opts...)
-	var resp *gatewaypb.GenerateCredentialsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.gatewayControlClient.GenerateCredentials(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
 }
 
 // GenerateCredentials generateCredentials provides connection information that allows a user to

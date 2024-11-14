@@ -1747,7 +1747,8 @@ func (x *UpdateEntityTypeRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Request message for [FeaturestoreService.DeleteEntityTypes][].
+// Request message for
+// [FeaturestoreService.DeleteEntityType][google.cloud.aiplatform.v1.FeaturestoreService.DeleteEntityType].
 type DeleteEntityTypeRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

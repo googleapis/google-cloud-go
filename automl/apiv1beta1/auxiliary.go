@@ -598,7 +598,7 @@ type ColumnSpecIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*automlpb.ColumnSpec, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ColumnSpecIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -645,7 +645,7 @@ type DatasetIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*automlpb.Dataset, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DatasetIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -692,7 +692,7 @@ type ModelEvaluationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*automlpb.ModelEvaluation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ModelEvaluationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -739,7 +739,7 @@ type ModelIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*automlpb.Model, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ModelIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -786,7 +786,7 @@ type TableSpecIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*automlpb.TableSpec, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TableSpecIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

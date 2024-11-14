@@ -2,6 +2,8 @@
     "accessapproval": "1.8.2",
     "accesscontextmanager": "1.9.2",
     "advisorynotifications": "1.5.2",
+    "ai": "0.9.0",
+    "aiplatform": "1.69.0",
     "alloydb": "1.13.0",
     "analytics": "0.25.2",
     "apigateway": "1.7.2",

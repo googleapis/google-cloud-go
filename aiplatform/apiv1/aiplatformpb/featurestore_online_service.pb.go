@@ -344,7 +344,7 @@ func (x *ReadFeatureValuesResponse) GetEntityView() *ReadFeatureValuesResponse_E
 }
 
 // Request message for
-// [FeaturestoreOnlineServingService.StreamingFeatureValuesRead][].
+// [FeaturestoreOnlineServingService.StreamingReadFeatureValues][google.cloud.aiplatform.v1.FeaturestoreOnlineServingService.StreamingReadFeatureValues].
 type StreamingReadFeatureValuesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
