@@ -51,7 +51,7 @@ type CreatePlaybookRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to create a playbook for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The playbook to create.
 	Playbook *Playbook `protobuf:"bytes,2,opt,name=playbook,proto3" json:"playbook,omitempty"`
@@ -111,8 +111,8 @@ type DeletePlaybookRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the playbook to delete.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -163,7 +163,7 @@ type ListPlaybooksRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to list playbooks from.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return in a single page. By default 100 and
 	// at most 1000.
@@ -294,8 +294,8 @@ type GetPlaybookRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the playbook.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -412,8 +412,8 @@ type Playbook struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The unique identifier of the playbook.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The human-readable name of the playbook, unique within an agent.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -578,8 +578,8 @@ type CreatePlaybookVersionRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The playbook to create a version for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The playbook version to create.
 	PlaybookVersion *PlaybookVersion `protobuf:"bytes,2,opt,name=playbook_version,json=playbookVersion,proto3" json:"playbook_version,omitempty"`
@@ -638,8 +638,8 @@ type PlaybookVersion struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The unique identifier of the playbook version.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>/versions/<Version ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>/versions/<VersionID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The description of the playbook version.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
@@ -727,8 +727,8 @@ type GetPlaybookVersionRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the playbook version.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>/versions/<Version ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>/versions/<VersionID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -779,8 +779,8 @@ type ListPlaybookVersionsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The playbook to list versions for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of items to return in a single page. By
 	// default 100 and at most 1000.
@@ -911,8 +911,8 @@ type DeletePlaybookVersionRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the playbook version to delete.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/playbooks/<Playbook ID>/versions/<Version ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/playbooks/<PlaybookID>/versions/<VersionID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

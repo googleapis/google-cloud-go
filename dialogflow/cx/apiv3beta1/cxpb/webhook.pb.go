@@ -364,8 +364,8 @@ type Webhook struct {
 	// [Webhooks.UpdateWebhook][google.cloud.dialogflow.cx.v3beta1.Webhooks.UpdateWebhook]
 	// method.
 	// [Webhooks.CreateWebhook][google.cloud.dialogflow.cx.v3beta1.Webhooks.CreateWebhook]
-	// populates the name automatically. Format: `projects/<Project
-	// ID>/locations/<Location ID>/agents/<Agent ID>/webhooks/<Webhook ID>`.
+	// populates the name automatically. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/webhooks/<WebhookID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The human-readable name of the webhook, unique within the agent.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -492,7 +492,7 @@ type ListWebhooksRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to list all webhooks for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return in a single page. By default 100 and
 	// at most 1000.
@@ -623,8 +623,8 @@ type GetWebhookRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the webhook.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/webhooks/<Webhook ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/webhooks/<WebhookID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -675,7 +675,7 @@ type CreateWebhookRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to create a webhook for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The webhook to create.
 	Webhook *Webhook `protobuf:"bytes,2,opt,name=webhook,proto3" json:"webhook,omitempty"`
@@ -795,8 +795,8 @@ type DeleteWebhookRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the webhook to delete.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/webhooks/<Webhook ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/webhooks/<WebhookID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// This field has no effect for webhook not being used.
 	// For webhooks that are used by pages/flows/transition route groups:
@@ -1064,8 +1064,8 @@ type WebhookRequest_Text struct {
 type WebhookRequest_TriggerIntent struct {
 	// If an [intent][google.cloud.dialogflow.cx.v3beta1.IntentInput] was
 	// provided as input, this field will contain a copy of the intent
-	// identifier. Format: `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/intents/<Intent ID>`.
+	// identifier. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/intents/<IntentID>`.
 	TriggerIntent string `protobuf:"bytes,11,opt,name=trigger_intent,json=triggerIntent,proto3,oneof"`
 }
 
@@ -1214,15 +1214,15 @@ type isWebhookResponse_Transition interface {
 
 type WebhookResponse_TargetPage struct {
 	// The target page to transition to.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/pages/<Page ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/pages/<PageID>`.
 	TargetPage string `protobuf:"bytes,5,opt,name=target_page,json=targetPage,proto3,oneof"`
 }
 
 type WebhookResponse_TargetFlow struct {
 	// The target flow to transition to.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	TargetFlow string `protobuf:"bytes,6,opt,name=target_flow,json=targetFlow,proto3,oneof"`
 }
 
@@ -1240,9 +1240,8 @@ type PageInfo struct {
 	// [WebhookRequest][google.cloud.dialogflow.cx.v3beta1.WebhookRequest].
 	// Ignored for
 	// [WebhookResponse][google.cloud.dialogflow.cx.v3beta1.WebhookResponse]. The
-	// unique identifier of the current page. Format: `projects/<Project
-	// ID>/locations/<Location ID>/agents/<Agent ID>/flows/<Flow ID>/pages/<Page
-	// ID>`.
+	// unique identifier of the current page. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/pages/<PageID>`.
 	CurrentPage string `protobuf:"bytes,1,opt,name=current_page,json=currentPage,proto3" json:"current_page,omitempty"`
 	// Always present for
 	// [WebhookRequest][google.cloud.dialogflow.cx.v3beta1.WebhookRequest].
@@ -1323,9 +1322,9 @@ type SessionInfo struct {
 	// unique identifier of the
 	// [session][google.cloud.dialogflow.cx.v3beta1.DetectIntentRequest.session].
 	// This field can be used by the webhook to identify a session. Format:
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>` or `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/environments/<Environment ID>/sessions/<Session ID>`
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>`
 	// if environment is specified.
 	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	// Optional for
@@ -1635,8 +1634,8 @@ type Webhook_ServiceDirectoryConfig struct {
 
 	// Required. The name of [Service
 	// Directory](https://cloud.google.com/service-directory) service.
-	// Format: `projects/<Project ID>/locations/<Location
-	// ID>/namespaces/<Namespace ID>/services/<Service ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/namespaces/<NamespaceID>/services/<ServiceID>`.
 	// `Location ID` of the service directory must be the same as the location
 	// of the agent.
 	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
@@ -1831,8 +1830,8 @@ type WebhookRequest_IntentInfo struct {
 
 	// Always present. The unique identifier of the last matched
 	// [intent][google.cloud.dialogflow.cx.v3beta1.Intent].
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/intents/<Intent ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/intents/<IntentID>`.
 	LastMatchedIntent string `protobuf:"bytes,1,opt,name=last_matched_intent,json=lastMatchedIntent,proto3" json:"last_matched_intent,omitempty"`
 	// Always present. The display name of the last matched
 	// [intent][google.cloud.dialogflow.cx.v3beta1.Intent].
@@ -1914,7 +1913,8 @@ type WebhookRequest_SentimentAnalysisResult struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Sentiment score between -1.0 (negative sentiment) and 1.0 (positive
-	// sentiment).
+	//
+	//	sentiment).
 	Score float32 `protobuf:"fixed32,1,opt,name=score,proto3" json:"score,omitempty"`
 	// A non-negative number in the [0, +inf) range, which represents the
 	// absolute magnitude of sentiment, regardless of score (positive or
@@ -2767,7 +2767,7 @@ var file_google_cloud_dialogflow_cx_v3beta1_webhook_proto_rawDesc = []byte{
 	0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f,
 	0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e,
 	0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66,
-	0x6c, 0x6f, 0x77, 0x42, 0xc5, 0x02, 0xea, 0x41, 0x7c, 0x0a, 0x27, 0x73, 0x65, 0x72, 0x76, 0x69,
+	0x6c, 0x6f, 0x77, 0x42, 0xc2, 0x02, 0xea, 0x41, 0x7c, 0x0a, 0x27, 0x73, 0x65, 0x72, 0x76, 0x69,
 	0x63, 0x65, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
 	0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x53, 0x65, 0x72, 0x76, 0x69,
 	0x63, 0x65, 0x12, 0x51, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72,
@@ -2782,13 +2782,12 @@ var file_google_cloud_dialogflow_cx_v3beta1_webhook_proto_rawDesc = []byte{
 	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
 	0x67, 0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x63, 0x78,
 	0x2f, 0x61, 0x70, 0x69, 0x76, 0x33, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x63, 0x78, 0x70, 0x62,
-	0x3b, 0x63, 0x78, 0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x22,
-	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61,
-	0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0x42, 0x65, 0x74,
-	0x61, 0x31, 0xea, 0x02, 0x26, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f,
-	0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a,
-	0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x3b, 0x63, 0x78, 0x70, 0x62, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x22, 0x47, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67,
+	0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0x42, 0x65, 0x74, 0x61, 0x31, 0xea,
+	0x02, 0x26, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a,
+	0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a,
+	0x3a, 0x56, 0x33, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

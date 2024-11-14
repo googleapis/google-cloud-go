@@ -14,8 +14,8 @@
 
 /*
 Package cloud is the root of the packages used to access Google Cloud
-Services. See https://pkg.go.dev/cloud.google.com/go for a full list
-of sub-modules.
+Services. See https://pkg.go.dev/cloud.google.com/go#section-directories for a
+full list of sub-modules.
 
 # Client Options
 
@@ -177,7 +177,7 @@ Here is a generic example:
 	// Then use ctx in a subsequent request.
 	response, err := client.GetSecret(ctx, request)
 
-## Google-reserved headers
+# Google-reserved headers
 
 There are a some header keys that Google reserves for internal use that must
 not be ovewritten. The following header keys are broadly considered reserved
@@ -190,7 +190,7 @@ Be sure to check the individual package documentation for other service-specific
 reserved headers. For example, Storage supports a specific auditing header that
 is mentioned in that [module's documentation][storagedocs].
 
-## Google Cloud system parameters
+# Google Cloud system parameters
 
 Google Cloud services respect [system parameters][system parameters] that can be
 used to augment request and/or response behavior. For the most part, they are

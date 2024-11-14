@@ -702,7 +702,7 @@
     {
       "regionTag": "aiplatform_v1_generated_DatasetService_ListAnnotations_sync",
       "title": "aiplatform ListAnnotations Sample",
-      "description": "ListAnnotations lists Annotations belongs to a dataitem",
+      "description": "ListAnnotations lists Annotations belongs to a dataitem\nThis RPC is only available in InternalDatasetService. It is only used for\nexporting conversation data to CCAI Insights.",
       "file": "DatasetClient/ListAnnotations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5014,6 +5014,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_FeatureRegistryService_BatchCreateFeatures_sync",
+      "title": "aiplatform BatchCreateFeatures Sample",
+      "description": "BatchCreateFeatures creates a batch of Features in a given FeatureGroup.",
+      "file": "FeatureRegistryClient/BatchCreateFeatures/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateFeatures",
+        "fullName": "google.cloud.aiplatform.v1.FeatureRegistryClient.BatchCreateFeatures",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchCreateFeaturesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchCreateFeaturesOperation",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "BatchCreateFeatures",
+          "fullName": "google.cloud.aiplatform.v1.FeatureRegistryService.BatchCreateFeatures",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_FeatureRegistryService_CancelOperation_sync",
       "title": "aiplatform CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -8411,7 +8457,7 @@
     {
       "regionTag": "aiplatform_v1_generated_GenAiTuningService_RebaseTunedModel_sync",
       "title": "aiplatform RebaseTunedModel Sample",
-      "description": "RebaseTunedModel rebase a TunedModel.\nCreates a LongRunningOperation that takes a legacy Tuned GenAI model\nReference and creates a TuningJob based on newly available model.",
+      "description": "RebaseTunedModel rebase a TunedModel.",
       "file": "GenAiTuningClient/RebaseTunedModel/main.go",
       "language": "GO",
       "clientMethod": {

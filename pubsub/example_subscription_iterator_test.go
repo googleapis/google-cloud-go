@@ -16,6 +16,7 @@ package pubsub_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"cloud.google.com/go/pubsub"
@@ -43,7 +44,7 @@ func ExampleSubscriptionIterator_Next() {
 	it := client.Subscriptions(ctx)
 	for {
 		sub, err := it.Next()
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {

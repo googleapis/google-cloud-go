@@ -38,7 +38,6 @@ var (
 	errMissingTargetPrincipal                   = errors.New("impersonate: target service account must be provided")
 	errMissingScopes                            = errors.New("impersonate: scopes must be provided")
 	errLifetimeOverMax                          = errors.New("impersonate: max lifetime is 12 hours")
-	errClientAndCredentials                     = errors.New("impersonate: client and credentials must not both be provided")
 	errUniverseNotSupportedDomainWideDelegation = errors.New("impersonate: service account user is configured for the credential. " +
 		"Domain-wide delegation is not supported in universes other than googleapis.com")
 )
@@ -64,11 +63,11 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 		isStaticToken = true
 	}
 
-	var client *http.Client
-	var creds *auth.Credentials
-	if opts.Client == nil {
+	client := opts.Client
+	creds := opts.Credentials
+	if client == nil {
 		var err error
-		if opts.Credentials == nil {
+		if creds == nil {
 			creds, err = credentials.DetectDefault(&credentials.DetectOptions{
 				Scopes:           []string{defaultScope},
 				UseSelfSignedJWT: true,
@@ -76,18 +75,12 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 			if err != nil {
 				return nil, err
 			}
-		} else {
-			creds = opts.Credentials
 		}
-		client, err = httptransport.NewClient(&httptransport.Options{
-			Credentials:    creds,
-			UniverseDomain: opts.UniverseDomain,
-		})
+
+		client, err = httptransport.NewClient(transportOpts(opts, creds))
 		if err != nil {
 			return nil, err
 		}
-	} else {
-		client = opts.Client
 	}
 
 	universeDomainProvider := resolveUniverseDomainProvider(creds)
@@ -129,6 +122,24 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 	}), nil
 }
 
+// transportOpts returns options for httptransport.NewClient. If opts.UniverseDomain
+// is provided, it will be used in the transport for a validation ensuring that it
+// matches the universe domain in the base credentials. If opts.UniverseDomain
+// is not provided, this validation will be skipped.
+func transportOpts(opts *CredentialsOptions, creds *auth.Credentials) *httptransport.Options {
+	tOpts := &httptransport.Options{
+		Credentials: creds,
+	}
+	if opts.UniverseDomain == "" {
+		tOpts.InternalOptions = &httptransport.InternalOptions{
+			SkipUniverseDomainValidation: true,
+		}
+	} else {
+		tOpts.UniverseDomain = opts.UniverseDomain
+	}
+	return tOpts
+}
+
 // resolveUniverseDomainProvider returns the default service domain for a given
 // Cloud universe. This is the universe domain configured for the credentials,
 // which will be used in endpoint(s), and compared to the universe domain that
@@ -163,18 +174,17 @@ type CredentialsOptions struct {
 	// wide delegation. Optional.
 	Subject string
 
-	// Credentials is the provider of the credentials used to fetch the ID
-	// token. If not provided, and a Client is also not provided, credentials
-	// will try to be detected from the environment. Optional.
+	// Credentials used in generating the impersonated token. If empty, an
+	// attempt will be made to detect credentials from the environment (see
+	// [cloud.google.com/go/auth/credentials.DetectDefault]). Optional.
 	Credentials *auth.Credentials
 	// Client configures the underlying client used to make network requests
-	// when fetching tokens. If provided the client should provide its own
-	// credentials at call time. Optional.
+	// when fetching tokens. If provided this should be a fully-authenticated
+	// client. Optional.
 	Client *http.Client
 	// UniverseDomain is the default service domain for a given Cloud universe.
-	// The default value is "googleapis.com". This is the universe domain
-	// configured for the client, which will be compared to the universe domain
-	// that is separately configured for the credentials. Optional.
+	// This field has no default value, and only if provided will it be used to
+	// verify the universe domain from the credentials. Optional.
 	UniverseDomain string
 }
 
@@ -190,9 +200,6 @@ func (o *CredentialsOptions) validate() error {
 	}
 	if o.Lifetime.Hours() > 12 {
 		return errLifetimeOverMax
-	}
-	if o.Client != nil && o.Credentials != nil {
-		return errClientAndCredentials
 	}
 	return nil
 }

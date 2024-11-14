@@ -191,23 +191,25 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		t.Errorf("Reservation() got: -, want: +\n%s", diff)
 	}
 
-	resIt := admin.Reservations(ctx, wire.LocationPath{Project: proj, Location: region}.String())
-	var foundRes *ReservationConfig
-	for {
-		res, err := resIt.Next()
-		if err == iterator.Done {
-			break
+	testutil.Retry(t, 4, 30*time.Second, func(r *testutil.R) {
+		resIt := admin.Reservations(ctx, wire.LocationPath{Project: proj, Location: region}.String())
+		var foundRes *ReservationConfig
+		for {
+			res, err := resIt.Next()
+			if err == iterator.Done {
+				break
+			}
+			if res.Name == reservationPath {
+				foundRes = res
+				break
+			}
 		}
-		if res.Name == reservationPath {
-			foundRes = res
-			break
+		if foundRes == nil {
+			r.Errorf("Reservations() did not return reservation config")
+		} else if diff := testutil.Diff(foundRes, newResConfig); diff != "" {
+			r.Errorf("Reservations() found config: -, want: +\n%s", diff)
 		}
-	}
-	if foundRes == nil {
-		t.Error("Reservations() did not return reservation config")
-	} else if diff := testutil.Diff(foundRes, newResConfig); diff != "" {
-		t.Errorf("Reservations() found config: -, want: +\n%s", diff)
-	}
+	})
 
 	resUpdate := ReservationConfigToUpdate{
 		Name:               reservationPath,
@@ -255,39 +257,43 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		t.Errorf("TopicPartitionCount() got: %v, want: %v", gotTopicPartitions, newTopicConfig.PartitionCount)
 	}
 
-	topicIt := admin.Topics(ctx, locationPath)
-	var foundTopic *TopicConfig
-	for {
-		topic, err := topicIt.Next()
-		if err == iterator.Done {
-			break
+	testutil.Retry(t, 4, 30*time.Second, func(r *testutil.R) {
+		topicIt := admin.Topics(ctx, locationPath)
+		var foundTopic *TopicConfig
+		for {
+			topic, err := topicIt.Next()
+			if err == iterator.Done {
+				break
+			}
+			if topic.Name == topicPath {
+				foundTopic = topic
+				break
+			}
 		}
-		if topic.Name == topicPath {
-			foundTopic = topic
-			break
+		if foundTopic == nil {
+			r.Errorf("Topics() did not return topic config")
+		} else if diff := testutil.Diff(foundTopic, newTopicConfig); diff != "" {
+			r.Errorf("Topics() found config: -, want: +\n%s", diff)
 		}
-	}
-	if foundTopic == nil {
-		t.Error("Topics() did not return topic config")
-	} else if diff := testutil.Diff(foundTopic, newTopicConfig); diff != "" {
-		t.Errorf("Topics() found config: -, want: +\n%s", diff)
-	}
+	})
 
-	topicPathIt := admin.ReservationTopics(ctx, reservationPath)
-	foundTopicPath := false
-	for {
-		path, err := topicPathIt.Next()
-		if err == iterator.Done {
-			break
+	testutil.Retry(t, 4, 30*time.Second, func(r *testutil.R) {
+		topicPathIt := admin.ReservationTopics(ctx, reservationPath)
+		foundTopicPath := false
+		for {
+			path, err := topicPathIt.Next()
+			if err == iterator.Done {
+				break
+			}
+			if topicPath == path {
+				foundTopicPath = true
+				break
+			}
 		}
-		if topicPath == path {
-			foundTopicPath = true
-			break
+		if !foundTopicPath {
+			r.Errorf("ReservationTopics() did not return topic path")
 		}
-	}
-	if !foundTopicPath {
-		t.Error("ReservationTopics() did not return topic path")
-	}
+	})
 
 	topicUpdate1 := TopicConfigToUpdate{
 		Name:                       topicPath,
@@ -353,39 +359,43 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		t.Errorf("Subscription() got: -, want: +\n%s", diff)
 	}
 
-	subsIt := admin.Subscriptions(ctx, locationPath)
-	var foundSubs *SubscriptionConfig
-	for {
-		subs, err := subsIt.Next()
-		if err == iterator.Done {
-			break
+	testutil.Retry(t, 4, 30*time.Second, func(r *testutil.R) {
+		subsIt := admin.Subscriptions(ctx, locationPath)
+		var foundSubs *SubscriptionConfig
+		for {
+			subs, err := subsIt.Next()
+			if err == iterator.Done {
+				break
+			}
+			if subs.Name == subscriptionPath {
+				foundSubs = subs
+				break
+			}
 		}
-		if subs.Name == subscriptionPath {
-			foundSubs = subs
-			break
+		if foundSubs == nil {
+			r.Errorf("Subscriptions() did not return subscription config")
+		} else if diff := testutil.Diff(foundSubs, gotSubsConfig); diff != "" {
+			r.Errorf("Subscriptions() found config: -, want: +\n%s", diff)
 		}
-	}
-	if foundSubs == nil {
-		t.Error("Subscriptions() did not return subscription config")
-	} else if diff := testutil.Diff(foundSubs, gotSubsConfig); diff != "" {
-		t.Errorf("Subscriptions() found config: -, want: +\n%s", diff)
-	}
+	})
 
-	subsPathIt := admin.TopicSubscriptions(ctx, topicPath)
-	foundSubsPath := false
-	for {
-		subsPath, err := subsPathIt.Next()
-		if err == iterator.Done {
-			break
+	testutil.Retry(t, 4, 30*time.Second, func(r *testutil.R) {
+		subsPathIt := admin.TopicSubscriptions(ctx, topicPath)
+		foundSubsPath := false
+		for {
+			subsPath, err := subsPathIt.Next()
+			if err == iterator.Done {
+				break
+			}
+			if subsPath == subscriptionPath {
+				foundSubsPath = true
+				break
+			}
 		}
-		if subsPath == subscriptionPath {
-			foundSubsPath = true
-			break
+		if !foundSubsPath {
+			r.Errorf("TopicSubscriptions() did not return subscription path")
 		}
-	}
-	if !foundSubsPath {
-		t.Error("TopicSubscriptions() did not return subscription path")
-	}
+	})
 
 	subsUpdate := SubscriptionConfigToUpdate{
 		Name:                subscriptionPath,
