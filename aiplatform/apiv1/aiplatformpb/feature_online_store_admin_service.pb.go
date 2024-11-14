@@ -894,7 +894,8 @@ func (x *UpdateFeatureViewRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Request message for [FeatureOnlineStoreAdminService.DeleteFeatureViews][].
+// Request message for
+// [FeatureOnlineStoreAdminService.DeleteFeatureView][google.cloud.aiplatform.v1.FeatureOnlineStoreAdminService.DeleteFeatureView].
 type DeleteFeatureViewRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
