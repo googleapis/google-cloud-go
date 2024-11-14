@@ -16,8 +16,6 @@
 
 package managedkafka
 
-import ()
-
 import (
 	"context"
 

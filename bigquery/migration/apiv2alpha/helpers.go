@@ -16,8 +16,6 @@
 
 package migration
 
-import ()
-
 import (
 	"context"
 

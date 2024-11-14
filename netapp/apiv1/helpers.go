@@ -16,8 +16,6 @@
 
 package netapp
 
-import ()
-
 import (
 	"context"
 

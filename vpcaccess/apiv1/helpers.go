@@ -16,8 +16,6 @@
 
 package vpcaccess
 
-import ()
-
 import (
 	"context"
 

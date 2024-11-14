@@ -16,8 +16,6 @@
 
 package servicecontrol
 
-import ()
-
 import (
 	"context"
 

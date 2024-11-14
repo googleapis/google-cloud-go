@@ -16,8 +16,6 @@
 
 package appgateways
 
-import ()
-
 import (
 	"context"
 

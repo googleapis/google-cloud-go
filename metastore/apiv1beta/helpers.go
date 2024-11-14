@@ -16,8 +16,6 @@
 
 package metastore
 
-import ()
-
 import (
 	"context"
 

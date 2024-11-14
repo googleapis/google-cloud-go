@@ -16,8 +16,6 @@
 
 package apigeeregistry
 
-import ()
-
 import (
 	"context"
 

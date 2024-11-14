@@ -16,8 +16,6 @@
 
 package secretmanager
 
-import ()
-
 import (
 	"context"
 

@@ -16,8 +16,6 @@
 
 package osconfig
 
-import ()
-
 import (
 	"context"
 

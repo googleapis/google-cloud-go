@@ -16,8 +16,6 @@
 
 package eventarc
 
-import ()
-
 import (
 	"context"
 

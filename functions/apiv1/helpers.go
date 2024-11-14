@@ -16,8 +16,6 @@
 
 package functions
 
-import ()
-
 import (
 	"context"
 

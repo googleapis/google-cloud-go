@@ -16,8 +16,6 @@
 
 package securitycenter
 
-import ()
-
 import (
 	"context"
 

@@ -16,8 +16,6 @@
 
 package publish
 
-import ()
-
 import (
 	"context"
 

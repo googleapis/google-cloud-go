@@ -16,8 +16,6 @@
 
 package servicehealth
 
-import ()
-
 import (
 	"context"
 

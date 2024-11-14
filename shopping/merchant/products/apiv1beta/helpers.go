@@ -16,8 +16,6 @@
 
 package products
 
-import ()
-
 import (
 	"context"
 

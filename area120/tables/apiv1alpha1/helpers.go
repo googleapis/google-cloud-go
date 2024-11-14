@@ -16,8 +16,6 @@
 
 package tables
 
-import ()
-
 import (
 	"context"
 

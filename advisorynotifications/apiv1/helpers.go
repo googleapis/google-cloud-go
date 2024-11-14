@@ -16,8 +16,6 @@
 
 package advisorynotifications
 
-import ()
-
 import (
 	"context"
 

@@ -16,8 +16,6 @@
 
 package pubsublite
 
-import ()
-
 import (
 	"context"
 

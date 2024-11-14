@@ -16,8 +16,6 @@
 
 package baremetalsolution
 
-import ()
-
 import (
 	"context"
 

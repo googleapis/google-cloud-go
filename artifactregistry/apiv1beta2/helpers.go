@@ -16,8 +16,6 @@
 
 package artifactregistry
 
-import ()
-
 import (
 	"context"
 
