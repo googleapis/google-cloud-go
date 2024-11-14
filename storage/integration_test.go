@@ -60,6 +60,7 @@ import (
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -352,7 +353,7 @@ func TestIntegration_DetectDirectConnectivity(t *testing.T) {
 			newBucket := client.Bucket(newBucketName)
 			h.mustCreate(newBucket, testutil.ProjID(), &BucketAttrs{Location: region, LocationType: "region"})
 			defer h.mustDeleteBucket(newBucket)
-			err := CheckDirectConnectivitySupported(ctx, newBucketName)
+			err := CheckDirectConnectivitySupported(ctx, newBucketName, internaloption.AllowNonDefaultServiceAccount(true))
 			if err != nil {
 				t.Fatalf("CheckDirectConnectivitySupported: %v", err)
 			}
