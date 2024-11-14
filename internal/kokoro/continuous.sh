@@ -99,116 +99,116 @@ curl -L -O https://github.com/GoogleCloudPlatform/grpc-gcp-tools/releases/downlo
 chmod +x dp_check
 ./dp_check --service storage.googleapis.com -check_grpclb=false -check_xds=true  --xds_expect_fallback_configured=false
 
-# # runDirectoryTests runs all tests in the current directory.
-# # If a PATH argument is specified, it runs `go test [PATH]`.
-# runDirectoryTests() {
-#   if { [[ $PWD == *"/internal/"* ]] ||
-#     [[ $PWD == *"/third_party/"* ]]; } &&
-#     [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
-#     # internal tools only expected to work with latest go version
-#     return
-#   fi
-#   GOWORK=off go test -race -v -timeout 45m "${1:-./...}" 2>&1 |
-#     tee sponge_log.log
-#   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
-#   # xUnit XML file.
-#   cat sponge_log.log |
-#     go-junit-report -set-exit-code >sponge_log.xml
-#   # Add the exit codes together so we exit non-zero if any module fails.
-#   exit_code=$(($exit_code + $?))
-# }
+# runDirectoryTests runs all tests in the current directory.
+# If a PATH argument is specified, it runs `go test [PATH]`.
+runDirectoryTests() {
+  if { [[ $PWD == *"/internal/"* ]] ||
+    [[ $PWD == *"/third_party/"* ]]; } &&
+    [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
+    # internal tools only expected to work with latest go version
+    return
+  fi
+  GOWORK=off go test -race -v -timeout 45m "${1:-./...}" 2>&1 |
+    tee sponge_log.log
+  # Takes the kokoro output log (raw stdout) and creates a machine-parseable
+  # xUnit XML file.
+  cat sponge_log.log |
+    go-junit-report -set-exit-code >sponge_log.xml
+  # Add the exit codes together so we exit non-zero if any module fails.
+  exit_code=$(($exit_code + $?))
+}
 
-# # runEmulatorTests runs emulator tests in the current directory.
-# runEmulatorTests() {
-#   if [ -f "emulator_test.sh" ]; then
-#     ./emulator_test.sh
-#     # Takes the kokoro output log (raw stdout) and creates a machine-parseable
-#     # xUnit XML file.
-#     cat sponge_log.log |
-#       go-junit-report -set-exit-code >sponge_log.xml
-#     # Add the exit codes together so we exit non-zero if any module fails.
-#     exit_code=$(($exit_code + $?))
-#   fi
-# }
+# runEmulatorTests runs emulator tests in the current directory.
+runEmulatorTests() {
+  if [ -f "emulator_test.sh" ]; then
+    ./emulator_test.sh
+    # Takes the kokoro output log (raw stdout) and creates a machine-parseable
+    # xUnit XML file.
+    cat sponge_log.log |
+      go-junit-report -set-exit-code >sponge_log.xml
+    # Add the exit codes together so we exit non-zero if any module fails.
+    exit_code=$(($exit_code + $?))
+  fi
+}
 
-# # testAllModules runs all modules' tests, including emulator tests.
-# testAllModules() {
-#   echo "Testing all modules"
-#   for i in $(find . -name go.mod); do
-#     pushd "$(dirname "$i")" >/dev/null
-#     runDirectoryTests
-#     # Run integration tests against an emulator.
-#     runEmulatorTests
-#     popd >/dev/null
-#   done
-# }
+# testAllModules runs all modules' tests, including emulator tests.
+testAllModules() {
+  echo "Testing all modules"
+  for i in $(find . -name go.mod); do
+    pushd "$(dirname "$i")" >/dev/null
+    runDirectoryTests
+    # Run integration tests against an emulator.
+    runEmulatorTests
+    popd >/dev/null
+  done
+}
 
-# # testChangedModules runs tests in changed modules only.
-# testChangedModules() {
-#   for d in $CHANGED_DIRS; do
-#     goDirectories="$(find "$d" -name "*.go" -printf "%h\n" | sort -u)"
-#     if [[ -n "$goDirectories" ]]; then
-#       for gd in $goDirectories; do
-#         pushd "$gd" >/dev/null
-#         runDirectoryTests .
-#         popd >/dev/null
-#       done
-#     fi
-#   done
-# }
+# testChangedModules runs tests in changed modules only.
+testChangedModules() {
+  for d in $CHANGED_DIRS; do
+    goDirectories="$(find "$d" -name "*.go" -printf "%h\n" | sort -u)"
+    if [[ -n "$goDirectories" ]]; then
+      for gd in $goDirectories; do
+        pushd "$gd" >/dev/null
+        runDirectoryTests .
+        popd >/dev/null
+      done
+    fi
+  done
+}
 
-# set +e # Run all tests, don't stop after the first failure.
-# exit_code=0
+set +e # Run all tests, don't stop after the first failure.
+exit_code=0
 
-# if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
-#   # Continuous jobs only run root tests & tests in submodules changed by the PR.
-#   SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKORO_GIT_COMMIT | grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' || true)
+if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
+  # Continuous jobs only run root tests & tests in submodules changed by the PR.
+  SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKORO_GIT_COMMIT | grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' || true)
 
-#   if [ -z $SIGNIFICANT_CHANGES ]; then
-#     echo "No changes detected, skipping tests"
-#     exit 0
-#   fi
+  if [ -z $SIGNIFICANT_CHANGES ]; then
+    echo "No changes detected, skipping tests"
+    exit 0
+  fi
 
-#   # CHANGED_DIRS is the list of significant top-level directories that changed,
-#   # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on main.
-#   CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
-#   if [[ -n $TARGET_MODULE ]]; then
-#     pushd $TARGET_MODULE >/dev/null
-#     runDirectoryTests
-#     popd >/dev/null
-#   elif [[ -z $SIGNIFICANT_CHANGES ]] || echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
-#     # If PR changes affect all submodules, then run all tests.
-#     testAllModules
-#   else
-#     runDirectoryTests . # Always run base tests.
-#     echo "Running tests only in changed submodules: $CHANGED_DIRS"
-#     testChangedModules
-#   fi
-# elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
-#   # Expected job name format: ".../nightly/[OPTIONAL_MODULE_NAME]/[OPTIONAL_JOB_NAMES...]"
-#   ARR=(${KOKORO_JOB_NAME//// }) # Splits job name by "/" where ARR[0] is expected to be "nightly".
-#   SUBMODULE_NAME=${ARR[5]}      # Gets the token after "nightly/".
-#   if [[ -n $SUBMODULE_NAME ]] && [[ -d "./$SUBMODULE_NAME" ]]; then
-#     # Only run tests in the submodule designated in the Kokoro job name.
-#     # Expected format example: ...google-cloud-go/nightly/logging.
-#     runDirectoryTests . # Always run base tests
-#     echo "Running tests in one submodule: $SUBMODULE_NAME"
-#     pushd $SUBMODULE_NAME >/dev/null
-#     runDirectoryTests
-#     popd >/dev/null
-#   else
-#     # Run all tests if it is a regular nightly job.
-#     testAllModules
-#   fi
-# else
-#   testAllModules
-# fi
+  # CHANGED_DIRS is the list of significant top-level directories that changed,
+  # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on main.
+  CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
+  if [[ -n $TARGET_MODULE ]]; then
+    pushd $TARGET_MODULE >/dev/null
+    runDirectoryTests
+    popd >/dev/null
+  elif [[ -z $SIGNIFICANT_CHANGES ]] || echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
+    # If PR changes affect all submodules, then run all tests.
+    testAllModules
+  else
+    runDirectoryTests . # Always run base tests.
+    echo "Running tests only in changed submodules: $CHANGED_DIRS"
+    testChangedModules
+  fi
+elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
+  # Expected job name format: ".../nightly/[OPTIONAL_MODULE_NAME]/[OPTIONAL_JOB_NAMES...]"
+  ARR=(${KOKORO_JOB_NAME//// }) # Splits job name by "/" where ARR[0] is expected to be "nightly".
+  SUBMODULE_NAME=${ARR[5]}      # Gets the token after "nightly/".
+  if [[ -n $SUBMODULE_NAME ]] && [[ -d "./$SUBMODULE_NAME" ]]; then
+    # Only run tests in the submodule designated in the Kokoro job name.
+    # Expected format example: ...google-cloud-go/nightly/logging.
+    runDirectoryTests . # Always run base tests
+    echo "Running tests in one submodule: $SUBMODULE_NAME"
+    pushd $SUBMODULE_NAME >/dev/null
+    runDirectoryTests
+    popd >/dev/null
+  else
+    # Run all tests if it is a regular nightly job.
+    testAllModules
+  fi
+else
+  testAllModules
+fi
 
-# if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
-#   chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
-#   $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
-#     -repo=googleapis/google-cloud-go \
-#     -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
-# fi
+if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
+  chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
+  $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
+    -repo=googleapis/google-cloud-go \
+    -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
+fi
 
-# exit $exit_code
+exit $exit_code
