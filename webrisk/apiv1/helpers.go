@@ -16,8 +16,6 @@
 
 package webrisk
 
-import ()
-
 import (
 	"context"
 

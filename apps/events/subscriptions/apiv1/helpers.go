@@ -16,8 +16,6 @@
 
 package subscriptions
 
-import ()
-
 import (
 	"context"
 

@@ -16,8 +16,6 @@
 
 package areainsights
 
-import ()
-
 import (
 	"context"
 

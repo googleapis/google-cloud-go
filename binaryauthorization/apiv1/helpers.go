@@ -16,8 +16,6 @@
 
 package binaryauthorization
 
-import ()
-
 import (
 	"context"
 

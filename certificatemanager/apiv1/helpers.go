@@ -16,8 +16,6 @@
 
 package certificatemanager
 
-import ()
-
 import (
 	"context"
 

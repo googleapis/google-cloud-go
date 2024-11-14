@@ -16,8 +16,6 @@
 
 package redis
 
-import ()
-
 import (
 	"context"
 

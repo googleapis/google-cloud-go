@@ -16,8 +16,6 @@
 
 package containeranalysis
 
-import ()
-
 import (
 	"context"
 

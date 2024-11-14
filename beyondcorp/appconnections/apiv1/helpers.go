@@ -16,8 +16,6 @@
 
 package appconnections
 
-import ()
-
 import (
 	"context"
 

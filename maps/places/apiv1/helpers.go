@@ -16,8 +16,6 @@
 
 package places
 
-import ()
-
 import (
 	"context"
 

@@ -16,8 +16,6 @@
 
 package publicca
 
-import ()
-
 import (
 	"context"
 

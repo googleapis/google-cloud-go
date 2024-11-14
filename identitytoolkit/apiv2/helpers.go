@@ -16,8 +16,6 @@
 
 package identitytoolkit
 
-import ()
-
 import (
 	"context"
 
