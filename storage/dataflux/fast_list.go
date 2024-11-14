@@ -216,7 +216,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 	return results, nil
 }
 
-// Close closes the range channel of the Lister.
+// Close is used to close the Lister.
 func (c *Lister) Close() {
 	if c.ranges != nil {
 		close(c.ranges)
