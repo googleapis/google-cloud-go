@@ -236,20 +236,6 @@ func (cc *countErr) increment() {
 	cc.counter++
 }
 
-// prefixAdjustedOffsets updates start and end offset based on prefix.
-// If a prefix is given, adjust start and end value such that it lists
-// objects with the given prefix. prefixAdjustedOffsets assumes prefix will
-// be added to the object name while listing objects in worksteal algorithm.
-//
-//	For example:
-//	start = "abc",  end = "prefix_a", prefix = "prefix",
-//
-//	end will change to "_a", prefix will be added in worksteal algorithm.
-//	"abc" is lexicographically smaller than "prefix". So start will be the first
-//	object with the given prefix.
-//
-//	Therefore start will change to ""(empty string) and end to "_a" .
-
 // prefixAdjustedOffsets returns a start and end offset adjusted from the given offsets based on the prefix, stripping the prefix.
 // These offsets can be used by adding back the prefix, so that the original offsets do not need to be checked.
 
