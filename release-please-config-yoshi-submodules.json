@@ -3,12 +3,6 @@
     "include-component-in-tag": true,
     "tag-separator": "/",
     "packages": {
-        "ai": {
-            "component": "ai"
-        },
-        "aiplatform": {
-            "component": "aiplatform"
-        },
         "accessapproval": {
             "component": "accessapproval"
         },
