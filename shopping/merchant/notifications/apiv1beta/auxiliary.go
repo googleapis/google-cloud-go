@@ -41,7 +41,7 @@ type NotificationSubscriptionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*notificationspb.NotificationSubscription, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NotificationSubscriptionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

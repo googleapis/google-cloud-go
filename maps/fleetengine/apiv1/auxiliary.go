@@ -41,7 +41,7 @@ type TripIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*fleetenginepb.Trip, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TripIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type VehicleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*fleetenginepb.Vehicle, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VehicleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
