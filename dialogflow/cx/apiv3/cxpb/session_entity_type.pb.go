@@ -124,11 +124,11 @@ type SessionEntityType struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The unique identifier of the session entity type.
-	// Format: `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/sessions/<Session ID>/entityTypes/<Entity Type
-	// ID>` or `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/sessions/<Session ID>/entityTypes/<Entity
-	// Type ID>`. If `Environment ID` is not specified, we assume default 'draft'
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`.
+	// If `Environment ID` is not specified, we assume default 'draft'
 	// environment.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Indicates whether the additional data should override or
@@ -200,9 +200,10 @@ type ListSessionEntityTypesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The session to list all session entity types from.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>` or `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/environments/<Environment ID>/sessions/<Session ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>`.
 	// If `Environment ID` is not specified, we assume default 'draft'
 	// environment.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
@@ -335,11 +336,11 @@ type GetSessionEntityTypeRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the session entity type.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>/entityTypes/<Entity Type ID>` or
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/sessions/<Session ID>/entityTypes/<Entity
-	// Type ID>`. If `Environment ID` is not specified, we assume default 'draft'
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`.
+	// If `Environment ID` is not specified, we assume default 'draft'
 	// environment.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -391,9 +392,10 @@ type CreateSessionEntityTypeRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The session to create a session entity type for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>` or `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/environments/<Environment ID>/sessions/<Session ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>`.
 	// If `Environment ID` is not specified, we assume default 'draft'
 	// environment.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
@@ -455,12 +457,12 @@ type UpdateSessionEntityTypeRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The session entity type to update.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>/entityTypes/<Entity Type ID>` or
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/sessions/<Session ID>/entityTypes/<Entity
-	// Type ID>`. If `Environment ID` is not specified, we assume default 'draft'
-	// environment.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`.
+	// If `Environment ID` is not specified,
+	// we assume default 'draft' environment.
 	SessionEntityType *SessionEntityType `protobuf:"bytes,1,opt,name=session_entity_type,json=sessionEntityType,proto3" json:"session_entity_type,omitempty"`
 	// The mask to control which fields get updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
@@ -520,12 +522,12 @@ type DeleteSessionEntityTypeRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the session entity type to delete.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/sessions/<Session ID>/entityTypes/<Entity Type ID>` or
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/sessions/<Session ID>/entityTypes/<Entity
-	// Type ID>`. If `Environment ID` is not specified, we assume default 'draft'
-	// environment.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/sessions/<SessionID>/entityTypes/<EntityTypeID>`.
+	// If `Environment ID` is not specified,
+	// we assume default 'draft' environment.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

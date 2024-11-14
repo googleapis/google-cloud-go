@@ -94,6 +94,7 @@ func TestSQL(t *testing.T) {
 					{Name: "Cm", Type: Type{Base: Int64}, Generated: Func{Name: "CHAR_LENGTH", Args: []Expr{ID("Ce")}}, Position: line(14)},
 					{Name: "Cn", Type: Type{Base: JSON}, Position: line(15)},
 					{Name: "Co", Type: Type{Base: Int64}, Default: IntegerLiteral(1), Position: line(16)},
+					{Name: "Cp", Type: Type{Base: Proto, ProtoRef: "a.b.c"}, Position: line(17)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
@@ -117,6 +118,7 @@ func TestSQL(t *testing.T) {
   Cm INT64 AS (CHAR_LENGTH(Ce)) STORED,
   Cn JSON,
   Co INT64 DEFAULT (1),
+  Cp ` + "`a.b.c`" + `,
 ) PRIMARY KEY(Ca, Cb DESC)`,
 			reparseDDL,
 		},
@@ -807,6 +809,13 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&DropProtoBundle{
+				Position: line(1),
+			},
+			"DROP PROTO BUNDLE",
+			reparseDDL,
+		},
+		{
 			&CreateTable{
 				Name: "tname1",
 				Columns: []ColumnDef{
@@ -918,6 +927,70 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			`DROP SEQUENCE sname`,
+			reparseDDL,
+		},
+		{
+			&AlterProtoBundle{
+				Position: line(1),
+			},
+			"ALTER PROTO BUNDLE",
+			reparseDDL,
+		},
+		{
+			&CreateProtoBundle{
+				Types:    []string{"a.b.c", "b.d.e"},
+				Position: line(1),
+			},
+			"CREATE PROTO BUNDLE (`a.b.c`, `b.d.e`)",
+			reparseDDL,
+		},
+		{
+			&CreateProtoBundle{
+				Types:    []string{"a"},
+				Position: line(1),
+			},
+			"CREATE PROTO BUNDLE (`a`)",
+			reparseDDL,
+		},
+		{
+			&CreateProtoBundle{
+				Types:    []string{"a.b.c"},
+				Position: line(1),
+			},
+			"CREATE PROTO BUNDLE (`a.b.c`)",
+			reparseDDL,
+		},
+		{
+			&AlterProtoBundle{
+				AddTypes: []string{"a.b.c", "b.d.e"},
+				Position: line(1),
+			},
+			"ALTER PROTO BUNDLE INSERT (`a.b.c`, `b.d.e`)",
+			reparseDDL,
+		},
+		{
+			&AlterProtoBundle{
+				UpdateTypes: []string{"a.b.c", "b.d.e"},
+				Position:    line(1),
+			},
+			"ALTER PROTO BUNDLE UPDATE (`a.b.c`, `b.d.e`)",
+			reparseDDL,
+		},
+		{
+			&AlterProtoBundle{
+				DeleteTypes: []string{"a.b.c", "b.d.e"},
+				Position:    line(1),
+			},
+			"ALTER PROTO BUNDLE DELETE (`a.b.c`, `b.d.e`)",
+			reparseDDL,
+		},
+		{
+			&AlterProtoBundle{
+				AddTypes:    []string{"e.f.g"},
+				DeleteTypes: []string{"a.b.c", "b.d.e"},
+				Position:    line(1),
+			},
+			"ALTER PROTO BUNDLE INSERT (`e.f.g`) DELETE (`a.b.c`, `b.d.e`)",
 			reparseDDL,
 		},
 		{
@@ -1037,6 +1110,18 @@ func TestSQL(t *testing.T) {
 				},
 			},
 			`SELECT CAST(7 AS STRING)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{Func{
+						Name: "CAST",
+						Args: []Expr{TypedExpr{Expr: IntegerLiteral(7), Type: Type{Base: Enum}}},
+					}},
+				},
+			},
+			`SELECT CAST(7 AS ENUM)`,
 			reparseQuery,
 		},
 		{

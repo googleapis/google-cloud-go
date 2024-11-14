@@ -189,8 +189,6 @@ func (c *GenAiTuningClient) CancelTuningJob(ctx context.Context, req *aiplatform
 }
 
 // RebaseTunedModel rebase a TunedModel.
-// Creates a LongRunningOperation that takes a legacy Tuned GenAI model
-// Reference and creates a TuningJob based on newly available model.
 func (c *GenAiTuningClient) RebaseTunedModel(ctx context.Context, req *aiplatformpb.RebaseTunedModelRequest, opts ...gax.CallOption) (*RebaseTunedModelOperation, error) {
 	return c.internalClient.RebaseTunedModel(ctx, req, opts...)
 }
