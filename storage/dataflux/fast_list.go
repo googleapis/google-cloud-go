@@ -127,7 +127,7 @@ type Lister struct {
 // worksteal listing is expected to be faster.
 func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) {
 	// countError tracks the number of failed listing methods.
-	cc := &contextErr{counter: 0}
+	cc := &countErr{counter: 0}
 
 	var results []*storage.ObjectAttrs
 	ctx, cancel := context.WithCancel(ctx)
@@ -225,12 +225,12 @@ func (c *Lister) Close() {
 	}
 }
 
-type contextErr struct {
+type countErr struct {
 	mu      sync.Mutex
 	counter int
 }
 
-func (cc *contextErr) increment() {
+func (cc *countErr) increment() {
 	cc.mu.Lock()
 	defer cc.mu.Unlock()
 	cc.counter++
