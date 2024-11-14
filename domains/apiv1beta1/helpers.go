@@ -16,8 +16,6 @@
 
 package domains
 
-import ()
-
 import (
 	"context"
 

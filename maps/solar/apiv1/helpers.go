@@ -16,8 +16,6 @@
 
 package solar
 
-import ()
-
 import (
 	"context"
 

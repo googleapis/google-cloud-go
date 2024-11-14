@@ -16,8 +16,6 @@
 
 package accesscontextmanager
 
-import ()
-
 import (
 	"context"
 

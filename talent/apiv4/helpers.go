@@ -16,8 +16,6 @@
 
 package talent
 
-import ()
-
 import (
 	"context"
 

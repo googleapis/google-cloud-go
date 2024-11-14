@@ -16,8 +16,6 @@
 
 package securityposture
 
-import ()
-
 import (
 	"context"
 

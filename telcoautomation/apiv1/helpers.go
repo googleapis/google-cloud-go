@@ -16,8 +16,6 @@
 
 package telcoautomation
 
-import ()
-
 import (
 	"context"
 

@@ -16,8 +16,6 @@
 
 package memcache
 
-import ()
-
 import (
 	"context"
 

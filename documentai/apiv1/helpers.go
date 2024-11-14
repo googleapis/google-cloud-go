@@ -16,8 +16,6 @@
 
 package documentai
 
-import ()
-
 import (
 	"context"
 

@@ -16,8 +16,6 @@
 
 package cloudprofiler
 
-import ()
-
 import (
 	"context"
 

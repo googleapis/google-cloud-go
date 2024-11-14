@@ -16,8 +16,6 @@
 
 package clientgateways
 
-import ()
-
 import (
 	"context"
 

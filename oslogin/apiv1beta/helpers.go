@@ -16,8 +16,6 @@
 
 package oslogin
 
-import ()
-
 import (
 	"context"
 

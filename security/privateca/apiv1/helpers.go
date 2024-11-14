@@ -16,8 +16,6 @@
 
 package privateca
 
-import ()
-
 import (
 	"context"
 

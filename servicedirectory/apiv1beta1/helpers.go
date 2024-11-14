@@ -16,8 +16,6 @@
 
 package servicedirectory
 
-import ()
-
 import (
 	"context"
 

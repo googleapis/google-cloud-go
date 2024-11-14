@@ -16,8 +16,6 @@
 
 package firestore
 
-import ()
-
 import (
 	"context"
 

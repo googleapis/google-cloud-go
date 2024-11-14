@@ -16,8 +16,6 @@
 
 package vision
 
-import ()
-
 import (
 	"context"
 
