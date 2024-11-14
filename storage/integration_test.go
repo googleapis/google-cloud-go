@@ -347,11 +347,11 @@ func TestIntegration_DetectDirectConnectivity(t *testing.T) {
 			}
 			region := v.AsString()
 			log.Printf("region: %v", region)
-			newBucketName := "go-frank-anima-test-grpc-" + uidSpace.New()
+			newBucketName := prefix + uidSpace.New()
 			log.Printf("Bucket name: %v", newBucketName)
 			newBucket := client.Bucket(newBucketName)
 			h.mustCreate(newBucket, testutil.ProjID(), &BucketAttrs{Location: region, LocationType: "region"})
-			// defer h.mustDeleteBucket(newBucket)
+			defer h.mustDeleteBucket(newBucket)
 			err := CheckDirectConnectivitySupported(ctx, newBucketName)
 			if err != nil {
 				t.Fatalf("CheckDirectConnectivitySupported: %v", err)
