@@ -108,7 +108,7 @@ runDirectoryTests() {
     # internal tools only expected to work with latest go version
     return
   fi
-  GOWORK=off go test -race -v -timeout 45m "${1:-./...}" 2>&1 |
+  GRPC_GO_LOG_VERBOSITY_LEVEL=99 GRPC_GO_LOG_SEVERITY_LEVEL=info GOWORK=off go test -race -v -timeout 45m "${1:-./...}" 2>&1 |
     tee sponge_log.log
   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
   # xUnit XML file.
