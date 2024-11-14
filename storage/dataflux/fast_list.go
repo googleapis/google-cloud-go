@@ -75,7 +75,7 @@ func NewLister(c *storage.Client, in *ListerInput) *Lister {
 	// prefix, startoffset and endoffset. For the default range to list is
 	// entire namespace, start and end will be empty.
 	rangeChannel := make(chan *listRange, in.Parallelism*2)
-	start, end := updateStartEndOffset(in.Query.StartOffset, in.Query.EndOffset, in.Query.Prefix)
+	start, end := prefixAdjustedOffsets(in.Query.StartOffset, in.Query.EndOffset, in.Query.Prefix)
 	rangeChannel <- &listRange{startRange: start, endRange: end}
 
 	lister := &Lister{
@@ -236,9 +236,9 @@ func (cc *countErr) increment() {
 	cc.counter++
 }
 
-// updateStartEndOffset updates start and end offset based on prefix.
+// prefixAdjustedOffsets updates start and end offset based on prefix.
 // If a prefix is given, adjust start and end value such that it lists
-// objects with the given prefix. updateStartEndOffset assumes prefix will
+// objects with the given prefix. prefixAdjustedOffsets assumes prefix will
 // be added to the object name while listing objects in worksteal algorithm.
 //
 //	For example:
@@ -249,7 +249,28 @@ func (cc *countErr) increment() {
 //	object with the given prefix.
 //
 //	Therefore start will change to ""(empty string) and end to "_a" .
-func updateStartEndOffset(start, end, prefix string) (string, string) {
+
+// prefixAdjustedOffsets returns a start and end offset adjusted from the given offsets based on the prefix, stripping the prefix.
+// These offsets can be used by adding back the prefix, so that the original offsets do not need to be checked.
+
+// This means that if the given offsets are out of range of the prefix
+// (for example, offsets {start:"a", end: "b"}, with prefix "c" which is lexicographically
+// outside of "a" to "b"), the returned offsets will ensure no strings fall in their range.
+
+// Otherwise, if the offset is too permissive given the prefix, it returns an empty string
+// to indicate there is no offset and all objects starting from or ending at the prefix should
+//
+//	For example:
+//	start = "abc",  end = "prefix_a", prefix = "prefix",
+//
+//	end will change to "_a", prefix is stripped.
+//	"abc" is lexicographically smaller than "prefix". So start offset indicates first
+//	object with the given prefix.
+//
+//	Therefore new offset will change to {start = "",  end = "_a" }.
+//
+// Otherwise, it just strips the prefix from the offset as shown by the end offset in the example above.
+func prefixAdjustedOffsets(start, end, prefix string) (string, string) {
 	if prefix == "" {
 		return start, end
 	}
