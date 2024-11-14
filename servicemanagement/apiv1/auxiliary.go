@@ -357,7 +357,7 @@ type ManagedServiceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*servicemanagementpb.ManagedService, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ManagedServiceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -404,7 +404,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -451,7 +451,7 @@ type RolloutIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*servicemanagementpb.Rollout, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RolloutIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -498,7 +498,7 @@ type ServiceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*serviceconfigpb.Service, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ServiceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

@@ -168,8 +168,9 @@ type ListTuningJobsRequest struct {
 	// Optional. The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. The standard list page token.
-	// Typically obtained via [ListTuningJob.next_page_token][] of the
-	// previous GenAiTuningService.ListTuningJob][] call.
+	// Typically obtained via
+	// [ListTuningJobsResponse.next_page_token][google.cloud.aiplatform.v1.ListTuningJobsResponse.next_page_token]
+	// of the previous GenAiTuningService.ListTuningJob][] call.
 	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 

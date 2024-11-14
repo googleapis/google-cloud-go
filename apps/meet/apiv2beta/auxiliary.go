@@ -41,7 +41,7 @@ type ConferenceRecordIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*meetpb.ConferenceRecord, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConferenceRecordIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type ParticipantIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*meetpb.Participant, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ParticipantIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -135,7 +135,7 @@ type ParticipantSessionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*meetpb.ParticipantSession, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ParticipantSessionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -182,7 +182,7 @@ type RecordingIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*meetpb.Recording, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RecordingIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -229,7 +229,7 @@ type TranscriptEntryIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*meetpb.TranscriptEntry, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TranscriptEntryIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -276,7 +276,7 @@ type TranscriptIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*meetpb.Transcript, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TranscriptIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

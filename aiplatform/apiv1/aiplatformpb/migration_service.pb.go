@@ -927,7 +927,7 @@ type BatchMigrateResourcesOperationMetadata_PartialResult struct {
 	//	*BatchMigrateResourcesOperationMetadata_PartialResult_Dataset
 	Result isBatchMigrateResourcesOperationMetadata_PartialResult_Result `protobuf_oneof:"result"`
 	// It's the same as the value in
-	// [MigrateResourceRequest.migrate_resource_requests][].
+	// [BatchMigrateResourcesRequest.migrate_resource_requests][google.cloud.aiplatform.v1.BatchMigrateResourcesRequest.migrate_resource_requests].
 	Request *MigrateResourceRequest `protobuf:"bytes,1,opt,name=request,proto3" json:"request,omitempty"`
 }
 
