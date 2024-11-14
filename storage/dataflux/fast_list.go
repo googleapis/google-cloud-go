@@ -62,6 +62,35 @@ type ListerInput struct {
 	SkipDirectoryObjects bool
 }
 
+// NewLister creates a new dataflux Lister to list objects in the give bucket.
+func NewLister(c *storage.Client, in *ListerInput) *Lister {
+	bucket := c.Bucket(in.BucketName)
+
+	// If parallelism is not given, set default value to 10x the number of
+	// available CPU.
+	if in.Parallelism == 0 {
+		in.Parallelism = runtime.NumCPU() * 10
+	}
+	// Initialize range channel with entire namespace of object for given
+	// prefix, startoffset and endoffset. For the default range to list is
+	// entire namespace, start and end will be empty.
+	rangeChannel := make(chan *listRange, in.Parallelism*2)
+	start, end := updateStartEndOffset(in.Query.StartOffset, in.Query.EndOffset, in.Query.Prefix)
+	rangeChannel <- &listRange{startRange: start, endRange: end}
+
+	lister := &Lister{
+		method:               open,
+		parallelism:          in.Parallelism,
+		pageToken:            "",
+		bucket:               bucket,
+		batchSize:            in.BatchSize,
+		query:                in.Query,
+		skipDirectoryObjects: in.SkipDirectoryObjects,
+		ranges:               rangeChannel,
+	}
+	return lister
+}
+
 // Lister is used for interacting with Dataflux fast-listing. The caller should
 // initialize it with NewLister() instead of creating it directly.
 type Lister struct {
@@ -90,40 +119,6 @@ type Lister struct {
 
 	// skipDirectoryObjects is to indicate whether to list directory objects.
 	skipDirectoryObjects bool
-}
-
-type contextErr struct {
-	mu      sync.Mutex
-	counter int
-}
-
-// NewLister creates a new dataflux Lister to list objects in the give bucket.
-func NewLister(c *storage.Client, in *ListerInput) *Lister {
-	bucket := c.Bucket(in.BucketName)
-
-	// If parallelism is not given, set default value to 10x the number of
-	// available CPU.
-	if in.Parallelism == 0 {
-		in.Parallelism = runtime.NumCPU() * 10
-	}
-	// Initialize range channel with entire namespace of object for given
-	// prefix, startoffset and endoffset. For the default range to list is
-	// entire namespace, start and end will be empty.
-	rangeChannel := make(chan *listRange, in.Parallelism*2)
-	start, end := updateStartEndOffset(in.Query.StartOffset, in.Query.EndOffset, in.Query.Prefix)
-	rangeChannel <- &listRange{startRange: start, endRange: end}
-
-	lister := &Lister{
-		method:               open,
-		parallelism:          in.Parallelism,
-		pageToken:            "",
-		bucket:               bucket,
-		batchSize:            in.BatchSize,
-		query:                in.Query,
-		skipDirectoryObjects: in.SkipDirectoryObjects,
-		ranges:               rangeChannel,
-	}
-	return lister
 }
 
 // NextBatch runs worksteal algorithm and sequential listing in parallel to quickly
@@ -228,6 +223,11 @@ func (c *Lister) Close() {
 	if c.ranges != nil {
 		close(c.ranges)
 	}
+}
+
+type contextErr struct {
+	mu      sync.Mutex
+	counter int
 }
 
 func (cc *contextErr) increment() {
