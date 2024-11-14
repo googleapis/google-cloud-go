@@ -29,7 +29,7 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-func TestUpdateStartEndOffset(t *testing.T) {
+func TestPrefixAdjustedOffsets(t *testing.T) {
 	testcase := []struct {
 		desc      string
 		start     string
@@ -134,9 +134,9 @@ func TestUpdateStartEndOffset(t *testing.T) {
 
 	for _, tc := range testcase {
 		t.Run(tc.desc, func(t *testing.T) {
-			gotStart, gotEnd := updateStartEndOffset(tc.start, tc.end, tc.prefix)
+			gotStart, gotEnd := prefixAdjustedOffsets(tc.start, tc.end, tc.prefix)
 			if gotStart != tc.wantStart || gotEnd != tc.wantEnd {
-				t.Errorf("updateStartEndOffset(%q, %q, %q) got = (%q, %q), want = (%q, %q)", tc.start, tc.end, tc.prefix, gotStart, gotEnd, tc.wantStart, tc.wantEnd)
+				t.Errorf("prefixAdjustedOffsets(%q, %q, %q) got = (%q, %q), want = (%q, %q)", tc.start, tc.end, tc.prefix, gotStart, gotEnd, tc.wantStart, tc.wantEnd)
 			}
 		})
 	}
