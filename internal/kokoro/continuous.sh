@@ -159,7 +159,8 @@ testChangedModules() {
 
 set +e # Run all tests, don't stop after the first failure.
 exit_code=0
-TARGET_MODULE=storage
+export TARGET_MODULE=storage
+export GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS=true
 if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   # Continuous jobs only run root tests & tests in submodules changed by the PR.
   SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKORO_GIT_COMMIT | grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' || true)
