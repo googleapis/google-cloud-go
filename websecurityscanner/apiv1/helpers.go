@@ -16,6 +16,8 @@
 
 package websecurityscanner
 
+import ()
+
 import (
 	"context"
 
