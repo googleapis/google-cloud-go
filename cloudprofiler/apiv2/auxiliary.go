@@ -41,7 +41,7 @@ type ProfileIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*cloudprofilerpb.Profile, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ProfileIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

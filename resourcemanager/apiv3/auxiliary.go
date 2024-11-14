@@ -1304,7 +1304,7 @@ type EffectiveTagIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*resourcemanagerpb.EffectiveTag, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EffectiveTagIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1351,7 +1351,7 @@ type FolderIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*resourcemanagerpb.Folder, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *FolderIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1398,7 +1398,7 @@ type OrganizationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*resourcemanagerpb.Organization, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OrganizationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1445,7 +1445,7 @@ type ProjectIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*resourcemanagerpb.Project, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ProjectIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1492,7 +1492,7 @@ type TagBindingIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*resourcemanagerpb.TagBinding, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TagBindingIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1539,7 +1539,7 @@ type TagHoldIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*resourcemanagerpb.TagHold, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TagHoldIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1586,7 +1586,7 @@ type TagKeyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*resourcemanagerpb.TagKey, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TagKeyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1633,7 +1633,7 @@ type TagValueIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*resourcemanagerpb.TagValue, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TagValueIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

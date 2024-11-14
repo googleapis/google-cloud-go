@@ -1687,7 +1687,8 @@ type ListNotebookExecutionJobsRequest struct {
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. The standard list page token.
 	// Typically obtained via
-	// [ListNotebookExecutionJobs.next_page_token][] of the previous
+	// [ListNotebookExecutionJobsResponse.next_page_token][google.cloud.aiplatform.v1.ListNotebookExecutionJobsResponse.next_page_token]
+	// of the previous
 	// [NotebookService.ListNotebookExecutionJobs][google.cloud.aiplatform.v1.NotebookService.ListNotebookExecutionJobs]
 	// call.
 	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
@@ -1787,8 +1788,9 @@ type ListNotebookExecutionJobsResponse struct {
 	// List of NotebookExecutionJobs in the requested page.
 	NotebookExecutionJobs []*NotebookExecutionJob `protobuf:"bytes,1,rep,name=notebook_execution_jobs,json=notebookExecutionJobs,proto3" json:"notebook_execution_jobs,omitempty"`
 	// A token to retrieve next page of results.
-	// Pass to [ListNotebookExecutionJobs.page_token][] to obtain that
-	// page.
+	// Pass to
+	// [ListNotebookExecutionJobsRequest.page_token][google.cloud.aiplatform.v1.ListNotebookExecutionJobsRequest.page_token]
+	// to obtain that page.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 

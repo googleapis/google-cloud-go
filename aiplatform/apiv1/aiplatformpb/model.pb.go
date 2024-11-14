@@ -470,7 +470,7 @@ type Model struct {
 	// Stats of data used for training or evaluating the Model.
 	//
 	// Only populated when the Model is trained by a TrainingPipeline with
-	// [data_input_config][TrainingPipeline.data_input_config].
+	// [data_input_config][google.cloud.aiplatform.v1.TrainingPipeline.input_data_config].
 	DataStats *Model_DataStats `protobuf:"bytes,21,opt,name=data_stats,json=dataStats,proto3" json:"data_stats,omitempty"`
 	// Customer-managed encryption key spec for a Model. If set, this
 	// Model and all sub-resources of this Model will be secured by this key.

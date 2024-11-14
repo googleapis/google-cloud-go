@@ -41,7 +41,7 @@ type MigrationSubtaskIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*migrationpb.MigrationSubtask, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MigrationSubtaskIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type MigrationWorkflowIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*migrationpb.MigrationWorkflow, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MigrationWorkflowIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

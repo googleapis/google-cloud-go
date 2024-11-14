@@ -111,7 +111,7 @@ type CryptoKeyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*kmspb.CryptoKey, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CryptoKeyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -158,7 +158,7 @@ type CryptoKeyVersionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*kmspb.CryptoKeyVersion, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CryptoKeyVersionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -205,7 +205,7 @@ type EkmConnectionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*kmspb.EkmConnection, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EkmConnectionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -252,7 +252,7 @@ type ImportJobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*kmspb.ImportJob, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ImportJobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -299,7 +299,7 @@ type KeyHandleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*kmspb.KeyHandle, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *KeyHandleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -346,7 +346,7 @@ type KeyRingIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*kmspb.KeyRing, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *KeyRingIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -393,7 +393,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
