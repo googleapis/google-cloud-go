@@ -60,6 +60,7 @@ import (
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -327,7 +328,6 @@ var readCases = []readCase{
 }
 
 func TestIntegration_DetectDirectConnectivity(t *testing.T) {
-	t.Skip("direct connectivity not yet available for CI")
 	ctx := skipHTTP("direct connectivity isn't available for json")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
 		h := testHelper{t}
@@ -351,7 +351,7 @@ func TestIntegration_DetectDirectConnectivity(t *testing.T) {
 			newBucket := client.Bucket(newBucketName)
 			h.mustCreate(newBucket, testutil.ProjID(), &BucketAttrs{Location: region, LocationType: "region"})
 			defer h.mustDeleteBucket(newBucket)
-			err := CheckDirectConnectivitySupported(ctx, newBucketName)
+			err := CheckDirectConnectivitySupported(ctx, newBucketName, internaloption.AllowNonDefaultServiceAccount(true))
 			if err != nil {
 				t.Fatalf("CheckDirectConnectivitySupported: %v", err)
 			}
