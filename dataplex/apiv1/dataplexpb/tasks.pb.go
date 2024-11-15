@@ -21,14 +21,13 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1105,10 +1104,9 @@ type Task_SparkTaskConfig_PythonScriptFile struct {
 }
 
 type Task_SparkTaskConfig_SqlScriptFile struct {
-	// A reference to a query file. This can be the Cloud Storage URI of the
-	// query file or it can the path to a SqlScript Content. The execution
-	// args are used to declare a set of script variables
-	// (`set key="value";`).
+	// A reference to a query file. This should be the Cloud Storage URI of
+	// the query file. The execution args are used to declare a set of script
+	// variables (`set key="value";`).
 	SqlScriptFile string `protobuf:"bytes,104,opt,name=sql_script_file,json=sqlScriptFile,proto3,oneof"`
 }
 

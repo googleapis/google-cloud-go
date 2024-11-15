@@ -21,13 +21,12 @@
 package dialogflowpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -648,8 +647,8 @@ func (x *SpeechWordInfo) GetConfidence() float32 {
 //     phase.
 //
 // The client provides this configuration in terms of the durations of those
-// two phases. The durations are measured in terms of the audio length from
-// the start of the input audio.
+// two phases. The durations are measured in terms of the audio length from the
+// start of the input audio.
 //
 // The flow goes like below:
 //
