@@ -59,10 +59,12 @@ type worker struct {
 	lister        *Lister
 }
 
-// workstealListing is the main entry point of the worksteal algorithm.
-// It performs worksteal to achieve highly dynamic object listing.
-// workstealListing creates multiple (parallelism) workers that simultaneosly lists
-// objects from the buckets.
+// workstealListing performs listing on GCS bucket using multiple parallel workers.
+// It achieves highly dynamic object listing using worksteal algorithm
+// where each worker in the list operation is able to steal work from its siblings once it has
+// finished all currently slated listing work. It returns a list of objects and the remaining
+// ranges (start end offset) of objects
+// which are yet to be listed. If range channel is empty, then listing is complete.
 func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, error) {
 	// Idle channel is used to track number of idle workers.
 	idleChannel := make(chan int, c.parallelism)
@@ -109,9 +111,9 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 }
 
 // doWorkstealListing implements the listing logic for each worker.
-// An active worker lists next page of objects to be listed within the given range
+// An active worker lists [wsDefaultPageSize] number of objects within the given range
 // and then splits range into two half if there are idle workers. Worker keeps
-// the first of splitted range and passes second half of the work in range channel
+// the first half of splitted range and passes second half of the work in range channel
 // for idle workers. It continues to do this until shutdown signal is true.
 // An idle worker waits till it finds work in rangeChannel. Once it finds work,
 // it acts like an active worker.

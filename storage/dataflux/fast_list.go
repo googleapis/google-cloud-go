@@ -121,9 +121,12 @@ type Lister struct {
 	skipDirectoryObjects bool
 }
 
-// NextBatch runs worksteal algorithm and sequential listing in parallel to quickly
-// return a list of objects in the bucket. For smaller dataset,
-// sequential listing is expected to be faster. For larger dataset,
+// NextBatch returns the next N objects in the bucket, where N is [ListerInput.BatchSize].
+// In case of failure, all processes are stopped and an error is returned immediately. Create a new Lister to retry.
+// For the first batch, both worksteal listing and sequential
+// listing runs in parallel to quickly list N number of objects in the bucket. For subsequent
+// batches, only the method which returned object faster in the first batch is used.
+// For smaller dataset, sequential listing is expected to be faster. For larger dataset,
 // worksteal listing is expected to be faster.
 func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) {
 	// countError tracks the number of failed listing methods.
