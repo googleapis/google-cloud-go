@@ -41,7 +41,7 @@ type JobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*transcoderpb.Job, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *JobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type JobTemplateIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*transcoderpb.JobTemplate, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *JobTemplateIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

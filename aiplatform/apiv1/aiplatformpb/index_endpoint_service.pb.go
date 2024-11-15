@@ -822,8 +822,10 @@ type MutateDeployedIndexRequest struct {
 	// `projects/{project}/locations/{location}/indexEndpoints/{index_endpoint}`
 	IndexEndpoint string `protobuf:"bytes,1,opt,name=index_endpoint,json=indexEndpoint,proto3" json:"index_endpoint,omitempty"`
 	// Required. The DeployedIndex to be updated within the IndexEndpoint.
-	// Currently, the updatable fields are [DeployedIndex][automatic_resources]
-	// and [DeployedIndex][dedicated_resources]
+	// Currently, the updatable fields are
+	// [DeployedIndex.automatic_resources][google.cloud.aiplatform.v1.DeployedIndex.automatic_resources]
+	// and
+	// [DeployedIndex.dedicated_resources][google.cloud.aiplatform.v1.DeployedIndex.dedicated_resources]
 	DeployedIndex *DeployedIndex `protobuf:"bytes,2,opt,name=deployed_index,json=deployedIndex,proto3" json:"deployed_index,omitempty"`
 }
 

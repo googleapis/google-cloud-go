@@ -1398,7 +1398,7 @@ func (x AutomationRun_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AutomationRun_State.Descriptor instead.
 func (AutomationRun_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{144, 0}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{146, 0}
 }
 
 // A `DeliveryPipeline` resource in the Cloud Deploy API.
@@ -11967,6 +11967,7 @@ type AutomationRule struct {
 	//	*AutomationRule_PromoteReleaseRule
 	//	*AutomationRule_AdvanceRolloutRule
 	//	*AutomationRule_RepairRolloutRule
+	//	*AutomationRule_TimedPromoteReleaseRule
 	Rule isAutomationRule_Rule `protobuf_oneof:"rule"`
 }
 
@@ -12030,6 +12031,13 @@ func (x *AutomationRule) GetRepairRolloutRule() *RepairRolloutRule {
 	return nil
 }
 
+func (x *AutomationRule) GetTimedPromoteReleaseRule() *TimedPromoteReleaseRule {
+	if x, ok := x.GetRule().(*AutomationRule_TimedPromoteReleaseRule); ok {
+		return x.TimedPromoteReleaseRule
+	}
+	return nil
+}
+
 type isAutomationRule_Rule interface {
 	isAutomationRule_Rule()
 }
@@ -12052,11 +12060,125 @@ type AutomationRule_RepairRolloutRule struct {
 	RepairRolloutRule *RepairRolloutRule `protobuf:"bytes,3,opt,name=repair_rollout_rule,json=repairRolloutRule,proto3,oneof"`
 }
 
+type AutomationRule_TimedPromoteReleaseRule struct {
+	// Optional. The `TimedPromoteReleaseRule` will automatically promote a
+	// release from the current target(s) to the specified target(s) on a
+	// configured schedule.
+	TimedPromoteReleaseRule *TimedPromoteReleaseRule `protobuf:"bytes,4,opt,name=timed_promote_release_rule,json=timedPromoteReleaseRule,proto3,oneof"`
+}
+
 func (*AutomationRule_PromoteReleaseRule) isAutomationRule_Rule() {}
 
 func (*AutomationRule_AdvanceRolloutRule) isAutomationRule_Rule() {}
 
 func (*AutomationRule_RepairRolloutRule) isAutomationRule_Rule() {}
+
+func (*AutomationRule_TimedPromoteReleaseRule) isAutomationRule_Rule() {}
+
+// The `TimedPromoteReleaseRule` will automatically promote a release from the
+// current target(s) to the specified target(s) on a configured schedule.
+type TimedPromoteReleaseRule struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. ID of the rule. This ID must be unique in the `Automation`
+	// resource to which this rule belongs. The format is
+	// `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Optional. The ID of the stage in the pipeline to which this `Release` is
+	// deploying. If unspecified, default it to the next stage in the promotion
+	// flow. The value of this field could be one of the following:
+	//
+	// * The last segment of a target name
+	// * "@next", the next target in the promotion sequence
+	DestinationTargetId string `protobuf:"bytes,2,opt,name=destination_target_id,json=destinationTargetId,proto3" json:"destination_target_id,omitempty"`
+	// Required. Schedule in crontab format. e.g. "0 9 * * 1" for every Monday at
+	// 9am.
+	Schedule string `protobuf:"bytes,3,opt,name=schedule,proto3" json:"schedule,omitempty"`
+	// Required. The time zone in IANA format [IANA Time Zone
+	// Database](https://www.iana.org/time-zones) (e.g. America/New_York).
+	TimeZone string `protobuf:"bytes,4,opt,name=time_zone,json=timeZone,proto3" json:"time_zone,omitempty"`
+	// Output only. Information around the state of the Automation rule.
+	Condition *AutomationRuleCondition `protobuf:"bytes,5,opt,name=condition,proto3" json:"condition,omitempty"`
+	// Optional. The starting phase of the rollout created by this rule. Default
+	// to the first phase.
+	DestinationPhase string `protobuf:"bytes,6,opt,name=destination_phase,json=destinationPhase,proto3" json:"destination_phase,omitempty"`
+}
+
+func (x *TimedPromoteReleaseRule) Reset() {
+	*x = TimedPromoteReleaseRule{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[131]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TimedPromoteReleaseRule) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TimedPromoteReleaseRule) ProtoMessage() {}
+
+func (x *TimedPromoteReleaseRule) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[131]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TimedPromoteReleaseRule.ProtoReflect.Descriptor instead.
+func (*TimedPromoteReleaseRule) Descriptor() ([]byte, []int) {
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{131}
+}
+
+func (x *TimedPromoteReleaseRule) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *TimedPromoteReleaseRule) GetDestinationTargetId() string {
+	if x != nil {
+		return x.DestinationTargetId
+	}
+	return ""
+}
+
+func (x *TimedPromoteReleaseRule) GetSchedule() string {
+	if x != nil {
+		return x.Schedule
+	}
+	return ""
+}
+
+func (x *TimedPromoteReleaseRule) GetTimeZone() string {
+	if x != nil {
+		return x.TimeZone
+	}
+	return ""
+}
+
+func (x *TimedPromoteReleaseRule) GetCondition() *AutomationRuleCondition {
+	if x != nil {
+		return x.Condition
+	}
+	return nil
+}
+
+func (x *TimedPromoteReleaseRule) GetDestinationPhase() string {
+	if x != nil {
+		return x.DestinationPhase
+	}
+	return ""
+}
 
 // The `PromoteRelease` rule will automatically promote a release from the
 // current target to a specified target.
@@ -12089,7 +12211,7 @@ type PromoteReleaseRule struct {
 func (x *PromoteReleaseRule) Reset() {
 	*x = PromoteReleaseRule{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[131]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[132]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -12102,7 +12224,7 @@ func (x *PromoteReleaseRule) String() string {
 func (*PromoteReleaseRule) ProtoMessage() {}
 
 func (x *PromoteReleaseRule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[131]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[132]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12115,7 +12237,7 @@ func (x *PromoteReleaseRule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PromoteReleaseRule.ProtoReflect.Descriptor instead.
 func (*PromoteReleaseRule) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{131}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{132}
 }
 
 func (x *PromoteReleaseRule) GetId() string {
@@ -12179,7 +12301,7 @@ type AdvanceRolloutRule struct {
 func (x *AdvanceRolloutRule) Reset() {
 	*x = AdvanceRolloutRule{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[132]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[133]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -12192,7 +12314,7 @@ func (x *AdvanceRolloutRule) String() string {
 func (*AdvanceRolloutRule) ProtoMessage() {}
 
 func (x *AdvanceRolloutRule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[132]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[133]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12205,7 +12327,7 @@ func (x *AdvanceRolloutRule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AdvanceRolloutRule.ProtoReflect.Descriptor instead.
 func (*AdvanceRolloutRule) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{132}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{133}
 }
 
 func (x *AdvanceRolloutRule) GetId() string {
@@ -12271,7 +12393,7 @@ type RepairRolloutRule struct {
 func (x *RepairRolloutRule) Reset() {
 	*x = RepairRolloutRule{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[133]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[134]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -12284,7 +12406,7 @@ func (x *RepairRolloutRule) String() string {
 func (*RepairRolloutRule) ProtoMessage() {}
 
 func (x *RepairRolloutRule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[133]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[134]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12297,7 +12419,7 @@ func (x *RepairRolloutRule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepairRolloutRule.ProtoReflect.Descriptor instead.
 func (*RepairRolloutRule) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{133}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{134}
 }
 
 func (x *RepairRolloutRule) GetId() string {
@@ -12353,7 +12475,7 @@ type RepairPhaseConfig struct {
 func (x *RepairPhaseConfig) Reset() {
 	*x = RepairPhaseConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[134]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[135]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -12366,7 +12488,7 @@ func (x *RepairPhaseConfig) String() string {
 func (*RepairPhaseConfig) ProtoMessage() {}
 
 func (x *RepairPhaseConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[134]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[135]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12379,7 +12501,7 @@ func (x *RepairPhaseConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepairPhaseConfig.ProtoReflect.Descriptor instead.
 func (*RepairPhaseConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{134}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{135}
 }
 
 func (m *RepairPhaseConfig) GetRepairPhase() isRepairPhaseConfig_RepairPhase {
@@ -12441,7 +12563,7 @@ type Retry struct {
 func (x *Retry) Reset() {
 	*x = Retry{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[135]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[136]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -12454,7 +12576,7 @@ func (x *Retry) String() string {
 func (*Retry) ProtoMessage() {}
 
 func (x *Retry) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[135]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[136]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12467,7 +12589,7 @@ func (x *Retry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Retry.ProtoReflect.Descriptor instead.
 func (*Retry) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{135}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{136}
 }
 
 func (x *Retry) GetAttempts() int64 {
@@ -12508,7 +12630,7 @@ type Rollback struct {
 func (x *Rollback) Reset() {
 	*x = Rollback{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[136]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[137]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -12521,7 +12643,7 @@ func (x *Rollback) String() string {
 func (*Rollback) ProtoMessage() {}
 
 func (x *Rollback) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[136]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[137]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12534,7 +12656,7 @@ func (x *Rollback) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Rollback.ProtoReflect.Descriptor instead.
 func (*Rollback) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{136}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{137}
 }
 
 func (x *Rollback) GetDestinationPhase() string {
@@ -12560,12 +12682,18 @@ type AutomationRuleCondition struct {
 
 	// Optional. Details around targets enumerated in the rule.
 	TargetsPresentCondition *TargetsPresentCondition `protobuf:"bytes,1,opt,name=targets_present_condition,json=targetsPresentCondition,proto3" json:"targets_present_condition,omitempty"`
+	// Details specific to the automation rule type.
+	//
+	// Types that are assignable to RuleTypeCondition:
+	//
+	//	*AutomationRuleCondition_TimedPromoteReleaseCondition
+	RuleTypeCondition isAutomationRuleCondition_RuleTypeCondition `protobuf_oneof:"rule_type_condition"`
 }
 
 func (x *AutomationRuleCondition) Reset() {
 	*x = AutomationRuleCondition{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[137]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[138]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -12578,7 +12706,7 @@ func (x *AutomationRuleCondition) String() string {
 func (*AutomationRuleCondition) ProtoMessage() {}
 
 func (x *AutomationRuleCondition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[137]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[138]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12591,12 +12719,98 @@ func (x *AutomationRuleCondition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AutomationRuleCondition.ProtoReflect.Descriptor instead.
 func (*AutomationRuleCondition) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{137}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{138}
 }
 
 func (x *AutomationRuleCondition) GetTargetsPresentCondition() *TargetsPresentCondition {
 	if x != nil {
 		return x.TargetsPresentCondition
+	}
+	return nil
+}
+
+func (m *AutomationRuleCondition) GetRuleTypeCondition() isAutomationRuleCondition_RuleTypeCondition {
+	if m != nil {
+		return m.RuleTypeCondition
+	}
+	return nil
+}
+
+func (x *AutomationRuleCondition) GetTimedPromoteReleaseCondition() *TimedPromoteReleaseCondition {
+	if x, ok := x.GetRuleTypeCondition().(*AutomationRuleCondition_TimedPromoteReleaseCondition); ok {
+		return x.TimedPromoteReleaseCondition
+	}
+	return nil
+}
+
+type isAutomationRuleCondition_RuleTypeCondition interface {
+	isAutomationRuleCondition_RuleTypeCondition()
+}
+
+type AutomationRuleCondition_TimedPromoteReleaseCondition struct {
+	// Optional. TimedPromoteReleaseCondition contains rule conditions specific
+	// to a an Automation with a timed promote release rule defined.
+	TimedPromoteReleaseCondition *TimedPromoteReleaseCondition `protobuf:"bytes,2,opt,name=timed_promote_release_condition,json=timedPromoteReleaseCondition,proto3,oneof"`
+}
+
+func (*AutomationRuleCondition_TimedPromoteReleaseCondition) isAutomationRuleCondition_RuleTypeCondition() {
+}
+
+// `TimedPromoteReleaseCondition` contains conditions specific to an Automation
+// with a Timed Promote Release rule defined.
+type TimedPromoteReleaseCondition struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Output only. When the next scheduled promotion(s) will occur.
+	NextPromotionTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=next_promotion_time,json=nextPromotionTime,proto3" json:"next_promotion_time,omitempty"`
+	// Output only. A list of targets involved in the upcoming timed promotion(s).
+	TargetsList []*TimedPromoteReleaseCondition_Targets `protobuf:"bytes,2,rep,name=targets_list,json=targetsList,proto3" json:"targets_list,omitempty"`
+}
+
+func (x *TimedPromoteReleaseCondition) Reset() {
+	*x = TimedPromoteReleaseCondition{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[139]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TimedPromoteReleaseCondition) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TimedPromoteReleaseCondition) ProtoMessage() {}
+
+func (x *TimedPromoteReleaseCondition) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[139]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TimedPromoteReleaseCondition.ProtoReflect.Descriptor instead.
+func (*TimedPromoteReleaseCondition) Descriptor() ([]byte, []int) {
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{139}
+}
+
+func (x *TimedPromoteReleaseCondition) GetNextPromotionTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.NextPromotionTime
+	}
+	return nil
+}
+
+func (x *TimedPromoteReleaseCondition) GetTargetsList() []*TimedPromoteReleaseCondition_Targets {
+	if x != nil {
+		return x.TargetsList
 	}
 	return nil
 }
@@ -12637,7 +12851,7 @@ type CreateAutomationRequest struct {
 func (x *CreateAutomationRequest) Reset() {
 	*x = CreateAutomationRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[138]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[140]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -12650,7 +12864,7 @@ func (x *CreateAutomationRequest) String() string {
 func (*CreateAutomationRequest) ProtoMessage() {}
 
 func (x *CreateAutomationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[138]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[140]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12663,7 +12877,7 @@ func (x *CreateAutomationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAutomationRequest.ProtoReflect.Descriptor instead.
 func (*CreateAutomationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{138}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{140}
 }
 
 func (x *CreateAutomationRequest) GetParent() string {
@@ -12740,7 +12954,7 @@ type UpdateAutomationRequest struct {
 func (x *UpdateAutomationRequest) Reset() {
 	*x = UpdateAutomationRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[139]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[141]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -12753,7 +12967,7 @@ func (x *UpdateAutomationRequest) String() string {
 func (*UpdateAutomationRequest) ProtoMessage() {}
 
 func (x *UpdateAutomationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[139]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[141]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12766,7 +12980,7 @@ func (x *UpdateAutomationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAutomationRequest.ProtoReflect.Descriptor instead.
 func (*UpdateAutomationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{139}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{141}
 }
 
 func (x *UpdateAutomationRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -12843,7 +13057,7 @@ type DeleteAutomationRequest struct {
 func (x *DeleteAutomationRequest) Reset() {
 	*x = DeleteAutomationRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[140]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[142]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -12856,7 +13070,7 @@ func (x *DeleteAutomationRequest) String() string {
 func (*DeleteAutomationRequest) ProtoMessage() {}
 
 func (x *DeleteAutomationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[140]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[142]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12869,7 +13083,7 @@ func (x *DeleteAutomationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAutomationRequest.ProtoReflect.Descriptor instead.
 func (*DeleteAutomationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{140}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{142}
 }
 
 func (x *DeleteAutomationRequest) GetName() string {
@@ -12938,7 +13152,7 @@ type ListAutomationsRequest struct {
 func (x *ListAutomationsRequest) Reset() {
 	*x = ListAutomationsRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[141]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[143]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -12951,7 +13165,7 @@ func (x *ListAutomationsRequest) String() string {
 func (*ListAutomationsRequest) ProtoMessage() {}
 
 func (x *ListAutomationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[141]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[143]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12964,7 +13178,7 @@ func (x *ListAutomationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAutomationsRequest.ProtoReflect.Descriptor instead.
 func (*ListAutomationsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{141}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{143}
 }
 
 func (x *ListAutomationsRequest) GetParent() string {
@@ -13020,7 +13234,7 @@ type ListAutomationsResponse struct {
 func (x *ListAutomationsResponse) Reset() {
 	*x = ListAutomationsResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[142]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[144]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13033,7 +13247,7 @@ func (x *ListAutomationsResponse) String() string {
 func (*ListAutomationsResponse) ProtoMessage() {}
 
 func (x *ListAutomationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[142]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[144]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13046,7 +13260,7 @@ func (x *ListAutomationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAutomationsResponse.ProtoReflect.Descriptor instead.
 func (*ListAutomationsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{142}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{144}
 }
 
 func (x *ListAutomationsResponse) GetAutomations() []*Automation {
@@ -13084,7 +13298,7 @@ type GetAutomationRequest struct {
 func (x *GetAutomationRequest) Reset() {
 	*x = GetAutomationRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[143]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[145]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13097,7 +13311,7 @@ func (x *GetAutomationRequest) String() string {
 func (*GetAutomationRequest) ProtoMessage() {}
 
 func (x *GetAutomationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[143]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[145]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13110,7 +13324,7 @@ func (x *GetAutomationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAutomationRequest.ProtoReflect.Descriptor instead.
 func (*GetAutomationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{143}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{145}
 }
 
 func (x *GetAutomationRequest) GetName() string {
@@ -13147,9 +13361,9 @@ type AutomationRun struct {
 	// Output only. Snapshot of the Automation taken at AutomationRun creation
 	// time.
 	AutomationSnapshot *Automation `protobuf:"bytes,6,opt,name=automation_snapshot,json=automationSnapshot,proto3" json:"automation_snapshot,omitempty"`
-	// Output only. The ID of the target that represents the promotion stage that
-	// initiates the `AutomationRun`. The value of this field is the last segment
-	// of a target name.
+	// Output only. The ID of the source target that initiates the
+	// `AutomationRun`. The value of this field is the last segment of a target
+	// name.
 	TargetId string `protobuf:"bytes,7,opt,name=target_id,json=targetId,proto3" json:"target_id,omitempty"`
 	// Output only. Current state of the `AutomationRun`.
 	State AutomationRun_State `protobuf:"varint,8,opt,name=state,proto3,enum=google.cloud.deploy.v1.AutomationRun_State" json:"state,omitempty"`
@@ -13173,6 +13387,7 @@ type AutomationRun struct {
 	//	*AutomationRun_PromoteReleaseOperation
 	//	*AutomationRun_AdvanceRolloutOperation
 	//	*AutomationRun_RepairRolloutOperation
+	//	*AutomationRun_TimedPromoteReleaseOperation
 	Operation isAutomationRun_Operation `protobuf_oneof:"operation"`
 	// Output only. Earliest time the `AutomationRun` will attempt to resume.
 	// Wait-time is configured by `wait` in automation rule.
@@ -13182,7 +13397,7 @@ type AutomationRun struct {
 func (x *AutomationRun) Reset() {
 	*x = AutomationRun{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[144]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[146]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13195,7 +13410,7 @@ func (x *AutomationRun) String() string {
 func (*AutomationRun) ProtoMessage() {}
 
 func (x *AutomationRun) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[144]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[146]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13208,7 +13423,7 @@ func (x *AutomationRun) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AutomationRun.ProtoReflect.Descriptor instead.
 func (*AutomationRun) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{144}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{146}
 }
 
 func (x *AutomationRun) GetName() string {
@@ -13330,6 +13545,13 @@ func (x *AutomationRun) GetRepairRolloutOperation() *RepairRolloutOperation {
 	return nil
 }
 
+func (x *AutomationRun) GetTimedPromoteReleaseOperation() *TimedPromoteReleaseOperation {
+	if x, ok := x.GetOperation().(*AutomationRun_TimedPromoteReleaseOperation); ok {
+		return x.TimedPromoteReleaseOperation
+	}
+	return nil
+}
+
 func (x *AutomationRun) GetWaitUntilTime() *timestamppb.Timestamp {
 	if x != nil {
 		return x.WaitUntilTime
@@ -13356,11 +13578,19 @@ type AutomationRun_RepairRolloutOperation struct {
 	RepairRolloutOperation *RepairRolloutOperation `protobuf:"bytes,17,opt,name=repair_rollout_operation,json=repairRolloutOperation,proto3,oneof"`
 }
 
+type AutomationRun_TimedPromoteReleaseOperation struct {
+	// Output only. Promotes a release to a specified 'Target' as defined in a
+	// Timed Promote Release rule.
+	TimedPromoteReleaseOperation *TimedPromoteReleaseOperation `protobuf:"bytes,19,opt,name=timed_promote_release_operation,json=timedPromoteReleaseOperation,proto3,oneof"`
+}
+
 func (*AutomationRun_PromoteReleaseOperation) isAutomationRun_Operation() {}
 
 func (*AutomationRun_AdvanceRolloutOperation) isAutomationRun_Operation() {}
 
 func (*AutomationRun_RepairRolloutOperation) isAutomationRun_Operation() {}
+
+func (*AutomationRun_TimedPromoteReleaseOperation) isAutomationRun_Operation() {}
 
 // Contains the information of an automated promote-release operation.
 type PromoteReleaseOperation struct {
@@ -13383,7 +13613,7 @@ type PromoteReleaseOperation struct {
 func (x *PromoteReleaseOperation) Reset() {
 	*x = PromoteReleaseOperation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[145]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[147]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13396,7 +13626,7 @@ func (x *PromoteReleaseOperation) String() string {
 func (*PromoteReleaseOperation) ProtoMessage() {}
 
 func (x *PromoteReleaseOperation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[145]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[147]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13409,7 +13639,7 @@ func (x *PromoteReleaseOperation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PromoteReleaseOperation.ProtoReflect.Descriptor instead.
 func (*PromoteReleaseOperation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{145}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{147}
 }
 
 func (x *PromoteReleaseOperation) GetTargetId() string {
@@ -13459,7 +13689,7 @@ type AdvanceRolloutOperation struct {
 func (x *AdvanceRolloutOperation) Reset() {
 	*x = AdvanceRolloutOperation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[146]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[148]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13472,7 +13702,7 @@ func (x *AdvanceRolloutOperation) String() string {
 func (*AdvanceRolloutOperation) ProtoMessage() {}
 
 func (x *AdvanceRolloutOperation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[146]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[148]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13485,7 +13715,7 @@ func (x *AdvanceRolloutOperation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AdvanceRolloutOperation.ProtoReflect.Descriptor instead.
 func (*AdvanceRolloutOperation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{146}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{148}
 }
 
 func (x *AdvanceRolloutOperation) GetSourcePhase() string {
@@ -13539,7 +13769,7 @@ type RepairRolloutOperation struct {
 func (x *RepairRolloutOperation) Reset() {
 	*x = RepairRolloutOperation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[147]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[149]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13552,7 +13782,7 @@ func (x *RepairRolloutOperation) String() string {
 func (*RepairRolloutOperation) ProtoMessage() {}
 
 func (x *RepairRolloutOperation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[147]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[149]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13565,7 +13795,7 @@ func (x *RepairRolloutOperation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepairRolloutOperation.ProtoReflect.Descriptor instead.
 func (*RepairRolloutOperation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{147}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{149}
 }
 
 func (x *RepairRolloutOperation) GetRollout() string {
@@ -13603,6 +13833,75 @@ func (x *RepairRolloutOperation) GetJobId() string {
 	return ""
 }
 
+// Contains the information of an automated timed promote-release operation.
+type TimedPromoteReleaseOperation struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Output only. The ID of the target that represents the promotion stage to
+	// which the release will be promoted. The value of this field is the last
+	// segment of a target name.
+	TargetId string `protobuf:"bytes,1,opt,name=target_id,json=targetId,proto3" json:"target_id,omitempty"`
+	// Output only. The name of the release to be promoted.
+	Release string `protobuf:"bytes,2,opt,name=release,proto3" json:"release,omitempty"`
+	// Output only. The starting phase of the rollout created by this operation.
+	Phase string `protobuf:"bytes,3,opt,name=phase,proto3" json:"phase,omitempty"`
+}
+
+func (x *TimedPromoteReleaseOperation) Reset() {
+	*x = TimedPromoteReleaseOperation{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[150]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TimedPromoteReleaseOperation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TimedPromoteReleaseOperation) ProtoMessage() {}
+
+func (x *TimedPromoteReleaseOperation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[150]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TimedPromoteReleaseOperation.ProtoReflect.Descriptor instead.
+func (*TimedPromoteReleaseOperation) Descriptor() ([]byte, []int) {
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{150}
+}
+
+func (x *TimedPromoteReleaseOperation) GetTargetId() string {
+	if x != nil {
+		return x.TargetId
+	}
+	return ""
+}
+
+func (x *TimedPromoteReleaseOperation) GetRelease() string {
+	if x != nil {
+		return x.Release
+	}
+	return ""
+}
+
+func (x *TimedPromoteReleaseOperation) GetPhase() string {
+	if x != nil {
+		return x.Phase
+	}
+	return ""
+}
+
 // RepairPhase tracks the repair attempts that have been made for
 // each `RepairPhaseConfig` specified in the `Automation` resource.
 type RepairPhase struct {
@@ -13622,7 +13921,7 @@ type RepairPhase struct {
 func (x *RepairPhase) Reset() {
 	*x = RepairPhase{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[148]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[151]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13635,7 +13934,7 @@ func (x *RepairPhase) String() string {
 func (*RepairPhase) ProtoMessage() {}
 
 func (x *RepairPhase) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[148]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[151]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13648,7 +13947,7 @@ func (x *RepairPhase) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepairPhase.ProtoReflect.Descriptor instead.
 func (*RepairPhase) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{148}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{151}
 }
 
 func (m *RepairPhase) GetRepairPhase() isRepairPhase_RepairPhase {
@@ -13709,7 +14008,7 @@ type RetryPhase struct {
 func (x *RetryPhase) Reset() {
 	*x = RetryPhase{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[149]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[152]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13722,7 +14021,7 @@ func (x *RetryPhase) String() string {
 func (*RetryPhase) ProtoMessage() {}
 
 func (x *RetryPhase) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[149]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[152]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13735,7 +14034,7 @@ func (x *RetryPhase) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RetryPhase.ProtoReflect.Descriptor instead.
 func (*RetryPhase) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{149}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{152}
 }
 
 func (x *RetryPhase) GetTotalAttempts() int64 {
@@ -13778,7 +14077,7 @@ type RetryAttempt struct {
 func (x *RetryAttempt) Reset() {
 	*x = RetryAttempt{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[150]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[153]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13791,7 +14090,7 @@ func (x *RetryAttempt) String() string {
 func (*RetryAttempt) ProtoMessage() {}
 
 func (x *RetryAttempt) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[150]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[153]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13804,7 +14103,7 @@ func (x *RetryAttempt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RetryAttempt.ProtoReflect.Descriptor instead.
 func (*RetryAttempt) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{150}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{153}
 }
 
 func (x *RetryAttempt) GetAttempt() int64 {
@@ -13856,7 +14155,7 @@ type RollbackAttempt struct {
 func (x *RollbackAttempt) Reset() {
 	*x = RollbackAttempt{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[151]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[154]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13869,7 +14168,7 @@ func (x *RollbackAttempt) String() string {
 func (*RollbackAttempt) ProtoMessage() {}
 
 func (x *RollbackAttempt) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[151]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[154]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13882,7 +14181,7 @@ func (x *RollbackAttempt) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RollbackAttempt.ProtoReflect.Descriptor instead.
 func (*RollbackAttempt) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{151}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{154}
 }
 
 func (x *RollbackAttempt) GetDestinationPhase() string {
@@ -13951,7 +14250,7 @@ type ListAutomationRunsRequest struct {
 func (x *ListAutomationRunsRequest) Reset() {
 	*x = ListAutomationRunsRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[152]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[155]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -13964,7 +14263,7 @@ func (x *ListAutomationRunsRequest) String() string {
 func (*ListAutomationRunsRequest) ProtoMessage() {}
 
 func (x *ListAutomationRunsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[152]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[155]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13977,7 +14276,7 @@ func (x *ListAutomationRunsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAutomationRunsRequest.ProtoReflect.Descriptor instead.
 func (*ListAutomationRunsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{152}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{155}
 }
 
 func (x *ListAutomationRunsRequest) GetParent() string {
@@ -14033,7 +14332,7 @@ type ListAutomationRunsResponse struct {
 func (x *ListAutomationRunsResponse) Reset() {
 	*x = ListAutomationRunsResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[153]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[156]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14046,7 +14345,7 @@ func (x *ListAutomationRunsResponse) String() string {
 func (*ListAutomationRunsResponse) ProtoMessage() {}
 
 func (x *ListAutomationRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[153]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[156]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14059,7 +14358,7 @@ func (x *ListAutomationRunsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAutomationRunsResponse.ProtoReflect.Descriptor instead.
 func (*ListAutomationRunsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{153}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{156}
 }
 
 func (x *ListAutomationRunsResponse) GetAutomationRuns() []*AutomationRun {
@@ -14097,7 +14396,7 @@ type GetAutomationRunRequest struct {
 func (x *GetAutomationRunRequest) Reset() {
 	*x = GetAutomationRunRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[154]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[157]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14110,7 +14409,7 @@ func (x *GetAutomationRunRequest) String() string {
 func (*GetAutomationRunRequest) ProtoMessage() {}
 
 func (x *GetAutomationRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[154]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[157]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14123,7 +14422,7 @@ func (x *GetAutomationRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAutomationRunRequest.ProtoReflect.Descriptor instead.
 func (*GetAutomationRunRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{154}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{157}
 }
 
 func (x *GetAutomationRunRequest) GetName() string {
@@ -14147,7 +14446,7 @@ type CancelAutomationRunRequest struct {
 func (x *CancelAutomationRunRequest) Reset() {
 	*x = CancelAutomationRunRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[155]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[158]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14160,7 +14459,7 @@ func (x *CancelAutomationRunRequest) String() string {
 func (*CancelAutomationRunRequest) ProtoMessage() {}
 
 func (x *CancelAutomationRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[155]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[158]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14173,7 +14472,7 @@ func (x *CancelAutomationRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelAutomationRunRequest.ProtoReflect.Descriptor instead.
 func (*CancelAutomationRunRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{155}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{158}
 }
 
 func (x *CancelAutomationRunRequest) GetName() string {
@@ -14193,7 +14492,7 @@ type CancelAutomationRunResponse struct {
 func (x *CancelAutomationRunResponse) Reset() {
 	*x = CancelAutomationRunResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[156]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[159]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14206,7 +14505,7 @@ func (x *CancelAutomationRunResponse) String() string {
 func (*CancelAutomationRunResponse) ProtoMessage() {}
 
 func (x *CancelAutomationRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[156]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[159]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14219,7 +14518,7 @@ func (x *CancelAutomationRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelAutomationRunResponse.ProtoReflect.Descriptor instead.
 func (*CancelAutomationRunResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{156}
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{159}
 }
 
 // PhaseConfig represents the configuration for a phase in the custom
@@ -14254,7 +14553,7 @@ type CustomCanaryDeployment_PhaseConfig struct {
 func (x *CustomCanaryDeployment_PhaseConfig) Reset() {
 	*x = CustomCanaryDeployment_PhaseConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[161]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[164]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14267,7 +14566,7 @@ func (x *CustomCanaryDeployment_PhaseConfig) String() string {
 func (*CustomCanaryDeployment_PhaseConfig) ProtoMessage() {}
 
 func (x *CustomCanaryDeployment_PhaseConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[161]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[164]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14361,7 +14660,7 @@ type KubernetesConfig_GatewayServiceMesh struct {
 func (x *KubernetesConfig_GatewayServiceMesh) Reset() {
 	*x = KubernetesConfig_GatewayServiceMesh{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[162]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[165]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14374,7 +14673,7 @@ func (x *KubernetesConfig_GatewayServiceMesh) String() string {
 func (*KubernetesConfig_GatewayServiceMesh) ProtoMessage() {}
 
 func (x *KubernetesConfig_GatewayServiceMesh) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[162]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[165]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14463,7 +14762,7 @@ type KubernetesConfig_ServiceNetworking struct {
 func (x *KubernetesConfig_ServiceNetworking) Reset() {
 	*x = KubernetesConfig_ServiceNetworking{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[163]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[166]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14476,7 +14775,7 @@ func (x *KubernetesConfig_ServiceNetworking) String() string {
 func (*KubernetesConfig_ServiceNetworking) ProtoMessage() {}
 
 func (x *KubernetesConfig_ServiceNetworking) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[163]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[166]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14542,7 +14841,7 @@ type KubernetesConfig_GatewayServiceMesh_RouteDestinations struct {
 func (x *KubernetesConfig_GatewayServiceMesh_RouteDestinations) Reset() {
 	*x = KubernetesConfig_GatewayServiceMesh_RouteDestinations{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[164]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[167]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14555,7 +14854,7 @@ func (x *KubernetesConfig_GatewayServiceMesh_RouteDestinations) String() string 
 func (*KubernetesConfig_GatewayServiceMesh_RouteDestinations) ProtoMessage() {}
 
 func (x *KubernetesConfig_GatewayServiceMesh_RouteDestinations) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[164]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[167]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14602,7 +14901,7 @@ type SkaffoldModules_SkaffoldGitSource struct {
 func (x *SkaffoldModules_SkaffoldGitSource) Reset() {
 	*x = SkaffoldModules_SkaffoldGitSource{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[171]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[174]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14615,7 +14914,7 @@ func (x *SkaffoldModules_SkaffoldGitSource) String() string {
 func (*SkaffoldModules_SkaffoldGitSource) ProtoMessage() {}
 
 func (x *SkaffoldModules_SkaffoldGitSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[171]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[174]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14669,7 +14968,7 @@ type SkaffoldModules_SkaffoldGCSSource struct {
 func (x *SkaffoldModules_SkaffoldGCSSource) Reset() {
 	*x = SkaffoldModules_SkaffoldGCSSource{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[172]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[175]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14682,7 +14981,7 @@ func (x *SkaffoldModules_SkaffoldGCSSource) String() string {
 func (*SkaffoldModules_SkaffoldGCSSource) ProtoMessage() {}
 
 func (x *SkaffoldModules_SkaffoldGCSSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[172]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[175]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14732,7 +15031,7 @@ type SkaffoldModules_SkaffoldGCBRepoSource struct {
 func (x *SkaffoldModules_SkaffoldGCBRepoSource) Reset() {
 	*x = SkaffoldModules_SkaffoldGCBRepoSource{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[173]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[176]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14745,7 +15044,7 @@ func (x *SkaffoldModules_SkaffoldGCBRepoSource) String() string {
 func (*SkaffoldModules_SkaffoldGCBRepoSource) ProtoMessage() {}
 
 func (x *SkaffoldModules_SkaffoldGCBRepoSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[173]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[176]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14807,7 +15106,7 @@ type Release_TargetRender struct {
 func (x *Release_TargetRender) Reset() {
 	*x = Release_TargetRender{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[178]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[181]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14820,7 +15119,7 @@ func (x *Release_TargetRender) String() string {
 func (*Release_TargetRender) ProtoMessage() {}
 
 func (x *Release_TargetRender) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[178]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[181]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14889,7 +15188,7 @@ type Release_ReleaseReadyCondition struct {
 func (x *Release_ReleaseReadyCondition) Reset() {
 	*x = Release_ReleaseReadyCondition{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[179]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[182]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14902,7 +15201,7 @@ func (x *Release_ReleaseReadyCondition) String() string {
 func (*Release_ReleaseReadyCondition) ProtoMessage() {}
 
 func (x *Release_ReleaseReadyCondition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[179]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[182]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14947,7 +15246,7 @@ type Release_SkaffoldSupportedCondition struct {
 func (x *Release_SkaffoldSupportedCondition) Reset() {
 	*x = Release_SkaffoldSupportedCondition{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[180]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[183]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -14960,7 +15259,7 @@ func (x *Release_SkaffoldSupportedCondition) String() string {
 func (*Release_SkaffoldSupportedCondition) ProtoMessage() {}
 
 func (x *Release_SkaffoldSupportedCondition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[180]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[183]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15020,7 +15319,7 @@ type Release_ReleaseCondition struct {
 func (x *Release_ReleaseCondition) Reset() {
 	*x = Release_ReleaseCondition{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[181]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[184]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -15033,7 +15332,7 @@ func (x *Release_ReleaseCondition) String() string {
 func (*Release_ReleaseCondition) ProtoMessage() {}
 
 func (x *Release_ReleaseCondition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[181]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[184]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15082,7 +15381,7 @@ type TargetArtifact_PhaseArtifact struct {
 func (x *TargetArtifact_PhaseArtifact) Reset() {
 	*x = TargetArtifact_PhaseArtifact{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[187]
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[190]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -15095,7 +15394,7 @@ func (x *TargetArtifact_PhaseArtifact) String() string {
 func (*TargetArtifact_PhaseArtifact) ProtoMessage() {}
 
 func (x *TargetArtifact_PhaseArtifact) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[187]
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[190]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15128,6 +15427,64 @@ func (x *TargetArtifact_PhaseArtifact) GetManifestPath() string {
 func (x *TargetArtifact_PhaseArtifact) GetJobManifestsPath() string {
 	if x != nil {
 		return x.JobManifestsPath
+	}
+	return ""
+}
+
+// The targets involved in a single timed promotion.
+type TimedPromoteReleaseCondition_Targets struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Optional. The source target ID.
+	SourceTargetId string `protobuf:"bytes,1,opt,name=source_target_id,json=sourceTargetId,proto3" json:"source_target_id,omitempty"`
+	// Optional. The destination target ID.
+	DestinationTargetId string `protobuf:"bytes,2,opt,name=destination_target_id,json=destinationTargetId,proto3" json:"destination_target_id,omitempty"`
+}
+
+func (x *TimedPromoteReleaseCondition_Targets) Reset() {
+	*x = TimedPromoteReleaseCondition_Targets{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[197]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TimedPromoteReleaseCondition_Targets) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TimedPromoteReleaseCondition_Targets) ProtoMessage() {}
+
+func (x *TimedPromoteReleaseCondition_Targets) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[197]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TimedPromoteReleaseCondition_Targets.ProtoReflect.Descriptor instead.
+func (*TimedPromoteReleaseCondition_Targets) Descriptor() ([]byte, []int) {
+	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{139, 0}
+}
+
+func (x *TimedPromoteReleaseCondition_Targets) GetSourceTargetId() string {
+	if x != nil {
+		return x.SourceTargetId
+	}
+	return ""
+}
+
+func (x *TimedPromoteReleaseCondition_Targets) GetDestinationTargetId() string {
+	if x != nil {
+		return x.DestinationTargetId
 	}
 	return ""
 }
@@ -17567,7 +17924,7 @@ var file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = []byte{
 	0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
 	0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76,
 	0x31, 0x2e, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
-	0x65, 0x52, 0x07, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x73, 0x22, 0xc4, 0x02, 0x0a, 0x0e, 0x41,
+	0x65, 0x52, 0x07, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x73, 0x22, 0xb9, 0x03, 0x0a, 0x0e, 0x41,
 	0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6c, 0x65, 0x12, 0x63, 0x0a,
 	0x14, 0x70, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x5f, 0x72, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65,
 	0x5f, 0x72, 0x75, 0x6c, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2a, 0x2e, 0x67, 0x6f,
@@ -17587,305 +17944,378 @@ var file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc = []byte{
 	0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65,
 	0x70, 0x61, 0x69, 0x72, 0x52, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x52, 0x75, 0x6c, 0x65, 0x42,
 	0x03, 0xe0, 0x41, 0x01, 0x48, 0x00, 0x52, 0x11, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x52, 0x6f,
-	0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x52, 0x75, 0x6c, 0x65, 0x42, 0x06, 0x0a, 0x04, 0x72, 0x75, 0x6c,
-	0x65, 0x22, 0x9c, 0x02, 0x0a, 0x12, 0x50, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c,
-	0x65, 0x61, 0x73, 0x65, 0x52, 0x75, 0x6c, 0x65, 0x12, 0x13, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x02, 0x69, 0x64, 0x12, 0x32, 0x0a,
-	0x04, 0x77, 0x61, 0x69, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75,
-	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x04, 0x77, 0x61, 0x69,
-	0x74, 0x12, 0x37, 0x0a, 0x15, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x5f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09,
-	0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x13, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x49, 0x64, 0x12, 0x52, 0x0a, 0x09, 0x63, 0x6f,
-	0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e,
+	0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x52, 0x75, 0x6c, 0x65, 0x12, 0x73, 0x0a, 0x1a, 0x74, 0x69, 0x6d,
+	0x65, 0x64, 0x5f, 0x70, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x5f, 0x72, 0x65, 0x6c, 0x65, 0x61,
+	0x73, 0x65, 0x5f, 0x72, 0x75, 0x6c, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e,
 	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70,
-	0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x52, 0x75, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03,
-	0xe0, 0x41, 0x03, 0x52, 0x09, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x30,
-	0x0a, 0x11, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x70, 0x68,
-	0x61, 0x73, 0x65, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x10,
-	0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x68, 0x61, 0x73, 0x65,
-	0x22, 0xdb, 0x01, 0x0a, 0x12, 0x41, 0x64, 0x76, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x6f, 0x6c, 0x6c,
-	0x6f, 0x75, 0x74, 0x52, 0x75, 0x6c, 0x65, 0x12, 0x13, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x02, 0x69, 0x64, 0x12, 0x28, 0x0a, 0x0d,
-	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f, 0x70, 0x68, 0x61, 0x73, 0x65, 0x73, 0x18, 0x06, 0x20,
-	0x03, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0c, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
-	0x50, 0x68, 0x61, 0x73, 0x65, 0x73, 0x12, 0x32, 0x0a, 0x04, 0x77, 0x61, 0x69, 0x74, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42,
-	0x03, 0xe0, 0x41, 0x01, 0x52, 0x04, 0x77, 0x61, 0x69, 0x74, 0x12, 0x52, 0x0a, 0x09, 0x63, 0x6f,
-	0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70,
-	0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x52, 0x75, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03,
-	0xe0, 0x41, 0x03, 0x52, 0x09, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x87,
-	0x02, 0x0a, 0x11, 0x52, 0x65, 0x70, 0x61, 0x69, 0x72, 0x52, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74,
-	0x52, 0x75, 0x6c, 0x65, 0x12, 0x13, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x02, 0x69, 0x64, 0x12, 0x1b, 0x0a, 0x06, 0x70, 0x68, 0x61,
-	0x73, 0x65, 0x73, 0x18, 0x07, 0x20, 0x03, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x06,
-	0x70, 0x68, 0x61, 0x73, 0x65, 0x73, 0x12, 0x17, 0x0a, 0x04, 0x6a, 0x6f, 0x62, 0x73, 0x18, 0x03,
-	0x20, 0x03, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x04, 0x6a, 0x6f, 0x62, 0x73, 0x12,
-	0x52, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x06, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75,
-	0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x75, 0x74, 0x6f,
-	0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74,
-	0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x09, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74,
-	0x69, 0x6f, 0x6e, 0x12, 0x53, 0x0a, 0x0d, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x5f, 0x70, 0x68,
-	0x61, 0x73, 0x65, 0x73, 0x18, 0x08, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x29, 0x2e, 0x67, 0x6f, 0x6f,
+	0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x6d,
+	0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x52, 0x75, 0x6c, 0x65, 0x42, 0x03,
+	0xe0, 0x41, 0x01, 0x48, 0x00, 0x52, 0x17, 0x74, 0x69, 0x6d, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x6d,
+	0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x52, 0x75, 0x6c, 0x65, 0x42, 0x06,
+	0x0a, 0x04, 0x72, 0x75, 0x6c, 0x65, 0x22, 0xb0, 0x02, 0x0a, 0x17, 0x54, 0x69, 0x6d, 0x65, 0x64,
+	0x50, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x52, 0x75,
+	0x6c, 0x65, 0x12, 0x13, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03,
+	0xe0, 0x41, 0x02, 0x52, 0x02, 0x69, 0x64, 0x12, 0x37, 0x0a, 0x15, 0x64, 0x65, 0x73, 0x74, 0x69,
+	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x5f, 0x69, 0x64,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x13, 0x64, 0x65, 0x73,
+	0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x49, 0x64,
+	0x12, 0x1f, 0x0a, 0x08, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x08, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c,
+	0x65, 0x12, 0x20, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x5f, 0x7a, 0x6f, 0x6e, 0x65, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x08, 0x74, 0x69, 0x6d, 0x65, 0x5a,
+	0x6f, 0x6e, 0x65, 0x12, 0x52, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e,
+	0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e,
+	0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6c, 0x65, 0x43, 0x6f,
+	0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x09, 0x63, 0x6f,
+	0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x30, 0x0a, 0x11, 0x64, 0x65, 0x73, 0x74, 0x69,
+	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x70, 0x68, 0x61, 0x73, 0x65, 0x18, 0x06, 0x20, 0x01,
+	0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x10, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x50, 0x68, 0x61, 0x73, 0x65, 0x22, 0x9c, 0x02, 0x0a, 0x12, 0x50, 0x72,
+	0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x52, 0x75, 0x6c, 0x65,
+	0x12, 0x13, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41,
+	0x02, 0x52, 0x02, 0x69, 0x64, 0x12, 0x32, 0x0a, 0x04, 0x77, 0x61, 0x69, 0x74, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03,
+	0xe0, 0x41, 0x01, 0x52, 0x04, 0x77, 0x61, 0x69, 0x74, 0x12, 0x37, 0x0a, 0x15, 0x64, 0x65, 0x73,
+	0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x5f,
+	0x69, 0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x13, 0x64,
+	0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74,
+	0x49, 0x64, 0x12, 0x52, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18,
+	0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x41,
+	0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6c, 0x65, 0x43, 0x6f, 0x6e,
+	0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x09, 0x63, 0x6f, 0x6e,
+	0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x30, 0x0a, 0x11, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x70, 0x68, 0x61, 0x73, 0x65, 0x18, 0x08, 0x20, 0x01, 0x28,
+	0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x10, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x50, 0x68, 0x61, 0x73, 0x65, 0x22, 0xdb, 0x01, 0x0a, 0x12, 0x41, 0x64, 0x76,
+	0x61, 0x6e, 0x63, 0x65, 0x52, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x52, 0x75, 0x6c, 0x65, 0x12,
+	0x13, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02,
+	0x52, 0x02, 0x69, 0x64, 0x12, 0x28, 0x0a, 0x0d, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f, 0x70,
+	0x68, 0x61, 0x73, 0x65, 0x73, 0x18, 0x06, 0x20, 0x03, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01,
+	0x52, 0x0c, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x50, 0x68, 0x61, 0x73, 0x65, 0x73, 0x12, 0x32,
+	0x0a, 0x04, 0x77, 0x61, 0x69, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44,
+	0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x04, 0x77, 0x61,
+	0x69, 0x74, 0x12, 0x52, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18,
+	0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x41,
+	0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6c, 0x65, 0x43, 0x6f, 0x6e,
+	0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x09, 0x63, 0x6f, 0x6e,
+	0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x87, 0x02, 0x0a, 0x11, 0x52, 0x65, 0x70, 0x61, 0x69,
+	0x72, 0x52, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x52, 0x75, 0x6c, 0x65, 0x12, 0x13, 0x0a, 0x02,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x02, 0x69,
+	0x64, 0x12, 0x1b, 0x0a, 0x06, 0x70, 0x68, 0x61, 0x73, 0x65, 0x73, 0x18, 0x07, 0x20, 0x03, 0x28,
+	0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x06, 0x70, 0x68, 0x61, 0x73, 0x65, 0x73, 0x12, 0x17,
+	0x0a, 0x04, 0x6a, 0x6f, 0x62, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41,
+	0x01, 0x52, 0x04, 0x6a, 0x6f, 0x62, 0x73, 0x12, 0x52, 0x0a, 0x09, 0x63, 0x6f, 0x6e, 0x64, 0x69,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79,
-	0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x70, 0x61, 0x69, 0x72, 0x50, 0x68, 0x61, 0x73, 0x65, 0x43,
-	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0c, 0x72, 0x65, 0x70, 0x61,
-	0x69, 0x72, 0x50, 0x68, 0x61, 0x73, 0x65, 0x73, 0x22, 0xa4, 0x01, 0x0a, 0x11, 0x52, 0x65, 0x70,
-	0x61, 0x69, 0x72, 0x50, 0x68, 0x61, 0x73, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x3a,
-	0x0a, 0x05, 0x72, 0x65, 0x74, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e,
+	0x2e, 0x76, 0x31, 0x2e, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75,
+	0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x03,
+	0x52, 0x09, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x53, 0x0a, 0x0d, 0x72,
+	0x65, 0x70, 0x61, 0x69, 0x72, 0x5f, 0x70, 0x68, 0x61, 0x73, 0x65, 0x73, 0x18, 0x08, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x29, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75,
+	0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x70, 0x61,
+	0x69, 0x72, 0x50, 0x68, 0x61, 0x73, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x03, 0xe0,
+	0x41, 0x02, 0x52, 0x0c, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x50, 0x68, 0x61, 0x73, 0x65, 0x73,
+	0x22, 0xa4, 0x01, 0x0a, 0x11, 0x52, 0x65, 0x70, 0x61, 0x69, 0x72, 0x50, 0x68, 0x61, 0x73, 0x65,
+	0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x3a, 0x0a, 0x05, 0x72, 0x65, 0x74, 0x72, 0x79, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x52,
+	0x65, 0x74, 0x72, 0x79, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x48, 0x00, 0x52, 0x05, 0x72, 0x65, 0x74,
+	0x72, 0x79, 0x12, 0x43, 0x0a, 0x08, 0x72, 0x6f, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c,
+	0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x6f,
+	0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x48, 0x00, 0x52, 0x08, 0x72,
+	0x6f, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x42, 0x0e, 0x0a, 0x0c, 0x72, 0x65, 0x70, 0x61, 0x69,
+	0x72, 0x5f, 0x70, 0x68, 0x61, 0x73, 0x65, 0x22, 0xa9, 0x01, 0x0a, 0x05, 0x52, 0x65, 0x74, 0x72,
+	0x79, 0x12, 0x1f, 0x0a, 0x08, 0x61, 0x74, 0x74, 0x65, 0x6d, 0x70, 0x74, 0x73, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x03, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x08, 0x61, 0x74, 0x74, 0x65, 0x6d, 0x70,
+	0x74, 0x73, 0x12, 0x32, 0x0a, 0x04, 0x77, 0x61, 0x69, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
+	0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x01,
+	0x52, 0x04, 0x77, 0x61, 0x69, 0x74, 0x12, 0x4b, 0x0a, 0x0c, 0x62, 0x61, 0x63, 0x6b, 0x6f, 0x66,
+	0x66, 0x5f, 0x6d, 0x6f, 0x64, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c,
+	0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x63, 0x6b, 0x6f, 0x66, 0x66, 0x4d, 0x6f, 0x64,
+	0x65, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0b, 0x62, 0x61, 0x63, 0x6b, 0x6f, 0x66, 0x66, 0x4d,
+	0x6f, 0x64, 0x65, 0x22, 0x8f, 0x01, 0x0a, 0x08, 0x52, 0x6f, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b,
+	0x12, 0x30, 0x0a, 0x11, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f,
+	0x70, 0x68, 0x61, 0x73, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01,
+	0x52, 0x10, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x68, 0x61,
+	0x73, 0x65, 0x12, 0x51, 0x0a, 0x23, 0x64, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x72, 0x6f,
+	0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x5f, 0x69, 0x66, 0x5f, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75,
+	0x74, 0x5f, 0x70, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x42,
+	0x03, 0xe0, 0x41, 0x01, 0x52, 0x1f, 0x64, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x6f, 0x6c,
+	0x6c, 0x62, 0x61, 0x63, 0x6b, 0x49, 0x66, 0x52, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x50, 0x65,
+	0x6e, 0x64, 0x69, 0x6e, 0x67, 0x22, 0xa7, 0x02, 0x0a, 0x17, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f,
+	0x6e, 0x12, 0x70, 0x0a, 0x19, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x73, 0x5f, 0x70, 0x72, 0x65,
+	0x73, 0x65, 0x6e, 0x74, 0x5f, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c,
+	0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x61,
+	0x72, 0x67, 0x65, 0x74, 0x73, 0x50, 0x72, 0x65, 0x73, 0x65, 0x6e, 0x74, 0x43, 0x6f, 0x6e, 0x64,
+	0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x17, 0x74, 0x61, 0x72, 0x67,
+	0x65, 0x74, 0x73, 0x50, 0x72, 0x65, 0x73, 0x65, 0x6e, 0x74, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74,
+	0x69, 0x6f, 0x6e, 0x12, 0x82, 0x01, 0x0a, 0x1f, 0x74, 0x69, 0x6d, 0x65, 0x64, 0x5f, 0x70, 0x72,
+	0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x5f, 0x72, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x5f, 0x63, 0x6f,
+	0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x34, 0x2e,
 	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70,
-	0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x74, 0x72, 0x79, 0x42, 0x03, 0xe0, 0x41,
-	0x01, 0x48, 0x00, 0x52, 0x05, 0x72, 0x65, 0x74, 0x72, 0x79, 0x12, 0x43, 0x0a, 0x08, 0x72, 0x6f,
-	0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c,
-	0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x6f, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x42, 0x03,
-	0xe0, 0x41, 0x01, 0x48, 0x00, 0x52, 0x08, 0x72, 0x6f, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x42,
-	0x0e, 0x0a, 0x0c, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x5f, 0x70, 0x68, 0x61, 0x73, 0x65, 0x22,
-	0xa9, 0x01, 0x0a, 0x05, 0x52, 0x65, 0x74, 0x72, 0x79, 0x12, 0x1f, 0x0a, 0x08, 0x61, 0x74, 0x74,
-	0x65, 0x6d, 0x70, 0x74, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x42, 0x03, 0xe0, 0x41, 0x02,
-	0x52, 0x08, 0x61, 0x74, 0x74, 0x65, 0x6d, 0x70, 0x74, 0x73, 0x12, 0x32, 0x0a, 0x04, 0x77, 0x61,
-	0x69, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x04, 0x77, 0x61, 0x69, 0x74, 0x12, 0x4b,
-	0x0a, 0x0c, 0x62, 0x61, 0x63, 0x6b, 0x6f, 0x66, 0x66, 0x5f, 0x6d, 0x6f, 0x64, 0x65, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c,
-	0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61,
-	0x63, 0x6b, 0x6f, 0x66, 0x66, 0x4d, 0x6f, 0x64, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0b,
-	0x62, 0x61, 0x63, 0x6b, 0x6f, 0x66, 0x66, 0x4d, 0x6f, 0x64, 0x65, 0x22, 0x8f, 0x01, 0x0a, 0x08,
-	0x52, 0x6f, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x12, 0x30, 0x0a, 0x11, 0x64, 0x65, 0x73, 0x74,
-	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x70, 0x68, 0x61, 0x73, 0x65, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x10, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x68, 0x61, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x23, 0x64, 0x69,
-	0x73, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x72, 0x6f, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x5f, 0x69,
-	0x66, 0x5f, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x5f, 0x70, 0x65, 0x6e, 0x64, 0x69, 0x6e,
-	0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x1f, 0x64, 0x69,
-	0x73, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x6f, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x49, 0x66, 0x52,
-	0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x50, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x22, 0x8b, 0x01,
-	0x0a, 0x17, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6c, 0x65,
-	0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x70, 0x0a, 0x19, 0x74, 0x61, 0x72,
-	0x67, 0x65, 0x74, 0x73, 0x5f, 0x70, 0x72, 0x65, 0x73, 0x65, 0x6e, 0x74, 0x5f, 0x63, 0x6f, 0x6e,
-	0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c,
-	0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x73, 0x50, 0x72, 0x65,
-	0x73, 0x65, 0x6e, 0x74, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0,
-	0x41, 0x01, 0x52, 0x17, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x73, 0x50, 0x72, 0x65, 0x73, 0x65,
-	0x6e, 0x74, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa1, 0x02, 0x0a, 0x17,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x45, 0x0a, 0x06, 0x70, 0x61, 0x72, 0x65, 0x6e,
-	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2d, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x27, 0x12,
-	0x25, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x41, 0x75, 0x74, 0x6f,
-	0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x06, 0x70, 0x61, 0x72, 0x65, 0x6e, 0x74, 0x12, 0x28,
-	0x0a, 0x0d, 0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0c, 0x61, 0x75, 0x74, 0x6f,
-	0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x47, 0x0a, 0x0a, 0x61, 0x75, 0x74, 0x6f,
-	0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c,
-	0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0a, 0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x12, 0x22, 0x0a, 0x0a, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64, 0x18,
-	0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x49, 0x64, 0x12, 0x28, 0x0a, 0x0d, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74,
-	0x65, 0x5f, 0x6f, 0x6e, 0x6c, 0x79, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x42, 0x03, 0xe0, 0x41,
-	0x01, 0x52, 0x0c, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x6e, 0x6c, 0x79, 0x22,
-	0x9c, 0x02, 0x0a, 0x17, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x40, 0x0a, 0x0b, 0x75,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x6d, 0x61, 0x73, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
-	0x75, 0x66, 0x2e, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x4d, 0x61, 0x73, 0x6b, 0x42, 0x03, 0xe0, 0x41,
-	0x02, 0x52, 0x0a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x73, 0x6b, 0x12, 0x47, 0x0a,
-	0x0a, 0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x22, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
-	0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x75, 0x74, 0x6f, 0x6d,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0a, 0x61, 0x75, 0x74, 0x6f,
-	0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x22, 0x0a, 0x0a, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52,
-	0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x64, 0x12, 0x28, 0x0a, 0x0d, 0x61, 0x6c,
-	0x6c, 0x6f, 0x77, 0x5f, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6e, 0x67, 0x18, 0x04, 0x20, 0x01, 0x28,
-	0x08, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x77, 0x4d, 0x69, 0x73,
-	0x73, 0x69, 0x6e, 0x67, 0x12, 0x28, 0x0a, 0x0d, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65,
+	0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x6d,
+	0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74,
+	0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x48, 0x00, 0x52, 0x1c, 0x74, 0x69, 0x6d, 0x65,
+	0x64, 0x50, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x43,
+	0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x15, 0x0a, 0x13, 0x72, 0x75, 0x6c, 0x65,
+	0x5f, 0x74, 0x79, 0x70, 0x65, 0x5f, 0x63, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x22,
+	0xc8, 0x02, 0x0a, 0x1c, 0x54, 0x69, 0x6d, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65,
+	0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e,
+	0x12, 0x4f, 0x0a, 0x13, 0x6e, 0x65, 0x78, 0x74, 0x5f, 0x70, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x69,
+	0x6f, 0x6e, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
+	0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x11,
+	0x6e, 0x65, 0x78, 0x74, 0x50, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x69, 0x6d,
+	0x65, 0x12, 0x64, 0x0a, 0x0c, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x73, 0x5f, 0x6c, 0x69, 0x73,
+	0x74, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x3c, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31,
+	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c,
+	0x65, 0x61, 0x73, 0x65, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x54, 0x61,
+	0x72, 0x67, 0x65, 0x74, 0x73, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0b, 0x74, 0x61, 0x72, 0x67,
+	0x65, 0x74, 0x73, 0x4c, 0x69, 0x73, 0x74, 0x1a, 0x71, 0x0a, 0x07, 0x54, 0x61, 0x72, 0x67, 0x65,
+	0x74, 0x73, 0x12, 0x2d, 0x0a, 0x10, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f, 0x74, 0x61, 0x72,
+	0x67, 0x65, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41,
+	0x01, 0x52, 0x0e, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x49,
+	0x64, 0x12, 0x37, 0x0a, 0x15, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x5f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x13, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x49, 0x64, 0x22, 0xa1, 0x02, 0x0a, 0x17, 0x43,
+	0x72, 0x65, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x45, 0x0a, 0x06, 0x70, 0x61, 0x72, 0x65, 0x6e, 0x74,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2d, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x27, 0x12, 0x25,
+	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x41, 0x75, 0x74, 0x6f, 0x6d,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x06, 0x70, 0x61, 0x72, 0x65, 0x6e, 0x74, 0x12, 0x28, 0x0a,
+	0x0d, 0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0c, 0x61, 0x75, 0x74, 0x6f, 0x6d,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x47, 0x0a, 0x0a, 0x61, 0x75, 0x74, 0x6f, 0x6d,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f,
+	0x79, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42,
+	0x03, 0xe0, 0x41, 0x02, 0x52, 0x0a, 0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x12, 0x22, 0x0a, 0x0a, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x49, 0x64, 0x12, 0x28, 0x0a, 0x0d, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65,
 	0x5f, 0x6f, 0x6e, 0x6c, 0x79, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x42, 0x03, 0xe0, 0x41, 0x01,
-	0x52, 0x0c, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x6e, 0x6c, 0x79, 0x22, 0xed,
-	0x01, 0x0a, 0x17, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x41, 0x0a, 0x04, 0x6e, 0x61,
-	0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2d, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x27,
-	0x0a, 0x25, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x67, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x41, 0x75, 0x74,
-	0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x22, 0x0a,
-	0x0a, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49,
-	0x64, 0x12, 0x28, 0x0a, 0x0d, 0x61, 0x6c, 0x6c, 0x6f, 0x77, 0x5f, 0x6d, 0x69, 0x73, 0x73, 0x69,
-	0x6e, 0x67, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0c, 0x61,
-	0x6c, 0x6c, 0x6f, 0x77, 0x4d, 0x69, 0x73, 0x73, 0x69, 0x6e, 0x67, 0x12, 0x28, 0x0a, 0x0d, 0x76,
-	0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x6f, 0x6e, 0x6c, 0x79, 0x18, 0x04, 0x20, 0x01,
-	0x28, 0x08, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0c, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74,
-	0x65, 0x4f, 0x6e, 0x6c, 0x79, 0x12, 0x17, 0x0a, 0x04, 0x65, 0x74, 0x61, 0x67, 0x18, 0x05, 0x20,
-	0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x04, 0x65, 0x74, 0x61, 0x67, 0x22, 0xce,
-	0x01, 0x0a, 0x16, 0x4c, 0x69, 0x73, 0x74, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x45, 0x0a, 0x06, 0x70, 0x61, 0x72,
-	0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2d, 0xe0, 0x41, 0x02, 0xfa, 0x41,
-	0x27, 0x12, 0x25, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x41, 0x75,
-	0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x06, 0x70, 0x61, 0x72, 0x65, 0x6e, 0x74,
-	0x12, 0x1b, 0x0a, 0x09, 0x70, 0x61, 0x67, 0x65, 0x5f, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x05, 0x52, 0x08, 0x70, 0x61, 0x67, 0x65, 0x53, 0x69, 0x7a, 0x65, 0x12, 0x1d, 0x0a,
-	0x0a, 0x70, 0x61, 0x67, 0x65, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x09, 0x70, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x16, 0x0a, 0x06,
-	0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x66, 0x69,
-	0x6c, 0x74, 0x65, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x62, 0x79,
-	0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x42, 0x79, 0x22,
-	0xa9, 0x01, 0x0a, 0x17, 0x4c, 0x69, 0x73, 0x74, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x44, 0x0a, 0x0b, 0x61,
-	0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
+	0x52, 0x0c, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x6e, 0x6c, 0x79, 0x22, 0x9c,
+	0x02, 0x0a, 0x17, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x40, 0x0a, 0x0b, 0x75, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x5f, 0x6d, 0x61, 0x73, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x4d, 0x61, 0x73, 0x6b, 0x42, 0x03, 0xe0, 0x41, 0x02,
+	0x52, 0x0a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x73, 0x6b, 0x12, 0x47, 0x0a, 0x0a,
+	0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
 	0x32, 0x22, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
 	0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0b, 0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x73, 0x12, 0x26, 0x0a, 0x0f, 0x6e, 0x65, 0x78, 0x74, 0x5f, 0x70, 0x61, 0x67, 0x65, 0x5f, 0x74,
-	0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x6e, 0x65, 0x78, 0x74,
-	0x50, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x20, 0x0a, 0x0b, 0x75, 0x6e, 0x72,
-	0x65, 0x61, 0x63, 0x68, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0b,
-	0x75, 0x6e, 0x72, 0x65, 0x61, 0x63, 0x68, 0x61, 0x62, 0x6c, 0x65, 0x22, 0x59, 0x0a, 0x14, 0x47,
-	0x65, 0x74, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x12, 0x41, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x42, 0x2d, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x27, 0x0a, 0x25, 0x63, 0x6c, 0x6f, 0x75, 0x64,
-	0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69,
-	0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x90, 0x0b, 0x0a, 0x0d, 0x41, 0x75, 0x74, 0x6f, 0x6d,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6e, 0x12, 0x17, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x04, 0x6e, 0x61, 0x6d,
-	0x65, 0x12, 0x40, 0x0a, 0x0b, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
-	0x6d, 0x70, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x54,
-	0x69, 0x6d, 0x65, 0x12, 0x40, 0x0a, 0x0b, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69,
-	0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
-	0x74, 0x61, 0x6d, 0x70, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0a, 0x75, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x17, 0x0a, 0x04, 0x65, 0x74, 0x61, 0x67, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x04, 0x65, 0x74, 0x61, 0x67, 0x12, 0x2c,
-	0x0a, 0x0f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e,
-	0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0e, 0x73, 0x65,
-	0x72, 0x76, 0x69, 0x63, 0x65, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x58, 0x0a, 0x13,
-	0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x73, 0x6e, 0x61, 0x70, 0x73,
-	0x68, 0x6f, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e,
-	0x76, 0x31, 0x2e, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0,
-	0x41, 0x03, 0x52, 0x12, 0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x6e,
-	0x61, 0x70, 0x73, 0x68, 0x6f, 0x74, 0x12, 0x20, 0x0a, 0x09, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x5f, 0x69, 0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x08,
-	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x49, 0x64, 0x12, 0x46, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x74,
-	0x65, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x2b, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31,
-	0x2e, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6e, 0x2e, 0x53,
-	0x74, 0x61, 0x74, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65,
-	0x12, 0x30, 0x0a, 0x11, 0x73, 0x74, 0x61, 0x74, 0x65, 0x5f, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69,
-	0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03,
-	0x52, 0x10, 0x73, 0x74, 0x61, 0x74, 0x65, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69,
-	0x6f, 0x6e, 0x12, 0x57, 0x0a, 0x10, 0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x5f, 0x76, 0x69, 0x6f,
-	0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c,
-	0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x56, 0x69, 0x6f, 0x6c,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0f, 0x70, 0x6f, 0x6c, 0x69,
-	0x63, 0x79, 0x56, 0x69, 0x6f, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x40, 0x0a, 0x0b, 0x65,
-	0x78, 0x70, 0x69, 0x72, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
-	0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x03, 0xe0, 0x41,
-	0x03, 0x52, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x1c, 0x0a,
-	0x07, 0x72, 0x75, 0x6c, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03,
-	0xe0, 0x41, 0x03, 0x52, 0x06, 0x72, 0x75, 0x6c, 0x65, 0x49, 0x64, 0x12, 0x28, 0x0a, 0x0d, 0x61,
-	0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x0f, 0x20, 0x01,
-	0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0c, 0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x72, 0x0a, 0x19, 0x70, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65,
-	0x5f, 0x72, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x5f, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76,
-	0x31, 0x2e, 0x50, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65,
-	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x48, 0x00,
-	0x52, 0x17, 0x70, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65,
-	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x72, 0x0a, 0x19, 0x61, 0x64, 0x76,
-	0x61, 0x6e, 0x63, 0x65, 0x5f, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x5f, 0x6f, 0x70, 0x65,
-	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c,
-	0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x64, 0x76, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x6f, 0x6c,
-	0x6c, 0x6f, 0x75, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0,
-	0x41, 0x03, 0x48, 0x00, 0x52, 0x17, 0x61, 0x64, 0x76, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x6f, 0x6c,
-	0x6c, 0x6f, 0x75, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x6f, 0x0a,
-	0x18, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x5f, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x5f,
-	0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x11, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x2e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64,
-	0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x70, 0x61, 0x69, 0x72, 0x52,
-	0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42,
-	0x03, 0xe0, 0x41, 0x03, 0x48, 0x00, 0x52, 0x16, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x52, 0x6f,
-	0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x47,
-	0x0a, 0x0f, 0x77, 0x61, 0x69, 0x74, 0x5f, 0x75, 0x6e, 0x74, 0x69, 0x6c, 0x5f, 0x74, 0x69, 0x6d,
-	0x65, 0x18, 0x10, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0a, 0x61, 0x75, 0x74, 0x6f, 0x6d,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x22, 0x0a, 0x0a, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x09,
+	0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x64, 0x12, 0x28, 0x0a, 0x0d, 0x61, 0x6c, 0x6c,
+	0x6f, 0x77, 0x5f, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6e, 0x67, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08,
+	0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x77, 0x4d, 0x69, 0x73, 0x73,
+	0x69, 0x6e, 0x67, 0x12, 0x28, 0x0a, 0x0d, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x5f,
+	0x6f, 0x6e, 0x6c, 0x79, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52,
+	0x0c, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x6e, 0x6c, 0x79, 0x22, 0xed, 0x01,
+	0x0a, 0x17, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x41, 0x0a, 0x04, 0x6e, 0x61, 0x6d,
+	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2d, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x27, 0x0a,
+	0x25, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x41, 0x75, 0x74, 0x6f,
+	0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x22, 0x0a, 0x0a,
+	0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x64,
+	0x12, 0x28, 0x0a, 0x0d, 0x61, 0x6c, 0x6c, 0x6f, 0x77, 0x5f, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6e,
+	0x67, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0c, 0x61, 0x6c,
+	0x6c, 0x6f, 0x77, 0x4d, 0x69, 0x73, 0x73, 0x69, 0x6e, 0x67, 0x12, 0x28, 0x0a, 0x0d, 0x76, 0x61,
+	0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x6f, 0x6e, 0x6c, 0x79, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x08, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0c, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65,
+	0x4f, 0x6e, 0x6c, 0x79, 0x12, 0x17, 0x0a, 0x04, 0x65, 0x74, 0x61, 0x67, 0x18, 0x05, 0x20, 0x01,
+	0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x04, 0x65, 0x74, 0x61, 0x67, 0x22, 0xce, 0x01,
+	0x0a, 0x16, 0x4c, 0x69, 0x73, 0x74, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x45, 0x0a, 0x06, 0x70, 0x61, 0x72, 0x65,
+	0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2d, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x27,
+	0x12, 0x25, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x41, 0x75, 0x74,
+	0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x06, 0x70, 0x61, 0x72, 0x65, 0x6e, 0x74, 0x12,
+	0x1b, 0x0a, 0x09, 0x70, 0x61, 0x67, 0x65, 0x5f, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x08, 0x70, 0x61, 0x67, 0x65, 0x53, 0x69, 0x7a, 0x65, 0x12, 0x1d, 0x0a, 0x0a,
+	0x70, 0x61, 0x67, 0x65, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x09, 0x70, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x16, 0x0a, 0x06, 0x66,
+	0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x66, 0x69, 0x6c,
+	0x74, 0x65, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x62, 0x79, 0x18,
+	0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x42, 0x79, 0x22, 0xa9,
+	0x01, 0x0a, 0x17, 0x4c, 0x69, 0x73, 0x74, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x44, 0x0a, 0x0b, 0x61, 0x75,
+	0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x22, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64,
+	0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x52, 0x0b, 0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x12, 0x26, 0x0a, 0x0f, 0x6e, 0x65, 0x78, 0x74, 0x5f, 0x70, 0x61, 0x67, 0x65, 0x5f, 0x74, 0x6f,
+	0x6b, 0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x6e, 0x65, 0x78, 0x74, 0x50,
+	0x61, 0x67, 0x65, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x20, 0x0a, 0x0b, 0x75, 0x6e, 0x72, 0x65,
+	0x61, 0x63, 0x68, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0b, 0x75,
+	0x6e, 0x72, 0x65, 0x61, 0x63, 0x68, 0x61, 0x62, 0x6c, 0x65, 0x22, 0x59, 0x0a, 0x14, 0x47, 0x65,
+	0x74, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x41, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x42, 0x2d, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x27, 0x0a, 0x25, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x64,
+	0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73,
+	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
+	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x95, 0x0c, 0x0a, 0x0d, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6e, 0x12, 0x17, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65,
+	0x12, 0x40, 0x0a, 0x0b, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
+	0x70, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x54, 0x69,
+	0x6d, 0x65, 0x12, 0x40, 0x0a, 0x0b, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d,
+	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
-	0x61, 0x6d, 0x70, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0d, 0x77, 0x61, 0x69, 0x74, 0x55, 0x6e,
-	0x74, 0x69, 0x6c, 0x54, 0x69, 0x6d, 0x65, 0x22, 0x73, 0x0a, 0x05, 0x53, 0x74, 0x61, 0x74, 0x65,
-	0x12, 0x15, 0x0a, 0x11, 0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43,
-	0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0d, 0x0a, 0x09, 0x53, 0x55, 0x43, 0x43, 0x45,
-	0x45, 0x44, 0x45, 0x44, 0x10, 0x01, 0x12, 0x0d, 0x0a, 0x09, 0x43, 0x41, 0x4e, 0x43, 0x45, 0x4c,
-	0x4c, 0x45, 0x44, 0x10, 0x02, 0x12, 0x0a, 0x0a, 0x06, 0x46, 0x41, 0x49, 0x4c, 0x45, 0x44, 0x10,
-	0x03, 0x12, 0x0f, 0x0a, 0x0b, 0x49, 0x4e, 0x5f, 0x50, 0x52, 0x4f, 0x47, 0x52, 0x45, 0x53, 0x53,
-	0x10, 0x04, 0x12, 0x0b, 0x0a, 0x07, 0x50, 0x45, 0x4e, 0x44, 0x49, 0x4e, 0x47, 0x10, 0x05, 0x12,
-	0x0b, 0x0a, 0x07, 0x41, 0x42, 0x4f, 0x52, 0x54, 0x45, 0x44, 0x10, 0x06, 0x3a, 0x9d, 0x01, 0xea,
-	0x41, 0x99, 0x01, 0x0a, 0x28, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6e, 0x12, 0x6d, 0x70,
-	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
-	0x7d, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x6c, 0x6f, 0x63,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x64, 0x65, 0x6c, 0x69, 0x76, 0x65, 0x72, 0x79, 0x50,
-	0x69, 0x70, 0x65, 0x6c, 0x69, 0x6e, 0x65, 0x73, 0x2f, 0x7b, 0x64, 0x65, 0x6c, 0x69, 0x76, 0x65,
-	0x72, 0x79, 0x5f, 0x70, 0x69, 0x70, 0x65, 0x6c, 0x69, 0x6e, 0x65, 0x7d, 0x2f, 0x61, 0x75, 0x74,
-	0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6e, 0x73, 0x2f, 0x7b, 0x61, 0x75, 0x74,
-	0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x72, 0x75, 0x6e, 0x7d, 0x42, 0x0b, 0x0a, 0x09,
-	0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa9, 0x01, 0x0a, 0x17, 0x50, 0x72,
-	0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x4f, 0x70, 0x65, 0x72,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x20, 0x0a, 0x09, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x5f,
-	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x08, 0x74,
-	0x61, 0x72, 0x67, 0x65, 0x74, 0x49, 0x64, 0x12, 0x32, 0x0a, 0x04, 0x77, 0x61, 0x69, 0x74, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x04, 0x77, 0x61, 0x69, 0x74, 0x12, 0x1d, 0x0a, 0x07, 0x72,
-	0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41,
-	0x03, 0x52, 0x07, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x12, 0x19, 0x0a, 0x05, 0x70, 0x68,
-	0x61, 0x73, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x05,
-	0x70, 0x68, 0x61, 0x73, 0x65, 0x22, 0xc6, 0x01, 0x0a, 0x17, 0x41, 0x64, 0x76, 0x61, 0x6e, 0x63,
-	0x65, 0x52, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x12, 0x26, 0x0a, 0x0c, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f, 0x70, 0x68, 0x61, 0x73,
-	0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0b, 0x73, 0x6f,
-	0x75, 0x72, 0x63, 0x65, 0x50, 0x68, 0x61, 0x73, 0x65, 0x12, 0x32, 0x0a, 0x04, 0x77, 0x61, 0x69,
-	0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x04, 0x77, 0x61, 0x69, 0x74, 0x12, 0x1d, 0x0a,
-	0x07, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03,
-	0xe0, 0x41, 0x03, 0x52, 0x07, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x12, 0x30, 0x0a, 0x11,
-	0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x70, 0x68, 0x61, 0x73,
-	0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x10, 0x64, 0x65,
-	0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x68, 0x61, 0x73, 0x65, 0x22, 0x84,
-	0x02, 0x0a, 0x16, 0x52, 0x65, 0x70, 0x61, 0x69, 0x72, 0x52, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74,
-	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1d, 0x0a, 0x07, 0x72, 0x6f, 0x6c,
-	0x6c, 0x6f, 0x75, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52,
-	0x07, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x12, 0x40, 0x0a, 0x1a, 0x63, 0x75, 0x72, 0x72,
-	0x65, 0x6e, 0x74, 0x5f, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x5f, 0x70, 0x68, 0x61, 0x73, 0x65,
-	0x5f, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x06, 0x20, 0x01, 0x28, 0x03, 0x42, 0x03, 0xe0, 0x41,
-	0x03, 0x52, 0x17, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x70, 0x61, 0x69, 0x72,
-	0x50, 0x68, 0x61, 0x73, 0x65, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x12, 0x4d, 0x0a, 0x0d, 0x72, 0x65,
-	0x70, 0x61, 0x69, 0x72, 0x5f, 0x70, 0x68, 0x61, 0x73, 0x65, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28,
-	0x0b, 0x32, 0x23, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
-	0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x70, 0x61, 0x69,
-	0x72, 0x50, 0x68, 0x61, 0x73, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0c, 0x72, 0x65, 0x70,
-	0x61, 0x69, 0x72, 0x50, 0x68, 0x61, 0x73, 0x65, 0x73, 0x12, 0x1e, 0x0a, 0x08, 0x70, 0x68, 0x61,
-	0x73, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03,
-	0x52, 0x07, 0x70, 0x68, 0x61, 0x73, 0x65, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x06, 0x6a, 0x6f, 0x62,
-	0x5f, 0x69, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x05,
-	0x6a, 0x6f, 0x62, 0x49, 0x64, 0x22, 0xaa, 0x01, 0x0a, 0x0b, 0x52, 0x65, 0x70, 0x61, 0x69, 0x72,
+	0x61, 0x6d, 0x70, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0a, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x54, 0x69, 0x6d, 0x65, 0x12, 0x17, 0x0a, 0x04, 0x65, 0x74, 0x61, 0x67, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x04, 0x65, 0x74, 0x61, 0x67, 0x12, 0x2c, 0x0a,
+	0x0f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74,
+	0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0e, 0x73, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x58, 0x0a, 0x13, 0x61,
+	0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x73, 0x6e, 0x61, 0x70, 0x73, 0x68,
+	0x6f, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76,
+	0x31, 0x2e, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41,
+	0x03, 0x52, 0x12, 0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x6e, 0x61,
+	0x70, 0x73, 0x68, 0x6f, 0x74, 0x12, 0x20, 0x0a, 0x09, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x5f,
+	0x69, 0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x08, 0x74,
+	0x61, 0x72, 0x67, 0x65, 0x74, 0x49, 0x64, 0x12, 0x46, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65,
+	0x18, 0x08, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x2b, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e,
+	0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6e, 0x2e, 0x53, 0x74,
+	0x61, 0x74, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65, 0x12,
+	0x30, 0x0a, 0x11, 0x73, 0x74, 0x61, 0x74, 0x65, 0x5f, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52,
+	0x10, 0x73, 0x74, 0x61, 0x74, 0x65, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f,
+	0x6e, 0x12, 0x57, 0x0a, 0x10, 0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x5f, 0x76, 0x69, 0x6f, 0x6c,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f,
+	0x79, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x56, 0x69, 0x6f, 0x6c, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0f, 0x70, 0x6f, 0x6c, 0x69, 0x63,
+	0x79, 0x56, 0x69, 0x6f, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x40, 0x0a, 0x0b, 0x65, 0x78,
+	0x70, 0x69, 0x72, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x03, 0xe0, 0x41, 0x03,
+	0x52, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x1c, 0x0a, 0x07,
+	0x72, 0x75, 0x6c, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0,
+	0x41, 0x03, 0x52, 0x06, 0x72, 0x75, 0x6c, 0x65, 0x49, 0x64, 0x12, 0x28, 0x0a, 0x0d, 0x61, 0x75,
+	0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x0f, 0x20, 0x01, 0x28,
+	0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0c, 0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x49, 0x64, 0x12, 0x72, 0x0a, 0x19, 0x70, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x5f,
+	0x72, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x5f, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31,
+	0x2e, 0x50, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x4f,
+	0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x48, 0x00, 0x52,
+	0x17, 0x70, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x4f,
+	0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x72, 0x0a, 0x19, 0x61, 0x64, 0x76, 0x61,
+	0x6e, 0x63, 0x65, 0x5f, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x5f, 0x6f, 0x70, 0x65, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f,
+	0x79, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x64, 0x76, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x6f, 0x6c, 0x6c,
+	0x6f, 0x75, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41,
+	0x03, 0x48, 0x00, 0x52, 0x17, 0x61, 0x64, 0x76, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x6f, 0x6c, 0x6c,
+	0x6f, 0x75, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x6f, 0x0a, 0x18,
+	0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x5f, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x5f, 0x6f,
+	0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x11, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2e,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65,
+	0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x70, 0x61, 0x69, 0x72, 0x52, 0x6f,
+	0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03,
+	0xe0, 0x41, 0x03, 0x48, 0x00, 0x52, 0x16, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x52, 0x6f, 0x6c,
+	0x6c, 0x6f, 0x75, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x82, 0x01,
+	0x0a, 0x1f, 0x74, 0x69, 0x6d, 0x65, 0x64, 0x5f, 0x70, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x5f,
+	0x72, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x5f, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x13, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x34, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31,
+	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c,
+	0x65, 0x61, 0x73, 0x65, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0,
+	0x41, 0x03, 0x48, 0x00, 0x52, 0x1c, 0x74, 0x69, 0x6d, 0x65, 0x64, 0x50, 0x72, 0x6f, 0x6d, 0x6f,
+	0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x47, 0x0a, 0x0f, 0x77, 0x61, 0x69, 0x74, 0x5f, 0x75, 0x6e, 0x74, 0x69, 0x6c,
+	0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x10, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x0d, 0x77, 0x61,
+	0x69, 0x74, 0x55, 0x6e, 0x74, 0x69, 0x6c, 0x54, 0x69, 0x6d, 0x65, 0x22, 0x73, 0x0a, 0x05, 0x53,
+	0x74, 0x61, 0x74, 0x65, 0x12, 0x15, 0x0a, 0x11, 0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x55, 0x4e,
+	0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0d, 0x0a, 0x09, 0x53,
+	0x55, 0x43, 0x43, 0x45, 0x45, 0x44, 0x45, 0x44, 0x10, 0x01, 0x12, 0x0d, 0x0a, 0x09, 0x43, 0x41,
+	0x4e, 0x43, 0x45, 0x4c, 0x4c, 0x45, 0x44, 0x10, 0x02, 0x12, 0x0a, 0x0a, 0x06, 0x46, 0x41, 0x49,
+	0x4c, 0x45, 0x44, 0x10, 0x03, 0x12, 0x0f, 0x0a, 0x0b, 0x49, 0x4e, 0x5f, 0x50, 0x52, 0x4f, 0x47,
+	0x52, 0x45, 0x53, 0x53, 0x10, 0x04, 0x12, 0x0b, 0x0a, 0x07, 0x50, 0x45, 0x4e, 0x44, 0x49, 0x4e,
+	0x47, 0x10, 0x05, 0x12, 0x0b, 0x0a, 0x07, 0x41, 0x42, 0x4f, 0x52, 0x54, 0x45, 0x44, 0x10, 0x06,
+	0x3a, 0x9d, 0x01, 0xea, 0x41, 0x99, 0x01, 0x0a, 0x28, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x64, 0x65,
+	0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e,
+	0x63, 0x6f, 0x6d, 0x2f, 0x41, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75,
+	0x6e, 0x12, 0x6d, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f,
+	0x6a, 0x65, 0x63, 0x74, 0x7d, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f,
+	0x7b, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x64, 0x65, 0x6c, 0x69, 0x76,
+	0x65, 0x72, 0x79, 0x50, 0x69, 0x70, 0x65, 0x6c, 0x69, 0x6e, 0x65, 0x73, 0x2f, 0x7b, 0x64, 0x65,
+	0x6c, 0x69, 0x76, 0x65, 0x72, 0x79, 0x5f, 0x70, 0x69, 0x70, 0x65, 0x6c, 0x69, 0x6e, 0x65, 0x7d,
+	0x2f, 0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x75, 0x6e, 0x73, 0x2f,
+	0x7b, 0x61, 0x75, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x72, 0x75, 0x6e, 0x7d,
+	0x42, 0x0b, 0x0a, 0x09, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa9, 0x01,
+	0x0a, 0x17, 0x50, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65,
+	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x20, 0x0a, 0x09, 0x74, 0x61, 0x72,
+	0x67, 0x65, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41,
+	0x03, 0x52, 0x08, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x49, 0x64, 0x12, 0x32, 0x0a, 0x04, 0x77,
+	0x61, 0x69, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x04, 0x77, 0x61, 0x69, 0x74, 0x12,
+	0x1d, 0x0a, 0x07, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x07, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x12, 0x19,
+	0x0a, 0x05, 0x70, 0x68, 0x61, 0x73, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0,
+	0x41, 0x03, 0x52, 0x05, 0x70, 0x68, 0x61, 0x73, 0x65, 0x22, 0xc6, 0x01, 0x0a, 0x17, 0x41, 0x64,
+	0x76, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x4f, 0x70, 0x65, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x26, 0x0a, 0x0c, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f,
+	0x70, 0x68, 0x61, 0x73, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03,
+	0x52, 0x0b, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x50, 0x68, 0x61, 0x73, 0x65, 0x12, 0x32, 0x0a,
+	0x04, 0x77, 0x61, 0x69, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75,
+	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x04, 0x77, 0x61, 0x69,
+	0x74, 0x12, 0x1d, 0x0a, 0x07, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x07, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74,
+	0x12, 0x30, 0x0a, 0x11, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f,
+	0x70, 0x68, 0x61, 0x73, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03,
+	0x52, 0x10, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x68, 0x61,
+	0x73, 0x65, 0x22, 0x84, 0x02, 0x0a, 0x16, 0x52, 0x65, 0x70, 0x61, 0x69, 0x72, 0x52, 0x6f, 0x6c,
+	0x6c, 0x6f, 0x75, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1d, 0x0a,
+	0x07, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03,
+	0xe0, 0x41, 0x03, 0x52, 0x07, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x12, 0x40, 0x0a, 0x1a,
+	0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x5f, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x5f, 0x70,
+	0x68, 0x61, 0x73, 0x65, 0x5f, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x06, 0x20, 0x01, 0x28, 0x03,
+	0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x17, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x74, 0x52, 0x65,
+	0x70, 0x61, 0x69, 0x72, 0x50, 0x68, 0x61, 0x73, 0x65, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x12, 0x4d,
+	0x0a, 0x0d, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x5f, 0x70, 0x68, 0x61, 0x73, 0x65, 0x73, 0x18,
+	0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x23, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x52,
+	0x65, 0x70, 0x61, 0x69, 0x72, 0x50, 0x68, 0x61, 0x73, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52,
+	0x0c, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x50, 0x68, 0x61, 0x73, 0x65, 0x73, 0x12, 0x1e, 0x0a,
+	0x08, 0x70, 0x68, 0x61, 0x73, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42,
+	0x03, 0xe0, 0x41, 0x03, 0x52, 0x07, 0x70, 0x68, 0x61, 0x73, 0x65, 0x49, 0x64, 0x12, 0x1a, 0x0a,
+	0x06, 0x6a, 0x6f, 0x62, 0x5f, 0x69, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0,
+	0x41, 0x03, 0x52, 0x05, 0x6a, 0x6f, 0x62, 0x49, 0x64, 0x22, 0x7a, 0x0a, 0x1c, 0x54, 0x69, 0x6d,
+	0x65, 0x64, 0x50, 0x72, 0x6f, 0x6d, 0x6f, 0x74, 0x65, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65,
+	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x20, 0x0a, 0x09, 0x74, 0x61, 0x72,
+	0x67, 0x65, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41,
+	0x03, 0x52, 0x08, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x49, 0x64, 0x12, 0x1d, 0x0a, 0x07, 0x72,
+	0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41,
+	0x03, 0x52, 0x07, 0x72, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x12, 0x19, 0x0a, 0x05, 0x70, 0x68,
+	0x61, 0x73, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x05,
+	0x70, 0x68, 0x61, 0x73, 0x65, 0x22, 0xaa, 0x01, 0x0a, 0x0b, 0x52, 0x65, 0x70, 0x61, 0x69, 0x72,
 	0x50, 0x68, 0x61, 0x73, 0x65, 0x12, 0x3f, 0x0a, 0x05, 0x72, 0x65, 0x74, 0x72, 0x79, 0x18, 0x01,
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c,
 	0x6f, 0x75, 0x64, 0x2e, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65,
@@ -18698,7 +19128,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_deploy_v1_cloud_deploy_proto_enumTypes = make([]protoimpl.EnumInfo, 20)
-var file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes = make([]protoimpl.MessageInfo, 194)
+var file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes = make([]protoimpl.MessageInfo, 198)
 var file_google_cloud_deploy_v1_cloud_deploy_proto_goTypes = []any{
 	(SkaffoldSupportState)(0),                      // 0: google.cloud.deploy.v1.SkaffoldSupportState
 	(BackoffMode)(0),                               // 1: google.cloud.deploy.v1.BackoffMode
@@ -18851,89 +19281,93 @@ var file_google_cloud_deploy_v1_cloud_deploy_proto_goTypes = []any{
 	(*Automation)(nil),                             // 148: google.cloud.deploy.v1.Automation
 	(*AutomationResourceSelector)(nil),             // 149: google.cloud.deploy.v1.AutomationResourceSelector
 	(*AutomationRule)(nil),                         // 150: google.cloud.deploy.v1.AutomationRule
-	(*PromoteReleaseRule)(nil),                     // 151: google.cloud.deploy.v1.PromoteReleaseRule
-	(*AdvanceRolloutRule)(nil),                     // 152: google.cloud.deploy.v1.AdvanceRolloutRule
-	(*RepairRolloutRule)(nil),                      // 153: google.cloud.deploy.v1.RepairRolloutRule
-	(*RepairPhaseConfig)(nil),                      // 154: google.cloud.deploy.v1.RepairPhaseConfig
-	(*Retry)(nil),                                  // 155: google.cloud.deploy.v1.Retry
-	(*Rollback)(nil),                               // 156: google.cloud.deploy.v1.Rollback
-	(*AutomationRuleCondition)(nil),                // 157: google.cloud.deploy.v1.AutomationRuleCondition
-	(*CreateAutomationRequest)(nil),                // 158: google.cloud.deploy.v1.CreateAutomationRequest
-	(*UpdateAutomationRequest)(nil),                // 159: google.cloud.deploy.v1.UpdateAutomationRequest
-	(*DeleteAutomationRequest)(nil),                // 160: google.cloud.deploy.v1.DeleteAutomationRequest
-	(*ListAutomationsRequest)(nil),                 // 161: google.cloud.deploy.v1.ListAutomationsRequest
-	(*ListAutomationsResponse)(nil),                // 162: google.cloud.deploy.v1.ListAutomationsResponse
-	(*GetAutomationRequest)(nil),                   // 163: google.cloud.deploy.v1.GetAutomationRequest
-	(*AutomationRun)(nil),                          // 164: google.cloud.deploy.v1.AutomationRun
-	(*PromoteReleaseOperation)(nil),                // 165: google.cloud.deploy.v1.PromoteReleaseOperation
-	(*AdvanceRolloutOperation)(nil),                // 166: google.cloud.deploy.v1.AdvanceRolloutOperation
-	(*RepairRolloutOperation)(nil),                 // 167: google.cloud.deploy.v1.RepairRolloutOperation
-	(*RepairPhase)(nil),                            // 168: google.cloud.deploy.v1.RepairPhase
-	(*RetryPhase)(nil),                             // 169: google.cloud.deploy.v1.RetryPhase
-	(*RetryAttempt)(nil),                           // 170: google.cloud.deploy.v1.RetryAttempt
-	(*RollbackAttempt)(nil),                        // 171: google.cloud.deploy.v1.RollbackAttempt
-	(*ListAutomationRunsRequest)(nil),              // 172: google.cloud.deploy.v1.ListAutomationRunsRequest
-	(*ListAutomationRunsResponse)(nil),             // 173: google.cloud.deploy.v1.ListAutomationRunsResponse
-	(*GetAutomationRunRequest)(nil),                // 174: google.cloud.deploy.v1.GetAutomationRunRequest
-	(*CancelAutomationRunRequest)(nil),             // 175: google.cloud.deploy.v1.CancelAutomationRunRequest
-	(*CancelAutomationRunResponse)(nil),            // 176: google.cloud.deploy.v1.CancelAutomationRunResponse
-	nil,                                            // 177: google.cloud.deploy.v1.DeliveryPipeline.AnnotationsEntry
-	nil,                                            // 178: google.cloud.deploy.v1.DeliveryPipeline.LabelsEntry
-	nil,                                            // 179: google.cloud.deploy.v1.DeployParameters.ValuesEntry
-	nil,                                            // 180: google.cloud.deploy.v1.DeployParameters.MatchTargetLabelsEntry
-	(*CustomCanaryDeployment_PhaseConfig)(nil),     // 181: google.cloud.deploy.v1.CustomCanaryDeployment.PhaseConfig
-	(*KubernetesConfig_GatewayServiceMesh)(nil),    // 182: google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh
-	(*KubernetesConfig_ServiceNetworking)(nil),     // 183: google.cloud.deploy.v1.KubernetesConfig.ServiceNetworking
-	(*KubernetesConfig_GatewayServiceMesh_RouteDestinations)(nil), // 184: google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh.RouteDestinations
-	nil, // 185: google.cloud.deploy.v1.Target.AnnotationsEntry
-	nil, // 186: google.cloud.deploy.v1.Target.LabelsEntry
-	nil, // 187: google.cloud.deploy.v1.Target.AssociatedEntitiesEntry
-	nil, // 188: google.cloud.deploy.v1.Target.DeployParametersEntry
-	nil, // 189: google.cloud.deploy.v1.CustomTargetType.AnnotationsEntry
-	nil, // 190: google.cloud.deploy.v1.CustomTargetType.LabelsEntry
-	(*SkaffoldModules_SkaffoldGitSource)(nil),     // 191: google.cloud.deploy.v1.SkaffoldModules.SkaffoldGitSource
-	(*SkaffoldModules_SkaffoldGCSSource)(nil),     // 192: google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCSSource
-	(*SkaffoldModules_SkaffoldGCBRepoSource)(nil), // 193: google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCBRepoSource
-	nil,                                   // 194: google.cloud.deploy.v1.DeployPolicy.AnnotationsEntry
-	nil,                                   // 195: google.cloud.deploy.v1.DeployPolicy.LabelsEntry
-	nil,                                   // 196: google.cloud.deploy.v1.DeliveryPipelineAttribute.LabelsEntry
-	nil,                                   // 197: google.cloud.deploy.v1.TargetAttribute.LabelsEntry
-	(*Release_TargetRender)(nil),          // 198: google.cloud.deploy.v1.Release.TargetRender
-	(*Release_ReleaseReadyCondition)(nil), // 199: google.cloud.deploy.v1.Release.ReleaseReadyCondition
-	(*Release_SkaffoldSupportedCondition)(nil), // 200: google.cloud.deploy.v1.Release.SkaffoldSupportedCondition
-	(*Release_ReleaseCondition)(nil),           // 201: google.cloud.deploy.v1.Release.ReleaseCondition
-	nil,                                        // 202: google.cloud.deploy.v1.Release.AnnotationsEntry
-	nil,                                        // 203: google.cloud.deploy.v1.Release.LabelsEntry
-	nil,                                        // 204: google.cloud.deploy.v1.Release.TargetArtifactsEntry
-	nil,                                        // 205: google.cloud.deploy.v1.Release.TargetRendersEntry
-	nil,                                        // 206: google.cloud.deploy.v1.Release.DeployParametersEntry
-	(*TargetArtifact_PhaseArtifact)(nil),       // 207: google.cloud.deploy.v1.TargetArtifact.PhaseArtifact
-	nil,                                        // 208: google.cloud.deploy.v1.TargetArtifact.PhaseArtifactsEntry
-	nil,                                        // 209: google.cloud.deploy.v1.Rollout.AnnotationsEntry
-	nil,                                        // 210: google.cloud.deploy.v1.Rollout.LabelsEntry
-	nil,                                        // 211: google.cloud.deploy.v1.CustomMetadata.ValuesEntry
-	nil,                                        // 212: google.cloud.deploy.v1.Automation.AnnotationsEntry
-	nil,                                        // 213: google.cloud.deploy.v1.Automation.LabelsEntry
-	(*timestamppb.Timestamp)(nil),              // 214: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),              // 215: google.protobuf.FieldMask
-	(*durationpb.Duration)(nil),                // 216: google.protobuf.Duration
-	(*date.Date)(nil),                          // 217: google.type.Date
-	(*timeofday.TimeOfDay)(nil),                // 218: google.type.TimeOfDay
-	(dayofweek.DayOfWeek)(0),                   // 219: google.type.DayOfWeek
-	(*longrunningpb.Operation)(nil),            // 220: google.longrunning.Operation
+	(*TimedPromoteReleaseRule)(nil),                // 151: google.cloud.deploy.v1.TimedPromoteReleaseRule
+	(*PromoteReleaseRule)(nil),                     // 152: google.cloud.deploy.v1.PromoteReleaseRule
+	(*AdvanceRolloutRule)(nil),                     // 153: google.cloud.deploy.v1.AdvanceRolloutRule
+	(*RepairRolloutRule)(nil),                      // 154: google.cloud.deploy.v1.RepairRolloutRule
+	(*RepairPhaseConfig)(nil),                      // 155: google.cloud.deploy.v1.RepairPhaseConfig
+	(*Retry)(nil),                                  // 156: google.cloud.deploy.v1.Retry
+	(*Rollback)(nil),                               // 157: google.cloud.deploy.v1.Rollback
+	(*AutomationRuleCondition)(nil),                // 158: google.cloud.deploy.v1.AutomationRuleCondition
+	(*TimedPromoteReleaseCondition)(nil),           // 159: google.cloud.deploy.v1.TimedPromoteReleaseCondition
+	(*CreateAutomationRequest)(nil),                // 160: google.cloud.deploy.v1.CreateAutomationRequest
+	(*UpdateAutomationRequest)(nil),                // 161: google.cloud.deploy.v1.UpdateAutomationRequest
+	(*DeleteAutomationRequest)(nil),                // 162: google.cloud.deploy.v1.DeleteAutomationRequest
+	(*ListAutomationsRequest)(nil),                 // 163: google.cloud.deploy.v1.ListAutomationsRequest
+	(*ListAutomationsResponse)(nil),                // 164: google.cloud.deploy.v1.ListAutomationsResponse
+	(*GetAutomationRequest)(nil),                   // 165: google.cloud.deploy.v1.GetAutomationRequest
+	(*AutomationRun)(nil),                          // 166: google.cloud.deploy.v1.AutomationRun
+	(*PromoteReleaseOperation)(nil),                // 167: google.cloud.deploy.v1.PromoteReleaseOperation
+	(*AdvanceRolloutOperation)(nil),                // 168: google.cloud.deploy.v1.AdvanceRolloutOperation
+	(*RepairRolloutOperation)(nil),                 // 169: google.cloud.deploy.v1.RepairRolloutOperation
+	(*TimedPromoteReleaseOperation)(nil),           // 170: google.cloud.deploy.v1.TimedPromoteReleaseOperation
+	(*RepairPhase)(nil),                            // 171: google.cloud.deploy.v1.RepairPhase
+	(*RetryPhase)(nil),                             // 172: google.cloud.deploy.v1.RetryPhase
+	(*RetryAttempt)(nil),                           // 173: google.cloud.deploy.v1.RetryAttempt
+	(*RollbackAttempt)(nil),                        // 174: google.cloud.deploy.v1.RollbackAttempt
+	(*ListAutomationRunsRequest)(nil),              // 175: google.cloud.deploy.v1.ListAutomationRunsRequest
+	(*ListAutomationRunsResponse)(nil),             // 176: google.cloud.deploy.v1.ListAutomationRunsResponse
+	(*GetAutomationRunRequest)(nil),                // 177: google.cloud.deploy.v1.GetAutomationRunRequest
+	(*CancelAutomationRunRequest)(nil),             // 178: google.cloud.deploy.v1.CancelAutomationRunRequest
+	(*CancelAutomationRunResponse)(nil),            // 179: google.cloud.deploy.v1.CancelAutomationRunResponse
+	nil,                                            // 180: google.cloud.deploy.v1.DeliveryPipeline.AnnotationsEntry
+	nil,                                            // 181: google.cloud.deploy.v1.DeliveryPipeline.LabelsEntry
+	nil,                                            // 182: google.cloud.deploy.v1.DeployParameters.ValuesEntry
+	nil,                                            // 183: google.cloud.deploy.v1.DeployParameters.MatchTargetLabelsEntry
+	(*CustomCanaryDeployment_PhaseConfig)(nil),     // 184: google.cloud.deploy.v1.CustomCanaryDeployment.PhaseConfig
+	(*KubernetesConfig_GatewayServiceMesh)(nil),    // 185: google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh
+	(*KubernetesConfig_ServiceNetworking)(nil),     // 186: google.cloud.deploy.v1.KubernetesConfig.ServiceNetworking
+	(*KubernetesConfig_GatewayServiceMesh_RouteDestinations)(nil), // 187: google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh.RouteDestinations
+	nil, // 188: google.cloud.deploy.v1.Target.AnnotationsEntry
+	nil, // 189: google.cloud.deploy.v1.Target.LabelsEntry
+	nil, // 190: google.cloud.deploy.v1.Target.AssociatedEntitiesEntry
+	nil, // 191: google.cloud.deploy.v1.Target.DeployParametersEntry
+	nil, // 192: google.cloud.deploy.v1.CustomTargetType.AnnotationsEntry
+	nil, // 193: google.cloud.deploy.v1.CustomTargetType.LabelsEntry
+	(*SkaffoldModules_SkaffoldGitSource)(nil),     // 194: google.cloud.deploy.v1.SkaffoldModules.SkaffoldGitSource
+	(*SkaffoldModules_SkaffoldGCSSource)(nil),     // 195: google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCSSource
+	(*SkaffoldModules_SkaffoldGCBRepoSource)(nil), // 196: google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCBRepoSource
+	nil,                                   // 197: google.cloud.deploy.v1.DeployPolicy.AnnotationsEntry
+	nil,                                   // 198: google.cloud.deploy.v1.DeployPolicy.LabelsEntry
+	nil,                                   // 199: google.cloud.deploy.v1.DeliveryPipelineAttribute.LabelsEntry
+	nil,                                   // 200: google.cloud.deploy.v1.TargetAttribute.LabelsEntry
+	(*Release_TargetRender)(nil),          // 201: google.cloud.deploy.v1.Release.TargetRender
+	(*Release_ReleaseReadyCondition)(nil), // 202: google.cloud.deploy.v1.Release.ReleaseReadyCondition
+	(*Release_SkaffoldSupportedCondition)(nil), // 203: google.cloud.deploy.v1.Release.SkaffoldSupportedCondition
+	(*Release_ReleaseCondition)(nil),           // 204: google.cloud.deploy.v1.Release.ReleaseCondition
+	nil,                                        // 205: google.cloud.deploy.v1.Release.AnnotationsEntry
+	nil,                                        // 206: google.cloud.deploy.v1.Release.LabelsEntry
+	nil,                                        // 207: google.cloud.deploy.v1.Release.TargetArtifactsEntry
+	nil,                                        // 208: google.cloud.deploy.v1.Release.TargetRendersEntry
+	nil,                                        // 209: google.cloud.deploy.v1.Release.DeployParametersEntry
+	(*TargetArtifact_PhaseArtifact)(nil),       // 210: google.cloud.deploy.v1.TargetArtifact.PhaseArtifact
+	nil,                                        // 211: google.cloud.deploy.v1.TargetArtifact.PhaseArtifactsEntry
+	nil,                                        // 212: google.cloud.deploy.v1.Rollout.AnnotationsEntry
+	nil,                                        // 213: google.cloud.deploy.v1.Rollout.LabelsEntry
+	nil,                                        // 214: google.cloud.deploy.v1.CustomMetadata.ValuesEntry
+	nil,                                        // 215: google.cloud.deploy.v1.Automation.AnnotationsEntry
+	nil,                                        // 216: google.cloud.deploy.v1.Automation.LabelsEntry
+	(*TimedPromoteReleaseCondition_Targets)(nil), // 217: google.cloud.deploy.v1.TimedPromoteReleaseCondition.Targets
+	(*timestamppb.Timestamp)(nil),                // 218: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                // 219: google.protobuf.FieldMask
+	(*durationpb.Duration)(nil),                  // 220: google.protobuf.Duration
+	(*date.Date)(nil),                            // 221: google.type.Date
+	(*timeofday.TimeOfDay)(nil),                  // 222: google.type.TimeOfDay
+	(dayofweek.DayOfWeek)(0),                     // 223: google.type.DayOfWeek
+	(*longrunningpb.Operation)(nil),              // 224: google.longrunning.Operation
 }
 var file_google_cloud_deploy_v1_cloud_deploy_proto_depIdxs = []int32{
-	177, // 0: google.cloud.deploy.v1.DeliveryPipeline.annotations:type_name -> google.cloud.deploy.v1.DeliveryPipeline.AnnotationsEntry
-	178, // 1: google.cloud.deploy.v1.DeliveryPipeline.labels:type_name -> google.cloud.deploy.v1.DeliveryPipeline.LabelsEntry
-	214, // 2: google.cloud.deploy.v1.DeliveryPipeline.create_time:type_name -> google.protobuf.Timestamp
-	214, // 3: google.cloud.deploy.v1.DeliveryPipeline.update_time:type_name -> google.protobuf.Timestamp
+	180, // 0: google.cloud.deploy.v1.DeliveryPipeline.annotations:type_name -> google.cloud.deploy.v1.DeliveryPipeline.AnnotationsEntry
+	181, // 1: google.cloud.deploy.v1.DeliveryPipeline.labels:type_name -> google.cloud.deploy.v1.DeliveryPipeline.LabelsEntry
+	218, // 2: google.cloud.deploy.v1.DeliveryPipeline.create_time:type_name -> google.protobuf.Timestamp
+	218, // 3: google.cloud.deploy.v1.DeliveryPipeline.update_time:type_name -> google.protobuf.Timestamp
 	21,  // 4: google.cloud.deploy.v1.DeliveryPipeline.serial_pipeline:type_name -> google.cloud.deploy.v1.SerialPipeline
 	37,  // 5: google.cloud.deploy.v1.DeliveryPipeline.condition:type_name -> google.cloud.deploy.v1.PipelineCondition
 	22,  // 6: google.cloud.deploy.v1.SerialPipeline.stages:type_name -> google.cloud.deploy.v1.Stage
 	24,  // 7: google.cloud.deploy.v1.Stage.strategy:type_name -> google.cloud.deploy.v1.Strategy
 	23,  // 8: google.cloud.deploy.v1.Stage.deploy_parameters:type_name -> google.cloud.deploy.v1.DeployParameters
-	179, // 9: google.cloud.deploy.v1.DeployParameters.values:type_name -> google.cloud.deploy.v1.DeployParameters.ValuesEntry
-	180, // 10: google.cloud.deploy.v1.DeployParameters.match_target_labels:type_name -> google.cloud.deploy.v1.DeployParameters.MatchTargetLabelsEntry
+	182, // 9: google.cloud.deploy.v1.DeployParameters.values:type_name -> google.cloud.deploy.v1.DeployParameters.ValuesEntry
+	183, // 10: google.cloud.deploy.v1.DeployParameters.match_target_labels:type_name -> google.cloud.deploy.v1.DeployParameters.MatchTargetLabelsEntry
 	27,  // 11: google.cloud.deploy.v1.Strategy.standard:type_name -> google.cloud.deploy.v1.Standard
 	28,  // 12: google.cloud.deploy.v1.Strategy.canary:type_name -> google.cloud.deploy.v1.Canary
 	25,  // 13: google.cloud.deploy.v1.Standard.predeploy:type_name -> google.cloud.deploy.v1.Predeploy
@@ -18943,112 +19377,112 @@ var file_google_cloud_deploy_v1_cloud_deploy_proto_depIdxs = []int32{
 	30,  // 17: google.cloud.deploy.v1.Canary.custom_canary_deployment:type_name -> google.cloud.deploy.v1.CustomCanaryDeployment
 	25,  // 18: google.cloud.deploy.v1.CanaryDeployment.predeploy:type_name -> google.cloud.deploy.v1.Predeploy
 	26,  // 19: google.cloud.deploy.v1.CanaryDeployment.postdeploy:type_name -> google.cloud.deploy.v1.Postdeploy
-	181, // 20: google.cloud.deploy.v1.CustomCanaryDeployment.phase_configs:type_name -> google.cloud.deploy.v1.CustomCanaryDeployment.PhaseConfig
-	182, // 21: google.cloud.deploy.v1.KubernetesConfig.gateway_service_mesh:type_name -> google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh
-	183, // 22: google.cloud.deploy.v1.KubernetesConfig.service_networking:type_name -> google.cloud.deploy.v1.KubernetesConfig.ServiceNetworking
+	184, // 20: google.cloud.deploy.v1.CustomCanaryDeployment.phase_configs:type_name -> google.cloud.deploy.v1.CustomCanaryDeployment.PhaseConfig
+	185, // 21: google.cloud.deploy.v1.KubernetesConfig.gateway_service_mesh:type_name -> google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh
+	186, // 22: google.cloud.deploy.v1.KubernetesConfig.service_networking:type_name -> google.cloud.deploy.v1.KubernetesConfig.ServiceNetworking
 	31,  // 23: google.cloud.deploy.v1.RuntimeConfig.kubernetes:type_name -> google.cloud.deploy.v1.KubernetesConfig
 	32,  // 24: google.cloud.deploy.v1.RuntimeConfig.cloud_run:type_name -> google.cloud.deploy.v1.CloudRunConfig
-	214, // 25: google.cloud.deploy.v1.PipelineReadyCondition.update_time:type_name -> google.protobuf.Timestamp
-	214, // 26: google.cloud.deploy.v1.TargetsPresentCondition.update_time:type_name -> google.protobuf.Timestamp
+	218, // 25: google.cloud.deploy.v1.PipelineReadyCondition.update_time:type_name -> google.protobuf.Timestamp
+	218, // 26: google.cloud.deploy.v1.TargetsPresentCondition.update_time:type_name -> google.protobuf.Timestamp
 	34,  // 27: google.cloud.deploy.v1.PipelineCondition.pipeline_ready_condition:type_name -> google.cloud.deploy.v1.PipelineReadyCondition
 	35,  // 28: google.cloud.deploy.v1.PipelineCondition.targets_present_condition:type_name -> google.cloud.deploy.v1.TargetsPresentCondition
 	36,  // 29: google.cloud.deploy.v1.PipelineCondition.targets_type_condition:type_name -> google.cloud.deploy.v1.TargetsTypeCondition
 	20,  // 30: google.cloud.deploy.v1.ListDeliveryPipelinesResponse.delivery_pipelines:type_name -> google.cloud.deploy.v1.DeliveryPipeline
 	20,  // 31: google.cloud.deploy.v1.CreateDeliveryPipelineRequest.delivery_pipeline:type_name -> google.cloud.deploy.v1.DeliveryPipeline
-	215, // 32: google.cloud.deploy.v1.UpdateDeliveryPipelineRequest.update_mask:type_name -> google.protobuf.FieldMask
+	219, // 32: google.cloud.deploy.v1.UpdateDeliveryPipelineRequest.update_mask:type_name -> google.protobuf.FieldMask
 	20,  // 33: google.cloud.deploy.v1.UpdateDeliveryPipelineRequest.delivery_pipeline:type_name -> google.cloud.deploy.v1.DeliveryPipeline
 	99,  // 34: google.cloud.deploy.v1.RollbackTargetConfig.rollout:type_name -> google.cloud.deploy.v1.Rollout
 	44,  // 35: google.cloud.deploy.v1.RollbackTargetRequest.rollback_config:type_name -> google.cloud.deploy.v1.RollbackTargetConfig
 	44,  // 36: google.cloud.deploy.v1.RollbackTargetResponse.rollback_config:type_name -> google.cloud.deploy.v1.RollbackTargetConfig
-	185, // 37: google.cloud.deploy.v1.Target.annotations:type_name -> google.cloud.deploy.v1.Target.AnnotationsEntry
-	186, // 38: google.cloud.deploy.v1.Target.labels:type_name -> google.cloud.deploy.v1.Target.LabelsEntry
-	214, // 39: google.cloud.deploy.v1.Target.create_time:type_name -> google.protobuf.Timestamp
-	214, // 40: google.cloud.deploy.v1.Target.update_time:type_name -> google.protobuf.Timestamp
+	188, // 37: google.cloud.deploy.v1.Target.annotations:type_name -> google.cloud.deploy.v1.Target.AnnotationsEntry
+	189, // 38: google.cloud.deploy.v1.Target.labels:type_name -> google.cloud.deploy.v1.Target.LabelsEntry
+	218, // 39: google.cloud.deploy.v1.Target.create_time:type_name -> google.protobuf.Timestamp
+	218, // 40: google.cloud.deploy.v1.Target.update_time:type_name -> google.protobuf.Timestamp
 	51,  // 41: google.cloud.deploy.v1.Target.gke:type_name -> google.cloud.deploy.v1.GkeCluster
 	52,  // 42: google.cloud.deploy.v1.Target.anthos_cluster:type_name -> google.cloud.deploy.v1.AnthosCluster
 	53,  // 43: google.cloud.deploy.v1.Target.run:type_name -> google.cloud.deploy.v1.CloudRunLocation
 	54,  // 44: google.cloud.deploy.v1.Target.multi_target:type_name -> google.cloud.deploy.v1.MultiTarget
 	55,  // 45: google.cloud.deploy.v1.Target.custom_target:type_name -> google.cloud.deploy.v1.CustomTarget
-	187, // 46: google.cloud.deploy.v1.Target.associated_entities:type_name -> google.cloud.deploy.v1.Target.AssociatedEntitiesEntry
+	190, // 46: google.cloud.deploy.v1.Target.associated_entities:type_name -> google.cloud.deploy.v1.Target.AssociatedEntitiesEntry
 	48,  // 47: google.cloud.deploy.v1.Target.execution_configs:type_name -> google.cloud.deploy.v1.ExecutionConfig
-	188, // 48: google.cloud.deploy.v1.Target.deploy_parameters:type_name -> google.cloud.deploy.v1.Target.DeployParametersEntry
+	191, // 48: google.cloud.deploy.v1.Target.deploy_parameters:type_name -> google.cloud.deploy.v1.Target.DeployParametersEntry
 	3,   // 49: google.cloud.deploy.v1.ExecutionConfig.usages:type_name -> google.cloud.deploy.v1.ExecutionConfig.ExecutionEnvironmentUsage
 	49,  // 50: google.cloud.deploy.v1.ExecutionConfig.default_pool:type_name -> google.cloud.deploy.v1.DefaultPool
 	50,  // 51: google.cloud.deploy.v1.ExecutionConfig.private_pool:type_name -> google.cloud.deploy.v1.PrivatePool
-	216, // 52: google.cloud.deploy.v1.ExecutionConfig.execution_timeout:type_name -> google.protobuf.Duration
+	220, // 52: google.cloud.deploy.v1.ExecutionConfig.execution_timeout:type_name -> google.protobuf.Duration
 	51,  // 53: google.cloud.deploy.v1.AssociatedEntities.gke_clusters:type_name -> google.cloud.deploy.v1.GkeCluster
 	52,  // 54: google.cloud.deploy.v1.AssociatedEntities.anthos_clusters:type_name -> google.cloud.deploy.v1.AnthosCluster
 	47,  // 55: google.cloud.deploy.v1.ListTargetsResponse.targets:type_name -> google.cloud.deploy.v1.Target
 	47,  // 56: google.cloud.deploy.v1.CreateTargetRequest.target:type_name -> google.cloud.deploy.v1.Target
-	215, // 57: google.cloud.deploy.v1.UpdateTargetRequest.update_mask:type_name -> google.protobuf.FieldMask
+	219, // 57: google.cloud.deploy.v1.UpdateTargetRequest.update_mask:type_name -> google.protobuf.FieldMask
 	47,  // 58: google.cloud.deploy.v1.UpdateTargetRequest.target:type_name -> google.cloud.deploy.v1.Target
-	189, // 59: google.cloud.deploy.v1.CustomTargetType.annotations:type_name -> google.cloud.deploy.v1.CustomTargetType.AnnotationsEntry
-	190, // 60: google.cloud.deploy.v1.CustomTargetType.labels:type_name -> google.cloud.deploy.v1.CustomTargetType.LabelsEntry
-	214, // 61: google.cloud.deploy.v1.CustomTargetType.create_time:type_name -> google.protobuf.Timestamp
-	214, // 62: google.cloud.deploy.v1.CustomTargetType.update_time:type_name -> google.protobuf.Timestamp
+	192, // 59: google.cloud.deploy.v1.CustomTargetType.annotations:type_name -> google.cloud.deploy.v1.CustomTargetType.AnnotationsEntry
+	193, // 60: google.cloud.deploy.v1.CustomTargetType.labels:type_name -> google.cloud.deploy.v1.CustomTargetType.LabelsEntry
+	218, // 61: google.cloud.deploy.v1.CustomTargetType.create_time:type_name -> google.protobuf.Timestamp
+	218, // 62: google.cloud.deploy.v1.CustomTargetType.update_time:type_name -> google.protobuf.Timestamp
 	64,  // 63: google.cloud.deploy.v1.CustomTargetType.custom_actions:type_name -> google.cloud.deploy.v1.CustomTargetSkaffoldActions
 	65,  // 64: google.cloud.deploy.v1.CustomTargetSkaffoldActions.include_skaffold_modules:type_name -> google.cloud.deploy.v1.SkaffoldModules
-	191, // 65: google.cloud.deploy.v1.SkaffoldModules.git:type_name -> google.cloud.deploy.v1.SkaffoldModules.SkaffoldGitSource
-	192, // 66: google.cloud.deploy.v1.SkaffoldModules.google_cloud_storage:type_name -> google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCSSource
-	193, // 67: google.cloud.deploy.v1.SkaffoldModules.google_cloud_build_repo:type_name -> google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCBRepoSource
+	194, // 65: google.cloud.deploy.v1.SkaffoldModules.git:type_name -> google.cloud.deploy.v1.SkaffoldModules.SkaffoldGitSource
+	195, // 66: google.cloud.deploy.v1.SkaffoldModules.google_cloud_storage:type_name -> google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCSSource
+	196, // 67: google.cloud.deploy.v1.SkaffoldModules.google_cloud_build_repo:type_name -> google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCBRepoSource
 	63,  // 68: google.cloud.deploy.v1.ListCustomTargetTypesResponse.custom_target_types:type_name -> google.cloud.deploy.v1.CustomTargetType
 	63,  // 69: google.cloud.deploy.v1.CreateCustomTargetTypeRequest.custom_target_type:type_name -> google.cloud.deploy.v1.CustomTargetType
-	215, // 70: google.cloud.deploy.v1.UpdateCustomTargetTypeRequest.update_mask:type_name -> google.protobuf.FieldMask
+	219, // 70: google.cloud.deploy.v1.UpdateCustomTargetTypeRequest.update_mask:type_name -> google.protobuf.FieldMask
 	63,  // 71: google.cloud.deploy.v1.UpdateCustomTargetTypeRequest.custom_target_type:type_name -> google.cloud.deploy.v1.CustomTargetType
-	194, // 72: google.cloud.deploy.v1.DeployPolicy.annotations:type_name -> google.cloud.deploy.v1.DeployPolicy.AnnotationsEntry
-	195, // 73: google.cloud.deploy.v1.DeployPolicy.labels:type_name -> google.cloud.deploy.v1.DeployPolicy.LabelsEntry
-	214, // 74: google.cloud.deploy.v1.DeployPolicy.create_time:type_name -> google.protobuf.Timestamp
-	214, // 75: google.cloud.deploy.v1.DeployPolicy.update_time:type_name -> google.protobuf.Timestamp
+	197, // 72: google.cloud.deploy.v1.DeployPolicy.annotations:type_name -> google.cloud.deploy.v1.DeployPolicy.AnnotationsEntry
+	198, // 73: google.cloud.deploy.v1.DeployPolicy.labels:type_name -> google.cloud.deploy.v1.DeployPolicy.LabelsEntry
+	218, // 74: google.cloud.deploy.v1.DeployPolicy.create_time:type_name -> google.protobuf.Timestamp
+	218, // 75: google.cloud.deploy.v1.DeployPolicy.update_time:type_name -> google.protobuf.Timestamp
 	73,  // 76: google.cloud.deploy.v1.DeployPolicy.selectors:type_name -> google.cloud.deploy.v1.DeployPolicyResourceSelector
 	76,  // 77: google.cloud.deploy.v1.DeployPolicy.rules:type_name -> google.cloud.deploy.v1.PolicyRule
 	74,  // 78: google.cloud.deploy.v1.DeployPolicyResourceSelector.delivery_pipeline:type_name -> google.cloud.deploy.v1.DeliveryPipelineAttribute
 	75,  // 79: google.cloud.deploy.v1.DeployPolicyResourceSelector.target:type_name -> google.cloud.deploy.v1.TargetAttribute
-	196, // 80: google.cloud.deploy.v1.DeliveryPipelineAttribute.labels:type_name -> google.cloud.deploy.v1.DeliveryPipelineAttribute.LabelsEntry
-	197, // 81: google.cloud.deploy.v1.TargetAttribute.labels:type_name -> google.cloud.deploy.v1.TargetAttribute.LabelsEntry
+	199, // 80: google.cloud.deploy.v1.DeliveryPipelineAttribute.labels:type_name -> google.cloud.deploy.v1.DeliveryPipelineAttribute.LabelsEntry
+	200, // 81: google.cloud.deploy.v1.TargetAttribute.labels:type_name -> google.cloud.deploy.v1.TargetAttribute.LabelsEntry
 	77,  // 82: google.cloud.deploy.v1.PolicyRule.rollout_restriction:type_name -> google.cloud.deploy.v1.RolloutRestriction
 	4,   // 83: google.cloud.deploy.v1.RolloutRestriction.invokers:type_name -> google.cloud.deploy.v1.DeployPolicy.Invoker
 	5,   // 84: google.cloud.deploy.v1.RolloutRestriction.actions:type_name -> google.cloud.deploy.v1.RolloutRestriction.RolloutActions
 	78,  // 85: google.cloud.deploy.v1.RolloutRestriction.time_windows:type_name -> google.cloud.deploy.v1.TimeWindows
 	79,  // 86: google.cloud.deploy.v1.TimeWindows.one_time_windows:type_name -> google.cloud.deploy.v1.OneTimeWindow
 	80,  // 87: google.cloud.deploy.v1.TimeWindows.weekly_windows:type_name -> google.cloud.deploy.v1.WeeklyWindow
-	217, // 88: google.cloud.deploy.v1.OneTimeWindow.start_date:type_name -> google.type.Date
-	218, // 89: google.cloud.deploy.v1.OneTimeWindow.start_time:type_name -> google.type.TimeOfDay
-	217, // 90: google.cloud.deploy.v1.OneTimeWindow.end_date:type_name -> google.type.Date
-	218, // 91: google.cloud.deploy.v1.OneTimeWindow.end_time:type_name -> google.type.TimeOfDay
-	219, // 92: google.cloud.deploy.v1.WeeklyWindow.days_of_week:type_name -> google.type.DayOfWeek
-	218, // 93: google.cloud.deploy.v1.WeeklyWindow.start_time:type_name -> google.type.TimeOfDay
-	218, // 94: google.cloud.deploy.v1.WeeklyWindow.end_time:type_name -> google.type.TimeOfDay
+	221, // 88: google.cloud.deploy.v1.OneTimeWindow.start_date:type_name -> google.type.Date
+	222, // 89: google.cloud.deploy.v1.OneTimeWindow.start_time:type_name -> google.type.TimeOfDay
+	221, // 90: google.cloud.deploy.v1.OneTimeWindow.end_date:type_name -> google.type.Date
+	222, // 91: google.cloud.deploy.v1.OneTimeWindow.end_time:type_name -> google.type.TimeOfDay
+	223, // 92: google.cloud.deploy.v1.WeeklyWindow.days_of_week:type_name -> google.type.DayOfWeek
+	222, // 93: google.cloud.deploy.v1.WeeklyWindow.start_time:type_name -> google.type.TimeOfDay
+	222, // 94: google.cloud.deploy.v1.WeeklyWindow.end_time:type_name -> google.type.TimeOfDay
 	82,  // 95: google.cloud.deploy.v1.PolicyViolation.policy_violation_details:type_name -> google.cloud.deploy.v1.PolicyViolationDetails
-	202, // 96: google.cloud.deploy.v1.Release.annotations:type_name -> google.cloud.deploy.v1.Release.AnnotationsEntry
-	203, // 97: google.cloud.deploy.v1.Release.labels:type_name -> google.cloud.deploy.v1.Release.LabelsEntry
-	214, // 98: google.cloud.deploy.v1.Release.create_time:type_name -> google.protobuf.Timestamp
-	214, // 99: google.cloud.deploy.v1.Release.render_start_time:type_name -> google.protobuf.Timestamp
-	214, // 100: google.cloud.deploy.v1.Release.render_end_time:type_name -> google.protobuf.Timestamp
+	205, // 96: google.cloud.deploy.v1.Release.annotations:type_name -> google.cloud.deploy.v1.Release.AnnotationsEntry
+	206, // 97: google.cloud.deploy.v1.Release.labels:type_name -> google.cloud.deploy.v1.Release.LabelsEntry
+	218, // 98: google.cloud.deploy.v1.Release.create_time:type_name -> google.protobuf.Timestamp
+	218, // 99: google.cloud.deploy.v1.Release.render_start_time:type_name -> google.protobuf.Timestamp
+	218, // 100: google.cloud.deploy.v1.Release.render_end_time:type_name -> google.protobuf.Timestamp
 	90,  // 101: google.cloud.deploy.v1.Release.build_artifacts:type_name -> google.cloud.deploy.v1.BuildArtifact
 	20,  // 102: google.cloud.deploy.v1.Release.delivery_pipeline_snapshot:type_name -> google.cloud.deploy.v1.DeliveryPipeline
 	47,  // 103: google.cloud.deploy.v1.Release.target_snapshots:type_name -> google.cloud.deploy.v1.Target
 	63,  // 104: google.cloud.deploy.v1.Release.custom_target_type_snapshots:type_name -> google.cloud.deploy.v1.CustomTargetType
 	6,   // 105: google.cloud.deploy.v1.Release.render_state:type_name -> google.cloud.deploy.v1.Release.RenderState
-	204, // 106: google.cloud.deploy.v1.Release.target_artifacts:type_name -> google.cloud.deploy.v1.Release.TargetArtifactsEntry
-	205, // 107: google.cloud.deploy.v1.Release.target_renders:type_name -> google.cloud.deploy.v1.Release.TargetRendersEntry
-	201, // 108: google.cloud.deploy.v1.Release.condition:type_name -> google.cloud.deploy.v1.Release.ReleaseCondition
-	206, // 109: google.cloud.deploy.v1.Release.deploy_parameters:type_name -> google.cloud.deploy.v1.Release.DeployParametersEntry
+	207, // 106: google.cloud.deploy.v1.Release.target_artifacts:type_name -> google.cloud.deploy.v1.Release.TargetArtifactsEntry
+	208, // 107: google.cloud.deploy.v1.Release.target_renders:type_name -> google.cloud.deploy.v1.Release.TargetRendersEntry
+	204, // 108: google.cloud.deploy.v1.Release.condition:type_name -> google.cloud.deploy.v1.Release.ReleaseCondition
+	209, // 109: google.cloud.deploy.v1.Release.deploy_parameters:type_name -> google.cloud.deploy.v1.Release.DeployParametersEntry
 	72,  // 110: google.cloud.deploy.v1.CreateDeployPolicyRequest.deploy_policy:type_name -> google.cloud.deploy.v1.DeployPolicy
-	215, // 111: google.cloud.deploy.v1.UpdateDeployPolicyRequest.update_mask:type_name -> google.protobuf.FieldMask
+	219, // 111: google.cloud.deploy.v1.UpdateDeployPolicyRequest.update_mask:type_name -> google.protobuf.FieldMask
 	72,  // 112: google.cloud.deploy.v1.UpdateDeployPolicyRequest.deploy_policy:type_name -> google.cloud.deploy.v1.DeployPolicy
 	72,  // 113: google.cloud.deploy.v1.ListDeployPoliciesResponse.deploy_policies:type_name -> google.cloud.deploy.v1.DeployPolicy
-	208, // 114: google.cloud.deploy.v1.TargetArtifact.phase_artifacts:type_name -> google.cloud.deploy.v1.TargetArtifact.PhaseArtifactsEntry
+	211, // 114: google.cloud.deploy.v1.TargetArtifact.phase_artifacts:type_name -> google.cloud.deploy.v1.TargetArtifact.PhaseArtifactsEntry
 	93,  // 115: google.cloud.deploy.v1.RenderMetadata.cloud_run:type_name -> google.cloud.deploy.v1.CloudRunRenderMetadata
 	105, // 116: google.cloud.deploy.v1.RenderMetadata.custom:type_name -> google.cloud.deploy.v1.CustomMetadata
 	83,  // 117: google.cloud.deploy.v1.ListReleasesResponse.releases:type_name -> google.cloud.deploy.v1.Release
 	83,  // 118: google.cloud.deploy.v1.CreateReleaseRequest.release:type_name -> google.cloud.deploy.v1.Release
-	209, // 119: google.cloud.deploy.v1.Rollout.annotations:type_name -> google.cloud.deploy.v1.Rollout.AnnotationsEntry
-	210, // 120: google.cloud.deploy.v1.Rollout.labels:type_name -> google.cloud.deploy.v1.Rollout.LabelsEntry
-	214, // 121: google.cloud.deploy.v1.Rollout.create_time:type_name -> google.protobuf.Timestamp
-	214, // 122: google.cloud.deploy.v1.Rollout.approve_time:type_name -> google.protobuf.Timestamp
-	214, // 123: google.cloud.deploy.v1.Rollout.enqueue_time:type_name -> google.protobuf.Timestamp
-	214, // 124: google.cloud.deploy.v1.Rollout.deploy_start_time:type_name -> google.protobuf.Timestamp
-	214, // 125: google.cloud.deploy.v1.Rollout.deploy_end_time:type_name -> google.protobuf.Timestamp
+	212, // 119: google.cloud.deploy.v1.Rollout.annotations:type_name -> google.cloud.deploy.v1.Rollout.AnnotationsEntry
+	213, // 120: google.cloud.deploy.v1.Rollout.labels:type_name -> google.cloud.deploy.v1.Rollout.LabelsEntry
+	218, // 121: google.cloud.deploy.v1.Rollout.create_time:type_name -> google.protobuf.Timestamp
+	218, // 122: google.cloud.deploy.v1.Rollout.approve_time:type_name -> google.protobuf.Timestamp
+	218, // 123: google.cloud.deploy.v1.Rollout.enqueue_time:type_name -> google.protobuf.Timestamp
+	218, // 124: google.cloud.deploy.v1.Rollout.deploy_start_time:type_name -> google.protobuf.Timestamp
+	218, // 125: google.cloud.deploy.v1.Rollout.deploy_end_time:type_name -> google.protobuf.Timestamp
 	9,   // 126: google.cloud.deploy.v1.Rollout.approval_state:type_name -> google.cloud.deploy.v1.Rollout.ApprovalState
 	10,  // 127: google.cloud.deploy.v1.Rollout.state:type_name -> google.cloud.deploy.v1.Rollout.State
 	11,  // 128: google.cloud.deploy.v1.Rollout.deploy_failure_cause:type_name -> google.cloud.deploy.v1.Rollout.FailureCause
@@ -19060,7 +19494,7 @@ var file_google_cloud_deploy_v1_cloud_deploy_proto_depIdxs = []int32{
 	102, // 134: google.cloud.deploy.v1.DeployJobRunMetadata.cloud_run:type_name -> google.cloud.deploy.v1.CloudRunMetadata
 	103, // 135: google.cloud.deploy.v1.DeployJobRunMetadata.custom_target:type_name -> google.cloud.deploy.v1.CustomTargetDeployMetadata
 	105, // 136: google.cloud.deploy.v1.DeployJobRunMetadata.custom:type_name -> google.cloud.deploy.v1.CustomMetadata
-	211, // 137: google.cloud.deploy.v1.CustomMetadata.values:type_name -> google.cloud.deploy.v1.CustomMetadata.ValuesEntry
+	214, // 137: google.cloud.deploy.v1.CustomMetadata.values:type_name -> google.cloud.deploy.v1.CustomMetadata.ValuesEntry
 	12,  // 138: google.cloud.deploy.v1.Phase.state:type_name -> google.cloud.deploy.v1.Phase.State
 	107, // 139: google.cloud.deploy.v1.Phase.deployment_jobs:type_name -> google.cloud.deploy.v1.DeploymentJobs
 	108, // 140: google.cloud.deploy.v1.Phase.child_rollout_jobs:type_name -> google.cloud.deploy.v1.ChildRolloutJobs
@@ -19079,11 +19513,11 @@ var file_google_cloud_deploy_v1_cloud_deploy_proto_depIdxs = []int32{
 	115, // 153: google.cloud.deploy.v1.Job.advance_child_rollout_job:type_name -> google.cloud.deploy.v1.AdvanceChildRolloutJob
 	99,  // 154: google.cloud.deploy.v1.ListRolloutsResponse.rollouts:type_name -> google.cloud.deploy.v1.Rollout
 	99,  // 155: google.cloud.deploy.v1.CreateRolloutRequest.rollout:type_name -> google.cloud.deploy.v1.Rollout
-	214, // 156: google.cloud.deploy.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	214, // 157: google.cloud.deploy.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	214, // 158: google.cloud.deploy.v1.JobRun.create_time:type_name -> google.protobuf.Timestamp
-	214, // 159: google.cloud.deploy.v1.JobRun.start_time:type_name -> google.protobuf.Timestamp
-	214, // 160: google.cloud.deploy.v1.JobRun.end_time:type_name -> google.protobuf.Timestamp
+	218, // 156: google.cloud.deploy.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	218, // 157: google.cloud.deploy.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	218, // 158: google.cloud.deploy.v1.JobRun.create_time:type_name -> google.protobuf.Timestamp
+	218, // 159: google.cloud.deploy.v1.JobRun.start_time:type_name -> google.protobuf.Timestamp
+	218, // 160: google.cloud.deploy.v1.JobRun.end_time:type_name -> google.protobuf.Timestamp
 	14,  // 161: google.cloud.deploy.v1.JobRun.state:type_name -> google.cloud.deploy.v1.JobRun.State
 	134, // 162: google.cloud.deploy.v1.JobRun.deploy_job_run:type_name -> google.cloud.deploy.v1.DeployJobRun
 	135, // 163: google.cloud.deploy.v1.JobRun.verify_job_run:type_name -> google.cloud.deploy.v1.VerifyJobRun
@@ -19099,167 +19533,173 @@ var file_google_cloud_deploy_v1_cloud_deploy_proto_depIdxs = []int32{
 	18,  // 173: google.cloud.deploy.v1.PostdeployJobRun.failure_cause:type_name -> google.cloud.deploy.v1.PostdeployJobRun.FailureCause
 	133, // 174: google.cloud.deploy.v1.ListJobRunsResponse.job_runs:type_name -> google.cloud.deploy.v1.JobRun
 	146, // 175: google.cloud.deploy.v1.Config.supported_versions:type_name -> google.cloud.deploy.v1.SkaffoldVersion
-	214, // 176: google.cloud.deploy.v1.SkaffoldVersion.maintenance_mode_time:type_name -> google.protobuf.Timestamp
-	214, // 177: google.cloud.deploy.v1.SkaffoldVersion.support_expiration_time:type_name -> google.protobuf.Timestamp
-	217, // 178: google.cloud.deploy.v1.SkaffoldVersion.support_end_date:type_name -> google.type.Date
-	214, // 179: google.cloud.deploy.v1.Automation.create_time:type_name -> google.protobuf.Timestamp
-	214, // 180: google.cloud.deploy.v1.Automation.update_time:type_name -> google.protobuf.Timestamp
-	212, // 181: google.cloud.deploy.v1.Automation.annotations:type_name -> google.cloud.deploy.v1.Automation.AnnotationsEntry
-	213, // 182: google.cloud.deploy.v1.Automation.labels:type_name -> google.cloud.deploy.v1.Automation.LabelsEntry
+	218, // 176: google.cloud.deploy.v1.SkaffoldVersion.maintenance_mode_time:type_name -> google.protobuf.Timestamp
+	218, // 177: google.cloud.deploy.v1.SkaffoldVersion.support_expiration_time:type_name -> google.protobuf.Timestamp
+	221, // 178: google.cloud.deploy.v1.SkaffoldVersion.support_end_date:type_name -> google.type.Date
+	218, // 179: google.cloud.deploy.v1.Automation.create_time:type_name -> google.protobuf.Timestamp
+	218, // 180: google.cloud.deploy.v1.Automation.update_time:type_name -> google.protobuf.Timestamp
+	215, // 181: google.cloud.deploy.v1.Automation.annotations:type_name -> google.cloud.deploy.v1.Automation.AnnotationsEntry
+	216, // 182: google.cloud.deploy.v1.Automation.labels:type_name -> google.cloud.deploy.v1.Automation.LabelsEntry
 	149, // 183: google.cloud.deploy.v1.Automation.selector:type_name -> google.cloud.deploy.v1.AutomationResourceSelector
 	150, // 184: google.cloud.deploy.v1.Automation.rules:type_name -> google.cloud.deploy.v1.AutomationRule
 	75,  // 185: google.cloud.deploy.v1.AutomationResourceSelector.targets:type_name -> google.cloud.deploy.v1.TargetAttribute
-	151, // 186: google.cloud.deploy.v1.AutomationRule.promote_release_rule:type_name -> google.cloud.deploy.v1.PromoteReleaseRule
-	152, // 187: google.cloud.deploy.v1.AutomationRule.advance_rollout_rule:type_name -> google.cloud.deploy.v1.AdvanceRolloutRule
-	153, // 188: google.cloud.deploy.v1.AutomationRule.repair_rollout_rule:type_name -> google.cloud.deploy.v1.RepairRolloutRule
-	216, // 189: google.cloud.deploy.v1.PromoteReleaseRule.wait:type_name -> google.protobuf.Duration
-	157, // 190: google.cloud.deploy.v1.PromoteReleaseRule.condition:type_name -> google.cloud.deploy.v1.AutomationRuleCondition
-	216, // 191: google.cloud.deploy.v1.AdvanceRolloutRule.wait:type_name -> google.protobuf.Duration
-	157, // 192: google.cloud.deploy.v1.AdvanceRolloutRule.condition:type_name -> google.cloud.deploy.v1.AutomationRuleCondition
-	157, // 193: google.cloud.deploy.v1.RepairRolloutRule.condition:type_name -> google.cloud.deploy.v1.AutomationRuleCondition
-	154, // 194: google.cloud.deploy.v1.RepairRolloutRule.repair_phases:type_name -> google.cloud.deploy.v1.RepairPhaseConfig
-	155, // 195: google.cloud.deploy.v1.RepairPhaseConfig.retry:type_name -> google.cloud.deploy.v1.Retry
-	156, // 196: google.cloud.deploy.v1.RepairPhaseConfig.rollback:type_name -> google.cloud.deploy.v1.Rollback
-	216, // 197: google.cloud.deploy.v1.Retry.wait:type_name -> google.protobuf.Duration
-	1,   // 198: google.cloud.deploy.v1.Retry.backoff_mode:type_name -> google.cloud.deploy.v1.BackoffMode
-	35,  // 199: google.cloud.deploy.v1.AutomationRuleCondition.targets_present_condition:type_name -> google.cloud.deploy.v1.TargetsPresentCondition
-	148, // 200: google.cloud.deploy.v1.CreateAutomationRequest.automation:type_name -> google.cloud.deploy.v1.Automation
-	215, // 201: google.cloud.deploy.v1.UpdateAutomationRequest.update_mask:type_name -> google.protobuf.FieldMask
-	148, // 202: google.cloud.deploy.v1.UpdateAutomationRequest.automation:type_name -> google.cloud.deploy.v1.Automation
-	148, // 203: google.cloud.deploy.v1.ListAutomationsResponse.automations:type_name -> google.cloud.deploy.v1.Automation
-	214, // 204: google.cloud.deploy.v1.AutomationRun.create_time:type_name -> google.protobuf.Timestamp
-	214, // 205: google.cloud.deploy.v1.AutomationRun.update_time:type_name -> google.protobuf.Timestamp
-	148, // 206: google.cloud.deploy.v1.AutomationRun.automation_snapshot:type_name -> google.cloud.deploy.v1.Automation
-	19,  // 207: google.cloud.deploy.v1.AutomationRun.state:type_name -> google.cloud.deploy.v1.AutomationRun.State
-	81,  // 208: google.cloud.deploy.v1.AutomationRun.policy_violation:type_name -> google.cloud.deploy.v1.PolicyViolation
-	214, // 209: google.cloud.deploy.v1.AutomationRun.expire_time:type_name -> google.protobuf.Timestamp
-	165, // 210: google.cloud.deploy.v1.AutomationRun.promote_release_operation:type_name -> google.cloud.deploy.v1.PromoteReleaseOperation
-	166, // 211: google.cloud.deploy.v1.AutomationRun.advance_rollout_operation:type_name -> google.cloud.deploy.v1.AdvanceRolloutOperation
-	167, // 212: google.cloud.deploy.v1.AutomationRun.repair_rollout_operation:type_name -> google.cloud.deploy.v1.RepairRolloutOperation
-	214, // 213: google.cloud.deploy.v1.AutomationRun.wait_until_time:type_name -> google.protobuf.Timestamp
-	216, // 214: google.cloud.deploy.v1.PromoteReleaseOperation.wait:type_name -> google.protobuf.Duration
-	216, // 215: google.cloud.deploy.v1.AdvanceRolloutOperation.wait:type_name -> google.protobuf.Duration
-	168, // 216: google.cloud.deploy.v1.RepairRolloutOperation.repair_phases:type_name -> google.cloud.deploy.v1.RepairPhase
-	169, // 217: google.cloud.deploy.v1.RepairPhase.retry:type_name -> google.cloud.deploy.v1.RetryPhase
-	171, // 218: google.cloud.deploy.v1.RepairPhase.rollback:type_name -> google.cloud.deploy.v1.RollbackAttempt
-	1,   // 219: google.cloud.deploy.v1.RetryPhase.backoff_mode:type_name -> google.cloud.deploy.v1.BackoffMode
-	170, // 220: google.cloud.deploy.v1.RetryPhase.attempts:type_name -> google.cloud.deploy.v1.RetryAttempt
-	216, // 221: google.cloud.deploy.v1.RetryAttempt.wait:type_name -> google.protobuf.Duration
-	2,   // 222: google.cloud.deploy.v1.RetryAttempt.state:type_name -> google.cloud.deploy.v1.RepairState
-	2,   // 223: google.cloud.deploy.v1.RollbackAttempt.state:type_name -> google.cloud.deploy.v1.RepairState
-	164, // 224: google.cloud.deploy.v1.ListAutomationRunsResponse.automation_runs:type_name -> google.cloud.deploy.v1.AutomationRun
-	25,  // 225: google.cloud.deploy.v1.CustomCanaryDeployment.PhaseConfig.predeploy:type_name -> google.cloud.deploy.v1.Predeploy
-	26,  // 226: google.cloud.deploy.v1.CustomCanaryDeployment.PhaseConfig.postdeploy:type_name -> google.cloud.deploy.v1.Postdeploy
-	216, // 227: google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh.route_update_wait_time:type_name -> google.protobuf.Duration
-	216, // 228: google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh.stable_cutback_duration:type_name -> google.protobuf.Duration
-	184, // 229: google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh.route_destinations:type_name -> google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh.RouteDestinations
-	56,  // 230: google.cloud.deploy.v1.Target.AssociatedEntitiesEntry.value:type_name -> google.cloud.deploy.v1.AssociatedEntities
-	7,   // 231: google.cloud.deploy.v1.Release.TargetRender.rendering_state:type_name -> google.cloud.deploy.v1.Release.TargetRender.TargetRenderState
-	94,  // 232: google.cloud.deploy.v1.Release.TargetRender.metadata:type_name -> google.cloud.deploy.v1.RenderMetadata
-	8,   // 233: google.cloud.deploy.v1.Release.TargetRender.failure_cause:type_name -> google.cloud.deploy.v1.Release.TargetRender.FailureCause
-	0,   // 234: google.cloud.deploy.v1.Release.SkaffoldSupportedCondition.skaffold_support_state:type_name -> google.cloud.deploy.v1.SkaffoldSupportState
-	214, // 235: google.cloud.deploy.v1.Release.SkaffoldSupportedCondition.maintenance_mode_time:type_name -> google.protobuf.Timestamp
-	214, // 236: google.cloud.deploy.v1.Release.SkaffoldSupportedCondition.support_expiration_time:type_name -> google.protobuf.Timestamp
-	199, // 237: google.cloud.deploy.v1.Release.ReleaseCondition.release_ready_condition:type_name -> google.cloud.deploy.v1.Release.ReleaseReadyCondition
-	200, // 238: google.cloud.deploy.v1.Release.ReleaseCondition.skaffold_supported_condition:type_name -> google.cloud.deploy.v1.Release.SkaffoldSupportedCondition
-	91,  // 239: google.cloud.deploy.v1.Release.TargetArtifactsEntry.value:type_name -> google.cloud.deploy.v1.TargetArtifact
-	198, // 240: google.cloud.deploy.v1.Release.TargetRendersEntry.value:type_name -> google.cloud.deploy.v1.Release.TargetRender
-	207, // 241: google.cloud.deploy.v1.TargetArtifact.PhaseArtifactsEntry.value:type_name -> google.cloud.deploy.v1.TargetArtifact.PhaseArtifact
-	38,  // 242: google.cloud.deploy.v1.CloudDeploy.ListDeliveryPipelines:input_type -> google.cloud.deploy.v1.ListDeliveryPipelinesRequest
-	40,  // 243: google.cloud.deploy.v1.CloudDeploy.GetDeliveryPipeline:input_type -> google.cloud.deploy.v1.GetDeliveryPipelineRequest
-	41,  // 244: google.cloud.deploy.v1.CloudDeploy.CreateDeliveryPipeline:input_type -> google.cloud.deploy.v1.CreateDeliveryPipelineRequest
-	42,  // 245: google.cloud.deploy.v1.CloudDeploy.UpdateDeliveryPipeline:input_type -> google.cloud.deploy.v1.UpdateDeliveryPipelineRequest
-	43,  // 246: google.cloud.deploy.v1.CloudDeploy.DeleteDeliveryPipeline:input_type -> google.cloud.deploy.v1.DeleteDeliveryPipelineRequest
-	57,  // 247: google.cloud.deploy.v1.CloudDeploy.ListTargets:input_type -> google.cloud.deploy.v1.ListTargetsRequest
-	45,  // 248: google.cloud.deploy.v1.CloudDeploy.RollbackTarget:input_type -> google.cloud.deploy.v1.RollbackTargetRequest
-	59,  // 249: google.cloud.deploy.v1.CloudDeploy.GetTarget:input_type -> google.cloud.deploy.v1.GetTargetRequest
-	60,  // 250: google.cloud.deploy.v1.CloudDeploy.CreateTarget:input_type -> google.cloud.deploy.v1.CreateTargetRequest
-	61,  // 251: google.cloud.deploy.v1.CloudDeploy.UpdateTarget:input_type -> google.cloud.deploy.v1.UpdateTargetRequest
-	62,  // 252: google.cloud.deploy.v1.CloudDeploy.DeleteTarget:input_type -> google.cloud.deploy.v1.DeleteTargetRequest
-	66,  // 253: google.cloud.deploy.v1.CloudDeploy.ListCustomTargetTypes:input_type -> google.cloud.deploy.v1.ListCustomTargetTypesRequest
-	68,  // 254: google.cloud.deploy.v1.CloudDeploy.GetCustomTargetType:input_type -> google.cloud.deploy.v1.GetCustomTargetTypeRequest
-	69,  // 255: google.cloud.deploy.v1.CloudDeploy.CreateCustomTargetType:input_type -> google.cloud.deploy.v1.CreateCustomTargetTypeRequest
-	70,  // 256: google.cloud.deploy.v1.CloudDeploy.UpdateCustomTargetType:input_type -> google.cloud.deploy.v1.UpdateCustomTargetTypeRequest
-	71,  // 257: google.cloud.deploy.v1.CloudDeploy.DeleteCustomTargetType:input_type -> google.cloud.deploy.v1.DeleteCustomTargetTypeRequest
-	95,  // 258: google.cloud.deploy.v1.CloudDeploy.ListReleases:input_type -> google.cloud.deploy.v1.ListReleasesRequest
-	97,  // 259: google.cloud.deploy.v1.CloudDeploy.GetRelease:input_type -> google.cloud.deploy.v1.GetReleaseRequest
-	98,  // 260: google.cloud.deploy.v1.CloudDeploy.CreateRelease:input_type -> google.cloud.deploy.v1.CreateReleaseRequest
-	131, // 261: google.cloud.deploy.v1.CloudDeploy.AbandonRelease:input_type -> google.cloud.deploy.v1.AbandonReleaseRequest
-	84,  // 262: google.cloud.deploy.v1.CloudDeploy.CreateDeployPolicy:input_type -> google.cloud.deploy.v1.CreateDeployPolicyRequest
-	85,  // 263: google.cloud.deploy.v1.CloudDeploy.UpdateDeployPolicy:input_type -> google.cloud.deploy.v1.UpdateDeployPolicyRequest
-	86,  // 264: google.cloud.deploy.v1.CloudDeploy.DeleteDeployPolicy:input_type -> google.cloud.deploy.v1.DeleteDeployPolicyRequest
-	87,  // 265: google.cloud.deploy.v1.CloudDeploy.ListDeployPolicies:input_type -> google.cloud.deploy.v1.ListDeployPoliciesRequest
-	89,  // 266: google.cloud.deploy.v1.CloudDeploy.GetDeployPolicy:input_type -> google.cloud.deploy.v1.GetDeployPolicyRequest
-	121, // 267: google.cloud.deploy.v1.CloudDeploy.ApproveRollout:input_type -> google.cloud.deploy.v1.ApproveRolloutRequest
-	123, // 268: google.cloud.deploy.v1.CloudDeploy.AdvanceRollout:input_type -> google.cloud.deploy.v1.AdvanceRolloutRequest
-	125, // 269: google.cloud.deploy.v1.CloudDeploy.CancelRollout:input_type -> google.cloud.deploy.v1.CancelRolloutRequest
-	116, // 270: google.cloud.deploy.v1.CloudDeploy.ListRollouts:input_type -> google.cloud.deploy.v1.ListRolloutsRequest
-	118, // 271: google.cloud.deploy.v1.CloudDeploy.GetRollout:input_type -> google.cloud.deploy.v1.GetRolloutRequest
-	119, // 272: google.cloud.deploy.v1.CloudDeploy.CreateRollout:input_type -> google.cloud.deploy.v1.CreateRolloutRequest
-	127, // 273: google.cloud.deploy.v1.CloudDeploy.IgnoreJob:input_type -> google.cloud.deploy.v1.IgnoreJobRequest
-	129, // 274: google.cloud.deploy.v1.CloudDeploy.RetryJob:input_type -> google.cloud.deploy.v1.RetryJobRequest
-	140, // 275: google.cloud.deploy.v1.CloudDeploy.ListJobRuns:input_type -> google.cloud.deploy.v1.ListJobRunsRequest
-	142, // 276: google.cloud.deploy.v1.CloudDeploy.GetJobRun:input_type -> google.cloud.deploy.v1.GetJobRunRequest
-	143, // 277: google.cloud.deploy.v1.CloudDeploy.TerminateJobRun:input_type -> google.cloud.deploy.v1.TerminateJobRunRequest
-	147, // 278: google.cloud.deploy.v1.CloudDeploy.GetConfig:input_type -> google.cloud.deploy.v1.GetConfigRequest
-	158, // 279: google.cloud.deploy.v1.CloudDeploy.CreateAutomation:input_type -> google.cloud.deploy.v1.CreateAutomationRequest
-	159, // 280: google.cloud.deploy.v1.CloudDeploy.UpdateAutomation:input_type -> google.cloud.deploy.v1.UpdateAutomationRequest
-	160, // 281: google.cloud.deploy.v1.CloudDeploy.DeleteAutomation:input_type -> google.cloud.deploy.v1.DeleteAutomationRequest
-	163, // 282: google.cloud.deploy.v1.CloudDeploy.GetAutomation:input_type -> google.cloud.deploy.v1.GetAutomationRequest
-	161, // 283: google.cloud.deploy.v1.CloudDeploy.ListAutomations:input_type -> google.cloud.deploy.v1.ListAutomationsRequest
-	174, // 284: google.cloud.deploy.v1.CloudDeploy.GetAutomationRun:input_type -> google.cloud.deploy.v1.GetAutomationRunRequest
-	172, // 285: google.cloud.deploy.v1.CloudDeploy.ListAutomationRuns:input_type -> google.cloud.deploy.v1.ListAutomationRunsRequest
-	175, // 286: google.cloud.deploy.v1.CloudDeploy.CancelAutomationRun:input_type -> google.cloud.deploy.v1.CancelAutomationRunRequest
-	39,  // 287: google.cloud.deploy.v1.CloudDeploy.ListDeliveryPipelines:output_type -> google.cloud.deploy.v1.ListDeliveryPipelinesResponse
-	20,  // 288: google.cloud.deploy.v1.CloudDeploy.GetDeliveryPipeline:output_type -> google.cloud.deploy.v1.DeliveryPipeline
-	220, // 289: google.cloud.deploy.v1.CloudDeploy.CreateDeliveryPipeline:output_type -> google.longrunning.Operation
-	220, // 290: google.cloud.deploy.v1.CloudDeploy.UpdateDeliveryPipeline:output_type -> google.longrunning.Operation
-	220, // 291: google.cloud.deploy.v1.CloudDeploy.DeleteDeliveryPipeline:output_type -> google.longrunning.Operation
-	58,  // 292: google.cloud.deploy.v1.CloudDeploy.ListTargets:output_type -> google.cloud.deploy.v1.ListTargetsResponse
-	46,  // 293: google.cloud.deploy.v1.CloudDeploy.RollbackTarget:output_type -> google.cloud.deploy.v1.RollbackTargetResponse
-	47,  // 294: google.cloud.deploy.v1.CloudDeploy.GetTarget:output_type -> google.cloud.deploy.v1.Target
-	220, // 295: google.cloud.deploy.v1.CloudDeploy.CreateTarget:output_type -> google.longrunning.Operation
-	220, // 296: google.cloud.deploy.v1.CloudDeploy.UpdateTarget:output_type -> google.longrunning.Operation
-	220, // 297: google.cloud.deploy.v1.CloudDeploy.DeleteTarget:output_type -> google.longrunning.Operation
-	67,  // 298: google.cloud.deploy.v1.CloudDeploy.ListCustomTargetTypes:output_type -> google.cloud.deploy.v1.ListCustomTargetTypesResponse
-	63,  // 299: google.cloud.deploy.v1.CloudDeploy.GetCustomTargetType:output_type -> google.cloud.deploy.v1.CustomTargetType
-	220, // 300: google.cloud.deploy.v1.CloudDeploy.CreateCustomTargetType:output_type -> google.longrunning.Operation
-	220, // 301: google.cloud.deploy.v1.CloudDeploy.UpdateCustomTargetType:output_type -> google.longrunning.Operation
-	220, // 302: google.cloud.deploy.v1.CloudDeploy.DeleteCustomTargetType:output_type -> google.longrunning.Operation
-	96,  // 303: google.cloud.deploy.v1.CloudDeploy.ListReleases:output_type -> google.cloud.deploy.v1.ListReleasesResponse
-	83,  // 304: google.cloud.deploy.v1.CloudDeploy.GetRelease:output_type -> google.cloud.deploy.v1.Release
-	220, // 305: google.cloud.deploy.v1.CloudDeploy.CreateRelease:output_type -> google.longrunning.Operation
-	132, // 306: google.cloud.deploy.v1.CloudDeploy.AbandonRelease:output_type -> google.cloud.deploy.v1.AbandonReleaseResponse
-	220, // 307: google.cloud.deploy.v1.CloudDeploy.CreateDeployPolicy:output_type -> google.longrunning.Operation
-	220, // 308: google.cloud.deploy.v1.CloudDeploy.UpdateDeployPolicy:output_type -> google.longrunning.Operation
-	220, // 309: google.cloud.deploy.v1.CloudDeploy.DeleteDeployPolicy:output_type -> google.longrunning.Operation
-	88,  // 310: google.cloud.deploy.v1.CloudDeploy.ListDeployPolicies:output_type -> google.cloud.deploy.v1.ListDeployPoliciesResponse
-	72,  // 311: google.cloud.deploy.v1.CloudDeploy.GetDeployPolicy:output_type -> google.cloud.deploy.v1.DeployPolicy
-	122, // 312: google.cloud.deploy.v1.CloudDeploy.ApproveRollout:output_type -> google.cloud.deploy.v1.ApproveRolloutResponse
-	124, // 313: google.cloud.deploy.v1.CloudDeploy.AdvanceRollout:output_type -> google.cloud.deploy.v1.AdvanceRolloutResponse
-	126, // 314: google.cloud.deploy.v1.CloudDeploy.CancelRollout:output_type -> google.cloud.deploy.v1.CancelRolloutResponse
-	117, // 315: google.cloud.deploy.v1.CloudDeploy.ListRollouts:output_type -> google.cloud.deploy.v1.ListRolloutsResponse
-	99,  // 316: google.cloud.deploy.v1.CloudDeploy.GetRollout:output_type -> google.cloud.deploy.v1.Rollout
-	220, // 317: google.cloud.deploy.v1.CloudDeploy.CreateRollout:output_type -> google.longrunning.Operation
-	128, // 318: google.cloud.deploy.v1.CloudDeploy.IgnoreJob:output_type -> google.cloud.deploy.v1.IgnoreJobResponse
-	130, // 319: google.cloud.deploy.v1.CloudDeploy.RetryJob:output_type -> google.cloud.deploy.v1.RetryJobResponse
-	141, // 320: google.cloud.deploy.v1.CloudDeploy.ListJobRuns:output_type -> google.cloud.deploy.v1.ListJobRunsResponse
-	133, // 321: google.cloud.deploy.v1.CloudDeploy.GetJobRun:output_type -> google.cloud.deploy.v1.JobRun
-	144, // 322: google.cloud.deploy.v1.CloudDeploy.TerminateJobRun:output_type -> google.cloud.deploy.v1.TerminateJobRunResponse
-	145, // 323: google.cloud.deploy.v1.CloudDeploy.GetConfig:output_type -> google.cloud.deploy.v1.Config
-	220, // 324: google.cloud.deploy.v1.CloudDeploy.CreateAutomation:output_type -> google.longrunning.Operation
-	220, // 325: google.cloud.deploy.v1.CloudDeploy.UpdateAutomation:output_type -> google.longrunning.Operation
-	220, // 326: google.cloud.deploy.v1.CloudDeploy.DeleteAutomation:output_type -> google.longrunning.Operation
-	148, // 327: google.cloud.deploy.v1.CloudDeploy.GetAutomation:output_type -> google.cloud.deploy.v1.Automation
-	162, // 328: google.cloud.deploy.v1.CloudDeploy.ListAutomations:output_type -> google.cloud.deploy.v1.ListAutomationsResponse
-	164, // 329: google.cloud.deploy.v1.CloudDeploy.GetAutomationRun:output_type -> google.cloud.deploy.v1.AutomationRun
-	173, // 330: google.cloud.deploy.v1.CloudDeploy.ListAutomationRuns:output_type -> google.cloud.deploy.v1.ListAutomationRunsResponse
-	176, // 331: google.cloud.deploy.v1.CloudDeploy.CancelAutomationRun:output_type -> google.cloud.deploy.v1.CancelAutomationRunResponse
-	287, // [287:332] is the sub-list for method output_type
-	242, // [242:287] is the sub-list for method input_type
-	242, // [242:242] is the sub-list for extension type_name
-	242, // [242:242] is the sub-list for extension extendee
-	0,   // [0:242] is the sub-list for field type_name
+	152, // 186: google.cloud.deploy.v1.AutomationRule.promote_release_rule:type_name -> google.cloud.deploy.v1.PromoteReleaseRule
+	153, // 187: google.cloud.deploy.v1.AutomationRule.advance_rollout_rule:type_name -> google.cloud.deploy.v1.AdvanceRolloutRule
+	154, // 188: google.cloud.deploy.v1.AutomationRule.repair_rollout_rule:type_name -> google.cloud.deploy.v1.RepairRolloutRule
+	151, // 189: google.cloud.deploy.v1.AutomationRule.timed_promote_release_rule:type_name -> google.cloud.deploy.v1.TimedPromoteReleaseRule
+	158, // 190: google.cloud.deploy.v1.TimedPromoteReleaseRule.condition:type_name -> google.cloud.deploy.v1.AutomationRuleCondition
+	220, // 191: google.cloud.deploy.v1.PromoteReleaseRule.wait:type_name -> google.protobuf.Duration
+	158, // 192: google.cloud.deploy.v1.PromoteReleaseRule.condition:type_name -> google.cloud.deploy.v1.AutomationRuleCondition
+	220, // 193: google.cloud.deploy.v1.AdvanceRolloutRule.wait:type_name -> google.protobuf.Duration
+	158, // 194: google.cloud.deploy.v1.AdvanceRolloutRule.condition:type_name -> google.cloud.deploy.v1.AutomationRuleCondition
+	158, // 195: google.cloud.deploy.v1.RepairRolloutRule.condition:type_name -> google.cloud.deploy.v1.AutomationRuleCondition
+	155, // 196: google.cloud.deploy.v1.RepairRolloutRule.repair_phases:type_name -> google.cloud.deploy.v1.RepairPhaseConfig
+	156, // 197: google.cloud.deploy.v1.RepairPhaseConfig.retry:type_name -> google.cloud.deploy.v1.Retry
+	157, // 198: google.cloud.deploy.v1.RepairPhaseConfig.rollback:type_name -> google.cloud.deploy.v1.Rollback
+	220, // 199: google.cloud.deploy.v1.Retry.wait:type_name -> google.protobuf.Duration
+	1,   // 200: google.cloud.deploy.v1.Retry.backoff_mode:type_name -> google.cloud.deploy.v1.BackoffMode
+	35,  // 201: google.cloud.deploy.v1.AutomationRuleCondition.targets_present_condition:type_name -> google.cloud.deploy.v1.TargetsPresentCondition
+	159, // 202: google.cloud.deploy.v1.AutomationRuleCondition.timed_promote_release_condition:type_name -> google.cloud.deploy.v1.TimedPromoteReleaseCondition
+	218, // 203: google.cloud.deploy.v1.TimedPromoteReleaseCondition.next_promotion_time:type_name -> google.protobuf.Timestamp
+	217, // 204: google.cloud.deploy.v1.TimedPromoteReleaseCondition.targets_list:type_name -> google.cloud.deploy.v1.TimedPromoteReleaseCondition.Targets
+	148, // 205: google.cloud.deploy.v1.CreateAutomationRequest.automation:type_name -> google.cloud.deploy.v1.Automation
+	219, // 206: google.cloud.deploy.v1.UpdateAutomationRequest.update_mask:type_name -> google.protobuf.FieldMask
+	148, // 207: google.cloud.deploy.v1.UpdateAutomationRequest.automation:type_name -> google.cloud.deploy.v1.Automation
+	148, // 208: google.cloud.deploy.v1.ListAutomationsResponse.automations:type_name -> google.cloud.deploy.v1.Automation
+	218, // 209: google.cloud.deploy.v1.AutomationRun.create_time:type_name -> google.protobuf.Timestamp
+	218, // 210: google.cloud.deploy.v1.AutomationRun.update_time:type_name -> google.protobuf.Timestamp
+	148, // 211: google.cloud.deploy.v1.AutomationRun.automation_snapshot:type_name -> google.cloud.deploy.v1.Automation
+	19,  // 212: google.cloud.deploy.v1.AutomationRun.state:type_name -> google.cloud.deploy.v1.AutomationRun.State
+	81,  // 213: google.cloud.deploy.v1.AutomationRun.policy_violation:type_name -> google.cloud.deploy.v1.PolicyViolation
+	218, // 214: google.cloud.deploy.v1.AutomationRun.expire_time:type_name -> google.protobuf.Timestamp
+	167, // 215: google.cloud.deploy.v1.AutomationRun.promote_release_operation:type_name -> google.cloud.deploy.v1.PromoteReleaseOperation
+	168, // 216: google.cloud.deploy.v1.AutomationRun.advance_rollout_operation:type_name -> google.cloud.deploy.v1.AdvanceRolloutOperation
+	169, // 217: google.cloud.deploy.v1.AutomationRun.repair_rollout_operation:type_name -> google.cloud.deploy.v1.RepairRolloutOperation
+	170, // 218: google.cloud.deploy.v1.AutomationRun.timed_promote_release_operation:type_name -> google.cloud.deploy.v1.TimedPromoteReleaseOperation
+	218, // 219: google.cloud.deploy.v1.AutomationRun.wait_until_time:type_name -> google.protobuf.Timestamp
+	220, // 220: google.cloud.deploy.v1.PromoteReleaseOperation.wait:type_name -> google.protobuf.Duration
+	220, // 221: google.cloud.deploy.v1.AdvanceRolloutOperation.wait:type_name -> google.protobuf.Duration
+	171, // 222: google.cloud.deploy.v1.RepairRolloutOperation.repair_phases:type_name -> google.cloud.deploy.v1.RepairPhase
+	172, // 223: google.cloud.deploy.v1.RepairPhase.retry:type_name -> google.cloud.deploy.v1.RetryPhase
+	174, // 224: google.cloud.deploy.v1.RepairPhase.rollback:type_name -> google.cloud.deploy.v1.RollbackAttempt
+	1,   // 225: google.cloud.deploy.v1.RetryPhase.backoff_mode:type_name -> google.cloud.deploy.v1.BackoffMode
+	173, // 226: google.cloud.deploy.v1.RetryPhase.attempts:type_name -> google.cloud.deploy.v1.RetryAttempt
+	220, // 227: google.cloud.deploy.v1.RetryAttempt.wait:type_name -> google.protobuf.Duration
+	2,   // 228: google.cloud.deploy.v1.RetryAttempt.state:type_name -> google.cloud.deploy.v1.RepairState
+	2,   // 229: google.cloud.deploy.v1.RollbackAttempt.state:type_name -> google.cloud.deploy.v1.RepairState
+	166, // 230: google.cloud.deploy.v1.ListAutomationRunsResponse.automation_runs:type_name -> google.cloud.deploy.v1.AutomationRun
+	25,  // 231: google.cloud.deploy.v1.CustomCanaryDeployment.PhaseConfig.predeploy:type_name -> google.cloud.deploy.v1.Predeploy
+	26,  // 232: google.cloud.deploy.v1.CustomCanaryDeployment.PhaseConfig.postdeploy:type_name -> google.cloud.deploy.v1.Postdeploy
+	220, // 233: google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh.route_update_wait_time:type_name -> google.protobuf.Duration
+	220, // 234: google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh.stable_cutback_duration:type_name -> google.protobuf.Duration
+	187, // 235: google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh.route_destinations:type_name -> google.cloud.deploy.v1.KubernetesConfig.GatewayServiceMesh.RouteDestinations
+	56,  // 236: google.cloud.deploy.v1.Target.AssociatedEntitiesEntry.value:type_name -> google.cloud.deploy.v1.AssociatedEntities
+	7,   // 237: google.cloud.deploy.v1.Release.TargetRender.rendering_state:type_name -> google.cloud.deploy.v1.Release.TargetRender.TargetRenderState
+	94,  // 238: google.cloud.deploy.v1.Release.TargetRender.metadata:type_name -> google.cloud.deploy.v1.RenderMetadata
+	8,   // 239: google.cloud.deploy.v1.Release.TargetRender.failure_cause:type_name -> google.cloud.deploy.v1.Release.TargetRender.FailureCause
+	0,   // 240: google.cloud.deploy.v1.Release.SkaffoldSupportedCondition.skaffold_support_state:type_name -> google.cloud.deploy.v1.SkaffoldSupportState
+	218, // 241: google.cloud.deploy.v1.Release.SkaffoldSupportedCondition.maintenance_mode_time:type_name -> google.protobuf.Timestamp
+	218, // 242: google.cloud.deploy.v1.Release.SkaffoldSupportedCondition.support_expiration_time:type_name -> google.protobuf.Timestamp
+	202, // 243: google.cloud.deploy.v1.Release.ReleaseCondition.release_ready_condition:type_name -> google.cloud.deploy.v1.Release.ReleaseReadyCondition
+	203, // 244: google.cloud.deploy.v1.Release.ReleaseCondition.skaffold_supported_condition:type_name -> google.cloud.deploy.v1.Release.SkaffoldSupportedCondition
+	91,  // 245: google.cloud.deploy.v1.Release.TargetArtifactsEntry.value:type_name -> google.cloud.deploy.v1.TargetArtifact
+	201, // 246: google.cloud.deploy.v1.Release.TargetRendersEntry.value:type_name -> google.cloud.deploy.v1.Release.TargetRender
+	210, // 247: google.cloud.deploy.v1.TargetArtifact.PhaseArtifactsEntry.value:type_name -> google.cloud.deploy.v1.TargetArtifact.PhaseArtifact
+	38,  // 248: google.cloud.deploy.v1.CloudDeploy.ListDeliveryPipelines:input_type -> google.cloud.deploy.v1.ListDeliveryPipelinesRequest
+	40,  // 249: google.cloud.deploy.v1.CloudDeploy.GetDeliveryPipeline:input_type -> google.cloud.deploy.v1.GetDeliveryPipelineRequest
+	41,  // 250: google.cloud.deploy.v1.CloudDeploy.CreateDeliveryPipeline:input_type -> google.cloud.deploy.v1.CreateDeliveryPipelineRequest
+	42,  // 251: google.cloud.deploy.v1.CloudDeploy.UpdateDeliveryPipeline:input_type -> google.cloud.deploy.v1.UpdateDeliveryPipelineRequest
+	43,  // 252: google.cloud.deploy.v1.CloudDeploy.DeleteDeliveryPipeline:input_type -> google.cloud.deploy.v1.DeleteDeliveryPipelineRequest
+	57,  // 253: google.cloud.deploy.v1.CloudDeploy.ListTargets:input_type -> google.cloud.deploy.v1.ListTargetsRequest
+	45,  // 254: google.cloud.deploy.v1.CloudDeploy.RollbackTarget:input_type -> google.cloud.deploy.v1.RollbackTargetRequest
+	59,  // 255: google.cloud.deploy.v1.CloudDeploy.GetTarget:input_type -> google.cloud.deploy.v1.GetTargetRequest
+	60,  // 256: google.cloud.deploy.v1.CloudDeploy.CreateTarget:input_type -> google.cloud.deploy.v1.CreateTargetRequest
+	61,  // 257: google.cloud.deploy.v1.CloudDeploy.UpdateTarget:input_type -> google.cloud.deploy.v1.UpdateTargetRequest
+	62,  // 258: google.cloud.deploy.v1.CloudDeploy.DeleteTarget:input_type -> google.cloud.deploy.v1.DeleteTargetRequest
+	66,  // 259: google.cloud.deploy.v1.CloudDeploy.ListCustomTargetTypes:input_type -> google.cloud.deploy.v1.ListCustomTargetTypesRequest
+	68,  // 260: google.cloud.deploy.v1.CloudDeploy.GetCustomTargetType:input_type -> google.cloud.deploy.v1.GetCustomTargetTypeRequest
+	69,  // 261: google.cloud.deploy.v1.CloudDeploy.CreateCustomTargetType:input_type -> google.cloud.deploy.v1.CreateCustomTargetTypeRequest
+	70,  // 262: google.cloud.deploy.v1.CloudDeploy.UpdateCustomTargetType:input_type -> google.cloud.deploy.v1.UpdateCustomTargetTypeRequest
+	71,  // 263: google.cloud.deploy.v1.CloudDeploy.DeleteCustomTargetType:input_type -> google.cloud.deploy.v1.DeleteCustomTargetTypeRequest
+	95,  // 264: google.cloud.deploy.v1.CloudDeploy.ListReleases:input_type -> google.cloud.deploy.v1.ListReleasesRequest
+	97,  // 265: google.cloud.deploy.v1.CloudDeploy.GetRelease:input_type -> google.cloud.deploy.v1.GetReleaseRequest
+	98,  // 266: google.cloud.deploy.v1.CloudDeploy.CreateRelease:input_type -> google.cloud.deploy.v1.CreateReleaseRequest
+	131, // 267: google.cloud.deploy.v1.CloudDeploy.AbandonRelease:input_type -> google.cloud.deploy.v1.AbandonReleaseRequest
+	84,  // 268: google.cloud.deploy.v1.CloudDeploy.CreateDeployPolicy:input_type -> google.cloud.deploy.v1.CreateDeployPolicyRequest
+	85,  // 269: google.cloud.deploy.v1.CloudDeploy.UpdateDeployPolicy:input_type -> google.cloud.deploy.v1.UpdateDeployPolicyRequest
+	86,  // 270: google.cloud.deploy.v1.CloudDeploy.DeleteDeployPolicy:input_type -> google.cloud.deploy.v1.DeleteDeployPolicyRequest
+	87,  // 271: google.cloud.deploy.v1.CloudDeploy.ListDeployPolicies:input_type -> google.cloud.deploy.v1.ListDeployPoliciesRequest
+	89,  // 272: google.cloud.deploy.v1.CloudDeploy.GetDeployPolicy:input_type -> google.cloud.deploy.v1.GetDeployPolicyRequest
+	121, // 273: google.cloud.deploy.v1.CloudDeploy.ApproveRollout:input_type -> google.cloud.deploy.v1.ApproveRolloutRequest
+	123, // 274: google.cloud.deploy.v1.CloudDeploy.AdvanceRollout:input_type -> google.cloud.deploy.v1.AdvanceRolloutRequest
+	125, // 275: google.cloud.deploy.v1.CloudDeploy.CancelRollout:input_type -> google.cloud.deploy.v1.CancelRolloutRequest
+	116, // 276: google.cloud.deploy.v1.CloudDeploy.ListRollouts:input_type -> google.cloud.deploy.v1.ListRolloutsRequest
+	118, // 277: google.cloud.deploy.v1.CloudDeploy.GetRollout:input_type -> google.cloud.deploy.v1.GetRolloutRequest
+	119, // 278: google.cloud.deploy.v1.CloudDeploy.CreateRollout:input_type -> google.cloud.deploy.v1.CreateRolloutRequest
+	127, // 279: google.cloud.deploy.v1.CloudDeploy.IgnoreJob:input_type -> google.cloud.deploy.v1.IgnoreJobRequest
+	129, // 280: google.cloud.deploy.v1.CloudDeploy.RetryJob:input_type -> google.cloud.deploy.v1.RetryJobRequest
+	140, // 281: google.cloud.deploy.v1.CloudDeploy.ListJobRuns:input_type -> google.cloud.deploy.v1.ListJobRunsRequest
+	142, // 282: google.cloud.deploy.v1.CloudDeploy.GetJobRun:input_type -> google.cloud.deploy.v1.GetJobRunRequest
+	143, // 283: google.cloud.deploy.v1.CloudDeploy.TerminateJobRun:input_type -> google.cloud.deploy.v1.TerminateJobRunRequest
+	147, // 284: google.cloud.deploy.v1.CloudDeploy.GetConfig:input_type -> google.cloud.deploy.v1.GetConfigRequest
+	160, // 285: google.cloud.deploy.v1.CloudDeploy.CreateAutomation:input_type -> google.cloud.deploy.v1.CreateAutomationRequest
+	161, // 286: google.cloud.deploy.v1.CloudDeploy.UpdateAutomation:input_type -> google.cloud.deploy.v1.UpdateAutomationRequest
+	162, // 287: google.cloud.deploy.v1.CloudDeploy.DeleteAutomation:input_type -> google.cloud.deploy.v1.DeleteAutomationRequest
+	165, // 288: google.cloud.deploy.v1.CloudDeploy.GetAutomation:input_type -> google.cloud.deploy.v1.GetAutomationRequest
+	163, // 289: google.cloud.deploy.v1.CloudDeploy.ListAutomations:input_type -> google.cloud.deploy.v1.ListAutomationsRequest
+	177, // 290: google.cloud.deploy.v1.CloudDeploy.GetAutomationRun:input_type -> google.cloud.deploy.v1.GetAutomationRunRequest
+	175, // 291: google.cloud.deploy.v1.CloudDeploy.ListAutomationRuns:input_type -> google.cloud.deploy.v1.ListAutomationRunsRequest
+	178, // 292: google.cloud.deploy.v1.CloudDeploy.CancelAutomationRun:input_type -> google.cloud.deploy.v1.CancelAutomationRunRequest
+	39,  // 293: google.cloud.deploy.v1.CloudDeploy.ListDeliveryPipelines:output_type -> google.cloud.deploy.v1.ListDeliveryPipelinesResponse
+	20,  // 294: google.cloud.deploy.v1.CloudDeploy.GetDeliveryPipeline:output_type -> google.cloud.deploy.v1.DeliveryPipeline
+	224, // 295: google.cloud.deploy.v1.CloudDeploy.CreateDeliveryPipeline:output_type -> google.longrunning.Operation
+	224, // 296: google.cloud.deploy.v1.CloudDeploy.UpdateDeliveryPipeline:output_type -> google.longrunning.Operation
+	224, // 297: google.cloud.deploy.v1.CloudDeploy.DeleteDeliveryPipeline:output_type -> google.longrunning.Operation
+	58,  // 298: google.cloud.deploy.v1.CloudDeploy.ListTargets:output_type -> google.cloud.deploy.v1.ListTargetsResponse
+	46,  // 299: google.cloud.deploy.v1.CloudDeploy.RollbackTarget:output_type -> google.cloud.deploy.v1.RollbackTargetResponse
+	47,  // 300: google.cloud.deploy.v1.CloudDeploy.GetTarget:output_type -> google.cloud.deploy.v1.Target
+	224, // 301: google.cloud.deploy.v1.CloudDeploy.CreateTarget:output_type -> google.longrunning.Operation
+	224, // 302: google.cloud.deploy.v1.CloudDeploy.UpdateTarget:output_type -> google.longrunning.Operation
+	224, // 303: google.cloud.deploy.v1.CloudDeploy.DeleteTarget:output_type -> google.longrunning.Operation
+	67,  // 304: google.cloud.deploy.v1.CloudDeploy.ListCustomTargetTypes:output_type -> google.cloud.deploy.v1.ListCustomTargetTypesResponse
+	63,  // 305: google.cloud.deploy.v1.CloudDeploy.GetCustomTargetType:output_type -> google.cloud.deploy.v1.CustomTargetType
+	224, // 306: google.cloud.deploy.v1.CloudDeploy.CreateCustomTargetType:output_type -> google.longrunning.Operation
+	224, // 307: google.cloud.deploy.v1.CloudDeploy.UpdateCustomTargetType:output_type -> google.longrunning.Operation
+	224, // 308: google.cloud.deploy.v1.CloudDeploy.DeleteCustomTargetType:output_type -> google.longrunning.Operation
+	96,  // 309: google.cloud.deploy.v1.CloudDeploy.ListReleases:output_type -> google.cloud.deploy.v1.ListReleasesResponse
+	83,  // 310: google.cloud.deploy.v1.CloudDeploy.GetRelease:output_type -> google.cloud.deploy.v1.Release
+	224, // 311: google.cloud.deploy.v1.CloudDeploy.CreateRelease:output_type -> google.longrunning.Operation
+	132, // 312: google.cloud.deploy.v1.CloudDeploy.AbandonRelease:output_type -> google.cloud.deploy.v1.AbandonReleaseResponse
+	224, // 313: google.cloud.deploy.v1.CloudDeploy.CreateDeployPolicy:output_type -> google.longrunning.Operation
+	224, // 314: google.cloud.deploy.v1.CloudDeploy.UpdateDeployPolicy:output_type -> google.longrunning.Operation
+	224, // 315: google.cloud.deploy.v1.CloudDeploy.DeleteDeployPolicy:output_type -> google.longrunning.Operation
+	88,  // 316: google.cloud.deploy.v1.CloudDeploy.ListDeployPolicies:output_type -> google.cloud.deploy.v1.ListDeployPoliciesResponse
+	72,  // 317: google.cloud.deploy.v1.CloudDeploy.GetDeployPolicy:output_type -> google.cloud.deploy.v1.DeployPolicy
+	122, // 318: google.cloud.deploy.v1.CloudDeploy.ApproveRollout:output_type -> google.cloud.deploy.v1.ApproveRolloutResponse
+	124, // 319: google.cloud.deploy.v1.CloudDeploy.AdvanceRollout:output_type -> google.cloud.deploy.v1.AdvanceRolloutResponse
+	126, // 320: google.cloud.deploy.v1.CloudDeploy.CancelRollout:output_type -> google.cloud.deploy.v1.CancelRolloutResponse
+	117, // 321: google.cloud.deploy.v1.CloudDeploy.ListRollouts:output_type -> google.cloud.deploy.v1.ListRolloutsResponse
+	99,  // 322: google.cloud.deploy.v1.CloudDeploy.GetRollout:output_type -> google.cloud.deploy.v1.Rollout
+	224, // 323: google.cloud.deploy.v1.CloudDeploy.CreateRollout:output_type -> google.longrunning.Operation
+	128, // 324: google.cloud.deploy.v1.CloudDeploy.IgnoreJob:output_type -> google.cloud.deploy.v1.IgnoreJobResponse
+	130, // 325: google.cloud.deploy.v1.CloudDeploy.RetryJob:output_type -> google.cloud.deploy.v1.RetryJobResponse
+	141, // 326: google.cloud.deploy.v1.CloudDeploy.ListJobRuns:output_type -> google.cloud.deploy.v1.ListJobRunsResponse
+	133, // 327: google.cloud.deploy.v1.CloudDeploy.GetJobRun:output_type -> google.cloud.deploy.v1.JobRun
+	144, // 328: google.cloud.deploy.v1.CloudDeploy.TerminateJobRun:output_type -> google.cloud.deploy.v1.TerminateJobRunResponse
+	145, // 329: google.cloud.deploy.v1.CloudDeploy.GetConfig:output_type -> google.cloud.deploy.v1.Config
+	224, // 330: google.cloud.deploy.v1.CloudDeploy.CreateAutomation:output_type -> google.longrunning.Operation
+	224, // 331: google.cloud.deploy.v1.CloudDeploy.UpdateAutomation:output_type -> google.longrunning.Operation
+	224, // 332: google.cloud.deploy.v1.CloudDeploy.DeleteAutomation:output_type -> google.longrunning.Operation
+	148, // 333: google.cloud.deploy.v1.CloudDeploy.GetAutomation:output_type -> google.cloud.deploy.v1.Automation
+	164, // 334: google.cloud.deploy.v1.CloudDeploy.ListAutomations:output_type -> google.cloud.deploy.v1.ListAutomationsResponse
+	166, // 335: google.cloud.deploy.v1.CloudDeploy.GetAutomationRun:output_type -> google.cloud.deploy.v1.AutomationRun
+	176, // 336: google.cloud.deploy.v1.CloudDeploy.ListAutomationRuns:output_type -> google.cloud.deploy.v1.ListAutomationRunsResponse
+	179, // 337: google.cloud.deploy.v1.CloudDeploy.CancelAutomationRun:output_type -> google.cloud.deploy.v1.CancelAutomationRunResponse
+	293, // [293:338] is the sub-list for method output_type
+	248, // [248:293] is the sub-list for method input_type
+	248, // [248:248] is the sub-list for extension type_name
+	248, // [248:248] is the sub-list for extension extendee
+	0,   // [0:248] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_deploy_v1_cloud_deploy_proto_init() }
@@ -20841,7 +21281,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[131].Exporter = func(v any, i int) any {
-			switch v := v.(*PromoteReleaseRule); i {
+			switch v := v.(*TimedPromoteReleaseRule); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -20853,7 +21293,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[132].Exporter = func(v any, i int) any {
-			switch v := v.(*AdvanceRolloutRule); i {
+			switch v := v.(*PromoteReleaseRule); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -20865,7 +21305,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[133].Exporter = func(v any, i int) any {
-			switch v := v.(*RepairRolloutRule); i {
+			switch v := v.(*AdvanceRolloutRule); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -20877,7 +21317,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[134].Exporter = func(v any, i int) any {
-			switch v := v.(*RepairPhaseConfig); i {
+			switch v := v.(*RepairRolloutRule); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -20889,7 +21329,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[135].Exporter = func(v any, i int) any {
-			switch v := v.(*Retry); i {
+			switch v := v.(*RepairPhaseConfig); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -20901,7 +21341,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[136].Exporter = func(v any, i int) any {
-			switch v := v.(*Rollback); i {
+			switch v := v.(*Retry); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -20913,7 +21353,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[137].Exporter = func(v any, i int) any {
-			switch v := v.(*AutomationRuleCondition); i {
+			switch v := v.(*Rollback); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -20925,7 +21365,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[138].Exporter = func(v any, i int) any {
-			switch v := v.(*CreateAutomationRequest); i {
+			switch v := v.(*AutomationRuleCondition); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -20937,7 +21377,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[139].Exporter = func(v any, i int) any {
-			switch v := v.(*UpdateAutomationRequest); i {
+			switch v := v.(*TimedPromoteReleaseCondition); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -20949,7 +21389,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[140].Exporter = func(v any, i int) any {
-			switch v := v.(*DeleteAutomationRequest); i {
+			switch v := v.(*CreateAutomationRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -20961,7 +21401,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[141].Exporter = func(v any, i int) any {
-			switch v := v.(*ListAutomationsRequest); i {
+			switch v := v.(*UpdateAutomationRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -20973,7 +21413,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[142].Exporter = func(v any, i int) any {
-			switch v := v.(*ListAutomationsResponse); i {
+			switch v := v.(*DeleteAutomationRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -20985,7 +21425,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[143].Exporter = func(v any, i int) any {
-			switch v := v.(*GetAutomationRequest); i {
+			switch v := v.(*ListAutomationsRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -20997,7 +21437,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[144].Exporter = func(v any, i int) any {
-			switch v := v.(*AutomationRun); i {
+			switch v := v.(*ListAutomationsResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -21009,7 +21449,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[145].Exporter = func(v any, i int) any {
-			switch v := v.(*PromoteReleaseOperation); i {
+			switch v := v.(*GetAutomationRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -21021,7 +21461,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[146].Exporter = func(v any, i int) any {
-			switch v := v.(*AdvanceRolloutOperation); i {
+			switch v := v.(*AutomationRun); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -21033,7 +21473,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[147].Exporter = func(v any, i int) any {
-			switch v := v.(*RepairRolloutOperation); i {
+			switch v := v.(*PromoteReleaseOperation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -21045,7 +21485,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[148].Exporter = func(v any, i int) any {
-			switch v := v.(*RepairPhase); i {
+			switch v := v.(*AdvanceRolloutOperation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -21057,7 +21497,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[149].Exporter = func(v any, i int) any {
-			switch v := v.(*RetryPhase); i {
+			switch v := v.(*RepairRolloutOperation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -21069,7 +21509,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[150].Exporter = func(v any, i int) any {
-			switch v := v.(*RetryAttempt); i {
+			switch v := v.(*TimedPromoteReleaseOperation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -21081,7 +21521,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[151].Exporter = func(v any, i int) any {
-			switch v := v.(*RollbackAttempt); i {
+			switch v := v.(*RepairPhase); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -21093,7 +21533,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[152].Exporter = func(v any, i int) any {
-			switch v := v.(*ListAutomationRunsRequest); i {
+			switch v := v.(*RetryPhase); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -21105,7 +21545,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[153].Exporter = func(v any, i int) any {
-			switch v := v.(*ListAutomationRunsResponse); i {
+			switch v := v.(*RetryAttempt); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -21117,7 +21557,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[154].Exporter = func(v any, i int) any {
-			switch v := v.(*GetAutomationRunRequest); i {
+			switch v := v.(*RollbackAttempt); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -21129,7 +21569,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[155].Exporter = func(v any, i int) any {
-			switch v := v.(*CancelAutomationRunRequest); i {
+			switch v := v.(*ListAutomationRunsRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -21141,6 +21581,42 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			}
 		}
 		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[156].Exporter = func(v any, i int) any {
+			switch v := v.(*ListAutomationRunsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[157].Exporter = func(v any, i int) any {
+			switch v := v.(*GetAutomationRunRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[158].Exporter = func(v any, i int) any {
+			switch v := v.(*CancelAutomationRunRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[159].Exporter = func(v any, i int) any {
 			switch v := v.(*CancelAutomationRunResponse); i {
 			case 0:
 				return &v.state
@@ -21152,7 +21628,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[161].Exporter = func(v any, i int) any {
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[164].Exporter = func(v any, i int) any {
 			switch v := v.(*CustomCanaryDeployment_PhaseConfig); i {
 			case 0:
 				return &v.state
@@ -21164,7 +21640,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[162].Exporter = func(v any, i int) any {
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[165].Exporter = func(v any, i int) any {
 			switch v := v.(*KubernetesConfig_GatewayServiceMesh); i {
 			case 0:
 				return &v.state
@@ -21176,7 +21652,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[163].Exporter = func(v any, i int) any {
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[166].Exporter = func(v any, i int) any {
 			switch v := v.(*KubernetesConfig_ServiceNetworking); i {
 			case 0:
 				return &v.state
@@ -21188,7 +21664,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[164].Exporter = func(v any, i int) any {
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[167].Exporter = func(v any, i int) any {
 			switch v := v.(*KubernetesConfig_GatewayServiceMesh_RouteDestinations); i {
 			case 0:
 				return &v.state
@@ -21200,7 +21676,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[171].Exporter = func(v any, i int) any {
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[174].Exporter = func(v any, i int) any {
 			switch v := v.(*SkaffoldModules_SkaffoldGitSource); i {
 			case 0:
 				return &v.state
@@ -21212,7 +21688,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[172].Exporter = func(v any, i int) any {
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[175].Exporter = func(v any, i int) any {
 			switch v := v.(*SkaffoldModules_SkaffoldGCSSource); i {
 			case 0:
 				return &v.state
@@ -21224,7 +21700,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[173].Exporter = func(v any, i int) any {
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[176].Exporter = func(v any, i int) any {
 			switch v := v.(*SkaffoldModules_SkaffoldGCBRepoSource); i {
 			case 0:
 				return &v.state
@@ -21236,7 +21712,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[178].Exporter = func(v any, i int) any {
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[181].Exporter = func(v any, i int) any {
 			switch v := v.(*Release_TargetRender); i {
 			case 0:
 				return &v.state
@@ -21248,7 +21724,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[179].Exporter = func(v any, i int) any {
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[182].Exporter = func(v any, i int) any {
 			switch v := v.(*Release_ReleaseReadyCondition); i {
 			case 0:
 				return &v.state
@@ -21260,7 +21736,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[180].Exporter = func(v any, i int) any {
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[183].Exporter = func(v any, i int) any {
 			switch v := v.(*Release_SkaffoldSupportedCondition); i {
 			case 0:
 				return &v.state
@@ -21272,7 +21748,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[181].Exporter = func(v any, i int) any {
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[184].Exporter = func(v any, i int) any {
 			switch v := v.(*Release_ReleaseCondition); i {
 			case 0:
 				return &v.state
@@ -21284,8 +21760,20 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[187].Exporter = func(v any, i int) any {
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[190].Exporter = func(v any, i int) any {
 			switch v := v.(*TargetArtifact_PhaseArtifact); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[197].Exporter = func(v any, i int) any {
+			switch v := v.(*TimedPromoteReleaseCondition_Targets); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -21365,17 +21853,22 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 		(*AutomationRule_PromoteReleaseRule)(nil),
 		(*AutomationRule_AdvanceRolloutRule)(nil),
 		(*AutomationRule_RepairRolloutRule)(nil),
+		(*AutomationRule_TimedPromoteReleaseRule)(nil),
 	}
-	file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[134].OneofWrappers = []any{
+	file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[135].OneofWrappers = []any{
 		(*RepairPhaseConfig_Retry)(nil),
 		(*RepairPhaseConfig_Rollback)(nil),
 	}
-	file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[144].OneofWrappers = []any{
+	file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[138].OneofWrappers = []any{
+		(*AutomationRuleCondition_TimedPromoteReleaseCondition)(nil),
+	}
+	file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[146].OneofWrappers = []any{
 		(*AutomationRun_PromoteReleaseOperation)(nil),
 		(*AutomationRun_AdvanceRolloutOperation)(nil),
 		(*AutomationRun_RepairRolloutOperation)(nil),
+		(*AutomationRun_TimedPromoteReleaseOperation)(nil),
 	}
-	file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[148].OneofWrappers = []any{
+	file_google_cloud_deploy_v1_cloud_deploy_proto_msgTypes[151].OneofWrappers = []any{
 		(*RepairPhase_Retry)(nil),
 		(*RepairPhase_Rollback)(nil),
 	}
@@ -21385,7 +21878,7 @@ func file_google_cloud_deploy_v1_cloud_deploy_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_deploy_v1_cloud_deploy_proto_rawDesc,
 			NumEnums:      20,
-			NumMessages:   194,
+			NumMessages:   198,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
