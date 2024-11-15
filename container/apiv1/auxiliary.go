@@ -41,7 +41,7 @@ type UsableSubnetworkIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*containerpb.UsableSubnetwork, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *UsableSubnetworkIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

@@ -591,7 +591,7 @@ type AuthorizationPolicyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*networksecuritypb.AuthorizationPolicy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AuthorizationPolicyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -638,7 +638,7 @@ type ClientTlsPolicyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*networksecuritypb.ClientTlsPolicy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ClientTlsPolicyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -685,7 +685,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -732,7 +732,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -779,7 +779,7 @@ type ServerTlsPolicyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*networksecuritypb.ServerTlsPolicy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ServerTlsPolicyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

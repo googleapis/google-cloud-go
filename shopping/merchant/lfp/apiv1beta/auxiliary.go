@@ -41,7 +41,7 @@ type LfpStoreIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*lfppb.LfpStore, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LfpStoreIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

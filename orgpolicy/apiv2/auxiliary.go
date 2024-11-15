@@ -41,7 +41,7 @@ type ConstraintIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*orgpolicypb.Constraint, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConstraintIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type CustomConstraintIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*orgpolicypb.CustomConstraint, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CustomConstraintIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -135,7 +135,7 @@ type PolicyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*orgpolicypb.Policy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PolicyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

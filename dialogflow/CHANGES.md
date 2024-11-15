@@ -1,5 +1,16 @@
 # Changes
 
+## [1.60.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.59.0...dialogflow/v1.60.0) (2024-11-14)
+
+
+### Features
+
+* **dialogflow:** Add options of query_source, search_config and context_size ([ccbc882](https://github.com/googleapis/google-cloud-go/commit/ccbc882d47d8c42998b463860d7c183c86cb7b53))
+* **dialogflow:** Add options of query_source, search_config, end_user_metadata and exact_search ([380e7d2](https://github.com/googleapis/google-cloud-go/commit/380e7d23e69b22ab46cc6e3be58902accee2f26a))
+* **dialogflow:** Add SipTrunks service ([ccbc882](https://github.com/googleapis/google-cloud-go/commit/ccbc882d47d8c42998b463860d7c183c86cb7b53))
+* **dialogflow:** Added support for ALAW encoding ([#11097](https://github.com/googleapis/google-cloud-go/issues/11097)) ([ccbc882](https://github.com/googleapis/google-cloud-go/commit/ccbc882d47d8c42998b463860d7c183c86cb7b53))
+* **dialogflow:** Expose metadata in AnswerSource ([380e7d2](https://github.com/googleapis/google-cloud-go/commit/380e7d23e69b22ab46cc6e3be58902accee2f26a))
+
 ## [1.59.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.58.1...dialogflow/v1.59.0) (2024-11-06)
 
 

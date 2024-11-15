@@ -1,6 +1,14 @@
 # Changes
 
 
+## [2.19.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.18.0...recaptchaenterprise/v2.19.0) (2024-11-14)
+
+
+### Features
+
+* **recaptchaenterprise:** A new enum `Challenge` is added ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **recaptchaenterprise:** A new field `challenge` is added to message `.google.cloud.recaptchaenterprise.v1.RiskAnalysis` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
 ## [2.18.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.17.3...recaptchaenterprise/v2.18.0) (2024-11-06)
 
 

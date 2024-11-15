@@ -41,7 +41,7 @@ type AccountIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*csspb.Account, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AccountIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type AccountLabelIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*csspb.AccountLabel, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AccountLabelIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -135,7 +135,7 @@ type CssProductIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*csspb.CssProduct, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CssProductIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

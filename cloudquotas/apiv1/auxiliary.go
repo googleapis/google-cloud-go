@@ -41,7 +41,7 @@ type QuotaInfoIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*cloudquotaspb.QuotaInfo, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *QuotaInfoIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type QuotaPreferenceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*cloudquotaspb.QuotaPreference, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *QuotaPreferenceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
