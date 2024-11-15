@@ -324,7 +324,7 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 }
 
 func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
-	// reduce data transfered by leveraging api projections
+	// reduce data transferred by leveraging api projections
 	projectedFields := []googleapi.Field{"rows", "pageToken", "totalRows"}
 	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location).Context(ctx)
 	call = call.FormatOptionsUseInt64Timestamp(true)
