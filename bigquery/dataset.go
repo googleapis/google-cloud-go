@@ -194,7 +194,7 @@ func (d *Dataset) Identifier(f IdentifierFormat) (string, error) {
 //
 // An error will be returned if the dataset already exists.
 // Pass in a DatasetMetadata value to configure the dataset.
-func (d *Dataset) Create(ctx context.Context, md *DatasetMetadata, opts ...DatasetOption) (err error) {
+func (d *Dataset) Create(ctx context.Context, md *DatasetMetadata) (err error) {
 	return d.CreateWithOptions(ctx, md)
 }
 
