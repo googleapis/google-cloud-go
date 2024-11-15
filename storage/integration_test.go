@@ -327,7 +327,6 @@ var readCases = []readCase{
 }
 
 func TestIntegration_DetectDirectConnectivity(t *testing.T) {
-	t.Skip("direct connectivity not yet available for CI")
 	ctx := skipHTTP("direct connectivity isn't available for json")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
 		h := testHelper{t}
