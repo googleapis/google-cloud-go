@@ -49,6 +49,7 @@ func tracer() trace.Tracer {
 func startSpan(ctx context.Context, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
 	// TODO: Remove internalTrace upon experimental launch.
 	if !isOTelTracingDevEnabled() {
+		name = appendPackageName(name)
 		ctx = internalTrace.StartSpan(ctx, name)
 		return ctx, nil
 	}
@@ -84,4 +85,8 @@ func getCommonTraceOptions() []trace.SpanStartOption {
 		),
 	}
 	return opts
+}
+
+func appendPackageName(spanName string) string {
+	return "cloud.google.com/go/" + spanName
 }
