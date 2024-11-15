@@ -474,7 +474,7 @@ func TestIntegration_DatasetConditions(t *testing.T) {
 		t.Fatalf("expected Create failure, but succeeded")
 	}
 
-	err = ds.Create(ctx, wantMeta, WithAccessPolicyVersion(3))
+	err = ds.CreateWithOptions(ctx, wantMeta, WithAccessPolicyVersion(3))
 	if err != nil {
 		t.Fatalf("expected Create to succeed, but failed: %v", err)
 	}
@@ -497,7 +497,7 @@ func TestIntegration_DatasetConditions(t *testing.T) {
 	}
 
 	// Re-fetch metadata with access policy specified.
-	md, err = ds.Metadata(ctx, WithAccessPolicyVersion(3))
+	md, err = ds.MetadataWithOptions(ctx, WithAccessPolicyVersion(3))
 	if err != nil {
 		t.Fatalf("Metadata (WithAccessPolicy): %v", err)
 	}
@@ -526,7 +526,7 @@ func TestIntegration_DatasetConditions(t *testing.T) {
 		t.Fatalf("Update succeeded where failure expected: %v", err)
 	}
 
-	md, err = ds.Update(ctx, DatasetMetadataToUpdate{Access: newAccess}, "", WithAccessPolicyVersion(3))
+	md, err = ds.UpdateWithOptions(ctx, DatasetMetadataToUpdate{Access: newAccess}, "", WithAccessPolicyVersion(3))
 	if err != nil {
 		t.Fatalf("Update failed: %v", err)
 	}

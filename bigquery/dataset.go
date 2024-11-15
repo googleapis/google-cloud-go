@@ -190,9 +190,20 @@ func (d *Dataset) Identifier(f IdentifierFormat) (string, error) {
 	}
 }
 
-// Create creates a dataset in the BigQuery service. An error will be returned if the
-// dataset already exists. Pass in a DatasetMetadata value to configure the dataset.
+// Create creates a dataset in the BigQuery service.
+//
+// An error will be returned if the dataset already exists.
+// Pass in a DatasetMetadata value to configure the dataset.
 func (d *Dataset) Create(ctx context.Context, md *DatasetMetadata, opts ...DatasetOption) (err error) {
+	return d.CreateWithOptions(ctx, md)
+}
+
+// CreateWithOptions creates a dataset in the BigQuery service, and
+// provides additional options to control the behavior of the call.
+//
+// An error will be returned if the dataset already exists.
+// Pass in a DatasetMetadata value to configure the dataset.
+func (d *Dataset) CreateWithOptions(ctx context.Context, md *DatasetMetadata, opts ...DatasetOption) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Dataset.Create")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -296,7 +307,13 @@ func (d *Dataset) deleteInternal(ctx context.Context, deleteContents bool) (err 
 }
 
 // Metadata fetches the metadata for the dataset.
-func (d *Dataset) Metadata(ctx context.Context, opts ...DatasetOption) (md *DatasetMetadata, err error) {
+func (d *Dataset) Metadata(ctx context.Context) (md *DatasetMetadata, err error) {
+	return d.MetadataWithOptions(ctx)
+}
+
+// MetadataWithOptions fetches metadata for the dataset, and provides additional options for
+// controlling the request.
+func (d *Dataset) MetadataWithOptions(ctx context.Context, opts ...DatasetOption) (md *DatasetMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Dataset.Metadata")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -390,7 +407,17 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 // To perform a read-modify-write that protects against intervening reads,
 // set the etag argument to the DatasetMetadata.ETag field from the read.
 // Pass the empty string for etag for a "blind write" that will always succeed.
-func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag string, opts ...DatasetOption) (md *DatasetMetadata, err error) {
+func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag string) (md *DatasetMetadata, err error) {
+	return d.UpdateWithOptions(ctx, dm, etag)
+}
+
+// UpdateWithOptions modifies specific Dataset metadata fields and
+// provides an interface for specifying additional options to the request.
+//
+// To perform a read-modify-write that protects against intervening reads,
+// set the etag argument to the DatasetMetadata.ETag field from the read.
+// Pass the empty string for etag for a "blind write" that will always succeed.
+func (d *Dataset) UpdateWithOptions(ctx context.Context, dm DatasetMetadataToUpdate, etag string, opts ...DatasetOption) (md *DatasetMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Dataset.Update")
 	defer func() { trace.EndSpan(ctx, err) }()
 
