@@ -132,27 +132,25 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 
 	var results []*storage.ObjectAttrs
 
-	var nextToken string
-
-	// To start listing method is Open and runs both worksteal and sequential listing
-	// in parallel. The method which completes first is used for all subsequent runs.
-
-	// Run worksteal listing when method is Open or WorkSteal.
-
+	// For the first batch, listing method is open and runs both worksteal and sequential listing
+	// in parallel. The method which completes first is used for all subsequent NextBatch calls.
 	switch c.method {
 	case worksteal:
+		// Run worksteal algorithm for listing.
 		objects, err := c.workstealListing(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("error in running worksteal_lister: %w", err)
 		}
 		results = objects
 	case sequential:
+		// Run GCS sequential listing.
 		objects, token, err := c.sequentialListing(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("error in running sequential listing: %w", err)
 		}
 		results = objects
-		nextToken = token
+		c.pageToken = token
+		c.ranges = nil
 	case open:
 		// countError tracks the number of failed listing methods.
 		countErr := &countErr{counter: 0}
@@ -166,13 +164,14 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 		seqCompletedfirst := false
 		var wsObjects []*storage.ObjectAttrs
 		var seqObjects []*storage.ObjectAttrs
+		var nextToken string
 		g.Go(func() error {
 			objects, err := c.workstealListing(ctx)
 			if err != nil {
 				countErr.increment()
-				return fmt.Errorf("error in running worksteal_lister: %w", err)
+				return fmt.Errorf("error in running worksteal listing: %w", err)
 			}
-			// Close context when sequential listing is complete.
+			// Close context when worksteal listing is complete.
 			cancel()
 			wsCompletedfirst = true
 			wsObjects = objects
@@ -196,10 +195,11 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 
 		// If the error is not context.Canceled, then return error instead of falling back
 		// to the other method. This is so that the error can be fixed and user can take
-		//  advantage of fast-listing.
-		// As one of the listing method completes, it is expected to cancel context for the
-		// only then return error. other method. If both sequential and worksteal listing
-		// fail due to context canceled, return error.
+		// advantage of fast-listing.
+		// As one of the listing method completes, it is expected to cancel context and
+		// return context canceled error for the other method. Since context canceled is expected, it
+		// will not be considered an error. If both sequential and worksteal listing fail due
+		// to context canceled, then return error.
 		if err != nil && (!strings.Contains(err.Error(), context.Canceled.Error()) || countErr.counter > 1) {
 			return nil, fmt.Errorf("failed waiting for sequential and work steal lister : %w", err)
 		}
@@ -254,17 +254,16 @@ func (cc *countErr) increment() {
 
 // Otherwise, if the offset is too permissive given the prefix, it returns an empty string
 // to indicate there is no offset and all objects starting from or ending at the prefix should
+// be listed.
 //
 //	For example:
 //	start = "abc",  end = "prefix_a", prefix = "prefix",
 //
-//	end will change to "_a", prefix is stripped.
-//	"abc" is lexicographically smaller than "prefix". So start offset indicates first
-//	object with the given prefix.
+// "abc" is lexicographically smaller than "prefix". The start offset indicates first
 //
+//	object with the given prefix should be listed therefor start offset will be empty.
+//	The end offset will change to "_a" as the prefix is stripped.
 //	Therefore new offset will change to {start = "",  end = "_a" }.
-//
-// Otherwise, it just strips the prefix from the offset as shown by the end offset in the example above.
 func prefixAdjustedOffsets(start, end, prefix string) (string, string) {
 	if prefix == "" {
 		return start, end

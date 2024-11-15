@@ -27,8 +27,8 @@ import (
 const (
 	// defaultAlphabet used to initialize rangesplitter. It must contain at least two unique characters.
 	defaultAlphabet = "ab"
-	// sleepDurationWhenIdle is the milliseconds we want each worker to sleep before checking
-	// the next update if it is idle.
+	// sleepDurationWhenIdle is the milliseconds for each idle worker to sleep before checking
+	// for work.
 	sleepDurationWhenIdle = time.Millisecond * time.Duration(200)
 )
 
@@ -59,12 +59,12 @@ type worker struct {
 	lister        *Lister
 }
 
-// workstealListing performs listing on GCS bucket using multiple parallel workers.
-// It achieves highly dynamic object listing using worksteal algorithm
-// where each worker in the list operation is able to steal work from its siblings once it has
-// finished all currently slated listing work. It returns a list of objects and the remaining
-// ranges (start end offset) of objects
-// which are yet to be listed. If range channel is empty, then listing is complete.
+// workstealListing performs listing on GCS bucket using multiple parallel
+// workers. It achieves highly dynamic object listing using worksteal algorithm
+// where each worker in the list operation is able to steal work from its siblings
+// once it has finished all currently slated listing work. It returns a list of
+// objects and the remaining ranges (start end offset) which are yet to be listed.
+// If range channel is empty, then listing is complete.
 func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, error) {
 	// Idle channel is used to track number of idle workers.
 	idleChannel := make(chan int, c.parallelism)
@@ -110,7 +110,7 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 	return result.objects, nil
 }
 
-// doWorkstealListing implements the listing logic for each worker.
+// doWorkstealListing implements the listing and workstealing logic for each worker.
 // An active worker lists [wsDefaultPageSize] number of objects within the given range
 // and then splits range into two half if there are idle workers. Worker keeps
 // the first half of splitted range and passes second half of the work in range channel
@@ -124,7 +124,7 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 		}
 
 		// If a worker is idle, sleep for a while before checking the next update.
-		// Worker is active when it finds work in range channel.
+		// Worker status is changed to active when it finds work in range channel.
 		if w.status == idle {
 			if len(w.lister.ranges) == 0 {
 				time.Sleep(sleepDurationWhenIdle)
@@ -159,7 +159,7 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 			}
 			// If split point is empty, skip splitting the work.
 			if len(splitPoint) < 1 {
-				continue
+				break
 			}
 			w.lister.ranges <- &listRange{startRange: splitPoint[0], endRange: w.endRange}
 
@@ -220,9 +220,8 @@ func (w *worker) objectLister(ctx context.Context) (bool, error) {
 	w.result.objects = append(w.result.objects, nextPageResult.items...)
 	w.result.mu.Unlock()
 
-	// Listing completed for default page size for the given range.
 	// Update current worker start range to new range and generation
-	// of the last objects listed if versions is true.
+	// of the last objects seen if versions is true.
 	w.startRange = nextPageResult.nextStartRange
 	w.generation = nextPageResult.generation
 	return nextPageResult.doneListing, nil
