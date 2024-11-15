@@ -151,7 +151,7 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 
 		// If listing not complete and idle workers are available, split the range
 		// and give half of work to idle worker.
-		if len(w.idleChannel)-len(w.lister.ranges) > 0 && ctx.Err() == nil {
+		for len(w.idleChannel)-len(w.lister.ranges) > 0 && ctx.Err() == nil {
 			// Split range and upload half of work for idle worker.
 			splitPoint, err := w.rangesplitter.splitRange(w.startRange, w.endRange, 1)
 			if err != nil {
