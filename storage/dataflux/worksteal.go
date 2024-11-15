@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	// defaultAlphabet used to initiliaze rangesplitter. It must contain at least two unique characters.
+	// defaultAlphabet used to initialize rangesplitter. It must contain at least two unique characters.
 	defaultAlphabet = "ab"
 	// sleepDurationWhenIdle is the milliseconds we want each worker to sleep before checking
 	// the next update if it is idle.
