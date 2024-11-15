@@ -129,29 +129,43 @@ type Lister struct {
 // For smaller dataset, sequential listing is expected to be faster. For larger dataset,
 // worksteal listing is expected to be faster.
 func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) {
-	// countError tracks the number of failed listing methods.
-	countErr := &countErr{counter: 0}
 
 	var results []*storage.ObjectAttrs
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
 
-	wsCompletedfirst := false
-	seqCompletedfirst := false
-	var wsObjects []*storage.ObjectAttrs
-	var seqObjects []*storage.ObjectAttrs
 	var nextToken string
-
-	// Errgroup takes care of running both methods in parallel. As soon as one of
-	// the method is complete, the running method also stops.
-	g, ctx := errgroup.WithContext(ctx)
 
 	// To start listing method is Open and runs both worksteal and sequential listing
 	// in parallel. The method which completes first is used for all subsequent runs.
 
 	// Run worksteal listing when method is Open or WorkSteal.
-	if c.method != sequential {
 
+	switch c.method {
+	case worksteal:
+		objects, err := c.workstealListing(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("error in running worksteal_lister: %w", err)
+		}
+		results = objects
+	case sequential:
+		objects, token, err := c.sequentialListing(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("error in running sequential listing: %w", err)
+		}
+		results = objects
+		nextToken = token
+	case open:
+		// countError tracks the number of failed listing methods.
+		countErr := &countErr{counter: 0}
+
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		// Errgroup takes care of running both methods in parallel. As soon as one of
+		// the method is complete, the running method also stops.
+		g, ctx := errgroup.WithContext(ctx)
+		wsCompletedfirst := false
+		seqCompletedfirst := false
+		var wsObjects []*storage.ObjectAttrs
+		var seqObjects []*storage.ObjectAttrs
 		g.Go(func() error {
 			objects, err := c.workstealListing(ctx)
 			if err != nil {
@@ -164,11 +178,6 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 			wsObjects = objects
 			return nil
 		})
-	}
-
-	// Run sequential listing when method is Open or Sequential.
-	if c.method != worksteal {
-
 		g.Go(func() error {
 			objects, token, err := c.sequentialListing(ctx)
 			if err != nil {
@@ -182,33 +191,32 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 			nextToken = token
 			return nil
 		})
-	}
+		// Close all functions if either sequential listing or worksteal listing is complete.
+		err := g.Wait()
 
-	// Close all functions if either sequential listing or worksteal listing is complete.
-	err := g.Wait()
-
-	// If the error is not context.Canceled, then return error instead of falling back
-	// to the other method. This is so that the error can be fixed and user can take
-	//  advantage of fast-listing.
-	// As one of the listing method completes, it is expected to cancel context for the
-	// only then return error. other method. If both sequential and worksteal listing
-	// fail due to context canceled, return error.
-	if err != nil && (!strings.Contains(err.Error(), context.Canceled.Error()) || countErr.counter > 1) {
-		return nil, fmt.Errorf("failed waiting for sequential and work steal lister : %w", err)
-	}
-	if wsCompletedfirst {
-		// If worksteal listing completes first, set method to worksteal listing and nextToken to "".
-		// The c.ranges channel will be used to continue worksteal listing.
-		results = wsObjects
-		c.pageToken = ""
-		c.method = worksteal
-	} else if seqCompletedfirst {
-		// If sequential listing completes first, set method to sequential listing
-		// and ranges to nil. The nextToken will be used to continue sequential listing.
-		results = seqObjects
-		c.pageToken = nextToken
-		c.method = sequential
-		c.ranges = nil
+		// If the error is not context.Canceled, then return error instead of falling back
+		// to the other method. This is so that the error can be fixed and user can take
+		//  advantage of fast-listing.
+		// As one of the listing method completes, it is expected to cancel context for the
+		// only then return error. other method. If both sequential and worksteal listing
+		// fail due to context canceled, return error.
+		if err != nil && (!strings.Contains(err.Error(), context.Canceled.Error()) || countErr.counter > 1) {
+			return nil, fmt.Errorf("failed waiting for sequential and work steal lister : %w", err)
+		}
+		if wsCompletedfirst {
+			// If worksteal listing completes first, set method to worksteal listing and nextToken to "".
+			// The c.ranges channel will be used to continue worksteal listing.
+			results = wsObjects
+			c.pageToken = ""
+			c.method = worksteal
+		} else if seqCompletedfirst {
+			// If sequential listing completes first, set method to sequential listing
+			// and ranges to nil. The nextToken will be used to continue sequential listing.
+			results = seqObjects
+			c.pageToken = nextToken
+			c.method = sequential
+			c.ranges = nil
+		}
 	}
 
 	// If ranges for worksteal and pageToken for sequential listing is empty, then
