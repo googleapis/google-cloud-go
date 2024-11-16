@@ -357,7 +357,7 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 
 	// critical section:  Things that need to happen inside the critical section:
 	//
-	// * get/open conenction
+	// * get/open connection
 	// * issue the append
 	// * add the pending write to the channel for the connection (ordering for the response)
 	co.mu.Lock()
@@ -462,7 +462,7 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 
 // getStream returns either a valid ARC client stream or permanent error.
 //
-// Any calls to getStream should do so in possesion of the critical section lock.
+// Any calls to getStream should do so in possession of the critical section lock.
 func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, forceReconnect bool) (*storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
 	if co.err != nil {
 		return nil, nil, co.err
