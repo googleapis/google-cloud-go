@@ -24,7 +24,7 @@ import (
 )
 
 const (
-	// wsDefaultPageSize specifies the number of object results to include on a single page for worksteal listing.
+	// wsDefaultPageSize specifies the number of object results to include in a single page for worksteal listing.
 	wsDefaultPageSize = 1000
 )
 
@@ -34,18 +34,18 @@ type nextPageOpts struct {
 	startRange string
 	// endRange is the end offset of the objects to be listed.
 	endRange string
-	// bucketHandle is the bucket handle of the bucket to be listed.
+	// bucketHandle is the bucket handle of the bucket from which objects are to be listed.
 	bucketHandle *storage.BucketHandle
 	// query is the storage.Query to filter objects for listing.
 	query storage.Query
-	// skipDirectoryObjects is to indicate whether to list directory objects.
+	// skipDirectoryObjects is to indicate whether to skip or list directory objects.
 	skipDirectoryObjects bool
 	// generation is the generation number of the last object in the page.
 	generation int64
 }
 
-// nextPageResult holds the next page of object names, start of the next page
-// and indicates whether the lister has completed listing (no more objects to retrieve).
+// nextPageResult represents the results of fetching a single page of objects
+// from a GCS listing operation and information for remaining objects to be listed.
 type nextPageResult struct {
 	// items is the list of objects listed.
 	items []*storage.ObjectAttrs
@@ -57,7 +57,11 @@ type nextPageResult struct {
 	generation int64
 }
 
-// nextPage lists objects using the given lister options.
+// nextPage retrieves a single page of objects from GCS using the provided
+// listing options (nextPageOpts). It returns a nextPageResult containing the
+// list of objects, a flag indicating if the listing is complete, the starting
+// point for the next page, and the generation of the last object in the page.
+// In case multiple versions of objects needs to be listed, then
 func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 
 	opts.query.StartOffset = addPrefix(opts.startRange, opts.query.Prefix)
@@ -126,30 +130,22 @@ func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 	// remain prefix-agnostic. This is necessary due to the unbounded end-range when splitting string
 	// namespaces of unknown size.
 	nextStartRange := strings.TrimPrefix(nameLexLast, opts.query.Prefix)
-	// When the lexicographically last item is not added to items list due to skipDirectoryObjects,
-	// then return nameLexLast as next start range.
-	// This does not require to check for generations as directory object cannot have multiple
-	// versions.
-	if len(items) < 1 || indexLexLast == -1 {
-		return &nextPageResult{
-			items:          items,
-			doneListing:    false,
-			nextStartRange: nextStartRange,
-		}, nil
-	}
-
 	generation := int64(0)
 
 	// Remove lexicographically last item from the item list to avoid duplicate listing and
-	// store generation value of the item removed from the list.
-	if indexLexLast >= indexItemLast {
-		// If the item is at the end of the list, remove last item.
-		generation = items[indexItemLast].Generation
-		items = items[:len(items)-1]
-	} else if indexLexLast >= 0 {
-		// If the item is not at the end of the list, remove the item at indexLexLast.
-		generation = items[indexLexLast].Generation
-		items = append(items[:indexLexLast], items[indexLexLast+1:]...)
+	// store generation value of the item removed from the list. indexLexLast less than zero
+	// indicats that the lexicographically last item is not added to the items list.
+	if indexLexLast >= 0 && len(items) > 0 {
+		if indexLexLast >= indexItemLast {
+			// If the item is at the end of the list, remove last item.
+			generation = items[indexItemLast].Generation
+			items = items[:len(items)-1]
+		} else {
+			// If the item is not at the end of the list, remove the item at indexLexLast.
+			// This is possible since directory objects are listed first in a page.
+			generation = items[indexLexLast].Generation
+			items = append(items[:indexLexLast], items[indexLexLast+1:]...)
+		}
 	}
 
 	// If versions is false in query, only latest version of the object will be
