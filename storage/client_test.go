@@ -1506,8 +1506,9 @@ func TestRetryReadStallEmulated(t *testing.T) {
 	}
 }
 
-// Test validates the retry for stalled write-request, when client is created with
-// WithReadStallTimeout.
+// In resumable uploads, the first chunk encounter a stall. The chunkTransferTimeout will then cancel the request and resend it.
+// The second request is expected to succeed. This allows the upload to finish earlier than if it had waited for the entire stall
+// duration, as the chunkTransferTimeout prevents unnecessary delays.
 func TestRetryWriteReqStallOnFirstChunkWithTransferTimeoutNonZeroEmulated(t *testing.T) {
 	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
@@ -1560,8 +1561,8 @@ func TestRetryWriteReqStallOnFirstChunkWithTransferTimeoutNonZeroEmulated(t *tes
 		if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
 			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
 		}
-		if end_time.Sub(start_time) > 8*time.Second {
-			t.Errorf("write took %v, want < %v", end_time.Sub(start_time), 10*time.Second)
+		if end_time.Sub(start_time) > 6*time.Second {
+			t.Errorf("write took %v, want < %v", end_time.Sub(start_time), 6*time.Second)
 		}
 
 		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
@@ -1580,6 +1581,8 @@ func TestRetryWriteReqStallOnFirstChunkWithTransferTimeoutNonZeroEmulated(t *tes
 	})
 }
 
+// In resumable uploads, the first chunk encounter a stall. Because ChunkTransferTimeout is set to 0,
+// the upload must wait for the entire stall duration.
 func TestRetryWriteReqStallOnFirstChunkWithTransferTimeoutZeroEmulated(t *testing.T) {
 	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
@@ -1651,6 +1654,9 @@ func TestRetryWriteReqStallOnFirstChunkWithTransferTimeoutZeroEmulated(t *testin
 	})
 }
 
+// In resumable uploads, the first chunk encounter a stall twice. The chunkTransferTimeout will then cancel the request and resend it.
+// The second request again faced stall chunkTransferTimeout will then cancel the request and resend it.
+// This allows the upload to finish earlier than if it had waited for the entire stall duration, as the chunkTransferTimeout prevents unnecessary delays.
 func TestRetryWriteReqStallOnFirstChunkTwiceWithTransferTimeoutNonZeroEmulated(t *testing.T) {
 	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
@@ -1703,8 +1709,8 @@ func TestRetryWriteReqStallOnFirstChunkTwiceWithTransferTimeoutNonZeroEmulated(t
 		if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
 			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
 		}
-		if end_time.Sub(start_time) > 8*time.Second {
-			t.Errorf("write took %v, want >= %v", end_time.Sub(start_time), 8*time.Second)
+		if end_time.Sub(start_time) > 6*time.Second {
+			t.Errorf("write took %v, want >= %v", end_time.Sub(start_time), 6*time.Second)
 		}
 
 		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
@@ -1723,6 +1729,9 @@ func TestRetryWriteReqStallOnFirstChunkTwiceWithTransferTimeoutNonZeroEmulated(t
 	})
 }
 
+// In resumable uploads, the second chunk encounter a stall. The chunkTransferTimeout will then cancel the request and resend it.
+// The second request is expected to succeed. This allows the upload to finish earlier than if it had waited for the entire stall
+// duration, as the chunkTransferTimeout prevents unnecessary delays.
 func TestRetryWriteReqStallOnSecondChunkWithTransferTimeoutNonZeroEmulated(t *testing.T) {
 	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
@@ -1775,8 +1784,8 @@ func TestRetryWriteReqStallOnSecondChunkWithTransferTimeoutNonZeroEmulated(t *te
 		if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
 			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
 		}
-		if end_time.Sub(start_time) > 8*time.Second {
-			t.Errorf("write took %v, want < %v", end_time.Sub(start_time), 8*time.Second)
+		if end_time.Sub(start_time) > 6*time.Second {
+			t.Errorf("write took %v, want <= %v", end_time.Sub(start_time), 6*time.Second)
 		}
 
 		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
