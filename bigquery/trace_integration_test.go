@@ -94,6 +94,37 @@ func TestIntegration_OpenCensusTracing(t *testing.T) {
 			},
 			wantSpans: []string{"bigquery.tables.get", "cloud.google.com/go/bigquery.Table.Metadata"},
 		},
+		{
+			description: "dataset and table insert/update/delete",
+			callF: func(ctx context.Context) {
+				ds := client.Dataset(datasetIDs.New())
+				if err := ds.Create(ctx, nil); err != nil {
+					t.Fatalf("creating dataset %s: %v", ds.DatasetID, err)
+				}
+				defer ds.DeleteWithContents(ctx)
+				tbl := ds.Table(tableIDs.New())
+				tm := &TableMetadata{
+					Schema: schema,
+				}
+				if err := tbl.Create(ctx, tm); err != nil {
+					t.Fatalf("creating table %s: %v", tbl.TableID, err)
+				}
+				defer tbl.Delete(ctx)
+				md := TableMetadataToUpdate{
+					Description: "new description",
+				}
+				if _, err := tbl.Update(ctx, md, ""); err != nil {
+					t.Fatalf("updating table %s: %v", tbl.TableID, err)
+				}
+			},
+			wantSpans: []string{
+				"cloud.google.com/go/bigquery.Dataset.Create",
+				"bigquery.tables.insert", "cloud.google.com/go/bigquery.Table.Create",
+				"bigquery.tables.patch", "cloud.google.com/go/bigquery.Table.Update",
+				"bigquery.datasets.delete", "cloud.google.com/go/bigquery.Dataset.Delete",
+				"bigquery.tables.delete", "cloud.google.com/go/bigquery.Table.Delete",
+			},
+		},
 	} {
 		t.Run(tc.description, func(t *testing.T) {
 			exporter := &testExporter{}
