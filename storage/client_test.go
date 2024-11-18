@@ -1539,7 +1539,7 @@ func TestRetryWriteReqStallOnFirstChunkWithTransferTimeoutNonZeroEmulated(t *tes
 			setObj:               func(o *ObjectAttrs) { gotAttrs = o },
 		}
 
-		start_time := time.Now()
+		startTime := time.Now()
 		pw, err := client.OpenWriter(params)
 		if err != nil {
 			t.Fatalf("failed to open writer: %v", err)
@@ -1551,7 +1551,7 @@ func TestRetryWriteReqStallOnFirstChunkWithTransferTimeoutNonZeroEmulated(t *tes
 		if err := pw.Close(); err != nil {
 			t.Fatalf("closing object: %v", err)
 		}
-		end_time := time.Now()
+		endTime := time.Now()
 		select {
 		case <-params.donec:
 		}
@@ -1561,8 +1561,8 @@ func TestRetryWriteReqStallOnFirstChunkWithTransferTimeoutNonZeroEmulated(t *tes
 		if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
 			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
 		}
-		if end_time.Sub(start_time) > 6*time.Second {
-			t.Errorf("write took %v, want < %v", end_time.Sub(start_time), 6*time.Second)
+		if endTime.Sub(startTime) > 6*time.Second {
+			t.Errorf("write took %v, want < %v", endTime.Sub(startTime), 6*time.Second)
 		}
 
 		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
@@ -1612,7 +1612,7 @@ func TestRetryWriteReqStallOnFirstChunkWithTransferTimeoutZeroEmulated(t *testin
 			setObj:    func(o *ObjectAttrs) { gotAttrs = o },
 		}
 
-		start_time := time.Now()
+		startTime := time.Now()
 		pw, err := client.OpenWriter(params)
 		if err != nil {
 			t.Fatalf("failed to open writer: %v", err)
@@ -1624,7 +1624,7 @@ func TestRetryWriteReqStallOnFirstChunkWithTransferTimeoutZeroEmulated(t *testin
 		if err := pw.Close(); err != nil {
 			t.Fatalf("closing object: %v", err)
 		}
-		end_time := time.Now()
+		endTime := time.Now()
 		select {
 		case <-params.donec:
 		}
@@ -1634,8 +1634,8 @@ func TestRetryWriteReqStallOnFirstChunkWithTransferTimeoutZeroEmulated(t *testin
 		if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
 			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
 		}
-		if end_time.Sub(start_time) < 10*time.Second {
-			t.Errorf("write took %v, want >= %v", end_time.Sub(start_time), 10*time.Second)
+		if endTime.Sub(startTime) < 10*time.Second {
+			t.Errorf("write took %v, want >= %v", endTime.Sub(startTime), 10*time.Second)
 		}
 
 		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
@@ -1687,7 +1687,7 @@ func TestRetryWriteReqStallOnFirstChunkTwiceWithTransferTimeoutNonZeroEmulated(t
 			setObj:               func(o *ObjectAttrs) { gotAttrs = o },
 		}
 
-		start_time := time.Now()
+		startTime := time.Now()
 		pw, err := client.OpenWriter(params)
 		if err != nil {
 			t.Fatalf("failed to open writer: %v", err)
@@ -1699,7 +1699,7 @@ func TestRetryWriteReqStallOnFirstChunkTwiceWithTransferTimeoutNonZeroEmulated(t
 		if err := pw.Close(); err != nil {
 			t.Fatalf("closing object: %v", err)
 		}
-		end_time := time.Now()
+		endTime := time.Now()
 		select {
 		case <-params.donec:
 		}
@@ -1709,8 +1709,8 @@ func TestRetryWriteReqStallOnFirstChunkTwiceWithTransferTimeoutNonZeroEmulated(t
 		if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
 			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
 		}
-		if end_time.Sub(start_time) > 6*time.Second {
-			t.Errorf("write took %v, want >= %v", end_time.Sub(start_time), 6*time.Second)
+		if endTime.Sub(startTime) > 6*time.Second {
+			t.Errorf("write took %v, want >= %v", endTime.Sub(startTime), 6*time.Second)
 		}
 
 		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
@@ -1762,7 +1762,7 @@ func TestRetryWriteReqStallOnSecondChunkWithTransferTimeoutNonZeroEmulated(t *te
 			setObj:               func(o *ObjectAttrs) { gotAttrs = o },
 		}
 
-		start_time := time.Now()
+		startTime := time.Now()
 		pw, err := client.OpenWriter(params)
 		if err != nil {
 			t.Fatalf("failed to open writer: %v", err)
@@ -1774,7 +1774,7 @@ func TestRetryWriteReqStallOnSecondChunkWithTransferTimeoutNonZeroEmulated(t *te
 		if err := pw.Close(); err != nil {
 			t.Fatalf("closing object: %v", err)
 		}
-		end_time := time.Now()
+		endTime := time.Now()
 		select {
 		case <-params.donec:
 		}
@@ -1784,8 +1784,8 @@ func TestRetryWriteReqStallOnSecondChunkWithTransferTimeoutNonZeroEmulated(t *te
 		if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
 			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
 		}
-		if end_time.Sub(start_time) > 6*time.Second {
-			t.Errorf("write took %v, want <= %v", end_time.Sub(start_time), 6*time.Second)
+		if endTime.Sub(startTime) > 6*time.Second {
+			t.Errorf("write took %v, want <= %v", endTime.Sub(startTime), 6*time.Second)
 		}
 
 		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
