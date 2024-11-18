@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.6.1...run/v1.7.0) (2024-11-14)
+
+
+### Features
+
+* **run:** Add EncryptionKeyRevocationAction and shutdown duration configuration to Services ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
+
+### Documentation
+
+* **run:** Fixed formatting of some documentation ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
 ## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.6.0...run/v1.6.1) (2024-10-23)
 
 
