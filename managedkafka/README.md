@@ -1,8 +1,8 @@
-# Apache Kafka for BigQuery API
+# Managed Service for Apache Kafka API
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/managedkafka.svg)](https://pkg.go.dev/cloud.google.com/go/managedkafka)
 
-Go Client Library for Apache Kafka for BigQuery API.
+Go Client Library for Managed Service for Apache Kafka API.
 
 ## Install
 

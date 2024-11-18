@@ -170,6 +170,12 @@ var (
 	// createExporterOptions takes Spanner client options and returns exporter options
 	// Overwritten in tests
 	createExporterOptions = func(spannerOpts ...option.ClientOption) []option.ClientOption {
+		defaultMonitoringEndpoint := "monitoring.googleapis.com:443"
+		if os.Getenv("SPANNER_MONITORING_HOST") != "" {
+			defaultMonitoringEndpoint = os.Getenv("SPANNER_MONITORING_HOST")
+		}
+		// overwrite any Endpoint option
+		spannerOpts = append(spannerOpts, option.WithEndpoint(defaultMonitoringEndpoint))
 		return spannerOpts
 	}
 )
