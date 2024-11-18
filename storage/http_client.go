@@ -968,6 +968,9 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	if params.chunkRetryDeadline != 0 {
 		mediaOpts = append(mediaOpts, googleapi.ChunkRetryDeadline(params.chunkRetryDeadline))
 	}
+	if params.chunkTransferTimeout != 0 {
+		mediaOpts = append(mediaOpts, googleapi.ChunkTransferTimeout(params.chunkTransferTimeout))
+	}
 
 	pr, pw := io.Pipe()
 

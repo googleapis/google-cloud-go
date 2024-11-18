@@ -1506,6 +1506,295 @@ func TestRetryReadStallEmulated(t *testing.T) {
 	}
 }
 
+// Test validates the retry for stalled write-request, when client is created with
+// WithReadStallTimeout.
+func TestRetryWriteReqStallOnFirstChunkWithTransferTimeoutNonZeroEmulated(t *testing.T) {
+	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+		instructions := map[string][]string{"storage.objects.insert": {"stall-for-10s-after-1024K"}}
+		testID := createRetryTest(t, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+		prefix := time.Now().Nanosecond()
+		want := &ObjectAttrs{
+			Bucket:     bucket,
+			Name:       fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			Generation: defaultGen,
+		}
+
+		var gotAttrs *ObjectAttrs
+		params := &openWriterParams{
+			attrs:                want,
+			bucket:               bucket,
+			chunkSize:            2 * 1024 * 1024,
+			chunkTransferTimeout: 2 * time.Second,
+			ctx:                  ctx,
+			donec:                make(chan struct{}),
+			setError:             func(_ error) {}, // no-op
+			progress:             func(_ int64) {}, // no-op
+			setObj:               func(o *ObjectAttrs) { gotAttrs = o },
+		}
+
+		start_time := time.Now()
+		pw, err := client.OpenWriter(params)
+		if err != nil {
+			t.Fatalf("failed to open writer: %v", err)
+		}
+		buffer := bytes.Repeat([]byte("B"), 5*1024*1024)
+		if _, err := pw.Write(buffer); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := pw.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		end_time := time.Now()
+		select {
+		case <-params.donec:
+		}
+		if gotAttrs == nil {
+			t.Fatalf("Writer finished, but resulting object wasn't set")
+		}
+		if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
+			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
+		}
+		if end_time.Sub(start_time) > 8*time.Second {
+			t.Errorf("write took %v, want < %v", end_time.Sub(start_time), 10*time.Second)
+		}
+
+		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(buffer)
+		got := make([]byte, wantLen)
+		n, err := r.Read(got)
+		if n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+		}
+		if diff := cmp.Diff(got, buffer); diff != "" {
+			t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestRetryWriteReqStallOnFirstChunkWithTransferTimeoutZeroEmulated(t *testing.T) {
+	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+		instructions := map[string][]string{"storage.objects.insert": {"stall-for-10s-after-1024K"}}
+		testID := createRetryTest(t, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+		prefix := time.Now().Nanosecond()
+		want := &ObjectAttrs{
+			Bucket:     bucket,
+			Name:       fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			Generation: defaultGen,
+		}
+
+		var gotAttrs *ObjectAttrs
+		params := &openWriterParams{
+			attrs:     want,
+			bucket:    bucket,
+			chunkSize: 2 * 1024 * 1024,
+			ctx:       ctx,
+			donec:     make(chan struct{}),
+			setError:  func(_ error) {}, // no-op
+			progress:  func(_ int64) {}, // no-op
+			setObj:    func(o *ObjectAttrs) { gotAttrs = o },
+		}
+
+		start_time := time.Now()
+		pw, err := client.OpenWriter(params)
+		if err != nil {
+			t.Fatalf("failed to open writer: %v", err)
+		}
+		buffer := bytes.Repeat([]byte("B"), 5*1024*1024)
+		if _, err := pw.Write(buffer); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := pw.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		end_time := time.Now()
+		select {
+		case <-params.donec:
+		}
+		if gotAttrs == nil {
+			t.Fatalf("Writer finished, but resulting object wasn't set")
+		}
+		if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
+			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
+		}
+		if end_time.Sub(start_time) < 10*time.Second {
+			t.Errorf("write took %v, want >= %v", end_time.Sub(start_time), 10*time.Second)
+		}
+
+		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(buffer)
+		got := make([]byte, wantLen)
+		n, err := r.Read(got)
+		if n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+		}
+		if diff := cmp.Diff(got, buffer); diff != "" {
+			t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestRetryWriteReqStallOnFirstChunkTwiceWithTransferTimeoutNonZeroEmulated(t *testing.T) {
+	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+		instructions := map[string][]string{"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"}}
+		testID := createRetryTest(t, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+		prefix := time.Now().Nanosecond()
+		want := &ObjectAttrs{
+			Bucket:     bucket,
+			Name:       fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			Generation: defaultGen,
+		}
+
+		var gotAttrs *ObjectAttrs
+		params := &openWriterParams{
+			attrs:                want,
+			bucket:               bucket,
+			chunkSize:            2 * 1024 * 1024,
+			chunkTransferTimeout: 2 * time.Second,
+			ctx:                  ctx,
+			donec:                make(chan struct{}),
+			setError:             func(_ error) {}, // no-op
+			progress:             func(_ int64) {}, // no-op
+			setObj:               func(o *ObjectAttrs) { gotAttrs = o },
+		}
+
+		start_time := time.Now()
+		pw, err := client.OpenWriter(params)
+		if err != nil {
+			t.Fatalf("failed to open writer: %v", err)
+		}
+		buffer := bytes.Repeat([]byte("B"), 5*1024*1024)
+		if _, err := pw.Write(buffer); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := pw.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		end_time := time.Now()
+		select {
+		case <-params.donec:
+		}
+		if gotAttrs == nil {
+			t.Fatalf("Writer finished, but resulting object wasn't set")
+		}
+		if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
+			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
+		}
+		if end_time.Sub(start_time) > 8*time.Second {
+			t.Errorf("write took %v, want >= %v", end_time.Sub(start_time), 8*time.Second)
+		}
+
+		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(buffer)
+		got := make([]byte, wantLen)
+		n, err := r.Read(got)
+		if n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+		}
+		if diff := cmp.Diff(got, buffer); diff != "" {
+			t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestRetryWriteReqStallOnSecondChunkWithTransferTimeoutNonZeroEmulated(t *testing.T) {
+	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+		instructions := map[string][]string{"storage.objects.insert": {"stall-for-10s-after-3072K"}}
+		testID := createRetryTest(t, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+		prefix := time.Now().Nanosecond()
+		want := &ObjectAttrs{
+			Bucket:     bucket,
+			Name:       fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			Generation: defaultGen,
+		}
+
+		var gotAttrs *ObjectAttrs
+		params := &openWriterParams{
+			attrs:                want,
+			bucket:               bucket,
+			chunkSize:            2 * 1024 * 1024,
+			chunkTransferTimeout: 2 * time.Second,
+			ctx:                  ctx,
+			donec:                make(chan struct{}),
+			setError:             func(_ error) {}, // no-op
+			progress:             func(_ int64) {}, // no-op
+			setObj:               func(o *ObjectAttrs) { gotAttrs = o },
+		}
+
+		start_time := time.Now()
+		pw, err := client.OpenWriter(params)
+		if err != nil {
+			t.Fatalf("failed to open writer: %v", err)
+		}
+		buffer := bytes.Repeat([]byte("B"), 5*1024*1024)
+		if _, err := pw.Write(buffer); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := pw.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		end_time := time.Now()
+		select {
+		case <-params.donec:
+		}
+		if gotAttrs == nil {
+			t.Fatalf("Writer finished, but resulting object wasn't set")
+		}
+		if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
+			t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
+		}
+		if end_time.Sub(start_time) > 8*time.Second {
+			t.Errorf("write took %v, want < %v", end_time.Sub(start_time), 8*time.Second)
+		}
+
+		r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		wantLen := len(buffer)
+		got := make([]byte, wantLen)
+		n, err := r.Read(got)
+		if n != wantLen {
+			t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+		}
+		if diff := cmp.Diff(got, buffer); diff != "" {
+			t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
 // createRetryTest creates a bucket in the emulator and sets up a test using the
 // Retry Test API for the given instructions. This is intended for emulator tests
 // of retry behavior that are not covered by conformance tests.
