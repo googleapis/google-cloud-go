@@ -135,7 +135,9 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 				w.updateWorker(newRange.startRange, newRange.endRange, active)
 			}
 		}
-		// Active worker to list next page of objects within the range.
+		// Active worker to list next page of objects within the range
+		// If more objects remain within the worker's range, update its start range
+		// to prepare for fetching the subsequent page.
 		doneListing, err := w.objectLister(ctx)
 		if err != nil {
 			return fmt.Errorf("objectLister failed: %w", err)
@@ -201,6 +203,10 @@ func (w *worker) updateWorker(startRange, endRange string, status workerStatus) 
 	w.generation = int64(0)
 }
 
+// objectLister retrieves the next page of objects within the worker's assigned range.
+// It appends the retrieved objects to the result and updates the worker's
+// start range and generation to prepare for fetching the subsequent page,
+// if any.
 func (w *worker) objectLister(ctx context.Context) (bool, error) {
 	// Active worker to list next page of objects within the range.
 	nextPageResult, err := nextPage(ctx, nextPageOpts{
