@@ -100,7 +100,7 @@ type AgentPoolIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*storagetransferpb.AgentPool, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AgentPoolIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -147,7 +147,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -194,7 +194,7 @@ type TransferJobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*storagetransferpb.TransferJob, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TransferJobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

@@ -262,7 +262,7 @@ func (c *BackendServicesClient) List(ctx context.Context, req *computepb.ListBac
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListUsable retrieves an aggregated list of all usable backend services in the specified project.
+// ListUsable retrieves a list of all usable backend services in the specified project.
 func (c *BackendServicesClient) ListUsable(ctx context.Context, req *computepb.ListUsableBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	return c.internalClient.ListUsable(ctx, req, opts...)
 }
@@ -1064,7 +1064,7 @@ func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.Lis
 	return it
 }
 
-// ListUsable retrieves an aggregated list of all usable backend services in the specified project.
+// ListUsable retrieves a list of all usable backend services in the specified project.
 func (c *backendServicesRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	it := &BackendServiceIterator{}
 	req = proto.Clone(req).(*computepb.ListUsableBackendServicesRequest)

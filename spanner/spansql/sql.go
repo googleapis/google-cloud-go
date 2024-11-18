@@ -98,6 +98,11 @@ func (ci CreateIndex) SQL() string {
 	return str
 }
 
+func (cp CreateProtoBundle) SQL() string {
+	// Backtick-quote all the types so we don't need to check for SQL keywords
+	return "CREATE PROTO BUNDLE (`" + strings.Join(cp.Types, "`, `") + "`)"
+}
+
 func (cv CreateView) SQL() string {
 	str := "CREATE"
 	if cv.OrReplace {
@@ -558,6 +563,23 @@ func (d *Delete) SQL() string {
 	return "DELETE FROM " + d.Table.SQL() + " WHERE " + d.Where.SQL()
 }
 
+func (do DropProtoBundle) SQL() string {
+	return "DROP PROTO BUNDLE"
+}
+func (ap AlterProtoBundle) SQL() string {
+	str := "ALTER PROTO BUNDLE"
+	if len(ap.AddTypes) > 0 {
+		str += " INSERT (`" + strings.Join(ap.AddTypes, "`, `") + "`)"
+	}
+	if len(ap.UpdateTypes) > 0 {
+		str += " UPDATE (`" + strings.Join(ap.UpdateTypes, "`, `") + "`)"
+	}
+	if len(ap.DeleteTypes) > 0 {
+		str += " DELETE (`" + strings.Join(ap.DeleteTypes, "`, `") + "`)"
+	}
+	return str
+}
+
 func (u *Update) SQL() string {
 	str := "UPDATE " + u.Table.SQL() + " SET "
 	for i, item := range u.Items {
@@ -651,6 +673,14 @@ func (c Check) SQL() string {
 
 func (t Type) SQL() string {
 	str := t.Base.SQL()
+
+	// If ProtoRef is empty, and Base is an Enum or Proto, we're probably
+	// in an expression where PROTO or ENUM are valid type names, in which
+	// case we can just fall through.
+	if t.Base == Proto || t.Base == Enum && t.ProtoRef != "" {
+		// If ProtoRef is non-empty, backtick-quote that and declare victory.
+		return "`" + t.ProtoRef + "`"
+	}
 	if t.Len > 0 && (t.Base == String || t.Base == Bytes) {
 		str += "("
 		if t.Len == MaxLen {
@@ -686,6 +716,10 @@ func (tb TypeBase) SQL() string {
 		return "TIMESTAMP"
 	case JSON:
 		return "JSON"
+	case Proto:
+		return "PROTO"
+	case Enum:
+		return "ENUM"
 	}
 	panic("unknown TypeBase")
 }

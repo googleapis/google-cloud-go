@@ -15,6 +15,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.13.0
 	go.opentelemetry.io/contrib/detectors/gcp v1.29.0
 	go.opentelemetry.io/otel v1.29.0
+	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.29.0
 	go.opentelemetry.io/otel/sdk v1.29.0
 	go.opentelemetry.io/otel/sdk/metric v1.29.0
 	golang.org/x/oauth2 v0.23.0
@@ -29,8 +30,8 @@ require (
 
 require (
 	cel.dev/expr v0.16.1 // indirect
-	cloud.google.com/go/auth v0.9.9 // indirect
-	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
+	cloud.google.com/go/auth v0.10.2 // indirect
+	cloud.google.com/go/auth/oauth2adapt v0.2.5 // indirect
 	cloud.google.com/go/monitoring v1.21.1 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.24.1 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.48.1 // indirect
@@ -54,7 +55,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.29.0 // indirect
 	golang.org/x/crypto v0.28.0 // indirect
 	golang.org/x/net v0.30.0 // indirect
-	golang.org/x/sys v0.26.0 // indirect
+	golang.org/x/sys v0.27.0 // indirect
 	golang.org/x/text v0.19.0 // indirect
 	golang.org/x/time v0.7.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241015192408-796eee8c2d53 // indirect

@@ -1502,6 +1502,11 @@
         "grpc": {
           "libraryClient": "FeatureRegistryClient",
           "rpcs": {
+            "BatchCreateFeatures": {
+              "methods": [
+                "BatchCreateFeatures"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -1517,6 +1522,16 @@
                 "CreateFeatureGroup"
               ]
             },
+            "CreateFeatureMonitor": {
+              "methods": [
+                "CreateFeatureMonitor"
+              ]
+            },
+            "CreateFeatureMonitorJob": {
+              "methods": [
+                "CreateFeatureMonitorJob"
+              ]
+            },
             "DeleteFeature": {
               "methods": [
                 "DeleteFeature"
@@ -1525,6 +1540,11 @@
             "DeleteFeatureGroup": {
               "methods": [
                 "DeleteFeatureGroup"
+              ]
+            },
+            "DeleteFeatureMonitor": {
+              "methods": [
+                "DeleteFeatureMonitor"
               ]
             },
             "DeleteOperation": {
@@ -1540,6 +1560,16 @@
             "GetFeatureGroup": {
               "methods": [
                 "GetFeatureGroup"
+              ]
+            },
+            "GetFeatureMonitor": {
+              "methods": [
+                "GetFeatureMonitor"
+              ]
+            },
+            "GetFeatureMonitorJob": {
+              "methods": [
+                "GetFeatureMonitorJob"
               ]
             },
             "GetIamPolicy": {
@@ -1560,6 +1590,16 @@
             "ListFeatureGroups": {
               "methods": [
                 "ListFeatureGroups"
+              ]
+            },
+            "ListFeatureMonitorJobs": {
+              "methods": [
+                "ListFeatureMonitorJobs"
+              ]
+            },
+            "ListFeatureMonitors": {
+              "methods": [
+                "ListFeatureMonitors"
               ]
             },
             "ListFeatures": {
@@ -1607,6 +1647,11 @@
         "rest": {
           "libraryClient": "FeatureRegistryClient",
           "rpcs": {
+            "BatchCreateFeatures": {
+              "methods": [
+                "BatchCreateFeatures"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -1622,6 +1667,16 @@
                 "CreateFeatureGroup"
               ]
             },
+            "CreateFeatureMonitor": {
+              "methods": [
+                "CreateFeatureMonitor"
+              ]
+            },
+            "CreateFeatureMonitorJob": {
+              "methods": [
+                "CreateFeatureMonitorJob"
+              ]
+            },
             "DeleteFeature": {
               "methods": [
                 "DeleteFeature"
@@ -1630,6 +1685,11 @@
             "DeleteFeatureGroup": {
               "methods": [
                 "DeleteFeatureGroup"
+              ]
+            },
+            "DeleteFeatureMonitor": {
+              "methods": [
+                "DeleteFeatureMonitor"
               ]
             },
             "DeleteOperation": {
@@ -1645,6 +1705,16 @@
             "GetFeatureGroup": {
               "methods": [
                 "GetFeatureGroup"
+              ]
+            },
+            "GetFeatureMonitor": {
+              "methods": [
+                "GetFeatureMonitor"
+              ]
+            },
+            "GetFeatureMonitorJob": {
+              "methods": [
+                "GetFeatureMonitorJob"
               ]
             },
             "GetIamPolicy": {
@@ -1665,6 +1735,16 @@
             "ListFeatureGroups": {
               "methods": [
                 "ListFeatureGroups"
+              ]
+            },
+            "ListFeatureMonitorJobs": {
+              "methods": [
+                "ListFeatureMonitorJobs"
+              ]
+            },
+            "ListFeatureMonitors": {
+              "methods": [
+                "ListFeatureMonitors"
               ]
             },
             "ListFeatures": {
@@ -4937,6 +5017,11 @@
                 "StartNotebookRuntime"
               ]
             },
+            "StopNotebookRuntime": {
+              "methods": [
+                "StopNotebookRuntime"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
@@ -5065,6 +5150,11 @@
             "StartNotebookRuntime": {
               "methods": [
                 "StartNotebookRuntime"
+              ]
+            },
+            "StopNotebookRuntime": {
+              "methods": [
+                "StopNotebookRuntime"
               ]
             },
             "TestIamPermissions": {

@@ -107,7 +107,7 @@ type FolderIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*controlpb.Folder, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *FolderIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -154,7 +154,7 @@ type ManagedFolderIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*controlpb.ManagedFolder, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ManagedFolderIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

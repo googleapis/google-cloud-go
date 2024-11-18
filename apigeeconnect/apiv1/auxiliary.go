@@ -41,7 +41,7 @@ type ConnectionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*apigeeconnectpb.Connection, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConnectionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
