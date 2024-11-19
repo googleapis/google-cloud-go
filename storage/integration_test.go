@@ -60,6 +60,7 @@ import (
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -326,8 +327,8 @@ var readCases = []readCase{
 	},
 }
 
-func TestIntegration_DetectDirectConnectivity(t *testing.T) {
-	ctx := skipHTTP("direct connectivity isn't available for json")
+func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
+	ctx := skipHTTP("grpc only test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
 		h := testHelper{t}
 		// Using Resoource Detector to detect if test is being ran inside GCE
@@ -340,38 +341,79 @@ func TestIntegration_DetectDirectConnectivity(t *testing.T) {
 			t.Fatalf("resource.New: %v", err)
 		}
 		attrs := detectedAttrs.Set()
-		if v, exists := attrs.Value("cloud.platform"); exists && v.AsString() == "gcp_compute_engine" {
-			v, exists = attrs.Value("cloud.region")
-			if !exists {
-				t.Fatalf("CheckDirectConnectivitySupported: region not detected")
-			}
-			region := v.AsString()
-			newBucketName := prefix + uidSpace.New()
-			newBucket := client.Bucket(newBucketName)
-			h.mustCreate(newBucket, testutil.ProjID(), &BucketAttrs{Location: region})
-			defer h.mustDeleteBucket(newBucket)
-			err := CheckDirectConnectivitySupported(ctx, newBucketName)
-			if err != nil {
-				t.Fatalf("CheckDirectConnectivitySupported: %v", err)
-			}
-			newMRBucketName := prefix + "-mr-" + uidSpace.New()
-			newMRBucket := client.Bucket(newMRBucketName)
-			h.mustCreate(newMRBucket, testutil.ProjID(), &BucketAttrs{Location: "US"})
-			defer h.mustDeleteBucket(newMRBucket)
-			err = CheckDirectConnectivitySupported(ctx, newMRBucketName)
-			if err == nil {
-				t.Fatalf("CheckDirectConnectivitySupported: error expected, got nil")
-			}
-		} else {
-			err = CheckDirectConnectivitySupported(ctx, bucket)
-			if err == nil {
-				t.Fatal("CheckDirectConnectivitySupported: expected error but none returned")
-			}
-			if err != nil && !strings.Contains(err.Error(), "direct connectivity not detected") {
-				t.Fatalf("CheckDirectConnectivitySupported: failed on a different error %v", err)
+		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() == "gcp_compute_engine" {
+			t.Skip("only testable in a GCE instance")
+		}
+		v, exists := attrs.Value("cloud.region")
+		if !exists {
+			t.Fatalf("CheckDirectConnectivitySupported: inside a GCE instance but region was not detected")
+		}
+		gceRegion := v.AsString()
+		var otherRegion string
+		for _, r := range []string{"us-west1", "us-east1", "us-central1"} {
+			if gceRegion != r {
+				otherRegion = r
 			}
 		}
+		for _, test := range []struct {
+			name                     string
+			attrs                    *BucketAttrs
+			expectDirectConnectivity bool
+		}{
+			{
+				name:                     "co-located bucket and GCE VM",
+				attrs:                    &BucketAttrs{Location: gceRegion},
+				expectDirectConnectivity: true,
+			},
+			{
+				name:  "default US multi-regional bucket",
+				attrs: nil,
+			},
+			{
+				name:  "regional but not co-located with GCE VM",
+				attrs: &BucketAttrs{Location: otherRegion},
+			},
+			{
+				name:  "multi-region bucket",
+				attrs: &BucketAttrs{Location: "US"},
+			},
+			{
+				name:  "dual-region bucket",
+				attrs: &BucketAttrs{Location: "NAM4"},
+			},
+			{
+				name:  "dual-region bucket",
+				attrs: &BucketAttrs{Location: "NAM4"},
+			},
+		} {
+			t.Run(test.name, func(t *testing.T) {
+				newBucketName := prefix + test.name + uidSpace.New()
+				newBucket := client.Bucket(newBucketName)
+				h.mustCreate(newBucket, testutil.ProjID(), test.attrs)
+				defer h.mustDeleteBucket(newBucket)
+				err := CheckDirectConnectivitySupported(ctx, newBucketName)
+				if err != nil && test.expectDirectConnectivity {
+					t.Fatalf("CheckDirectConnectivitySupported: expected direct connectivity but failed: %v", err)
+				}
+				if err == nil && !test.expectDirectConnectivity {
+					t.Fatalf("CheckDirectConnectivitySupported: detected direct connectivity when not expected")
+				}
+			})
+		}
 	})
+}
+
+func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
+	ctx := skipHTTP("grpc only test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		err := CheckDirectConnectivitySupported(ctx, bucket)
+		if err == nil {
+			t.Fatal("CheckDirectConnectivitySupported: expected error but none returned")
+		}
+		if err != nil && !strings.Contains(err.Error(), "direct connectivity not detected") {
+			t.Fatalf("CheckDirectConnectivitySupported: failed on a different error %v", err)
+		}
+	}, internaloption.EnableDirectPath(false))
 }
 
 func TestIntegration_BucketCreateDelete(t *testing.T) {
