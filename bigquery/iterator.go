@@ -243,7 +243,7 @@ type fetchPageResult struct {
 // then dispatches to either the appropriate job or table-based backend mechanism
 // as needed.
 func fetchPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
-	result, err := fetchCachedPage(ctx, src, schema, startIndex, pageSize, pageToken)
+	result, err := fetchCachedPage(src, schema, startIndex, pageSize, pageToken)
 	if err != nil {
 		if err != errNoCacheData {
 			// This likely means something more severe, like a problem with schema.
@@ -324,7 +324,7 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 }
 
 func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
-	// reduce data transfered by leveraging api projections
+	// reduce data transferred by leveraging api projections
 	projectedFields := []googleapi.Field{"rows", "pageToken", "totalRows"}
 	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location).Context(ctx)
 	call = call.FormatOptionsUseInt64Timestamp(true)
@@ -371,7 +371,7 @@ var errNoCacheData = errors.New("no rows in rowSource cache")
 // fetchCachedPage attempts to service the first page of results.  For the jobs path specifically, we have an
 // opportunity to fetch rows before the iterator is constructed, and thus serve that data as the first request
 // without an unnecessary network round trip.
-func fetchCachedPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
+func fetchCachedPage(src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
 	// we have no cached data
 	if src.cachedRows == nil {
 		return nil, errNoCacheData
