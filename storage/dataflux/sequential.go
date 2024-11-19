@@ -42,7 +42,7 @@ func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs,
 	for {
 		objects, nextToken, pageSize, err := listNextPageSequentially(objectIterator, c.skipDirectoryObjects)
 		if err != nil {
-			return nil, "", fmt.Errorf("failed while listing objects: %w", err)
+			return nil, "", fmt.Errorf("listing next page sequentially: %w", err)
 		}
 		results = append(results, objects...)
 		lastToken = nextToken
@@ -55,9 +55,9 @@ func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs,
 	return results, lastToken, nil
 }
 
-// listNextPageSequentially leverages the GCS API's pagination capabilities to
-// list [seqDefaultPageSize] number of objects, token to list next page of objects and
-// number of objects iterated(even if not in results).
+// listNextPageSequentially returns objects fetched by GCS API in a single request,
+// token to list next page of objects and number of objects iterated(even
+// if not in results).
 func listNextPageSequentially(objectIterator *storage.ObjectIterator, skipDirectoryObjects bool) (results []*storage.ObjectAttrs, token string, pageSize int, err error) {
 
 	for {
@@ -67,7 +67,7 @@ func listNextPageSequentially(objectIterator *storage.ObjectIterator, skipDirect
 			break
 		}
 		if errObjectIterator != nil {
-			err = fmt.Errorf("iterating through objects %w", errObjectIterator)
+			err = errObjectIterator
 			return
 		}
 		// pageSize tracks the number of objects iterated through.
