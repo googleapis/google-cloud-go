@@ -348,11 +348,19 @@ func TestIntegration_DetectDirectConnectivity(t *testing.T) {
 			region := v.AsString()
 			newBucketName := prefix + uidSpace.New()
 			newBucket := client.Bucket(newBucketName)
-			h.mustCreate(newBucket, testutil.ProjID(), &BucketAttrs{Location: region, LocationType: "region"})
+			h.mustCreate(newBucket, testutil.ProjID(), &BucketAttrs{Location: region})
 			defer h.mustDeleteBucket(newBucket)
 			err := CheckDirectConnectivitySupported(ctx, newBucketName)
 			if err != nil {
 				t.Fatalf("CheckDirectConnectivitySupported: %v", err)
+			}
+			newMRBucketName := prefix + "-mr-" + uidSpace.New()
+			newMRBucket := client.Bucket(newMRBucketName)
+			h.mustCreate(newMRBucket, testutil.ProjID(), &BucketAttrs{Location: "US"})
+			defer h.mustDeleteBucket(newMRBucket)
+			err = CheckDirectConnectivitySupported(ctx, newMRBucketName)
+			if err == nil {
+				t.Fatalf("CheckDirectConnectivitySupported: error expected, got nil")
 			}
 		} else {
 			err = CheckDirectConnectivitySupported(ctx, bucket)

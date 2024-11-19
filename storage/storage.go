@@ -282,7 +282,7 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 				hist := m.Data.(metricdata.Histogram[float64])
 				for _, d := range hist.DataPoints {
 					v, present := d.Attributes.Value("grpc.lb.locality")
-					if present && v.AsString() != "" {
+					if present && v.AsString() != "{}" {
 						return nil
 					}
 				}
