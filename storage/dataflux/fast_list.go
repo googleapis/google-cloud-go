@@ -16,6 +16,7 @@ package dataflux
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"runtime"
 	"strings"
@@ -62,7 +63,7 @@ type ListerInput struct {
 	SkipDirectoryObjects bool
 }
 
-// NewLister creates a new dataflux Lister to list objects in the give bucket.
+// NewLister creates a new [Lister] that can be used to list objects in the given bucket.
 func NewLister(c *storage.Client, in *ListerInput) *Lister {
 	bucket := c.Bucket(in.BucketName)
 
@@ -128,6 +129,10 @@ type Lister struct {
 // batches, only the method which returned object faster in the first batch is used.
 // For smaller dataset, sequential listing is expected to be faster. For larger dataset,
 // worksteal listing is expected to be faster.
+//
+// Worksteal algorithm list objects in GCS bucket in parallel using multiple parallel
+// workers and each worker in the list operation is able to steal work from its siblings
+// once it has finished all currently slated listing work.
 func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) {
 
 	var results []*storage.ObjectAttrs
@@ -139,14 +144,14 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 		// Run worksteal algorithm for listing.
 		objects, err := c.workstealListing(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("error in running worksteal_lister: %w", err)
+			return nil, fmt.Errorf("worksteal listing: %w", err)
 		}
 		results = objects
 	case sequential:
 		// Run GCS sequential listing.
 		objects, token, err := c.sequentialListing(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("error in running sequential listing: %w", err)
+			return nil, fmt.Errorf("sequential listing: %w", err)
 		}
 		results = objects
 		c.pageToken = token
@@ -169,7 +174,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 			objects, err := c.workstealListing(ctx)
 			if err != nil {
 				countErr.increment()
-				return fmt.Errorf("error in running worksteal listing: %w", err)
+				return fmt.Errorf("worksteal listing: %w", err)
 			}
 			// Close context when worksteal listing is complete.
 			cancel()
@@ -182,7 +187,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 			objects, token, err := c.sequentialListing(ctx)
 			if err != nil {
 				countErr.increment()
-				return fmt.Errorf("error in running sequential listing: %w", err)
+				return fmt.Errorf("sequential listing: %w", err)
 			}
 			// Close context when sequential listing is complete.
 			cancel()
@@ -202,8 +207,8 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 		// return context canceled error for the other method. Since context canceled is expected, it
 		// will not be considered an error. If both sequential and worksteal listing fail due
 		// to context canceled, then return error.
-		if err != nil && (!strings.Contains(err.Error(), context.Canceled.Error()) || countErr.counter > 1) {
-			return nil, fmt.Errorf("failed waiting for sequential and work steal lister : %w", err)
+		if err != nil && (!errors.Is(err, context.Canceled) || countErr.counter > 1) {
+			return nil, fmt.Errorf("dataflux : %w", err)
 		}
 		if wsCompletedfirst {
 			// If worksteal listing completes first, set method to worksteal listing and nextToken to "".

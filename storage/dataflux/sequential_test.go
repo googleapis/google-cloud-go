@@ -21,7 +21,7 @@ import (
 	"cloud.google.com/go/storage"
 )
 
-func TestDoSeqListingEmulated(t *testing.T) {
+func TestListNextPageSequentiallyEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
 
 		attrs := &storage.BucketAttrs{
@@ -36,12 +36,12 @@ func TestDoSeqListingEmulated(t *testing.T) {
 			t.Fatalf("unable to create objects: %v", err)
 		}
 		objectIterator := bucketHandle.Objects(ctx, nil)
-		objects, nextToken, pageSize, err := doSeqListing(objectIterator, false)
+		objects, nextToken, pageSize, err := listNextPageSequentially(objectIterator, false)
 		if err != nil {
-			t.Fatalf("failed to call doSeqListing() : %v", err)
+			t.Fatalf("failed to call listNextPageSequentially() : %v", err)
 		}
 		if len(objects) != wantObjects {
-			t.Errorf("doSeqListing() expected to receive %d results, got %d results", len(objects), wantObjects)
+			t.Errorf("listNextPageSequentially() expected to receive %d results, got %d results", len(objects), wantObjects)
 		}
 		if nextToken != "" {
 			t.Errorf("doSequential() expected to receive empty token, got %q", nextToken)
@@ -76,7 +76,7 @@ func TestSequentialListingEmulated(t *testing.T) {
 		objects, nextToken, err := c.sequentialListing(ctx)
 
 		if err != nil {
-			t.Fatalf("failed to call doSeqListing() : %v", err)
+			t.Fatalf("failed to call listNextPageSequentially() : %v", err)
 		}
 		if len(objects) != wantObjects {
 			t.Errorf("sequentialListing() expected to receive %d results, got %d results", len(objects), wantObjects)

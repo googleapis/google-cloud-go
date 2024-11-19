@@ -95,14 +95,14 @@ func (c *Lister) workstealListing(ctx context.Context) ([]*storage.ObjectAttrs, 
 		idleChannel <- 1
 		g.Go(func() error {
 			if err := idleWorker.doWorkstealListing(ctx); err != nil {
-				return fmt.Errorf("listing worker ID %d: %w", idleWorker.id, err)
+				return err
 			}
 			return nil
 		})
 	}
 
 	if err := g.Wait(); err != nil {
-		return nil, fmt.Errorf("failed waiting for multiple workers : %w", err)
+		return nil, err
 	}
 
 	close(idleChannel)
@@ -140,7 +140,7 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 		// to prepare for fetching the subsequent page.
 		doneListing, err := w.objectLister(ctx)
 		if err != nil {
-			return fmt.Errorf("objectLister failed: %w", err)
+			return err
 		}
 
 		// If listing is complete for the range, make worker idle and continue.
@@ -157,7 +157,7 @@ func (w *worker) doWorkstealListing(ctx context.Context) error {
 			// Split range and upload half of work for idle worker.
 			splitPoint, err := w.rangesplitter.splitRange(w.startRange, w.endRange, 1)
 			if err != nil {
-				return fmt.Errorf("splitting range for worker ID:%v, err: %w", w.id, err)
+				return fmt.Errorf("splitting range: %w", err)
 			}
 			// If split point is empty, skip splitting the work.
 			if len(splitPoint) < 1 {
@@ -218,7 +218,7 @@ func (w *worker) objectLister(ctx context.Context) (bool, error) {
 		generation:           w.generation,
 	})
 	if err != nil {
-		return false, fmt.Errorf("listing next page for worker ID %v,  err: %w", w.id, err)
+		return false, err
 	}
 
 	// Append objects listed by objectLister to result.
