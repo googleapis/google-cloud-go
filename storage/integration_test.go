@@ -349,12 +349,6 @@ func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 			t.Fatalf("CheckDirectConnectivitySupported: inside a GCE instance but region was not detected")
 		}
 		gceRegion := v.AsString()
-		var otherRegion string
-		for _, r := range []string{"us-west1", "us-east1", "us-central1"} {
-			if gceRegion != r {
-				otherRegion = r
-			}
-		}
 		for _, test := range []struct {
 			name                     string
 			attrs                    *BucketAttrs
@@ -371,7 +365,7 @@ func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 			},
 			{
 				name:  "regional but not co-located with GCE VM",
-				attrs: &BucketAttrs{Location: otherRegion},
+				attrs: &BucketAttrs{Location: "ASIA-EAST1"},
 			},
 			{
 				name:  "multi-region bucket",
