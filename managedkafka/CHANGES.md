@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.2.2...managedkafka/v0.2.3) (2024-11-19)
+
+
+### Documentation
+
+* **managedkafka:** Update title in README ([#11143](https://github.com/googleapis/google-cloud-go/issues/11143)) ([8823f23](https://github.com/googleapis/google-cloud-go/commit/8823f232e0685de7c4fb8ddbd1d98a33cff60b56))
+
 ## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.2.1...managedkafka/v0.2.2) (2024-10-23)
 
 

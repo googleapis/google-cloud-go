@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.7.0...run/v1.8.0) (2024-11-19)
+
+
+### Features
+
+* **run:** Support manual instance count in Cloud Run for manual scaling feature ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.6.1...run/v1.7.0) (2024-11-14)
 
 
