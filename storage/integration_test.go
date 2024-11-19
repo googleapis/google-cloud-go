@@ -327,6 +327,16 @@ var readCases = []readCase{
 	},
 }
 
+// Test in a GCE environment expected to be located in one of:
+// - us-west1-a, us-west1-b, us-west-c
+//
+// The test skips when ran outside of a GCE instance and us-west-*.
+//
+// Test cases for direct connectivity (DC) check:
+// 1. DC detected with co-located GCS bucket in us-west1
+// 2. DC not detected with multi region bucket in EU
+// 3. DC not detected with dual region bucket in EUR4
+// 4. DC not detected with regional bucket in EUROPE-WEST1
 func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 	ctx := skipHTTP("grpc only test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
@@ -344,37 +354,30 @@ func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() != "gcp_compute_engine" {
 			t.Skip("only testable in a GCE instance")
 		}
-		v, exists := attrs.Value("cloud.region")
-		if !exists {
-			t.Fatalf("CheckDirectConnectivitySupported: inside a GCE instance but region was not detected")
+		if v, exists := attrs.Value("cloud.region"); !exists || !strings.Contains(strings.ToLower(v.AsString()), "us-west1") {
+			t.Skip("inside a GCE instance but region is not us-west1")
 		}
-		gceRegion := v.AsString()
 		for _, test := range []struct {
 			name                     string
 			attrs                    *BucketAttrs
 			expectDirectConnectivity bool
 		}{
 			{
-				name:                     "co-located bucket and GCE VM",
-				attrs:                    &BucketAttrs{Location: gceRegion},
+				name:                     "co-located-bucket",
+				attrs:                    &BucketAttrs{Location: "us-west1"},
 				expectDirectConnectivity: true,
 			},
 			{
-				name:  "default US multi-regional bucket",
-				attrs: nil,
+				name:  "not-colocated-multi-region-bucket",
+				attrs: &BucketAttrs{Location: "EU"},
 			},
 			{
-				name:  "regional but not co-located with GCE VM",
-				attrs: &BucketAttrs{Location: "ASIA-EAST1"},
+				name:  "not-colocated-dual-region-bucket",
+				attrs: &BucketAttrs{Location: "EUR4"},
 			},
 			{
-				name:  "multi-region bucket",
-				attrs: &BucketAttrs{Location: "US"},
-			},
-			{
-				name:                     "dual-region bucket",
-				attrs:                    &BucketAttrs{Location: "NAM4"},
-				expectDirectConnectivity: true,
+				name:  "not-colocated-region-bucket",
+				attrs: &BucketAttrs{Location: "EUROPE-WEST1"},
 			},
 		} {
 			t.Run(test.name, func(t *testing.T) {
@@ -394,6 +397,8 @@ func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 	})
 }
 
+// Test handles the case when Direct Connectivity is disabled which causes
+// "grpc.lb.locality" to return ""
 func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
 	ctx := skipHTTP("grpc only test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
