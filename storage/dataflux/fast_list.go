@@ -62,7 +62,7 @@ type ListerInput struct {
 	SkipDirectoryObjects bool
 }
 
-// NewLister creates a new dataflux Lister to list objects in the give bucket.
+// NewLister creates a new [Lister] that can be used to list objects in the given bucket.
 func NewLister(c *storage.Client, in *ListerInput) *Lister {
 	bucket := c.Bucket(in.BucketName)
 
