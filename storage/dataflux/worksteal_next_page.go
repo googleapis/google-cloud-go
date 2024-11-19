@@ -97,6 +97,8 @@ func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 		}
 
 		// Skip object versions already processed in the previous page to prevent duplicates.
+		// Objects are listed in the increasing order of generation.
+		// See https://cloud.google.com/storage/docs/json_api/v1/objects/list#parameters.
 		if opts.query.Versions && opts.query.StartOffset == attrs.Name && attrs.Generation < opts.generation {
 			continue
 		}
