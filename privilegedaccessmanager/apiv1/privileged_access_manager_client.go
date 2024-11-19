@@ -223,7 +223,7 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CheckOnboardingStatus checkOnboardingStatus reports the onboarding status for a
+// CheckOnboardingStatus CheckOnboardingStatus reports the onboarding status for a
 // project/folder/organization. Any findings reported by this API need to be
 // fixed before PAM can be used on the resource.
 func (c *Client) CheckOnboardingStatus(ctx context.Context, req *privilegedaccessmanagerpb.CheckOnboardingStatusRequest, opts ...gax.CallOption) (*privilegedaccessmanagerpb.CheckOnboardingStatusResponse, error) {
@@ -323,7 +323,8 @@ func (c *Client) GetGrant(ctx context.Context, req *privilegedaccessmanagerpb.Ge
 	return c.internalClient.GetGrant(ctx, req, opts...)
 }
 
-// CreateGrant creates a new grant in a given project and location.
+// CreateGrant creates a new grant in a given project/folder/organization and
+// location.
 func (c *Client) CreateGrant(ctx context.Context, req *privilegedaccessmanagerpb.CreateGrantRequest, opts ...gax.CallOption) (*privilegedaccessmanagerpb.Grant, error) {
 	return c.internalClient.CreateGrant(ctx, req, opts...)
 }
@@ -1123,7 +1124,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// CheckOnboardingStatus checkOnboardingStatus reports the onboarding status for a
+// CheckOnboardingStatus CheckOnboardingStatus reports the onboarding status for a
 // project/folder/organization. Any findings reported by this API need to be
 // fixed before PAM can be used on the resource.
 func (c *restClient) CheckOnboardingStatus(ctx context.Context, req *privilegedaccessmanagerpb.CheckOnboardingStatusRequest, opts ...gax.CallOption) (*privilegedaccessmanagerpb.CheckOnboardingStatusResponse, error) {
@@ -1934,7 +1935,8 @@ func (c *restClient) GetGrant(ctx context.Context, req *privilegedaccessmanagerp
 	return resp, nil
 }
 
-// CreateGrant creates a new grant in a given project and location.
+// CreateGrant creates a new grant in a given project/folder/organization and
+// location.
 func (c *restClient) CreateGrant(ctx context.Context, req *privilegedaccessmanagerpb.CreateGrantRequest, opts ...gax.CallOption) (*privilegedaccessmanagerpb.Grant, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetGrant()

@@ -353,7 +353,7 @@ type AcceleratorTypeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*tpupb.AcceleratorType, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AcceleratorTypeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -400,7 +400,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -447,7 +447,7 @@ type NodeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*tpupb.Node, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NodeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -494,7 +494,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -541,7 +541,7 @@ type TensorFlowVersionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*tpupb.TensorFlowVersion, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TensorFlowVersionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

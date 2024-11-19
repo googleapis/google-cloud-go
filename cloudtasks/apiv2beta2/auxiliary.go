@@ -42,7 +42,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -89,7 +89,7 @@ type QueueIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*cloudtaskspb.Queue, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *QueueIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -136,7 +136,7 @@ type TaskIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*cloudtaskspb.Task, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TaskIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

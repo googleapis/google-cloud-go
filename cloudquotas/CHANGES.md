@@ -2,6 +2,14 @@
 
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.1.2...cloudquotas/v1.2.0) (2024-11-14)
+
+
+### Features
+
+* **cloudquotas:** A new value `NOT_ENOUGH_USAGE_HISTORY` is added to enum `IneligibilityReason` ([e85151d](https://github.com/googleapis/google-cloud-go/commit/e85151ddc5f70174f951265106d5a114191c5f53))
+* **cloudquotas:** A new value `NOT_SUPPORTED` is added to enum `IneligibilityReason` ([e85151d](https://github.com/googleapis/google-cloud-go/commit/e85151ddc5f70174f951265106d5a114191c5f53))
+
 ## [1.1.2](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.1.1...cloudquotas/v1.1.2) (2024-10-23)
 
 
