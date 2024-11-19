@@ -36,18 +36,18 @@ func TestDoSeqListingEmulated(t *testing.T) {
 			t.Fatalf("unable to create objects: %v", err)
 		}
 		objectIterator := bucketHandle.Objects(ctx, nil)
-		objects, nextToken, pageSize, err := doSeqListing(objectIterator, false)
+		objects, nextToken, pageSize, err := listNextPageSequentially(objectIterator, false)
 		if err != nil {
-			t.Fatalf("failed to call doSeqListing() : %v", err)
+			t.Fatalf("failed to call listNextPageSequentially() : %v", err)
 		}
 		if len(objects) != wantObjects {
-			t.Errorf("doSeqListing()  got %d objects, want %d objects ", len(objects), wantObjects)
+			t.Errorf("listNextPageSequentially()  got %d objects, want %d objects ", len(objects), wantObjects)
 		}
 		if nextToken != "" {
-			t.Errorf("doSequential() got %q token, want empty string ", nextToken)
+			t.Errorf("listNextPageSequentially() got %q token, want empty string ", nextToken)
 		}
 		if pageSize > seqDefaultPageSize {
-			t.Errorf("doSequential() got %d pagesize, want less than %d pagesize", pageSize, seqDefaultPageSize)
+			t.Errorf("listNextPageSequentially() got %d pagesize, want less than %d pagesize", pageSize, seqDefaultPageSize)
 		}
 	})
 }

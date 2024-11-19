@@ -61,7 +61,8 @@ type nextPageResult struct {
 // listing options (nextPageOpts). It returns a nextPageResult containing the
 // list of objects, a flag indicating if the listing is complete, the starting
 // point for the next page, and the generation of the last object in the page.
-// In case multiple versions of objects needs to be listed, then
+// In case multiple versions of an object needs to be listed, more than one page
+// can also be listed to avoid duplicate listing.
 func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 
 	opts.query.StartOffset = addPrefix(opts.startRange, opts.query.Prefix)

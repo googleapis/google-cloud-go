@@ -32,7 +32,7 @@ const (
 // It returns a list of objects and the next token to use to continue listing.
 // If the next token is empty, then listing is complete.
 func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs, string, error) {
-	var result []*storage.ObjectAttrs
+	var results []*storage.ObjectAttrs
 	var objectsIterated int
 	var lastToken string
 	objectIterator := c.bucket.Objects(ctx, &c.query)
@@ -40,11 +40,11 @@ func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs,
 	objectIterator.PageInfo().MaxSize = seqDefaultPageSize
 
 	for {
-		objects, nextToken, pageSize, err := doSeqListing(objectIterator, c.skipDirectoryObjects)
+		objects, nextToken, pageSize, err := listNextPageSequentially(objectIterator, c.skipDirectoryObjects)
 		if err != nil {
 			return nil, "", fmt.Errorf("failed while listing objects: %w", err)
 		}
-		result = append(result, objects...)
+		results = append(results, objects...)
 		lastToken = nextToken
 		objectsIterated += pageSize
 		if nextToken == "" || (c.batchSize > 0 && objectsIterated >= c.batchSize) {
@@ -52,13 +52,13 @@ func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs,
 		}
 		c.pageToken = nextToken
 	}
-	return result, lastToken, nil
+	return results, lastToken, nil
 }
 
-// doSeqListing leverages the GCS API's pagination capabilities to
-// list [seqDefaultPageSize] numbe of objects, token to list next page of obhects and
+// listNextPageSequentially leverages the GCS API's pagination capabilities to
+// list [seqDefaultPageSize] number of objects, token to list next page of objects and
 // number of objects iterated(even if not in results).
-func doSeqListing(objectIterator *storage.ObjectIterator, skipDirectoryObjects bool) (result []*storage.ObjectAttrs, token string, pageSize int, err error) {
+func listNextPageSequentially(objectIterator *storage.ObjectIterator, skipDirectoryObjects bool) (results []*storage.ObjectAttrs, token string, pageSize int, err error) {
 
 	for {
 		attrs, errObjectIterator := objectIterator.Next()
@@ -70,10 +70,10 @@ func doSeqListing(objectIterator *storage.ObjectIterator, skipDirectoryObjects b
 			err = fmt.Errorf("iterating through objects %w", errObjectIterator)
 			return
 		}
-		// pagesize tracks number of objects fetched bu GCS api.
+		// pageSize tracks the number of objects iterated through.
 		pageSize++
 		if !(skipDirectoryObjects && strings.HasSuffix(attrs.Name, "/")) {
-			result = append(result, attrs)
+			results = append(results, attrs)
 		}
 		if objectIterator.PageInfo().Remaining() == 0 {
 			break
