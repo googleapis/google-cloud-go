@@ -134,6 +134,9 @@ func (c *Client) ClientID() string {
 }
 
 func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientConfig, opts ...option.ClientOption) (*grpcgcp.GCPMultiEndpoint, error) {
+	options := make([]option.ClientOption, len(opts))
+	copy(options, opts)
+
 	if cfg.GRPCgcpConfig == nil {
 		cfg.GRPCgcpConfig = &grpcgcppb.ApiConfig{}
 	}
@@ -196,7 +199,7 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 			option.WithoutAuthentication(),
 			internaloption.SkipDialSettingsValidation(),
 		}
-		opts = append(opts, emulatorOpts...)
+		options = append(options, emulatorOpts...)
 		// Replace all endpoints with emulator target.
 		for _, meo := range cfg.MultiEndpoints {
 			meo.Endpoints = []string{emulatorAddr}
@@ -216,7 +219,8 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 	cfg.GRPCgcpConfig.ChannelPool.BindPickStrategy = grpcgcppb.ChannelPoolConfig_ROUND_ROBIN
 
 	cfg.DialFunc = func(ctx context.Context, target string, dopts ...grpc.DialOption) (*grpc.ClientConn, error) {
-		copts := opts
+		copts := make([]option.ClientOption, len(options))
+		copy(copts, options)
 
 		for _, do := range dopts {
 			copts = append(copts, option.WithGRPCDialOption(do))
