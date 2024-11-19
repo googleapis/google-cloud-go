@@ -897,7 +897,7 @@ type AccessEntry struct {
 
 // Expr represents the conditional information related to dataset access policies.
 type Expr struct {
-	//Textual representation of an expression in Common Expression Language syntax.
+	// Textual representation of an expression in Common Expression Language syntax.
 	Expression string
 
 	// Optional. Title for the expression, i.e. a short string describing

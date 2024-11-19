@@ -450,7 +450,6 @@ func TestIntegration_DatasetConditions(t *testing.T) {
 	}
 
 	wantEntry := &AccessEntry{
-
 		Role:       ReaderRole,
 		Entity:     "Joe@example.com",
 		EntityType: UserEmailEntity,
