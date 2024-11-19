@@ -237,9 +237,9 @@ type RemoteFunctionOptions struct {
 	UserDefinedContext map[string]string
 }
 
-func bqToRemoteFunctionOptions(in *bq.RemoteFunctionOptions) (*RemoteFunctionOptions, error) {
+func bqToRemoteFunctionOptions(in *bq.RemoteFunctionOptions) *RemoteFunctionOptions {
 	if in == nil {
-		return nil, nil
+		return nil
 	}
 	rfo := &RemoteFunctionOptions{
 		Connection:      in.Connection,
@@ -252,12 +252,12 @@ func bqToRemoteFunctionOptions(in *bq.RemoteFunctionOptions) (*RemoteFunctionOpt
 			rfo.UserDefinedContext[k] = v
 		}
 	}
-	return rfo, nil
+	return rfo
 }
 
-func (rfo *RemoteFunctionOptions) toBQ() (*bq.RemoteFunctionOptions, error) {
+func (rfo *RemoteFunctionOptions) toBQ() *bq.RemoteFunctionOptions {
 	if rfo == nil {
-		return nil, nil
+		return nil
 	}
 	r := &bq.RemoteFunctionOptions{
 		Connection:      rfo.Connection,
@@ -270,7 +270,7 @@ func (rfo *RemoteFunctionOptions) toBQ() (*bq.RemoteFunctionOptions, error) {
 			r.UserDefinedContext[k] = v
 		}
 	}
-	return r, nil
+	return r
 }
 
 func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
@@ -307,11 +307,7 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 	r.Arguments = args
 	r.ImportedLibraries = rm.ImportedLibraries
 	if rm.RemoteFunctionOptions != nil {
-		rfo, err := rm.RemoteFunctionOptions.toBQ()
-		if err != nil {
-			return nil, err
-		}
-		r.RemoteFunctionOptions = rfo
+		r.RemoteFunctionOptions = rm.RemoteFunctionOptions.toBQ()
 	}
 	if !rm.CreationTime.IsZero() {
 		return nil, errors.New("cannot set CreationTime on create")
@@ -528,11 +524,7 @@ func bqToRoutineMetadata(r *bq.Routine) (*RoutineMetadata, error) {
 		return nil, err
 	}
 	meta.ReturnType = ret
-	rfo, err := bqToRemoteFunctionOptions(r.RemoteFunctionOptions)
-	if err != nil {
-		return nil, err
-	}
-	meta.RemoteFunctionOptions = rfo
+	meta.RemoteFunctionOptions = bqToRemoteFunctionOptions(r.RemoteFunctionOptions)
 	tt, err := bqToStandardSQLTableType(r.ReturnTableType)
 	if err != nil {
 		return nil, err

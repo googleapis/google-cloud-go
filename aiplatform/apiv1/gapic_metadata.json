@@ -338,6 +338,11 @@
                 "UpdateEndpoint"
               ]
             },
+            "UpdateEndpointLongRunning": {
+              "methods": [
+                "UpdateEndpointLongRunning"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
