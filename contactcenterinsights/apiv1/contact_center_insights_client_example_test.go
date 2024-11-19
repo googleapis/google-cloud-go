@@ -119,6 +119,66 @@ func ExampleClient_BulkDeleteConversations() {
 	_ = resp
 }
 
+func ExampleClient_BulkDownloadFeedbackLabels() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.BulkDownloadFeedbackLabelsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#BulkDownloadFeedbackLabelsRequest.
+	}
+	op, err := c.BulkDownloadFeedbackLabels(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_BulkUploadFeedbackLabels() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.BulkUploadFeedbackLabelsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#BulkUploadFeedbackLabelsRequest.
+	}
+	op, err := c.BulkUploadFeedbackLabels(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CalculateIssueModelStats() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -199,6 +259,31 @@ func ExampleClient_CreateAnalysis() {
 	_ = resp
 }
 
+func ExampleClient_CreateAnalysisRule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.CreateAnalysisRuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CreateAnalysisRuleRequest.
+	}
+	resp, err := c.CreateAnalysisRule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateConversation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -217,6 +302,31 @@ func ExampleClient_CreateConversation() {
 		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CreateConversationRequest.
 	}
 	resp, err := c.CreateConversation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateFeedbackLabel() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.CreateFeedbackLabelRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CreateFeedbackLabelRequest.
+	}
+	resp, err := c.CreateFeedbackLabel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -279,6 +389,81 @@ func ExampleClient_CreatePhraseMatcher() {
 	_ = resp
 }
 
+func ExampleClient_CreateQaQuestion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.CreateQaQuestionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CreateQaQuestionRequest.
+	}
+	resp, err := c.CreateQaQuestion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateQaScorecard() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.CreateQaScorecardRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CreateQaScorecardRequest.
+	}
+	resp, err := c.CreateQaScorecard(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateQaScorecardRevision() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.CreateQaScorecardRevisionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CreateQaScorecardRevisionRequest.
+	}
+	resp, err := c.CreateQaScorecardRevision(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateView() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -327,6 +512,29 @@ func ExampleClient_DeleteAnalysis() {
 	}
 }
 
+func ExampleClient_DeleteAnalysisRule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.DeleteAnalysisRuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#DeleteAnalysisRuleRequest.
+	}
+	err = c.DeleteAnalysisRule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_DeleteConversation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -345,6 +553,29 @@ func ExampleClient_DeleteConversation() {
 		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#DeleteConversationRequest.
 	}
 	err = c.DeleteConversation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteFeedbackLabel() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.DeleteFeedbackLabelRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#DeleteFeedbackLabelRequest.
+	}
+	err = c.DeleteFeedbackLabel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -424,6 +655,75 @@ func ExampleClient_DeletePhraseMatcher() {
 	}
 }
 
+func ExampleClient_DeleteQaQuestion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.DeleteQaQuestionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#DeleteQaQuestionRequest.
+	}
+	err = c.DeleteQaQuestion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteQaScorecard() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.DeleteQaScorecardRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#DeleteQaScorecardRequest.
+	}
+	err = c.DeleteQaScorecard(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteQaScorecardRevision() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.DeleteQaScorecardRevisionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#DeleteQaScorecardRevisionRequest.
+	}
+	err = c.DeleteQaScorecardRevision(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_DeleteView() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -470,6 +770,31 @@ func ExampleClient_DeployIssueModel() {
 	}
 
 	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeployQaScorecardRevision() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.DeployQaScorecardRevisionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#DeployQaScorecardRevisionRequest.
+	}
+	resp, err := c.DeployQaScorecardRevision(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -562,6 +887,31 @@ func ExampleClient_GetAnalysis() {
 	_ = resp
 }
 
+func ExampleClient_GetAnalysisRule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.GetAnalysisRuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetAnalysisRuleRequest.
+	}
+	resp, err := c.GetAnalysisRule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetConversation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -605,6 +955,31 @@ func ExampleClient_GetEncryptionSpec() {
 		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetEncryptionSpecRequest.
 	}
 	resp, err := c.GetEncryptionSpec(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetFeedbackLabel() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.GetFeedbackLabelRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetFeedbackLabelRequest.
+	}
+	resp, err := c.GetFeedbackLabel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -680,6 +1055,81 @@ func ExampleClient_GetPhraseMatcher() {
 		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetPhraseMatcherRequest.
 	}
 	resp, err := c.GetPhraseMatcher(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetQaQuestion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.GetQaQuestionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetQaQuestionRequest.
+	}
+	resp, err := c.GetQaQuestion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetQaScorecard() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.GetQaScorecardRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetQaScorecardRequest.
+	}
+	resp, err := c.GetQaScorecard(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetQaScorecardRevision() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.GetQaScorecardRevisionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetQaScorecardRevisionRequest.
+	}
+	resp, err := c.GetQaScorecardRevision(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -827,6 +1277,43 @@ func ExampleClient_InitializeEncryptionSpec() {
 	_ = resp
 }
 
+func ExampleClient_ListAllFeedbackLabels() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.ListAllFeedbackLabelsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ListAllFeedbackLabelsRequest.
+	}
+	it := c.ListAllFeedbackLabels(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*contactcenterinsightspb.ListAllFeedbackLabelsResponse)
+	}
+}
+
 func ExampleClient_ListAnalyses() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -864,6 +1351,43 @@ func ExampleClient_ListAnalyses() {
 	}
 }
 
+func ExampleClient_ListAnalysisRules() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.ListAnalysisRulesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ListAnalysisRulesRequest.
+	}
+	it := c.ListAnalysisRules(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*contactcenterinsightspb.ListAnalysisRulesResponse)
+	}
+}
+
 func ExampleClient_ListConversations() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -898,6 +1422,43 @@ func ExampleClient_ListConversations() {
 		// Otherwise, remove this line. Only populated after
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*contactcenterinsightspb.ListConversationsResponse)
+	}
+}
+
+func ExampleClient_ListFeedbackLabels() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.ListFeedbackLabelsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ListFeedbackLabelsRequest.
+	}
+	it := c.ListFeedbackLabels(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*contactcenterinsightspb.ListFeedbackLabelsResponse)
 	}
 }
 
@@ -988,6 +1549,117 @@ func ExampleClient_ListPhraseMatchers() {
 	}
 }
 
+func ExampleClient_ListQaQuestions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.ListQaQuestionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ListQaQuestionsRequest.
+	}
+	it := c.ListQaQuestions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*contactcenterinsightspb.ListQaQuestionsResponse)
+	}
+}
+
+func ExampleClient_ListQaScorecardRevisions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.ListQaScorecardRevisionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ListQaScorecardRevisionsRequest.
+	}
+	it := c.ListQaScorecardRevisions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*contactcenterinsightspb.ListQaScorecardRevisionsResponse)
+	}
+}
+
+func ExampleClient_ListQaScorecards() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.ListQaScorecardsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ListQaScorecardsRequest.
+	}
+	it := c.ListQaScorecards(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*contactcenterinsightspb.ListQaScorecardsResponse)
+	}
+}
+
 func ExampleClient_ListViews() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -1025,6 +1697,66 @@ func ExampleClient_ListViews() {
 	}
 }
 
+func ExampleClient_QueryMetrics() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.QueryMetricsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#QueryMetricsRequest.
+	}
+	op, err := c.QueryMetrics(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_TuneQaScorecardRevision() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.TuneQaScorecardRevisionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#TuneQaScorecardRevisionRequest.
+	}
+	op, err := c.TuneQaScorecardRevision(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_UndeployIssueModel() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -1055,6 +1787,56 @@ func ExampleClient_UndeployIssueModel() {
 	_ = resp
 }
 
+func ExampleClient_UndeployQaScorecardRevision() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.UndeployQaScorecardRevisionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UndeployQaScorecardRevisionRequest.
+	}
+	resp, err := c.UndeployQaScorecardRevision(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateAnalysisRule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.UpdateAnalysisRuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UpdateAnalysisRuleRequest.
+	}
+	resp, err := c.UpdateAnalysisRule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_UpdateConversation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -1073,6 +1855,31 @@ func ExampleClient_UpdateConversation() {
 		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UpdateConversationRequest.
 	}
 	resp, err := c.UpdateConversation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateFeedbackLabel() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.UpdateFeedbackLabelRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UpdateFeedbackLabelRequest.
+	}
+	resp, err := c.UpdateFeedbackLabel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -1148,6 +1955,56 @@ func ExampleClient_UpdatePhraseMatcher() {
 		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UpdatePhraseMatcherRequest.
 	}
 	resp, err := c.UpdatePhraseMatcher(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateQaQuestion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.UpdateQaQuestionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UpdateQaQuestionRequest.
+	}
+	resp, err := c.UpdateQaQuestion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateQaScorecard() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.UpdateQaScorecardRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UpdateQaScorecardRequest.
+	}
+	resp, err := c.UpdateQaScorecard(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
