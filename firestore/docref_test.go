@@ -89,6 +89,17 @@ func TestDocGet(t *testing.T) {
 	if status.Code(err) != codes.NotFound {
 		t.Errorf("got %v, want NotFound", err)
 	}
+
+	// Invalid UTF-8 characters
+	if _, gotErr := c.Collection("C").Doc("Mayag\xcfez").Get(ctx); !errorsMatch(gotErr, errInvalidUtf8DocRef) {
+		t.Errorf("got: %v, want: %v", gotErr, errInvalidUtf8DocRef)
+	}
+
+	// nil DocRef
+	var nilDocRef *DocumentRef
+	if _, gotErr := nilDocRef.Get(ctx); !errorsMatch(gotErr, errNilDocRef) {
+		t.Errorf("got: %v, want: %v", gotErr, errInvalidUtf8DocRef)
+	}
 }
 
 func TestDocSet(t *testing.T) {
@@ -133,6 +144,18 @@ func TestDocSet(t *testing.T) {
 	if err == nil {
 		t.Errorf("got nil, want error")
 	}
+
+	// Invalid UTF-8 characters
+	if _, gotErr := c.Collection("C").Doc("Mayag\xcfez").
+		Set(ctx, data, Merge([]string{"*", "~"})); !errorsMatch(gotErr, errInvalidUtf8DocRef) {
+		t.Errorf("got: %v, want: %v", gotErr, errInvalidUtf8DocRef)
+	}
+
+	// nil DocRef
+	var nilDocRef *DocumentRef
+	if _, gotErr := nilDocRef.Set(ctx, data, Merge([]string{"*", "~"})); !errorsMatch(gotErr, errNilDocRef) {
+		t.Errorf("got: %v, want: %v", gotErr, errInvalidUtf8DocRef)
+	}
 }
 
 func TestDocCreate(t *testing.T) {
@@ -175,6 +198,18 @@ func TestDocCreate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// Invalid UTF-8 characters
+	if _, gotErr := c.Collection("C").Doc("Mayag\xcfez").
+		Create(ctx, &create{}); !errorsMatch(gotErr, errInvalidUtf8DocRef) {
+		t.Errorf("got: %v, want: %v", gotErr, errInvalidUtf8DocRef)
+	}
+
+	// nil DocRef
+	var nilDocRef *DocumentRef
+	if _, gotErr := nilDocRef.Create(ctx, &create{}); !errorsMatch(gotErr, errNilDocRef) {
+		t.Errorf("got: %v, want: %v", gotErr, errInvalidUtf8DocRef)
+	}
 }
 
 func TestDocDelete(t *testing.T) {
@@ -198,6 +233,18 @@ func TestDocDelete(t *testing.T) {
 	}
 	if !testEqual(wr, &WriteResult{}) {
 		t.Errorf("got %+v, want %+v", wr, writeResultForSet)
+	}
+
+	// Invalid UTF-8 characters
+	if _, gotErr := c.Collection("C").Doc("Mayag\xcfez").
+		Delete(ctx); !errorsMatch(gotErr, errInvalidUtf8DocRef) {
+		t.Errorf("got: %v, want: %v", gotErr, errInvalidUtf8DocRef)
+	}
+
+	// nil DocRef
+	var nilDocRef *DocumentRef
+	if _, gotErr := nilDocRef.Delete(ctx); !errorsMatch(gotErr, errNilDocRef) {
+		t.Errorf("got: %v, want: %v", gotErr, errInvalidUtf8DocRef)
 	}
 }
 

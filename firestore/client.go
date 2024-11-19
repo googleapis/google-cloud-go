@@ -256,8 +256,8 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 	var docNames []string
 	docIndices := map[string][]int{} // doc name to positions in docRefs
 	for i, dr := range docRefs {
-		if dr == nil {
-			return nil, errNilDocRef
+		if err := dr.isValid(); err != nil {
+			return nil, err
 		}
 		docNames = append(docNames, dr.Path)
 		docIndices[dr.Path] = append(docIndices[dr.Path], i)

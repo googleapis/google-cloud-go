@@ -17,7 +17,8 @@ package spanner
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"errors"
+	"io"
 	"log"
 	"os"
 	"testing"
@@ -57,7 +58,7 @@ func TestMockPartitionedUpdateWithQuery(t *testing.T) {
 	_, err := client.PartitionedUpdate(ctx, stmt)
 	wantCode := codes.InvalidArgument
 	var serr *Error
-	if !errorAs(err, &serr) {
+	if !errors.As(err, &serr) {
 		t.Errorf("got error %v, want spanner.Error", err)
 	}
 	if ErrCode(serr) != wantCode {
@@ -134,7 +135,7 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 	// The following update will cause a 'Failed to delete session' warning to
 	// be logged. This is expected. To avoid spamming the log, we temporarily
 	// set the output to be discarded.
-	logger.SetOutput(ioutil.Discard)
+	logger.SetOutput(io.Discard)
 	_, err := client.PartitionedUpdate(ctx, stmt)
 	logger.SetOutput(os.Stderr)
 	if err == nil {

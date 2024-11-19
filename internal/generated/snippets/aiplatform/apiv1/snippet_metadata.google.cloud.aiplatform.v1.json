@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.68.0",
+    "version": "1.69.0",
     "language": "GO",
     "apis": [
       {
@@ -702,7 +702,7 @@
     {
       "regionTag": "aiplatform_v1_generated_DatasetService_ListAnnotations_sync",
       "title": "aiplatform ListAnnotations Sample",
-      "description": "ListAnnotations lists Annotations belongs to a dataitem",
+      "description": "ListAnnotations lists Annotations belongs to a dataitem\nThis RPC is only available in InternalDatasetService. It is only used for\nexporting conversation data to CCAI Insights.",
       "file": "DatasetClient/ListAnnotations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2853,6 +2853,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EndpointService_UpdateEndpointLongRunning_sync",
+      "title": "aiplatform UpdateEndpointLongRunning Sample",
+      "description": "UpdateEndpointLongRunning updates an Endpoint with a long running operation.",
+      "file": "EndpointClient/UpdateEndpointLongRunning/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEndpointLongRunning",
+        "fullName": "google.cloud.aiplatform.v1.EndpointClient.UpdateEndpointLongRunning",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateEndpointLongRunningRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEndpointLongRunningOperation",
+        "client": {
+          "shortName": "EndpointClient",
+          "fullName": "google.cloud.aiplatform.v1.EndpointClient"
+        },
+        "method": {
+          "shortName": "UpdateEndpointLongRunning",
+          "fullName": "google.cloud.aiplatform.v1.EndpointService.UpdateEndpointLongRunning",
+          "service": {
+            "shortName": "EndpointService",
+            "fullName": "google.cloud.aiplatform.v1.EndpointService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -5009,6 +5055,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_FeatureRegistryService_BatchCreateFeatures_sync",
+      "title": "aiplatform BatchCreateFeatures Sample",
+      "description": "BatchCreateFeatures creates a batch of Features in a given FeatureGroup.",
+      "file": "FeatureRegistryClient/BatchCreateFeatures/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateFeatures",
+        "fullName": "google.cloud.aiplatform.v1.FeatureRegistryClient.BatchCreateFeatures",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchCreateFeaturesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchCreateFeaturesOperation",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "BatchCreateFeatures",
+          "fullName": "google.cloud.aiplatform.v1.FeatureRegistryService.BatchCreateFeatures",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -8404,6 +8496,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_GenAiTuningService_RebaseTunedModel_sync",
+      "title": "aiplatform RebaseTunedModel Sample",
+      "description": "RebaseTunedModel rebase a TunedModel.",
+      "file": "GenAiTuningClient/RebaseTunedModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RebaseTunedModel",
+        "fullName": "google.cloud.aiplatform.v1.GenAiTuningClient.RebaseTunedModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.RebaseTunedModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RebaseTunedModelOperation",
+        "client": {
+          "shortName": "GenAiTuningClient",
+          "fullName": "google.cloud.aiplatform.v1.GenAiTuningClient"
+        },
+        "method": {
+          "shortName": "RebaseTunedModel",
+          "fullName": "google.cloud.aiplatform.v1.GenAiTuningService.RebaseTunedModel",
+          "service": {
+            "shortName": "GenAiTuningService",
+            "fullName": "google.cloud.aiplatform.v1.GenAiTuningService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -18548,6 +18686,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_NotebookService_StopNotebookRuntime_sync",
+      "title": "aiplatform StopNotebookRuntime Sample",
+      "description": "StopNotebookRuntime stops a NotebookRuntime.",
+      "file": "NotebookClient/StopNotebookRuntime/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopNotebookRuntime",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.StopNotebookRuntime",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.StopNotebookRuntimeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StopNotebookRuntimeOperation",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "StopNotebookRuntime",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.StopNotebookRuntime",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_NotebookService_TestIamPermissions_sync",
       "title": "aiplatform TestIamPermissions Sample",
       "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
@@ -21927,7 +22111,7 @@
     {
       "regionTag": "aiplatform_v1_generated_ScheduleService_ResumeSchedule_sync",
       "title": "aiplatform ResumeSchedule Sample",
-      "description": "ResumeSchedule resumes a paused Schedule to start scheduling new runs. Will mark\n[Schedule.state][google.cloud.aiplatform.v1.Schedule.state] to 'ACTIVE'.\nOnly paused Schedule can be resumed.\n\nWhen the Schedule is resumed, new runs will be scheduled starting from the\nnext execution time after the current time based on the time_specification\nin the Schedule. If [Schedule.catchUp][] is set up true, all\nmissed runs will be scheduled for backfill first.",
+      "description": "ResumeSchedule resumes a paused Schedule to start scheduling new runs. Will mark\n[Schedule.state][google.cloud.aiplatform.v1.Schedule.state] to 'ACTIVE'.\nOnly paused Schedule can be resumed.\n\nWhen the Schedule is resumed, new runs will be scheduled starting from the\nnext execution time after the current time based on the time_specification\nin the Schedule. If\n[Schedule.catch_up][google.cloud.aiplatform.v1.Schedule.catch_up] is set up\ntrue, all missed runs will be scheduled for backfill first.",
       "file": "ScheduleClient/ResumeSchedule/main.go",
       "language": "GO",
       "clientMethod": {

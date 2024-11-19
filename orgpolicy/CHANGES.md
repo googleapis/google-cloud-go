@@ -1,5 +1,27 @@
 # Changes
 
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.14.0...orgpolicy/v1.14.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **orgpolicy:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **orgpolicy:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.13.1...orgpolicy/v1.14.0) (2024-09-19)
+
+
+### Features
+
+* **orgpolicy:** Support adding constraints to new method types REMOVE_GRANTS and GOVERN_TAGS ([0b3c268](https://github.com/googleapis/google-cloud-go/commit/0b3c268c564ffe0d87b0efc716f08afaf064b4cc))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.13.0...orgpolicy/v1.13.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **orgpolicy:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.12.8...orgpolicy/v1.13.0) (2024-08-20)
 
 

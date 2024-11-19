@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"bytes"
 	"crypto/md5"
 	"hash/crc32"
 	"math/rand"
@@ -23,11 +24,12 @@ import (
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/grpc/mem"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 )
 
-func TestBytesCodec(t *testing.T) {
+func TestBytesCodecV2(t *testing.T) {
 	// Generate some random content.
 	content := make([]byte, 1<<10+1) // 1 kib + 1 byte
 	rand.New(rand.NewSource(0)).Read(content)
@@ -85,8 +87,9 @@ func TestBytesCodec(t *testing.T) {
 	}
 
 	for _, test := range []struct {
-		desc string
-		resp *storagepb.ReadObjectResponse
+		desc        string
+		resp        *storagepb.ReadObjectResponse
+		wantContent []byte
 	}{
 		{
 			desc: "filled object response",
@@ -106,41 +109,111 @@ func TestBytesCodec(t *testing.T) {
 				},
 				Metadata: metadata,
 			},
+			wantContent: content,
 		},
 		{
-			desc: "empty object response",
-			resp: &storagepb.ReadObjectResponse{},
+			desc:        "empty object response",
+			resp:        &storagepb.ReadObjectResponse{},
+			wantContent: []byte{},
 		},
 		{
 			desc: "partially empty",
 			resp: &storagepb.ReadObjectResponse{
 				ChecksummedData: &storagepb.ChecksummedData{},
 				ObjectChecksums: &storagepb.ObjectChecksums{Md5Hash: md5},
-				Metadata:        &storagepb.Object{},
 			},
+			wantContent: []byte{},
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
-			// Encode the response.
-			encodedResp, err := proto.Marshal(test.resp)
-			if err != nil {
-				t.Fatalf("proto.Marshal: %v", err)
-			}
+			for _, subtest := range []struct {
+				desc        string
+				splitBuffer func([]byte) [][]byte // call this to split the message into multiple buffers.
+			}{
+				{
+					desc: "single buffer",
+					splitBuffer: func(b []byte) [][]byte {
+						return [][]byte{b}
+					},
+				},
+				{
+					desc: "split every 100 bytes",
+					splitBuffer: func(b []byte) [][]byte {
+						var bufs [][]byte
+						var i int
+						for i = 0; i < len(b)-100; i += 100 {
+							bufs = append(bufs, b[i:i+100])
+						}
+						bufs = append(bufs, b[i:])
+						return bufs
+					},
+				},
+				{
+					desc: "split every 8 bytes",
+					splitBuffer: func(b []byte) [][]byte {
+						var bufs [][]byte
+						var i int
+						for i = 0; i < len(b)-8; i += 8 {
+							bufs = append(bufs, b[i:i+8])
+						}
+						bufs = append(bufs, b[i:])
+						return bufs
+					},
+				},
+				{
+					desc: "split every byte",
+					splitBuffer: func(b []byte) [][]byte {
+						var bufs [][]byte
+						for i := 0; i < len(b); i++ {
+							bufs = append(bufs, b[i:i+1])
+						}
+						return bufs
+					},
+				},
+			} {
+				t.Run(subtest.desc, func(t *testing.T) {
+					// Encode the response.
+					encodedResp, err := proto.Marshal(test.resp)
+					if err != nil {
+						t.Fatalf("proto.Marshal: %v", err)
+					}
+					// Convert response data into mem.BufferSlice, potentially split across multiple buffers.
+					var respData mem.BufferSlice
+					slices := subtest.splitBuffer(encodedResp)
+					for _, s := range slices {
+						respData = append(respData, mem.SliceBuffer(s))
+					}
+					// Unmarshal and decode response using custom decoding.
+					var encodedBytes mem.BufferSlice = mem.BufferSlice{}
+					if err := bytesCodecV2.Unmarshal(bytesCodecV2{}, respData, &encodedBytes); err != nil {
+						t.Fatalf("unmarshal: %v", err)
+					}
 
-			// Unmarshal and decode response using custom decoding.
-			encodedBytes := &[]byte{}
-			if err := bytesCodec.Unmarshal(bytesCodec{}, encodedResp, encodedBytes); err != nil {
-				t.Fatalf("unmarshal: %v", err)
-			}
+					decoder := &readResponseDecoder{
+						databufs: encodedBytes,
+					}
 
-			got, err := readFullObjectResponse(*encodedBytes)
-			if err != nil {
-				t.Fatalf("readFullObjectResponse: %v", err)
-			}
+					err = decoder.readFullObjectResponse()
+					if err != nil {
+						t.Fatalf("readFullObjectResponse: %v", err)
+					}
 
-			// Compare the result with the original ReadObjectResponse.
-			if diff := cmp.Diff(got, test.resp, protocmp.Transform()); diff != "" {
-				t.Errorf("cmp.Diff got(-),want(+):\n%s", diff)
+					// Compare the result with the original ReadObjectResponse, without the content
+					if diff := cmp.Diff(decoder.msg, test.resp, protocmp.Transform(), protocmp.IgnoreMessages(&storagepb.ChecksummedData{})); diff != "" {
+						t.Errorf("cmp.Diff message: got(-),want(+):\n%s", diff)
+					}
+
+					// Read out the data and compare length and content.
+					buf := &bytes.Buffer{}
+					n, err := decoder.writeToAndUpdateCRC(buf, func([]byte) {})
+					if n != int64(len(test.wantContent)) {
+						t.Errorf("mismatched content length: got %d, want %d, offsets %+v", n, len(content), decoder.dataOffsets)
+					}
+					if !bytes.Equal(buf.Bytes(), test.wantContent) {
+						t.Errorf("returned message content did not match")
+					}
+
+				})
 			}
 		})
 	}

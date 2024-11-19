@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
-    "version": "0.8.2",
+    "version": "0.9.0",
     "language": "GO",
     "apis": [
       {
@@ -1329,6 +1329,52 @@
           "service": {
             "shortName": "PermissionService",
             "fullName": "google.ai.generativelanguage.v1beta.PermissionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_PredictionService_Predict_sync",
+      "title": "generativelanguage Predict Sample",
+      "description": "Predict performs a prediction request.",
+      "file": "PredictionClient/Predict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Predict",
+        "fullName": "google.ai.generativelanguage.v1beta.PredictionClient.Predict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.PredictRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.PredictResponse",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.ai.generativelanguage.v1beta.PredictionClient"
+        },
+        "method": {
+          "shortName": "Predict",
+          "fullName": "google.ai.generativelanguage.v1beta.PredictionService.Predict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.ai.generativelanguage.v1beta.PredictionService"
           }
         }
       },

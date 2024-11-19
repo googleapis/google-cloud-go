@@ -441,7 +441,7 @@ func defaultRESTCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods available from Security Center Management API.
+// internalClient is an interface that defines the methods available from Security Command Center Management API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -471,7 +471,7 @@ type internalClient interface {
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
 
-// Client is a client for interacting with Security Center Management API.
+// Client is a client for interacting with Security Command Center Management API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service describing handlers for resources
@@ -506,62 +506,76 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListEffectiveSecurityHealthAnalyticsCustomModules returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the
-// given parent. This includes resident modules defined at the scope of the
-// parent, and inherited modules, inherited from CRM ancestors (no
-// descendants).
+// ListEffectiveSecurityHealthAnalyticsCustomModules returns a list of all
+// EffectiveSecurityHealthAnalyticsCustomModule
+// resources for the given parent. This includes resident modules defined at
+// the scope of the parent, and inherited modules, inherited from ancestor
+// organizations, folders, and projects (no descendants).
 func (c *Client) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycentermanagementpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *EffectiveSecurityHealthAnalyticsCustomModuleIterator {
 	return c.internalClient.ListEffectiveSecurityHealthAnalyticsCustomModules(ctx, req, opts...)
 }
 
-// GetEffectiveSecurityHealthAnalyticsCustomModule gets details of a single EffectiveSecurityHealthAnalyticsCustomModule.
+// GetEffectiveSecurityHealthAnalyticsCustomModule gets details of a single
+// EffectiveSecurityHealthAnalyticsCustomModule.
 func (c *Client) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycentermanagementpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.EffectiveSecurityHealthAnalyticsCustomModule, error) {
 	return c.internalClient.GetEffectiveSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
 }
 
-// ListSecurityHealthAnalyticsCustomModules returns a list of all SecurityHealthAnalyticsCustomModules for the given
-// parent. This includes resident modules defined at the scope of the parent,
-// and inherited modules, inherited from CRM ancestors (no descendants).
+// ListSecurityHealthAnalyticsCustomModules returns a list of all
+// SecurityHealthAnalyticsCustomModule
+// resources for the given parent. This includes resident modules defined at
+// the scope of the parent, and inherited modules, inherited from ancestor
+// organizations, folders, and projects (no descendants).
 func (c *Client) ListSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycentermanagementpb.ListSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
 	return c.internalClient.ListSecurityHealthAnalyticsCustomModules(ctx, req, opts...)
 }
 
-// ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident SecurityHealthAnalyticsCustomModules under
-// the given CRM parent and all of the parent’s CRM descendants.
+// ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident
+// SecurityHealthAnalyticsCustomModule
+// resources under the given organization, folder, or project and all of its
+// descendants.
 func (c *Client) ListDescendantSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycentermanagementpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
 	return c.internalClient.ListDescendantSecurityHealthAnalyticsCustomModules(ctx, req, opts...)
 }
 
-// GetSecurityHealthAnalyticsCustomModule retrieves a SecurityHealthAnalyticsCustomModule.
+// GetSecurityHealthAnalyticsCustomModule retrieves a
+// SecurityHealthAnalyticsCustomModule.
 func (c *Client) GetSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycentermanagementpb.GetSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule, error) {
 	return c.internalClient.GetSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
 }
 
-// CreateSecurityHealthAnalyticsCustomModule creates a resident SecurityHealthAnalyticsCustomModule at the scope of the
-// given CRM parent, and also creates inherited
-// SecurityHealthAnalyticsCustomModules for all CRM descendants of the given
-// parent. These modules are enabled by default.
+// CreateSecurityHealthAnalyticsCustomModule creates a resident
+// SecurityHealthAnalyticsCustomModule
+// at the scope of the given organization, folder, or project, and also
+// creates inherited SecurityHealthAnalyticsCustomModule resources for all
+// folders and projects that are descendants of the given parent. These
+// modules are enabled by default.
 func (c *Client) CreateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycentermanagementpb.CreateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule, error) {
 	return c.internalClient.CreateSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
 }
 
-// UpdateSecurityHealthAnalyticsCustomModule updates the SecurityHealthAnalyticsCustomModule under the given name based
-// on the given update mask. Updating the enablement state is supported on
-// both resident and inherited modules (though resident modules cannot have an
-// enablement state of “inherited”). Updating the display name and custom
-// config of a module is supported on resident modules only.
+// UpdateSecurityHealthAnalyticsCustomModule updates the
+// SecurityHealthAnalyticsCustomModule
+// under the given name based on the given update mask. Updating the
+// enablement state is supported on both resident and inherited modules
+// (though resident modules cannot have an enablement state of “inherited”).
+// Updating the display name and custom configuration of a module is supported
+// on resident modules only.
 func (c *Client) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycentermanagementpb.UpdateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule, error) {
 	return c.internalClient.UpdateSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
 }
 
-// DeleteSecurityHealthAnalyticsCustomModule deletes the specified SecurityHealthAnalyticsCustomModule and all of its
-// descendants in the CRM hierarchy. This method is only supported for
-// resident custom modules.
+// DeleteSecurityHealthAnalyticsCustomModule deletes the specified
+// SecurityHealthAnalyticsCustomModule
+// and all of its descendants in the resource hierarchy. This method is only
+// supported for resident custom modules.
 func (c *Client) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycentermanagementpb.DeleteSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
 }
 
-// SimulateSecurityHealthAnalyticsCustomModule simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+// SimulateSecurityHealthAnalyticsCustomModule simulates the result of using a
+// SecurityHealthAnalyticsCustomModule
+// to check a resource.
 func (c *Client) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycentermanagementpb.SimulateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SimulateSecurityHealthAnalyticsCustomModuleResponse, error) {
 	return c.internalClient.SimulateSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
 }
@@ -573,26 +587,31 @@ func (c *Client) ListEffectiveEventThreatDetectionCustomModules(ctx context.Cont
 	return c.internalClient.ListEffectiveEventThreatDetectionCustomModules(ctx, req, opts...)
 }
 
-// GetEffectiveEventThreatDetectionCustomModule gets an effective ETD custom module. Retrieves the effective module at the
-// given level. The difference between an EffectiveCustomModule and a
-// CustomModule is that the fields for an EffectiveCustomModule are computed
-// from ancestors if needed. For example, the enablement_state for a
-// CustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the
-// enablement_state for an EffectiveCustomModule is always computed to ENABLED
-// or DISABLED (the effective enablement_state).
+// GetEffectiveEventThreatDetectionCustomModule gets the effective Event Threat Detection custom module at the given level.
+//
+// The difference between an
+// EffectiveEventThreatDetectionCustomModule
+// and an
+// EventThreatDetectionCustomModule
+// is that the fields for an EffectiveEventThreatDetectionCustomModule are
+// computed from ancestors if needed. For example, the enablement state for an
+// EventThreatDetectionCustomModule can be ENABLED, DISABLED, or
+// INHERITED. In contrast, the enablement state for an
+// EffectiveEventThreatDetectionCustomModule is always computed as ENABLED
+// or DISABLED.
 func (c *Client) GetEffectiveEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.GetEffectiveEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.EffectiveEventThreatDetectionCustomModule, error) {
 	return c.internalClient.GetEffectiveEventThreatDetectionCustomModule(ctx, req, opts...)
 }
 
-// ListEventThreatDetectionCustomModules lists all Event Threat Detection custom modules for the given
-// Resource Manager parent. This includes resident modules defined at the
-// scope of the parent along with modules inherited from ancestors.
+// ListEventThreatDetectionCustomModules lists all Event Threat Detection custom modules for the given organization,
+// folder, or project. This includes resident modules defined at the scope of
+// the parent along with modules inherited from ancestors.
 func (c *Client) ListEventThreatDetectionCustomModules(ctx context.Context, req *securitycentermanagementpb.ListEventThreatDetectionCustomModulesRequest, opts ...gax.CallOption) *EventThreatDetectionCustomModuleIterator {
 	return c.internalClient.ListEventThreatDetectionCustomModules(ctx, req, opts...)
 }
 
-// ListDescendantEventThreatDetectionCustomModules lists all resident Event Threat Detection custom modules under the
-// given Resource Manager parent and its descendants.
+// ListDescendantEventThreatDetectionCustomModules lists all resident Event Threat Detection custom modules for the given
+// organization, folder, or project and its descendants.
 func (c *Client) ListDescendantEventThreatDetectionCustomModules(ctx context.Context, req *securitycentermanagementpb.ListDescendantEventThreatDetectionCustomModulesRequest, opts ...gax.CallOption) *EventThreatDetectionCustomModuleIterator {
 	return c.internalClient.ListDescendantEventThreatDetectionCustomModules(ctx, req, opts...)
 }
@@ -603,9 +622,9 @@ func (c *Client) GetEventThreatDetectionCustomModule(ctx context.Context, req *s
 }
 
 // CreateEventThreatDetectionCustomModule creates a resident Event Threat Detection custom module at the scope of the
-// given Resource Manager parent, and also creates inherited custom modules
-// for all descendants of the given parent. These modules are enabled by
-// default.
+// given organization, folder, or project, and creates inherited custom
+// modules for all descendants of the given parent. These modules are enabled
+// by default.
 func (c *Client) CreateEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.CreateEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.EventThreatDetectionCustomModule, error) {
 	return c.internalClient.CreateEventThreatDetectionCustomModule(ctx, req, opts...)
 }
@@ -621,8 +640,8 @@ func (c *Client) UpdateEventThreatDetectionCustomModule(ctx context.Context, req
 }
 
 // DeleteEventThreatDetectionCustomModule deletes the specified Event Threat Detection custom module and all of its
-// descendants in the Resource Manager hierarchy. This method is only
-// supported for resident custom modules.
+// descendants in the resource hierarchy. This method is only supported for
+// resident custom modules.
 func (c *Client) DeleteEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.DeleteEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteEventThreatDetectionCustomModule(ctx, req, opts...)
 }
@@ -658,7 +677,7 @@ func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocation
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
 
-// gRPCClient is a client for interacting with Security Center Management API over gRPC transport.
+// gRPCClient is a client for interacting with Security Command Center Management API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {
@@ -1438,10 +1457,11 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	return it
 }
 
-// ListEffectiveSecurityHealthAnalyticsCustomModules returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the
-// given parent. This includes resident modules defined at the scope of the
-// parent, and inherited modules, inherited from CRM ancestors (no
-// descendants).
+// ListEffectiveSecurityHealthAnalyticsCustomModules returns a list of all
+// EffectiveSecurityHealthAnalyticsCustomModule
+// resources for the given parent. This includes resident modules defined at
+// the scope of the parent, and inherited modules, inherited from ancestor
+// organizations, folders, and projects (no descendants).
 func (c *restClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycentermanagementpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *EffectiveSecurityHealthAnalyticsCustomModuleIterator {
 	it := &EffectiveSecurityHealthAnalyticsCustomModuleIterator{}
 	req = proto.Clone(req).(*securitycentermanagementpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest)
@@ -1530,7 +1550,8 @@ func (c *restClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx conte
 	return it
 }
 
-// GetEffectiveSecurityHealthAnalyticsCustomModule gets details of a single EffectiveSecurityHealthAnalyticsCustomModule.
+// GetEffectiveSecurityHealthAnalyticsCustomModule gets details of a single
+// EffectiveSecurityHealthAnalyticsCustomModule.
 func (c *restClient) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycentermanagementpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.EffectiveSecurityHealthAnalyticsCustomModule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1590,9 +1611,11 @@ func (c *restClient) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context
 	return resp, nil
 }
 
-// ListSecurityHealthAnalyticsCustomModules returns a list of all SecurityHealthAnalyticsCustomModules for the given
-// parent. This includes resident modules defined at the scope of the parent,
-// and inherited modules, inherited from CRM ancestors (no descendants).
+// ListSecurityHealthAnalyticsCustomModules returns a list of all
+// SecurityHealthAnalyticsCustomModule
+// resources for the given parent. This includes resident modules defined at
+// the scope of the parent, and inherited modules, inherited from ancestor
+// organizations, folders, and projects (no descendants).
 func (c *restClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycentermanagementpb.ListSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
 	it := &SecurityHealthAnalyticsCustomModuleIterator{}
 	req = proto.Clone(req).(*securitycentermanagementpb.ListSecurityHealthAnalyticsCustomModulesRequest)
@@ -1681,8 +1704,10 @@ func (c *restClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Contex
 	return it
 }
 
-// ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident SecurityHealthAnalyticsCustomModules under
-// the given CRM parent and all of the parent’s CRM descendants.
+// ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident
+// SecurityHealthAnalyticsCustomModule
+// resources under the given organization, folder, or project and all of its
+// descendants.
 func (c *restClient) ListDescendantSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycentermanagementpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
 	it := &SecurityHealthAnalyticsCustomModuleIterator{}
 	req = proto.Clone(req).(*securitycentermanagementpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest)
@@ -1771,7 +1796,8 @@ func (c *restClient) ListDescendantSecurityHealthAnalyticsCustomModules(ctx cont
 	return it
 }
 
-// GetSecurityHealthAnalyticsCustomModule retrieves a SecurityHealthAnalyticsCustomModule.
+// GetSecurityHealthAnalyticsCustomModule retrieves a
+// SecurityHealthAnalyticsCustomModule.
 func (c *restClient) GetSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycentermanagementpb.GetSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1831,10 +1857,12 @@ func (c *restClient) GetSecurityHealthAnalyticsCustomModule(ctx context.Context,
 	return resp, nil
 }
 
-// CreateSecurityHealthAnalyticsCustomModule creates a resident SecurityHealthAnalyticsCustomModule at the scope of the
-// given CRM parent, and also creates inherited
-// SecurityHealthAnalyticsCustomModules for all CRM descendants of the given
-// parent. These modules are enabled by default.
+// CreateSecurityHealthAnalyticsCustomModule creates a resident
+// SecurityHealthAnalyticsCustomModule
+// at the scope of the given organization, folder, or project, and also
+// creates inherited SecurityHealthAnalyticsCustomModule resources for all
+// folders and projects that are descendants of the given parent. These
+// modules are enabled by default.
 func (c *restClient) CreateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycentermanagementpb.CreateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetSecurityHealthAnalyticsCustomModule()
@@ -1904,11 +1932,13 @@ func (c *restClient) CreateSecurityHealthAnalyticsCustomModule(ctx context.Conte
 	return resp, nil
 }
 
-// UpdateSecurityHealthAnalyticsCustomModule updates the SecurityHealthAnalyticsCustomModule under the given name based
-// on the given update mask. Updating the enablement state is supported on
-// both resident and inherited modules (though resident modules cannot have an
-// enablement state of “inherited”). Updating the display name and custom
-// config of a module is supported on resident modules only.
+// UpdateSecurityHealthAnalyticsCustomModule updates the
+// SecurityHealthAnalyticsCustomModule
+// under the given name based on the given update mask. Updating the
+// enablement state is supported on both resident and inherited modules
+// (though resident modules cannot have an enablement state of “inherited”).
+// Updating the display name and custom configuration of a module is supported
+// on resident modules only.
 func (c *restClient) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycentermanagementpb.UpdateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetSecurityHealthAnalyticsCustomModule()
@@ -1985,9 +2015,10 @@ func (c *restClient) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Conte
 	return resp, nil
 }
 
-// DeleteSecurityHealthAnalyticsCustomModule deletes the specified SecurityHealthAnalyticsCustomModule and all of its
-// descendants in the CRM hierarchy. This method is only supported for
-// resident custom modules.
+// DeleteSecurityHealthAnalyticsCustomModule deletes the specified
+// SecurityHealthAnalyticsCustomModule
+// and all of its descendants in the resource hierarchy. This method is only
+// supported for resident custom modules.
 func (c *restClient) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycentermanagementpb.DeleteSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2032,7 +2063,9 @@ func (c *restClient) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Conte
 	}, opts...)
 }
 
-// SimulateSecurityHealthAnalyticsCustomModule simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+// SimulateSecurityHealthAnalyticsCustomModule simulates the result of using a
+// SecurityHealthAnalyticsCustomModule
+// to check a resource.
 func (c *restClient) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycentermanagementpb.SimulateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SimulateSecurityHealthAnalyticsCustomModuleResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2189,13 +2222,18 @@ func (c *restClient) ListEffectiveEventThreatDetectionCustomModules(ctx context.
 	return it
 }
 
-// GetEffectiveEventThreatDetectionCustomModule gets an effective ETD custom module. Retrieves the effective module at the
-// given level. The difference between an EffectiveCustomModule and a
-// CustomModule is that the fields for an EffectiveCustomModule are computed
-// from ancestors if needed. For example, the enablement_state for a
-// CustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the
-// enablement_state for an EffectiveCustomModule is always computed to ENABLED
-// or DISABLED (the effective enablement_state).
+// GetEffectiveEventThreatDetectionCustomModule gets the effective Event Threat Detection custom module at the given level.
+//
+// The difference between an
+// EffectiveEventThreatDetectionCustomModule
+// and an
+// EventThreatDetectionCustomModule
+// is that the fields for an EffectiveEventThreatDetectionCustomModule are
+// computed from ancestors if needed. For example, the enablement state for an
+// EventThreatDetectionCustomModule can be ENABLED, DISABLED, or
+// INHERITED. In contrast, the enablement state for an
+// EffectiveEventThreatDetectionCustomModule is always computed as ENABLED
+// or DISABLED.
 func (c *restClient) GetEffectiveEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.GetEffectiveEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.EffectiveEventThreatDetectionCustomModule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2255,9 +2293,9 @@ func (c *restClient) GetEffectiveEventThreatDetectionCustomModule(ctx context.Co
 	return resp, nil
 }
 
-// ListEventThreatDetectionCustomModules lists all Event Threat Detection custom modules for the given
-// Resource Manager parent. This includes resident modules defined at the
-// scope of the parent along with modules inherited from ancestors.
+// ListEventThreatDetectionCustomModules lists all Event Threat Detection custom modules for the given organization,
+// folder, or project. This includes resident modules defined at the scope of
+// the parent along with modules inherited from ancestors.
 func (c *restClient) ListEventThreatDetectionCustomModules(ctx context.Context, req *securitycentermanagementpb.ListEventThreatDetectionCustomModulesRequest, opts ...gax.CallOption) *EventThreatDetectionCustomModuleIterator {
 	it := &EventThreatDetectionCustomModuleIterator{}
 	req = proto.Clone(req).(*securitycentermanagementpb.ListEventThreatDetectionCustomModulesRequest)
@@ -2346,8 +2384,8 @@ func (c *restClient) ListEventThreatDetectionCustomModules(ctx context.Context, 
 	return it
 }
 
-// ListDescendantEventThreatDetectionCustomModules lists all resident Event Threat Detection custom modules under the
-// given Resource Manager parent and its descendants.
+// ListDescendantEventThreatDetectionCustomModules lists all resident Event Threat Detection custom modules for the given
+// organization, folder, or project and its descendants.
 func (c *restClient) ListDescendantEventThreatDetectionCustomModules(ctx context.Context, req *securitycentermanagementpb.ListDescendantEventThreatDetectionCustomModulesRequest, opts ...gax.CallOption) *EventThreatDetectionCustomModuleIterator {
 	it := &EventThreatDetectionCustomModuleIterator{}
 	req = proto.Clone(req).(*securitycentermanagementpb.ListDescendantEventThreatDetectionCustomModulesRequest)
@@ -2497,9 +2535,9 @@ func (c *restClient) GetEventThreatDetectionCustomModule(ctx context.Context, re
 }
 
 // CreateEventThreatDetectionCustomModule creates a resident Event Threat Detection custom module at the scope of the
-// given Resource Manager parent, and also creates inherited custom modules
-// for all descendants of the given parent. These modules are enabled by
-// default.
+// given organization, folder, or project, and creates inherited custom
+// modules for all descendants of the given parent. These modules are enabled
+// by default.
 func (c *restClient) CreateEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.CreateEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.EventThreatDetectionCustomModule, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEventThreatDetectionCustomModule()
@@ -2652,8 +2690,8 @@ func (c *restClient) UpdateEventThreatDetectionCustomModule(ctx context.Context,
 }
 
 // DeleteEventThreatDetectionCustomModule deletes the specified Event Threat Detection custom module and all of its
-// descendants in the Resource Manager hierarchy. This method is only
-// supported for resident custom modules.
+// descendants in the resource hierarchy. This method is only supported for
+// resident custom modules.
 func (c *restClient) DeleteEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.DeleteEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

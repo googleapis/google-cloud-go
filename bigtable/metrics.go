@@ -20,7 +20,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -66,10 +65,12 @@ const (
 	metricUnitCount = "1"
 )
 
-// These are effectively const, but for testing purposes they are mutable
+// These are effectively constant, but for testing purposes they are mutable
 var (
 	// duration between two metric exports
 	defaultSamplePeriod = 5 * time.Minute
+
+	metricsErrorPrefix = "bigtable-metrics: "
 
 	clientName = fmt.Sprintf("go-bigtable/%v", internal.Version)
 
@@ -120,7 +121,12 @@ var (
 		return "go-" + uuid.NewString() + "@" + hostname, nil
 	}
 
-	exporterOpts = []option.ClientOption{}
+	// GCM exporter should use the same options as Bigtable client
+	// createExporterOptions takes Bigtable client options and returns exporter options
+	// Overwritten in tests
+	createExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
+		return btOpts
+	}
 )
 
 type metricInfo struct {
@@ -147,7 +153,7 @@ type builtinMetricsTracerFactory struct {
 func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
-		log.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric atteribute", err, metricLabelKeyClientUID)
+		return nil, err
 	}
 
 	tracerFactory := &builtinMetricsTracerFactory{
@@ -191,7 +197,8 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 }
 
 func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
-	defaultExporter, err := newMonitoringExporter(context.Background(), project, opts...)
+	allOpts := createExporterOptions(opts...)
+	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
 	if err != nil {
 		return nil, err
 	}

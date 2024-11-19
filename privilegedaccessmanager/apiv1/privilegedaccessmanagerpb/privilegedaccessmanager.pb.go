@@ -582,7 +582,7 @@ func (x *Entitlement) GetEtag() string {
 	return ""
 }
 
-// AccessControlEntry is used to control who can do some operation.
+// `AccessControlEntry` is used to control who can do some operation.
 type AccessControlEntry struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1229,7 +1229,7 @@ type CreateEntitlementRequest struct {
 	// ID, the server can check if original operation with the same request ID
 	// was received, and if so, ignores the second request and returns the
 	// previous operation's response. This prevents clients from accidentally
-	// creating duplicate commitments.
+	// creating duplicate entitlements.
 	//
 	// The request ID must be a valid UUID with the exception that zero UUID is
 	// not supported (00000000-0000-0000-0000-000000000000).
@@ -1312,8 +1312,7 @@ type DeleteEntitlementRequest struct {
 	// For example, consider a situation where you make an initial request and the
 	// request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
-	// was received, and if so, ignores the second request. This prevents
-	// clients from accidentally creating duplicate commitments.
+	// was received, and if so, ignores the second request.
 	//
 	// The request ID must be a valid UUID with the exception that zero UUID is
 	// not supported (00000000-0000-0000-0000-000000000000).
@@ -1443,8 +1442,6 @@ func (x *UpdateEntitlementRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// This is to ensure that the `Grants` and `ProducerGrants` proto are byte
-// compatible.
 // A grant represents a request from a user for obtaining the access specified
 // in an entitlement they are eligible for.
 type Grant struct {
@@ -2224,7 +2221,7 @@ type CreateGrantRequest struct {
 	// request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
 	// was received, and if so, ignores the second request. This prevents
-	// clients from accidentally creating duplicate commitments.
+	// clients from accidentally creating duplicate grants.
 	//
 	// The request ID must be a valid UUID with the exception that zero UUID is
 	// not supported (00000000-0000-0000-0000-000000000000).
@@ -2607,7 +2604,7 @@ func (*Entitlement_RequesterJustificationConfig_NotMandatory_) isEntitlement_Req
 func (*Entitlement_RequesterJustificationConfig_Unstructured_) isEntitlement_RequesterJustificationConfig_JustificationType() {
 }
 
-// AdditionalNotificationTargets includes email addresses to be notified.
+// `AdditionalNotificationTargets` includes email addresses to be notified.
 type Entitlement_AdditionalNotificationTargets struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2817,7 +2814,7 @@ func (x *ManualApprovals_Step) GetApproverEmailRecipients() []string {
 	return nil
 }
 
-// GcpIamAccess represents IAM based access control on a Google Cloud
+// `GcpIamAccess` represents IAM based access control on a Google Cloud
 // resource. Refer to https://cloud.google.com/iam/docs to understand more
 // about IAM.
 type PrivilegedAccess_GcpIamAccess struct {
@@ -2886,7 +2883,7 @@ func (x *PrivilegedAccess_GcpIamAccess) GetRoleBindings() []*PrivilegedAccess_Gc
 	return nil
 }
 
-// IAM Role bindings that are created after a successful grant.
+// IAM role bindings that are created after a successful grant.
 type PrivilegedAccess_GcpIamAccess_RoleBinding struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5636,7 +5633,7 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type PrivilegedAccessManagerClient interface {
-	// CheckOnboardingStatus reports the onboarding status for a
+	// `CheckOnboardingStatus` reports the onboarding status for a
 	// project/folder/organization. Any findings reported by this API need to be
 	// fixed before PAM can be used on the resource.
 	CheckOnboardingStatus(ctx context.Context, in *CheckOnboardingStatusRequest, opts ...grpc.CallOption) (*CheckOnboardingStatusResponse, error)
@@ -5651,7 +5648,7 @@ type PrivilegedAccessManagerClient interface {
 	// location.
 	CreateEntitlement(ctx context.Context, in *CreateEntitlementRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single entitlement. This method can only be called when there
-	// are no in-progress (ACTIVE/ACTIVATING/REVOKING) grants under the
+	// are no in-progress (`ACTIVE`/`ACTIVATING`/`REVOKING`) grants under the
 	// entitlement.
 	DeleteEntitlement(ctx context.Context, in *DeleteEntitlementRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the entitlement specified in the request. Updated fields in the
@@ -5682,7 +5679,8 @@ type PrivilegedAccessManagerClient interface {
 	SearchGrants(ctx context.Context, in *SearchGrantsRequest, opts ...grpc.CallOption) (*SearchGrantsResponse, error)
 	// Get details of a single grant.
 	GetGrant(ctx context.Context, in *GetGrantRequest, opts ...grpc.CallOption) (*Grant, error)
-	// Creates a new grant in a given project and location.
+	// Creates a new grant in a given project/folder/organization and
+	// location.
 	CreateGrant(ctx context.Context, in *CreateGrantRequest, opts ...grpc.CallOption) (*Grant, error)
 	// `ApproveGrant` is used to approve a grant. This method can only be called
 	// on a grant when it's in the `APPROVAL_AWAITED` state. This operation can't
@@ -5833,7 +5831,7 @@ func (c *privilegedAccessManagerClient) RevokeGrant(ctx context.Context, in *Rev
 
 // PrivilegedAccessManagerServer is the server API for PrivilegedAccessManager service.
 type PrivilegedAccessManagerServer interface {
-	// CheckOnboardingStatus reports the onboarding status for a
+	// `CheckOnboardingStatus` reports the onboarding status for a
 	// project/folder/organization. Any findings reported by this API need to be
 	// fixed before PAM can be used on the resource.
 	CheckOnboardingStatus(context.Context, *CheckOnboardingStatusRequest) (*CheckOnboardingStatusResponse, error)
@@ -5848,7 +5846,7 @@ type PrivilegedAccessManagerServer interface {
 	// location.
 	CreateEntitlement(context.Context, *CreateEntitlementRequest) (*longrunningpb.Operation, error)
 	// Deletes a single entitlement. This method can only be called when there
-	// are no in-progress (ACTIVE/ACTIVATING/REVOKING) grants under the
+	// are no in-progress (`ACTIVE`/`ACTIVATING`/`REVOKING`) grants under the
 	// entitlement.
 	DeleteEntitlement(context.Context, *DeleteEntitlementRequest) (*longrunningpb.Operation, error)
 	// Updates the entitlement specified in the request. Updated fields in the
@@ -5879,7 +5877,8 @@ type PrivilegedAccessManagerServer interface {
 	SearchGrants(context.Context, *SearchGrantsRequest) (*SearchGrantsResponse, error)
 	// Get details of a single grant.
 	GetGrant(context.Context, *GetGrantRequest) (*Grant, error)
-	// Creates a new grant in a given project and location.
+	// Creates a new grant in a given project/folder/organization and
+	// location.
 	CreateGrant(context.Context, *CreateGrantRequest) (*Grant, error)
 	// `ApproveGrant` is used to approve a grant. This method can only be called
 	// on a grant when it's in the `APPROVAL_AWAITED` state. This operation can't

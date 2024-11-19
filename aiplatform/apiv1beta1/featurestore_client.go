@@ -90,6 +90,7 @@ func defaultFeaturestoreGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -766,6 +767,7 @@ func defaultFeaturestoreRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -2444,6 +2446,23 @@ func (c *featurestoreRESTClient) GetFeature(ctx context.Context, req *aiplatform
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetFeatureStatsAndAnomalySpec() != nil && req.GetFeatureStatsAndAnomalySpec().LatestStatsCount != nil {
+		params.Add("featureStatsAndAnomalySpec.latestStatsCount", fmt.Sprintf("%v", req.GetFeatureStatsAndAnomalySpec().GetLatestStatsCount()))
+	}
+	if req.GetFeatureStatsAndAnomalySpec().GetStatsTimeRange().GetEndTime() != nil {
+		field, err := protojson.Marshal(req.GetFeatureStatsAndAnomalySpec().GetStatsTimeRange().GetEndTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("featureStatsAndAnomalySpec.statsTimeRange.endTime", string(field[1:len(field)-1]))
+	}
+	if req.GetFeatureStatsAndAnomalySpec().GetStatsTimeRange().GetStartTime() != nil {
+		field, err := protojson.Marshal(req.GetFeatureStatsAndAnomalySpec().GetStatsTimeRange().GetStartTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("featureStatsAndAnomalySpec.statsTimeRange.startTime", string(field[1:len(field)-1]))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

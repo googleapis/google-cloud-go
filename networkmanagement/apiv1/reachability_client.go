@@ -263,7 +263,7 @@ func (c *ReachabilityClient) CreateConnectivityTestOperation(name string) *Creat
 //
 // If the endpoint specifications in ConnectivityTest are incomplete, the
 // reachability result returns a value of AMBIGUOUS. See the documentation
-// in ConnectivityTest for for more details.
+// in ConnectivityTest for more details.
 func (c *ReachabilityClient) UpdateConnectivityTest(ctx context.Context, req *networkmanagementpb.UpdateConnectivityTestRequest, opts ...gax.CallOption) (*UpdateConnectivityTestOperation, error) {
 	return c.internalClient.UpdateConnectivityTest(ctx, req, opts...)
 }
@@ -1170,7 +1170,7 @@ func (c *reachabilityRESTClient) CreateConnectivityTest(ctx context.Context, req
 //
 // If the endpoint specifications in ConnectivityTest are incomplete, the
 // reachability result returns a value of AMBIGUOUS. See the documentation
-// in ConnectivityTest for for more details.
+// in ConnectivityTest for more details.
 func (c *reachabilityRESTClient) UpdateConnectivityTest(ctx context.Context, req *networkmanagementpb.UpdateConnectivityTestRequest, opts ...gax.CallOption) (*UpdateConnectivityTestOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetResource()

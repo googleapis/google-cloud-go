@@ -25,6 +25,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -160,23 +161,35 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		}
 
 		// Check if the file exists.
-		// TODO: add skip option.
+		fileExists := false
+
 		filePath := filepath.Join(input.LocalDirectory, attrs.Name)
 		if _, err := os.Stat(filePath); err == nil {
-			return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, os.ErrExist)
+			fileExists = true
+			if !d.config.skipIfExists {
+				return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, os.ErrExist)
+			}
 		} else if !errors.Is(err, os.ErrNotExist) {
+			// Encountered an error other than file does not exist.
 			return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, err)
 		}
 
-		objectsToQueue = append(objectsToQueue, attrs.Name)
+		if !(d.config.skipIfExists && fileExists) {
+			objectsToQueue = append(objectsToQueue, attrs.Name)
+		}
 	}
 
 	outs := make(chan DownloadOutput, len(objectsToQueue))
 	inputs := make([]DownloadObjectInput, 0, len(objectsToQueue))
 
 	for _, object := range objectsToQueue {
-		objDirectory := filepath.Join(input.LocalDirectory, filepath.Dir(object))
-		filePath := filepath.Join(input.LocalDirectory, object)
+		objectWithoutPrefix := object
+		if len(input.StripPrefix) > 0 {
+			objectWithoutPrefix, _ = strings.CutPrefix(object, input.StripPrefix)
+		}
+
+		objDirectory := filepath.Join(input.LocalDirectory, filepath.Dir(objectWithoutPrefix))
+		filePath := filepath.Join(input.LocalDirectory, objectWithoutPrefix)
 
 		// Make sure all directories in the object path exist.
 		err := os.MkdirAll(objDirectory, fs.ModeDir|fs.ModePerm)
@@ -749,6 +762,12 @@ type DownloadDirectoryInput struct {
 	// must not be modified while the download is in progress.
 	// The directory will be created if it does not already exist. Required.
 	LocalDirectory string
+
+	// StripPrefix is a prefix to be removed from the path of the local file on
+	// download from GCS. For example, if you have an object in GCS called
+	// "mydirectory/a/file", and StripPrefix is set to "mydirectory/", the file
+	// will be downloaded to "{LocalDirectory}/a/file". Optional.
+	StripPrefix string
 
 	// Prefix is the prefix filter to download objects whose names begin with this.
 	// Optional.

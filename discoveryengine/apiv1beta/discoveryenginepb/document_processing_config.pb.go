@@ -37,11 +37,11 @@ const (
 )
 
 // A singleton resource of
-// [DataStore][google.cloud.discoveryengine.v1beta.DataStore]. It's empty when
-// [DataStore][google.cloud.discoveryengine.v1beta.DataStore] is created, which
-// defaults to digital parser. The first call to
-// [DataStoreService.UpdateDocumentProcessingConfig][] method will initialize
-// the config.
+// [DataStore][google.cloud.discoveryengine.v1beta.DataStore]. If it's empty
+// when [DataStore][google.cloud.discoveryengine.v1beta.DataStore] is created
+// and [DataStore][google.cloud.discoveryengine.v1beta.DataStore] is set to
+// [DataStore.ContentConfig.CONTENT_REQUIRED][google.cloud.discoveryengine.v1beta.DataStore.ContentConfig.CONTENT_REQUIRED],
+// the default parser will default to digital parser.
 type DocumentProcessingConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -68,6 +68,10 @@ type DocumentProcessingConfig struct {
 	// * `docx`: Override parsing config for DOCX files, only digital parsing and
 	// layout parsing are supported.
 	// * `pptx`: Override parsing config for PPTX files, only digital parsing and
+	// layout parsing are supported.
+	// * `xlsm`: Override parsing config for XLSM files, only digital parsing and
+	// layout parsing are supported.
+	// * `xlsx`: Override parsing config for XLSX files, only digital parsing and
 	// layout parsing are supported.
 	ParsingConfigOverrides map[string]*DocumentProcessingConfig_ParsingConfig `protobuf:"bytes,5,rep,name=parsing_config_overrides,json=parsingConfigOverrides,proto3" json:"parsing_config_overrides,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }

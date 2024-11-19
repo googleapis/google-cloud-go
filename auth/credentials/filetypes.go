@@ -34,7 +34,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		return nil, err
 	}
 
-	var projectID, quotaProjectID, universeDomain string
+	var projectID, universeDomain string
 	var tp auth.TokenProvider
 	switch fileType {
 	case credsfile.ServiceAccountKey:
@@ -59,7 +59,6 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		quotaProjectID = f.QuotaProjectID
 		universeDomain = f.UniverseDomain
 	case credsfile.ExternalAccountKey:
 		f, err := credsfile.ParseExternalAccount(b)
@@ -70,7 +69,6 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		quotaProjectID = f.QuotaProjectID
 		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
 	case credsfile.ExternalAccountAuthorizedUserKey:
 		f, err := credsfile.ParseExternalAccountAuthorizedUser(b)
@@ -81,7 +79,6 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		quotaProjectID = f.QuotaProjectID
 		universeDomain = f.UniverseDomain
 	case credsfile.ImpersonatedServiceAccountKey:
 		f, err := credsfile.ParseImpersonatedServiceAccount(b)
@@ -113,9 +110,9 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		TokenProvider: auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
 			ExpireEarly: opts.EarlyTokenRefresh,
 		}),
-		JSON:                   b,
-		ProjectIDProvider:      internalauth.StaticCredentialsProperty(projectID),
-		QuotaProjectIDProvider: internalauth.StaticCredentialsProperty(quotaProjectID),
+		JSON:              b,
+		ProjectIDProvider: internalauth.StaticCredentialsProperty(projectID),
+		// TODO(codyoss): only set quota project here if there was a user override
 		UniverseDomainProvider: internalauth.StaticCredentialsProperty(universeDomain),
 	}), nil
 }
@@ -133,8 +130,15 @@ func resolveUniverseDomain(optsUniverseDomain, fileUniverseDomain string) string
 
 func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	prefixTime(fmt.Sprintf("In handleServiceAccount\n"))
+	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
+
 	if opts.UseSelfSignedJWT {
 		prefixTime(fmt.Sprintf("opts.UseSelfSignedJWT is true"))
+		return configureSelfSignedJWT(f, opts)
+	} else if ud != "" && ud != internalauth.DefaultUniverseDomain {
+		// For non-GDU universe domains, token exchange is impossible and services
+		// must support self-signed JWTs.
+		opts.UseSelfSignedJWT = true
 		return configureSelfSignedJWT(f, opts)
 	}
 	opts2LO := &auth.Options2LO{

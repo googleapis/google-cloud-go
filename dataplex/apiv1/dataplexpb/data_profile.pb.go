@@ -618,14 +618,14 @@ type DataProfileResult_Profile_Field_ProfileInfo struct {
 	// Ratio of rows with null value against total scanned rows.
 	NullRatio float64 `protobuf:"fixed64,2,opt,name=null_ratio,json=nullRatio,proto3" json:"null_ratio,omitempty"`
 	// Ratio of rows with distinct values against total scanned rows.
-	// Not available for complex non-groupable field type RECORD and fields
-	// with REPEATABLE mode.
+	// Not available for complex non-groupable field type, including RECORD,
+	// ARRAY, GEOGRAPHY, and JSON, as well as fields with REPEATABLE mode.
 	DistinctRatio float64 `protobuf:"fixed64,3,opt,name=distinct_ratio,json=distinctRatio,proto3" json:"distinct_ratio,omitempty"`
 	// The list of top N non-null values, frequency and ratio with which
 	// they occur in the scanned data. N is 10 or equal to the number of
 	// distinct values in the field, whichever is smaller. Not available for
-	// complex non-groupable field type RECORD and fields with REPEATABLE
-	// mode.
+	// complex non-groupable field type, including RECORD, ARRAY, GEOGRAPHY,
+	// and JSON, as well as fields with REPEATABLE mode.
 	TopNValues []*DataProfileResult_Profile_Field_ProfileInfo_TopNValue `protobuf:"bytes,4,rep,name=top_n_values,json=topNValues,proto3" json:"top_n_values,omitempty"`
 	// Structural and profile information for specific field type. Not
 	// available, if mode is REPEATABLE.

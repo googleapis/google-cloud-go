@@ -844,6 +844,7 @@ type UpdateFeatureViewRequest struct {
 	//   - `feature_registry_source.feature_groups`
 	//   - `sync_config`
 	//   - `sync_config.cron`
+	//   - `optimized_config.automatic_resources`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -893,7 +894,8 @@ func (x *UpdateFeatureViewRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Request message for [FeatureOnlineStoreAdminService.DeleteFeatureViews][].
+// Request message for
+// [FeatureOnlineStoreAdminService.DeleteFeatureView][google.cloud.aiplatform.v1.FeatureOnlineStoreAdminService.DeleteFeatureView].
 type DeleteFeatureViewRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1191,7 +1193,7 @@ func (x *SyncFeatureViewRequest) GetFeatureView() string {
 	return ""
 }
 
-// Respose message for
+// Response message for
 // [FeatureOnlineStoreAdminService.SyncFeatureView][google.cloud.aiplatform.v1.FeatureOnlineStoreAdminService.SyncFeatureView].
 type SyncFeatureViewResponse struct {
 	state         protoimpl.MessageState

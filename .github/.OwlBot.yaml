@@ -58,6 +58,7 @@ deep-remove-regex:
   - /bigquery/migration/apiv2alpha/
   - /bigquery/reservation/apiv1/
   - /bigquery/storage/apiv1/
+  - /bigquery/storage/apiv1alpha/
   - /bigquery/storage/apiv1beta1/
   - /bigquery/storage/apiv1beta2/
   - /bigtable/admin/apiv2/
@@ -131,6 +132,7 @@ deep-remove-regex:
   - /functions/apiv2beta/
   - /gkebackup/apiv1/
   - /gkeconnect/gateway/apiv1beta1/
+  - /gkeconnect/gateway/apiv1/
   - /gkehub/apiv1beta1/
   - /gkemulticloud/apiv1/
   - /gsuiteaddons/apiv1/
@@ -194,6 +196,7 @@ deep-remove-regex:
   - /internal/generated/snippets/bigquery/migration/apiv2alpha/
   - /internal/generated/snippets/bigquery/reservation/apiv1/
   - /internal/generated/snippets/bigquery/storage/apiv1/
+  - /internal/generated/snippets/bigquery/storage/apiv1alpha/
   - /internal/generated/snippets/bigquery/storage/apiv1beta1/
   - /internal/generated/snippets/bigquery/storage/apiv1beta2/
   - /internal/generated/snippets/billing/apiv1/
@@ -263,6 +266,7 @@ deep-remove-regex:
   - /internal/generated/snippets/functions/apiv2beta/
   - /internal/generated/snippets/gkebackup/apiv1/
   - /internal/generated/snippets/gkeconnect/gateway/apiv1beta1/
+  - /internal/generated/snippets/gkeconnect/gateway/apiv1/
   - /internal/generated/snippets/gkehub/apiv1beta1/
   - /internal/generated/snippets/gkemulticloud/apiv1/
   - /internal/generated/snippets/gsuiteaddons/apiv1/
@@ -284,6 +288,7 @@ deep-remove-regex:
   - /internal/generated/snippets/managedidentities/apiv1/
   - /internal/generated/snippets/managedkafka/apiv1/
   - /internal/generated/snippets/maps/addressvalidation/apiv1/
+  - /internal/generated/snippets/maps/areainsights/apiv1/
   - /internal/generated/snippets/maps/fleetengine/apiv1/
   - /internal/generated/snippets/maps/fleetengine/delivery/apiv1/
   - /internal/generated/snippets/maps/places/apiv1/
@@ -310,6 +315,7 @@ deep-remove-regex:
   - /internal/generated/snippets/notebooks/apiv1beta1/
   - /internal/generated/snippets/notebooks/apiv2/
   - /internal/generated/snippets/optimization/apiv1/
+  - /internal/generated/snippets/oracledatabase/apiv1/
   - /internal/generated/snippets/orchestration/airflow/service/apiv1/
   - /internal/generated/snippets/orgpolicy/apiv2/
   - /internal/generated/snippets/osconfig/agentendpoint/apiv1/
@@ -319,6 +325,7 @@ deep-remove-regex:
   - /internal/generated/snippets/osconfig/apiv1beta/
   - /internal/generated/snippets/oslogin/apiv1/
   - /internal/generated/snippets/oslogin/apiv1beta/
+  - /internal/generated/snippets/parallelstore/apiv1/
   - /internal/generated/snippets/parallelstore/apiv1beta/
   - /internal/generated/snippets/phishingprotection/apiv1beta1/
   - /internal/generated/snippets/policysimulator/apiv1/
@@ -430,6 +437,7 @@ deep-remove-regex:
   - /managedidentities/apiv1/
   - /managedkafka/apiv1/
   - /maps/addressvalidation/apiv1/
+  - /maps/areainsights/apiv1/
   - /maps/fleetengine/apiv1/
   - /maps/fleetengine/delivery/apiv1/
   - /maps/places/apiv1/
@@ -456,6 +464,7 @@ deep-remove-regex:
   - /notebooks/apiv1beta1/
   - /notebooks/apiv2/
   - /optimization/apiv1/
+  - /oracledatabase/apiv1/
   - /orchestration/airflow/service/apiv1/
   - /orgpolicy/apiv1/
   - /orgpolicy/apiv2/
@@ -467,6 +476,7 @@ deep-remove-regex:
   - /oslogin/apiv1/
   - /oslogin/apiv1beta/
   - /oslogin/common/
+  - /parallelstore/apiv1/
   - /parallelstore/apiv1beta/
   - /phishingprotection/apiv1beta1/
   - /policysimulator/apiv1/
@@ -727,6 +737,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/bigquery/storage/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/bigquery/storage/v1alpha/cloud.google.com/go
+    dest: /
   - source: /google/cloud/bigquery/storage/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/storage/v1beta2/cloud.google.com/go
@@ -870,6 +882,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/gkeconnect/gateway/v1beta1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/gkeconnect/gateway/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/gkehub/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/gkemulticloud/v1/cloud.google.com/go
@@ -911,6 +925,8 @@ deep-copy-regex:
   - source: /google/cloud/managedkafka/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/addressvalidation/v1/cloud.google.com/go
+    dest: /
+  - source: /google/maps/areainsights/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/fleetengine/v1/cloud.google.com/go
     dest: /
@@ -964,6 +980,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/optimization/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/oracledatabase/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/orchestration/airflow/service/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/orgpolicy/v1/cloud.google.com/go
@@ -985,6 +1003,8 @@ deep-copy-regex:
   - source: /google/cloud/oslogin/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/oslogin/common/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/parallelstore/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/parallelstore/v1beta/cloud.google.com/go
     dest: /
