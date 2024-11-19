@@ -341,7 +341,7 @@ func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 			t.Fatalf("resource.New: %v", err)
 		}
 		attrs := detectedAttrs.Set()
-		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() == "gcp_compute_engine" {
+		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() != "gcp_compute_engine" {
 			t.Skip("only testable in a GCE instance")
 		}
 		v, exists := attrs.Value("cloud.region")
