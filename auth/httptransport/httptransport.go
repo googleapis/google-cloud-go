@@ -141,8 +141,9 @@ type InternalOptions struct {
 	// DefaultEndpointTemplate combined with UniverseDomain specifies the
 	// default endpoint.
 	DefaultEndpointTemplate string
-	// DefaultMTLSEndpoint specifies the default mTLS endpoint.
-	DefaultMTLSEndpoint string
+	// DefaultMTLSEndpointTemplate combined with UniverseDomain specifies the
+	// default mTLS endpoint.
+	DefaultMTLSEndpointTemplate string
 	// DefaultScopes specifies the default OAuth2 scopes to be used for a
 	// service.
 	DefaultScopes []string
@@ -200,7 +201,7 @@ func NewClient(opts *Options) (*http.Client, error) {
 	}
 	if io := opts.InternalOptions; io != nil {
 		tOpts.DefaultEndpointTemplate = io.DefaultEndpointTemplate
-		tOpts.DefaultMTLSEndpoint = io.DefaultMTLSEndpoint
+		tOpts.DefaultMTLSEndpointTemplate = io.DefaultMTLSEndpointTemplate
 	}
 	clientCertProvider, dialTLSContext, err := transport.GetHTTPTransportConfig(tOpts)
 	if err != nil {
