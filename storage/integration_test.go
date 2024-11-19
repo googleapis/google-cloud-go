@@ -378,16 +378,13 @@ func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 				attrs: &BucketAttrs{Location: "US"},
 			},
 			{
-				name:  "dual-region bucket",
-				attrs: &BucketAttrs{Location: "NAM4"},
-			},
-			{
-				name:  "dual-region bucket",
-				attrs: &BucketAttrs{Location: "NAM4"},
+				name:                     "dual-region bucket",
+				attrs:                    &BucketAttrs{Location: "NAM4"},
+				expectDirectConnectivity: true,
 			},
 		} {
 			t.Run(test.name, func(t *testing.T) {
-				newBucketName := prefix + test.name + uidSpace.New()
+				newBucketName := prefix + uidSpace.New()
 				newBucket := client.Bucket(newBucketName)
 				h.mustCreate(newBucket, testutil.ProjID(), test.attrs)
 				defer h.mustDeleteBucket(newBucket)
