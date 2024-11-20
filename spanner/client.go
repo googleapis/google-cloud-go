@@ -31,6 +31,7 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
 	grpcgcppb "github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/grpc_gcp"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/multiendpoint"
 	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -46,6 +47,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/internal"
@@ -133,7 +135,32 @@ func (c *Client) ClientID() string {
 	return c.sc.id
 }
 
-func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientConfig, opts ...option.ClientOption) (*grpcgcp.GCPMultiEndpoint, error) {
+func copyGCPMultiEndpointConfig(cfg *grpcgcp.GCPMultiEndpointOptions) *grpcgcp.GCPMultiEndpointOptions {
+	if cfg == nil {
+		return nil
+	}
+
+	config := grpcgcp.GCPMultiEndpointOptions{
+		GRPCgcpConfig:  proto.Clone(cfg.GRPCgcpConfig).(*grpcgcppb.ApiConfig),
+		MultiEndpoints: make(map[string]*multiendpoint.MultiEndpointOptions),
+		Default:        cfg.Default,
+		DialFunc:       cfg.DialFunc,
+	}
+
+	for k, v := range cfg.MultiEndpoints {
+		config.MultiEndpoints[k] = &multiendpoint.MultiEndpointOptions{
+			Endpoints:       make([]string, len(v.Endpoints)),
+			RecoveryTimeout: v.RecoveryTimeout,
+			SwitchingDelay:  v.SwitchingDelay,
+		}
+		copy(config.MultiEndpoints[k].Endpoints, v.Endpoints)
+	}
+
+	return &config
+}
+
+func createGCPMultiEndpoint(meConfig *grpcgcp.GCPMultiEndpointOptions, config ClientConfig, opts ...option.ClientOption) (*grpcgcp.GCPMultiEndpoint, error) {
+	cfg := copyGCPMultiEndpointConfig(meConfig)
 	options := make([]option.ClientOption, len(opts))
 	copy(options, opts)
 
