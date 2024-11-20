@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.68.0",
+    "version": "1.69.0",
     "language": "GO",
     "apis": [
       {
@@ -2853,6 +2853,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_EndpointService_UpdateEndpointLongRunning_sync",
+      "title": "aiplatform UpdateEndpointLongRunning Sample",
+      "description": "UpdateEndpointLongRunning updates an Endpoint with a long running operation.",
+      "file": "EndpointClient/UpdateEndpointLongRunning/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEndpointLongRunning",
+        "fullName": "google.cloud.aiplatform.v1.EndpointClient.UpdateEndpointLongRunning",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateEndpointLongRunningRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEndpointLongRunningOperation",
+        "client": {
+          "shortName": "EndpointClient",
+          "fullName": "google.cloud.aiplatform.v1.EndpointClient"
+        },
+        "method": {
+          "shortName": "UpdateEndpointLongRunning",
+          "fullName": "google.cloud.aiplatform.v1.EndpointService.UpdateEndpointLongRunning",
+          "service": {
+            "shortName": "EndpointService",
+            "fullName": "google.cloud.aiplatform.v1.EndpointService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
