@@ -333,10 +333,11 @@ var readCases = []readCase{
 // The test skips when ran outside of a GCE instance and us-west-*.
 //
 // Test cases for direct connectivity (DC) check:
-// 1. DC detected with co-located GCS bucket in us-west1
+// 1. DC detected with co-located bucket in us-west1
 // 2. DC not detected with multi region bucket in EU
 // 3. DC not detected with dual region bucket in EUR4
 // 4. DC not detected with regional bucket in EUROPE-WEST1
+// 5. DC detected with co-located dual region bucket including us-west1
 func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 	ctx := skipHTTP("grpc only test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
@@ -363,8 +364,8 @@ func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 			expectDirectConnectivity bool
 		}{
 			{
-				name:                     "co-located-bucket",
-				attrs:                    &BucketAttrs{Location: "us-west1"},
+				name:                     "co-located-region-bucket",
+				attrs:                    &BucketAttrs{Location: "US-WEST1"},
 				expectDirectConnectivity: true,
 			},
 			{
@@ -379,7 +380,15 @@ func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 				name:  "not-colocated-region-bucket",
 				attrs: &BucketAttrs{Location: "EUROPE-WEST1"},
 			},
-			// TODO: Add a test for DC dual-region with us-west1 when supported
+			{
+				name: "co-located-dual-region-bucket",
+				attrs: &BucketAttrs{
+					Location: "US",
+					CustomPlacementConfig: &CustomPlacementConfig{
+						DataLocations: []string{"US-WEST1", "US-CENTRAL1"},
+					}},
+				expectDirectConnectivity: true,
+			},
 		} {
 			t.Run(test.name, func(t *testing.T) {
 				newBucketName := prefix + uidSpace.New()
