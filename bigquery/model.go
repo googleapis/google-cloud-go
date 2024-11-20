@@ -94,7 +94,7 @@ func (m *Model) Metadata(ctx context.Context) (mm *ModelMetadata, err error) {
 	if err != nil {
 		return nil, err
 	}
-	return bqToModelMetadata(model)
+	return bqToModelMetadata(model), nil
 }
 
 // Update updates mutable fields in an ML model.
@@ -120,7 +120,7 @@ func (m *Model) Update(ctx context.Context, mm ModelMetadataToUpdate, etag strin
 	}); err != nil {
 		return nil, err
 	}
-	return bqToModelMetadata(res)
+	return bqToModelMetadata(res), nil
 }
 
 // Delete deletes an ML model.
@@ -229,8 +229,8 @@ func bqToModelCols(s []*bq.StandardSqlField) ([]*StandardSQLField, error) {
 	return cols, nil
 }
 
-func bqToModelMetadata(m *bq.Model) (*ModelMetadata, error) {
-	md := &ModelMetadata{
+func bqToModelMetadata(m *bq.Model) *ModelMetadata {
+	return &ModelMetadata{
 		Description:      m.Description,
 		Name:             m.FriendlyName,
 		Type:             m.ModelType,
@@ -245,7 +245,6 @@ func bqToModelMetadata(m *bq.Model) (*ModelMetadata, error) {
 		trainingRuns:     m.TrainingRuns,
 		ETag:             m.Etag,
 	}
-	return md, nil
 }
 
 // ModelMetadataToUpdate is used when updating an ML model's metadata.
