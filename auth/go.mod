@@ -13,6 +13,17 @@ require (
 	golang.org/x/net v0.40.0
 	google.golang.org/grpc v1.72.2
 	google.golang.org/protobuf v1.36.6
+	cloud.google.com/go/compute/metadata v0.5.1
+	github.com/google/go-cmp v0.6.0
+	github.com/google/s2a-go v0.1.8
+	github.com/googleapis/enterprise-certificate-proxy v0.3.4
+	go.opencensus.io v0.24.0
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.49.0
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.54.0
+	golang.org/x/net v0.29.0
+	golang.org/x/time v0.5.0
+	google.golang.org/grpc v1.66.2
+	google.golang.org/protobuf v1.34.2
 )
 
 require (
