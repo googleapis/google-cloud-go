@@ -54,9 +54,10 @@ func (c *Lister) sequentialListing(ctx context.Context) ([]*storage.ObjectAttrs,
 	return results, lastToken, nil
 }
 
-// listNextPageSequentially returns objects fetched by GCS API in a single request,
-// token to list next page of objects and number of objects iterated(even
-// if not in results).
+// listNextPageSequentially returns all objects fetched by GCS API in a single request
+// and a token to list next page of objects and number of objects iterated(even
+// if not in results). This function will make at most one network call to GCS
+// and will exhaust all objects currently held in the iterator
 func listNextPageSequentially(objectIterator *storage.ObjectIterator, skipDirectoryObjects bool) (results []*storage.ObjectAttrs, token string, pageSize int, err error) {
 
 	for {

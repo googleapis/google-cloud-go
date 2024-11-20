@@ -48,9 +48,11 @@ type ListerInput struct {
 	// Default value is 10x number of available CPU. Optional.
 	Parallelism int
 
-	// BatchSize is the number of objects to list. Default value returns
-	// all objects at once. The number of objects returned will be
-	// rounded up to a multiple of gcs page size. Optional.
+	// BatchSize is the minimum number of objects to list in each batch.
+	// The number of objects returned in a batch will be rounded up to
+	// include all the objects received in the last request to GCS.
+	// By default, the Lister returns all objects in one batch.
+	// Optional.
 	BatchSize int
 
 	// Query is the query to filter objects for listing. Default value is nil.
@@ -59,7 +61,8 @@ type ListerInput struct {
 	Query storage.Query
 
 	// SkipDirectoryObjects is to indicate whether to list directory objects.
-	// Default value is false. Optional.
+	// Note: Even if directory objects are excluded, they contribute to the
+	// [ListerInput.BatchSize] count. Default value is false. Optional.
 	SkipDirectoryObjects bool
 }
 
