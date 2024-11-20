@@ -68,6 +68,7 @@ func nextPage(ctx context.Context, opts nextPageOpts) (*nextPageResult, error) {
 	opts.query.StartOffset = addPrefix(opts.startRange, opts.query.Prefix)
 	opts.query.EndOffset = addPrefix(opts.endRange, opts.query.Prefix)
 	objectIterator := opts.bucketHandle.Objects(ctx, &opts.query)
+	objectIterator.PageInfo().MaxSize = wsDefaultPageSize
 	var items []*storage.ObjectAttrs
 
 	// nameLexLast is the name of lexicographically last object in the page.
