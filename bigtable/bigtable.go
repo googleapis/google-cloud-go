@@ -128,7 +128,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 	asyncRefreshMetricAttrs := metricsTracerFactory.clientAttributes
 	asyncRefreshMetricAttrs = append(asyncRefreshMetricAttrs,
-		attribute.String(metricLabelKeyTag, "async_refresh_dryn_run"),
+		attribute.String(metricLabelKeyTag, "async_refresh_dry_run"),
 
 		// Table, cluster and zone are unknown at this point
 		// Use default values
