@@ -141,7 +141,7 @@ func TestRowIteratorCacheBehavior(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		gotResp, gotErr := fetchCachedPage(context.Background(), tc.inSource, tc.inSchema, tc.inStartIndex, tc.inPageSize, tc.inPageToken)
+		gotResp, gotErr := fetchCachedPage(tc.inSource, tc.inSchema, tc.inStartIndex, tc.inPageSize, tc.inPageToken)
 		if gotErr != tc.wantErr {
 			t.Errorf("err mismatch.  got %v, want %v", gotErr, tc.wantErr)
 		} else {
