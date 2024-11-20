@@ -211,7 +211,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 		// will not be considered an error. If both sequential and worksteal listing fail due
 		// to context canceled, then return error.
 		if err != nil && (!errors.Is(err, context.Canceled) || countErr.counter > 1) {
-			return nil, fmt.Errorf("dataflux : %w", err)
+			return nil, fmt.Errorf("dataflux: %w", err)
 		}
 		if wsCompletedfirst {
 			// If worksteal listing completes first, set method to worksteal listing and nextToken to "".
