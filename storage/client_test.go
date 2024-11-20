@@ -1515,11 +1515,11 @@ func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T)
 			t.Fatalf("creating bucket: %v", err)
 		}
 
+		chunkSize := 2 * 1024 * 1024 // 2 MiB
+		fileSize := 5 * 1024 * 1024  // 5 MiB
 		tests := []struct {
 			name         string
 			instructions map[string][]string
-			chunkSize    int
-			fileSize     int
 			wantDuration time.Duration
 		}{
 			{
@@ -1527,8 +1527,6 @@ func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T)
 				instructions: map[string][]string{
 					"storage.objects.insert": {"stall-for-10s-after-1024K"},
 				},
-				chunkSize:    2 * 1024 * 1024,
-				fileSize:     5 * 1024 * 1024,
 				wantDuration: 10 * time.Second,
 			},
 			{
@@ -1536,8 +1534,6 @@ func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T)
 				instructions: map[string][]string{
 					"storage.objects.insert": {"stall-for-10s-after-3072K"},
 				},
-				chunkSize:    2 * 1024 * 1024,
-				fileSize:     5 * 1024 * 1024,
 				wantDuration: 10 * time.Second,
 			},
 			{
@@ -1545,8 +1541,6 @@ func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T)
 				instructions: map[string][]string{
 					"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"},
 				},
-				chunkSize:    2 * 1024 * 1024,
-				fileSize:     5 * 1024 * 1024,
 				wantDuration: 10 * time.Second,
 			},
 		}
@@ -1567,7 +1561,7 @@ func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T)
 				params := &openWriterParams{
 					attrs:     want,
 					bucket:    bucket,
-					chunkSize: tc.chunkSize,
+					chunkSize: chunkSize,
 					ctx:       ctx,
 					donec:     make(chan struct{}),
 					setError:  func(_ error) {}, // no-op
@@ -1580,7 +1574,7 @@ func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T)
 				if err != nil {
 					t.Fatalf("failed to open writer: %v", err)
 				}
-				buffer := bytes.Repeat([]byte("A"), tc.fileSize)
+				buffer := bytes.Repeat([]byte("A"), fileSize)
 				if _, err := pw.Write(buffer); err != nil {
 					t.Fatalf("failed to populate test data: %v", err)
 				}
@@ -1629,12 +1623,12 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 			t.Fatalf("creating bucket: %v", err)
 		}
 
+		chunkSize := 2 * 1024 * 1024 // 2 MiB
+		fileSize := 5 * 1024 * 1024  // 5 MiB
 		tests := []struct {
 			name                 string
 			instructions         map[string][]string
-			chunkSize            int
 			chunkTransferTimeout time.Duration
-			fileSize             int
 			wantDuration         time.Duration
 		}{
 			{
@@ -1642,9 +1636,7 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				instructions: map[string][]string{
 					"storage.objects.insert": {"stall-for-10s-after-1024K"},
 				},
-				chunkSize:            2 * 1024 * 1024,
 				chunkTransferTimeout: 2 * time.Second,
-				fileSize:             5 * 1024 * 1024,
 				wantDuration:         3 * time.Second,
 			},
 			{
@@ -1652,9 +1644,7 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				instructions: map[string][]string{
 					"storage.objects.insert": {"stall-for-10s-after-3072K"},
 				},
-				chunkSize:            2 * 1024 * 1024,
 				chunkTransferTimeout: 2 * time.Second,
-				fileSize:             5 * 1024 * 1024,
 				wantDuration:         3 * time.Second,
 			},
 			{
@@ -1662,9 +1652,7 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				instructions: map[string][]string{
 					"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"},
 				},
-				chunkSize:            2 * 1024 * 1024,
 				chunkTransferTimeout: 2 * time.Second,
-				fileSize:             5 * 1024 * 1024,
 				wantDuration:         5 * time.Second,
 			},
 		}
@@ -1685,7 +1673,7 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				params := &openWriterParams{
 					attrs:                want,
 					bucket:               bucket,
-					chunkSize:            tc.chunkSize,
+					chunkSize:            chunkSize,
 					chunkTransferTimeout: tc.chunkTransferTimeout,
 					ctx:                  ctx,
 					donec:                make(chan struct{}),
@@ -1699,7 +1687,7 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				if err != nil {
 					t.Fatalf("failed to open writer: %v", err)
 				}
-				buffer := bytes.Repeat([]byte("A"), tc.fileSize)
+				buffer := bytes.Repeat([]byte("A"), fileSize)
 				if _, err := pw.Write(buffer); err != nil {
 					t.Fatalf("failed to populate test data: %v", err)
 				}
