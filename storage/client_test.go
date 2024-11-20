@@ -1645,7 +1645,7 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				chunkSize:            2 * 1024 * 1024,
 				chunkTransferTimeout: 2 * time.Second,
 				fileSize:             5 * 1024 * 1024,
-				wantDuration:         6 * time.Second,
+				wantDuration:         3 * time.Second,
 			},
 			{
 				name: "stall-on-second-chunk-with-chunk-transfer-timeout-nonzero",
@@ -1655,7 +1655,7 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				chunkSize:            2 * 1024 * 1024,
 				chunkTransferTimeout: 2 * time.Second,
 				fileSize:             5 * 1024 * 1024,
-				wantDuration:         6 * time.Second,
+				wantDuration:         3 * time.Second,
 			},
 			{
 				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-nonzero",
@@ -1665,7 +1665,7 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				chunkSize:            2 * 1024 * 1024,
 				chunkTransferTimeout: 2 * time.Second,
 				fileSize:             5 * 1024 * 1024,
-				wantDuration:         6 * time.Second,
+				wantDuration:         5 * time.Second,
 			},
 		}
 
