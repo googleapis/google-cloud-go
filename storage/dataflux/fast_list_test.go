@@ -307,10 +307,10 @@ func createObject(ctx context.Context, bucket *storage.BucketHandle, numObjects 
 		// Generate a unique object name using UUIDs
 		objectName := fmt.Sprintf("object%s", uuid.New().String())
 		// Create a writer for the object
-		wc := bucket.Object(objectName).NewWriter(ctx)
+		w := bucket.Object(objectName).NewWriter(ctx)
 
 		// Close the writer to finalize the upload
-		if err := wc.Close(); err != nil {
+		if err := w.Close(); err != nil {
 			return fmt.Errorf("failed to close writer for object %q: %v", objectName, err)
 		}
 	}
