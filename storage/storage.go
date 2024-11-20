@@ -244,6 +244,8 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 // Direct connectivity is expected to be available when running from inside
 // GCP and connecting to a bucket in the same region.
 //
+// Experimental helper that's subject to change.
+//
 // You can pass in [option.ClientOption] you plan on passing to [NewGRPCClient]
 func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts ...option.ClientOption) error {
 	view := metric.NewView(
@@ -282,7 +284,7 @@ func CheckDirectConnectivitySupported(ctx context.Context, bucket string, opts .
 				hist := m.Data.(metricdata.Histogram[float64])
 				for _, d := range hist.DataPoints {
 					v, present := d.Attributes.Value("grpc.lb.locality")
-					if present && v.AsString() != "" {
+					if present && v.AsString() != "" && v.AsString() != "{}" {
 						return nil
 					}
 				}
