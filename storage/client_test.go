@@ -1519,7 +1519,7 @@ func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T)
 			name         string
 			instructions map[string][]string
 			chunkSize    int
-			wantError    bool
+			fileSize     int
 			wantDuration time.Duration
 		}{
 			{
@@ -1528,7 +1528,7 @@ func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T)
 					"storage.objects.insert": {"stall-for-10s-after-1024K"},
 				},
 				chunkSize:    2 * 1024 * 1024,
-				wantError:    false,
+				fileSize:     5 * 1024 * 1024,
 				wantDuration: 10 * time.Second,
 			},
 			{
@@ -1537,7 +1537,7 @@ func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T)
 					"storage.objects.insert": {"stall-for-10s-after-3072K"},
 				},
 				chunkSize:    2 * 1024 * 1024,
-				wantError:    false,
+				fileSize:     5 * 1024 * 1024,
 				wantDuration: 10 * time.Second,
 			},
 			{
@@ -1546,7 +1546,7 @@ func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T)
 					"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"},
 				},
 				chunkSize:    2 * 1024 * 1024,
-				wantError:    false,
+				fileSize:     5 * 1024 * 1024,
 				wantDuration: 10 * time.Second,
 			},
 		}
@@ -1580,7 +1580,7 @@ func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T)
 				if err != nil {
 					t.Fatalf("failed to open writer: %v", err)
 				}
-				buffer := bytes.Repeat([]byte("B"), 5*1024*1024)
+				buffer := bytes.Repeat([]byte("A"), tc.fileSize)
 				if _, err := pw.Write(buffer); err != nil {
 					t.Fatalf("failed to populate test data: %v", err)
 				}
@@ -1597,17 +1597,8 @@ func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T)
 				if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
 					t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
 				}
-				if tc.wantError {
-					if err == nil {
-						t.Errorf("Expected an error, but got nil")
-					}
-				} else {
-					if err != nil {
-						t.Errorf("Unexpected error: %v", err)
-					}
-					if endTime.Sub(startTime) < tc.wantDuration {
-						t.Errorf("write took %v, want >= %v", endTime.Sub(startTime), tc.wantDuration)
-					}
+				if endTime.Sub(startTime) < tc.wantDuration {
+					t.Errorf("write took %v, want >= %v", endTime.Sub(startTime), tc.wantDuration)
 				}
 
 				r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
@@ -1643,7 +1634,7 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 			instructions         map[string][]string
 			chunkSize            int
 			chunkTransferTimeout time.Duration
-			wantError            bool
+			fileSize             int
 			wantDuration         time.Duration
 		}{
 			{
@@ -1653,7 +1644,7 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				},
 				chunkSize:            2 * 1024 * 1024,
 				chunkTransferTimeout: 2 * time.Second,
-				wantError:            false,
+				fileSize:             5 * 1024 * 1024,
 				wantDuration:         6 * time.Second,
 			},
 			{
@@ -1663,7 +1654,7 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				},
 				chunkSize:            2 * 1024 * 1024,
 				chunkTransferTimeout: 2 * time.Second,
-				wantError:            false,
+				fileSize:             5 * 1024 * 1024,
 				wantDuration:         6 * time.Second,
 			},
 			{
@@ -1673,7 +1664,7 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				},
 				chunkSize:            2 * 1024 * 1024,
 				chunkTransferTimeout: 2 * time.Second,
-				wantError:            false,
+				fileSize:             5 * 1024 * 1024,
 				wantDuration:         6 * time.Second,
 			},
 		}
@@ -1708,7 +1699,7 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				if err != nil {
 					t.Fatalf("failed to open writer: %v", err)
 				}
-				buffer := bytes.Repeat([]byte("B"), 5*1024*1024)
+				buffer := bytes.Repeat([]byte("A"), tc.fileSize)
 				if _, err := pw.Write(buffer); err != nil {
 					t.Fatalf("failed to populate test data: %v", err)
 				}
@@ -1725,17 +1716,8 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
 					t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
 				}
-				if tc.wantError {
-					if err == nil {
-						t.Errorf("Expected an error, but got nil")
-					}
-				} else {
-					if err != nil {
-						t.Errorf("Unexpected error: %v", err)
-					}
-					if endTime.Sub(startTime) > tc.wantDuration {
-						t.Errorf("write took %v, want <= %v", endTime.Sub(startTime), tc.wantDuration)
-					}
+				if endTime.Sub(startTime) > tc.wantDuration {
+					t.Errorf("write took %v, want <= %v", endTime.Sub(startTime), tc.wantDuration)
 				}
 
 				r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
