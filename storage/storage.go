@@ -938,7 +938,7 @@ func (o *ObjectHandle) Key(encryptionKey []byte) *ObjectHandle {
 // Attrs returns meta information about the object.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error) {
-	ctx, _ = startSpan(ctx, "storage.Object.Attrs")
+	ctx, _ = startSpan(ctx, "Object.Attrs")
 	defer func() { endSpan(ctx, err) }()
 
 	if err := o.validate(); err != nil {
@@ -952,7 +952,7 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 // ObjectAttrsToUpdate docs for details on treatment of zero values.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (oa *ObjectAttrs, err error) {
-	ctx, _ = startSpan(ctx, "storage.Object.Update")
+	ctx, _ = startSpan(ctx, "Object.Update")
 	defer func() { endSpan(ctx, err) }()
 
 	if err := o.validate(); err != nil {

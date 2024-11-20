@@ -91,7 +91,7 @@ func TestTraceSpansMultiEmulated(t *testing.T) {
 			call      func(ctx context.Context, c *Client, fs *resources) error
 		}{
 			{
-				name:      "storage.Bucket.Attrs",
+				name:      "Bucket.Attrs",
 				resources: []string{"bucket"},
 				call: func(ctx context.Context, c *Client, fs *resources) error {
 					_, err := c.Bucket(fs.bucket.Name).Attrs(ctx)
@@ -99,7 +99,7 @@ func TestTraceSpansMultiEmulated(t *testing.T) {
 				},
 			},
 			{
-				name:      "storage.Bucket.Create",
+				name:      "Bucket.Create",
 				resources: []string{},
 				call: func(ctx context.Context, c *Client, fs *resources) error {
 					b := bucketIDs.New()
@@ -107,7 +107,7 @@ func TestTraceSpansMultiEmulated(t *testing.T) {
 				},
 			},
 			{
-				name:      "storage.Bucket.Delete",
+				name:      "Bucket.Delete",
 				resources: []string{"bucket"},
 				call: func(ctx context.Context, c *Client, fs *resources) error {
 					c.Bucket(fs.bucket.Name).Delete(ctx)
@@ -115,7 +115,7 @@ func TestTraceSpansMultiEmulated(t *testing.T) {
 				},
 			},
 			{
-				name:      "storage.Bucket.Update",
+				name:      "Bucket.Update",
 				resources: []string{"bucket"},
 				call: func(ctx context.Context, c *Client, fs *resources) error {
 					uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}
@@ -125,7 +125,7 @@ func TestTraceSpansMultiEmulated(t *testing.T) {
 				},
 			},
 			{
-				name:      "storage.Object.Attrs",
+				name:      "Object.Attrs",
 				resources: []string{"bucket", "object"},
 				call: func(ctx context.Context, c *Client, fs *resources) error {
 					_, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).Attrs(ctx)
@@ -133,7 +133,7 @@ func TestTraceSpansMultiEmulated(t *testing.T) {
 				},
 			},
 			{
-				name:      "storage.ACL.List",
+				name:      "ACL.List",
 				resources: []string{"bucket"},
 				call: func(ctx context.Context, c *Client, fs *resources) error {
 					_, err := c.Bucket(fs.bucket.Name).ACL().List(ctx)
@@ -141,7 +141,7 @@ func TestTraceSpansMultiEmulated(t *testing.T) {
 				},
 			},
 			{
-				name:      "storage.ACL.Set",
+				name:      "ACL.Set",
 				resources: []string{"bucket"},
 				call: func(ctx context.Context, c *Client, fs *resources) error {
 					return c.Bucket(fs.bucket.Name).ACL().Set(ctx, AllAuthenticatedUsers, RoleOwner)
@@ -179,7 +179,7 @@ func TestTraceSpansMultiEmulated(t *testing.T) {
 
 func createWantSpanStub(spanName string) tracetest.SpanStub {
 	return tracetest.SpanStub{
-		Name: spanName,
+		Name: appendPackageName(spanName),
 		Attributes: []attribute.KeyValue{
 			attribute.String("gcp.client.version", internal.Version),
 			attribute.String("gcp.client.repo", gcpClientRepo),

@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	internalTrace "cloud.google.com/go/internal/trace"
@@ -47,9 +48,9 @@ func tracer() trace.Tracer {
 // If the context.Context provided in `ctx` contains a span then the newly-created
 // span will be a child of that span, otherwise it will be a root span.
 func startSpan(ctx context.Context, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	name = appendPackageName(name)
 	// TODO: Remove internalTrace upon experimental launch.
 	if !isOTelTracingDevEnabled() {
-		name = appendPackageName(name)
 		ctx = internalTrace.StartSpan(ctx, name)
 		return ctx, nil
 	}
@@ -88,5 +89,5 @@ func getCommonTraceOptions() []trace.SpanStartOption {
 }
 
 func appendPackageName(spanName string) string {
-	return "cloud.google.com/go/" + spanName
+	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
 }
