@@ -42,8 +42,7 @@ func ExampleLister() {
 		SkipDirectoryObjects: false,
 	}
 
-	// Create Lister with desired options, including number of workers,
-	// part size, per operation timeout, etc.
+	// Create Lister with  fast-list input.
 	df := dataflux.NewLister(client, in)
 	defer df.Close()
 
