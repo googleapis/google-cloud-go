@@ -15,11 +15,15 @@
 package grpctransport
 
 import (
+	"bytes"
+	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/credentials"
+	"cloud.google.com/go/compute/metadata"
 	"context"
 	"errors"
+	"log/slog"
+	"strings"
 	"testing"
-
-	"cloud.google.com/go/auth"
 )
 
 func TestIsTokenProviderDirectPathCompatible(t *testing.T) {
@@ -150,4 +154,72 @@ func token(metadata map[string]interface{}) *auth.Token {
 	tok := &auth.Token{Value: "fakeToken"}
 	tok.Metadata = metadata
 	return tok
+}
+
+func TestLogDirectPathMisconfigDirectPathNotSet(t *testing.T) {
+	opts := &Options{InternalOptions: &InternalOptions{}}
+	opts.InternalOptions.EnableDirectPathXds = true
+
+	var logOutput bytes.Buffer
+	opts.Logger = slog.New(slog.NewTextHandler(&logOutput, nil))
+
+	endpoint := "abc.googleapis.com"
+	creds, err := credentials.DetectDefault(opts.resolveDetectOptions())
+	if err != nil {
+		t.Fatalf("failed to create creds")
+	}
+
+	logDirectPathMisconfig(endpoint, creds, opts)
+
+	wantedLog := "DirectPath is disabled. To enable, please set the EnableDirectPath option along with the EnableDirectPathXds option."
+	if !strings.Contains(logOutput.String(), wantedLog) {
+		t.Fatalf("got: %v, want: %v", logOutput.String(), wantedLog)
+	}
+}
+
+func TestLogDirectPathMisconfigWrongCredential(t *testing.T) {
+	opts := &Options{InternalOptions: &InternalOptions{
+		EnableDirectPathXds: true,
+		EnableDirectPath:    true,
+	}}
+	opts.InternalOptions.EnableDirectPath = true
+	opts.InternalOptions.EnableDirectPathXds = true
+
+	var logOutput bytes.Buffer
+	opts.Logger = slog.New(slog.NewTextHandler(&logOutput, nil))
+
+	endpoint := "abc.googleapis.com"
+	creds := &auth.Credentials{}
+
+	logDirectPathMisconfig(endpoint, creds, opts)
+
+	wantedLog := "DirectPath is disabled. Please make sure the token source is fetched from GCE metadata server and the default service account is used."
+	if !strings.Contains(logOutput.String(), wantedLog) {
+		t.Fatalf("got: %v, want: %v", logOutput.String(), wantedLog)
+	}
+}
+
+func TestLogDirectPathMisconfigNotOnGCE(t *testing.T) {
+	opts := &Options{InternalOptions: &InternalOptions{}}
+	opts.InternalOptions.EnableDirectPath = true
+	opts.InternalOptions.EnableDirectPathXds = true
+
+	var logOutput bytes.Buffer
+	opts.Logger = slog.New(slog.NewTextHandler(&logOutput, nil))
+
+	endpoint := "abc.googleapis.com"
+
+	creds, err := credentials.DetectDefault(opts.resolveDetectOptions())
+	if err != nil {
+		t.Fatalf("failed to create creds")
+	}
+
+	logDirectPathMisconfig(endpoint, creds, opts)
+
+	if !metadata.OnGCE() {
+		wantedLog := "DirectPath is disabled. DirectPath is only available in a GCE environment."
+		if !strings.Contains(logOutput.String(), wantedLog) {
+			t.Fatalf("got: %v, want: %v", logOutput.String(), wantedLog)
+		}
+	}
 }
