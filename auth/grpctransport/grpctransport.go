@@ -197,9 +197,9 @@ type InternalOptions struct {
 	// DefaultEndpointTemplate combined with UniverseDomain specifies
 	// the default endpoint.
 	DefaultEndpointTemplate string
-	// DefaultMTLSEndpointTemplate combined with UniverseDomain specifies the
+	// DefaultMTLSEndpoint combined with UniverseDomain specifies the
 	// default mTLS endpoint.
-	DefaultMTLSEndpointTemplate string
+	DefaultMTLSEndpoint string
 	// DefaultScopes specifies the default OAuth2 scopes to be used for a
 	// service.
 	DefaultScopes []string
@@ -245,7 +245,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	}
 	if io := opts.InternalOptions; io != nil {
 		tOpts.DefaultEndpointTemplate = io.DefaultEndpointTemplate
-		tOpts.DefaultMTLSEndpointTemplate = io.DefaultMTLSEndpointTemplate
+		tOpts.DefaultMTLSEndpointTemplate = io.DefaultMTLSEndpoint
 		tOpts.EnableDirectPath = io.EnableDirectPath
 		tOpts.EnableDirectPathXds = io.EnableDirectPathXds
 	}
