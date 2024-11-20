@@ -379,6 +379,7 @@ func TestIntegration_DetectDirectConnectivityInGCE(t *testing.T) {
 				name:  "not-colocated-region-bucket",
 				attrs: &BucketAttrs{Location: "EUROPE-WEST1"},
 			},
+			// TODO: Add a test for DC dual-region with us-west1 when supported
 		} {
 			t.Run(test.name, func(t *testing.T) {
 				newBucketName := prefix + uidSpace.New()
