@@ -32,6 +32,7 @@ import (
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -124,8 +125,20 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// Allow non-default service account in DirectPath.
 	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
 	o = append(o, opts...)
+
+	asyncRefreshMetricAttrs := metricsTracerFactory.clientAttributes
+	asyncRefreshMetricAttrs = append(asyncRefreshMetricAttrs,
+		attribute.String(metricLabelKeyTag, "async_refresh_dryn_run"),
+
+		// Table, cluster and zone are unknown at this point
+		// Use default values
+		attribute.String(monitoredResLabelKeyTable, ""),
+		attribute.String(monitoredResLabelKeyCluster, ""),
+		attribute.String(monitoredResLabelKeyZone, "global"),
+	)
 	o = append(o, internaloption.EnableAsyncRefreshDryRun(func() {
-		metricsTracerFactory.connErrCount.Add(context.Background(), 1, metric.WithAttributes(metricsTracerFactory.clientAttributes...))
+		metricsTracerFactory.debugTags.Add(context.Background(), 1,
+			metric.WithAttributes(asyncRefreshMetricAttrs...))
 	}))
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
