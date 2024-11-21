@@ -103,7 +103,7 @@ func (ts *tokenSourceAdapter) Token() (*oauth2.Token, error) {
 	m := tok.Metadata
 	if m != nil {
 		// Copy map to avoid concurrent map writes error (#11161).
-		metadata := make(map[string]interface{})
+		metadata := make(map[string]interface{}, len(m)+2)
 		for k, v := range m {
 			metadata[k] = v
 		}
