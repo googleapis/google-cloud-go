@@ -141,8 +141,7 @@ type InternalOptions struct {
 	// DefaultEndpointTemplate combined with UniverseDomain specifies the
 	// default endpoint.
 	DefaultEndpointTemplate string
-	// DefaultMTLSEndpoint combined with UniverseDomain specifies the
-	// default mTLS endpoint.
+	// DefaultMTLSEndpoint specifies the default mTLS endpoint.
 	DefaultMTLSEndpoint string
 	// DefaultScopes specifies the default OAuth2 scopes to be used for a
 	// service.
