@@ -800,7 +800,7 @@ func TestGetClientCertificateProvider(t *testing.T) {
 				Endpoint:           testOverrideEndpoint,
 			},
 			useCertEnvVar:    "unset",
-			wantCertProvider: fakeClientCertSource,
+			wantCertProvider: nil,
 		},
 		{
 			name: "UseCertEnvVar unset, Domain is GDU",
