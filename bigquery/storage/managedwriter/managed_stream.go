@@ -194,7 +194,7 @@ func (ms *ManagedStream) Finalize(ctx context.Context, opts ...gax.CallOption) (
 // appendWithRetry handles the details of adding sending an append request on a stream.  Appends are sent on a long
 // lived bidirectional network stream, with it's own managed context (ms.ctx), and there's a per-request context
 // attached to the pendingWrite.
-func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOption) error {
+func (ms *ManagedStream) appendWithRetry(pw *pendingWrite) error {
 	for {
 		ms.mu.Lock()
 		err := ms.err
@@ -355,7 +355,7 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 
 // processRetry is responsible for evaluating and re-enqueing an append.
 // If the append is not retried, it is marked complete.
-func (ms *ManagedStream) processRetry(pw *pendingWrite, srcConn *connection, appendResp *storagepb.AppendRowsResponse, initialErr error) {
+func (ms *ManagedStream) processRetry(pw *pendingWrite, appendResp *storagepb.AppendRowsResponse, initialErr error) {
 	err := initialErr
 	for {
 		pause, shouldRetry := ms.statelessRetryer().Retry(err, pw.attemptCount)

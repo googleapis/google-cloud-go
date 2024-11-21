@@ -537,7 +537,7 @@ func connRecvProcessor(ctx context.Context, co *connection, arc storagepb.BigQue
 				// TODO:  Determine if/how we should report this case, as we have no viable context for propagating.
 
 				// Because we can't tell locally if this write is done, we pass it back to the retrier for possible re-enqueue.
-				pw.writer.processRetry(pw, co, nil, doneErr)
+				pw.writer.processRetry(pw, nil, doneErr)
 			}
 		case nextWrite, ok := <-ch:
 			if !ok {
@@ -557,7 +557,7 @@ func connRecvProcessor(ctx context.Context, co *connection, arc storagepb.BigQue
 				}
 				recordStat(metricCtx, AppendResponseErrors, 1)
 
-				nextWrite.writer.processRetry(nextWrite, co, nil, err)
+				nextWrite.writer.processRetry(nextWrite, nil, err)
 				continue
 			}
 			// Record that we did in fact get a response from the backend.
@@ -573,7 +573,7 @@ func connRecvProcessor(ctx context.Context, co *connection, arc storagepb.BigQue
 				recordStat(metricCtx, AppendResponseErrors, 1)
 				respErr := grpcstatus.ErrorProto(status)
 
-				nextWrite.writer.processRetry(nextWrite, co, resp, respErr)
+				nextWrite.writer.processRetry(nextWrite, resp, respErr)
 
 				continue
 			}
