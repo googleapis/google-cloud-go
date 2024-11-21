@@ -201,7 +201,7 @@ func NewClient(opts *Options) (*http.Client, error) {
 	}
 	if io := opts.InternalOptions; io != nil {
 		tOpts.DefaultEndpointTemplate = io.DefaultEndpointTemplate
-		tOpts.DefaultMTLSEndpointTemplate = io.DefaultMTLSEndpoint
+		tOpts.DefaultMTLSEndpoint = io.DefaultMTLSEndpoint
 	}
 	clientCertProvider, dialTLSContext, err := transport.GetHTTPTransportConfig(tOpts)
 	if err != nil {

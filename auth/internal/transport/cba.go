@@ -55,14 +55,14 @@ const (
 // transport packages in order to avoid cyclic deps. It correlates 1:1 with
 // fields on httptransport.Options and grpctransport.Options.
 type Options struct {
-	Endpoint                    string
-	DefaultEndpointTemplate     string
-	DefaultMTLSEndpointTemplate string
-	ClientCertProvider          cert.Provider
-	Client                      *http.Client
-	UniverseDomain              string
-	EnableDirectPath            bool
-	EnableDirectPathXds         bool
+	Endpoint                string
+	DefaultEndpointTemplate string
+	DefaultMTLSEndpoint     string
+	ClientCertProvider      cert.Provider
+	Client                  *http.Client
+	UniverseDomain          string
+	EnableDirectPath        bool
+	EnableDirectPathXds     bool
 }
 
 // getUniverseDomain returns the default service domain for a given Cloud
@@ -94,10 +94,10 @@ func (o *Options) defaultEndpoint() string {
 // universe domain if the DefaultMTLSEndpointTemplate is set, otherwise returns an
 // empty string.
 func (o *Options) defaultMTLSEndpoint() string {
-	if o.DefaultMTLSEndpointTemplate == "" {
+	if o.DefaultMTLSEndpoint == "" {
 		return ""
 	}
-	return strings.Replace(o.DefaultMTLSEndpointTemplate, universeDomainPlaceholder, o.getUniverseDomain(), 1)
+	return strings.Replace(o.DefaultMTLSEndpoint, universeDomainPlaceholder, o.getUniverseDomain(), 1)
 }
 
 // mergedEndpoint merges a user-provided Endpoint of format host[:port] with the

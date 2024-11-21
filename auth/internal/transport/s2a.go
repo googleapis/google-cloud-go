@@ -114,7 +114,7 @@ func shouldUseS2A(clientCertSource cert.Provider, opts *Options) bool {
 		return false
 	}
 	// If DefaultMTLSEndpoint is not set or has endpoint override, skip S2A.
-	if opts.DefaultMTLSEndpointTemplate == "" || opts.Endpoint != "" {
+	if opts.DefaultMTLSEndpoint == "" || opts.Endpoint != "" {
 		return false
 	}
 	// If custom HTTP client is provided, skip S2A.
