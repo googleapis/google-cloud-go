@@ -23,6 +23,7 @@ import (
 
 	generativelanguage "cloud.google.com/go/ai/generativelanguage/apiv1beta"
 	generativelanguagepb "cloud.google.com/go/ai/generativelanguage/apiv1beta/generativelanguagepb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func ExampleRetrieverClient_ListChunks_all() {
@@ -95,6 +96,32 @@ func ExampleRetrieverClient_ListDocuments_all() {
 		// See https://pkg.go.dev/cloud.google.com/go/ai/generativelanguage/apiv1beta/generativelanguagepb#ListDocumentsRequest.
 	}
 	for resp, err := range c.ListDocuments(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleRetrieverClient_ListOperations_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := generativelanguage.NewRetrieverClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
+	}
+	for resp, err := range c.ListOperations(ctx, req).All() {
 		if err != nil {
 			// TODO: Handle error.
 		}
