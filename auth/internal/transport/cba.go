@@ -284,7 +284,7 @@ func getTransportConfig(opts *Options) (*transportConfig, error) {
 // encountered while initializing the default source will be reported as client
 // error (ex. corrupt metadata file).
 func GetClientCertificateProvider(opts *Options) (cert.Provider, error) {
-	if !isClientCertificateEnabled(opts) {
+	if !isClientCertificateEnabled() {
 		return nil, nil
 	} else if opts.ClientCertProvider != nil {
 		return opts.ClientCertProvider, nil
@@ -293,14 +293,14 @@ func GetClientCertificateProvider(opts *Options) (cert.Provider, error) {
 
 }
 
-// isClientCertificateEnabled returns true by default for all GDU universe domain, unless explicitly overridden by env var
-func isClientCertificateEnabled(opts *Options) bool {
+// isClientCertificateEnabled returns true by default, unless explicitly set to false via env var.
+func isClientCertificateEnabled() bool {
 	if value, ok := os.LookupEnv(googleAPIUseCertSource); ok {
 		// error as false is OK
 		b, _ := strconv.ParseBool(value)
 		return b
 	}
-	return opts.isUniverseDomainGDU()
+	return true
 }
 
 type transportConfig struct {
