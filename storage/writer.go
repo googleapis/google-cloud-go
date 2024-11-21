@@ -94,10 +94,7 @@ type Writer struct {
 	// For uploads of larger files, the Writer will attempt to retry if the
 	// request to upload a particular chunk stalls for some time.
 	// If a single chunk has been attempting to upload for longer than this
-	// deadline and the request fails, it will be retried. The default value
-	// is 8s. Users may want to pick a longer deadline if they are using larger
-	// values for ChunkSize or if they expect to have a slow or unreliable
-	// internet connection.
+	// timeout, then it will be retried. The default value no timeout.
 	ChunkTransferTimeOut time.Duration
 
 	// ForceEmptyContentType is an optional parameter that is used to disable
