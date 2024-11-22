@@ -135,19 +135,11 @@ func (c *Client) ClientID() string {
 }
 
 func (c *Client) registerTransactionPool(pool TransactionPool) error {
-	if !pooledTransactionsEnabled() {
-		return spannerErrorf(codes.FailedPrecondition, "pooled transactions are disabled")
-	}
 	if c.txPool != nil {
 		return spannerErrorf(codes.FailedPrecondition, "a transaction pool has already been registered")
 	}
 	c.txPool = pool
 	return nil
-}
-
-func pooledTransactionsEnabled() bool {
-	// TODO: Use an env var for this?
-	return true
 }
 
 func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientConfig, opts ...option.ClientOption) (*grpcgcp.GCPMultiEndpoint, error) {
@@ -981,7 +973,7 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.ReadWriteTransaction")
 	defer func() { trace.EndSpan(ctx, err) }()
 	var resp CommitResponse
-	if pooledTransactionsEnabled() && c.txPool != nil {
+	if c.txPool != nil {
 		resp, err = c.txPool.RunTransaction(ctx, f)
 	} else {
 		resp, err = c.rwTransaction(ctx, f, TransactionOptions{})

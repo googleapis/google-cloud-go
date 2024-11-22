@@ -39,9 +39,13 @@ import (
 type TransactionPool interface {
 	// RegisterPool registers the transaction pool with a client. The client will pick
 	// transactions from this pool when ReadWriteTransaction is called.
+	//
+	// This method is experimental and may be removed in a future version of this library.
 	RegisterPool(client *Client) error
 
 	// RunTransaction runs a transaction using a transaction from this pool.
+	//
+	// This method is experimental and may be removed in a future version of this library.
 	RunTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (resp CommitResponse, err error)
 }
 
