@@ -109,6 +109,7 @@ func parseDatabaseName(db string) (project, instance, database string, err error
 type Client struct {
 	sc                   *sessionClient
 	idleSessions         *sessionPool
+	txPool               TransactionPool
 	logger               *log.Logger
 	qo                   QueryOptions
 	ro                   ReadOptions
@@ -131,6 +132,22 @@ func (c *Client) DatabaseName() string {
 // ClientID returns the id of the Client. This is not recommended for customer applications and used internally for testing.
 func (c *Client) ClientID() string {
 	return c.sc.id
+}
+
+func (c *Client) registerTransactionPool(pool TransactionPool) error {
+	if !pooledTransactionsEnabled() {
+		return spannerErrorf(codes.FailedPrecondition, "pooled transactions are disabled")
+	}
+	if c.txPool != nil {
+		return spannerErrorf(codes.FailedPrecondition, "a transaction pool has already been registered")
+	}
+	c.txPool = pool
+	return nil
+}
+
+func pooledTransactionsEnabled() bool {
+	// TODO: Use an env var for this?
+	return true
 }
 
 func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientConfig, opts ...option.ClientOption) (*grpcgcp.GCPMultiEndpoint, error) {
@@ -963,7 +980,12 @@ func checkNestedTxn(ctx context.Context) error {
 func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (commitTimestamp time.Time, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.ReadWriteTransaction")
 	defer func() { trace.EndSpan(ctx, err) }()
-	resp, err := c.rwTransaction(ctx, f, TransactionOptions{})
+	var resp CommitResponse
+	if pooledTransactionsEnabled() && c.txPool != nil {
+		resp, err = c.txPool.RunTransaction(ctx, f)
+	} else {
+		resp, err = c.rwTransaction(ctx, f, TransactionOptions{})
+	}
 	return resp.CommitTs, err
 }
 
@@ -981,13 +1003,45 @@ func (c *Client) ReadWriteTransactionWithOptions(ctx context.Context, f func(con
 	return resp, err
 }
 
+func (c *Client) prepareTransaction(ctx context.Context, options TransactionOptions) (*preparedTransaction, error) {
+	sh, err := c.idleSessions.take(ctx)
+	if err != nil {
+		return nil, err
+	}
+	// This session might be checked out of the pool for a long time.
+	sh.eligibleForLongRunning = true
+	t := &ReadWriteTransaction{
+		txReadyOrClosed: make(chan struct{}),
+	}
+	t.txReadOnly.sh = sh
+	t.txOpts = c.txo.merge(options)
+	if err := t.begin(ctx); err != nil {
+		sh.recycle()
+		return nil, err
+	}
+
+	return &preparedTransaction{c: c, sh: sh, t: t}, nil
+}
+
+type preparedTransaction struct {
+	c  *Client
+	sh *sessionHandle
+	t  *ReadWriteTransaction
+}
+
+func (pt *preparedTransaction) run(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (resp CommitResponse, err error) {
+	return pt.c.rwTransactionWithPreparedTransaction(ctx, pt.sh, pt.t, f, pt.t.txOpts)
+}
+
 func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error) {
+	return c.rwTransactionWithPreparedTransaction(ctx, nil, nil, f, options)
+}
+
+func (c *Client) rwTransactionWithPreparedTransaction(ctx context.Context, sh *sessionHandle, t *ReadWriteTransaction, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error) {
 	if err := checkNestedTxn(ctx); err != nil {
 		return resp, err
 	}
 	var (
-		sh      *sessionHandle
-		t       *ReadWriteTransaction
 		attempt = 0
 	)
 	defer func() {
@@ -1019,7 +1073,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 				trace.TracePrintf(ctx, nil, "Error while BeginTransaction during retrying a ReadWrite transaction: %v", ToSpannerError(err))
 				return ToSpannerError(err)
 			}
-		} else {
+		} else if t == nil || attempt > 0 {
 			t = &ReadWriteTransaction{
 				txReadyOrClosed: make(chan struct{}),
 			}

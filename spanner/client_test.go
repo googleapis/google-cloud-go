@@ -1783,6 +1783,231 @@ func testReadOnlyTransaction(t *testing.T, executionTimes map[string]SimulatedEx
 	return executeSingerQuery(ctx, tx)
 }
 
+func TestClient_PreparedTransaction(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: SessionPoolConfig{MinOpened: 1, MaxOpened: 1}})
+	defer teardown()
+	// Wait for the session pool to contain 1 session, so we don't have to care about this in the
+	// checks for which requests we receive.
+	waitForSessionPool(t, client, 1, server)
+
+	for i := 0; i < 2; i++ {
+		tx, err := client.prepareTransaction(ctx, TransactionOptions{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = tx.run(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+			count, err := transaction.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+			if err != nil {
+				return err
+			}
+			if g, w := int(count), UpdateBarSetFooRowCount; g != w {
+				t.Fatalf("affected rows mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		requests := drainRequestsFromServer(server.TestSpanner)
+		if err := compareRequests([]interface{}{
+			&sppb.BeginTransactionRequest{},
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}, requests); err != nil {
+			t.Fatal(err)
+		}
+		execRequest := requests[1].(*sppb.ExecuteSqlRequest)
+		id := execRequest.Transaction.GetId()
+		begin := execRequest.Transaction.GetBegin()
+		if begin != nil {
+			t.Fatal("unexpected begin transaction selector")
+		}
+		if id == nil || len(id) == 0 {
+			t.Fatal("missing transaction id")
+		}
+	}
+}
+
+func TestClient_PooledTransaction(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	config := ClientConfig{SessionPoolConfig: SessionPoolConfig{MinOpened: 20, MaxOpened: 20}}
+	server, client, teardown := setupMockedTestServerWithConfig(t, config)
+	defer teardown()
+
+	// Wait for the session pool to contain 20 sessions, so we don't have to care about this in the
+	// checks for which requests we receive.
+	waitForSessionPool(t, client, int(config.MinOpened), server)
+
+	numPreparedTransactions := 10
+	txPool, err := NewFixedSizeTransactionPool(client, numPreparedTransactions, TransactionOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Wait for the transaction pool to be filled.
+	p, _ := txPool.(*fixedSizePool)
+	waitFor(t, func() error {
+		p.mu.Lock()
+		defer p.mu.Unlock()
+		if len(p.transactions) < p.size {
+			return fmt.Errorf("tx pool size is %d", len(p.transactions))
+		}
+		return nil
+	})
+	// Drain all requests from the server. This removes all the BeginTransaction requests
+	// that were executed by the pool.
+	drainRequestsFromServer(server.TestSpanner)
+	// Replace the prepareFunc with a no-op to prevent new transactions from being prepared
+	// by the pool. This guarantees that the following transaction uses existing transactions
+	// from the pool.
+	p.prepareFunc = func() {}
+
+	for i := 0; i < numPreparedTransactions; i++ {
+		_, err = txPool.RunTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+			count, err := transaction.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+			if err != nil {
+				return err
+			}
+			if g, w := int(count), UpdateBarSetFooRowCount; g != w {
+				t.Fatalf("affected rows mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		requests := drainRequestsFromServer(server.TestSpanner)
+		if err := compareRequests([]interface{}{
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}, requests); err != nil {
+			t.Fatalf("rquest mismatch for transaction %d: %v", i, err)
+		}
+		execRequest := requests[0].(*sppb.ExecuteSqlRequest)
+		id := execRequest.Transaction.GetId()
+		begin := execRequest.Transaction.GetBegin()
+		if begin != nil {
+			t.Fatal("unexpected begin transaction selector")
+		}
+		if id == nil || len(id) == 0 {
+			t.Fatal("missing transaction id")
+		}
+	}
+	// Verify that the next transaction fails, as the pool is exhausted and we have disabled the prepareFunc.
+	_, err = txPool.RunTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+		return nil
+	})
+	if err == nil {
+		t.Fatal("missing error for last transaction")
+	}
+	if g, w := ErrCode(err), codes.ResourceExhausted; g != w {
+		t.Fatalf("error code mismatch\n Got %v\nWant: %v", g, w)
+	}
+}
+
+func TestClient_RegisterPool(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	config := ClientConfig{SessionPoolConfig: SessionPoolConfig{MinOpened: 20, MaxOpened: 20}}
+	server, client, teardown := setupMockedTestServerWithConfig(t, config)
+	defer teardown()
+
+	// Wait for the session pool to contain 20 sessions, so we don't have to care about this in the
+	// checks for which requests we receive.
+	waitForSessionPool(t, client, int(config.MinOpened), server)
+
+	numPreparedTransactions := 10
+	txPool, err := NewFixedSizeTransactionPool(client, numPreparedTransactions, TransactionOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Register the pool with the client.
+	if err := txPool.RegisterPool(client); err != nil {
+		t.Fatal(err)
+	}
+
+	// Wait for the transaction pool to be filled.
+	p, _ := txPool.(*fixedSizePool)
+	waitFor(t, func() error {
+		p.mu.Lock()
+		defer p.mu.Unlock()
+		if len(p.transactions) < p.size {
+			return fmt.Errorf("tx pool size is %d", len(p.transactions))
+		}
+		return nil
+	})
+	// Drain all requests from the server. This removes all the BeginTransaction requests
+	// that were executed by the pool.
+	drainRequestsFromServer(server.TestSpanner)
+	// Replace the prepareFunc with a no-op to prevent new transactions from being prepared
+	// by the pool. This guarantees that the following transaction uses existing transactions
+	// from the pool.
+	p.prepareFunc = func() {}
+
+	for i := 0; i < numPreparedTransactions; i++ {
+		// Use the standard ReadWriteTransaction in the client to run a pooled transaction.
+		_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+			count, err := transaction.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+			if err != nil {
+				return err
+			}
+			if g, w := int(count), UpdateBarSetFooRowCount; g != w {
+				t.Fatalf("affected rows mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		requests := drainRequestsFromServer(server.TestSpanner)
+		if err := compareRequests([]interface{}{
+			&sppb.ExecuteSqlRequest{},
+			&sppb.CommitRequest{},
+		}, requests); err != nil {
+			t.Fatalf("rquest mismatch for transaction %d: %v", i, err)
+		}
+		execRequest := requests[0].(*sppb.ExecuteSqlRequest)
+		id := execRequest.Transaction.GetId()
+		begin := execRequest.Transaction.GetBegin()
+		if begin != nil {
+			t.Fatal("unexpected begin transaction selector")
+		}
+		if id == nil || len(id) == 0 {
+			t.Fatal("missing transaction id")
+		}
+	}
+	// Verify that the next transaction fails, as the pool is exhausted and we have disabled the prepareFunc.
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+		return nil
+	})
+	if err == nil {
+		t.Fatal("missing error for last transaction")
+	}
+	if g, w := ErrCode(err), codes.ResourceExhausted; g != w {
+		t.Fatalf("error code mismatch\n Got %v\nWant: %v", g, w)
+	}
+}
+func waitForSessionPool(t *testing.T, client *Client, minSessions int, server *MockedSpannerInMemTestServer) {
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if sp.idleList.Len() < minSessions {
+			return fmt.Errorf("num open sessions mismatch.\nGot: %d\nWant: %d", sp.numOpened, sp.MinOpened)
+		}
+		return nil
+	})
+	drainRequestsFromServer(server.TestSpanner)
+}
+
 func TestClient_ReadWriteTransaction(t *testing.T) {
 	t.Parallel()
 	if err := testReadWriteTransaction(t, make(map[string]SimulatedExecutionTime), 1); err != nil {
