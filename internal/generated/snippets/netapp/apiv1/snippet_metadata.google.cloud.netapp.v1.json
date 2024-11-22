@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/netapp/apiv1",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "language": "GO",
     "apis": [
       {
@@ -960,6 +960,52 @@
         "method": {
           "shortName": "EncryptVolumes",
           "fullName": "google.cloud.netapp.v1.NetApp.EncryptVolumes",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_EstablishPeering_sync",
+      "title": "netapp EstablishPeering Sample",
+      "description": "EstablishPeering establish replication peering.",
+      "file": "Client/EstablishPeering/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EstablishPeering",
+        "fullName": "google.cloud.netapp.v1.Client.EstablishPeering",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.EstablishPeeringRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EstablishPeeringOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "EstablishPeering",
+          "fullName": "google.cloud.netapp.v1.NetApp.EstablishPeering",
           "service": {
             "shortName": "NetApp",
             "fullName": "google.cloud.netapp.v1.NetApp"
@@ -2202,6 +2248,52 @@
         "method": {
           "shortName": "SwitchActiveReplicaZone",
           "fullName": "google.cloud.netapp.v1.NetApp.SwitchActiveReplicaZone",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_SyncReplication_sync",
+      "title": "netapp SyncReplication Sample",
+      "description": "SyncReplication syncs the replication. This will invoke one time volume data transfer from\nsource to destination.",
+      "file": "Client/SyncReplication/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SyncReplication",
+        "fullName": "google.cloud.netapp.v1.Client.SyncReplication",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.SyncReplicationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SyncReplicationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "SyncReplication",
+          "fullName": "google.cloud.netapp.v1.NetApp.SyncReplication",
           "service": {
             "shortName": "NetApp",
             "fullName": "google.cloud.netapp.v1.NetApp"

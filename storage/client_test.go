@@ -1456,53 +1456,54 @@ func TestRetryDeadlineExceedeEmulated(t *testing.T) {
 
 // Test validates the retry for stalled read-request, when client is created with
 // WithReadStallTimeout.
-func TestRetryReadReqStallEmulated(t *testing.T) {
+func TestRetryReadStallEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
-	multiTransportTest(skipJSONReads(skipGRPC("not supported"), "not supported"), t, func(t *testing.T, ctx context.Context, project, _ string, client *Client) {
-		// Setup bucket and upload object.
-		bucket := fmt.Sprintf("http-bucket-%d", time.Now().Nanosecond())
-		if _, err := client.tc.CreateBucket(context.Background(), project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
-			t.Fatalf("client.CreateBucket: %v", err)
-		}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-		name, _, _, err := createObjectWithContent(ctx, bucket, randomBytes3MiB)
-		if err != nil {
-			t.Fatalf("createObject: %v", err)
-		}
-
-		// Plant stall at start for 2s.
-		instructions := map[string][]string{"storage.objects.get": {"stall-for-2s-after-0K"}}
-		testID := createRetryTest(t, client.tc, instructions)
-		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-		defer cancel()
-
-		r, err := client.tc.NewRangeReader(ctx, &newRangeReaderParams{
-			bucket: bucket,
-			object: name,
-			gen:    defaultGen,
-			offset: 0,
-			length: -1,
-		}, idempotent(true))
-		if err != nil {
-			t.Fatalf("NewRangeReader: %v", err)
-		}
-		defer r.Close()
-
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, r); err != nil {
-			t.Fatalf("io.Copy: %v", err)
-		}
-		if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
-			t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
-		}
-
-	}, experimental.WithReadStallTimeout(
+	// Initialize new storage.Client with ReadStallTimeout option. This cannot be initialized
+	// at the transportClient level so we must use NewClient for this test.
+	client, err := NewClient(ctx, experimental.WithReadStallTimeout(
 		&experimental.ReadStallTimeoutConfig{
 			TargetPercentile: 0.99,
-			Min:              time.Second,
+			Min:              10 * time.Millisecond,
 		}))
+	if err != nil {
+		t.Fatalf("storage.NewClient: %v", err)
+	}
+
+	// Setup bucket and upload object.
+	project := "fake-project"
+	bucket := fmt.Sprintf("http-bucket-%d", time.Now().Nanosecond())
+	if err := client.Bucket(bucket).Create(ctx, project, nil); err != nil {
+		t.Fatalf("client.Bucket.Create: %v", err)
+	}
+
+	name, _, _, err := createObjectWithContent(ctx, bucket, randomBytes3MiB)
+	if err != nil {
+		t.Fatalf("createObject: %v", err)
+	}
+
+	// Plant stall at start for 10s.
+	// The ReadStallTimeout should cause the stalled request to be stopped and
+	// retried before hitting the 5s context deadline.
+	instructions := map[string][]string{"storage.objects.get": {"stall-for-10s-after-0K"}}
+	testID := createRetryTest(t, client.tc, instructions)
+
+	ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+	r, err := client.Bucket(bucket).Object(name).NewReader(ctx)
+	if err != nil {
+		t.Fatalf("NewReader: %v", err)
+	}
+	defer r.Close()
+
+	buf := &bytes.Buffer{}
+	if _, err := io.Copy(buf, r); err != nil {
+		t.Fatalf("io.Copy: %v", err)
+	}
+	if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
+		t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+	}
 }
 
 // createRetryTest creates a bucket in the emulator and sets up a test using the
@@ -1583,10 +1584,10 @@ func transportClientTest(ctx context.Context, t *testing.T, test func(*testing.T
 	checkEmulatorEnvironment(t)
 
 	for transport, client := range emulatorClients {
-		if reason := ctx.Value(skipTransportTestKey(transport)); reason != nil {
-			t.Skip("transport", fmt.Sprintf("%q", transport), "explicitly skipped:", reason)
-		}
 		t.Run(transport, func(t *testing.T) {
+			if reason := ctx.Value(skipTransportTestKey(transport)); reason != nil {
+				t.Skip("transport", fmt.Sprintf("%q", transport), "explicitly skipped:", reason)
+			}
 			project := fmt.Sprintf("%s-project", transport)
 			bucket := fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond())
 			test(t, ctx, project, bucket, client)

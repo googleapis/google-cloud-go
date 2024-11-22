@@ -19,6 +19,7 @@ package discoveryengine
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -45,10 +46,12 @@ var newGroundedGenerationClientHook clientHook
 
 // GroundedGenerationCallOptions contains the retry settings for each method of GroundedGenerationClient.
 type GroundedGenerationCallOptions struct {
-	CheckGrounding  []gax.CallOption
-	CancelOperation []gax.CallOption
-	GetOperation    []gax.CallOption
-	ListOperations  []gax.CallOption
+	StreamGenerateGroundedContent []gax.CallOption
+	GenerateGroundedContent       []gax.CallOption
+	CheckGrounding                []gax.CallOption
+	CancelOperation               []gax.CallOption
+	GetOperation                  []gax.CallOption
+	ListOperations                []gax.CallOption
 }
 
 func defaultGroundedGenerationGRPCClientOptions() []option.ClientOption {
@@ -68,6 +71,29 @@ func defaultGroundedGenerationGRPCClientOptions() []option.ClientOption {
 
 func defaultGroundedGenerationCallOptions() *GroundedGenerationCallOptions {
 	return &GroundedGenerationCallOptions{
+		StreamGenerateGroundedContent: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GenerateGroundedContent: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CheckGrounding: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -121,6 +147,28 @@ func defaultGroundedGenerationCallOptions() *GroundedGenerationCallOptions {
 
 func defaultGroundedGenerationRESTCallOptions() *GroundedGenerationCallOptions {
 	return &GroundedGenerationCallOptions{
+		StreamGenerateGroundedContent: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GenerateGroundedContent: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		CheckGrounding: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -173,6 +221,8 @@ type internalGroundedGenerationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	StreamGenerateGroundedContent(context.Context, ...gax.CallOption) (discoveryenginepb.GroundedGenerationService_StreamGenerateGroundedContentClient, error)
+	GenerateGroundedContent(context.Context, *discoveryenginepb.GenerateGroundedContentRequest, ...gax.CallOption) (*discoveryenginepb.GenerateGroundedContentResponse, error)
 	CheckGrounding(context.Context, *discoveryenginepb.CheckGroundingRequest, ...gax.CallOption) (*discoveryenginepb.CheckGroundingResponse, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -212,6 +262,18 @@ func (c *GroundedGenerationClient) setGoogleClientInfo(keyval ...string) {
 // return the same resource.
 func (c *GroundedGenerationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
+}
+
+// StreamGenerateGroundedContent generates grounded content in a streaming fashion.
+//
+// This method is not supported for the REST transport.
+func (c *GroundedGenerationClient) StreamGenerateGroundedContent(ctx context.Context, opts ...gax.CallOption) (discoveryenginepb.GroundedGenerationService_StreamGenerateGroundedContentClient, error) {
+	return c.internalClient.StreamGenerateGroundedContent(ctx, opts...)
+}
+
+// GenerateGroundedContent generates grounded content.
+func (c *GroundedGenerationClient) GenerateGroundedContent(ctx context.Context, req *discoveryenginepb.GenerateGroundedContentRequest, opts ...gax.CallOption) (*discoveryenginepb.GenerateGroundedContentResponse, error) {
+	return c.internalClient.GenerateGroundedContent(ctx, req, opts...)
 }
 
 // CheckGrounding performs a grounding check.
@@ -384,6 +446,39 @@ func (c *groundedGenerationRESTClient) Close() error {
 func (c *groundedGenerationRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
+func (c *groundedGenerationGRPCClient) StreamGenerateGroundedContent(ctx context.Context, opts ...gax.CallOption) (discoveryenginepb.GroundedGenerationService_StreamGenerateGroundedContentClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	var resp discoveryenginepb.GroundedGenerationService_StreamGenerateGroundedContentClient
+	opts = append((*c.CallOptions).StreamGenerateGroundedContent[0:len((*c.CallOptions).StreamGenerateGroundedContent):len((*c.CallOptions).StreamGenerateGroundedContent)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.groundedGenerationClient.StreamGenerateGroundedContent(ctx, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *groundedGenerationGRPCClient) GenerateGroundedContent(ctx context.Context, req *discoveryenginepb.GenerateGroundedContentRequest, opts ...gax.CallOption) (*discoveryenginepb.GenerateGroundedContentResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateGroundedContent[0:len((*c.CallOptions).GenerateGroundedContent):len((*c.CallOptions).GenerateGroundedContent)], opts...)
+	var resp *discoveryenginepb.GenerateGroundedContentResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.groundedGenerationClient.GenerateGroundedContent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *groundedGenerationGRPCClient) CheckGrounding(ctx context.Context, req *discoveryenginepb.CheckGroundingRequest, opts ...gax.CallOption) (*discoveryenginepb.CheckGroundingResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "grounding_config", url.QueryEscape(req.GetGroundingConfig()))}
 
@@ -478,6 +573,79 @@ func (c *groundedGenerationGRPCClient) ListOperations(ctx context.Context, req *
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// StreamGenerateGroundedContent generates grounded content in a streaming fashion.
+//
+// This method is not supported for the REST transport.
+func (c *groundedGenerationRESTClient) StreamGenerateGroundedContent(ctx context.Context, opts ...gax.CallOption) (discoveryenginepb.GroundedGenerationService_StreamGenerateGroundedContentClient, error) {
+	return nil, errors.New("StreamGenerateGroundedContent not yet supported for REST clients")
+}
+
+// GenerateGroundedContent generates grounded content.
+func (c *groundedGenerationRESTClient) GenerateGroundedContent(ctx context.Context, req *discoveryenginepb.GenerateGroundedContentRequest, opts ...gax.CallOption) (*discoveryenginepb.GenerateGroundedContentResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:generateGroundedContent", req.GetLocation())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateGroundedContent[0:len((*c.CallOptions).GenerateGroundedContent):len((*c.CallOptions).GenerateGroundedContent)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.GenerateGroundedContentResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // CheckGrounding performs a grounding check.

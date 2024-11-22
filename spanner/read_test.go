@@ -28,6 +28,7 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/metric/noop"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -805,10 +806,10 @@ func TestRsdNonblockingStates(t *testing.T) {
 			}
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			defer cancel()
+			mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 			r := newResumableStreamDecoder(
 				ctx,
 				nil,
-				c.metricsTracerFactory,
 				test.rpc,
 				nil,
 			)
@@ -882,8 +883,12 @@ func TestRsdNonblockingStates(t *testing.T) {
 					}
 					return
 				}
+				mt.currOp.incrementAttemptCount()
+				mt.currOp.currAttempt = &attemptTracer{
+					startTime: time.Now(),
+				}
 				// Receive next decoded item.
-				if r.next() {
+				if r.next(&mt) {
 					rs = append(rs, r.get())
 				}
 			}
@@ -1099,10 +1104,10 @@ func TestRsdBlockingStates(t *testing.T) {
 			}
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
+			mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 			r := newResumableStreamDecoder(
 				ctx,
 				nil,
-				c.metricsTracerFactory,
 				test.rpc,
 				nil,
 			)
@@ -1146,8 +1151,12 @@ func TestRsdBlockingStates(t *testing.T) {
 			var rs []*sppb.PartialResultSet
 			rowsFetched := make(chan int)
 			go func() {
+				mt.currOp.incrementAttemptCount()
+				mt.currOp.currAttempt = &attemptTracer{
+					startTime: time.Now(),
+				}
 				for {
-					if !r.next() {
+					if !r.next(&mt) {
 						// Note that r.Next also exits on context cancel/timeout.
 						close(rowsFetched)
 						return
@@ -1261,10 +1270,10 @@ func TestQueueBytes(t *testing.T) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
 	decoder := newResumableStreamDecoder(
 		ctx,
 		nil,
-		c.metricsTracerFactory,
 		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 			r, err := mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
 				Session:     session.Name,
@@ -1286,24 +1295,24 @@ func TestQueueBytes(t *testing.T) {
 		ResumeToken: rt1,
 	})
 
-	decoder.next()
-	decoder.next()
-	decoder.next()
+	decoder.next(&mt)
+	decoder.next(&mt)
+	decoder.next(&mt)
 	if got, want := decoder.bytesBetweenResumeTokens, int32(2*sizeOfPRS); got != want {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want %v", got, want)
 	}
 
-	decoder.next()
+	decoder.next(&mt)
 	if decoder.bytesBetweenResumeTokens != 0 {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", decoder.bytesBetweenResumeTokens)
 	}
 
-	decoder.next()
+	decoder.next(&mt)
 	if got, want := decoder.bytesBetweenResumeTokens, int32(sizeOfPRS); got != want {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want %v", got, want)
 	}
 
-	decoder.next()
+	decoder.next(&mt)
 	if decoder.bytesBetweenResumeTokens != 0 {
 		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", decoder.bytesBetweenResumeTokens)
 	}
@@ -1769,8 +1778,12 @@ func TestIteratorStopEarly(t *testing.T) {
 }
 
 func TestIteratorWithError(t *testing.T) {
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/my-project/instances/my-instance/databases/my-database", noop.NewMeterProvider(), "identity")
+	if err != nil {
+		t.Fatalf("failed to create metrics tracer factory: %v", err)
+	}
 	injected := errors.New("Failed iterator")
-	iter := RowIterator{err: injected}
+	iter := RowIterator{meterTracerFactory: metricsTracerFactory, err: injected}
 	defer iter.Stop()
 	if _, err := iter.Next(); err != injected {
 		t.Fatalf("Expected error: %v, got %v", injected, err)

@@ -54,6 +54,9 @@ type SiteSearchEngineCallOptions struct {
 	UpdateTargetSite              []gax.CallOption
 	DeleteTargetSite              []gax.CallOption
 	ListTargetSites               []gax.CallOption
+	CreateSitemap                 []gax.CallOption
+	DeleteSitemap                 []gax.CallOption
+	FetchSitemaps                 []gax.CallOption
 	EnableAdvancedSiteSearch      []gax.CallOption
 	DisableAdvancedSiteSearch     []gax.CallOption
 	RecrawlUris                   []gax.CallOption
@@ -88,6 +91,9 @@ func defaultSiteSearchEngineCallOptions() *SiteSearchEngineCallOptions {
 		UpdateTargetSite:              []gax.CallOption{},
 		DeleteTargetSite:              []gax.CallOption{},
 		ListTargetSites:               []gax.CallOption{},
+		CreateSitemap:                 []gax.CallOption{},
+		DeleteSitemap:                 []gax.CallOption{},
+		FetchSitemaps:                 []gax.CallOption{},
 		EnableAdvancedSiteSearch:      []gax.CallOption{},
 		DisableAdvancedSiteSearch:     []gax.CallOption{},
 		RecrawlUris:                   []gax.CallOption{},
@@ -141,6 +147,9 @@ func defaultSiteSearchEngineRESTCallOptions() *SiteSearchEngineCallOptions {
 		UpdateTargetSite:              []gax.CallOption{},
 		DeleteTargetSite:              []gax.CallOption{},
 		ListTargetSites:               []gax.CallOption{},
+		CreateSitemap:                 []gax.CallOption{},
+		DeleteSitemap:                 []gax.CallOption{},
+		FetchSitemaps:                 []gax.CallOption{},
 		EnableAdvancedSiteSearch:      []gax.CallOption{},
 		DisableAdvancedSiteSearch:     []gax.CallOption{},
 		RecrawlUris:                   []gax.CallOption{},
@@ -198,6 +207,11 @@ type internalSiteSearchEngineClient interface {
 	DeleteTargetSite(context.Context, *discoveryenginepb.DeleteTargetSiteRequest, ...gax.CallOption) (*DeleteTargetSiteOperation, error)
 	DeleteTargetSiteOperation(name string) *DeleteTargetSiteOperation
 	ListTargetSites(context.Context, *discoveryenginepb.ListTargetSitesRequest, ...gax.CallOption) *TargetSiteIterator
+	CreateSitemap(context.Context, *discoveryenginepb.CreateSitemapRequest, ...gax.CallOption) (*CreateSitemapOperation, error)
+	CreateSitemapOperation(name string) *CreateSitemapOperation
+	DeleteSitemap(context.Context, *discoveryenginepb.DeleteSitemapRequest, ...gax.CallOption) (*DeleteSitemapOperation, error)
+	DeleteSitemapOperation(name string) *DeleteSitemapOperation
+	FetchSitemaps(context.Context, *discoveryenginepb.FetchSitemapsRequest, ...gax.CallOption) (*discoveryenginepb.FetchSitemapsResponse, error)
 	EnableAdvancedSiteSearch(context.Context, *discoveryenginepb.EnableAdvancedSiteSearchRequest, ...gax.CallOption) (*EnableAdvancedSiteSearchOperation, error)
 	EnableAdvancedSiteSearchOperation(name string) *EnableAdvancedSiteSearchOperation
 	DisableAdvancedSiteSearch(context.Context, *discoveryenginepb.DisableAdvancedSiteSearchRequest, ...gax.CallOption) (*DisableAdvancedSiteSearchOperation, error)
@@ -312,6 +326,34 @@ func (c *SiteSearchEngineClient) DeleteTargetSiteOperation(name string) *DeleteT
 // TargetSites.
 func (c *SiteSearchEngineClient) ListTargetSites(ctx context.Context, req *discoveryenginepb.ListTargetSitesRequest, opts ...gax.CallOption) *TargetSiteIterator {
 	return c.internalClient.ListTargetSites(ctx, req, opts...)
+}
+
+// CreateSitemap creates a Sitemap.
+func (c *SiteSearchEngineClient) CreateSitemap(ctx context.Context, req *discoveryenginepb.CreateSitemapRequest, opts ...gax.CallOption) (*CreateSitemapOperation, error) {
+	return c.internalClient.CreateSitemap(ctx, req, opts...)
+}
+
+// CreateSitemapOperation returns a new CreateSitemapOperation from a given name.
+// The name must be that of a previously created CreateSitemapOperation, possibly from a different process.
+func (c *SiteSearchEngineClient) CreateSitemapOperation(name string) *CreateSitemapOperation {
+	return c.internalClient.CreateSitemapOperation(name)
+}
+
+// DeleteSitemap deletes a Sitemap.
+func (c *SiteSearchEngineClient) DeleteSitemap(ctx context.Context, req *discoveryenginepb.DeleteSitemapRequest, opts ...gax.CallOption) (*DeleteSitemapOperation, error) {
+	return c.internalClient.DeleteSitemap(ctx, req, opts...)
+}
+
+// DeleteSitemapOperation returns a new DeleteSitemapOperation from a given name.
+// The name must be that of a previously created DeleteSitemapOperation, possibly from a different process.
+func (c *SiteSearchEngineClient) DeleteSitemapOperation(name string) *DeleteSitemapOperation {
+	return c.internalClient.DeleteSitemapOperation(name)
+}
+
+// FetchSitemaps fetch Sitemaps in a
+// DataStore.
+func (c *SiteSearchEngineClient) FetchSitemaps(ctx context.Context, req *discoveryenginepb.FetchSitemapsRequest, opts ...gax.CallOption) (*discoveryenginepb.FetchSitemapsResponse, error) {
+	return c.internalClient.FetchSitemaps(ctx, req, opts...)
 }
 
 // EnableAdvancedSiteSearch upgrade from basic site search to advanced site search.
@@ -723,6 +765,64 @@ func (c *siteSearchEngineGRPCClient) ListTargetSites(ctx context.Context, req *d
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *siteSearchEngineGRPCClient) CreateSitemap(ctx context.Context, req *discoveryenginepb.CreateSitemapRequest, opts ...gax.CallOption) (*CreateSitemapOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSitemap[0:len((*c.CallOptions).CreateSitemap):len((*c.CallOptions).CreateSitemap)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.siteSearchEngineClient.CreateSitemap(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateSitemapOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *siteSearchEngineGRPCClient) DeleteSitemap(ctx context.Context, req *discoveryenginepb.DeleteSitemapRequest, opts ...gax.CallOption) (*DeleteSitemapOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteSitemap[0:len((*c.CallOptions).DeleteSitemap):len((*c.CallOptions).DeleteSitemap)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.siteSearchEngineClient.DeleteSitemap(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteSitemapOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *siteSearchEngineGRPCClient) FetchSitemaps(ctx context.Context, req *discoveryenginepb.FetchSitemapsRequest, opts ...gax.CallOption) (*discoveryenginepb.FetchSitemapsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).FetchSitemaps[0:len((*c.CallOptions).FetchSitemaps):len((*c.CallOptions).FetchSitemaps)], opts...)
+	var resp *discoveryenginepb.FetchSitemapsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.siteSearchEngineClient.FetchSitemaps(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *siteSearchEngineGRPCClient) EnableAdvancedSiteSearch(ctx context.Context, req *discoveryenginepb.EnableAdvancedSiteSearchRequest, opts ...gax.CallOption) (*EnableAdvancedSiteSearchOperation, error) {
@@ -1417,6 +1517,207 @@ func (c *siteSearchEngineRESTClient) ListTargetSites(ctx context.Context, req *d
 	return it
 }
 
+// CreateSitemap creates a Sitemap.
+func (c *siteSearchEngineRESTClient) CreateSitemap(ctx context.Context, req *discoveryenginepb.CreateSitemapRequest, opts ...gax.CallOption) (*CreateSitemapOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSitemap()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/sitemaps", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &CreateSitemapOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteSitemap deletes a Sitemap.
+func (c *siteSearchEngineRESTClient) DeleteSitemap(ctx context.Context, req *discoveryenginepb.DeleteSitemapRequest, opts ...gax.CallOption) (*DeleteSitemapOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &DeleteSitemapOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// FetchSitemaps fetch Sitemaps in a
+// DataStore.
+func (c *siteSearchEngineRESTClient) FetchSitemaps(ctx context.Context, req *discoveryenginepb.FetchSitemapsRequest, opts ...gax.CallOption) (*discoveryenginepb.FetchSitemapsResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/sitemaps:fetch", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetMatcher().GetUrisMatcher().GetUris(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("matcher.urisMatcher.uris", fmt.Sprintf("%v", item))
+		}
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).FetchSitemaps[0:len((*c.CallOptions).FetchSitemaps):len((*c.CallOptions).FetchSitemaps)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.FetchSitemapsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // EnableAdvancedSiteSearch upgrade from basic site search to advanced site search.
 func (c *siteSearchEngineRESTClient) EnableAdvancedSiteSearch(ctx context.Context, req *discoveryenginepb.EnableAdvancedSiteSearchRequest, opts ...gax.CallOption) (*EnableAdvancedSiteSearchOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2026,6 +2327,24 @@ func (c *siteSearchEngineRESTClient) BatchVerifyTargetSitesOperation(name string
 	}
 }
 
+// CreateSitemapOperation returns a new CreateSitemapOperation from a given name.
+// The name must be that of a previously created CreateSitemapOperation, possibly from a different process.
+func (c *siteSearchEngineGRPCClient) CreateSitemapOperation(name string) *CreateSitemapOperation {
+	return &CreateSitemapOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateSitemapOperation returns a new CreateSitemapOperation from a given name.
+// The name must be that of a previously created CreateSitemapOperation, possibly from a different process.
+func (c *siteSearchEngineRESTClient) CreateSitemapOperation(name string) *CreateSitemapOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &CreateSitemapOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateTargetSiteOperation returns a new CreateTargetSiteOperation from a given name.
 // The name must be that of a previously created CreateTargetSiteOperation, possibly from a different process.
 func (c *siteSearchEngineGRPCClient) CreateTargetSiteOperation(name string) *CreateTargetSiteOperation {
@@ -2039,6 +2358,24 @@ func (c *siteSearchEngineGRPCClient) CreateTargetSiteOperation(name string) *Cre
 func (c *siteSearchEngineRESTClient) CreateTargetSiteOperation(name string) *CreateTargetSiteOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateTargetSiteOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteSitemapOperation returns a new DeleteSitemapOperation from a given name.
+// The name must be that of a previously created DeleteSitemapOperation, possibly from a different process.
+func (c *siteSearchEngineGRPCClient) DeleteSitemapOperation(name string) *DeleteSitemapOperation {
+	return &DeleteSitemapOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteSitemapOperation returns a new DeleteSitemapOperation from a given name.
+// The name must be that of a previously created DeleteSitemapOperation, possibly from a different process.
+func (c *siteSearchEngineRESTClient) DeleteSitemapOperation(name string) *DeleteSitemapOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &DeleteSitemapOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

@@ -1407,7 +1407,7 @@ type ConnectionProfileIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.ConnectionProfile, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConnectionProfileIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1454,7 +1454,7 @@ type ConversionWorkspaceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.ConversionWorkspace, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConversionWorkspaceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1501,7 +1501,7 @@ type DatabaseEntityIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.DatabaseEntity, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DatabaseEntityIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1548,7 +1548,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1595,7 +1595,7 @@ type MappingRuleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.MappingRule, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MappingRuleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1642,7 +1642,7 @@ type MigrationJobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.MigrationJob, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MigrationJobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1689,7 +1689,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1736,7 +1736,7 @@ type PrivateConnectionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.PrivateConnection, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PrivateConnectionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1783,7 +1783,7 @@ type StringIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []string, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *StringIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

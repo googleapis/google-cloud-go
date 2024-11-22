@@ -12,6 +12,52 @@
   },
   "snippets": [
     {
+      "regionTag": "eventarcpublishing_v1_generated_Publisher_Publish_sync",
+      "title": "eventarcpublishing Publish Sample",
+      "description": "Publish publish events to a message bus.",
+      "file": "PublisherClient/Publish/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Publish",
+        "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient.Publish",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "publishingpb.PublishRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*publishingpb.PublishResponse",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "Publish",
+          "fullName": "google.cloud.eventarc.publishing.v1.Publisher.Publish",
+          "service": {
+            "shortName": "Publisher",
+            "fullName": "google.cloud.eventarc.publishing.v1.Publisher"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "eventarcpublishing_v1_generated_Publisher_PublishChannelConnectionEvents_sync",
       "title": "eventarcpublishing PublishChannelConnectionEvents Sample",
       "description": "PublishChannelConnectionEvents publish events to a ChannelConnection in a partner's project.",

@@ -38,6 +38,59 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// The subscription period of the product.
+type SubscriptionPeriod int32
+
+const (
+	// Indicates that the subscription period is unspecified.
+	SubscriptionPeriod_SUBSCRIPTION_PERIOD_UNSPECIFIED SubscriptionPeriod = 0
+	// Indicates that the subscription period is month.
+	SubscriptionPeriod_MONTH SubscriptionPeriod = 1
+	// Indicates that the subscription period is year.
+	SubscriptionPeriod_YEAR SubscriptionPeriod = 2
+)
+
+// Enum value maps for SubscriptionPeriod.
+var (
+	SubscriptionPeriod_name = map[int32]string{
+		0: "SUBSCRIPTION_PERIOD_UNSPECIFIED",
+		1: "MONTH",
+		2: "YEAR",
+	}
+	SubscriptionPeriod_value = map[string]int32{
+		"SUBSCRIPTION_PERIOD_UNSPECIFIED": 0,
+		"MONTH":                           1,
+		"YEAR":                            2,
+	}
+)
+
+func (x SubscriptionPeriod) Enum() *SubscriptionPeriod {
+	p := new(SubscriptionPeriod)
+	*p = x
+	return p
+}
+
+func (x SubscriptionPeriod) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SubscriptionPeriod) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_shopping_css_v1_css_product_common_proto_enumTypes[0].Descriptor()
+}
+
+func (SubscriptionPeriod) Type() protoreflect.EnumType {
+	return &file_google_shopping_css_v1_css_product_common_proto_enumTypes[0]
+}
+
+func (x SubscriptionPeriod) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SubscriptionPeriod.Descriptor instead.
+func (SubscriptionPeriod) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_css_v1_css_product_common_proto_rawDescGZIP(), []int{0}
+}
+
 // Attributes for CSS Product.
 type Attributes struct {
 	state         protoimpl.MessageState
@@ -172,6 +225,11 @@ type Attributes struct {
 	CustomLabel_3 *string `protobuf:"bytes,49,opt,name=custom_label_3,json=customLabel3,proto3,oneof" json:"custom_label_3,omitempty"`
 	// Custom label 4 for custom grouping of items in a Shopping campaign.
 	CustomLabel_4 *string `protobuf:"bytes,50,opt,name=custom_label_4,json=customLabel4,proto3,oneof" json:"custom_label_4,omitempty"`
+	// Number and amount of installments to pay for an item.
+	HeadlineOfferInstallment *HeadlineOfferInstallment `protobuf:"bytes,51,opt,name=headline_offer_installment,json=headlineOfferInstallment,proto3" json:"headline_offer_installment,omitempty"`
+	// Number of periods (months or years) and amount of payment per period
+	// for an item with an associated subscription contract.
+	HeadlineOfferSubscriptionCost *HeadlineOfferSubscriptionCost `protobuf:"bytes,52,opt,name=headline_offer_subscription_cost,json=headlineOfferSubscriptionCost,proto3" json:"headline_offer_subscription_cost,omitempty"`
 }
 
 func (x *Attributes) Reset() {
@@ -542,6 +600,20 @@ func (x *Attributes) GetCustomLabel_4() string {
 	return ""
 }
 
+func (x *Attributes) GetHeadlineOfferInstallment() *HeadlineOfferInstallment {
+	if x != nil {
+		return x.HeadlineOfferInstallment
+	}
+	return nil
+}
+
+func (x *Attributes) GetHeadlineOfferSubscriptionCost() *HeadlineOfferSubscriptionCost {
+	if x != nil {
+		return x.HeadlineOfferSubscriptionCost
+	}
+	return nil
+}
+
 // The certification for the product. Use the this attribute to describe
 // certifications, such as energy efficiency ratings, associated with a product.
 type Certification struct {
@@ -898,6 +970,143 @@ func (x *CssProductStatus) GetGoogleExpirationDate() *timestamppb.Timestamp {
 	return nil
 }
 
+// The SubscriptionCost of the product.
+type HeadlineOfferSubscriptionCost struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The type of subscription period.
+	// Supported values are:
+	//   - "`month`"
+	//   - "`year`"
+	Period SubscriptionPeriod `protobuf:"varint,1,opt,name=period,proto3,enum=google.shopping.css.v1.SubscriptionPeriod" json:"period,omitempty"`
+	// The number of subscription periods the buyer has to pay.
+	PeriodLength int64 `protobuf:"varint,2,opt,name=period_length,json=periodLength,proto3" json:"period_length,omitempty"`
+	// The amount the buyer has to pay per subscription period.
+	Amount *typepb.Price `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
+}
+
+func (x *HeadlineOfferSubscriptionCost) Reset() {
+	*x = HeadlineOfferSubscriptionCost{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_shopping_css_v1_css_product_common_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *HeadlineOfferSubscriptionCost) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HeadlineOfferSubscriptionCost) ProtoMessage() {}
+
+func (x *HeadlineOfferSubscriptionCost) ProtoReflect() protoreflect.Message {
+	mi := &file_google_shopping_css_v1_css_product_common_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HeadlineOfferSubscriptionCost.ProtoReflect.Descriptor instead.
+func (*HeadlineOfferSubscriptionCost) Descriptor() ([]byte, []int) {
+	return file_google_shopping_css_v1_css_product_common_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *HeadlineOfferSubscriptionCost) GetPeriod() SubscriptionPeriod {
+	if x != nil {
+		return x.Period
+	}
+	return SubscriptionPeriod_SUBSCRIPTION_PERIOD_UNSPECIFIED
+}
+
+func (x *HeadlineOfferSubscriptionCost) GetPeriodLength() int64 {
+	if x != nil {
+		return x.PeriodLength
+	}
+	return 0
+}
+
+func (x *HeadlineOfferSubscriptionCost) GetAmount() *typepb.Price {
+	if x != nil {
+		return x.Amount
+	}
+	return nil
+}
+
+// A message that represents installment.
+type HeadlineOfferInstallment struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The number of installments the buyer has to pay.
+	Months int64 `protobuf:"varint,1,opt,name=months,proto3" json:"months,omitempty"`
+	// The amount the buyer has to pay per month.
+	Amount *typepb.Price `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
+	// The up-front down payment amount the buyer has to pay.
+	Downpayment *typepb.Price `protobuf:"bytes,3,opt,name=downpayment,proto3" json:"downpayment,omitempty"`
+}
+
+func (x *HeadlineOfferInstallment) Reset() {
+	*x = HeadlineOfferInstallment{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_shopping_css_v1_css_product_common_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *HeadlineOfferInstallment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HeadlineOfferInstallment) ProtoMessage() {}
+
+func (x *HeadlineOfferInstallment) ProtoReflect() protoreflect.Message {
+	mi := &file_google_shopping_css_v1_css_product_common_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HeadlineOfferInstallment.ProtoReflect.Descriptor instead.
+func (*HeadlineOfferInstallment) Descriptor() ([]byte, []int) {
+	return file_google_shopping_css_v1_css_product_common_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *HeadlineOfferInstallment) GetMonths() int64 {
+	if x != nil {
+		return x.Months
+	}
+	return 0
+}
+
+func (x *HeadlineOfferInstallment) GetAmount() *typepb.Price {
+	if x != nil {
+		return x.Amount
+	}
+	return nil
+}
+
+func (x *HeadlineOfferInstallment) GetDownpayment() *typepb.Price {
+	if x != nil {
+		return x.Downpayment
+	}
+	return nil
+}
+
 // The destination status of the product status.
 type CssProductStatus_DestinationStatus struct {
 	state         protoimpl.MessageState
@@ -920,7 +1129,7 @@ type CssProductStatus_DestinationStatus struct {
 func (x *CssProductStatus_DestinationStatus) Reset() {
 	*x = CssProductStatus_DestinationStatus{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_shopping_css_v1_css_product_common_proto_msgTypes[6]
+		mi := &file_google_shopping_css_v1_css_product_common_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -933,7 +1142,7 @@ func (x *CssProductStatus_DestinationStatus) String() string {
 func (*CssProductStatus_DestinationStatus) ProtoMessage() {}
 
 func (x *CssProductStatus_DestinationStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_css_v1_css_product_common_proto_msgTypes[6]
+	mi := &file_google_shopping_css_v1_css_product_common_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1007,7 +1216,7 @@ type CssProductStatus_ItemLevelIssue struct {
 func (x *CssProductStatus_ItemLevelIssue) Reset() {
 	*x = CssProductStatus_ItemLevelIssue{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_shopping_css_v1_css_product_common_proto_msgTypes[7]
+		mi := &file_google_shopping_css_v1_css_product_common_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1020,7 +1229,7 @@ func (x *CssProductStatus_ItemLevelIssue) String() string {
 func (*CssProductStatus_ItemLevelIssue) ProtoMessage() {}
 
 func (x *CssProductStatus_ItemLevelIssue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_css_v1_css_product_common_proto_msgTypes[7]
+	mi := &file_google_shopping_css_v1_css_product_common_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1112,7 +1321,7 @@ var file_google_shopping_css_v1_css_product_common_proto_rawDesc = []byte{
 	0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65,
 	0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2f, 0x73, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2f, 0x74, 0x79, 0x70,
-	0x65, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xff, 0x15,
+	0x65, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xef, 0x17,
 	0x0a, 0x0a, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x12, 0x1e, 0x0a, 0x08,
 	0x63, 0x70, 0x70, 0x5f, 0x6c, 0x69, 0x6e, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00,
 	0x52, 0x07, 0x63, 0x70, 0x70, 0x4c, 0x69, 0x6e, 0x6b, 0x88, 0x01, 0x01, 0x12, 0x2b, 0x0a, 0x0f,
@@ -1257,7 +1466,22 @@ var file_google_shopping_css_v1_css_product_common_proto_rawDesc = []byte{
 	0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x33, 0x88, 0x01, 0x01, 0x12,
 	0x29, 0x0a, 0x0e, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x5f, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x5f,
 	0x34, 0x18, 0x32, 0x20, 0x01, 0x28, 0x09, 0x48, 0x1e, 0x52, 0x0c, 0x63, 0x75, 0x73, 0x74, 0x6f,
-	0x6d, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x34, 0x88, 0x01, 0x01, 0x42, 0x0b, 0x0a, 0x09, 0x5f, 0x63,
+	0x6d, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x34, 0x88, 0x01, 0x01, 0x12, 0x6e, 0x0a, 0x1a, 0x68, 0x65,
+	0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65, 0x5f, 0x6f, 0x66, 0x66, 0x65, 0x72, 0x5f, 0x69, 0x6e, 0x73,
+	0x74, 0x61, 0x6c, 0x6c, 0x6d, 0x65, 0x6e, 0x74, 0x18, 0x33, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x30,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x73, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67,
+	0x2e, 0x63, 0x73, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x48, 0x65, 0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65,
+	0x4f, 0x66, 0x66, 0x65, 0x72, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6c, 0x6c, 0x6d, 0x65, 0x6e, 0x74,
+	0x52, 0x18, 0x68, 0x65, 0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65, 0x4f, 0x66, 0x66, 0x65, 0x72, 0x49,
+	0x6e, 0x73, 0x74, 0x61, 0x6c, 0x6c, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x7e, 0x0a, 0x20, 0x68, 0x65,
+	0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65, 0x5f, 0x6f, 0x66, 0x66, 0x65, 0x72, 0x5f, 0x73, 0x75, 0x62,
+	0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x63, 0x6f, 0x73, 0x74, 0x18, 0x34,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x35, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x73, 0x68,
+	0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x63, 0x73, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x48, 0x65,
+	0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65, 0x4f, 0x66, 0x66, 0x65, 0x72, 0x53, 0x75, 0x62, 0x73, 0x63,
+	0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x73, 0x74, 0x52, 0x1d, 0x68, 0x65, 0x61,
+	0x64, 0x6c, 0x69, 0x6e, 0x65, 0x4f, 0x66, 0x66, 0x65, 0x72, 0x53, 0x75, 0x62, 0x73, 0x63, 0x72,
+	0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x73, 0x74, 0x42, 0x0b, 0x0a, 0x09, 0x5f, 0x63,
 	0x70, 0x70, 0x5f, 0x6c, 0x69, 0x6e, 0x6b, 0x42, 0x12, 0x0a, 0x10, 0x5f, 0x63, 0x70, 0x70, 0x5f,
 	0x6d, 0x6f, 0x62, 0x69, 0x6c, 0x65, 0x5f, 0x6c, 0x69, 0x6e, 0x6b, 0x42, 0x13, 0x0a, 0x11, 0x5f,
 	0x63, 0x70, 0x70, 0x5f, 0x61, 0x64, 0x73, 0x5f, 0x72, 0x65, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74,
@@ -1371,20 +1595,47 @@ var file_google_shopping_css_v1_css_product_common_proto_rawDesc = []byte{
 	0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x31, 0x0a, 0x14,
 	0x61, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74,
 	0x72, 0x69, 0x65, 0x73, 0x18, 0x09, 0x20, 0x03, 0x28, 0x09, 0x52, 0x13, 0x61, 0x70, 0x70, 0x6c,
-	0x69, 0x63, 0x61, 0x62, 0x6c, 0x65, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x42,
-	0xb7, 0x01, 0x0a, 0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x73,
-	0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x63, 0x73, 0x73, 0x2e, 0x76, 0x31, 0x42, 0x15,
-	0x43, 0x73, 0x73, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e,
-	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x32, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x73, 0x68, 0x6f,
-	0x70, 0x70, 0x69, 0x6e, 0x67, 0x2f, 0x63, 0x73, 0x73, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f,
-	0x63, 0x73, 0x73, 0x70, 0x62, 0x3b, 0x63, 0x73, 0x73, 0x70, 0x62, 0xaa, 0x02, 0x16, 0x47, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x53, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x43, 0x73,
-	0x73, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x16, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x53, 0x68,
-	0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x5c, 0x43, 0x73, 0x73, 0x5c, 0x56, 0x31, 0xea, 0x02, 0x19,
-	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x53, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67,
-	0x3a, 0x3a, 0x43, 0x73, 0x73, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x69, 0x63, 0x61, 0x62, 0x6c, 0x65, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x22,
+	0xbd, 0x01, 0x0a, 0x1d, 0x48, 0x65, 0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65, 0x4f, 0x66, 0x66, 0x65,
+	0x72, 0x53, 0x75, 0x62, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x73,
+	0x74, 0x12, 0x42, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0e, 0x32, 0x2a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x73, 0x68, 0x6f, 0x70, 0x70,
+	0x69, 0x6e, 0x67, 0x2e, 0x63, 0x73, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x75, 0x62, 0x73, 0x63,
+	0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x52, 0x06, 0x70,
+	0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x23, 0x0a, 0x0d, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x5f,
+	0x6c, 0x65, 0x6e, 0x67, 0x74, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x70, 0x65,
+	0x72, 0x69, 0x6f, 0x64, 0x4c, 0x65, 0x6e, 0x67, 0x74, 0x68, 0x12, 0x33, 0x0a, 0x06, 0x61, 0x6d,
+	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x73, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x74, 0x79, 0x70,
+	0x65, 0x2e, 0x50, 0x72, 0x69, 0x63, 0x65, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22,
+	0xa6, 0x01, 0x0a, 0x18, 0x48, 0x65, 0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65, 0x4f, 0x66, 0x66, 0x65,
+	0x72, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6c, 0x6c, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x16, 0x0a, 0x06,
+	0x6d, 0x6f, 0x6e, 0x74, 0x68, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x6d, 0x6f,
+	0x6e, 0x74, 0x68, 0x73, 0x12, 0x33, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x73, 0x68,
+	0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x50, 0x72, 0x69, 0x63,
+	0x65, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x3d, 0x0a, 0x0b, 0x64, 0x6f, 0x77,
+	0x6e, 0x70, 0x61, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x73, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67,
+	0x2e, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x50, 0x72, 0x69, 0x63, 0x65, 0x52, 0x0b, 0x64, 0x6f, 0x77,
+	0x6e, 0x70, 0x61, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x2a, 0x4e, 0x0a, 0x12, 0x53, 0x75, 0x62, 0x73,
+	0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x23,
+	0x0a, 0x1f, 0x53, 0x55, 0x42, 0x53, 0x43, 0x52, 0x49, 0x50, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x50,
+	0x45, 0x52, 0x49, 0x4f, 0x44, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45,
+	0x44, 0x10, 0x00, 0x12, 0x09, 0x0a, 0x05, 0x4d, 0x4f, 0x4e, 0x54, 0x48, 0x10, 0x01, 0x12, 0x08,
+	0x0a, 0x04, 0x59, 0x45, 0x41, 0x52, 0x10, 0x02, 0x42, 0xb7, 0x01, 0x0a, 0x1a, 0x63, 0x6f, 0x6d,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x73, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67,
+	0x2e, 0x63, 0x73, 0x73, 0x2e, 0x76, 0x31, 0x42, 0x15, 0x43, 0x73, 0x73, 0x50, 0x72, 0x6f, 0x64,
+	0x75, 0x63, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
+	0x5a, 0x32, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x73, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2f, 0x63,
+	0x73, 0x73, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x63, 0x73, 0x73, 0x70, 0x62, 0x3b, 0x63,
+	0x73, 0x73, 0x70, 0x62, 0xaa, 0x02, 0x16, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x53, 0x68,
+	0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x43, 0x73, 0x73, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x16,
+	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x53, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x5c,
+	0x43, 0x73, 0x73, 0x5c, 0x56, 0x31, 0xea, 0x02, 0x19, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a,
+	0x3a, 0x53, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x3a, 0x3a, 0x43, 0x73, 0x73, 0x3a, 0x3a,
+	0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1399,41 +1650,51 @@ func file_google_shopping_css_v1_css_product_common_proto_rawDescGZIP() []byte {
 	return file_google_shopping_css_v1_css_product_common_proto_rawDescData
 }
 
-var file_google_shopping_css_v1_css_product_common_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_google_shopping_css_v1_css_product_common_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_google_shopping_css_v1_css_product_common_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_google_shopping_css_v1_css_product_common_proto_goTypes = []any{
-	(*Attributes)(nil),                         // 0: google.shopping.css.v1.Attributes
-	(*Certification)(nil),                      // 1: google.shopping.css.v1.Certification
-	(*ProductDetail)(nil),                      // 2: google.shopping.css.v1.ProductDetail
-	(*ProductDimension)(nil),                   // 3: google.shopping.css.v1.ProductDimension
-	(*ProductWeight)(nil),                      // 4: google.shopping.css.v1.ProductWeight
-	(*CssProductStatus)(nil),                   // 5: google.shopping.css.v1.CssProductStatus
-	(*CssProductStatus_DestinationStatus)(nil), // 6: google.shopping.css.v1.CssProductStatus.DestinationStatus
-	(*CssProductStatus_ItemLevelIssue)(nil),    // 7: google.shopping.css.v1.CssProductStatus.ItemLevelIssue
-	(*typepb.Price)(nil),                       // 8: google.shopping.type.Price
-	(*timestamppb.Timestamp)(nil),              // 9: google.protobuf.Timestamp
+	(SubscriptionPeriod)(0),                    // 0: google.shopping.css.v1.SubscriptionPeriod
+	(*Attributes)(nil),                         // 1: google.shopping.css.v1.Attributes
+	(*Certification)(nil),                      // 2: google.shopping.css.v1.Certification
+	(*ProductDetail)(nil),                      // 3: google.shopping.css.v1.ProductDetail
+	(*ProductDimension)(nil),                   // 4: google.shopping.css.v1.ProductDimension
+	(*ProductWeight)(nil),                      // 5: google.shopping.css.v1.ProductWeight
+	(*CssProductStatus)(nil),                   // 6: google.shopping.css.v1.CssProductStatus
+	(*HeadlineOfferSubscriptionCost)(nil),      // 7: google.shopping.css.v1.HeadlineOfferSubscriptionCost
+	(*HeadlineOfferInstallment)(nil),           // 8: google.shopping.css.v1.HeadlineOfferInstallment
+	(*CssProductStatus_DestinationStatus)(nil), // 9: google.shopping.css.v1.CssProductStatus.DestinationStatus
+	(*CssProductStatus_ItemLevelIssue)(nil),    // 10: google.shopping.css.v1.CssProductStatus.ItemLevelIssue
+	(*typepb.Price)(nil),                       // 11: google.shopping.type.Price
+	(*timestamppb.Timestamp)(nil),              // 12: google.protobuf.Timestamp
 }
 var file_google_shopping_css_v1_css_product_common_proto_depIdxs = []int32{
-	8,  // 0: google.shopping.css.v1.Attributes.low_price:type_name -> google.shopping.type.Price
-	8,  // 1: google.shopping.css.v1.Attributes.high_price:type_name -> google.shopping.type.Price
-	8,  // 2: google.shopping.css.v1.Attributes.headline_offer_price:type_name -> google.shopping.type.Price
-	8,  // 3: google.shopping.css.v1.Attributes.headline_offer_shipping_price:type_name -> google.shopping.type.Price
-	2,  // 4: google.shopping.css.v1.Attributes.product_details:type_name -> google.shopping.css.v1.ProductDetail
-	4,  // 5: google.shopping.css.v1.Attributes.product_weight:type_name -> google.shopping.css.v1.ProductWeight
-	3,  // 6: google.shopping.css.v1.Attributes.product_length:type_name -> google.shopping.css.v1.ProductDimension
-	3,  // 7: google.shopping.css.v1.Attributes.product_width:type_name -> google.shopping.css.v1.ProductDimension
-	3,  // 8: google.shopping.css.v1.Attributes.product_height:type_name -> google.shopping.css.v1.ProductDimension
-	1,  // 9: google.shopping.css.v1.Attributes.certifications:type_name -> google.shopping.css.v1.Certification
-	9,  // 10: google.shopping.css.v1.Attributes.expiration_date:type_name -> google.protobuf.Timestamp
-	6,  // 11: google.shopping.css.v1.CssProductStatus.destination_statuses:type_name -> google.shopping.css.v1.CssProductStatus.DestinationStatus
-	7,  // 12: google.shopping.css.v1.CssProductStatus.item_level_issues:type_name -> google.shopping.css.v1.CssProductStatus.ItemLevelIssue
-	9,  // 13: google.shopping.css.v1.CssProductStatus.creation_date:type_name -> google.protobuf.Timestamp
-	9,  // 14: google.shopping.css.v1.CssProductStatus.last_update_date:type_name -> google.protobuf.Timestamp
-	9,  // 15: google.shopping.css.v1.CssProductStatus.google_expiration_date:type_name -> google.protobuf.Timestamp
-	16, // [16:16] is the sub-list for method output_type
-	16, // [16:16] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	11, // 0: google.shopping.css.v1.Attributes.low_price:type_name -> google.shopping.type.Price
+	11, // 1: google.shopping.css.v1.Attributes.high_price:type_name -> google.shopping.type.Price
+	11, // 2: google.shopping.css.v1.Attributes.headline_offer_price:type_name -> google.shopping.type.Price
+	11, // 3: google.shopping.css.v1.Attributes.headline_offer_shipping_price:type_name -> google.shopping.type.Price
+	3,  // 4: google.shopping.css.v1.Attributes.product_details:type_name -> google.shopping.css.v1.ProductDetail
+	5,  // 5: google.shopping.css.v1.Attributes.product_weight:type_name -> google.shopping.css.v1.ProductWeight
+	4,  // 6: google.shopping.css.v1.Attributes.product_length:type_name -> google.shopping.css.v1.ProductDimension
+	4,  // 7: google.shopping.css.v1.Attributes.product_width:type_name -> google.shopping.css.v1.ProductDimension
+	4,  // 8: google.shopping.css.v1.Attributes.product_height:type_name -> google.shopping.css.v1.ProductDimension
+	2,  // 9: google.shopping.css.v1.Attributes.certifications:type_name -> google.shopping.css.v1.Certification
+	12, // 10: google.shopping.css.v1.Attributes.expiration_date:type_name -> google.protobuf.Timestamp
+	8,  // 11: google.shopping.css.v1.Attributes.headline_offer_installment:type_name -> google.shopping.css.v1.HeadlineOfferInstallment
+	7,  // 12: google.shopping.css.v1.Attributes.headline_offer_subscription_cost:type_name -> google.shopping.css.v1.HeadlineOfferSubscriptionCost
+	9,  // 13: google.shopping.css.v1.CssProductStatus.destination_statuses:type_name -> google.shopping.css.v1.CssProductStatus.DestinationStatus
+	10, // 14: google.shopping.css.v1.CssProductStatus.item_level_issues:type_name -> google.shopping.css.v1.CssProductStatus.ItemLevelIssue
+	12, // 15: google.shopping.css.v1.CssProductStatus.creation_date:type_name -> google.protobuf.Timestamp
+	12, // 16: google.shopping.css.v1.CssProductStatus.last_update_date:type_name -> google.protobuf.Timestamp
+	12, // 17: google.shopping.css.v1.CssProductStatus.google_expiration_date:type_name -> google.protobuf.Timestamp
+	0,  // 18: google.shopping.css.v1.HeadlineOfferSubscriptionCost.period:type_name -> google.shopping.css.v1.SubscriptionPeriod
+	11, // 19: google.shopping.css.v1.HeadlineOfferSubscriptionCost.amount:type_name -> google.shopping.type.Price
+	11, // 20: google.shopping.css.v1.HeadlineOfferInstallment.amount:type_name -> google.shopping.type.Price
+	11, // 21: google.shopping.css.v1.HeadlineOfferInstallment.downpayment:type_name -> google.shopping.type.Price
+	22, // [22:22] is the sub-list for method output_type
+	22, // [22:22] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_google_shopping_css_v1_css_product_common_proto_init() }
@@ -1515,7 +1776,7 @@ func file_google_shopping_css_v1_css_product_common_proto_init() {
 			}
 		}
 		file_google_shopping_css_v1_css_product_common_proto_msgTypes[6].Exporter = func(v any, i int) any {
-			switch v := v.(*CssProductStatus_DestinationStatus); i {
+			switch v := v.(*HeadlineOfferSubscriptionCost); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1527,6 +1788,30 @@ func file_google_shopping_css_v1_css_product_common_proto_init() {
 			}
 		}
 		file_google_shopping_css_v1_css_product_common_proto_msgTypes[7].Exporter = func(v any, i int) any {
+			switch v := v.(*HeadlineOfferInstallment); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_shopping_css_v1_css_product_common_proto_msgTypes[8].Exporter = func(v any, i int) any {
+			switch v := v.(*CssProductStatus_DestinationStatus); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_shopping_css_v1_css_product_common_proto_msgTypes[9].Exporter = func(v any, i int) any {
 			switch v := v.(*CssProductStatus_ItemLevelIssue); i {
 			case 0:
 				return &v.state
@@ -1545,13 +1830,14 @@ func file_google_shopping_css_v1_css_product_common_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_shopping_css_v1_css_product_common_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   8,
+			NumEnums:      1,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_google_shopping_css_v1_css_product_common_proto_goTypes,
 		DependencyIndexes: file_google_shopping_css_v1_css_product_common_proto_depIdxs,
+		EnumInfos:         file_google_shopping_css_v1_css_product_common_proto_enumTypes,
 		MessageInfos:      file_google_shopping_css_v1_css_product_common_proto_msgTypes,
 	}.Build()
 	File_google_shopping_css_v1_css_product_common_proto = out.File

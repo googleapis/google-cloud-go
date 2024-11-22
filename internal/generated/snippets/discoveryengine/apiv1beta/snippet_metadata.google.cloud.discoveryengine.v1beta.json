@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1beta",
-    "version": "1.14.0",
+    "version": "1.16.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "discoveryengine_v1beta_generated_CompletionService_AdvancedCompleteQuery_sync",
+      "title": "discoveryengine AdvancedCompleteQuery Sample",
+      "description": "AdvancedCompleteQuery completes the user input with advanced keyword suggestions.",
+      "file": "CompletionClient/AdvancedCompleteQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AdvancedCompleteQuery",
+        "fullName": "google.cloud.discoveryengine.v1beta.CompletionClient.AdvancedCompleteQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.AdvancedCompleteQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.AdvancedCompleteQueryResponse",
+        "client": {
+          "shortName": "CompletionClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.CompletionClient"
+        },
+        "method": {
+          "shortName": "AdvancedCompleteQuery",
+          "fullName": "google.cloud.discoveryengine.v1beta.CompletionService.AdvancedCompleteQuery",
+          "service": {
+            "shortName": "CompletionService",
+            "fullName": "google.cloud.discoveryengine.v1beta.CompletionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "discoveryengine_v1beta_generated_CompletionService_CancelOperation_sync",
       "title": "discoveryengine CancelOperation Sample",
@@ -3266,6 +3312,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1beta_generated_GroundedGenerationService_GenerateGroundedContent_sync",
+      "title": "discoveryengine GenerateGroundedContent Sample",
+      "description": "GenerateGroundedContent generates grounded content.",
+      "file": "GroundedGenerationClient/GenerateGroundedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateGroundedContent",
+        "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationClient.GenerateGroundedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GenerateGroundedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.GenerateGroundedContentResponse",
+        "client": {
+          "shortName": "GroundedGenerationClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationClient"
+        },
+        "method": {
+          "shortName": "GenerateGroundedContent",
+          "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationService.GenerateGroundedContent",
+          "service": {
+            "shortName": "GroundedGenerationService",
+            "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1beta_generated_GroundedGenerationService_GetOperation_sync",
       "title": "discoveryengine GetOperation Sample",
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
@@ -3353,6 +3445,48 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_GroundedGenerationService_StreamGenerateGroundedContent_sync",
+      "title": "discoveryengine StreamGenerateGroundedContent Sample",
+      "description": "StreamGenerateGroundedContent generates grounded content in a streaming fashion.\n\n\nThis method is not supported for the REST transport.",
+      "file": "GroundedGenerationClient/StreamGenerateGroundedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamGenerateGroundedContent",
+        "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationClient.StreamGenerateGroundedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "discoveryenginepb.GroundedGenerationService_StreamGenerateGroundedContentClient",
+        "client": {
+          "shortName": "GroundedGenerationClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationClient"
+        },
+        "method": {
+          "shortName": "StreamGenerateGroundedContent",
+          "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationService.StreamGenerateGroundedContent",
+          "service": {
+            "shortName": "GroundedGenerationService",
+            "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
           "type": "FULL"
         }
       ]
@@ -5235,6 +5369,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1beta_generated_SearchService_SearchLite_sync",
+      "title": "discoveryengine SearchLite Sample",
+      "description": "SearchLite performs a search. Similar to the\n[SearchService.Search][google.cloud.discoveryengine.v1beta.SearchService.Search]\nmethod, but a lite version that allows API key for authentication, where\nOAuth and IAM checks are not required.\n\nOnly public website search is supported by this method. If data stores and\nengines not associated with public website search are specified, a\n`FAILED_PRECONDITION` error is returned.\n\nThis method can be used for easy onboarding without having to implement an\nauthentication backend. However, it is strongly recommended to use\n[SearchService.Search][google.cloud.discoveryengine.v1beta.SearchService.Search]\ninstead with required OAuth and IAM checks to provide better data security.",
+      "file": "SearchClient/SearchLite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchLite",
+        "fullName": "google.cloud.discoveryengine.v1beta.SearchClient.SearchLite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.SearchRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SearchResponse_SearchResultIterator",
+        "client": {
+          "shortName": "SearchClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.SearchClient"
+        },
+        "method": {
+          "shortName": "SearchLite",
+          "fullName": "google.cloud.discoveryengine.v1beta.SearchService.SearchLite",
+          "service": {
+            "shortName": "SearchService",
+            "fullName": "google.cloud.discoveryengine.v1beta.SearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1beta_generated_SearchTuningService_CancelOperation_sync",
       "title": "discoveryengine CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -5876,6 +6056,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1beta_generated_SiteSearchEngineService_CreateSitemap_sync",
+      "title": "discoveryengine CreateSitemap Sample",
+      "description": "CreateSitemap creates a [Sitemap][google.cloud.discoveryengine.v1beta.Sitemap].",
+      "file": "SiteSearchEngineClient/CreateSitemap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSitemap",
+        "fullName": "google.cloud.discoveryengine.v1beta.SiteSearchEngineClient.CreateSitemap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateSitemapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateSitemapOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "CreateSitemap",
+          "fullName": "google.cloud.discoveryengine.v1beta.SiteSearchEngineService.CreateSitemap",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1beta.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1beta_generated_SiteSearchEngineService_CreateTargetSite_sync",
       "title": "discoveryengine CreateTargetSite Sample",
       "description": "CreateTargetSite creates a [TargetSite][google.cloud.discoveryengine.v1beta.TargetSite].",
@@ -5917,6 +6143,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_SiteSearchEngineService_DeleteSitemap_sync",
+      "title": "discoveryengine DeleteSitemap Sample",
+      "description": "DeleteSitemap deletes a [Sitemap][google.cloud.discoveryengine.v1beta.Sitemap].",
+      "file": "SiteSearchEngineClient/DeleteSitemap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSitemap",
+        "fullName": "google.cloud.discoveryengine.v1beta.SiteSearchEngineClient.DeleteSitemap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteSitemapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteSitemapOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "DeleteSitemap",
+          "fullName": "google.cloud.discoveryengine.v1beta.SiteSearchEngineService.DeleteSitemap",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1beta.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -6101,6 +6373,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_SiteSearchEngineService_FetchSitemaps_sync",
+      "title": "discoveryengine FetchSitemaps Sample",
+      "description": "FetchSitemaps fetch [Sitemap][google.cloud.discoveryengine.v1beta.Sitemap]s in a\n[DataStore][google.cloud.discoveryengine.v1beta.DataStore].",
+      "file": "SiteSearchEngineClient/FetchSitemaps/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchSitemaps",
+        "fullName": "google.cloud.discoveryengine.v1beta.SiteSearchEngineClient.FetchSitemaps",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.FetchSitemapsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.FetchSitemapsResponse",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "FetchSitemaps",
+          "fullName": "google.cloud.discoveryengine.v1beta.SiteSearchEngineService.FetchSitemaps",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1beta.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

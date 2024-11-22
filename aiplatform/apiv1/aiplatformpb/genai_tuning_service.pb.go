@@ -168,8 +168,9 @@ type ListTuningJobsRequest struct {
 	// Optional. The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. The standard list page token.
-	// Typically obtained via [ListTuningJob.next_page_token][] of the
-	// previous GenAiTuningService.ListTuningJob][] call.
+	// Typically obtained via
+	// [ListTuningJobsResponse.next_page_token][google.cloud.aiplatform.v1.ListTuningJobsResponse.next_page_token]
+	// of the previous GenAiTuningService.ListTuningJob][] call.
 	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -873,8 +874,6 @@ type GenAiTuningServiceClient interface {
 	// `CANCELLED`.
 	CancelTuningJob(ctx context.Context, in *CancelTuningJobRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Rebase a TunedModel.
-	// Creates a LongRunningOperation that takes a legacy Tuned GenAI model
-	// Reference and creates a TuningJob based on newly available model.
 	RebaseTunedModel(ctx context.Context, in *RebaseTunedModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
@@ -954,8 +953,6 @@ type GenAiTuningServiceServer interface {
 	// `CANCELLED`.
 	CancelTuningJob(context.Context, *CancelTuningJobRequest) (*emptypb.Empty, error)
 	// Rebase a TunedModel.
-	// Creates a LongRunningOperation that takes a legacy Tuned GenAI model
-	// Reference and creates a TuningJob based on newly available model.
 	RebaseTunedModel(context.Context, *RebaseTunedModelRequest) (*longrunningpb.Operation, error)
 }
 

@@ -330,27 +330,27 @@ type Tensor struct {
 	// be set.  The values hold the flattened representation of the tensor in
 	// row major order.
 	//
-	// [BOOL][google.aiplatform.master.Tensor.DataType.BOOL]
+	// [BOOL][google.cloud.aiplatform.v1.Tensor.DataType.BOOL]
 	BoolVal []bool `protobuf:"varint,3,rep,packed,name=bool_val,json=boolVal,proto3" json:"bool_val,omitempty"`
-	// [STRING][google.aiplatform.master.Tensor.DataType.STRING]
+	// [STRING][google.cloud.aiplatform.v1.Tensor.DataType.STRING]
 	StringVal []string `protobuf:"bytes,14,rep,name=string_val,json=stringVal,proto3" json:"string_val,omitempty"`
-	// [STRING][google.aiplatform.master.Tensor.DataType.STRING]
+	// [STRING][google.cloud.aiplatform.v1.Tensor.DataType.STRING]
 	BytesVal [][]byte `protobuf:"bytes,15,rep,name=bytes_val,json=bytesVal,proto3" json:"bytes_val,omitempty"`
-	// [FLOAT][google.aiplatform.master.Tensor.DataType.FLOAT]
+	// [FLOAT][google.cloud.aiplatform.v1.Tensor.DataType.FLOAT]
 	FloatVal []float32 `protobuf:"fixed32,5,rep,packed,name=float_val,json=floatVal,proto3" json:"float_val,omitempty"`
-	// [DOUBLE][google.aiplatform.master.Tensor.DataType.DOUBLE]
+	// [DOUBLE][google.cloud.aiplatform.v1.Tensor.DataType.DOUBLE]
 	DoubleVal []float64 `protobuf:"fixed64,6,rep,packed,name=double_val,json=doubleVal,proto3" json:"double_val,omitempty"`
-	// [INT_8][google.aiplatform.master.Tensor.DataType.INT8]
-	// [INT_16][google.aiplatform.master.Tensor.DataType.INT16]
-	// [INT_32][google.aiplatform.master.Tensor.DataType.INT32]
+	// [INT_8][google.cloud.aiplatform.v1.Tensor.DataType.INT8]
+	// [INT_16][google.cloud.aiplatform.v1.Tensor.DataType.INT16]
+	// [INT_32][google.cloud.aiplatform.v1.Tensor.DataType.INT32]
 	IntVal []int32 `protobuf:"varint,7,rep,packed,name=int_val,json=intVal,proto3" json:"int_val,omitempty"`
-	// [INT64][google.aiplatform.master.Tensor.DataType.INT64]
+	// [INT64][google.cloud.aiplatform.v1.Tensor.DataType.INT64]
 	Int64Val []int64 `protobuf:"varint,8,rep,packed,name=int64_val,json=int64Val,proto3" json:"int64_val,omitempty"`
-	// [UINT8][google.aiplatform.master.Tensor.DataType.UINT8]
-	// [UINT16][google.aiplatform.master.Tensor.DataType.UINT16]
-	// [UINT32][google.aiplatform.master.Tensor.DataType.UINT32]
+	// [UINT8][google.cloud.aiplatform.v1.Tensor.DataType.UINT8]
+	// [UINT16][google.cloud.aiplatform.v1.Tensor.DataType.UINT16]
+	// [UINT32][google.cloud.aiplatform.v1.Tensor.DataType.UINT32]
 	UintVal []uint32 `protobuf:"varint,9,rep,packed,name=uint_val,json=uintVal,proto3" json:"uint_val,omitempty"`
-	// [UINT64][google.aiplatform.master.Tensor.DataType.UINT64]
+	// [UINT64][google.cloud.aiplatform.v1.Tensor.DataType.UINT64]
 	Uint64Val []uint64 `protobuf:"varint,10,rep,packed,name=uint64_val,json=uint64Val,proto3" json:"uint64_val,omitempty"`
 	// A list of tensor values.
 	ListVal []*Tensor `protobuf:"bytes,11,rep,name=list_val,json=listVal,proto3" json:"list_val,omitempty"`

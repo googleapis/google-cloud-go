@@ -21,6 +21,7 @@ import (
 
 	"cloud.google.com/go/storage/experimental"
 	"github.com/google/go-cmp/cmp"
+	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
 	"google.golang.org/api/option"
 )
 
@@ -37,6 +38,8 @@ func TestApplyStorageOpt(t *testing.T) {
 				useJSONforReads:      true,
 				readAPIWasSet:        true,
 				disableClientMetrics: false,
+				metricInterval:       0,
+				metricExporter:       nil,
 			},
 		},
 		{
@@ -46,6 +49,8 @@ func TestApplyStorageOpt(t *testing.T) {
 				useJSONforReads:      false,
 				readAPIWasSet:        true,
 				disableClientMetrics: false,
+				metricInterval:       0,
+				metricExporter:       nil,
 			},
 		},
 		{
@@ -55,6 +60,8 @@ func TestApplyStorageOpt(t *testing.T) {
 				useJSONforReads:      false,
 				readAPIWasSet:        true,
 				disableClientMetrics: false,
+				metricInterval:       0,
+				metricExporter:       nil,
 			},
 		},
 		{
@@ -64,6 +71,8 @@ func TestApplyStorageOpt(t *testing.T) {
 				useJSONforReads:      false,
 				readAPIWasSet:        false,
 				disableClientMetrics: false,
+				metricInterval:       0,
+				metricExporter:       nil,
 			},
 		},
 		{
@@ -73,6 +82,8 @@ func TestApplyStorageOpt(t *testing.T) {
 				useJSONforReads:      false,
 				readAPIWasSet:        false,
 				disableClientMetrics: false,
+				metricInterval:       0,
+				metricExporter:       nil,
 			},
 		},
 		{
@@ -82,6 +93,19 @@ func TestApplyStorageOpt(t *testing.T) {
 				useJSONforReads:      false,
 				readAPIWasSet:        false,
 				disableClientMetrics: true,
+				metricInterval:       0,
+				metricExporter:       nil,
+			},
+		},
+		{
+			desc: "set metrics interval",
+			opts: []option.ClientOption{experimental.WithMetricInterval(time.Minute * 5)},
+			want: storageConfig{
+				useJSONforReads:      false,
+				readAPIWasSet:        false,
+				disableClientMetrics: false,
+				metricInterval:       time.Minute * 5,
+				metricExporter:       nil,
 			},
 		},
 		{
@@ -125,6 +149,24 @@ func TestApplyStorageOpt(t *testing.T) {
 				t.Errorf(cmp.Diff(got, test.want, cmp.AllowUnexported(storageConfig{}, experimental.ReadStallTimeoutConfig{})))
 			}
 		})
+	}
+}
+
+func TestSetCustomExporter(t *testing.T) {
+	exporter, err := stdoutmetric.New()
+	if err != nil {
+		t.Errorf("TestSetCustomExporter: %v", err)
+	}
+	want := storageConfig{
+		metricExporter: &exporter,
+	}
+	var got storageConfig
+	opt := experimental.WithMetricExporter(&exporter)
+	if storageOpt, ok := opt.(storageClientOption); ok {
+		storageOpt.ApplyStorageOpt(&got)
+	}
+	if got.metricExporter != want.metricExporter {
+		t.Errorf("TestSetCustomExpoerter: metricExporter want=%v, got=%v", want.metricExporter, got.metricExporter)
 	}
 }
 

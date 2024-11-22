@@ -1,5 +1,42 @@
 # Changes
 
+## [1.61.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.60.0...dialogflow/v1.61.0) (2024-11-19)
+
+
+### Features
+
+* **dialogflow:** Add options of query_source, search_config, end_user_metadata and exact_search ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dialogflow:** Expose metadata in AnswerSource ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+
+## [1.60.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.59.0...dialogflow/v1.60.0) (2024-11-14)
+
+
+### Features
+
+* **dialogflow:** Add options of query_source, search_config and context_size ([ccbc882](https://github.com/googleapis/google-cloud-go/commit/ccbc882d47d8c42998b463860d7c183c86cb7b53))
+* **dialogflow:** Add options of query_source, search_config, end_user_metadata and exact_search ([380e7d2](https://github.com/googleapis/google-cloud-go/commit/380e7d23e69b22ab46cc6e3be58902accee2f26a))
+* **dialogflow:** Add SipTrunks service ([ccbc882](https://github.com/googleapis/google-cloud-go/commit/ccbc882d47d8c42998b463860d7c183c86cb7b53))
+* **dialogflow:** Added support for ALAW encoding ([#11097](https://github.com/googleapis/google-cloud-go/issues/11097)) ([ccbc882](https://github.com/googleapis/google-cloud-go/commit/ccbc882d47d8c42998b463860d7c183c86cb7b53))
+* **dialogflow:** Expose metadata in AnswerSource ([380e7d2](https://github.com/googleapis/google-cloud-go/commit/380e7d23e69b22ab46cc6e3be58902accee2f26a))
+
+## [1.59.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.58.1...dialogflow/v1.59.0) (2024-11-06)
+
+
+### Features
+
+* **dialogflow/cx:** Add options of client_certificate_settings, bigquery_export_settings, bearer_token_config and boost_control_spec; add support of ALAW encoding ([abf9cba](https://github.com/googleapis/google-cloud-go/commit/abf9cba74a78c0a909fa43e934f33bf0f59e83c1))
+* **dialogflow/cx:** Add options of client_certificate_settings, bigquery_export_settings, bearer_token_config and boost_control_spec; add support of ALAW encoding ([#11072](https://github.com/googleapis/google-cloud-go/issues/11072)) ([abf9cba](https://github.com/googleapis/google-cloud-go/commit/abf9cba74a78c0a909fa43e934f33bf0f59e83c1))
+* **dialogflow:** Add options of query_source, search_config and context_size ([2a2dbb8](https://github.com/googleapis/google-cloud-go/commit/2a2dbb82da6f50db5f5bd7b6692328918ced4da2))
+* **dialogflow:** Added support for ALAW encoding ([#11092](https://github.com/googleapis/google-cloud-go/issues/11092)) ([2a2dbb8](https://github.com/googleapis/google-cloud-go/commit/2a2dbb82da6f50db5f5bd7b6692328918ced4da2))
+
+## [1.58.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.58.0...dialogflow/v1.58.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **dialogflow:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **dialogflow:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [1.58.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.57.1...dialogflow/v1.58.0) (2024-09-25)
 
 

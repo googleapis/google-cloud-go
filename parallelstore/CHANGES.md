@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.7.1...parallelstore/v0.8.0) (2024-11-06)
+
+
+### Features
+
+* **parallelstore:** New client(s) ([#11055](https://github.com/googleapis/google-cloud-go/issues/11055)) ([93d3f92](https://github.com/googleapis/google-cloud-go/commit/93d3f928afa6f5137b5f180dbdf6862896d43572))
+
+## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.7.0...parallelstore/v0.7.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **parallelstore:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **parallelstore:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.6.1...parallelstore/v0.7.0) (2024-10-09)
 
 

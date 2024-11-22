@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.28.1",
+    "version": "1.29.0",
     "language": "GO",
     "apis": [
       {
@@ -1762,7 +1762,7 @@
     {
       "regionTag": "compute_v1_generated_BackendServices_ListUsable_sync",
       "title": "compute ListUsable Sample",
-      "description": "ListUsable retrieves an aggregated list of all usable backend services in the specified project.",
+      "description": "ListUsable retrieves a list of all usable backend services in the specified project.",
       "file": "BackendServicesClient/ListUsable/main.go",
       "language": "GO",
       "clientMethod": {
@@ -15700,7 +15700,7 @@
     {
       "regionTag": "compute_v1_generated_Networks_Patch_sync",
       "title": "compute Patch Sample",
-      "description": "Patch patches the specified network with the data included in the request. Only the following fields can be modified: routingConfig.routingMode.",
+      "description": "Patch patches the specified network with the data included in the request. Only routingConfig can be modified.",
       "file": "NetworksClient/Patch/main.go",
       "language": "GO",
       "clientMethod": {
@@ -19288,7 +19288,7 @@
     {
       "regionTag": "compute_v1_generated_RegionBackendServices_ListUsable_sync",
       "title": "compute ListUsable Sample",
-      "description": "ListUsable retrieves an aggregated list of all usable backend services in the specified project in the given region.",
+      "description": "ListUsable retrieves a list of all usable backend services in the specified project in the given region.",
       "file": "RegionBackendServicesClient/ListUsable/main.go",
       "language": "GO",
       "clientMethod": {
@@ -26280,7 +26280,7 @@
     {
       "regionTag": "compute_v1_generated_Regions_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified Region resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request.",
+      "description": "Get returns the specified Region resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request. This method fails if the quota information is unavailable for the region and if the organization policy constraint compute.requireBasicQuotaInResponse is enforced. This constraint, when enforced, disables the fail-open behaviour when quota information (the `items.quotas` field) is unavailable for the region. It is recommended to use the default setting for the constraint unless your application requires the fail-closed behaviour for this method.",
       "file": "RegionsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -26326,7 +26326,7 @@
     {
       "regionTag": "compute_v1_generated_Regions_List_sync",
       "title": "compute List Sample",
-      "description": "List retrieves the list of region resources available to the specified project. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `items.quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request.",
+      "description": "List retrieves the list of region resources available to the specified project. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `items.quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request. This method fails if the quota information is unavailable for the region and if the organization policy constraint compute.requireBasicQuotaInResponse is enforced. This constraint, when enforced, disables the fail-open behaviour when quota information (the `items.quotas` field) is unavailable for the region. It is recommended to use the default setting for the constraint unless your application requires the fail-closed behaviour for this method.",
       "file": "RegionsClient/List/main.go",
       "language": "GO",
       "clientMethod": {
@@ -30466,7 +30466,7 @@
     {
       "regionTag": "compute_v1_generated_StoragePools_Update_sync",
       "title": "compute Update Sample",
-      "description": "Update updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: size_tb and provisioned_iops.",
+      "description": "Update updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: pool_provisioned_capacity_gb, pool_provisioned_iops and pool_provisioned_throughput.",
       "file": "StoragePoolsClient/Update/main.go",
       "language": "GO",
       "clientMethod": {

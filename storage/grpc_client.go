@@ -101,7 +101,10 @@ func defaultGRPCOptions() []option.ClientOption {
 		)
 	} else {
 		// Only enable DirectPath when the emulator is not being targeted.
-		defaults = append(defaults, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
+		defaults = append(defaults,
+			internaloption.EnableDirectPath(true),
+			internaloption.EnableDirectPathXds(),
+			internaloption.AllowNonDefaultServiceAccount(true))
 	}
 
 	return defaults
@@ -129,7 +132,7 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 
 	if !config.disableClientMetrics {
 		// Do not fail client creation if enabling metrics fails.
-		if metricsContext, err := enableClientMetrics(ctx, s); err == nil {
+		if metricsContext, err := enableClientMetrics(ctx, s, config); err == nil {
 			s.metricsContext = metricsContext
 			s.clientOption = append(s.clientOption, metricsContext.clientOpts...)
 		} else {

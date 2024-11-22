@@ -68,7 +68,7 @@ func TestClose(t *testing.T) {
 
 	pool := &roundRobinConnPool{}
 	for i := 0; i < 4; i++ {
-		conn, err := grpc.NewClient(l.Addr().String(), grpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := grpc.Dial(l.Addr().String(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -84,8 +84,9 @@ func TestWithEndpointAndPoolSize(t *testing.T) {
 	_, l := mockServer(t)
 	ctx := context.Background()
 	connPool, err := Dial(ctx, false, &Options{
-		Endpoint: l.Addr().String(),
-		PoolSize: 4,
+		Endpoint:              l.Addr().String(),
+		PoolSize:              4,
+		DisableAuthentication: true,
 	})
 	if err != nil {
 		t.Fatal(err)

@@ -223,7 +223,8 @@ type NluSettings struct {
 	// classification threshold. If the returned score value is less than the
 	// threshold value, then a no-match event will be triggered. The score values
 	// range from 0.0 (completely uncertain) to 1.0 (completely certain). If set
-	// to 0.0, the default of 0.3 is used.
+	// to 0.0, the default of 0.3 is used. You can set a separate classification
+	// threshold for the flow in each language enabled for the agent.
 	ClassificationThreshold float32 `protobuf:"fixed32,3,opt,name=classification_threshold,json=classificationThreshold,proto3" json:"classification_threshold,omitempty"`
 	// Indicates NLU model training mode.
 	ModelTrainingMode NluSettings_ModelTrainingMode `protobuf:"varint,4,opt,name=model_training_mode,json=modelTrainingMode,proto3,enum=google.cloud.dialogflow.cx.v3beta1.NluSettings_ModelTrainingMode" json:"model_training_mode,omitempty"`
@@ -302,8 +303,8 @@ type Flow struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The unique identifier of the flow.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The human-readable name of the flow.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -349,11 +350,10 @@ type Flow struct {
 	// route groups][Page.transition_route_groups]. Transition route groups
 	// defined in the page have higher priority than those defined in the flow.
 	//
-	// Format:`projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/transitionRouteGroups/<TransitionRouteGroup ID>`
-	// or `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/transitionRouteGroups/<TransitionRouteGroup ID>` for agent-level
-	// groups.
+	// Format:`projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/transitionRouteGroups/<TransitionRouteGroupID>`
+	// or
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/transitionRouteGroups/<TransitionRouteGroupID>`
+	// for agent-level groups.
 	TransitionRouteGroups []string `protobuf:"bytes,15,rep,name=transition_route_groups,json=transitionRouteGroups,proto3" json:"transition_route_groups,omitempty"`
 	// NLU related settings of the flow.
 	NluSettings *NluSettings `protobuf:"bytes,11,opt,name=nlu_settings,json=nluSettings,proto3" json:"nlu_settings,omitempty"`
@@ -486,7 +486,7 @@ type CreateFlowRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to create a flow for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The flow to create.
 	Flow *Flow `protobuf:"bytes,2,opt,name=flow,proto3" json:"flow,omitempty"`
@@ -566,8 +566,8 @@ type DeleteFlowRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the flow to delete.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// This field has no effect for flows with no incoming transitions.
 	// For flows with incoming transitions:
@@ -636,7 +636,7 @@ type ListFlowsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent containing the flows.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return in a single page. By default 100 and
 	// at most 1000.
@@ -788,8 +788,8 @@ type GetFlowRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the flow to get.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The language to retrieve the flow for. The following fields are language
 	// dependent:
@@ -941,8 +941,8 @@ type TrainFlowRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The flow to train.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -993,8 +993,8 @@ type ValidateFlowRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The flow to validate.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// If not specified, the agent's default language is used.
 	LanguageCode string `protobuf:"bytes,2,opt,name=language_code,json=languageCode,proto3" json:"language_code,omitempty"`
@@ -1054,8 +1054,8 @@ type GetFlowValidationResultRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The flow name.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/validationResult`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/validationResult`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// If not specified, the agent's default language is used.
 	LanguageCode string `protobuf:"bytes,2,opt,name=language_code,json=languageCode,proto3" json:"language_code,omitempty"`
@@ -1115,8 +1115,8 @@ type FlowValidationResult struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The unique identifier of the flow validation result.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/validationResult`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/validationResult`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Contains all validation messages.
 	ValidationMessages []*ValidationMessage `protobuf:"bytes,2,rep,name=validation_messages,json=validationMessages,proto3" json:"validation_messages,omitempty"`
@@ -1185,7 +1185,7 @@ type ImportFlowRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to import the flow into.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The flow to import.
 	//
@@ -1364,8 +1364,8 @@ type ImportFlowResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The unique identifier of the new flow.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	Flow string `protobuf:"bytes,1,opt,name=flow,proto3" json:"flow,omitempty"`
 }
 
@@ -1416,8 +1416,8 @@ type ExportFlowRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the flow to export.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The [Google Cloud
 	// Storage](https://cloud.google.com/storage/docs/) URI to export the flow to.

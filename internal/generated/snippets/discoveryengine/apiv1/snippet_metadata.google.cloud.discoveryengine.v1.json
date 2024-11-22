@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1",
-    "version": "1.14.0",
+    "version": "1.16.0",
     "language": "GO",
     "apis": [
       {
@@ -4070,6 +4070,52 @@
         "method": {
           "shortName": "Search",
           "fullName": "google.cloud.discoveryengine.v1.SearchService.Search",
+          "service": {
+            "shortName": "SearchService",
+            "fullName": "google.cloud.discoveryengine.v1.SearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SearchService_SearchLite_sync",
+      "title": "discoveryengine SearchLite Sample",
+      "description": "SearchLite performs a search. Similar to the\n[SearchService.Search][google.cloud.discoveryengine.v1.SearchService.Search]\nmethod, but a lite version that allows API key for authentication, where\nOAuth and IAM checks are not required.\n\nOnly public website search is supported by this method. If data stores and\nengines not associated with public website search are specified, a\n`FAILED_PRECONDITION` error is returned.\n\nThis method can be used for easy onboarding without having to implement an\nauthentication backend. However, it is strongly recommended to use\n[SearchService.Search][google.cloud.discoveryengine.v1.SearchService.Search]\ninstead with required OAuth and IAM checks to provide better data security.",
+      "file": "SearchClient/SearchLite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchLite",
+        "fullName": "google.cloud.discoveryengine.v1.SearchClient.SearchLite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.SearchRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SearchResponse_SearchResultIterator",
+        "client": {
+          "shortName": "SearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.SearchClient"
+        },
+        "method": {
+          "shortName": "SearchLite",
+          "fullName": "google.cloud.discoveryengine.v1.SearchService.SearchLite",
           "service": {
             "shortName": "SearchService",
             "fullName": "google.cloud.discoveryengine.v1.SearchService"

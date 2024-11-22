@@ -1492,6 +1492,67 @@ func (op *CreatePersistentResourceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// CreateRagCorpusOperation manages a long-running operation from CreateRagCorpus.
+type CreateRagCorpusOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateRagCorpusOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.RagCorpus, error) {
+	var resp aiplatformpb.RagCorpus
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateRagCorpusOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.RagCorpus, error) {
+	var resp aiplatformpb.RagCorpus
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateRagCorpusOperation) Metadata() (*aiplatformpb.CreateRagCorpusOperationMetadata, error) {
+	var meta aiplatformpb.CreateRagCorpusOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateRagCorpusOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateRagCorpusOperation) Name() string {
+	return op.lro.Name()
+}
+
 // CreateSpecialistPoolOperation manages a long-running operation from CreateSpecialistPool.
 type CreateSpecialistPoolOperation struct {
 	lro *longrunning.Operation
@@ -3125,6 +3186,106 @@ func (op *DeletePipelineJobOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteRagCorpusOperation manages a long-running operation from DeleteRagCorpus.
+type DeleteRagCorpusOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteRagCorpusOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteRagCorpusOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteRagCorpusOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
+	var meta aiplatformpb.DeleteOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteRagCorpusOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteRagCorpusOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteRagFileOperation manages a long-running operation from DeleteRagFile.
+type DeleteRagFileOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteRagFileOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteRagFileOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteRagFileOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
+	var meta aiplatformpb.DeleteOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteRagFileOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteRagFileOperation) Name() string {
+	return op.lro.Name()
+}
+
 // DeleteSavedQueryOperation manages a long-running operation from DeleteSavedQuery.
 type DeleteSavedQueryOperation struct {
 	lro *longrunning.Operation
@@ -3952,6 +4113,67 @@ func (op *ImportFeatureValuesOperation) Name() string {
 	return op.lro.Name()
 }
 
+// ImportRagFilesOperation manages a long-running operation from ImportRagFiles.
+type ImportRagFilesOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ImportRagFilesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ImportRagFilesResponse, error) {
+	var resp aiplatformpb.ImportRagFilesResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ImportRagFilesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ImportRagFilesResponse, error) {
+	var resp aiplatformpb.ImportRagFilesResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ImportRagFilesOperation) Metadata() (*aiplatformpb.ImportRagFilesOperationMetadata, error) {
+	var meta aiplatformpb.ImportRagFilesOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ImportRagFilesOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ImportRagFilesOperation) Name() string {
+	return op.lro.Name()
+}
+
 // MutateDeployedIndexOperation manages a long-running operation from MutateDeployedIndex.
 type MutateDeployedIndexOperation struct {
 	lro *longrunning.Operation
@@ -4501,6 +4723,67 @@ func (op *StartNotebookRuntimeOperation) Name() string {
 	return op.lro.Name()
 }
 
+// StopNotebookRuntimeOperation manages a long-running operation from StopNotebookRuntime.
+type StopNotebookRuntimeOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *StopNotebookRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.StopNotebookRuntimeResponse, error) {
+	var resp aiplatformpb.StopNotebookRuntimeResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *StopNotebookRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.StopNotebookRuntimeResponse, error) {
+	var resp aiplatformpb.StopNotebookRuntimeResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *StopNotebookRuntimeOperation) Metadata() (*aiplatformpb.StopNotebookRuntimeOperationMetadata, error) {
+	var meta aiplatformpb.StopNotebookRuntimeOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *StopNotebookRuntimeOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *StopNotebookRuntimeOperation) Name() string {
+	return op.lro.Name()
+}
+
 // SuggestTrialsOperation manages a long-running operation from SuggestTrials.
 type SuggestTrialsOperation struct {
 	lro *longrunning.Operation
@@ -4742,6 +5025,67 @@ func (op *UpdateDeploymentResourcePoolOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateDeploymentResourcePoolOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateEndpointLongRunningOperation manages a long-running operation from UpdateEndpointLongRunning.
+type UpdateEndpointLongRunningOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateEndpointLongRunningOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Endpoint, error) {
+	var resp aiplatformpb.Endpoint
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateEndpointLongRunningOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Endpoint, error) {
+	var resp aiplatformpb.Endpoint
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateEndpointLongRunningOperation) Metadata() (*aiplatformpb.UpdateEndpointOperationMetadata, error) {
+	var meta aiplatformpb.UpdateEndpointOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateEndpointLongRunningOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateEndpointLongRunningOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -5294,6 +5638,67 @@ func (op *UpdatePersistentResourceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateRagCorpusOperation manages a long-running operation from UpdateRagCorpus.
+type UpdateRagCorpusOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateRagCorpusOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.RagCorpus, error) {
+	var resp aiplatformpb.RagCorpus
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateRagCorpusOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.RagCorpus, error) {
+	var resp aiplatformpb.RagCorpus
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateRagCorpusOperation) Metadata() (*aiplatformpb.UpdateRagCorpusOperationMetadata, error) {
+	var meta aiplatformpb.UpdateRagCorpusOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateRagCorpusOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateRagCorpusOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateSpecialistPoolOperation manages a long-running operation from UpdateSpecialistPool.
 type UpdateSpecialistPoolOperation struct {
 	lro *longrunning.Operation
@@ -5558,7 +5963,7 @@ type AnnotationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Annotation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AnnotationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5605,7 +6010,7 @@ type ArtifactIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Artifact, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ArtifactIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5652,7 +6057,7 @@ type BatchPredictionJobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.BatchPredictionJob, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *BatchPredictionJobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5699,7 +6104,7 @@ type ContextIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Context, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ContextIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5746,7 +6151,7 @@ type CustomJobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.CustomJob, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CustomJobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5793,7 +6198,7 @@ type DataItemIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DataItem, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DataItemIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5840,7 +6245,7 @@ type DataItemViewIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DataItemView, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DataItemViewIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5887,7 +6292,7 @@ type DataLabelingJobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DataLabelingJob, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DataLabelingJobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5934,7 +6339,7 @@ type DatasetIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Dataset, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DatasetIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5981,7 +6386,7 @@ type DatasetVersionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DatasetVersion, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DatasetVersionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6028,7 +6433,7 @@ type DeployedModelIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DeployedModel, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DeployedModelIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6075,7 +6480,7 @@ type DeploymentResourcePoolIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DeploymentResourcePool, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DeploymentResourcePoolIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6122,7 +6527,7 @@ type EndpointIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Endpoint, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EndpointIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6169,7 +6574,7 @@ type EntityTypeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.EntityType, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EntityTypeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6216,7 +6621,7 @@ type ExecutionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Execution, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ExecutionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6263,7 +6668,7 @@ type FeatureGroupIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.FeatureGroup, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *FeatureGroupIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6310,7 +6715,7 @@ type FeatureIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Feature, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *FeatureIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6357,7 +6762,7 @@ type FeatureOnlineStoreIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.FeatureOnlineStore, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *FeatureOnlineStoreIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6404,7 +6809,7 @@ type FeatureViewIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.FeatureView, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *FeatureViewIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6451,7 +6856,7 @@ type FeatureViewSyncIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.FeatureViewSync, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *FeatureViewSyncIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6498,7 +6903,7 @@ type FeaturestoreIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Featurestore, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *FeaturestoreIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6545,7 +6950,7 @@ type HyperparameterTuningJobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.HyperparameterTuningJob, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *HyperparameterTuningJobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6592,7 +6997,7 @@ type IndexEndpointIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.IndexEndpoint, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *IndexEndpointIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6639,7 +7044,7 @@ type IndexIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Index, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *IndexIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6686,7 +7091,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6733,7 +7138,7 @@ type MetadataSchemaIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.MetadataSchema, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MetadataSchemaIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6780,7 +7185,7 @@ type MetadataStoreIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.MetadataStore, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MetadataStoreIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6827,7 +7232,7 @@ type MigratableResourceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.MigratableResource, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MigratableResourceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6874,7 +7279,7 @@ type ModelDeploymentMonitoringJobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.ModelDeploymentMonitoringJob, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ModelDeploymentMonitoringJobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6921,7 +7326,7 @@ type ModelEvaluationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.ModelEvaluation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ModelEvaluationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -6968,7 +7373,7 @@ type ModelEvaluationSliceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.ModelEvaluationSlice, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ModelEvaluationSliceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7015,7 +7420,7 @@ type ModelIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Model, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ModelIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7062,7 +7467,7 @@ type ModelMonitoringStatsAnomaliesIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.ModelMonitoringStatsAnomalies, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ModelMonitoringStatsAnomaliesIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7109,7 +7514,7 @@ type NasJobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.NasJob, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NasJobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7156,7 +7561,7 @@ type NasTrialDetailIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.NasTrialDetail, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NasTrialDetailIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7203,7 +7608,7 @@ type NotebookExecutionJobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.NotebookExecutionJob, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NotebookExecutionJobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7250,7 +7655,7 @@ type NotebookRuntimeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.NotebookRuntime, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NotebookRuntimeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7297,7 +7702,7 @@ type NotebookRuntimeTemplateIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.NotebookRuntimeTemplate, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NotebookRuntimeTemplateIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7344,7 +7749,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7391,7 +7796,7 @@ type PersistentResourceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.PersistentResource, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PersistentResourceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7438,7 +7843,7 @@ type PipelineJobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.PipelineJob, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PipelineJobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7465,6 +7870,100 @@ func (it *PipelineJobIterator) takeBuf() interface{} {
 	return b
 }
 
+// RagCorpusIterator manages a stream of *aiplatformpb.RagCorpus.
+type RagCorpusIterator struct {
+	items    []*aiplatformpb.RagCorpus
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.RagCorpus, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *RagCorpusIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *RagCorpusIterator) Next() (*aiplatformpb.RagCorpus, error) {
+	var item *aiplatformpb.RagCorpus
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *RagCorpusIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *RagCorpusIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// RagFileIterator manages a stream of *aiplatformpb.RagFile.
+type RagFileIterator struct {
+	items    []*aiplatformpb.RagFile
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.RagFile, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *RagFileIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *RagFileIterator) Next() (*aiplatformpb.RagFile, error) {
+	var item *aiplatformpb.RagFile
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *RagFileIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *RagFileIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // SavedQueryIterator manages a stream of *aiplatformpb.SavedQuery.
 type SavedQueryIterator struct {
 	items    []*aiplatformpb.SavedQuery
@@ -7485,7 +7984,7 @@ type SavedQueryIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.SavedQuery, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SavedQueryIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7532,7 +8031,7 @@ type ScheduleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Schedule, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ScheduleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7579,7 +8078,7 @@ type SpecialistPoolIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.SpecialistPool, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SpecialistPoolIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7626,7 +8125,7 @@ type StudyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Study, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *StudyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7673,7 +8172,7 @@ type TensorboardExperimentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.TensorboardExperiment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TensorboardExperimentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7720,7 +8219,7 @@ type TensorboardIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Tensorboard, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TensorboardIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7767,7 +8266,7 @@ type TensorboardRunIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.TensorboardRun, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TensorboardRunIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7814,7 +8313,7 @@ type TensorboardTimeSeriesIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.TensorboardTimeSeries, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TensorboardTimeSeriesIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7861,7 +8360,7 @@ type TimeSeriesDataPointIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.TimeSeriesDataPoint, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TimeSeriesDataPointIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7908,7 +8407,7 @@ type TrainingPipelineIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.TrainingPipeline, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TrainingPipelineIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -7955,7 +8454,7 @@ type TrialIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Trial, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TrialIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -8002,7 +8501,7 @@ type TuningJobIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.TuningJob, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TuningJobIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

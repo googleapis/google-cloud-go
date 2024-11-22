@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/apiv2beta1",
-    "version": "1.58.0",
+    "version": "1.61.0",
     "language": "GO",
     "apis": [
       {
@@ -8161,6 +8161,464 @@
         {
           "start": 18,
           "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_SipTrunks_CancelOperation_sync",
+      "title": "dialogflow CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "SipTrunksClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SipTrunksClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_SipTrunks_CreateSipTrunk_sync",
+      "title": "dialogflow CreateSipTrunk Sample",
+      "description": "CreateSipTrunk creates a SipTrunk for a specified location.",
+      "file": "SipTrunksClient/CreateSipTrunk/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSipTrunk",
+        "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient.CreateSipTrunk",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.CreateSipTrunkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.SipTrunk",
+        "client": {
+          "shortName": "SipTrunksClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient"
+        },
+        "method": {
+          "shortName": "CreateSipTrunk",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunks.CreateSipTrunk",
+          "service": {
+            "shortName": "SipTrunks",
+            "fullName": "google.cloud.dialogflow.v2beta1.SipTrunks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_SipTrunks_DeleteSipTrunk_sync",
+      "title": "dialogflow DeleteSipTrunk Sample",
+      "description": "DeleteSipTrunk deletes a specified SipTrunk.",
+      "file": "SipTrunksClient/DeleteSipTrunk/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSipTrunk",
+        "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient.DeleteSipTrunk",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.DeleteSipTrunkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SipTrunksClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient"
+        },
+        "method": {
+          "shortName": "DeleteSipTrunk",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunks.DeleteSipTrunk",
+          "service": {
+            "shortName": "SipTrunks",
+            "fullName": "google.cloud.dialogflow.v2beta1.SipTrunks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_SipTrunks_GetLocation_sync",
+      "title": "dialogflow GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "SipTrunksClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "SipTrunksClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_SipTrunks_GetOperation_sync",
+      "title": "dialogflow GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SipTrunksClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "SipTrunksClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_SipTrunks_GetSipTrunk_sync",
+      "title": "dialogflow GetSipTrunk Sample",
+      "description": "GetSipTrunk retrieves the specified SipTrunk.",
+      "file": "SipTrunksClient/GetSipTrunk/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSipTrunk",
+        "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient.GetSipTrunk",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.GetSipTrunkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.SipTrunk",
+        "client": {
+          "shortName": "SipTrunksClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient"
+        },
+        "method": {
+          "shortName": "GetSipTrunk",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunks.GetSipTrunk",
+          "service": {
+            "shortName": "SipTrunks",
+            "fullName": "google.cloud.dialogflow.v2beta1.SipTrunks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_SipTrunks_ListLocations_sync",
+      "title": "dialogflow ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "SipTrunksClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "SipTrunksClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_SipTrunks_ListOperations_sync",
+      "title": "dialogflow ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SipTrunksClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "SipTrunksClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_SipTrunks_ListSipTrunks_sync",
+      "title": "dialogflow ListSipTrunks Sample",
+      "description": "ListSipTrunks returns a list of SipTrunks in the specified location.",
+      "file": "SipTrunksClient/ListSipTrunks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSipTrunks",
+        "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient.ListSipTrunks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.ListSipTrunksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SipTrunkIterator",
+        "client": {
+          "shortName": "SipTrunksClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient"
+        },
+        "method": {
+          "shortName": "ListSipTrunks",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunks.ListSipTrunks",
+          "service": {
+            "shortName": "SipTrunks",
+            "fullName": "google.cloud.dialogflow.v2beta1.SipTrunks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_SipTrunks_UpdateSipTrunk_sync",
+      "title": "dialogflow UpdateSipTrunk Sample",
+      "description": "UpdateSipTrunk updates the specified SipTrunk.",
+      "file": "SipTrunksClient/UpdateSipTrunk/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSipTrunk",
+        "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient.UpdateSipTrunk",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.UpdateSipTrunkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.SipTrunk",
+        "client": {
+          "shortName": "SipTrunksClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunksClient"
+        },
+        "method": {
+          "shortName": "UpdateSipTrunk",
+          "fullName": "google.cloud.dialogflow.v2beta1.SipTrunks.UpdateSipTrunk",
+          "service": {
+            "shortName": "SipTrunks",
+            "fullName": "google.cloud.dialogflow.v2beta1.SipTrunks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
