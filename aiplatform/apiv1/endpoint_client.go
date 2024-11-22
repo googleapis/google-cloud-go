@@ -41,24 +41,25 @@ var newEndpointClientHook clientHook
 
 // EndpointCallOptions contains the retry settings for each method of EndpointClient.
 type EndpointCallOptions struct {
-	CreateEndpoint      []gax.CallOption
-	GetEndpoint         []gax.CallOption
-	ListEndpoints       []gax.CallOption
-	UpdateEndpoint      []gax.CallOption
-	DeleteEndpoint      []gax.CallOption
-	DeployModel         []gax.CallOption
-	UndeployModel       []gax.CallOption
-	MutateDeployedModel []gax.CallOption
-	GetLocation         []gax.CallOption
-	ListLocations       []gax.CallOption
-	GetIamPolicy        []gax.CallOption
-	SetIamPolicy        []gax.CallOption
-	TestIamPermissions  []gax.CallOption
-	CancelOperation     []gax.CallOption
-	DeleteOperation     []gax.CallOption
-	GetOperation        []gax.CallOption
-	ListOperations      []gax.CallOption
-	WaitOperation       []gax.CallOption
+	CreateEndpoint            []gax.CallOption
+	GetEndpoint               []gax.CallOption
+	ListEndpoints             []gax.CallOption
+	UpdateEndpoint            []gax.CallOption
+	UpdateEndpointLongRunning []gax.CallOption
+	DeleteEndpoint            []gax.CallOption
+	DeployModel               []gax.CallOption
+	UndeployModel             []gax.CallOption
+	MutateDeployedModel       []gax.CallOption
+	GetLocation               []gax.CallOption
+	ListLocations             []gax.CallOption
+	GetIamPolicy              []gax.CallOption
+	SetIamPolicy              []gax.CallOption
+	TestIamPermissions        []gax.CallOption
+	CancelOperation           []gax.CallOption
+	DeleteOperation           []gax.CallOption
+	GetOperation              []gax.CallOption
+	ListOperations            []gax.CallOption
+	WaitOperation             []gax.CallOption
 }
 
 func defaultEndpointGRPCClientOptions() []option.ClientOption {
@@ -78,24 +79,25 @@ func defaultEndpointGRPCClientOptions() []option.ClientOption {
 
 func defaultEndpointCallOptions() *EndpointCallOptions {
 	return &EndpointCallOptions{
-		CreateEndpoint:      []gax.CallOption{},
-		GetEndpoint:         []gax.CallOption{},
-		ListEndpoints:       []gax.CallOption{},
-		UpdateEndpoint:      []gax.CallOption{},
-		DeleteEndpoint:      []gax.CallOption{},
-		DeployModel:         []gax.CallOption{},
-		UndeployModel:       []gax.CallOption{},
-		MutateDeployedModel: []gax.CallOption{},
-		GetLocation:         []gax.CallOption{},
-		ListLocations:       []gax.CallOption{},
-		GetIamPolicy:        []gax.CallOption{},
-		SetIamPolicy:        []gax.CallOption{},
-		TestIamPermissions:  []gax.CallOption{},
-		CancelOperation:     []gax.CallOption{},
-		DeleteOperation:     []gax.CallOption{},
-		GetOperation:        []gax.CallOption{},
-		ListOperations:      []gax.CallOption{},
-		WaitOperation:       []gax.CallOption{},
+		CreateEndpoint:            []gax.CallOption{},
+		GetEndpoint:               []gax.CallOption{},
+		ListEndpoints:             []gax.CallOption{},
+		UpdateEndpoint:            []gax.CallOption{},
+		UpdateEndpointLongRunning: []gax.CallOption{},
+		DeleteEndpoint:            []gax.CallOption{},
+		DeployModel:               []gax.CallOption{},
+		UndeployModel:             []gax.CallOption{},
+		MutateDeployedModel:       []gax.CallOption{},
+		GetLocation:               []gax.CallOption{},
+		ListLocations:             []gax.CallOption{},
+		GetIamPolicy:              []gax.CallOption{},
+		SetIamPolicy:              []gax.CallOption{},
+		TestIamPermissions:        []gax.CallOption{},
+		CancelOperation:           []gax.CallOption{},
+		DeleteOperation:           []gax.CallOption{},
+		GetOperation:              []gax.CallOption{},
+		ListOperations:            []gax.CallOption{},
+		WaitOperation:             []gax.CallOption{},
 	}
 }
 
@@ -109,6 +111,8 @@ type internalEndpointClient interface {
 	GetEndpoint(context.Context, *aiplatformpb.GetEndpointRequest, ...gax.CallOption) (*aiplatformpb.Endpoint, error)
 	ListEndpoints(context.Context, *aiplatformpb.ListEndpointsRequest, ...gax.CallOption) *EndpointIterator
 	UpdateEndpoint(context.Context, *aiplatformpb.UpdateEndpointRequest, ...gax.CallOption) (*aiplatformpb.Endpoint, error)
+	UpdateEndpointLongRunning(context.Context, *aiplatformpb.UpdateEndpointLongRunningRequest, ...gax.CallOption) (*UpdateEndpointLongRunningOperation, error)
+	UpdateEndpointLongRunningOperation(name string) *UpdateEndpointLongRunningOperation
 	DeleteEndpoint(context.Context, *aiplatformpb.DeleteEndpointRequest, ...gax.CallOption) (*DeleteEndpointOperation, error)
 	DeleteEndpointOperation(name string) *DeleteEndpointOperation
 	DeployModel(context.Context, *aiplatformpb.DeployModelRequest, ...gax.CallOption) (*DeployModelOperation, error)
@@ -193,6 +197,17 @@ func (c *EndpointClient) ListEndpoints(ctx context.Context, req *aiplatformpb.Li
 // UpdateEndpoint updates an Endpoint.
 func (c *EndpointClient) UpdateEndpoint(ctx context.Context, req *aiplatformpb.UpdateEndpointRequest, opts ...gax.CallOption) (*aiplatformpb.Endpoint, error) {
 	return c.internalClient.UpdateEndpoint(ctx, req, opts...)
+}
+
+// UpdateEndpointLongRunning updates an Endpoint with a long running operation.
+func (c *EndpointClient) UpdateEndpointLongRunning(ctx context.Context, req *aiplatformpb.UpdateEndpointLongRunningRequest, opts ...gax.CallOption) (*UpdateEndpointLongRunningOperation, error) {
+	return c.internalClient.UpdateEndpointLongRunning(ctx, req, opts...)
+}
+
+// UpdateEndpointLongRunningOperation returns a new UpdateEndpointLongRunningOperation from a given name.
+// The name must be that of a previously created UpdateEndpointLongRunningOperation, possibly from a different process.
+func (c *EndpointClient) UpdateEndpointLongRunningOperation(name string) *UpdateEndpointLongRunningOperation {
+	return c.internalClient.UpdateEndpointLongRunningOperation(name)
 }
 
 // DeleteEndpoint deletes an Endpoint.
@@ -503,6 +518,26 @@ func (c *endpointGRPCClient) UpdateEndpoint(ctx context.Context, req *aiplatform
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *endpointGRPCClient) UpdateEndpointLongRunning(ctx context.Context, req *aiplatformpb.UpdateEndpointLongRunningRequest, opts ...gax.CallOption) (*UpdateEndpointLongRunningOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint.name", url.QueryEscape(req.GetEndpoint().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateEndpointLongRunning[0:len((*c.CallOptions).UpdateEndpointLongRunning):len((*c.CallOptions).UpdateEndpointLongRunning)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.endpointClient.UpdateEndpointLongRunning(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateEndpointLongRunningOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *endpointGRPCClient) DeleteEndpoint(ctx context.Context, req *aiplatformpb.DeleteEndpointRequest, opts ...gax.CallOption) (*DeleteEndpointOperation, error) {
@@ -849,6 +884,14 @@ func (c *endpointGRPCClient) MutateDeployedModelOperation(name string) *MutateDe
 // The name must be that of a previously created UndeployModelOperation, possibly from a different process.
 func (c *endpointGRPCClient) UndeployModelOperation(name string) *UndeployModelOperation {
 	return &UndeployModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateEndpointLongRunningOperation returns a new UpdateEndpointLongRunningOperation from a given name.
+// The name must be that of a previously created UpdateEndpointLongRunningOperation, possibly from a different process.
+func (c *endpointGRPCClient) UpdateEndpointLongRunningOperation(name string) *UpdateEndpointLongRunningOperation {
+	return &UpdateEndpointLongRunningOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

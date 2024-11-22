@@ -76,7 +76,7 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 					if len(token) != 1 {
 						return status.Errorf(codes.Internal, "unexpected number of api client token headers: %v", len(token))
 					}
-					if !strings.HasPrefix(token[0], "gl-go/") {
+					if !strings.Contains(token[0], "gl-go/") {
 						return status.Errorf(codes.Internal, "unexpected api client token: %v", token[0])
 					}
 					if !strings.Contains(token[0], "gccl/") {
@@ -4384,6 +4384,63 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 	if !strings.Contains(se.Error(), msg) {
 		t.Fatalf("Error message mismatch\nGot: %s\nWant: %s", se.Error(), msg)
+	}
+}
+
+func TestClient_EndToEndTracingHeader(t *testing.T) {
+	tests := []struct {
+		name                  string
+		endToEndTracingEnv    string
+		enableEndToEndTracing bool
+		wantEndToEndTracing   bool
+	}{
+		{
+			name:                  "when end-to-end tracing is enabled via config",
+			enableEndToEndTracing: true,
+			wantEndToEndTracing:   true,
+			endToEndTracingEnv:    "false",
+		},
+		{
+			name:                  "when end-to-end tracing is enabled via env",
+			enableEndToEndTracing: false,
+			wantEndToEndTracing:   true,
+			endToEndTracingEnv:    "true",
+		},
+		{
+			name:                  "when end-to-end tracing is disabled",
+			enableEndToEndTracing: false,
+			wantEndToEndTracing:   false,
+			endToEndTracingEnv:    "false",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Setenv("SPANNER_ENABLE_END_TO_END_TRACING", tt.endToEndTracingEnv)
+
+			server, opts, teardown := NewMockedSpannerInMemTestServer(t)
+			defer teardown()
+			config := ClientConfig{}
+			if tt.enableEndToEndTracing {
+				config.EnableEndToEndTracing = true
+			}
+
+			client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
+			if err != nil {
+				t.Fatalf("failed to get a client: %v", err)
+			}
+
+			gotEndToEndTracing := false
+			for _, val := range client.sc.md.Get(endToEndTracingHeader) {
+				if val == "true" {
+					gotEndToEndTracing = true
+				}
+			}
+
+			if gotEndToEndTracing != tt.wantEndToEndTracing {
+				t.Fatalf("mismatch in client configuration for property EnableEndToEndTracing: got %v, want %v", gotEndToEndTracing, tt.wantEndToEndTracing)
+			}
+		})
 	}
 }
 

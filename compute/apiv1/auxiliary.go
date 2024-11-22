@@ -41,7 +41,7 @@ type AcceleratorTypeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.AcceleratorType, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AcceleratorTypeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -94,7 +94,7 @@ type AcceleratorTypesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []AcceleratorTypesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AcceleratorTypesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -141,7 +141,7 @@ type AddressIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Address, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AddressIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -194,7 +194,7 @@ type AddressesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []AddressesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AddressesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -241,7 +241,7 @@ type AutoscalerIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Autoscaler, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AutoscalerIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -294,7 +294,7 @@ type AutoscalersScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []AutoscalersScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AutoscalersScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -341,7 +341,7 @@ type BackendBucketIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.BackendBucket, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *BackendBucketIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -388,7 +388,7 @@ type BackendServiceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.BackendService, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *BackendServiceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -441,7 +441,7 @@ type BackendServicesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []BackendServicesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *BackendServicesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -488,7 +488,7 @@ type CommitmentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Commitment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CommitmentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -541,7 +541,7 @@ type CommitmentsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []CommitmentsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CommitmentsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -588,7 +588,7 @@ type DiskIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Disk, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DiskIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -635,7 +635,7 @@ type DiskTypeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.DiskType, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DiskTypeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -688,7 +688,7 @@ type DiskTypesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []DiskTypesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DiskTypesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -741,7 +741,7 @@ type DisksScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []DisksScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DisksScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -788,7 +788,7 @@ type ExchangedPeeringRouteIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.ExchangedPeeringRoute, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ExchangedPeeringRouteIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -835,7 +835,7 @@ type ExternalVpnGatewayIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.ExternalVpnGateway, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ExternalVpnGatewayIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -882,7 +882,7 @@ type FirewallIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Firewall, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *FirewallIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -929,7 +929,7 @@ type FirewallPolicyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.FirewallPolicy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *FirewallPolicyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -976,7 +976,7 @@ type ForwardingRuleIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.ForwardingRule, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ForwardingRuleIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1029,7 +1029,7 @@ type ForwardingRulesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []ForwardingRulesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ForwardingRulesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1076,7 +1076,7 @@ type HealthCheckIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.HealthCheck, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *HealthCheckIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1123,7 +1123,7 @@ type HealthCheckServiceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.HealthCheckService, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *HealthCheckServiceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1176,7 +1176,7 @@ type HealthChecksScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []HealthChecksScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *HealthChecksScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1223,7 +1223,7 @@ type ImageIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Image, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ImageIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1270,7 +1270,7 @@ type InstanceGroupIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InstanceGroup, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstanceGroupIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1317,7 +1317,7 @@ type InstanceGroupManagerIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InstanceGroupManager, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstanceGroupManagerIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1364,7 +1364,7 @@ type InstanceGroupManagerResizeRequestIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InstanceGroupManagerResizeRequest, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstanceGroupManagerResizeRequestIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1417,7 +1417,7 @@ type InstanceGroupManagersScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []InstanceGroupManagersScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstanceGroupManagersScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1470,7 +1470,7 @@ type InstanceGroupsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []InstanceGroupsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstanceGroupsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1517,7 +1517,7 @@ type InstanceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Instance, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstanceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1564,7 +1564,7 @@ type InstanceManagedByIgmErrorIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InstanceManagedByIgmError, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstanceManagedByIgmErrorIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1611,7 +1611,7 @@ type InstanceTemplateIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InstanceTemplate, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstanceTemplateIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1664,7 +1664,7 @@ type InstanceTemplatesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []InstanceTemplatesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstanceTemplatesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1711,7 +1711,7 @@ type InstanceWithNamedPortsIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InstanceWithNamedPorts, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstanceWithNamedPortsIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1764,7 +1764,7 @@ type InstancesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []InstancesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstancesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1811,7 +1811,7 @@ type InstantSnapshotIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InstantSnapshot, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstantSnapshotIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1864,7 +1864,7 @@ type InstantSnapshotsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []InstantSnapshotsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InstantSnapshotsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1911,7 +1911,7 @@ type InterconnectAttachmentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InterconnectAttachment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InterconnectAttachmentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1964,7 +1964,7 @@ type InterconnectAttachmentsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []InterconnectAttachmentsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InterconnectAttachmentsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2011,7 +2011,7 @@ type InterconnectIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Interconnect, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InterconnectIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2058,7 +2058,7 @@ type InterconnectLocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InterconnectLocation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InterconnectLocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2105,7 +2105,7 @@ type InterconnectRemoteLocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InterconnectRemoteLocation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *InterconnectRemoteLocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2152,7 +2152,7 @@ type LicenseIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.License, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LicenseIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2199,7 +2199,7 @@ type MachineImageIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.MachineImage, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MachineImageIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2246,7 +2246,7 @@ type MachineTypeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.MachineType, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MachineTypeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2299,7 +2299,7 @@ type MachineTypesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []MachineTypesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MachineTypesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2346,7 +2346,7 @@ type ManagedInstanceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.ManagedInstance, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ManagedInstanceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2393,7 +2393,7 @@ type NetworkAttachmentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.NetworkAttachment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NetworkAttachmentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2446,7 +2446,7 @@ type NetworkAttachmentsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []NetworkAttachmentsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NetworkAttachmentsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2499,7 +2499,7 @@ type NetworkEdgeSecurityServicesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []NetworkEdgeSecurityServicesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NetworkEdgeSecurityServicesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2546,7 +2546,7 @@ type NetworkEndpointGroupIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.NetworkEndpointGroup, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NetworkEndpointGroupIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2599,7 +2599,7 @@ type NetworkEndpointGroupsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []NetworkEndpointGroupsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NetworkEndpointGroupsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2646,7 +2646,7 @@ type NetworkEndpointWithHealthStatusIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.NetworkEndpointWithHealthStatus, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NetworkEndpointWithHealthStatusIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2693,7 +2693,7 @@ type NetworkIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Network, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NetworkIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2740,7 +2740,7 @@ type NodeGroupIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.NodeGroup, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NodeGroupIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2787,7 +2787,7 @@ type NodeGroupNodeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.NodeGroupNode, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NodeGroupNodeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2840,7 +2840,7 @@ type NodeGroupsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []NodeGroupsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NodeGroupsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2887,7 +2887,7 @@ type NodeTemplateIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.NodeTemplate, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NodeTemplateIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2940,7 +2940,7 @@ type NodeTemplatesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []NodeTemplatesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NodeTemplatesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2987,7 +2987,7 @@ type NodeTypeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.NodeType, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NodeTypeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3040,7 +3040,7 @@ type NodeTypesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []NodeTypesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NodeTypesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3087,7 +3087,7 @@ type NotificationEndpointIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.NotificationEndpoint, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *NotificationEndpointIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3134,7 +3134,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3187,7 +3187,7 @@ type OperationsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []OperationsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3234,7 +3234,7 @@ type PacketMirroringIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.PacketMirroring, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PacketMirroringIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3287,7 +3287,7 @@ type PacketMirroringsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []PacketMirroringsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PacketMirroringsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3334,7 +3334,7 @@ type PerInstanceConfigIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.PerInstanceConfig, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PerInstanceConfigIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3381,7 +3381,7 @@ type ProjectIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Project, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ProjectIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3428,7 +3428,7 @@ type PublicAdvertisedPrefixIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.PublicAdvertisedPrefix, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PublicAdvertisedPrefixIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3475,7 +3475,7 @@ type PublicDelegatedPrefixIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.PublicDelegatedPrefix, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PublicDelegatedPrefixIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3528,7 +3528,7 @@ type PublicDelegatedPrefixesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []PublicDelegatedPrefixesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *PublicDelegatedPrefixesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3575,7 +3575,7 @@ type ReferenceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Reference, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ReferenceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3622,7 +3622,7 @@ type RegionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Region, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RegionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3669,7 +3669,7 @@ type ReservationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Reservation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ReservationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3722,7 +3722,7 @@ type ReservationsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []ReservationsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ReservationsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3775,7 +3775,7 @@ type ResourcePoliciesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []ResourcePoliciesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ResourcePoliciesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3822,7 +3822,7 @@ type ResourcePolicyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.ResourcePolicy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ResourcePolicyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3869,7 +3869,7 @@ type RouteIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Route, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RouteIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3916,7 +3916,7 @@ type RouterIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Router, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RouterIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -3969,7 +3969,7 @@ type RoutersScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []RoutersScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *RoutersScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4022,7 +4022,7 @@ type SecurityPoliciesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []SecurityPoliciesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SecurityPoliciesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4069,7 +4069,7 @@ type SecurityPolicyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.SecurityPolicy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SecurityPolicyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4116,7 +4116,7 @@ type ServiceAttachmentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.ServiceAttachment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ServiceAttachmentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4169,7 +4169,7 @@ type ServiceAttachmentsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []ServiceAttachmentsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ServiceAttachmentsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4216,7 +4216,7 @@ type SnapshotIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Snapshot, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SnapshotIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4263,7 +4263,7 @@ type SslCertificateIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.SslCertificate, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SslCertificateIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4316,7 +4316,7 @@ type SslCertificatesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []SslCertificatesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SslCertificatesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4369,7 +4369,7 @@ type SslPoliciesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []SslPoliciesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SslPoliciesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4416,7 +4416,7 @@ type SslPolicyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.SslPolicy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SslPolicyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4463,7 +4463,7 @@ type StoragePoolDiskIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.StoragePoolDisk, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *StoragePoolDiskIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4510,7 +4510,7 @@ type StoragePoolIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.StoragePool, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *StoragePoolIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4557,7 +4557,7 @@ type StoragePoolTypeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.StoragePoolType, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *StoragePoolTypeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4610,7 +4610,7 @@ type StoragePoolTypesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []StoragePoolTypesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *StoragePoolTypesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4663,7 +4663,7 @@ type StoragePoolsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []StoragePoolsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *StoragePoolsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4710,7 +4710,7 @@ type SubnetworkIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Subnetwork, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SubnetworkIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4763,7 +4763,7 @@ type SubnetworksScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []SubnetworksScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SubnetworksScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4810,7 +4810,7 @@ type TargetGrpcProxyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.TargetGrpcProxy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetGrpcProxyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4863,7 +4863,7 @@ type TargetHttpProxiesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []TargetHttpProxiesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetHttpProxiesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4910,7 +4910,7 @@ type TargetHttpProxyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.TargetHttpProxy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetHttpProxyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -4963,7 +4963,7 @@ type TargetHttpsProxiesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []TargetHttpsProxiesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetHttpsProxiesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5010,7 +5010,7 @@ type TargetHttpsProxyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.TargetHttpsProxy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetHttpsProxyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5057,7 +5057,7 @@ type TargetInstanceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.TargetInstance, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetInstanceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5110,7 +5110,7 @@ type TargetInstancesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []TargetInstancesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetInstancesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5157,7 +5157,7 @@ type TargetPoolIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.TargetPool, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetPoolIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5210,7 +5210,7 @@ type TargetPoolsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []TargetPoolsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetPoolsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5257,7 +5257,7 @@ type TargetSslProxyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.TargetSslProxy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetSslProxyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5310,7 +5310,7 @@ type TargetTcpProxiesScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []TargetTcpProxiesScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetTcpProxiesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5357,7 +5357,7 @@ type TargetTcpProxyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.TargetTcpProxy, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetTcpProxyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5404,7 +5404,7 @@ type TargetVpnGatewayIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.TargetVpnGateway, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetVpnGatewayIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5457,7 +5457,7 @@ type TargetVpnGatewaysScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []TargetVpnGatewaysScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TargetVpnGatewaysScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5504,7 +5504,7 @@ type UrlMapIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.UrlMap, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *UrlMapIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5557,7 +5557,7 @@ type UrlMapsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []UrlMapsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *UrlMapsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5604,7 +5604,7 @@ type UsableSubnetworkIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.UsableSubnetwork, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *UsableSubnetworkIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5651,7 +5651,7 @@ type VmEndpointNatMappingsIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.VmEndpointNatMappings, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VmEndpointNatMappingsIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5698,7 +5698,7 @@ type VpnGatewayIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.VpnGateway, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VpnGatewayIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5751,7 +5751,7 @@ type VpnGatewaysScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []VpnGatewaysScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VpnGatewaysScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5798,7 +5798,7 @@ type VpnTunnelIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.VpnTunnel, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VpnTunnelIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5851,7 +5851,7 @@ type VpnTunnelsScopedListPairIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []VpnTunnelsScopedListPair, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VpnTunnelsScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5898,7 +5898,7 @@ type XpnResourceIdIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.XpnResourceId, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *XpnResourceIdIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -5945,7 +5945,7 @@ type ZoneIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Zone, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ZoneIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

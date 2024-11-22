@@ -252,6 +252,67 @@ func TestOauth2CredentialsFromAuthCredentials(t *testing.T) {
 	}
 }
 
+func TestMetadataConversions_ToTokenProvider(t *testing.T) {
+	ctx := context.Background()
+	tok := &oauth2.Token{AccessToken: "token"}
+	tok = tok.WithExtra(map[string]interface{}{
+		oauth2TokenSourceKey:    "compute-metadata",
+		oauth2ServiceAccountKey: "default",
+	})
+	inputCreds := &google.Credentials{
+		ProjectID:   "test_project",
+		TokenSource: tokenSource{token: tok},
+		JSON:        []byte("json"),
+		UniverseDomainProvider: func() (string, error) {
+			return "domain", nil
+		},
+	}
+	outCreds := AuthCredentialsFromOauth2Credentials(inputCreds)
+	tok2, err := outCreds.Token(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if tok2.MetadataString(authTokenSourceKey) != "compute-metadata" {
+		t.Errorf("got %q, want %q", tok2.MetadataString(authTokenSourceKey), "compute-metadata")
+	}
+	if tok2.MetadataString(oauth2TokenSourceKey) != "compute-metadata" {
+		t.Errorf("got %q, want %q", tok2.MetadataString(oauth2TokenSourceKey), "compute-metadata")
+	}
+	if tok2.MetadataString(authServiceAccountKey) != "default" {
+		t.Errorf("got %q, want %q", tok2.MetadataString(authTokenSourceKey), "default")
+	}
+	if tok2.MetadataString(oauth2ServiceAccountKey) != "default" {
+		t.Errorf("got %q, want %q", tok2.MetadataString(oauth2ServiceAccountKey), "default")
+	}
+}
+
+func TestMetadataConversions_ToTokenSource(t *testing.T) {
+	tok := &auth.Token{Value: "token", Metadata: map[string]interface{}{
+		authTokenSourceKey:    "compute-metadata",
+		authServiceAccountKey: "default",
+	}}
+	inputCreds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: tokenProvider{token: tok},
+	})
+	outCreds := Oauth2CredentialsFromAuthCredentials(inputCreds)
+	tok2, err := outCreds.TokenSource.Token()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if val, ok := tok2.Extra(oauth2TokenSourceKey).(string); !ok && val != "compute-metadata" {
+		t.Errorf("got %q, want %q", tok2.Extra(oauth2TokenSourceKey), "compute-metadata")
+	}
+	if val, ok := tok2.Extra(authTokenSourceKey).(string); !ok && val != "compute-metadata" {
+		t.Errorf("got %q, want %q", tok2.Extra(authTokenSourceKey), "compute-metadata")
+	}
+	if val, ok := tok2.Extra(oauth2ServiceAccountKey).(string); !ok && val != "default" {
+		t.Errorf("got %q, want %q", tok2.Extra(oauth2ServiceAccountKey), "default")
+	}
+	if val, ok := tok2.Extra(authServiceAccountKey).(string); !ok && val != "default" {
+		t.Errorf("got %q, want %q", tok2.Extra(authServiceAccountKey), "default")
+	}
+}
+
 type tokenSource struct {
 	token *oauth2.Token
 	err   error
@@ -261,10 +322,7 @@ func (ts tokenSource) Token() (*oauth2.Token, error) {
 	if ts.err != nil {
 		return nil, ts.err
 	}
-	return &oauth2.Token{
-		AccessToken: ts.token.AccessToken,
-		TokenType:   ts.token.TokenType,
-	}, nil
+	return ts.token, nil
 }
 
 type tokenProvider struct {
@@ -276,8 +334,5 @@ func (tp tokenProvider) Token(context.Context) (*auth.Token, error) {
 	if tp.err != nil {
 		return nil, tp.err
 	}
-	return &auth.Token{
-		Value: tp.token.Value,
-		Type:  tp.token.Type,
-	}, nil
+	return tp.token, nil
 }

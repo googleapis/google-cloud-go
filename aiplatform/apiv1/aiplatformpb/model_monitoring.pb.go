@@ -179,9 +179,9 @@ type ModelMonitoringAlertConfig struct {
 	Alert isModelMonitoringAlertConfig_Alert `protobuf_oneof:"alert"`
 	// Dump the anomalies to Cloud Logging. The anomalies will be put to json
 	// payload encoded from proto
-	// [google.cloud.aiplatform.logging.ModelMonitoringAnomaliesLogEntry][].
-	// This can be further sinked to Pub/Sub or any other services supported
-	// by Cloud Logging.
+	// [ModelMonitoringStatsAnomalies][google.cloud.aiplatform.v1.ModelMonitoringStatsAnomalies].
+	// This can be further synced to Pub/Sub or any other services supported by
+	// Cloud Logging.
 	EnableLogging bool `protobuf:"varint,2,opt,name=enable_logging,json=enableLogging,proto3" json:"enable_logging,omitempty"`
 	// Resource names of the NotificationChannels to send alert.
 	// Must be of the format

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/alloydb/apiv1",
-    "version": "1.12.1",
+    "version": "1.14.0",
     "language": "GO",
     "apis": [
       {
@@ -607,6 +607,52 @@
       ]
     },
     {
+      "regionTag": "alloydb_v1_generated_AlloyDBAdmin_ExecuteSql_sync",
+      "title": "alloydb ExecuteSql Sample",
+      "description": "ExecuteSql executes a SQL statement in a database inside an AlloyDB instance.",
+      "file": "AlloyDBAdminClient/ExecuteSql/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExecuteSql",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient.ExecuteSql",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.ExecuteSqlRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*alloydbpb.ExecuteSqlResponse",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "ExecuteSql",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.ExecuteSql",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "alloydb_v1_generated_AlloyDBAdmin_FailoverInstance_sync",
       "title": "alloydb FailoverInstance Sample",
       "description": "FailoverInstance forces a Failover for a highly available instance.\nFailover promotes the HA standby instance as the new primary.\nImperative only.",
@@ -1159,6 +1205,52 @@
       ]
     },
     {
+      "regionTag": "alloydb_v1_generated_AlloyDBAdmin_ListDatabases_sync",
+      "title": "alloydb ListDatabases Sample",
+      "description": "ListDatabases lists Databases in a given project and location.",
+      "file": "AlloyDBAdminClient/ListDatabases/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDatabases",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient.ListDatabases",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.ListDatabasesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DatabaseIterator",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "ListDatabases",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.ListDatabases",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "alloydb_v1_generated_AlloyDBAdmin_ListInstances_sync",
       "title": "alloydb ListInstances Sample",
       "description": "ListInstances lists Instances in a given project and location.",
@@ -1511,6 +1603,52 @@
         "method": {
           "shortName": "RestoreCluster",
           "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.RestoreCluster",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1_generated_AlloyDBAdmin_SwitchoverCluster_sync",
+      "title": "alloydb SwitchoverCluster Sample",
+      "description": "SwitchoverCluster switches the roles of PRIMARY and SECONDARY clusters without any data loss.\nThis promotes the SECONDARY cluster to PRIMARY and sets up the original\nPRIMARY cluster to replicate from this newly promoted cluster.",
+      "file": "AlloyDBAdminClient/SwitchoverCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SwitchoverCluster",
+        "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient.SwitchoverCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.SwitchoverClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SwitchoverClusterOperation",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "SwitchoverCluster",
+          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.SwitchoverCluster",
           "service": {
             "shortName": "AlloyDBAdmin",
             "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"

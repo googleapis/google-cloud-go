@@ -53,6 +53,12 @@ func (it *DeliveryPipelineIterator) All() iter.Seq2[*deploypb.DeliveryPipeline, 
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *DeployPolicyIterator) All() iter.Seq2[*deploypb.DeployPolicy, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *JobRunIterator) All() iter.Seq2[*deploypb.JobRun, error] {
 	return iterator.RangeAdapter(it.Next)
 }

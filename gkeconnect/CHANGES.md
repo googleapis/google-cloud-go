@@ -1,5 +1,21 @@
 # Changes
 
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.11.2...gkeconnect/v0.12.0) (2024-11-14)
+
+
+### Features
+
+* **gkeconnect/gateway:** Update default transport type for Connect Gateway v1 client to "rest" ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **gkeconnect/gateway:** Update default transport type for Connect Gateway v1beta1 client to "rest" ([#11108](https://github.com/googleapis/google-cloud-go/issues/11108)) ([380e7d2](https://github.com/googleapis/google-cloud-go/commit/380e7d23e69b22ab46cc6e3be58902accee2f26a))
+
+## [0.11.2](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.11.1...gkeconnect/v0.11.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **gkeconnect:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **gkeconnect:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [0.11.1](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.11.0...gkeconnect/v0.11.1) (2024-09-12)
 
 

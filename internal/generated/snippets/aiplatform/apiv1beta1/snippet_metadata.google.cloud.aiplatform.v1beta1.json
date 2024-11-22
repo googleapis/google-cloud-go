@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.68.0",
+    "version": "1.69.0",
     "language": "GO",
     "apis": [
       {
@@ -2853,6 +2853,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_EndpointService_UpdateEndpointLongRunning_sync",
+      "title": "aiplatform UpdateEndpointLongRunning Sample",
+      "description": "UpdateEndpointLongRunning updates an Endpoint with a long running operation.",
+      "file": "EndpointClient/UpdateEndpointLongRunning/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEndpointLongRunning",
+        "fullName": "google.cloud.aiplatform.v1beta1.EndpointClient.UpdateEndpointLongRunning",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateEndpointLongRunningRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEndpointLongRunningOperation",
+        "client": {
+          "shortName": "EndpointClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.EndpointClient"
+        },
+        "method": {
+          "shortName": "UpdateEndpointLongRunning",
+          "fullName": "google.cloud.aiplatform.v1beta1.EndpointService.UpdateEndpointLongRunning",
+          "service": {
+            "shortName": "EndpointService",
+            "fullName": "google.cloud.aiplatform.v1beta1.EndpointService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -6294,6 +6340,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_FeatureRegistryService_BatchCreateFeatures_sync",
+      "title": "aiplatform BatchCreateFeatures Sample",
+      "description": "BatchCreateFeatures creates a batch of Features in a given FeatureGroup.",
+      "file": "FeatureRegistryClient/BatchCreateFeatures/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateFeatures",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient.BatchCreateFeatures",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchCreateFeaturesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchCreateFeaturesOperation",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "BatchCreateFeatures",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService.BatchCreateFeatures",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_FeatureRegistryService_CancelOperation_sync",
       "title": "aiplatform CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -6431,6 +6523,98 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_FeatureRegistryService_CreateFeatureMonitor_sync",
+      "title": "aiplatform CreateFeatureMonitor Sample",
+      "description": "CreateFeatureMonitor creates a new FeatureMonitor in a given project, location and FeatureGroup.",
+      "file": "FeatureRegistryClient/CreateFeatureMonitor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFeatureMonitor",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient.CreateFeatureMonitor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateFeatureMonitorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateFeatureMonitorOperation",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "CreateFeatureMonitor",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService.CreateFeatureMonitor",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_FeatureRegistryService_CreateFeatureMonitorJob_sync",
+      "title": "aiplatform CreateFeatureMonitorJob Sample",
+      "description": "CreateFeatureMonitorJob creates a new feature monitor job.",
+      "file": "FeatureRegistryClient/CreateFeatureMonitorJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFeatureMonitorJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient.CreateFeatureMonitorJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateFeatureMonitorJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.FeatureMonitorJob",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "CreateFeatureMonitorJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService.CreateFeatureMonitorJob",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_FeatureRegistryService_DeleteFeature_sync",
       "title": "aiplatform DeleteFeature Sample",
       "description": "DeleteFeature deletes a single Feature.",
@@ -6507,6 +6691,52 @@
         "method": {
           "shortName": "DeleteFeatureGroup",
           "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService.DeleteFeatureGroup",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_FeatureRegistryService_DeleteFeatureMonitor_sync",
+      "title": "aiplatform DeleteFeatureMonitor Sample",
+      "description": "DeleteFeatureMonitor deletes a single FeatureMonitor.",
+      "file": "FeatureRegistryClient/DeleteFeatureMonitor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFeatureMonitor",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient.DeleteFeatureMonitor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteFeatureMonitorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteFeatureMonitorOperation",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteFeatureMonitor",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService.DeleteFeatureMonitor",
           "service": {
             "shortName": "FeatureRegistryService",
             "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService"
@@ -6644,6 +6874,98 @@
         "method": {
           "shortName": "GetFeatureGroup",
           "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService.GetFeatureGroup",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_FeatureRegistryService_GetFeatureMonitor_sync",
+      "title": "aiplatform GetFeatureMonitor Sample",
+      "description": "GetFeatureMonitor gets details of a single FeatureMonitor.",
+      "file": "FeatureRegistryClient/GetFeatureMonitor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFeatureMonitor",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient.GetFeatureMonitor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetFeatureMonitorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.FeatureMonitor",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "GetFeatureMonitor",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService.GetFeatureMonitor",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_FeatureRegistryService_GetFeatureMonitorJob_sync",
+      "title": "aiplatform GetFeatureMonitorJob Sample",
+      "description": "GetFeatureMonitorJob get a feature monitor job.",
+      "file": "FeatureRegistryClient/GetFeatureMonitorJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFeatureMonitorJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient.GetFeatureMonitorJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetFeatureMonitorJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.FeatureMonitorJob",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "GetFeatureMonitorJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService.GetFeatureMonitorJob",
           "service": {
             "shortName": "FeatureRegistryService",
             "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService"
@@ -6828,6 +7150,98 @@
         "method": {
           "shortName": "ListFeatureGroups",
           "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService.ListFeatureGroups",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_FeatureRegistryService_ListFeatureMonitorJobs_sync",
+      "title": "aiplatform ListFeatureMonitorJobs Sample",
+      "description": "ListFeatureMonitorJobs list feature monitor jobs.",
+      "file": "FeatureRegistryClient/ListFeatureMonitorJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFeatureMonitorJobs",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient.ListFeatureMonitorJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListFeatureMonitorJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FeatureMonitorJobIterator",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "ListFeatureMonitorJobs",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService.ListFeatureMonitorJobs",
+          "service": {
+            "shortName": "FeatureRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_FeatureRegistryService_ListFeatureMonitors_sync",
+      "title": "aiplatform ListFeatureMonitors Sample",
+      "description": "ListFeatureMonitors lists FeatureGroups in a given project and location.",
+      "file": "FeatureRegistryClient/ListFeatureMonitors/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFeatureMonitors",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient.ListFeatureMonitors",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListFeatureMonitorsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FeatureMonitorIterator",
+        "client": {
+          "shortName": "FeatureRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient"
+        },
+        "method": {
+          "shortName": "ListFeatureMonitors",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService.ListFeatureMonitors",
           "service": {
             "shortName": "FeatureRegistryService",
             "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryService"
@@ -21509,6 +21923,52 @@
         "method": {
           "shortName": "StartNotebookRuntime",
           "fullName": "google.cloud.aiplatform.v1beta1.NotebookService.StartNotebookRuntime",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1beta1.NotebookService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_NotebookService_StopNotebookRuntime_sync",
+      "title": "aiplatform StopNotebookRuntime Sample",
+      "description": "StopNotebookRuntime stops a NotebookRuntime.",
+      "file": "NotebookClient/StopNotebookRuntime/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopNotebookRuntime",
+        "fullName": "google.cloud.aiplatform.v1beta1.NotebookClient.StopNotebookRuntime",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.StopNotebookRuntimeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StopNotebookRuntimeOperation",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.NotebookClient"
+        },
+        "method": {
+          "shortName": "StopNotebookRuntime",
+          "fullName": "google.cloud.aiplatform.v1beta1.NotebookService.StopNotebookRuntime",
           "service": {
             "shortName": "NotebookService",
             "fullName": "google.cloud.aiplatform.v1beta1.NotebookService"

@@ -20,11 +20,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
-
+	"hash/fnv"
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -125,7 +125,59 @@ var (
 		return uuid.NewString() + "@" + strconv.FormatInt(int64(os.Getpid()), 10) + "@" + hostname, nil
 	}
 
-	exporterOpts = []option.ClientOption{}
+	// generateClientHash generates a 6-digit zero-padded lowercase hexadecimal hash
+	// using the 10 most significant bits of a 64-bit hash value.
+	//
+	// The primary purpose of this function is to generate a hash value for the `client_hash`
+	// resource label using `client_uid` metric field. The range of values is chosen to be small
+	// enough to keep the cardinality of the Resource targets under control. Note: If at later time
+	// the range needs to be increased, it can be done by increasing the value of `kPrefixLength` to
+	// up to 24 bits without changing the format of the returned value.
+	generateClientHash = func(clientUID string) string {
+		if clientUID == "" {
+			return "000000"
+		}
+
+		// Use FNV hash function to generate a 64-bit hash
+		hasher := fnv.New64()
+		hasher.Write([]byte(clientUID))
+		hashValue := hasher.Sum64()
+
+		// Extract the 10 most significant bits
+		// Shift right by 54 bits to get the 10 most significant bits
+		kPrefixLength := 10
+		tenMostSignificantBits := hashValue >> (64 - kPrefixLength)
+
+		// Format the result as a 6-digit zero-padded hexadecimal string
+		return fmt.Sprintf("%06x", tenMostSignificantBits)
+	}
+
+	detectClientLocation = func(ctx context.Context) string {
+		resource, err := gcp.NewDetector().Detect(ctx)
+		if err != nil {
+			return "global"
+		}
+		for _, attr := range resource.Attributes() {
+			if attr.Key == semconv.CloudRegionKey {
+				return attr.Value.AsString()
+			}
+		}
+		// If region is not found, return global
+		return "global"
+	}
+
+	// GCM exporter should use the same options as Spanner client
+	// createExporterOptions takes Spanner client options and returns exporter options
+	// Overwritten in tests
+	createExporterOptions = func(spannerOpts ...option.ClientOption) []option.ClientOption {
+		defaultMonitoringEndpoint := "monitoring.googleapis.com:443"
+		if os.Getenv("SPANNER_MONITORING_HOST") != "" {
+			defaultMonitoringEndpoint = os.Getenv("SPANNER_MONITORING_HOST")
+		}
+		// overwrite any Endpoint option
+		spannerOpts = append(spannerOpts, option.WithEndpoint(defaultMonitoringEndpoint))
+		return spannerOpts
+	}
 )
 
 type metricInfo struct {
@@ -151,21 +203,7 @@ type builtinMetricsTracerFactory struct {
 	attemptCount       metric.Int64Counter     // Counter for the number of attempts.
 }
 
-func detectClientLocation(ctx context.Context) string {
-	resource, err := gcp.NewDetector().Detect(ctx)
-	if err != nil {
-		return "global"
-	}
-	for _, attr := range resource.Attributes() {
-		if attr.Key == semconv.CloudRegionKey {
-			return attr.Value.AsString()
-		}
-	}
-	// If region is not found, return global
-	return "global"
-}
-
-func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsProvider metric.MeterProvider) (*builtinMetricsTracerFactory, error) {
+func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsProvider metric.MeterProvider, compression string, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
 		log.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric atteribute", err, metricLabelKeyClientUID)
@@ -183,7 +221,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 			attribute.String(metricLabelKeyDatabase, database),
 			attribute.String(metricLabelKeyClientUID, clientUID),
 			attribute.String(metricLabelKeyClientName, clientName),
-			attribute.String(monitoredResLabelKeyClientHash, "cloud_spanner_client_raw_metrics"),
+			attribute.String(monitoredResLabelKeyClientHash, generateClientHash(clientUID)),
 			// Skipping instance config until we have a way to get it
 			attribute.String(monitoredResLabelKeyInstanceConfig, "unknown"),
 			attribute.String(monitoredResLabelKeyLocation, detectClientLocation(ctx)),
@@ -196,7 +234,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 	var meterProvider *sdkmetric.MeterProvider
 	if metricsProvider == nil {
 		// Create default meter provider
-		mpOptions, err := builtInMeterProviderOptions(project)
+		mpOptions, err := builtInMeterProviderOptions(project, compression, opts...)
 		if err != nil {
 			return tracerFactory, err
 		}
@@ -219,8 +257,9 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 	return tracerFactory, err
 }
 
-func builtInMeterProviderOptions(project string) ([]sdkmetric.Option, error) {
-	defaultExporter, err := newMonitoringExporter(context.Background(), project, exporterOpts...)
+func builtInMeterProviderOptions(project, compression string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
+	allOpts := createExporterOptions(opts...)
+	defaultExporter, err := newMonitoringExporter(context.Background(), project, compression, allOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -264,6 +303,9 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("The count of database operations."),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
 
 	// Create attempt_count
 	tf.attemptCount, err = meter.Int64Counter(
@@ -378,6 +420,9 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 // to OpenTelemetry attributes format,
 // - combines these with common client attributes and returns
 func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribute.KeyValue, error) {
+	if mt.currOp == nil || mt.currOp.currAttempt == nil {
+		return nil, fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
+	}
 	// Create attribute key value pairs for attributes common to all metricss
 	attrKeyValues := []attribute.KeyValue{
 		attribute.String(metricLabelKeyMethod, strings.ReplaceAll(strings.TrimPrefix(mt.method, "/google.spanner.v1."), "/", ".")),
@@ -440,7 +485,10 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	elapsedTime := convertToMs(time.Since(mt.currOp.currAttempt.startTime))
 
 	// Record attempt_latencies
-	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
+	attemptLatAttrs, err := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
+	if err != nil {
+		return
+	}
 	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributes(attemptLatAttrs...))
 }
 
@@ -456,15 +504,24 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 	elapsedTimeMs := convertToMs(time.Since(mt.currOp.startTime))
 
 	// Record operation_count
-	opCntAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationCount)
+	opCntAttrs, err := mt.toOtelMetricAttrs(metricNameOperationCount)
+	if err != nil {
+		return
+	}
 	mt.instrumentOperationCount.Add(mt.ctx, 1, metric.WithAttributes(opCntAttrs...))
 
 	// Record operation_latencies
-	opLatAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationLatencies)
+	opLatAttrs, err := mt.toOtelMetricAttrs(metricNameOperationLatencies)
+	if err != nil {
+		return
+	}
 	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributes(opLatAttrs...))
 
 	// Record attempt_count
-	attemptCntAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptCount)
+	attemptCntAttrs, err := mt.toOtelMetricAttrs(metricNameAttemptCount)
+	if err != nil {
+		return
+	}
 	mt.instrumentAttemptCount.Add(mt.ctx, mt.currOp.attemptCount, metric.WithAttributes(attemptCntAttrs...))
 }
 

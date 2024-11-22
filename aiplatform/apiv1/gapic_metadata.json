@@ -338,6 +338,11 @@
                 "UpdateEndpoint"
               ]
             },
+            "UpdateEndpointLongRunning": {
+              "methods": [
+                "UpdateEndpointLongRunning"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -609,6 +614,11 @@
         "grpc": {
           "libraryClient": "FeatureRegistryClient",
           "rpcs": {
+            "BatchCreateFeatures": {
+              "methods": [
+                "BatchCreateFeatures"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -2209,6 +2219,11 @@
             "StartNotebookRuntime": {
               "methods": [
                 "StartNotebookRuntime"
+              ]
+            },
+            "StopNotebookRuntime": {
+              "methods": [
+                "StopNotebookRuntime"
               ]
             },
             "TestIamPermissions": {

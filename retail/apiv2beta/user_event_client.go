@@ -52,6 +52,7 @@ type UserEventCallOptions struct {
 	CollectUserEvent []gax.CallOption
 	PurgeUserEvents  []gax.CallOption
 	ImportUserEvents []gax.CallOption
+	ExportUserEvents []gax.CallOption
 	RejoinUserEvents []gax.CallOption
 	GetOperation     []gax.CallOption
 	ListOperations   []gax.CallOption
@@ -122,6 +123,19 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        300000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ExportUserEvents: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -206,6 +220,18 @@ func defaultUserEventRESTCallOptions() *UserEventCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		ExportUserEvents: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		RejoinUserEvents: []gax.CallOption{
 			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -245,6 +271,8 @@ type internalUserEventClient interface {
 	PurgeUserEventsOperation(name string) *PurgeUserEventsOperation
 	ImportUserEvents(context.Context, *retailpb.ImportUserEventsRequest, ...gax.CallOption) (*ImportUserEventsOperation, error)
 	ImportUserEventsOperation(name string) *ImportUserEventsOperation
+	ExportUserEvents(context.Context, *retailpb.ExportUserEventsRequest, ...gax.CallOption) (*ExportUserEventsOperation, error)
+	ExportUserEventsOperation(name string) *ExportUserEventsOperation
 	RejoinUserEvents(context.Context, *retailpb.RejoinUserEventsRequest, ...gax.CallOption) (*RejoinUserEventsOperation, error)
 	RejoinUserEventsOperation(name string) *RejoinUserEventsOperation
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -334,6 +362,20 @@ func (c *UserEventClient) ImportUserEvents(ctx context.Context, req *retailpb.Im
 // The name must be that of a previously created ImportUserEventsOperation, possibly from a different process.
 func (c *UserEventClient) ImportUserEventsOperation(name string) *ImportUserEventsOperation {
 	return c.internalClient.ImportUserEventsOperation(name)
+}
+
+// ExportUserEvents exports user events.
+//
+// Operation.response is of type ExportResponse.
+// Operation.metadata is of type ExportMetadata.
+func (c *UserEventClient) ExportUserEvents(ctx context.Context, req *retailpb.ExportUserEventsRequest, opts ...gax.CallOption) (*ExportUserEventsOperation, error) {
+	return c.internalClient.ExportUserEvents(ctx, req, opts...)
+}
+
+// ExportUserEventsOperation returns a new ExportUserEventsOperation from a given name.
+// The name must be that of a previously created ExportUserEventsOperation, possibly from a different process.
+func (c *UserEventClient) ExportUserEventsOperation(name string) *ExportUserEventsOperation {
+	return c.internalClient.ExportUserEventsOperation(name)
 }
 
 // RejoinUserEvents starts a user-event rejoin operation with latest product catalog. Events
@@ -617,6 +659,26 @@ func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *retailp
 		return nil, err
 	}
 	return &ImportUserEventsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *userEventGRPCClient) ExportUserEvents(ctx context.Context, req *retailpb.ExportUserEventsRequest, opts ...gax.CallOption) (*ExportUserEventsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportUserEvents[0:len((*c.CallOptions).ExportUserEvents):len((*c.CallOptions).ExportUserEvents)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.userEventClient.ExportUserEvents(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportUserEventsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1001,6 +1063,79 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *retailp
 	}, nil
 }
 
+// ExportUserEvents exports user events.
+//
+// Operation.response is of type ExportResponse.
+// Operation.metadata is of type ExportMetadata.
+func (c *userEventRESTClient) ExportUserEvents(ctx context.Context, req *retailpb.ExportUserEventsRequest, opts ...gax.CallOption) (*ExportUserEventsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta/%v/userEvents:export", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	return &ExportUserEventsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // RejoinUserEvents starts a user-event rejoin operation with latest product catalog. Events
 // are not annotated with detailed product information for products that are
 // missing from the catalog when the user event is ingested. These
@@ -1228,6 +1363,24 @@ func (c *userEventRESTClient) ListOperations(ctx context.Context, req *longrunni
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// ExportUserEventsOperation returns a new ExportUserEventsOperation from a given name.
+// The name must be that of a previously created ExportUserEventsOperation, possibly from a different process.
+func (c *userEventGRPCClient) ExportUserEventsOperation(name string) *ExportUserEventsOperation {
+	return &ExportUserEventsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExportUserEventsOperation returns a new ExportUserEventsOperation from a given name.
+// The name must be that of a previously created ExportUserEventsOperation, possibly from a different process.
+func (c *userEventRESTClient) ExportUserEventsOperation(name string) *ExportUserEventsOperation {
+	override := fmt.Sprintf("/v2beta/%s", name)
+	return &ExportUserEventsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // ImportUserEventsOperation returns a new ImportUserEventsOperation from a given name.

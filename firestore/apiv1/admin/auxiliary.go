@@ -612,7 +612,7 @@ type FieldIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Field, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *FieldIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -659,7 +659,7 @@ type IndexIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Index, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *IndexIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -706,7 +706,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

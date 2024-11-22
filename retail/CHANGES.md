@@ -1,5 +1,32 @@
 # Changes
 
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/retail/v1.19.0...retail/v1.19.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **retail:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **retail:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([2b8ca4b](https://github.com/googleapis/google-cloud-go/commit/2b8ca4b4127ce3025c7a21cc7247510e07cc5625))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.18.1...retail/v1.19.0) (2024-10-09)
+
+
+### Features
+
+* **retail:** Add conversational search ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Add conversational search ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Add conversational search ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Add tile navigation ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Add tile navigation ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Add tile navigation ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
+
+### Documentation
+
+* **retail:** Keep the API doc up-to-date with recent changes ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Keep the API doc up-to-date with recent changes ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **retail:** Keep the API doc up-to-date with recent changes ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/retail/v1.18.0...retail/v1.18.1) (2024-09-12)
 
 

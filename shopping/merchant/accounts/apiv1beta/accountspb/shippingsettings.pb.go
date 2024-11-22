@@ -275,7 +275,7 @@ func (BusinessDayConfig_Weekday) EnumDescriptor() ([]byte, []int) {
 }
 
 // The merchant account's [shipping
-// setting]((https://support.google.com/merchants/answer/6069284).
+// setting](https://support.google.com/merchants/answer/6069284).
 type ShippingSettings struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -844,10 +844,14 @@ type DeliveryTime struct {
 	CutoffTime *CutoffTime `protobuf:"bytes,3,opt,name=cutoff_time,json=cutoffTime,proto3,oneof" json:"cutoff_time,omitempty"`
 	// Minimum number of business days spent before an order is shipped.
 	// 0 means same day shipped, 1 means next day shipped.
+	// 'min_handling_days' and 'max_handling_days' should be either set or not set
+	// at the same time.
 	MinHandlingDays *int32 `protobuf:"varint,4,opt,name=min_handling_days,json=minHandlingDays,proto3,oneof" json:"min_handling_days,omitempty"`
 	// Maximum number of business days spent before an order is shipped.
 	// 0 means same day shipped, 1 means next day shipped.
 	// Must be greater than or equal to `min_handling_days`.
+	// 'min_handling_days' and 'max_handling_days' should be either set or not set
+	// at the same time.
 	MaxHandlingDays *int32 `protobuf:"varint,5,opt,name=max_handling_days,json=maxHandlingDays,proto3,oneof" json:"max_handling_days,omitempty"`
 	// Transit time table, number of business days spent in transit based on row
 	// and column dimensions. Either `min_transit_days`, `max_transit_days` or

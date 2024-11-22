@@ -33,6 +33,12 @@ func (it *FirewallPolicyIterator) All() iter.Seq2[*recaptchaenterprisepb.Firewal
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *IpOverrideDataIterator) All() iter.Seq2[*recaptchaenterprisepb.IpOverrideData, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *KeyIterator) All() iter.Seq2[*recaptchaenterprisepb.Key, error] {
 	return iterator.RangeAdapter(it.Next)
 }

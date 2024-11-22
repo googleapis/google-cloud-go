@@ -250,8 +250,8 @@ type Intent struct {
 	// method.
 	// [Intents.CreateIntent][google.cloud.dialogflow.cx.v3.Intents.CreateIntent]
 	// populates the name automatically.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/intents/<Intent ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/intents/<IntentID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The human-readable name of the intent, unique within the agent.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -390,7 +390,7 @@ type ListIntentsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to list all intents for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The language to list intents for. The following fields are language
 	// dependent:
@@ -548,8 +548,8 @@ type GetIntentRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the intent.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/intents/<Intent ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/intents/<IntentID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The language to retrieve the intent for. The following fields are language
 	// dependent:
@@ -618,7 +618,7 @@ type CreateIntentRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to create an intent for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The intent to create.
 	Intent *Intent `protobuf:"bytes,2,opt,name=intent,proto3" json:"intent,omitempty"`
@@ -772,8 +772,8 @@ type DeleteIntentRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the intent to delete.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/intents/<Intent ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/intents/<IntentID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -824,7 +824,7 @@ type ImportIntentsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The agent to import the intents into.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The intents to import.
 	//
@@ -938,8 +938,8 @@ type ImportIntentsResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The unique identifier of the imported intents.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/intents/<Intent ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/intents/<IntentID>`.
 	Intents []string `protobuf:"bytes,1,rep,name=intents,proto3" json:"intents,omitempty"`
 	// Info which resources have conflicts when
 	// [REPORT_CONFLICT][ImportIntentsResponse.REPORT_CONFLICT] merge_option is
@@ -1042,12 +1042,11 @@ type ExportIntentsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the parent agent to export intents.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>`.
+	// Format: `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The name of the intents to export.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/intents/<Intent ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/intents/<IntentID>`.
 	Intents []string `protobuf:"bytes,2,rep,name=intents,proto3" json:"intents,omitempty"`
 	// The destination to export.
 	//
@@ -1392,11 +1391,12 @@ type Intent_Parameter struct {
 	// their [parts][google.cloud.dialogflow.cx.v3.Intent.TrainingPhrase.Part].
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Required. The entity type of the parameter.
-	// Format: `projects/-/locations/-/agents/-/entityTypes/<System Entity Type
-	// ID>` for system entity types (for example,
+	// Format:
+	// `projects/-/locations/-/agents/-/entityTypes/<SystemEntityTypeID>` for
+	// system entity types (for example,
 	// `projects/-/locations/-/agents/-/entityTypes/sys.date`), or
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/entityTypes/<Entity Type ID>` for developer entity types.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/entityTypes/<EntityTypeID>`
+	// for developer entity types.
 	EntityType string `protobuf:"bytes,2,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
 	// Indicates whether the parameter represents a list of values.
 	IsList bool `protobuf:"varint,3,opt,name=is_list,json=isList,proto3" json:"is_list,omitempty"`
@@ -1923,19 +1923,19 @@ var file_google_cloud_dialogflow_cx_v3_intent_proto_rawDesc = []byte{
 	0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2c,
 	0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
 	0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f,
-	0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0xb1, 0x01, 0x0a, 0x21, 0x63,
+	0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0xae, 0x01, 0x0a, 0x21, 0x63,
 	0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
 	0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x63, 0x78, 0x2e, 0x76, 0x33,
 	0x42, 0x0b, 0x49, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
 	0x31, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f,
 	0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f,
 	0x63, 0x78, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x33, 0x2f, 0x63, 0x78, 0x70, 0x62, 0x3b, 0x63, 0x78,
-	0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1d, 0x47, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67,
-	0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0xea, 0x02, 0x21, 0x47, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c,
-	0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x70, 0x62, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f,
+	0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0xea, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66,
+	0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (

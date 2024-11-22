@@ -235,8 +235,8 @@ type Experiment struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the experiment.
-	// Format: projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/experiments/<Experiment ID>..
+	// Format:
+	// projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/experiments/<ExperimentID>.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The human-readable name of the experiment (unique in an
 	// environment). Limit of 64 characters.
@@ -696,9 +696,8 @@ type ListExperimentsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The [Environment][google.cloud.dialogflow.cx.v3.Environment] to
-	// list all environments for. Format: `projects/<Project
-	// ID>/locations/<Location ID>/agents/<Agent ID>/environments/<Environment
-	// ID>`.
+	// list all environments for. Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return in a single page. By default 20 and
 	// at most 100.
@@ -832,8 +831,7 @@ type GetExperimentRequest struct {
 
 	// Required. The name of the
 	// [Environment][google.cloud.dialogflow.cx.v3.Environment]. Format:
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/experiments/<Experiment ID>`.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/experiments/<ExperimentID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -885,8 +883,7 @@ type CreateExperimentRequest struct {
 
 	// Required. The [Agent][google.cloud.dialogflow.cx.v3.Agent] to create an
 	// [Environment][google.cloud.dialogflow.cx.v3.Environment] for. Format:
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>`.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The experiment to create.
 	Experiment *Experiment `protobuf:"bytes,2,opt,name=experiment,proto3" json:"experiment,omitempty"`
@@ -1006,8 +1003,7 @@ type DeleteExperimentRequest struct {
 
 	// Required. The name of the
 	// [Environment][google.cloud.dialogflow.cx.v3.Environment] to delete. Format:
-	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/experiments/<Experiment ID>`.
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/experiments/<ExperimentID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -1058,8 +1054,8 @@ type StartExperimentRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Resource name of the experiment to start.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/experiments/<Experiment ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/experiments/<ExperimentID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -1110,8 +1106,8 @@ type StopExperimentRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Resource name of the experiment to stop.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/environments/<Environment ID>/experiments/<Experiment ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/environments/<EnvironmentID>/experiments/<ExperimentID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -1500,8 +1496,8 @@ type Experiment_Result_VersionMetrics struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the flow [Version][google.cloud.dialogflow.cx.v3.Version].
-	// Format: `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/flows/<Flow ID>/versions/<Version ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/versions/<VersionID>`.
 	Version string `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
 	// The metrics and corresponding confidence intervals in the inference
 	// result.
@@ -1570,8 +1566,8 @@ type VersionVariants_Variant struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the flow version.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/versions/<Version ID>`.
+	// Format:
+	// `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/versions/<VersionID>`.
 	Version string `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
 	// Percentage of the traffic which should be routed to this
 	// version of flow. Traffic allocation for a single flow must sum up to 1.0.
@@ -2109,19 +2105,19 @@ var file_google_cloud_dialogflow_cx_v3_experiment_proto_rawDesc = []byte{
 	0x74, 0x68, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
 	0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74,
-	0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0xb5, 0x01, 0x0a,
+	0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0xb2, 0x01, 0x0a,
 	0x21, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75,
 	0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x63, 0x78, 0x2e,
 	0x76, 0x33, 0x42, 0x0f, 0x45, 0x78, 0x70, 0x65, 0x72, 0x69, 0x6d, 0x65, 0x6e, 0x74, 0x50, 0x72,
 	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x31, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f,
 	0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x63, 0x78, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x33, 0x2f, 0x63,
-	0x78, 0x70, 0x62, 0x3b, 0x63, 0x78, 0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46,
-	0xaa, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
-	0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33,
-	0xea, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64,
-	0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58,
-	0x3a, 0x3a, 0x56, 0x33, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x78, 0x70, 0x62, 0x3b, 0x63, 0x78, 0x70, 0x62, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1d,
+	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61,
+	0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0xea, 0x02, 0x21,
+	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44,
+	0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56,
+	0x33, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

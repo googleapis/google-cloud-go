@@ -315,6 +315,7 @@ deep-remove-regex:
   - /internal/generated/snippets/notebooks/apiv1beta1/
   - /internal/generated/snippets/notebooks/apiv2/
   - /internal/generated/snippets/optimization/apiv1/
+  - /internal/generated/snippets/oracledatabase/apiv1/
   - /internal/generated/snippets/orchestration/airflow/service/apiv1/
   - /internal/generated/snippets/orgpolicy/apiv2/
   - /internal/generated/snippets/osconfig/agentendpoint/apiv1/
@@ -324,6 +325,7 @@ deep-remove-regex:
   - /internal/generated/snippets/osconfig/apiv1beta/
   - /internal/generated/snippets/oslogin/apiv1/
   - /internal/generated/snippets/oslogin/apiv1beta/
+  - /internal/generated/snippets/parallelstore/apiv1/
   - /internal/generated/snippets/parallelstore/apiv1beta/
   - /internal/generated/snippets/phishingprotection/apiv1beta1/
   - /internal/generated/snippets/policysimulator/apiv1/
@@ -462,6 +464,7 @@ deep-remove-regex:
   - /notebooks/apiv1beta1/
   - /notebooks/apiv2/
   - /optimization/apiv1/
+  - /oracledatabase/apiv1/
   - /orchestration/airflow/service/apiv1/
   - /orgpolicy/apiv1/
   - /orgpolicy/apiv2/
@@ -473,6 +476,7 @@ deep-remove-regex:
   - /oslogin/apiv1/
   - /oslogin/apiv1beta/
   - /oslogin/common/
+  - /parallelstore/apiv1/
   - /parallelstore/apiv1beta/
   - /phishingprotection/apiv1beta1/
   - /policysimulator/apiv1/
@@ -976,6 +980,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/optimization/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/oracledatabase/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/orchestration/airflow/service/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/orgpolicy/v1/cloud.google.com/go
@@ -997,6 +1003,8 @@ deep-copy-regex:
   - source: /google/cloud/oslogin/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/oslogin/common/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/parallelstore/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/parallelstore/v1beta/cloud.google.com/go
     dest: /

@@ -17,9 +17,11 @@ package storage
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
@@ -1306,6 +1308,16 @@ func TestDetectDefaultGoogleAccessID(t *testing.T) {
 				if id != tc.serviceAccount {
 					t.Errorf("service account not found correctly; got: %s, want: %s", id, tc.serviceAccount)
 				}
+			} else if metadata.OnGCE() {
+				// On GCE, we fall back to the default service account. Check that's
+				// what happened.
+				defaultServiceAccount, err := metadata.Email("default")
+				if err != nil {
+					t.Errorf("could not load metadata service account for fallback: %v", err)
+				}
+				if id != defaultServiceAccount {
+					t.Errorf("service account not found correctly on fallback; got: %s, want: %s", id, defaultServiceAccount)
+				}
 			} else if err == nil {
 				t.Error("expected error but detectDefaultGoogleAccessID did not return one")
 			}
@@ -1627,5 +1639,32 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 				s.Fatalf("bucket.SidnedURL:\n\tgot:\t%v\n\twant:\t%v", got, test.want)
 			}
 		})
+	}
+}
+
+// Test retry logic for default SignBlob function used by BucketHandle.SignedURL.
+// This cannot be tested via the emulator so we use a mock.
+func TestDefaultSignBlobRetry(t *testing.T) {
+	ctx := context.Background()
+
+	// Use mock transport. Return 2 503 responses before succeeding.
+	mt := mockTransport{}
+	mt.addResult(&http.Response{StatusCode: 503, Body: bodyReader("")}, nil)
+	mt.addResult(&http.Response{StatusCode: 503, Body: bodyReader("")}, nil)
+	mt.addResult(&http.Response{StatusCode: 200, Body: bodyReader("{}")}, nil)
+
+	client, err := NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: &mt}))
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+
+	b := client.Bucket("fakebucket")
+
+	if _, err := b.SignedURL("fakeobj", &SignedURLOptions{
+		Method:    "GET",
+		Expires:   time.Now().Add(time.Hour),
+		SignBytes: b.defaultSignBytesFunc("example@example.com"),
+	}); err != nil {
+		t.Fatalf("BucketHandle.SignedURL: %v", err)
 	}
 }

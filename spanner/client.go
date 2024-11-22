@@ -25,7 +25,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
@@ -67,6 +66,10 @@ const (
 	routeToLeaderHeader = "x-goog-spanner-route-to-leader"
 
 	requestsCompressionHeader = "x-response-encoding"
+
+	// endToEndTracingHeader is the name of the metadata header if client
+	// has opted-in for the creation of trace spans on the Spanner layer.
+	endToEndTracingHeader = "x-goog-spanner-end-to-end-tracing"
 
 	// numChannels is the default value for NumChannels of client.
 	numChannels = 4
@@ -186,8 +189,9 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 	}
 	// Append emulator options if SPANNER_EMULATOR_HOST has been set.
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
+		schemeRemoved := regexp.MustCompile("^(http://|https://|passthrough:///)").ReplaceAllString(emulatorAddr, "")
 		emulatorOpts := []option.ClientOption{
-			option.WithEndpoint(emulatorAddr),
+			option.WithEndpoint("passthrough:///" + schemeRemoved),
 			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 			option.WithoutAuthentication(),
 			internaloption.SkipDialSettingsValidation(),
@@ -337,6 +341,20 @@ type ClientConfig struct {
 	DirectedReadOptions *sppb.DirectedReadOptions
 
 	OpenTelemetryMeterProvider metric.MeterProvider
+
+	// EnableEndToEndTracing indicates whether end to end tracing is enabled or not. If
+	// it is enabled, trace spans will be created at Spanner layer. Enabling end to end
+	// tracing requires OpenTelemetry to be set up. Simply enabling this option won't
+	// generate traces at Spanner layer.
+	//
+	// Default: false
+	EnableEndToEndTracing bool
+
+	// DisableNativeMetrics indicates whether native metrics should be disabled or not.
+	// If true, native metrics will not be emitted.
+	//
+	// Default: false
+	DisableNativeMetrics bool
 }
 
 type openTelemetryConfig struct {
@@ -391,8 +409,9 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 
 	// Append emulator options if SPANNER_EMULATOR_HOST has been set.
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
+		schemeRemoved := regexp.MustCompile("^(http://|https://|passthrough:///)").ReplaceAllString(emulatorAddr, "")
 		emulatorOpts := []option.ClientOption{
-			option.WithEndpoint(emulatorAddr),
+			option.WithEndpoint("passthrough:///" + schemeRemoved),
 			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 			option.WithoutAuthentication(),
 			internaloption.SkipDialSettingsValidation(),
@@ -452,6 +471,13 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.Compression == gzip.Name {
 		md.Append(requestsCompressionHeader, gzip.Name)
 	}
+	// Append end to end tracing header if SPANNER_ENABLE_END_TO_END_TRACING
+	// environment variable has been set or client has passed the opt-in
+	// option in ClientConfig.
+	endToEndTracingEnvironmentVariable := os.Getenv("SPANNER_ENABLE_END_TO_END_TRACING")
+	if config.EnableEndToEndTracing || endToEndTracingEnvironmentVariable == "true" {
+		md.Append(endToEndTracingHeader, "true")
+	}
 
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
@@ -472,18 +498,16 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		// Do not emit native metrics when emulator is being used
 		metricsProvider = noop.NewMeterProvider()
 	}
-
-	// SPANNER_ENABLE_BUILTIN_METRICS environment variable is used to enable
-	// native metrics for the Spanner client, which overrides the default.
-	//
-	// This is an EXPERIMENTAL feature and may be changed or removed in the future.
-	if os.Getenv("SPANNER_ENABLE_BUILTIN_METRICS") != "true" {
-		// Do not emit native metrics when SPANNER_ENABLE_BUILTIN_METRICS is not set to true
+	// Check if native metrics are disabled via env.
+	if disableNativeMetrics, _ := strconv.ParseBool(os.Getenv("SPANNER_DISABLE_BUILTIN_METRICS")); disableNativeMetrics {
+		config.DisableNativeMetrics = true
+	}
+	if config.DisableNativeMetrics {
+		// Do not emit native metrics when DisableNativeMetrics is set
 		metricsProvider = noop.NewMeterProvider()
 	}
 
-	// Create a OpenTelemetry metrics configuration
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider)
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider, config.Compression, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -567,11 +591,11 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
-		internaloption.AllowNonDefaultServiceAccount(true),
 		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(addNativeMetricsInterceptor()...)),
 		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(addStreamNativeMetricsInterceptor()...)),
 	}
 	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
+		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowNonDefaultServiceAccount(true))
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 	}
 	if compression == "gzip" {
@@ -630,29 +654,19 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 // wrappedStream  wraps around the embedded grpc.ClientStream, and intercepts the RecvMsg and
 // SendMsg method call.
 type wrappedStream struct {
-	sync.Mutex
-	isFirstRecv bool
-	method      string
-	target      string
+	method string
+	target string
 	grpc.ClientStream
 }
 
 func (w *wrappedStream) RecvMsg(m any) error {
-	attempt := &attemptTracer{}
-	attempt.setStartTime(time.Now())
 	err := w.ClientStream.RecvMsg(m)
-	statusCode, _ := status.FromError(err)
 	ctx := w.ClientStream.Context()
 	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-	if !ok || !w.isFirstRecv {
+	if !ok {
 		return err
 	}
-	w.Lock()
-	w.isFirstRecv = false
-	w.Unlock()
 	mt.method = w.method
-	mt.currOp.incrementAttemptCount()
-	mt.currOp.currAttempt = attempt
 	if strings.HasPrefix(w.target, "google-c2p") {
 		mt.currOp.setDirectPathEnabled(true)
 	}
@@ -666,9 +680,9 @@ func (w *wrappedStream) RecvMsg(m any) error {
 			}
 		}
 	}
-	mt.currOp.currAttempt.setStatus(statusCode.Code().String())
-	mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
-	recordAttemptCompletion(mt)
+	if mt.currOp.currAttempt != nil {
+		mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
+	}
 	return err
 }
 
@@ -677,7 +691,7 @@ func (w *wrappedStream) SendMsg(m any) error {
 }
 
 func newWrappedStream(s grpc.ClientStream, method, target string) grpc.ClientStream {
-	return &wrappedStream{ClientStream: s, method: method, target: target, isFirstRecv: true}
+	return &wrappedStream{ClientStream: s, method: method, target: target}
 }
 
 // metricsInterceptor is a gRPC stream client interceptor that records metrics for stream RPCs.

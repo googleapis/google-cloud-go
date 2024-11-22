@@ -220,7 +220,7 @@ type AppConnectionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*appconnectionspb.AppConnection, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AppConnectionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -267,7 +267,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -314,7 +314,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -361,7 +361,7 @@ type ResolveAppConnectionsResponse_AppConnectionDetailsIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*appconnectionspb.ResolveAppConnectionsResponse_AppConnectionDetails, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ResolveAppConnectionsResponse_AppConnectionDetailsIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
