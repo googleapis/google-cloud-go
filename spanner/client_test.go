@@ -2079,6 +2079,78 @@ func TestClient_PrepareError(t *testing.T) {
 	})
 }
 
+func TestClient_ExecuteManyPooledTransactions(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	config := ClientConfig{SessionPoolConfig: SessionPoolConfig{MinOpened: 20, MaxOpened: 20}}
+	_, client, teardown := setupMockedTestServerWithConfig(t, config)
+	defer teardown()
+
+	numPreparedTransactions := 10
+	txPool, err := NewFixedSizeTransactionPool(client, numPreparedTransactions, TransactionOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Register the pool with the client.
+	if err := txPool.RegisterPool(client); err != nil {
+		t.Fatal(err)
+	}
+
+	// Verify that we can execute many more transactions than that there are prepared transactions
+	// in the pool, and that we do not need to wait for the pool to be filled before requesting a
+	// transaction.
+	for i := 0; i < numPreparedTransactions*50; i++ {
+		// Use the standard ReadWriteTransaction in the client to run a pooled transaction.
+		_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+			count, err := transaction.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+			if err != nil {
+				return err
+			}
+			if g, w := int(count), UpdateBarSetFooRowCount; g != w {
+				t.Fatalf("affected rows mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func TestClient_PooledTransactionTimeout(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*10)
+	defer cancel()
+	config := ClientConfig{SessionPoolConfig: SessionPoolConfig{MinOpened: 20, MaxOpened: 20}}
+	server, client, teardown := setupMockedTestServerWithConfig(t, config)
+	defer teardown()
+
+	// Wait for the session pool to be initialized.
+	waitForSessionPool(t, client, int(config.MinOpened), server)
+
+	// Freeze the mock server. This will prevent any transactions from being created.
+	server.TestSpanner.Freeze()
+	numPreparedTransactions := 10
+	txPool, err := NewFixedSizeTransactionPool(client, numPreparedTransactions, TransactionOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Register the pool with the client.
+	if err := txPool.RegisterPool(client); err != nil {
+		t.Fatal(err)
+	}
+
+	// Running a read/write transaction will now fail with a DeadlineExceeded error.
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+		return nil
+	})
+	if g, w := err, context.DeadlineExceeded; g != w {
+		t.Fatalf("error mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
 func waitForSessionPool(t *testing.T, client *Client, minSessions int, server *MockedSpannerInMemTestServer) {
 	sp := client.idleSessions
 	waitFor(t, func() error {

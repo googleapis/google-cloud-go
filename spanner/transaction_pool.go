@@ -46,11 +46,12 @@ type TransactionPool interface {
 }
 
 type fixedSizePool struct {
-	mu           sync.Mutex
-	c            *Client
-	size         int
-	opts         TransactionOptions
-	transactions []*preparedTransaction
+	mu               sync.Mutex
+	c                *Client
+	size             int
+	opts             TransactionOptions
+	transactions     []*preparedTransaction
+	transactionReady chan bool
 
 	lastPrepareErr error
 	numPrepareErrs int
@@ -65,10 +66,11 @@ type fixedSizePool struct {
 // back-filled when a transaction has been used.
 func NewFixedSizeTransactionPool(client *Client, size int, opts TransactionOptions) (TransactionPool, error) {
 	pool := &fixedSizePool{
-		c:            client,
-		size:         size,
-		opts:         opts,
-		transactions: make([]*preparedTransaction, 0, size),
+		c:                client,
+		size:             size,
+		opts:             opts,
+		transactions:     make([]*preparedTransaction, 0, size),
+		transactionReady: make(chan bool),
 
 		// TODO: Make configurable
 		maxPrepareErrs: 25,
@@ -98,7 +100,6 @@ func (p *fixedSizePool) RunTransaction(ctx context.Context, f func(context.Conte
 
 func (p *fixedSizePool) get(ctx context.Context) (*preparedTransaction, error) {
 	p.mu.Lock()
-	defer p.mu.Unlock()
 
 	if p.numFailed > 0 {
 		p.prepareTransactions(p.numFailed)
@@ -106,17 +107,39 @@ func (p *fixedSizePool) get(ctx context.Context) (*preparedTransaction, error) {
 	}
 	l := len(p.transactions)
 	if l == 0 {
-		if p.lastPrepareErr != nil && p.numPrepareErrs >= p.maxPrepareErrs {
-			return nil, p.lastPrepareErr
+		for {
+			if p.lastPrepareErr != nil && p.numPrepareErrs >= p.maxPrepareErrs {
+				err := p.lastPrepareErr
+				p.mu.Unlock()
+				return nil, err
+			}
+			p.mu.Unlock()
+			if err := p.waitForTransaction(ctx); err != nil {
+				return nil, err
+			}
+			p.mu.Lock()
+			l = len(p.transactions)
+			if l > 0 {
+				break
+			}
 		}
-		// TODO: Implement a waiting mechanism
-		return nil, spannerErrorf(codes.ResourceExhausted, "transaction pool exhausted")
 	}
 	tx := p.transactions[l-1]
 	p.transactions = p.transactions[:l-1]
 	p.prepareTransactions(1)
 
+	p.mu.Unlock()
 	return tx, nil
+}
+
+func (p *fixedSizePool) waitForTransaction(ctx context.Context) error {
+	select {
+	case <-ctx.Done():
+		trace.TracePrintf(ctx, nil, "Context done waiting for prepared transaction")
+		return ctx.Err()
+	case <-p.transactionReady:
+	}
+	return nil
 }
 
 func (p *fixedSizePool) prepareTransactions(numTransactions int) {
@@ -143,6 +166,7 @@ func (p *fixedSizePool) prepareTransaction() {
 		}
 		p.mu.Unlock()
 		if err == nil || maxErrsReached {
+			p.transactionReady <- true
 			break
 		}
 	}
