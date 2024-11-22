@@ -21,14 +21,13 @@
 package netapppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -323,9 +322,9 @@ type CreateStoragePoolRequest struct {
 	// Required. Value for parent.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. Id of the requesting storage pool. Must be unique within the
-	// parent resource. Must contain only letters, numbers, underscore and hyphen,
-	// with the first character a letter or underscore, the last a letter or
-	// underscore or a number, and a 63 character maximum.
+	// parent resource. Must contain only letters, numbers and hyphen, with the
+	// first character a letter, the last a letter or a number, and a 63 character
+	// maximum.
 	StoragePoolId string `protobuf:"bytes,2,opt,name=storage_pool_id,json=storagePoolId,proto3" json:"storage_pool_id,omitempty"`
 	// Required. The required parameters to create a new storage pool.
 	StoragePool *StoragePool `protobuf:"bytes,3,opt,name=storage_pool,json=storagePool,proto3" json:"storage_pool,omitempty"`

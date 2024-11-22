@@ -21,14 +21,13 @@
 package netapppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -325,9 +324,9 @@ type CreateSnapshotRequest struct {
 	// Required. A snapshot resource
 	Snapshot *Snapshot `protobuf:"bytes,2,opt,name=snapshot,proto3" json:"snapshot,omitempty"`
 	// Required. ID of the snapshot to create. Must be unique within the parent
-	// resource. Must contain only letters, numbers, underscore and hyphen, with
-	// the first character a letter or underscore, the last a letter or underscore
-	// or a number, and a 63 character maximum.
+	// resource. Must contain only letters, numbers and hyphen, with the first
+	// character a letter, the last a letter or a
+	// number, and a 63 character maximum.
 	SnapshotId string `protobuf:"bytes,3,opt,name=snapshot_id,json=snapshotId,proto3" json:"snapshot_id,omitempty"`
 }
 
