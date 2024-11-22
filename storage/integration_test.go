@@ -5881,7 +5881,7 @@ func TestIntegration_OCTracing(t *testing.T) {
 func TestIntegration_UniverseDomains(t *testing.T) {
 	ctx := skipJSONReads(skipGRPC("gRPC not supported"), "no reads in test")
 
-	t.Setenv("GOOGLE_API_GO_EXPERIMENTAL_DISABLE_NEW_AUTH_LIB", "true")
+	//t.Setenv("GOOGLE_API_GO_EXPERIMENTAL_DISABLE_NEW_AUTH_LIB", "true")
 
 	universeDomain := os.Getenv(testUniverseDomain)
 	if universeDomain == "" {
