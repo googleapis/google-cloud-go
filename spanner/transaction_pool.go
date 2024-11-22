@@ -55,6 +55,7 @@ type fixedSizePool struct {
 	lastPrepareErr error
 	numPrepareErrs int
 	maxPrepareErrs int
+	numFailed      int
 
 	prepareFunc func()
 }
@@ -70,7 +71,7 @@ func NewFixedSizeTransactionPool(client *Client, size int, opts TransactionOptio
 		transactions: make([]*preparedTransaction, 0, size),
 
 		// TODO: Make configurable
-		maxPrepareErrs: 1000,
+		maxPrepareErrs: 25,
 	}
 	pool.prepareFunc = pool.prepareTransaction
 	pool.prepareTransactions(size)
@@ -78,6 +79,9 @@ func NewFixedSizeTransactionPool(client *Client, size int, opts TransactionOptio
 }
 
 func (p *fixedSizePool) RegisterPool(client *Client) error {
+	if client != p.c {
+		return spannerErrorf(codes.InvalidArgument, "this pool can only be registered with the client that was used to create the pool")
+	}
 	return client.registerTransactionPool(p)
 }
 
@@ -96,9 +100,13 @@ func (p *fixedSizePool) get(ctx context.Context) (*preparedTransaction, error) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
+	if p.numFailed > 0 {
+		p.prepareTransactions(p.numFailed)
+		p.numFailed = 0
+	}
 	l := len(p.transactions)
 	if l == 0 {
-		if p.lastPrepareErr != nil && p.numPrepareErrs == p.maxPrepareErrs {
+		if p.lastPrepareErr != nil && p.numPrepareErrs >= p.maxPrepareErrs {
 			return nil, p.lastPrepareErr
 		}
 		// TODO: Implement a waiting mechanism
@@ -120,17 +128,22 @@ func (p *fixedSizePool) prepareTransactions(numTransactions int) {
 func (p *fixedSizePool) prepareTransaction() {
 	for {
 		tx, err := p.c.prepareTransaction(context.Background(), p.opts)
+		maxErrsReached := false
 		p.mu.Lock()
 		if err != nil {
 			p.lastPrepareErr = err
 			p.numPrepareErrs++
-			if p.numPrepareErrs > p.maxPrepareErrs {
-				return
+			if p.numPrepareErrs >= p.maxPrepareErrs {
+				p.numFailed++
+				maxErrsReached = true
 			}
 		} else {
+			p.numPrepareErrs = 0
 			p.transactions = append(p.transactions, tx)
 		}
 		p.mu.Unlock()
-		break
+		if err == nil || maxErrsReached {
+			break
+		}
 	}
 }

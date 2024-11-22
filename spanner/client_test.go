@@ -39,6 +39,7 @@ import (
 	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/multiendpoint"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -1995,6 +1996,89 @@ func TestClient_RegisterPool(t *testing.T) {
 		t.Fatalf("error code mismatch\n Got %v\nWant: %v", g, w)
 	}
 }
+
+func TestClient_PrepareError(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	config := ClientConfig{SessionPoolConfig: SessionPoolConfig{MinOpened: 20, MaxOpened: 20}}
+	server, client, teardown := setupMockedTestServerWithConfig(t, config)
+	defer teardown()
+
+	// Wait for the session pool to contain 20 sessions, so we don't have to care about this in the
+	// checks for which requests we receive.
+	waitForSessionPool(t, client, int(config.MinOpened), server)
+
+	// Simulate that BeginTransaction fails.
+	s := status.Newf(codes.PermissionDenied, "User does not have permission to create read/write transactions")
+	permissionDeniedErr, _ := apierror.FromError(s.Err())
+	server.TestSpanner.PutExecutionTime(
+		MethodBeginTransaction,
+		SimulatedExecutionTime{KeepError: true, Errors: []error{permissionDeniedErr}},
+	)
+
+	numPreparedTransactions := 10
+	txPool, err := NewFixedSizeTransactionPool(client, numPreparedTransactions, TransactionOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Register the pool with the client.
+	if err := txPool.RegisterPool(client); err != nil {
+		t.Fatal(err)
+	}
+
+	// Wait for the transaction pool to have tried to create 10 transactions.
+	p, _ := txPool.(*fixedSizePool)
+	waitFor(t, func() error {
+		p.mu.Lock()
+		defer p.mu.Unlock()
+		if p.numPrepareErrs >= p.maxPrepareErrs {
+			return nil
+		}
+		return fmt.Errorf("waiting for transaction pool")
+	})
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+		return nil
+	})
+	if g, w := ErrCode(err), codes.PermissionDenied; g != w {
+		t.Fatalf("error mismatch\n Got: %v\nWant: %v", g, w)
+	}
+
+	// Now remove the permanent error. The pool should automatically heal.
+	server.TestSpanner.PutExecutionTime(MethodBeginTransaction, SimulatedExecutionTime{})
+	// The first request still fails, as the error is cached.
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+		return nil
+	})
+	if g, w := ErrCode(err), codes.PermissionDenied; g != w {
+		t.Fatalf("error mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	// The next attempt should succeed once the pool has had a chance to create transactions.
+	waitFor(t, func() error {
+		p.mu.Lock()
+		defer p.mu.Unlock()
+		if len(p.transactions) > 0 {
+			return nil
+		}
+		return fmt.Errorf("waiting for transaction pool")
+	})
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Verify that the pool grows back to its target size.
+	waitFor(t, func() error {
+		p.mu.Lock()
+		defer p.mu.Unlock()
+		if len(p.transactions) == p.size {
+			return nil
+		}
+		return fmt.Errorf("waiting for transaction pool")
+	})
+}
+
 func waitForSessionPool(t *testing.T, client *Client, minSessions int, server *MockedSpannerInMemTestServer) {
 	sp := client.idleSessions
 	waitFor(t, func() error {
