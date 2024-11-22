@@ -165,7 +165,7 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 	defer te.Unregister()
 
 	waitErr := &Error{}
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig})
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, SessionPoolConfig: DefaultSessionPoolConfig})
 	defer teardown()
 	// Wait for the session pool initialization to finish.
 	expectedWrites := uint64(0)
