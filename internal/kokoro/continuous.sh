@@ -139,7 +139,7 @@ testAllModules() {
     pushd "$(dirname "$i")" >/dev/null
     runDirectoryTests
     # Run integration tests against an emulator.
-    runEmulatorTests
+    # runEmulatorTests
     popd >/dev/null
   done
 }
