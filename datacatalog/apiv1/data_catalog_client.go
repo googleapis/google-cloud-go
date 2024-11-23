@@ -82,6 +82,9 @@ type CallOptions struct {
 	GetIamPolicy                    []gax.CallOption
 	TestIamPermissions              []gax.CallOption
 	ImportEntries                   []gax.CallOption
+	SetConfig                       []gax.CallOption
+	RetrieveConfig                  []gax.CallOption
+	RetrieveEffectiveConfig         []gax.CallOption
 	CancelOperation                 []gax.CallOption
 	DeleteOperation                 []gax.CallOption
 	GetOperation                    []gax.CallOption
@@ -581,6 +584,48 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		SetConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RetrieveConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RetrieveEffectiveConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation:    []gax.CallOption{},
@@ -1032,6 +1077,45 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		SetConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		RetrieveConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		RetrieveEffectiveConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation:    []gax.CallOption{},
@@ -1080,6 +1164,9 @@ type internalClient interface {
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	ImportEntries(context.Context, *datacatalogpb.ImportEntriesRequest, ...gax.CallOption) (*ImportEntriesOperation, error)
 	ImportEntriesOperation(name string) *ImportEntriesOperation
+	SetConfig(context.Context, *datacatalogpb.SetConfigRequest, ...gax.CallOption) (*datacatalogpb.MigrationConfig, error)
+	RetrieveConfig(context.Context, *datacatalogpb.RetrieveConfigRequest, ...gax.CallOption) (*datacatalogpb.OrganizationConfig, error)
+	RetrieveEffectiveConfig(context.Context, *datacatalogpb.RetrieveEffectiveConfigRequest, ...gax.CallOption) (*datacatalogpb.MigrationConfig, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -1536,6 +1623,28 @@ func (c *Client) ImportEntries(ctx context.Context, req *datacatalogpb.ImportEnt
 // The name must be that of a previously created ImportEntriesOperation, possibly from a different process.
 func (c *Client) ImportEntriesOperation(name string) *ImportEntriesOperation {
 	return c.internalClient.ImportEntriesOperation(name)
+}
+
+// SetConfig sets the configuration related to the migration to Dataplex for an
+// organization or project.
+func (c *Client) SetConfig(ctx context.Context, req *datacatalogpb.SetConfigRequest, opts ...gax.CallOption) (*datacatalogpb.MigrationConfig, error) {
+	return c.internalClient.SetConfig(ctx, req, opts...)
+}
+
+// RetrieveConfig retrieves the configuration related to the migration from Data Catalog to
+// Dataplex for a specific organization, including all the projects under it
+// which have a separate configuration set.
+func (c *Client) RetrieveConfig(ctx context.Context, req *datacatalogpb.RetrieveConfigRequest, opts ...gax.CallOption) (*datacatalogpb.OrganizationConfig, error) {
+	return c.internalClient.RetrieveConfig(ctx, req, opts...)
+}
+
+// RetrieveEffectiveConfig retrieves the effective configuration related to the migration from Data
+// Catalog to Dataplex for a specific organization or project. If there is no
+// specific configuration set for the resource, the setting is checked
+// hierarchicahlly through the ancestors of the resource, starting from the
+// resource itself.
+func (c *Client) RetrieveEffectiveConfig(ctx context.Context, req *datacatalogpb.RetrieveEffectiveConfigRequest, opts ...gax.CallOption) (*datacatalogpb.MigrationConfig, error) {
+	return c.internalClient.RetrieveEffectiveConfig(ctx, req, opts...)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -2441,6 +2550,60 @@ func (c *gRPCClient) ImportEntries(ctx context.Context, req *datacatalogpb.Impor
 	return &ImportEntriesOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *gRPCClient) SetConfig(ctx context.Context, req *datacatalogpb.SetConfigRequest, opts ...gax.CallOption) (*datacatalogpb.MigrationConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SetConfig[0:len((*c.CallOptions).SetConfig):len((*c.CallOptions).SetConfig)], opts...)
+	var resp *datacatalogpb.MigrationConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.SetConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) RetrieveConfig(ctx context.Context, req *datacatalogpb.RetrieveConfigRequest, opts ...gax.CallOption) (*datacatalogpb.OrganizationConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RetrieveConfig[0:len((*c.CallOptions).RetrieveConfig):len((*c.CallOptions).RetrieveConfig)], opts...)
+	var resp *datacatalogpb.OrganizationConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RetrieveConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) RetrieveEffectiveConfig(ctx context.Context, req *datacatalogpb.RetrieveEffectiveConfigRequest, opts ...gax.CallOption) (*datacatalogpb.MigrationConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RetrieveEffectiveConfig[0:len((*c.CallOptions).RetrieveEffectiveConfig):len((*c.CallOptions).RetrieveEffectiveConfig)], opts...)
+	var resp *datacatalogpb.MigrationConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RetrieveEffectiveConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
@@ -4940,6 +5103,184 @@ func (c *restClient) ImportEntries(ctx context.Context, req *datacatalogpb.Impor
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// SetConfig sets the configuration related to the migration to Dataplex for an
+// organization or project.
+func (c *restClient) SetConfig(ctx context.Context, req *datacatalogpb.SetConfigRequest, opts ...gax.CallOption) (*datacatalogpb.MigrationConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:setConfig", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetConfig[0:len((*c.CallOptions).SetConfig):len((*c.CallOptions).SetConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &datacatalogpb.MigrationConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// RetrieveConfig retrieves the configuration related to the migration from Data Catalog to
+// Dataplex for a specific organization, including all the projects under it
+// which have a separate configuration set.
+func (c *restClient) RetrieveConfig(ctx context.Context, req *datacatalogpb.RetrieveConfigRequest, opts ...gax.CallOption) (*datacatalogpb.OrganizationConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:retrieveConfig", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RetrieveConfig[0:len((*c.CallOptions).RetrieveConfig):len((*c.CallOptions).RetrieveConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &datacatalogpb.OrganizationConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// RetrieveEffectiveConfig retrieves the effective configuration related to the migration from Data
+// Catalog to Dataplex for a specific organization or project. If there is no
+// specific configuration set for the resource, the setting is checked
+// hierarchicahlly through the ancestors of the resource, starting from the
+// resource itself.
+func (c *restClient) RetrieveEffectiveConfig(ctx context.Context, req *datacatalogpb.RetrieveEffectiveConfigRequest, opts ...gax.CallOption) (*datacatalogpb.MigrationConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:retrieveEffectiveConfig", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RetrieveEffectiveConfig[0:len((*c.CallOptions).RetrieveEffectiveConfig):len((*c.CallOptions).RetrieveEffectiveConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &datacatalogpb.MigrationConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.

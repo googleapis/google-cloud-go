@@ -145,6 +145,11 @@
                 "LookupStreamObject"
               ]
             },
+            "RunStream": {
+              "methods": [
+                "RunStream"
+              ]
+            },
             "StartBackfillJob": {
               "methods": [
                 "StartBackfillJob"
@@ -303,6 +308,11 @@
             "LookupStreamObject": {
               "methods": [
                 "LookupStreamObject"
+              ]
+            },
+            "RunStream": {
+              "methods": [
+                "RunStream"
               ]
             },
             "StartBackfillJob": {
