@@ -225,7 +225,7 @@ func TestNextBatchContextCancelEmulated(t *testing.T) {
 			t.Errorf("NextBatch() expected to fail with %v, got nil", context.Canceled)
 		}
 		if len(result) > 0 {
-			t.Errorf("NextBatch() got object %v, want 0 objects", len(result))
+			t.Errorf("NextBatch() got %v objects, want 0 objects", len(result))
 		}
 	})
 }
@@ -270,10 +270,10 @@ func TestNextBatchEmulated(t *testing.T) {
 					t.Fatalf("NextBatch() failed with error: %v", err)
 				}
 				if err == nil {
-					t.Errorf("NextBatch() expected to to return %v", iterator.Done)
+					t.Errorf("NextBatch() expected to return %v", iterator.Done)
 				}
 				if len(result) != numObject {
-					t.Errorf("NextBatch() got object %d, want %d objects", len(result), numObject)
+					t.Errorf("NextBatch() got %d objects, want %d objects", len(result), numObject)
 				}
 			})
 		}
