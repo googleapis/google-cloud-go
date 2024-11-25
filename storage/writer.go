@@ -88,14 +88,14 @@ type Writer struct {
 	// cancellation.
 	ChunkRetryDeadline time.Duration
 
-	// ChunkTransferTimeOut sets a per-chunk retry transfer timeout for multi-chunk
-	// resumable uploads.
+	// ChunkTransferTimeout sets a per-chunk request timeout for resumable uploads.
 	//
-	// For uploads of larger files, the Writer will attempt to retry if the
-	// request to upload a particular chunk stalls for some time.
-	// If a single chunk has been attempting to upload for longer than this
-	// timeout, then it will be retried. The default value no timeout.
-	ChunkTransferTimeOut time.Duration
+	// For resumable uploads, the Writer will terminate the request and attempt a retry
+	// if the request to upload a particular chunk stalls for longer than this duration. Retries
+	// may continue until the ChunkRetryDeadline is reached.
+	//
+	// The default value is no timeout.
+	ChunkTransferTimeout time.Duration
 
 	// ForceEmptyContentType is an optional parameter that is used to disable
 	// auto-detection of Content-Type. By default, if a blank Content-Type
@@ -197,7 +197,7 @@ func (w *Writer) openWriter() (err error) {
 		ctx:                   w.ctx,
 		chunkSize:             w.ChunkSize,
 		chunkRetryDeadline:    w.ChunkRetryDeadline,
-		chunkTransferTimeout:  w.ChunkTransferTimeOut,
+		chunkTransferTimeout:  w.ChunkTransferTimeout,
 		bucket:                w.o.bucket,
 		attrs:                 &w.ObjectAttrs,
 		conds:                 w.o.conds,

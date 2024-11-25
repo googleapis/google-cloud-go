@@ -1525,23 +1525,23 @@ func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T)
 			{
 				name: "stall-on-first-chunk-with-chunk-transfer-timeout-zero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-1s-after-1024K"},
 				},
-				wantDuration: 10 * time.Second,
+				wantDuration: 1 * time.Second,
 			},
 			{
 				name: "stall-on-second-chunk-with-chunk-transfer-timeout-zero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-3072K"},
+					"storage.objects.insert": {"stall-for-1s-after-3072K"},
 				},
-				wantDuration: 10 * time.Second,
+				wantDuration: 1 * time.Second,
 			},
 			{
 				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-zero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-1s-after-1024K", "stall-for-1s-after-1024K"},
 				},
-				wantDuration: 10 * time.Second,
+				wantDuration: 1 * time.Second,
 			},
 		}
 
@@ -1634,26 +1634,26 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 			{
 				name: "stall-on-first-chunk-with-chunk-transfer-timeout-nonzero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-1s-after-1024K"},
 				},
-				chunkTransferTimeout: 2 * time.Second,
-				wantDuration:         3 * time.Second,
+				chunkTransferTimeout: 100 * time.Millisecond,
+				wantDuration:         1 * time.Second,
 			},
 			{
 				name: "stall-on-second-chunk-with-chunk-transfer-timeout-nonzero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-3072K"},
+					"storage.objects.insert": {"stall-for-1s-after-3072K"},
 				},
-				chunkTransferTimeout: 2 * time.Second,
-				wantDuration:         3 * time.Second,
+				chunkTransferTimeout: 100 * time.Millisecond,
+				wantDuration:         1 * time.Second,
 			},
 			{
 				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-nonzero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-1s-after-1024K", "stall-for-1s-after-1024K"},
 				},
-				chunkTransferTimeout: 2 * time.Second,
-				wantDuration:         5 * time.Second,
+				chunkTransferTimeout: 100 * time.Millisecond,
+				wantDuration:         1 * time.Second,
 			},
 		}
 
