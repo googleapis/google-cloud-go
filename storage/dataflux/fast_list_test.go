@@ -266,8 +266,11 @@ func TestNextBatchEmulated(t *testing.T) {
 				defer c.Close()
 				c.method = tc.method
 				result, err := c.NextBatch(ctx)
-				if err != nil {
+				if err != nil && err != iterator.Done {
 					t.Fatalf("NextBatch() failed with error: %v", err)
+				}
+				if err == nil {
+					t.Errorf("NextBatch() expected to to return %v", iterator.Done)
 				}
 				if len(result) != numObject {
 					t.Errorf("NextBatch() got object %d, want %d objects", len(result), numObject)
@@ -306,28 +309,28 @@ func TestNextBatchWithQueryEmulated(t *testing.T) {
 			want                 int
 		}{
 			{
-				desc:                 "list objects with delimiter / and prefix",
+				desc:                 "object at root level using worksteal lsiting",
 				skipDirectoryObjects: false,
-				query:                storage.Query{Prefix: prefix, Delimiter: "/"},
+				query:                storage.Query{Delimiter: "/"},
 				method:               worksteal,
-				want:                 1,
+				want:                 101,
 			},
 			{
-				desc:                 "list objects with prefix",
+				desc:                 "objects with prefix using worksteal listing",
 				skipDirectoryObjects: false,
 				query:                storage.Query{Prefix: prefix},
 				method:               worksteal,
 				want:                 100,
 			},
 			{
-				desc:                 "list objects with delimiter / and prefix",
+				desc:                 "object at root level",
 				skipDirectoryObjects: false,
-				query:                storage.Query{Prefix: prefix, Delimiter: "/"},
+				query:                storage.Query{Delimiter: "/"},
 				method:               open,
-				want:                 1,
+				want:                 101,
 			},
 			{
-				desc:                 "list objects with prefix",
+				desc:                 "objects with prefix",
 				skipDirectoryObjects: false,
 				query:                storage.Query{Prefix: prefix},
 				method:               open,
@@ -340,6 +343,7 @@ func TestNextBatchWithQueryEmulated(t *testing.T) {
 				input.SkipDirectoryObjects = tc.skipDirectoryObjects
 				df := NewLister(client, input)
 				defer df.Close()
+				df.method = tc.method
 				got, err := df.NextBatch(ctx)
 				if err != nil && err != iterator.Done {
 					t.Fatalf("NextBatch() for input %v failed: %v", *input, err)
