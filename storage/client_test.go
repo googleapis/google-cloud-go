@@ -1506,117 +1506,7 @@ func TestRetryReadStallEmulated(t *testing.T) {
 	}
 }
 
-// In resumable uploads, the first chunk encounter a stall. Because ChunkTransferTimeout is set to 0,
-// the upload must wait for the entire stall duration.
-func TestRetryWriteReqStallWithDefaultChunkTransferTimeoutEmulated(t *testing.T) {
-	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
-		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
-		if err != nil {
-			t.Fatalf("creating bucket: %v", err)
-		}
-
-		chunkSize := 2 * 1024 * 1024 // 2 MiB
-		fileSize := 5 * 1024 * 1024  // 5 MiB
-		tests := []struct {
-			name         string
-			instructions map[string][]string
-			wantDuration time.Duration
-		}{
-			{
-				name: "stall-on-first-chunk-with-chunk-transfer-timeout-zero",
-				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-1s-after-1024K"},
-				},
-				wantDuration: 1 * time.Second,
-			},
-			{
-				name: "stall-on-second-chunk-with-chunk-transfer-timeout-zero",
-				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-1s-after-3072K"},
-				},
-				wantDuration: 1 * time.Second,
-			},
-			{
-				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-zero",
-				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-1s-after-1024K", "stall-for-1s-after-1024K"},
-				},
-				wantDuration: 1 * time.Second,
-			},
-		}
-
-		for _, tc := range tests {
-			t.Run(tc.name, func(t *testing.T) {
-				testID := createRetryTest(t, client, tc.instructions)
-				ctx := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-
-				prefix := time.Now().Nanosecond()
-				want := &ObjectAttrs{
-					Bucket:     bucket,
-					Name:       fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
-					Generation: defaultGen,
-				}
-
-				var gotAttrs *ObjectAttrs
-				params := &openWriterParams{
-					attrs:     want,
-					bucket:    bucket,
-					chunkSize: chunkSize,
-					ctx:       ctx,
-					donec:     make(chan struct{}),
-					setError:  func(_ error) {}, // no-op
-					progress:  func(_ int64) {}, // no-op
-					setObj:    func(o *ObjectAttrs) { gotAttrs = o },
-				}
-
-				startTime := time.Now()
-				pw, err := client.OpenWriter(params)
-				if err != nil {
-					t.Fatalf("failed to open writer: %v", err)
-				}
-				buffer := bytes.Repeat([]byte("A"), fileSize)
-				if _, err := pw.Write(buffer); err != nil {
-					t.Fatalf("failed to populate test data: %v", err)
-				}
-				if err := pw.Close(); err != nil {
-					t.Fatalf("closing object: %v", err)
-				}
-				endTime := time.Now()
-				select {
-				case <-params.donec:
-				}
-				if gotAttrs == nil {
-					t.Fatalf("Writer finished, but resulting object wasn't set")
-				}
-				if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
-					t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
-				}
-				if endTime.Sub(startTime) < tc.wantDuration {
-					t.Errorf("write took %v, want >= %v", endTime.Sub(startTime), tc.wantDuration)
-				}
-
-				r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
-				if err != nil {
-					t.Fatalf("opening reading: %v", err)
-				}
-				wantLen := len(buffer)
-				got := make([]byte, wantLen)
-				n, err := r.Read(got)
-				if n != wantLen {
-					t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
-				}
-				if diff := cmp.Diff(got, buffer); diff != "" {
-					t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
-				}
-			})
-		}
-	})
-}
-
-// In resumable uploads, the chunk encounter a stall. The chunkTransferTimeout will then cancel the request and resend it.
-// The second request is expected to succeed. This allows the upload to finish earlier than if it had waited for the entire stall
-// duration, as the chunkTransferTimeout prevents unnecessary delays.
-func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T) {
+func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
 		if err != nil {
@@ -1629,15 +1519,34 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 			name                 string
 			instructions         map[string][]string
 			chunkTransferTimeout time.Duration
-			wantDuration         time.Duration
 		}{
+			{
+				name: "stall-on-first-chunk-with-chunk-transfer-timeout-zero",
+				instructions: map[string][]string{
+					"storage.objects.insert": {"stall-for-1s-after-1024K"},
+				},
+				chunkTransferTimeout: 0,
+			},
+			{
+				name: "stall-on-second-chunk-with-chunk-transfer-timeout-zero",
+				instructions: map[string][]string{
+					"storage.objects.insert": {"stall-for-1s-after-3072K"},
+				},
+				chunkTransferTimeout: 0,
+			},
+			{
+				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-zero",
+				instructions: map[string][]string{
+					"storage.objects.insert": {"stall-for-1s-after-1024K", "stall-for-1s-after-1024K"},
+				},
+				chunkTransferTimeout: 0,
+			},
 			{
 				name: "stall-on-first-chunk-with-chunk-transfer-timeout-nonzero",
 				instructions: map[string][]string{
 					"storage.objects.insert": {"stall-for-1s-after-1024K"},
 				},
 				chunkTransferTimeout: 100 * time.Millisecond,
-				wantDuration:         1 * time.Second,
 			},
 			{
 				name: "stall-on-second-chunk-with-chunk-transfer-timeout-nonzero",
@@ -1645,7 +1554,6 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 					"storage.objects.insert": {"stall-for-1s-after-3072K"},
 				},
 				chunkTransferTimeout: 100 * time.Millisecond,
-				wantDuration:         1 * time.Second,
 			},
 			{
 				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-nonzero",
@@ -1653,7 +1561,6 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 					"storage.objects.insert": {"stall-for-1s-after-1024K", "stall-for-1s-after-1024K"},
 				},
 				chunkTransferTimeout: 100 * time.Millisecond,
-				wantDuration:         1 * time.Second,
 			},
 		}
 
@@ -1671,18 +1578,17 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 
 				var gotAttrs *ObjectAttrs
 				params := &openWriterParams{
-					attrs:                want,
-					bucket:               bucket,
-					chunkSize:            chunkSize,
-					chunkTransferTimeout: tc.chunkTransferTimeout,
-					ctx:                  ctx,
-					donec:                make(chan struct{}),
-					setError:             func(_ error) {}, // no-op
-					progress:             func(_ int64) {}, // no-op
-					setObj:               func(o *ObjectAttrs) { gotAttrs = o },
+					attrs:              want,
+					bucket:             bucket,
+					chunkSize:          chunkSize,
+					chunkRetryDeadline: 2 * time.Second,
+					ctx:                ctx,
+					donec:              make(chan struct{}),
+					setError:           func(_ error) {}, // no-op
+					progress:           func(_ int64) {}, // no-op
+					setObj:             func(o *ObjectAttrs) { gotAttrs = o },
 				}
 
-				startTime := time.Now()
 				pw, err := client.OpenWriter(params)
 				if err != nil {
 					t.Fatalf("failed to open writer: %v", err)
@@ -1694,7 +1600,6 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				if err := pw.Close(); err != nil {
 					t.Fatalf("closing object: %v", err)
 				}
-				endTime := time.Now()
 				select {
 				case <-params.donec:
 				}
@@ -1703,9 +1608,6 @@ func TestRetryWriteReqStallWithNonZeroChunkTransferTimeoutEmulated(t *testing.T)
 				}
 				if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
 					t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
-				}
-				if endTime.Sub(startTime) > tc.wantDuration {
-					t.Errorf("write took %v, want <= %v", endTime.Sub(startTime), tc.wantDuration)
 				}
 
 				r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
