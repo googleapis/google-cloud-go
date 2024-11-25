@@ -163,7 +163,8 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 		// countError tracks the number of failed listing methods.
 		countErr := &countErr{counter: 0}
 
-		// ctx, cancel := context.WithCancel(ctx)
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
 		// Errgroup takes care of running both methods in parallel. As soon as one of
 		// the method is complete, the running method also stops.
 		g, ctx := errgroup.WithContext(ctx)
@@ -179,7 +180,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 				return fmt.Errorf("worksteal listing: %w", err)
 			}
 			// Close context when worksteal listing is complete.
-			// cancel()
+			cancel()
 			wsCompletedfirst = true
 			wsObjects = objects
 
@@ -192,7 +193,7 @@ func (c *Lister) NextBatch(ctx context.Context) ([]*storage.ObjectAttrs, error) 
 				return fmt.Errorf("sequential listing: %w", err)
 			}
 			// Close context when sequential listing is complete.
-			// cancel()
+			cancel()
 			seqCompletedfirst = true
 			seqObjects = objects
 			nextToken = token

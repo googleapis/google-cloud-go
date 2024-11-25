@@ -231,7 +231,7 @@ func TestNextBatchContextCancelEmulated(t *testing.T) {
 }
 
 func TestNextBatchEmulated(t *testing.T) {
-	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
+	transportClientTest(skipGRPC("context cancel not supported"), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
 
 		bucketHandle := client.Bucket(bucket)
 		if err := bucketHandle.Create(ctx, project, &storage.BucketAttrs{
@@ -282,7 +282,7 @@ func TestNextBatchEmulated(t *testing.T) {
 }
 
 func TestNextBatchWithQueryEmulated(t *testing.T) {
-	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
+	transportClientTest(skipGRPC("context cancel not supported"), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
 
 		bucketHandle := client.Bucket(bucket)
 		if err := bucketHandle.Create(ctx, project, &storage.BucketAttrs{
