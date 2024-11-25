@@ -386,7 +386,8 @@ func TestClient_MultiEndpoint(t *testing.T) {
 
 	// Let both endpoints connect.
 	for atomic.LoadUint32(&connCount) < numChannels*2 {
-		time.Sleep(time.Millisecond * 5)
+		t.Logf("Channels connected: %d/%d", connCount, numChannels*2)
+		time.Sleep(time.Second * 5)
 	}
 
 	// Works via mirror.
