@@ -5903,6 +5903,11 @@
                 "SetIamPolicy"
               ]
             },
+            "StreamQueryReasoningEngine": {
+              "methods": [
+                "StreamQueryReasoningEngine"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
@@ -5961,6 +5966,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "StreamQueryReasoningEngine": {
+              "methods": [
+                "StreamQueryReasoningEngine"
               ]
             },
             "TestIamPermissions": {
