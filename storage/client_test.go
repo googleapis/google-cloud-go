@@ -1637,7 +1637,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 					}
 				} else {
 					if !errors.Is(err, context.DeadlineExceeded) {
-						t.Fatalf("expected context deadline exceeded found %v", err.Error())
+						t.Fatalf("expected context deadline exceeded found %v", err)
 					}
 				}
 			})
