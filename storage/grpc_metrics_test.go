@@ -59,9 +59,9 @@ func TestNewPreparedResource(t *testing.T) {
 			detectedAttributes: []attribute.KeyValue{
 				{Key: "location",
 					Value: attribute.StringValue("us-central1")},
-				{Key: "cloud_platform",
+				{Key: "cloud.platform",
 					Value: attribute.StringValue("gcp")},
-				{Key: "host_id",
+				{Key: "host.id",
 					Value: attribute.StringValue("gce-instance-id")},
 			},
 			wantAttributes: attribute.NewSet(attribute.KeyValue{
@@ -73,26 +73,6 @@ func TestNewPreparedResource(t *testing.T) {
 			}, attribute.KeyValue{
 				Key:   "host_id",
 				Value: attribute.StringValue("gce-instance-id"),
-			}),
-		}, {
-			desc: "use default when value is empty string",
-			detectedAttributes: []attribute.KeyValue{
-				{Key: "location",
-					Value: attribute.StringValue("us-central1")},
-				{Key: "cloud_platform",
-					Value: attribute.StringValue("")},
-				{Key: "host_id",
-					Value: attribute.StringValue("")},
-			},
-			wantAttributes: attribute.NewSet(attribute.KeyValue{
-				Key:   "location",
-				Value: attribute.StringValue("us-central1"),
-			}, attribute.KeyValue{
-				Key:   "cloud_platform",
-				Value: attribute.StringValue("unknown"),
-			}, attribute.KeyValue{
-				Key:   "host_id",
-				Value: attribute.StringValue("unknown"),
 			}),
 		},
 	} {

@@ -17,7 +17,6 @@ package storage
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -82,13 +81,6 @@ func metricFormatter(m metricdata.Metrics) string {
 	return metricPrefix + strings.ReplaceAll(string(m.Name), ".", "/")
 }
 
-func gcpAttributeExpectedDefaults() []attribute.KeyValue {
-	return []attribute.KeyValue{
-		{Key: "location", Value: attribute.StringValue("global")},
-		{Key: "cloud_platform", Value: attribute.StringValue("unknown")},
-		{Key: "host_id", Value: attribute.StringValue("unknown")}}
-}
-
 // Added to help with tests
 type preparedResource struct {
 	projectToUse string
@@ -103,29 +95,34 @@ func newPreparedResource(ctx context.Context, project string, resourceOptions []
 	preparedResource := &preparedResource{}
 	s := detectedAttrs.Set()
 	p, present := s.Value("cloud.account.id")
-	if present {
+	// Precedence for user provided project when set
+	if present && project == "" {
 		preparedResource.projectToUse = p.AsString()
 	} else {
 		preparedResource.projectToUse = project
 	}
-	updates := []attribute.KeyValue{}
-	for _, kv := range gcpAttributeExpectedDefaults() {
-		if val, present := s.Value(kv.Key); !present || val.AsString() == "" {
-			updates = append(updates, attribute.KeyValue{Key: kv.Key, Value: kv.Value})
-		}
+	mrAttrs := []attribute.KeyValue{
+		{Key: "gcp.resource_type", Value: attribute.StringValue(monitoredResourceName)},
+		{Key: "project_id", Value: attribute.StringValue(project)},
+		{Key: "api", Value: attribute.StringValue("grpc")},
+		{Key: "instance_id", Value: attribute.StringValue(uuid.New().String())},
 	}
-	r, err := resource.New(
-		ctx,
-		resource.WithAttributes(
-			attribute.KeyValue{Key: "gcp.resource_type", Value: attribute.StringValue(monitoredResourceName)},
-			attribute.KeyValue{Key: "instance_id", Value: attribute.StringValue(uuid.New().String())},
-			attribute.KeyValue{Key: "project_id", Value: attribute.StringValue(project)},
-			attribute.KeyValue{Key: "api", Value: attribute.StringValue("grpc")},
-		),
-		resource.WithAttributes(detectedAttrs.Attributes()...),
-		// Last duplicate key / value wins
-		resource.WithAttributes(updates...),
-	)
+	if v, ok := s.Value("location"); ok {
+		mrAttrs = append(mrAttrs, attribute.KeyValue{Key: "location", Value: v})
+	} else {
+		mrAttrs = append(mrAttrs, attribute.KeyValue{Key: "location", Value: attribute.StringValue("global")})
+	}
+	if v, ok := s.Value("cloud.platform"); ok {
+		mrAttrs = append(mrAttrs, attribute.KeyValue{Key: "cloud_platform", Value: v})
+	} else {
+		mrAttrs = append(mrAttrs, attribute.KeyValue{Key: "cloud_platform", Value: attribute.StringValue("unknown")})
+	}
+	if v, ok := s.Value("host.id"); ok {
+		mrAttrs = append(mrAttrs, attribute.KeyValue{Key: "host_id", Value: v})
+	} else {
+		mrAttrs = append(mrAttrs, attribute.KeyValue{Key: "host_id", Value: attribute.StringValue("unknown")})
+	}
+	r, err := resource.New(ctx, resource.WithAttributes(mrAttrs...))
 	if err != nil {
 		return nil, err
 	}
@@ -162,17 +159,12 @@ func newGRPCMetricContext(ctx context.Context, project string, config storageCon
 		if err != nil {
 			return nil, err
 		}
-		meterOpts = append(meterOpts, metric.WithResource(preparedResource.resource))
 		// Implementation requires a project, if one is not determined possibly user
 		// credentials. Then we will fail stating gRPC Metrics require a project-id.
 		if project == "" && preparedResource.projectToUse == "" {
 			return nil, fmt.Errorf("google cloud project is required to start client-side metrics")
 		}
-		// If projectTouse isn't the same as project provided to Storage client, then
-		// emit a log stating which project is being used to emit metrics to.
-		if project != preparedResource.projectToUse {
-			log.Printf("The Project ID configured for metrics is %s, but the Project ID of the storage client is %s. Make sure that the service account in use has the required metric writing role (roles/monitoring.metricWriter) in the project projectIdToUse or metrics will not be written.", preparedResource.projectToUse, project)
-		}
+		meterOpts = append(meterOpts, metric.WithResource(preparedResource.resource))
 		meOpts := []mexporter.Option{
 			mexporter.WithProjectID(preparedResource.projectToUse),
 			mexporter.WithMetricDescriptorTypeFormatter(metricFormatter),
