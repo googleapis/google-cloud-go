@@ -21,12 +21,12 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
@@ -1291,11 +1291,16 @@ func TestDetectDefaultGoogleAccessID(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			jsonBytes := []byte(tc.creds(tc.serviceAccount))
+			creds, err := credentials.DetectDefault(&credentials.DetectOptions{
+				CredentialsJSON: jsonBytes,
+			})
+			if tc.expectSuccess && err != nil {
+				t.Fatal(err)
+			}
 			bucket := BucketHandle{
 				c: &Client{
-					creds: &google.Credentials{
-						JSON: []byte(tc.creds(tc.serviceAccount)),
-					},
+					creds: creds,
 				},
 				name: "my-bucket",
 			}

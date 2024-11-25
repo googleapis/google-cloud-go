@@ -43,6 +43,8 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -55,13 +57,11 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel/sdk/resource"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
-	"google.golang.org/api/transport"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -92,6 +92,13 @@ var (
 	replaying     bool
 	testTime      time.Time
 	controlClient *control.StorageControlClient
+)
+
+var (
+	testScopes = []string{
+		ScopeFullControl,
+		"https://www.googleapis.com/auth/cloud-platform",
+	}
 )
 
 func TestMain(m *testing.M) {
@@ -5348,6 +5355,24 @@ func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 	})
 }
 
+type credentialsFile struct {
+	Type string `json:"type"`
+
+	// Service Account email
+	ClientEmail string `json:"client_email"`
+}
+
+func jwtConfigFromJSON(jsonKey []byte) (*credentialsFile, error) {
+	var f credentialsFile
+	if err := json.Unmarshal(jsonKey, &f); err != nil {
+		return nil, err
+	}
+	if f.Type != "service_account" {
+		return nil, fmt.Errorf("read JWT from JSON credentials: 'type' field is %q (expected service_account)", f.Type)
+	}
+	return &f, nil
+}
+
 func TestIntegration_HMACKey(t *testing.T) {
 	ctx := skipJSONReads(skipGRPC("hmac not implemented"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, _ string, client *Client) {
@@ -5367,13 +5392,12 @@ func TestIntegration_HMACKey(t *testing.T) {
 		if credentials.JSON == nil {
 			t.Fatal("could not read the JSON key file, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
 		}
-		conf, err := google.JWTConfigFromJSON(credentials.JSON)
+		conf, err := jwtConfigFromJSON(credentials.JSON)
 		if err != nil {
 			t.Fatal(err)
 		}
-		serviceAccountEmail := conf.Email
 
-		hmacKey, err := client.CreateHMACKey(ctx, projectID, serviceAccountEmail)
+		hmacKey, err := client.CreateHMACKey(ctx, projectID, conf.ClientEmail)
 		if err != nil {
 			t.Fatalf("Failed to create HMACKey: %v", err)
 		}
@@ -5600,8 +5624,7 @@ func TestIntegration_SignedURL_WithCreds(t *testing.T) {
 	}
 
 	ctx := context.Background()
-
-	creds, err := findTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
+	creds, err := findTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", testScopes)
 	if err != nil {
 		t.Fatalf("unable to find test credentials: %v", err)
 	}
@@ -5626,7 +5649,7 @@ func TestIntegration_SignedURL_WithCreds(t *testing.T) {
 		if err := verifySignedURL(url, nil, contents); err != nil {
 			t.Fatalf("problem with the signed URL: %v", err)
 		}
-	}, option.WithCredentials(creds))
+	}, option.WithAuthCredentials(creds))
 }
 
 func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
@@ -5683,7 +5706,7 @@ func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
 	// By default we are authed with a token source, so don't have the context to
 	// read some of the fields from the keyfile.
 	// Here we explictly send the key to the client.
-	creds, err := findTestCredentials(context.Background(), "GCLOUD_TESTS_GOLANG_KEY", ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
+	creds, err := findTestCredentials(context.Background(), "GCLOUD_TESTS_GOLANG_KEY", testScopes)
 	if err != nil {
 		t.Fatalf("unable to find test credentials: %v", err)
 	}
@@ -5728,7 +5751,7 @@ func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
 				}
 			})
 		}
-	}, option.WithCredentials(creds))
+	}, option.WithAuthCredentials(creds))
 
 }
 
@@ -5969,16 +5992,11 @@ func verifyPostPolicy(pv4 *PostPolicyV4, obj *ObjectHandle, bytesToWrite []byte,
 		})
 }
 
-func findTestCredentials(ctx context.Context, envVar string, scopes ...string) (*google.Credentials, error) {
-	key := os.Getenv(envVar)
-	var opts []option.ClientOption
-	if len(scopes) > 0 {
-		opts = append(opts, option.WithScopes(scopes...))
-	}
-	if key != "" {
-		opts = append(opts, option.WithCredentialsFile(key))
-	}
-	return transport.Creds(ctx, opts...)
+func findTestCredentials(ctx context.Context, envVar string, scopes []string) (*auth.Credentials, error) {
+	return credentials.DetectDefault(&credentials.DetectOptions{
+		CredentialsFile: os.Getenv(envVar),
+		Scopes:          scopes,
+	})
 }
 
 type testHelper struct {
