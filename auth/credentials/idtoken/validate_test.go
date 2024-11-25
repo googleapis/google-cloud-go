@@ -184,7 +184,7 @@ func TestValidateES256(t *testing.T) {
 	tests := []struct {
 		name         string
 		keyID        string
-		certsUrl     string
+		certsURL     string
 		x            *big.Int
 		y            *big.Int
 		nowFunc      func() time.Time
@@ -203,7 +203,7 @@ func TestValidateES256(t *testing.T) {
 		{
 			name:         "works with custom certs url",
 			keyID:        keyID,
-			certsUrl:     "http://example.com",
+			certsURL:     "http://example.com",
 			x:            pk.X,
 			y:            pk.Y,
 			nowFunc:      beforeExp,
@@ -271,7 +271,7 @@ func TestValidateES256(t *testing.T) {
 
 			v, err := NewValidator(&ValidatorOptions{
 				Client:        client,
-				ES256CertsURL: tt.certsUrl,
+				ES256CertsURL: tt.certsURL,
 			})
 			if err != nil {
 				t.Fatalf("NewValidator(...) = %q, want nil", err)
