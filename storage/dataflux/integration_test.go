@@ -38,6 +38,8 @@ const (
 	bucketExpiryAge = 24 * time.Hour
 	minObjectSize   = 1024
 	maxObjectSize   = 1024 * 1024
+	HTTP            = "http"
+	GRPC            = "grpc"
 )
 
 var (
