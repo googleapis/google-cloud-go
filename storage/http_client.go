@@ -31,11 +31,11 @@ import (
 	"strings"
 	"time"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"github.com/googleapis/gax-go/v2/callctx"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -48,7 +48,7 @@ import (
 // httpStorageClient is the HTTP-JSON API implementation of the transport-agnostic
 // storageClient interface.
 type httpStorageClient struct {
-	creds                      *google.Credentials
+	creds                      *auth.Credentials
 	hc                         *http.Client
 	xmlHost                    string
 	raw                        *raw.Service
@@ -65,7 +65,7 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	o := s.clientOption
 	config := newStorageConfig(o...)
 
-	var creds *google.Credentials
+	var creds *auth.Credentials
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
 	// since raw.NewService configures the correct default endpoints when initializing the
 	// internal http client. However, in our case, "NewRangeReader" in reader.go needs to
@@ -83,10 +83,10 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		)
 		// Don't error out here. The user may have passed in their own HTTP
 		// client which does not auth with ADC or other common conventions.
-		c, err := transport.Creds(ctx, o...)
+		c, err := transport.AuthCreds(ctx, o...)
 		if err == nil {
 			creds = c
-			o = append(o, internaloption.WithCredentials(creds))
+			o = append(o, option.WithAuthCredentials(creds))
 		}
 	} else {
 		var hostURL *url.URL
