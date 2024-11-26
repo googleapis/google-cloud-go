@@ -38,11 +38,15 @@ func TestStorageMonitoredResource(t *testing.T) {
 	ctx := context.Background()
 	for _, test := range []struct {
 		desc               string
+		project            string
+		api                string
 		detectedAttributes []attribute.KeyValue
 		wantAttributes     attribute.Set
 	}{
 		{
-			desc: "default values set when GCP attributes are not detected",
+			desc:    "default values set when GCP attributes are not detected",
+			project: "project-id",
+			api:     "grpc",
 			wantAttributes: attribute.NewSet(attribute.KeyValue{
 				Key:   "location",
 				Value: attribute.StringValue("global"),
@@ -52,10 +56,18 @@ func TestStorageMonitoredResource(t *testing.T) {
 			}, attribute.KeyValue{
 				Key:   "host_id",
 				Value: attribute.StringValue("unknown"),
+			}, attribute.KeyValue{
+				Key:   "project_id",
+				Value: attribute.StringValue("project-id"),
+			}, attribute.KeyValue{
+				Key:   "api",
+				Value: attribute.StringValue("grpc"),
 			}),
 		},
 		{
-			desc: "use detected values when GCP attributes are detected",
+			desc:    "use detected values when GCP attributes are detected",
+			project: "project-id",
+			api:     "grpc",
 			detectedAttributes: []attribute.KeyValue{
 				{Key: "location",
 					Value: attribute.StringValue("us-central1")},
@@ -73,25 +85,29 @@ func TestStorageMonitoredResource(t *testing.T) {
 			}, attribute.KeyValue{
 				Key:   "host_id",
 				Value: attribute.StringValue("gce-instance-id"),
+			}, attribute.KeyValue{
+				Key:   "project_id",
+				Value: attribute.StringValue("project-id"),
+			}, attribute.KeyValue{
+				Key:   "api",
+				Value: attribute.StringValue("grpc"),
 			}),
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
-			smr := &storageMonitoredResource{
-				project: "project",
+			smr, err := newStorageMonitoredResource(ctx, test.project, test.api, resource.WithAttributes(test.detectedAttributes...))
+			if err != nil {
+				t.Errorf("newStorageMonitoredResource: %v", err)
 			}
-			if err := smr.detectFromGCP(ctx, resource.WithAttributes(test.detectedAttributes...)); err != nil {
-				t.Errorf("detectFromGCP: %v", err)
-			}
-			resultSet := smr.resource.Set()
+			resultSet := smr.toResource().Set()
 			for _, want := range test.wantAttributes.ToSlice() {
 				got, exists := resultSet.Value(want.Key)
 				if !exists {
-					t.Errorf("detectFromGCP: %v not set", want.Key)
+					t.Errorf("resultSet[%v] not set", want.Key)
 					continue
 				}
 				if got != want.Value {
-					t.Errorf("detectFromGCP: want[%v] = %v, got: %v", want.Key, want.Value, got)
+					t.Errorf("want[%v] = %v, got: %v", want.Key, want.Value.AsString(), got.AsString())
 					continue
 				}
 			}

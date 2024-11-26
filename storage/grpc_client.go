@@ -34,6 +34,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	"google.golang.org/api/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding"
@@ -115,6 +116,19 @@ func defaultGRPCOptions() []option.ClientOption {
 type grpcStorageClient struct {
 	raw      *gapic.Client
 	settings *settings
+}
+
+func enableClientMetrics(ctx context.Context, s *settings, config storageConfig) (*metricsContext, error) {
+	var project string
+	c, err := transport.Creds(ctx, s.clientOption...)
+	if err == nil {
+		project = c.ProjectID
+	}
+	metricsContext, err := newGRPCMetricContext(ctx, project, config.metricInterval, config.testReader)
+	if err != nil {
+		return nil, fmt.Errorf("gRPC Metrics: %w", err)
+	}
+	return metricsContext, nil
 }
 
 // newGRPCStorageClient initializes a new storageClient that uses the gRPC
