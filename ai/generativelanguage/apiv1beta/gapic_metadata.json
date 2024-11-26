@@ -25,9 +25,19 @@
                 "GetCachedContent"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListCachedContents": {
               "methods": [
                 "ListCachedContents"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "UpdateCachedContent": {
@@ -55,9 +65,19 @@
                 "GetCachedContent"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListCachedContents": {
               "methods": [
                 "ListCachedContents"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "UpdateCachedContent": {
@@ -83,6 +103,16 @@
               "methods": [
                 "GenerateMessage"
               ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
             }
           }
         },
@@ -97,6 +127,16 @@
             "GenerateMessage": {
               "methods": [
                 "GenerateMessage"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             }
           }
@@ -123,9 +163,19 @@
                 "GetFile"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListFiles": {
               "methods": [
                 "ListFiles"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             }
           }
@@ -148,9 +198,19 @@
                 "GetFile"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListFiles": {
               "methods": [
                 "ListFiles"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             }
           }
@@ -187,6 +247,16 @@
                 "GenerateContent"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "StreamGenerateContent": {
               "methods": [
                 "StreamGenerateContent"
@@ -222,6 +292,16 @@
                 "GenerateContent"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "StreamGenerateContent": {
               "methods": [
                 "StreamGenerateContent"
@@ -251,6 +331,11 @@
                 "GetModel"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetTunedModel": {
               "methods": [
                 "GetTunedModel"
@@ -259,6 +344,11 @@
             "ListModels": {
               "methods": [
                 "ListModels"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListTunedModels": {
@@ -291,6 +381,11 @@
                 "GetModel"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetTunedModel": {
               "methods": [
                 "GetTunedModel"
@@ -299,6 +394,11 @@
             "ListModels": {
               "methods": [
                 "ListModels"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListTunedModels": {
@@ -330,9 +430,19 @@
                 "DeletePermission"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetPermission": {
               "methods": [
                 "GetPermission"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListPermissions": {
@@ -365,9 +475,19 @@
                 "DeletePermission"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetPermission": {
               "methods": [
                 "GetPermission"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListPermissions": {
@@ -394,6 +514,16 @@
         "grpc": {
           "libraryClient": "PredictionClient",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "Predict": {
               "methods": [
                 "Predict"
@@ -404,6 +534,16 @@
         "rest": {
           "libraryClient": "PredictionClient",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "Predict": {
               "methods": [
                 "Predict"
@@ -478,6 +618,11 @@
                 "GetDocument"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListChunks": {
               "methods": [
                 "ListChunks"
@@ -491,6 +636,11 @@
             "ListDocuments": {
               "methods": [
                 "ListDocuments"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "QueryCorpus": {
@@ -583,6 +733,11 @@
                 "GetDocument"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListChunks": {
               "methods": [
                 "ListChunks"
@@ -596,6 +751,11 @@
             "ListDocuments": {
               "methods": [
                 "ListDocuments"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "QueryCorpus": {
@@ -651,6 +811,16 @@
               "methods": [
                 "GenerateText"
               ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
             }
           }
         },
@@ -675,6 +845,16 @@
             "GenerateText": {
               "methods": [
                 "GenerateText"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             }
           }
