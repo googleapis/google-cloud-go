@@ -21,7 +21,7 @@ import (
 
 	"cloud.google.com/go/storage/experimental"
 	"github.com/google/go-cmp/cmp"
-	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
+	"go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
 )
 
@@ -39,7 +39,6 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        true,
 				disableClientMetrics: false,
 				metricInterval:       0,
-				metricExporter:       nil,
 			},
 		},
 		{
@@ -50,7 +49,6 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        true,
 				disableClientMetrics: false,
 				metricInterval:       0,
-				metricExporter:       nil,
 			},
 		},
 		{
@@ -61,7 +59,6 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        true,
 				disableClientMetrics: false,
 				metricInterval:       0,
-				metricExporter:       nil,
 			},
 		},
 		{
@@ -72,7 +69,6 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        false,
 				disableClientMetrics: false,
 				metricInterval:       0,
-				metricExporter:       nil,
 			},
 		},
 		{
@@ -83,7 +79,6 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        false,
 				disableClientMetrics: false,
 				metricInterval:       0,
-				metricExporter:       nil,
 			},
 		},
 		{
@@ -94,7 +89,6 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        false,
 				disableClientMetrics: true,
 				metricInterval:       0,
-				metricExporter:       nil,
 			},
 		},
 		{
@@ -105,7 +99,6 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        false,
 				disableClientMetrics: false,
 				metricInterval:       time.Minute * 5,
-				metricExporter:       nil,
 			},
 		},
 		{
@@ -152,21 +145,18 @@ func TestApplyStorageOpt(t *testing.T) {
 	}
 }
 
-func TestSetCustomExporter(t *testing.T) {
-	exporter, err := stdoutmetric.New()
-	if err != nil {
-		t.Errorf("TestSetCustomExporter: %v", err)
-	}
+func TestSetManualReader(t *testing.T) {
+	manualReader := metric.NewManualReader()
 	want := storageConfig{
-		metricExporter: &exporter,
+		manualReader: manualReader,
 	}
 	var got storageConfig
-	opt := experimental.WithMetricExporter(&exporter)
+	opt := withTestMetricReader(manualReader)
 	if storageOpt, ok := opt.(storageClientOption); ok {
 		storageOpt.ApplyStorageOpt(&got)
 	}
-	if got.metricExporter != want.metricExporter {
-		t.Errorf("TestSetCustomExpoerter: metricExporter want=%v, got=%v", want.metricExporter, got.metricExporter)
+	if got.manualReader != want.manualReader {
+		t.Errorf("TestSetCustomExpoerter: manualReader want=%v, got=%v", want.manualReader, got.manualReader)
 	}
 }
 

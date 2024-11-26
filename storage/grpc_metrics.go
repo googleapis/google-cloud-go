@@ -124,8 +124,14 @@ type metricsContext struct {
 	close func()
 }
 
-func newGRPCMetricContext(ctx context.Context, project string, interval time.Duration, testReader metric.Reader) (*metricsContext, error) {
-	smr, err := newStorageMonitoredResource(ctx, project, "grpc")
+type metricsConfig struct {
+	project      string
+	interval     time.Duration
+	manualReader *metric.ManualReader
+}
+
+func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsContext, error) {
+	smr, err := newStorageMonitoredResource(ctx, cfg.project, "grpc")
 	if err != nil {
 		return nil, err
 	}
@@ -133,8 +139,9 @@ func newGRPCMetricContext(ctx context.Context, project string, interval time.Dur
 	if err != nil {
 		return nil, err
 	}
-	if interval == 0 {
-		interval = time.Minute
+	interval := time.Minute
+	if cfg.interval > 0 {
+		interval = cfg.interval
 	}
 	meterOpts := []metric.Option{
 		metric.WithResource(smr.resource),
@@ -147,8 +154,8 @@ func newGRPCMetricContext(ctx context.Context, project string, interval time.Dur
 			createHistogramView("grpc.client.attempt.rcvd_total_compressed_message_size", sizeHistogramBoundaries()),
 			createHistogramView("grpc.client.attempt.sent_total_compressed_message_size", sizeHistogramBoundaries())),
 	}
-	if testReader != nil {
-		meterOpts = append(meterOpts, metric.WithReader(testReader))
+	if cfg.manualReader != nil {
+		meterOpts = append(meterOpts, metric.WithReader(cfg.manualReader))
 	}
 	provider := metric.NewMeterProvider(meterOpts...)
 	mo := opentelemetry.MetricsOptions{

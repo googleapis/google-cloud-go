@@ -124,7 +124,11 @@ func enableClientMetrics(ctx context.Context, s *settings, config storageConfig)
 	if err == nil {
 		project = c.ProjectID
 	}
-	metricsContext, err := newGRPCMetricContext(ctx, project, config.metricInterval, config.testReader)
+	metricsContext, err := newGRPCMetricContext(ctx, metricsConfig{
+		project:      project,
+		interval:     config.metricInterval,
+		manualReader: config.manualReader},
+	)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC Metrics: %w", err)
 	}
