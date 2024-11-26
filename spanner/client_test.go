@@ -1148,7 +1148,7 @@ func TestClient_PreparedTransaction(t *testing.T) {
 				t.Fatalf("affected rows mismatch\n Got: %v\nWant: %v", g, w)
 			}
 			return nil
-		})
+		}, TransactionOptions{})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1218,7 +1218,7 @@ func TestClient_PooledTransaction(t *testing.T) {
 				t.Fatalf("affected rows mismatch\n Got: %v\nWant: %v", g, w)
 			}
 			return nil
-		})
+		}, TransactionOptions{TransactionTag: "test-tag", CommitOptions: CommitOptions{ReturnCommitStats: true}})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1239,13 +1239,20 @@ func TestClient_PooledTransaction(t *testing.T) {
 		if id == nil || len(id) == 0 {
 			t.Fatal("missing transaction id")
 		}
+		commitRequest := requests[1].(*sppb.CommitRequest)
+		if !commitRequest.ReturnCommitStats {
+			t.Fatal("missing commit request flag on CommitRequest")
+		}
+		if g, w := commitRequest.RequestOptions.TransactionTag, "test-tag"; g != w {
+			t.Fatalf("transaction tag mismatch\n Got: %v\nWant: %v", g, w)
+		}
 	}
 	// Verify that the next transaction fails, as the pool is exhausted, and we have disabled the prepareFunc.
 	ctx, cancel := context.WithTimeout(ctx, time.Millisecond*10)
 	defer cancel()
 	_, err = txPool.RunTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
 		return nil
-	})
+	}, TransactionOptions{})
 	if err == nil {
 		t.Fatal("missing error for last transaction")
 	}
@@ -1332,7 +1339,7 @@ func TestClient_RegisterPool(t *testing.T) {
 	defer cancel()
 	_, err = txPool.RunTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
 		return nil
-	})
+	}, TransactionOptions{})
 	if err == nil {
 		t.Fatal("missing error for last transaction")
 	}

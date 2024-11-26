@@ -46,7 +46,7 @@ type TransactionPool interface {
 	// RunTransaction runs a transaction using a transaction from this pool.
 	//
 	// This method is experimental and may be removed in a future version of this library.
-	RunTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (resp CommitResponse, err error)
+	RunTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error)
 }
 
 type fixedSizePool struct {
@@ -92,14 +92,14 @@ func (p *fixedSizePool) RegisterPool(client *Client) error {
 }
 
 // RunTransaction runs a read/write transaction using a prepared transaction from the pool.
-func (p *fixedSizePool) RunTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (resp CommitResponse, err error) {
+func (p *fixedSizePool) RunTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.fixedSizePool.RunTransaction")
 	defer func() { trace.EndSpan(ctx, err) }()
 	tx, err := p.get(ctx)
 	if err != nil {
 		return resp, err
 	}
-	return tx.run(ctx, f)
+	return tx.run(ctx, f, options)
 }
 
 func (p *fixedSizePool) get(ctx context.Context) (*preparedTransaction, error) {

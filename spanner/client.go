@@ -541,7 +541,7 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 	defer func() { trace.EndSpan(ctx, err) }()
 	var resp CommitResponse
 	if c.txPool != nil {
-		resp, err = c.txPool.RunTransaction(ctx, f)
+		resp, err = c.txPool.RunTransaction(ctx, f, TransactionOptions{})
 	} else {
 		resp, err = c.rwTransaction(ctx, f, TransactionOptions{})
 	}
@@ -558,7 +558,11 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 func (c *Client) ReadWriteTransactionWithOptions(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.ReadWriteTransactionWithOptions")
 	defer func() { trace.EndSpan(ctx, err) }()
-	resp, err = c.rwTransaction(ctx, f, options)
+	if c.txPool != nil {
+		resp, err = c.txPool.RunTransaction(ctx, f, options)
+	} else {
+		resp, err = c.rwTransaction(ctx, f, options)
+	}
 	return resp, err
 }
 
@@ -588,8 +592,9 @@ type preparedTransaction struct {
 	t  *ReadWriteTransaction
 }
 
-func (pt *preparedTransaction) run(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (resp CommitResponse, err error) {
-	return pt.c.rwTransactionWithPreparedTransaction(ctx, pt.sh, pt.t, f, pt.t.txOpts)
+func (pt *preparedTransaction) run(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error) {
+	opts := pt.t.txOpts.merge(options)
+	return pt.c.rwTransactionWithPreparedTransaction(ctx, pt.sh, pt.t, f, opts)
 }
 
 func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error) {
