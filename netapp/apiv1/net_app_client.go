@@ -85,6 +85,8 @@ type CallOptions struct {
 	StopReplication             []gax.CallOption
 	ResumeReplication           []gax.CallOption
 	ReverseReplicationDirection []gax.CallOption
+	EstablishPeering            []gax.CallOption
+	SyncReplication             []gax.CallOption
 	CreateBackupVault           []gax.CallOption
 	GetBackupVault              []gax.CallOption
 	ListBackupVaults            []gax.CallOption
@@ -342,6 +344,8 @@ func defaultCallOptions() *CallOptions {
 		ReverseReplicationDirection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		EstablishPeering: []gax.CallOption{},
+		SyncReplication:  []gax.CallOption{},
 		CreateBackupVault: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -657,6 +661,8 @@ func defaultRESTCallOptions() *CallOptions {
 		ReverseReplicationDirection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		EstablishPeering: []gax.CallOption{},
+		SyncReplication:  []gax.CallOption{},
 		CreateBackupVault: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -825,6 +831,10 @@ type internalClient interface {
 	ResumeReplicationOperation(name string) *ResumeReplicationOperation
 	ReverseReplicationDirection(context.Context, *netapppb.ReverseReplicationDirectionRequest, ...gax.CallOption) (*ReverseReplicationDirectionOperation, error)
 	ReverseReplicationDirectionOperation(name string) *ReverseReplicationDirectionOperation
+	EstablishPeering(context.Context, *netapppb.EstablishPeeringRequest, ...gax.CallOption) (*EstablishPeeringOperation, error)
+	EstablishPeeringOperation(name string) *EstablishPeeringOperation
+	SyncReplication(context.Context, *netapppb.SyncReplicationRequest, ...gax.CallOption) (*SyncReplicationOperation, error)
+	SyncReplicationOperation(name string) *SyncReplicationOperation
 	CreateBackupVault(context.Context, *netapppb.CreateBackupVaultRequest, ...gax.CallOption) (*CreateBackupVaultOperation, error)
 	CreateBackupVaultOperation(name string) *CreateBackupVaultOperation
 	GetBackupVault(context.Context, *netapppb.GetBackupVaultRequest, ...gax.CallOption) (*netapppb.BackupVault, error)
@@ -1230,6 +1240,29 @@ func (c *Client) ReverseReplicationDirection(ctx context.Context, req *netapppb.
 // The name must be that of a previously created ReverseReplicationDirectionOperation, possibly from a different process.
 func (c *Client) ReverseReplicationDirectionOperation(name string) *ReverseReplicationDirectionOperation {
 	return c.internalClient.ReverseReplicationDirectionOperation(name)
+}
+
+// EstablishPeering establish replication peering.
+func (c *Client) EstablishPeering(ctx context.Context, req *netapppb.EstablishPeeringRequest, opts ...gax.CallOption) (*EstablishPeeringOperation, error) {
+	return c.internalClient.EstablishPeering(ctx, req, opts...)
+}
+
+// EstablishPeeringOperation returns a new EstablishPeeringOperation from a given name.
+// The name must be that of a previously created EstablishPeeringOperation, possibly from a different process.
+func (c *Client) EstablishPeeringOperation(name string) *EstablishPeeringOperation {
+	return c.internalClient.EstablishPeeringOperation(name)
+}
+
+// SyncReplication syncs the replication. This will invoke one time volume data transfer from
+// source to destination.
+func (c *Client) SyncReplication(ctx context.Context, req *netapppb.SyncReplicationRequest, opts ...gax.CallOption) (*SyncReplicationOperation, error) {
+	return c.internalClient.SyncReplication(ctx, req, opts...)
+}
+
+// SyncReplicationOperation returns a new SyncReplicationOperation from a given name.
+// The name must be that of a previously created SyncReplicationOperation, possibly from a different process.
+func (c *Client) SyncReplicationOperation(name string) *SyncReplicationOperation {
+	return c.internalClient.SyncReplicationOperation(name)
 }
 
 // CreateBackupVault creates new backup vault
@@ -2456,6 +2489,46 @@ func (c *gRPCClient) ReverseReplicationDirection(ctx context.Context, req *netap
 		return nil, err
 	}
 	return &ReverseReplicationDirectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) EstablishPeering(ctx context.Context, req *netapppb.EstablishPeeringRequest, opts ...gax.CallOption) (*EstablishPeeringOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).EstablishPeering[0:len((*c.CallOptions).EstablishPeering):len((*c.CallOptions).EstablishPeering)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.EstablishPeering(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &EstablishPeeringOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) SyncReplication(ctx context.Context, req *netapppb.SyncReplicationRequest, opts ...gax.CallOption) (*SyncReplicationOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SyncReplication[0:len((*c.CallOptions).SyncReplication):len((*c.CallOptions).SyncReplication)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.SyncReplication(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SyncReplicationOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -5697,6 +5770,147 @@ func (c *restClient) ReverseReplicationDirection(ctx context.Context, req *netap
 	}, nil
 }
 
+// EstablishPeering establish replication peering.
+func (c *restClient) EstablishPeering(ctx context.Context, req *netapppb.EstablishPeeringRequest, opts ...gax.CallOption) (*EstablishPeeringOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:establishPeering", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &EstablishPeeringOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// SyncReplication syncs the replication. This will invoke one time volume data transfer from
+// source to destination.
+func (c *restClient) SyncReplication(ctx context.Context, req *netapppb.SyncReplicationRequest, opts ...gax.CallOption) (*SyncReplicationOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:sync", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &SyncReplicationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // CreateBackupVault creates new backup vault
 func (c *restClient) CreateBackupVault(ctx context.Context, req *netapppb.CreateBackupVaultRequest, opts ...gax.CallOption) (*CreateBackupVaultOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -7543,6 +7757,24 @@ func (c *restClient) EncryptVolumesOperation(name string) *EncryptVolumesOperati
 	}
 }
 
+// EstablishPeeringOperation returns a new EstablishPeeringOperation from a given name.
+// The name must be that of a previously created EstablishPeeringOperation, possibly from a different process.
+func (c *gRPCClient) EstablishPeeringOperation(name string) *EstablishPeeringOperation {
+	return &EstablishPeeringOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// EstablishPeeringOperation returns a new EstablishPeeringOperation from a given name.
+// The name must be that of a previously created EstablishPeeringOperation, possibly from a different process.
+func (c *restClient) EstablishPeeringOperation(name string) *EstablishPeeringOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &EstablishPeeringOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // ResumeReplicationOperation returns a new ResumeReplicationOperation from a given name.
 // The name must be that of a previously created ResumeReplicationOperation, possibly from a different process.
 func (c *gRPCClient) ResumeReplicationOperation(name string) *ResumeReplicationOperation {
@@ -7628,6 +7860,24 @@ func (c *gRPCClient) SwitchActiveReplicaZoneOperation(name string) *SwitchActive
 func (c *restClient) SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &SwitchActiveReplicaZoneOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// SyncReplicationOperation returns a new SyncReplicationOperation from a given name.
+// The name must be that of a previously created SyncReplicationOperation, possibly from a different process.
+func (c *gRPCClient) SyncReplicationOperation(name string) *SyncReplicationOperation {
+	return &SyncReplicationOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// SyncReplicationOperation returns a new SyncReplicationOperation from a given name.
+// The name must be that of a previously created SyncReplicationOperation, possibly from a different process.
+func (c *restClient) SyncReplicationOperation(name string) *SyncReplicationOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &SyncReplicationOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

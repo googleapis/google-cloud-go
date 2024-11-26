@@ -252,8 +252,8 @@ type CreateBackupPolicyRequest struct {
 	BackupPolicy *BackupPolicy `protobuf:"bytes,2,opt,name=backup_policy,json=backupPolicy,proto3" json:"backup_policy,omitempty"`
 	// Required. The ID to use for the backup policy.
 	// The ID must be unique within the specified location.
-	// Must contain only letters, numbers, underscore and hyphen, with the first
-	// character a letter or underscore, the last a letter or underscore or a
+	// Must contain only letters, numbers and hyphen, with the first
+	// character a letter, the last a letter or a
 	// number, and a 63 character maximum.
 	BackupPolicyId string `protobuf:"bytes,3,opt,name=backup_policy_id,json=backupPolicyId,proto3" json:"backup_policy_id,omitempty"`
 }

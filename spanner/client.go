@@ -748,7 +748,7 @@ func getQueryOptions(opts QueryOptions) QueryOptions {
 // Close closes the client.
 func (c *Client) Close() {
 	if c.metricsTracerFactory != nil {
-		c.metricsTracerFactory.shutdown()
+		c.metricsTracerFactory.shutdown(context.Background())
 	}
 	if c.idleSessions != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
