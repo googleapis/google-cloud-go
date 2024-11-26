@@ -114,7 +114,7 @@ func TestIntegration_NextBatch(t *testing.T) {
 	}
 	const landsatBucket = "gcp-public-data-landsat"
 	const landsatPrefix = "LC08/01/001"
-
+  
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
