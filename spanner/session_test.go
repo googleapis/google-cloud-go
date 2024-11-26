@@ -22,6 +22,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"log"
 	"math/rand"
 	"reflect"
 	"strings"
@@ -158,6 +160,7 @@ func TestLIFOSessionOrder(t *testing.T) {
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MaxOpened: 3,
 				MinOpened: 3,
@@ -197,6 +200,7 @@ func TestTakeFromIdleList(t *testing.T) {
 	// Make sure maintainer keeps the idle sessions.
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MaxIdle:                   10,
 				MaxOpened:                 10,
@@ -254,6 +258,7 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	// Make sure maintainer keeps the idle sessions.
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				WriteSessions:             0.0,
 				MaxIdle:                   1,
@@ -343,6 +348,7 @@ func TestSessionLeak(t *testing.T) {
 	ctx := context.Background()
 
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			TrackSessionHandles: true,
 			MinOpened:           0,
@@ -423,8 +429,12 @@ func TestSessionLeak(t *testing.T) {
 
 func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.T) {
 	t.Parallel()
+
 	ctx := context.Background()
+	logger := log.Default()
+	logger.SetOutput(io.Discard)
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 0,
 			MaxOpened: 1,
@@ -433,6 +443,7 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 			},
 			TrackSessionHandles: true,
 		},
+		Logger: logger,
 	})
 	defer teardown()
 
@@ -500,9 +511,13 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 }
 
 func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *testing.T) {
+	t.Parallel()
 
 	ctx := context.Background()
+	logger := log.Default()
+	logger.SetOutput(io.Discard)
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:                 1,
 			MaxOpened:                 3,
@@ -512,6 +527,7 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSession
 				executionFrequency:          15 * time.Millisecond, // check long-running sessions every 20ms
 			},
 		},
+		Logger: logger,
 	})
 	defer teardown()
 	sp := client.idleSessions
@@ -574,7 +590,10 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSession
 func TestLongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
+	logger := log.Default()
+	logger.SetOutput(io.Discard)
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 1,
 			MaxOpened: 3,
@@ -582,6 +601,7 @@ func TestLongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *
 				ActionOnInactiveTransaction: WarnAndClose,
 			},
 		},
+		Logger: logger,
 	})
 	defer teardown()
 	sp := client.idleSessions
@@ -642,7 +662,10 @@ func TestLongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *
 func TestLongRunningTransactionsCleanup_IfLog_VerifyInactiveSessionsOpen(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
+	logger := log.Default()
+	logger.SetOutput(io.Discard)
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 1,
 			MaxOpened: 3,
@@ -650,6 +673,7 @@ func TestLongRunningTransactionsCleanup_IfLog_VerifyInactiveSessionsOpen(t *test
 				ActionOnInactiveTransaction: Warn,
 			},
 		},
+		Logger: logger,
 	})
 	defer teardown()
 	sp := client.idleSessions
@@ -729,6 +753,7 @@ func TestLongRunningTransactionsCleanup_UtilisationBelowThreshold_VerifyInactive
 	t.Parallel()
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 1,
 			MaxOpened: 3,
@@ -789,6 +814,7 @@ func TestLongRunningTransactions_WhenAllExpectedlyLongRunning_VerifyInactiveSess
 	t.Parallel()
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 1,
 			MaxOpened: 3,
@@ -857,6 +883,7 @@ func TestLongRunningTransactions_WhenDurationBelowThreshold_VerifyInactiveSessio
 	t.Parallel()
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened: 1,
 			MaxOpened: 3,
@@ -939,6 +966,7 @@ func TestMaxOpenedSessions(t *testing.T) {
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MaxOpened: 1,
 			},
@@ -990,6 +1018,7 @@ func TestMinOpenedSessions(t *testing.T) {
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened:                 1,
 				healthCheckSampleInterval: time.Millisecond,
@@ -1047,6 +1076,7 @@ func TestPositiveNumInUseSessions(t *testing.T) {
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened:                 1,
 				healthCheckSampleInterval: time.Millisecond,
@@ -1093,6 +1123,7 @@ func TestMaxBurst(t *testing.T) {
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MaxBurst: 1,
 			},
@@ -1118,14 +1149,14 @@ func TestMaxBurst(t *testing.T) {
 		cr := sp.createReqs
 		sp.mu.Unlock()
 		if cr == 0 {
-			<-time.After(time.Second)
+			<-time.After(time.Millisecond * 10)
 			continue
 		}
 		// The first session request is being executed.
 		break
 	}
 
-	ctx2, cancel := context.WithTimeout(ctx, time.Second)
+	ctx2, cancel := context.WithTimeout(ctx, time.Millisecond*10)
 	defer cancel()
 	_, gotErr := sp.take(ctx2)
 
@@ -1157,6 +1188,7 @@ func TestSessionRecycle(t *testing.T) {
 	// while session pool initialization is still running.
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened: 1,
 				MaxIdle:   5,
@@ -1191,12 +1223,16 @@ func TestSessionRecycle(t *testing.T) {
 func TestSessionDestroy(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
+	logger := log.Default()
+	logger.SetOutput(io.Discard)
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened: 1,
 				MaxBurst:  1,
 			},
+			Logger: logger,
 		})
 	defer teardown()
 	sp := client.idleSessions
@@ -1260,6 +1296,7 @@ func TestHealthCheckScheduler(t *testing.T) {
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				HealthCheckInterval:       50 * time.Millisecond,
 				healthCheckSampleInterval: 10 * time.Millisecond,
@@ -1314,6 +1351,7 @@ func TestHealthCheck_FirstHealthCheck(t *testing.T) {
 	t.Parallel()
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MaxOpened:           0,
 				MinOpened:           0,
@@ -1345,6 +1383,7 @@ func TestHealthCheck_NonFirstHealthCheck(t *testing.T) {
 	t.Parallel()
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MaxOpened:           0,
 				MinOpened:           0,
@@ -1373,6 +1412,7 @@ func TestSessionHealthCheck(t *testing.T) {
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				HealthCheckInterval:       time.Nanosecond,
 				healthCheckSampleInterval: 10 * time.Millisecond,
@@ -1461,7 +1501,8 @@ func TestStressSessionPool(t *testing.T) {
 		cfg.HealthCheckWorkers = 50
 
 		server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-			SessionPoolConfig: cfg,
+			DisableNativeMetrics: true,
+			SessionPoolConfig:    cfg,
 		})
 		sp := client.idleSessions
 
@@ -1604,6 +1645,7 @@ func TestMaintainer(t *testing.T) {
 	maxIdle := uint64(4)
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MinOpened:                 minOpened,
 				MaxIdle:                   maxIdle,
@@ -1689,6 +1731,7 @@ func TestMultiplexSessionWorker(t *testing.T) {
 
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
+			DisableNativeMetrics: true,
 			SessionPoolConfig: SessionPoolConfig{
 				MultiplexSessionCheckInterval: time.Millisecond,
 			},
@@ -1774,8 +1817,9 @@ func TestInit_CreatesSessions(t *testing.T) {
 	}
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
-			SessionPoolConfig: spc,
-			NumChannels:       4,
+			DisableNativeMetrics: true,
+			SessionPoolConfig:    spc,
+			NumChannels:          4,
 		})
 	defer teardown()
 	sp := client.idleSessions
@@ -1860,7 +1904,8 @@ func TestMaintainer_DeletesSessions(t *testing.T) {
 	const sampleInterval = time.Millisecond * 10
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
-			SessionPoolConfig: SessionPoolConfig{healthCheckSampleInterval: sampleInterval},
+			DisableNativeMetrics: true,
+			SessionPoolConfig:    SessionPoolConfig{healthCheckSampleInterval: sampleInterval},
 		})
 	defer teardown()
 	sp := client.idleSessions
@@ -2012,8 +2057,9 @@ func TestSessionCreationIsDistributedOverChannels(t *testing.T) {
 	}
 	_, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
-			SessionPoolConfig: spc,
-			NumChannels:       numChannels,
+			DisableNativeMetrics: true,
+			SessionPoolConfig:    spc,
+			NumChannels:          numChannels,
 		})
 	defer teardown()
 	sp := client.idleSessions

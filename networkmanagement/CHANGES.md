@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.16.0...networkmanagement/v1.17.0) (2024-11-19)
+
+
+### Features
+
+* **networkmanagement:** Add round-trip mode ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.15.0...networkmanagement/v1.16.0) (2024-11-14)
 
 
