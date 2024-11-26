@@ -438,7 +438,7 @@ func BenchmarkWatchdogPulse(b *testing.B) {
 				b.Fatalf("(@%d-@%d): activateRouter: %v", numWriters, numConnections, err)
 			}
 			// now, set router as multiplex.  We do this to avoid router activation starting the watchdog
-			// in a seperate goroutine.
+			// in a separate goroutine.
 			router.multiplex = true
 
 			var writers []*ManagedStream

@@ -1166,7 +1166,7 @@ type AgentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Agent, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AgentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1213,7 +1213,7 @@ type AnswerRecordIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.AnswerRecord, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AnswerRecordIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1260,7 +1260,7 @@ type ContextIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Context, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ContextIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1307,7 +1307,7 @@ type ConversationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Conversation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConversationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1354,7 +1354,7 @@ type ConversationProfileIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.ConversationProfile, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ConversationProfileIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1401,7 +1401,7 @@ type DocumentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Document, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DocumentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1448,7 +1448,7 @@ type EntityTypeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.EntityType, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EntityTypeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1495,7 +1495,7 @@ type EnvironmentHistory_EntryIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.EnvironmentHistory_Entry, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EnvironmentHistory_EntryIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1542,7 +1542,7 @@ type EnvironmentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Environment, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EnvironmentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1589,7 +1589,7 @@ type GeneratorIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Generator, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *GeneratorIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1636,7 +1636,7 @@ type IntentIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Intent, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *IntentIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1683,7 +1683,7 @@ type KnowledgeBaseIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.KnowledgeBase, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *KnowledgeBaseIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1730,7 +1730,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1777,7 +1777,7 @@ type MessageIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Message, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *MessageIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1824,7 +1824,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1871,7 +1871,7 @@ type ParticipantIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Participant, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ParticipantIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1918,7 +1918,7 @@ type SessionEntityTypeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.SessionEntityType, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SessionEntityTypeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1945,6 +1945,53 @@ func (it *SessionEntityTypeIterator) takeBuf() interface{} {
 	return b
 }
 
+// SipTrunkIterator manages a stream of *dialogflowpb.SipTrunk.
+type SipTrunkIterator struct {
+	items    []*dialogflowpb.SipTrunk
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.SipTrunk, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *SipTrunkIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SipTrunkIterator) Next() (*dialogflowpb.SipTrunk, error) {
+	var item *dialogflowpb.SipTrunk
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SipTrunkIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SipTrunkIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // SuggestionIterator manages a stream of *dialogflowpb.Suggestion.
 type SuggestionIterator struct {
 	items    []*dialogflowpb.Suggestion
@@ -1965,7 +2012,7 @@ type SuggestionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Suggestion, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SuggestionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -2012,7 +2059,7 @@ type VersionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Version, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *VersionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

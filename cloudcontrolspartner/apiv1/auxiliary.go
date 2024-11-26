@@ -41,7 +41,7 @@ type AccessApprovalRequestIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*cloudcontrolspartnerpb.AccessApprovalRequest, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AccessApprovalRequestIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -88,7 +88,7 @@ type CustomerIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*cloudcontrolspartnerpb.Customer, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CustomerIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -135,7 +135,7 @@ type ViolationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*cloudcontrolspartnerpb.Violation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ViolationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -182,7 +182,7 @@ type WorkloadIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*cloudcontrolspartnerpb.Workload, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *WorkloadIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

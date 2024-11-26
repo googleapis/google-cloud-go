@@ -21,11 +21,10 @@ import (
 	"errors"
 	"fmt"
 	"hash/fnv"
-	"strings"
-
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -167,7 +166,18 @@ var (
 		return "global"
 	}
 
-	exporterOpts = []option.ClientOption{}
+	// GCM exporter should use the same options as Spanner client
+	// createExporterOptions takes Spanner client options and returns exporter options
+	// Overwritten in tests
+	createExporterOptions = func(spannerOpts ...option.ClientOption) []option.ClientOption {
+		defaultMonitoringEndpoint := "monitoring.googleapis.com:443"
+		if os.Getenv("SPANNER_MONITORING_HOST") != "" {
+			defaultMonitoringEndpoint = os.Getenv("SPANNER_MONITORING_HOST")
+		}
+		// overwrite any Endpoint option
+		spannerOpts = append(spannerOpts, option.WithEndpoint(defaultMonitoringEndpoint))
+		return spannerOpts
+	}
 )
 
 type metricInfo struct {
@@ -181,7 +191,7 @@ type builtinMetricsTracerFactory struct {
 	isDirectPathEnabled bool // Indicates if DirectPath is enabled.
 
 	// shutdown is a function to be called on client close to clean up resources.
-	shutdown func()
+	shutdown func(ctx context.Context)
 
 	// clientAttributes are attributes specific to a client instance that do not change across different function calls on the client.
 	clientAttributes []attribute.KeyValue
@@ -193,7 +203,7 @@ type builtinMetricsTracerFactory struct {
 	attemptCount       metric.Int64Counter     // Counter for the number of attempts.
 }
 
-func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsProvider metric.MeterProvider) (*builtinMetricsTracerFactory, error) {
+func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsProvider metric.MeterProvider, compression string, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
 		log.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric atteribute", err, metricLabelKeyClientUID)
@@ -216,7 +226,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 			attribute.String(monitoredResLabelKeyInstanceConfig, "unknown"),
 			attribute.String(monitoredResLabelKeyLocation, detectClientLocation(ctx)),
 		},
-		shutdown: func() {},
+		shutdown: func(ctx context.Context) {},
 	}
 
 	tracerFactory.isDirectPathEnabled = false
@@ -224,14 +234,14 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 	var meterProvider *sdkmetric.MeterProvider
 	if metricsProvider == nil {
 		// Create default meter provider
-		mpOptions, err := builtInMeterProviderOptions(project)
+		mpOptions, err := builtInMeterProviderOptions(project, compression, opts...)
 		if err != nil {
 			return tracerFactory, err
 		}
 		meterProvider = sdkmetric.NewMeterProvider(mpOptions...)
 
 		tracerFactory.enabled = true
-		tracerFactory.shutdown = func() { meterProvider.Shutdown(ctx) }
+		tracerFactory.shutdown = func(ctx context.Context) { meterProvider.Shutdown(ctx) }
 	} else {
 		switch metricsProvider.(type) {
 		case noop.MeterProvider:
@@ -247,8 +257,9 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 	return tracerFactory, err
 }
 
-func builtInMeterProviderOptions(project string) ([]sdkmetric.Option, error) {
-	defaultExporter, err := newMonitoringExporter(context.Background(), project, exporterOpts...)
+func builtInMeterProviderOptions(project, compression string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
+	allOpts := createExporterOptions(opts...)
+	defaultExporter, err := newMonitoringExporter(context.Background(), project, compression, allOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -409,6 +420,9 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 // to OpenTelemetry attributes format,
 // - combines these with common client attributes and returns
 func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribute.KeyValue, error) {
+	if mt.currOp == nil || mt.currOp.currAttempt == nil {
+		return nil, fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
+	}
 	// Create attribute key value pairs for attributes common to all metricss
 	attrKeyValues := []attribute.KeyValue{
 		attribute.String(metricLabelKeyMethod, strings.ReplaceAll(strings.TrimPrefix(mt.method, "/google.spanner.v1."), "/", ".")),
@@ -471,7 +485,10 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	elapsedTime := convertToMs(time.Since(mt.currOp.currAttempt.startTime))
 
 	// Record attempt_latencies
-	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
+	attemptLatAttrs, err := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
+	if err != nil {
+		return
+	}
 	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributes(attemptLatAttrs...))
 }
 
@@ -487,15 +504,24 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 	elapsedTimeMs := convertToMs(time.Since(mt.currOp.startTime))
 
 	// Record operation_count
-	opCntAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationCount)
+	opCntAttrs, err := mt.toOtelMetricAttrs(metricNameOperationCount)
+	if err != nil {
+		return
+	}
 	mt.instrumentOperationCount.Add(mt.ctx, 1, metric.WithAttributes(opCntAttrs...))
 
 	// Record operation_latencies
-	opLatAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationLatencies)
+	opLatAttrs, err := mt.toOtelMetricAttrs(metricNameOperationLatencies)
+	if err != nil {
+		return
+	}
 	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributes(opLatAttrs...))
 
 	// Record attempt_count
-	attemptCntAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptCount)
+	attemptCntAttrs, err := mt.toOtelMetricAttrs(metricNameAttemptCount)
+	if err != nil {
+		return
+	}
 	mt.instrumentAttemptCount.Add(mt.ctx, mt.currOp.attemptCount, metric.WithAttributes(attemptCntAttrs...))
 }
 

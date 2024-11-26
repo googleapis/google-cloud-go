@@ -25,7 +25,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
@@ -350,6 +349,12 @@ type ClientConfig struct {
 	//
 	// Default: false
 	EnableEndToEndTracing bool
+
+	// DisableNativeMetrics indicates whether native metrics should be disabled or not.
+	// If true, native metrics will not be emitted.
+	//
+	// Default: false
+	DisableNativeMetrics bool
 }
 
 type openTelemetryConfig struct {
@@ -493,18 +498,16 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		// Do not emit native metrics when emulator is being used
 		metricsProvider = noop.NewMeterProvider()
 	}
-
-	// SPANNER_ENABLE_BUILTIN_METRICS environment variable is used to enable
-	// native metrics for the Spanner client, which overrides the default.
-	//
-	// This is an EXPERIMENTAL feature and may be changed or removed in the future.
-	if os.Getenv("SPANNER_ENABLE_BUILTIN_METRICS") != "true" {
-		// Do not emit native metrics when SPANNER_ENABLE_BUILTIN_METRICS is not set to true
+	// Check if native metrics are disabled via env.
+	if disableNativeMetrics, _ := strconv.ParseBool(os.Getenv("SPANNER_DISABLE_BUILTIN_METRICS")); disableNativeMetrics {
+		config.DisableNativeMetrics = true
+	}
+	if config.DisableNativeMetrics {
+		// Do not emit native metrics when DisableNativeMetrics is set
 		metricsProvider = noop.NewMeterProvider()
 	}
 
-	// Create a OpenTelemetry metrics configuration
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider)
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, metricsProvider, config.Compression, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -588,11 +591,11 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
-		internaloption.AllowNonDefaultServiceAccount(true),
 		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(addNativeMetricsInterceptor()...)),
 		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(addStreamNativeMetricsInterceptor()...)),
 	}
 	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
+		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowNonDefaultServiceAccount(true))
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 	}
 	if compression == "gzip" {
@@ -651,29 +654,19 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 // wrappedStream  wraps around the embedded grpc.ClientStream, and intercepts the RecvMsg and
 // SendMsg method call.
 type wrappedStream struct {
-	sync.Mutex
-	isFirstRecv bool
-	method      string
-	target      string
+	method string
+	target string
 	grpc.ClientStream
 }
 
 func (w *wrappedStream) RecvMsg(m any) error {
-	attempt := &attemptTracer{}
-	attempt.setStartTime(time.Now())
 	err := w.ClientStream.RecvMsg(m)
-	statusCode, _ := status.FromError(err)
 	ctx := w.ClientStream.Context()
 	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-	if !ok || !w.isFirstRecv {
+	if !ok {
 		return err
 	}
-	w.Lock()
-	w.isFirstRecv = false
-	w.Unlock()
 	mt.method = w.method
-	mt.currOp.incrementAttemptCount()
-	mt.currOp.currAttempt = attempt
 	if strings.HasPrefix(w.target, "google-c2p") {
 		mt.currOp.setDirectPathEnabled(true)
 	}
@@ -687,9 +680,9 @@ func (w *wrappedStream) RecvMsg(m any) error {
 			}
 		}
 	}
-	mt.currOp.currAttempt.setStatus(statusCode.Code().String())
-	mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
-	recordAttemptCompletion(mt)
+	if mt.currOp.currAttempt != nil {
+		mt.currOp.currAttempt.setDirectPathUsed(isDirectPathUsed)
+	}
 	return err
 }
 
@@ -698,7 +691,7 @@ func (w *wrappedStream) SendMsg(m any) error {
 }
 
 func newWrappedStream(s grpc.ClientStream, method, target string) grpc.ClientStream {
-	return &wrappedStream{ClientStream: s, method: method, target: target, isFirstRecv: true}
+	return &wrappedStream{ClientStream: s, method: method, target: target}
 }
 
 // metricsInterceptor is a gRPC stream client interceptor that records metrics for stream RPCs.
@@ -755,7 +748,7 @@ func getQueryOptions(opts QueryOptions) QueryOptions {
 // Close closes the client.
 func (c *Client) Close() {
 	if c.metricsTracerFactory != nil {
-		c.metricsTracerFactory.shutdown()
+		c.metricsTracerFactory.shutdown(context.Background())
 	}
 	if c.idleSessions != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

@@ -41,7 +41,7 @@ type TraceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*tracepb.Trace, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *TraceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

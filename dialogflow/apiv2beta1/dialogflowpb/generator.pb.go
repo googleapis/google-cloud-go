@@ -253,10 +253,10 @@ type CreateGeneratorRequest struct {
 	// Optional. The ID to use for the generator, which will become the final
 	// component of the generator's resource name.
 	//
-	// The generator ID must be compliant with the regression fomula
+	// The generator ID must be compliant with the regression formula
 	// `[a-zA-Z][a-zA-Z0-9_-]*` with the characters length in range of [3,64].
 	// If the field is not provided, an Id will be auto-generated.
-	// If the field is provided, the caller is resposible for
+	// If the field is provided, the caller is responsible for
 	// 1. the uniqueness of the ID, otherwise the request will be rejected.
 	// 2. the consistency for whether to use custom ID or not under a project to
 	// better ensure uniqueness.
@@ -781,7 +781,6 @@ func (x *SummarizationSectionList) GetSummarizationSections() []*SummarizationSe
 
 // Providing examples in the generator (i.e. building a few-shot generator)
 // helps convey the desired format of the LLM response.
-// NEXT_ID: 10
 type FewShotExample struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1243,7 +1242,7 @@ type isGenerator_Context interface {
 }
 
 type Generator_SummarizationContext struct {
-	// Input of prebuilt Summarization feature.
+	// Input of Summarization feature.
 	SummarizationContext *SummarizationContext `protobuf:"bytes,13,opt,name=summarization_context,json=summarizationContext,proto3,oneof"`
 }
 

@@ -463,7 +463,7 @@ type AutonomousDatabaseBackupIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*oracledatabasepb.AutonomousDatabaseBackup, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AutonomousDatabaseBackupIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -510,7 +510,7 @@ type AutonomousDatabaseCharacterSetIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*oracledatabasepb.AutonomousDatabaseCharacterSet, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AutonomousDatabaseCharacterSetIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -557,7 +557,7 @@ type AutonomousDatabaseIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*oracledatabasepb.AutonomousDatabase, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AutonomousDatabaseIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -604,7 +604,7 @@ type AutonomousDbVersionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*oracledatabasepb.AutonomousDbVersion, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AutonomousDbVersionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -651,7 +651,7 @@ type CloudExadataInfrastructureIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*oracledatabasepb.CloudExadataInfrastructure, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CloudExadataInfrastructureIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -698,7 +698,7 @@ type CloudVmClusterIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*oracledatabasepb.CloudVmCluster, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CloudVmClusterIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -745,7 +745,7 @@ type DbNodeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*oracledatabasepb.DbNode, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DbNodeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -792,7 +792,7 @@ type DbServerIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*oracledatabasepb.DbServer, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DbServerIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -839,7 +839,7 @@ type DbSystemShapeIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*oracledatabasepb.DbSystemShape, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *DbSystemShapeIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -886,7 +886,7 @@ type EntitlementIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*oracledatabasepb.Entitlement, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *EntitlementIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -933,7 +933,7 @@ type GiVersionIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*oracledatabasepb.GiVersion, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *GiVersionIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -980,7 +980,7 @@ type LocationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *LocationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1027,7 +1027,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

@@ -1,6 +1,27 @@
 # Changes
 
 
+## [2.19.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.18.0...recaptchaenterprise/v2.19.0) (2024-11-14)
+
+
+### Features
+
+* **recaptchaenterprise:** A new enum `Challenge` is added ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+* **recaptchaenterprise:** A new field `challenge` is added to message `.google.cloud.recaptchaenterprise.v1.RiskAnalysis` ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
+## [2.18.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.17.3...recaptchaenterprise/v2.18.0) (2024-11-06)
+
+
+### Features
+
+* **recaptchaenterprise:** Enable Akamai web application firewall ([248026e](https://github.com/googleapis/google-cloud-go/commit/248026e7fad6ef6433f36c0205a9fe9e08b5545e))
+* **recaptchaenterprise:** Support for ListIpOverrides and RemoveIpOverride ([#11054](https://github.com/googleapis/google-cloud-go/issues/11054)) ([248026e](https://github.com/googleapis/google-cloud-go/commit/248026e7fad6ef6433f36c0205a9fe9e08b5545e))
+
+
+### Documentation
+
+* **recaptchaenterprise:** Minor updates to reference documentation ([248026e](https://github.com/googleapis/google-cloud-go/commit/248026e7fad6ef6433f36c0205a9fe9e08b5545e))
+
 ## [2.17.3](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.17.2...recaptchaenterprise/v2.17.3) (2024-10-23)
 
 

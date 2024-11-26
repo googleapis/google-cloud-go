@@ -365,7 +365,8 @@ type ResponseMessage_Text struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. A collection of text responses.
+	// Required. A collection of text response variants. If multiple variants
+	// are defined, only one text response variant is returned at runtime.
 	Text []string `protobuf:"bytes,1,rep,name=text,proto3" json:"text,omitempty"`
 	// Output only. Whether the playback of this message can be interrupted by
 	// the end user's speech and the client can then starts the next Dialogflow

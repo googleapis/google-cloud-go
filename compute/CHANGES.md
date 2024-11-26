@@ -1,5 +1,19 @@
 # Changes
 
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.28.3...compute/v1.29.0) (2024-11-14)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20241105 ([#954](https://github.com/googleapis/google-cloud-go/issues/954)) ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
+## [1.28.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.28.2...compute/v1.28.3) (2024-11-06)
+
+
+### Bug Fixes
+
+* **compute:** Reduce size of Go compute package ([#946](https://github.com/googleapis/google-cloud-go/issues/946)) ([706ecb2](https://github.com/googleapis/google-cloud-go/commit/706ecb2c813da3109035b986a642ca891a33847f))
+
 ## [1.28.2](https://github.com/googleapis/google-cloud-go/compare/compute/v1.28.1...compute/v1.28.2) (2024-10-23)
 
 
