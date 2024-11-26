@@ -16,17 +16,19 @@ package dataflux
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"runtime"
-	"strings"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/google/uuid"
 	"google.golang.org/api/iterator"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestPrefixAdjustedOffsets(t *testing.T) {
@@ -218,7 +220,7 @@ func TestNextBatchContextCancelEmulated(t *testing.T) {
 		childCtx, cancel := context.WithCancel(ctx)
 		cancel()
 		result, err := c.NextBatch(childCtx)
-		if err != nil && !strings.Contains(err.Error(), context.Canceled.Error()) {
+		if err != nil && !(errors.Is(err, context.Canceled) || status.Code(err) == codes.Canceled) {
 			t.Fatalf("NextBatch() failed with error: %v", err)
 		}
 		if err == nil {
