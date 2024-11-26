@@ -108,13 +108,12 @@ func TestIntegration_NextBatch_All(t *testing.T) {
 // large number of files.
 func TestIntegration_NextBatch(t *testing.T) {
 	// Accessing public bucket to list large number of files in batches.
-	// See https://cloud.google.com/storage/docs/public-datasets/landsat
+	// See https://cloud.google.com/storage/docs/public-datasets/landsat.
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
 	const landsatBucket = "gcp-public-data-landsat"
 	const landsatPrefix = "LC08/01/001"
-  
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
