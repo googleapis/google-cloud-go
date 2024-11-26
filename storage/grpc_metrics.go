@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -82,28 +83,34 @@ func metricFormatter(m metricdata.Metrics) string {
 }
 
 // Added to help with tests
-type preparedResource struct {
-	projectToUse string
-	resource     *resource.Resource
+type storageMonitoredResource struct {
+	project  string
+	resource *resource.Resource
 }
 
-func newPreparedResource(ctx context.Context, project string, resourceOptions []resource.Option) (*preparedResource, error) {
-	detectedAttrs, err := resource.New(ctx, resourceOptions...)
+func (smr *storageMonitoredResource) name() string {
+	return monitoredResourceName
+}
+
+func (smr *storageMonitoredResource) attributes() []string {
+	return []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}
+}
+
+func (smr *storageMonitoredResource) detectFromGCP(ctx context.Context, opts ...resource.Option) error {
+	aopts := append([]resource.Option{resource.WithDetectors(gcp.NewDetector())}, opts...)
+	detectedAttrs, err := resource.New(ctx, aopts...)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	preparedResource := &preparedResource{}
 	s := detectedAttrs.Set()
-	p, present := s.Value("cloud.account.id")
-	// Precedence for user provided project when set
-	if present && project == "" {
-		preparedResource.projectToUse = p.AsString()
-	} else {
-		preparedResource.projectToUse = project
+	if p, present := s.Value("cloud.account.id"); present && smr.project == "" {
+		smr.project = p.AsString()
+	} else if !present && smr.project == "" {
+		return errors.New("google cloud project is required to start client-side metrics")
 	}
 	mrAttrs := []attribute.KeyValue{
 		{Key: "gcp.resource_type", Value: attribute.StringValue(monitoredResourceName)},
-		{Key: "project_id", Value: attribute.StringValue(project)},
+		{Key: "project_id", Value: attribute.StringValue(smr.project)},
 		{Key: "api", Value: attribute.StringValue("grpc")},
 		{Key: "instance_id", Value: attribute.StringValue(uuid.New().String())},
 	}
@@ -124,10 +131,10 @@ func newPreparedResource(ctx context.Context, project string, resourceOptions []
 	}
 	r, err := resource.New(ctx, resource.WithAttributes(mrAttrs...))
 	if err != nil {
-		return nil, err
+		return err
 	}
-	preparedResource.resource = r
-	return preparedResource, nil
+	smr.resource = r
+	return nil
 }
 
 type metricsContext struct {
@@ -155,25 +162,24 @@ func newGRPCMetricContext(ctx context.Context, project string, config storageCon
 	if config.metricExporter != nil {
 		exporter = *config.metricExporter
 	} else {
-		preparedResource, err := newPreparedResource(ctx, project, []resource.Option{resource.WithDetectors(gcp.NewDetector())})
-		if err != nil {
+		smr := &storageMonitoredResource{
+			project: project,
+		}
+		if err := smr.detectFromGCP(ctx); err != nil {
 			return nil, err
 		}
-		// Implementation requires a project, if one is not determined possibly user
-		// credentials. Then we will fail stating gRPC Metrics require a project-id.
-		if project == "" && preparedResource.projectToUse == "" {
-			return nil, fmt.Errorf("google cloud project is required to start client-side metrics")
-		}
-		meterOpts = append(meterOpts, metric.WithResource(preparedResource.resource))
+		meterOpts = append(meterOpts, metric.WithResource(smr.resource))
 		meOpts := []mexporter.Option{
-			mexporter.WithProjectID(preparedResource.projectToUse),
+			mexporter.WithProjectID(smr.project),
 			mexporter.WithMetricDescriptorTypeFormatter(metricFormatter),
 			mexporter.WithCreateServiceTimeSeries(),
-			mexporter.WithMonitoredResourceDescription(monitoredResourceName, []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"})}
-		exporter, err = mexporter.New(meOpts...)
+			mexporter.WithMonitoredResourceDescription(smr.name(), smr.attributes()),
+		}
+		ex, err := mexporter.New(meOpts...)
 		if err != nil {
 			return nil, err
 		}
+		exporter = ex
 	}
 	// Metric views update histogram boundaries to be relevant to GCS
 	// otherwise default OTel histogram boundaries are used.
@@ -188,6 +194,9 @@ func newGRPCMetricContext(ctx context.Context, project string, config storageCon
 	}
 	meterOpts = append(meterOpts, metric.WithReader(metric.NewPeriodicReader(&exporterLogSuppressor{exporter: exporter}, metric.WithInterval(interval))),
 		metric.WithView(metricViews...))
+	if config.testReader != nil {
+		meterOpts = append(meterOpts, metric.WithReader(config.testReader))
+	}
 	provider := metric.NewMeterProvider(meterOpts...)
 	mo := opentelemetry.MetricsOptions{
 		MeterProvider: provider,

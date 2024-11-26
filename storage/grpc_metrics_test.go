@@ -34,7 +34,7 @@ func TestMetricFormatter(t *testing.T) {
 	}
 }
 
-func TestNewPreparedResource(t *testing.T) {
+func TestStorageMonitoredResource(t *testing.T) {
 	ctx := context.Background()
 	for _, test := range []struct {
 		desc               string
@@ -77,20 +77,21 @@ func TestNewPreparedResource(t *testing.T) {
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
-			resourceOptions := []resource.Option{resource.WithAttributes(test.detectedAttributes...)}
-			result, err := newPreparedResource(ctx, "project", resourceOptions)
-			if err != nil {
-				t.Errorf("newPreparedResource: %v", err)
+			smr := &storageMonitoredResource{
+				project: "project",
 			}
-			resultSet := result.resource.Set()
+			if err := smr.detectFromGCP(ctx, resource.WithAttributes(test.detectedAttributes...)); err != nil {
+				t.Errorf("detectFromGCP: %v", err)
+			}
+			resultSet := smr.resource.Set()
 			for _, want := range test.wantAttributes.ToSlice() {
 				got, exists := resultSet.Value(want.Key)
 				if !exists {
-					t.Errorf("newPreparedResource: %v not set", want.Key)
+					t.Errorf("detectFromGCP: %v not set", want.Key)
 					continue
 				}
 				if got != want.Value {
-					t.Errorf("newPreparedResource: want[%v] = %v, got: %v", want.Key, want.Value, got)
+					t.Errorf("detectFromGCP: want[%v] = %v, got: %v", want.Key, want.Value, got)
 					continue
 				}
 			}

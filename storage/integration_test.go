@@ -54,6 +54,8 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/contrib/detectors/gcp"
+	"go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
@@ -411,6 +413,87 @@ func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
 			t.Fatalf("CheckDirectConnectivitySupported: failed on a different error %v", err)
 		}
 	}, internaloption.EnableDirectPath(false))
+}
+
+func TestIntegration_MetricsEnablement(t *testing.T) {
+	ctx := skipHTTP("grpc only test")
+	mr := metric.NewManualReader()
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		it := client.Bucket(bucket).Objects(ctx, nil)
+		_, err := it.Next()
+		if err != iterator.Done {
+			t.Errorf("Objects.Next: expected iterator.Done got %v", err)
+		}
+		metricCheck := map[string]bool{
+			"grpc.client.attempt.started":                            false,
+			"grpc.client.attempt.duration":                           false,
+			"grpc.client.attempt.sent_total_compressed_message_size": false,
+			"grpc.client.attempt.rcvd_total_compressed_message_size": false,
+			"grpc.client.call.duration":                              false,
+		}
+		rm := metricdata.ResourceMetrics{}
+		if err := mr.Collect(context.Background(), &rm); err != nil {
+			t.Errorf("ManualReader.Collect: %v", err)
+		}
+		for _, sm := range rm.ScopeMetrics {
+			for _, m := range sm.Metrics {
+				metricCheck[m.Name] = true
+			}
+		}
+		for k, v := range metricCheck {
+			if !v {
+				t.Errorf("metric %v not found", k)
+			}
+		}
+	}, withTestMetricReader(mr))
+}
+
+func TestIntegration_MetricsEnablementInGCE(t *testing.T) {
+	ctx := skipHTTP("grpc only test")
+	mr := metric.NewManualReader()
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		detectedAttrs, err := resource.New(ctx, resource.WithDetectors(gcp.NewDetector()))
+		if err != nil {
+			t.Fatalf("resource.New: %v", err)
+		}
+		attrs := detectedAttrs.Set()
+		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() != "gcp_compute_engine" {
+			t.Skip("only testable in a GCE instance")
+		}
+		it := client.Buckets(ctx, testutil.ProjID())
+		_, _ = it.Next()
+		metricCheck := map[string]bool{
+			"grpc.client.attempt.started":                            false,
+			"grpc.client.attempt.duration":                           false,
+			"grpc.client.attempt.sent_total_compressed_message_size": false,
+			"grpc.client.attempt.rcvd_total_compressed_message_size": false,
+			"grpc.client.call.duration":                              false,
+			"grpc.lb.rls.cache_entries":                              false,
+			"grpc.lb.rls.cache_size":                                 false,
+			"grpc.lb.rls.default_target_picks":                       false,
+			// TODO: determine a way to force these metrics to be collected
+			// "grpc.lb.wrr.rr_fallback":                                false,
+			// "grpc.lb.wrr.endpoint_weight_not_yet_usable":             false,
+			// "grpc.lb.wrr.endpoint_weight_stale":                      false,
+			// "grpc.lb.wrr.endpoint_weights":                           false,
+			// "grpc.lb.rls.target_picks":                               false,
+			// "grpc.lb.rls.failed_picks":                               false,
+		}
+		rm := metricdata.ResourceMetrics{}
+		if err := mr.Collect(context.Background(), &rm); err != nil {
+			t.Errorf("ManualReader.Collect: %v", err)
+		}
+		for _, sm := range rm.ScopeMetrics {
+			for _, m := range sm.Metrics {
+				metricCheck[m.Name] = true
+			}
+		}
+		for k, v := range metricCheck {
+			if !v {
+				t.Errorf("metric %v not found", k)
+			}
+		}
+	}, withTestMetricReader(mr))
 }
 
 func TestIntegration_BucketCreateDelete(t *testing.T) {
