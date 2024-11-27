@@ -21,14 +21,13 @@
 package batchpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -356,18 +355,18 @@ type Job struct {
 	TaskGroups []*TaskGroup `protobuf:"bytes,4,rep,name=task_groups,json=taskGroups,proto3" json:"task_groups,omitempty"`
 	// Compute resource allocation for all TaskGroups in the Job.
 	AllocationPolicy *AllocationPolicy `protobuf:"bytes,7,opt,name=allocation_policy,json=allocationPolicy,proto3" json:"allocation_policy,omitempty"`
-	// Labels for the Job. Labels could be user provided or system generated.
-	// For example,
+	// Custom labels to apply to the job and any Cloud Logging
+	// [LogEntry](https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry)
+	// that it generates.
 	//
-	//	"labels": {
-	//	   "department": "finance",
-	//	   "environment": "test"
-	//	 }
-	//
-	// You can assign up to 64 labels.  [Google Compute Engine label
-	// restrictions](https://cloud.google.com/compute/docs/labeling-resources#restrictions)
-	// apply.
-	// Label names that start with "goog-" or "google-" are reserved.
+	// Use labels to group and describe the resources they are applied to. Batch
+	// automatically applies predefined labels and supports multiple `labels`
+	// fields for each job, which each let you apply custom labels to various
+	// resources. Label names that start with "goog-" or "google-" are
+	// reserved for predefined labels. For more information about labels with
+	// Batch, see
+	// [Organize resources using
+	// labels](https://cloud.google.com/batch/docs/organize-resources-using-labels).
 	Labels map[string]string `protobuf:"bytes,8,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Output only. Job status. It is read only for users.
 	Status *JobStatus `protobuf:"bytes,9,opt,name=status,proto3" json:"status,omitempty"`
@@ -733,13 +732,17 @@ type AllocationPolicy struct {
 	//   - scopes: Additional OAuth scopes to grant the service account, beyond the
 	//     default cloud-platform scope. (list of strings)
 	ServiceAccount *ServiceAccount `protobuf:"bytes,9,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
-	// Labels applied to all VM instances and other resources
-	// created by AllocationPolicy.
-	// Labels could be user provided or system generated.
-	// You can assign up to 64 labels. [Google Compute Engine label
-	// restrictions](https://cloud.google.com/compute/docs/labeling-resources#restrictions)
-	// apply.
-	// Label names that start with "goog-" or "google-" are reserved.
+	// Custom labels to apply to the job and all the Compute Engine resources
+	// that both are created by this allocation policy and support labels.
+	//
+	// Use labels to group and describe the resources they are applied to. Batch
+	// automatically applies predefined labels and supports multiple `labels`
+	// fields for each job, which each let you apply custom labels to various
+	// resources. Label names that start with "goog-" or "google-" are
+	// reserved for predefined labels. For more information about labels with
+	// Batch, see
+	// [Organize resources using
+	// labels](https://cloud.google.com/batch/docs/organize-resources-using-labels).
 	Labels map[string]string `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// The network policy.
 	//
@@ -1745,6 +1748,8 @@ type AllocationPolicy_InstancePolicy struct {
 	Disks []*AllocationPolicy_AttachedDisk `protobuf:"bytes,6,rep,name=disks,proto3" json:"disks,omitempty"`
 	// Optional. If specified, VMs will consume only the specified reservation.
 	// If not specified (default), VMs will consume any applicable reservation.
+	// Additionally, VMs will not consume any reservation if "NO_RESERVATION"
+	// is specified.
 	Reservation string `protobuf:"bytes,7,opt,name=reservation,proto3" json:"reservation,omitempty"`
 }
 
