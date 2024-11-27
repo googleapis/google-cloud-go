@@ -22,9 +22,6 @@ package aiplatformpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -176,7 +175,7 @@ type StreamQueryReasoningEngineRequest struct {
 	// include text query, function calling parameters, media bytes, etc.
 	Input *structpb.Struct `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
 	// Optional. Class method to be used for the stream query.
-	// It is optional and defaults to "steam_query" if unspecified.
+	// It is optional and defaults to "stream_query" if unspecified.
 	ClassMethod string `protobuf:"bytes,3,opt,name=class_method,json=classMethod,proto3" json:"class_method,omitempty"`
 }
 
