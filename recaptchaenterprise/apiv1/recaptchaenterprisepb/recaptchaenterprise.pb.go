@@ -22,9 +22,6 @@ package recaptchaenterprisepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -611,7 +610,7 @@ func (RiskAnalysis_ClassificationReason) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{12, 0}
 }
 
-// Challenge information for SCORE_AND_CHALLENGE keys
+// Challenge information for SCORE_AND_CHALLENGE and INVISIBLE keys
 type RiskAnalysis_Challenge int32
 
 const (
@@ -2534,7 +2533,8 @@ type RiskAnalysis struct {
 	// Output only. Extended verdict reasons to be used for experimentation only.
 	// The set of possible reasons is subject to change.
 	ExtendedVerdictReasons []string `protobuf:"bytes,3,rep,name=extended_verdict_reasons,json=extendedVerdictReasons,proto3" json:"extended_verdict_reasons,omitempty"`
-	// Output only. Challenge information for SCORE_AND_CHALLENGE keys
+	// Output only. Challenge information for SCORE_AND_CHALLENGE and INVISIBLE
+	// keys
 	Challenge RiskAnalysis_Challenge `protobuf:"varint,4,opt,name=challenge,proto3,enum=google.cloud.recaptchaenterprise.v1.RiskAnalysis_Challenge" json:"challenge,omitempty"`
 }
 
@@ -5710,7 +5710,7 @@ func (*AddIpOverrideResponse) Descriptor() ([]byte, []int) {
 	return file_google_cloud_recaptchaenterprise_v1_recaptchaenterprise_proto_rawDescGZIP(), []int{58}
 }
 
-// The removeIpOverride request message.
+// The RemoveIpOverride request message.
 type RemoveIpOverrideRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
