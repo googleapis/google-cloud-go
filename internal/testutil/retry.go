@@ -45,6 +45,12 @@ func Retry(t *testing.T, maxAttempts int, sleep time.Duration, f func(r *R)) boo
 			t.Fail()
 		}
 
+		if r.fatal {
+			t.Logf("Fatal failure after %d attempts:%s", attempt, r.log.String())
+			t.Fail()
+			return false
+		}
+
 		time.Sleep(sleep)
 	}
 	return false
@@ -70,6 +76,11 @@ func RetryWithoutTest(maxAttempts int, sleep time.Duration, f func(r *R)) bool {
 			return false
 		}
 
+		if r.fatal {
+			r.Logf("Fatal failure after %d attempts:%s", attempt, r.log.String())
+			return false
+		}
+
 		time.Sleep(sleep)
 	}
 	return false
@@ -81,6 +92,7 @@ type R struct {
 	Attempt int
 
 	failed bool
+	fatal  bool
 	log    *bytes.Buffer
 }
 
@@ -93,6 +105,12 @@ func (r *R) Fail() {
 func (r *R) Errorf(s string, v ...interface{}) {
 	r.logf(s, v...)
 	r.Fail()
+}
+
+// Fatalf is equivalent to Errorf but will not retry.
+func (r *R) Fatalf(s string, v ...interface{}) {
+	r.Errorf(s, v...)
+	r.fatal = true
 }
 
 // Logf formats its arguments and records it in the error log.
