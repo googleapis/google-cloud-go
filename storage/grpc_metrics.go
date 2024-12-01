@@ -44,9 +44,9 @@ type storageMonitoredResource struct {
 	project       string
 	api           string
 	location      string
-	instanceID    string
+	instance      string
 	cloudPlatform string
-	hostID        string
+	host          string
 	resource      *resource.Resource
 }
 
@@ -59,10 +59,10 @@ func (smr *storageMonitoredResource) toResource() *resource.Resource {
 		{Key: "gcp.resource_type", Value: attribute.StringValue(monitoredResourceName)},
 		{Key: "project_id", Value: attribute.StringValue(smr.project)},
 		{Key: "api", Value: attribute.StringValue(smr.api)},
-		{Key: "instance_id", Value: attribute.StringValue(smr.instanceID)},
+		{Key: "instance_id", Value: attribute.StringValue(smr.instance)},
 		{Key: "location", Value: attribute.StringValue(smr.location)},
 		{Key: "cloud_platform", Value: attribute.StringValue(smr.cloudPlatform)},
-		{Key: "host_id", Value: attribute.StringValue(smr.hostID)},
+		{Key: "host_id", Value: attribute.StringValue(smr.host)},
 	}...))
 	return smr.resource
 }
@@ -81,15 +81,14 @@ func (smr *storageMonitoredResource) exporter() (metric.Exporter, error) {
 }
 
 func newStorageMonitoredResource(ctx context.Context, project, api string, opts ...resource.Option) (*storageMonitoredResource, error) {
-	aopts := append([]resource.Option{resource.WithDetectors(gcp.NewDetector())}, opts...)
-	detectedAttrs, err := resource.New(ctx, aopts...)
+	detectedAttrs, err := resource.New(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
 	smr := &storageMonitoredResource{
-		instanceID: uuid.New().String(),
-		api:        api,
-		project:    project,
+		instance: uuid.New().String(),
+		api:      api,
+		project:  project,
 	}
 	s := detectedAttrs.Set()
 	if p, present := s.Value("cloud.account.id"); present && smr.project == "" {
@@ -108,9 +107,9 @@ func newStorageMonitoredResource(ctx context.Context, project, api string, opts 
 		smr.cloudPlatform = "unknown"
 	}
 	if v, ok := s.Value("host.id"); ok {
-		smr.hostID = v.AsString()
+		smr.host = v.AsString()
 	} else {
-		smr.hostID = "unknown"
+		smr.host = "unknown"
 	}
 	return smr, nil
 }
@@ -127,11 +126,11 @@ type metricsContext struct {
 type metricsConfig struct {
 	project      string
 	interval     time.Duration
-	manualReader *metric.ManualReader
+	manualReader *metric.ManualReader // used by tests
 }
 
 func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsContext, error) {
-	smr, err := newStorageMonitoredResource(ctx, cfg.project, "grpc")
+	smr, err := newStorageMonitoredResource(ctx, cfg.project, "grpc", resource.WithDetectors(gcp.NewDetector()))
 	if err != nil {
 		return nil, err
 	}
@@ -184,14 +183,13 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 		option.WithGRPCDialOption(
 			grpc.WithDefaultCallOptions(grpc.StaticMethodCallOption{})),
 	}
-	context := &metricsContext{
+	return &metricsContext{
 		clientOpts: opts,
 		provider:   provider,
 		close: func() {
 			provider.Shutdown(ctx)
 		},
-	}
-	return context, nil
+	}, nil
 }
 
 // Silences permission errors after initial error is emitted to prevent
