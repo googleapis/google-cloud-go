@@ -124,26 +124,33 @@ type metricsContext struct {
 }
 
 type metricsConfig struct {
-	project      string
-	interval     time.Duration
-	manualReader *metric.ManualReader // used by tests
+	project        string
+	interval       time.Duration
+	customExporter *metric.Exporter
+	manualReader   *metric.ManualReader // used by tests
 }
 
 func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsContext, error) {
-	smr, err := newStorageMonitoredResource(ctx, cfg.project, "grpc", resource.WithDetectors(gcp.NewDetector()))
-	if err != nil {
-		return nil, err
-	}
-	exporter, err := smr.exporter()
-	if err != nil {
-		return nil, err
+	var exporter metric.Exporter
+	meterOpts := []metric.Option{}
+	if cfg.customExporter == nil {
+		smr, err := newStorageMonitoredResource(ctx, cfg.project, "grpc", resource.WithDetectors(gcp.NewDetector()))
+		if err != nil {
+			return nil, err
+		}
+		exporter, err = smr.exporter()
+		if err != nil {
+			return nil, err
+		}
+		meterOpts = append(meterOpts, metric.WithResource(smr.resource))
+	} else {
+		exporter = *cfg.customExporter
 	}
 	interval := time.Minute
 	if cfg.interval > 0 {
 		interval = cfg.interval
 	}
-	meterOpts := []metric.Option{
-		metric.WithResource(smr.resource),
+	meterOpts = append(meterOpts,
 		metric.WithReader(
 			metric.NewPeriodicReader(&exporterLogSuppressor{exporter: exporter}, metric.WithInterval(interval))),
 		// Metric views update histogram boundaries to be relevant to GCS
@@ -152,7 +159,7 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 			createHistogramView("grpc.client.attempt.duration", latencyHistogramBoundaries()),
 			createHistogramView("grpc.client.attempt.rcvd_total_compressed_message_size", sizeHistogramBoundaries()),
 			createHistogramView("grpc.client.attempt.sent_total_compressed_message_size", sizeHistogramBoundaries())),
-	}
+	)
 	if cfg.manualReader != nil {
 		meterOpts = append(meterOpts, metric.WithReader(cfg.manualReader))
 	}
