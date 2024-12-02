@@ -258,14 +258,6 @@ func computeSummary(segments []*requestIDSegments) *interceptSummary {
 }
 
 func ensureMonotonicityOfRequestIDs(requestIDs []*requestIDSegments) error {
-	if false {
-		blob, err := json.MarshalIndent(requestIDs, "", " ")
-		if err != nil {
-			return err
-		}
-		println(string(blob))
-	}
-
 	for _, segment := range requestIDs {
 		if err := validateRequestIDSegments(segment); err != nil {
 			return err
