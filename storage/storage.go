@@ -51,7 +51,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
-	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc/experimental/stats"
 	"google.golang.org/grpc/stats/opentelemetry"
@@ -163,7 +162,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 		// Don't error out here. The user may have passed in their own HTTP
 		// client which does not auth with ADC or other common conventions.
-		c, err := transport.AuthCreds(ctx, opts...)
+		c, err := internaloption.AuthCreds(ctx, opts)
 		if err == nil {
 			creds = c
 			opts = append(opts, option.WithAuthCredentials(creds))

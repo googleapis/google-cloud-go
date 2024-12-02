@@ -41,7 +41,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
-	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
 )
 
@@ -83,7 +82,7 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		)
 		// Don't error out here. The user may have passed in their own HTTP
 		// client which does not auth with ADC or other common conventions.
-		c, err := transport.AuthCreds(ctx, o...)
+		c, err := internaloption.AuthCreds(ctx, o)
 		if err == nil {
 			creds = c
 			o = append(o, option.WithAuthCredentials(creds))
