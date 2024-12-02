@@ -120,6 +120,7 @@ type grpcStorageClient struct {
 
 func enableClientMetrics(ctx context.Context, s *settings, config storageConfig) (*metricsContext, error) {
 	var project string
+	// TODO: use new auth client
 	c, err := transport.Creds(ctx, s.clientOption...)
 	if err == nil {
 		project = c.ProjectID

@@ -152,7 +152,7 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 	}
 	meterOpts = append(meterOpts,
 		metric.WithReader(
-			metric.NewPeriodicReader(&exporterLogSuppressor{exporter: exporter}, metric.WithInterval(interval))),
+			metric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, metric.WithInterval(interval))),
 		// Metric views update histogram boundaries to be relevant to GCS
 		// otherwise default OTel histogram boundaries are used.
 		metric.WithView(
@@ -202,7 +202,7 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 // Silences permission errors after initial error is emitted to prevent
 // chatty logs.
 type exporterLogSuppressor struct {
-	exporter       metric.Exporter
+	metric.Exporter
 	emittedFailure bool
 }
 
@@ -210,7 +210,7 @@ type exporterLogSuppressor struct {
 // lack of credentials after initial failure.
 // https://pkg.go.dev/go.opentelemetry.io/otel/sdk/metric@v1.28.0#Exporter
 func (e *exporterLogSuppressor) Export(ctx context.Context, rm *metricdata.ResourceMetrics) error {
-	if err := e.exporter.Export(ctx, rm); err != nil && !e.emittedFailure {
+	if err := e.Exporter.Export(ctx, rm); err != nil && !e.emittedFailure {
 		if strings.Contains(err.Error(), "PermissionDenied") {
 			e.emittedFailure = true
 			return fmt.Errorf("gRPC metrics failed due permission issue: %w", err)
@@ -218,22 +218,6 @@ func (e *exporterLogSuppressor) Export(ctx context.Context, rm *metricdata.Resou
 		return err
 	}
 	return nil
-}
-
-func (e *exporterLogSuppressor) Temporality(k metric.InstrumentKind) metricdata.Temporality {
-	return e.exporter.Temporality(k)
-}
-
-func (e *exporterLogSuppressor) Aggregation(k metric.InstrumentKind) metric.Aggregation {
-	return e.exporter.Aggregation(k)
-}
-
-func (e *exporterLogSuppressor) ForceFlush(ctx context.Context) error {
-	return e.exporter.ForceFlush(ctx)
-}
-
-func (e *exporterLogSuppressor) Shutdown(ctx context.Context) error {
-	return e.exporter.Shutdown(ctx)
 }
 
 func latencyHistogramBoundaries() []float64 {

@@ -117,7 +117,7 @@ func TestStorageMonitoredResource(t *testing.T) {
 
 func TestNewExporterLogSuppressor(t *testing.T) {
 	ctx := context.Background()
-	s := &exporterLogSuppressor{exporter: &failingExporter{}}
+	s := &exporterLogSuppressor{Exporter: &failingExporter{}}
 	if err := s.Export(ctx, nil); err == nil {
 		t.Errorf("exporterLogSuppressor: did not emit an error when one was expected")
 	}
@@ -126,24 +126,10 @@ func TestNewExporterLogSuppressor(t *testing.T) {
 	}
 }
 
-type failingExporter struct{}
+type failingExporter struct {
+	metric.Exporter
+}
 
 func (f *failingExporter) Export(ctx context.Context, rm *metricdata.ResourceMetrics) error {
 	return fmt.Errorf("PermissionDenied")
-}
-
-func (f *failingExporter) Temporality(m metric.InstrumentKind) metricdata.Temporality {
-	return metricdata.CumulativeTemporality
-}
-
-func (f *failingExporter) Aggregation(ik metric.InstrumentKind) metric.Aggregation {
-	return metric.AggregationDefault{}
-}
-
-func (f *failingExporter) ForceFlush(ctx context.Context) error {
-	return nil
-}
-
-func (f *failingExporter) Shutdown(ctx context.Context) error {
-	return nil
 }
