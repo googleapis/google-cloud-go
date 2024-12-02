@@ -73,10 +73,10 @@ type retryerWithRequestID struct {
 
 var _ gax.CallOption = (*retryerWithRequestID)(nil)
 
-func (g *grpcSpannerClient) appendRequestIDToGRPCOptions(priors []grpc.CallOption, nthRequest, nthRPC uint32) []grpc.CallOption {
+func (g *grpcSpannerClient) appendRequestIDToGRPCOptions(priors []grpc.CallOption, nthRequest, attempt uint32) []grpc.CallOption {
 	// Google Engineering has requested that each value be added in Decimal unpadded.
 	// Should we have a standardized endianness: Little Endian or Big Endian?
-	requestID := fmt.Sprintf("%d.%s.%d.%d.%d.%d", xSpannerRequestIDVersion, randIDForProcess, g.id, g.channelID, nthRequest, nthRPC)
+	requestID := fmt.Sprintf("%d.%s.%d.%d.%d.%d", xSpannerRequestIDVersion, randIDForProcess, g.id, g.channelID, nthRequest, attempt)
 	md := metadata.MD{xSpannerRequestIDHeader: []string{requestID}}
 	return append(priors, grpc.Header(&md))
 }
@@ -191,23 +191,23 @@ func (wr *requestIDHeaderInjector) interceptStream(ctx context.Context, desc *gr
 
 func (wr *retryerWithRequestID) Resolve(cs *gax.CallSettings) {
 	nthRequest := wr.gsc.nextNthRequest()
-	nthRPC := uint32(1)
+	attempt := uint32(1)
 	originalGRPCOptions := cs.GRPC
 	// Inject the first request-id header.
-	cs.GRPC = wr.gsc.appendRequestIDToGRPCOptions(originalGRPCOptions, nthRequest, nthRPC)
+	cs.GRPC = wr.gsc.appendRequestIDToGRPCOptions(originalGRPCOptions, nthRequest, attempt)
 
 	if cs.Retry == nil {
 		// If there was no retry manager, our journey has ended.
 		return
 	}
 
-	// Otherwise in this case for each retry, we need to increment nthRPC on every
+	// Otherwise in this case for each retry, we need to increment attempt on every
 	// retry and re-append the requestID header to the original cs.GRPC callOptions.
 	originalRetryer := cs.Retry()
 	newRetryer := func() gax.Retryer {
 		return (wrapRetryFn)(func(err error) (pause time.Duration, shouldRetry bool) {
-			nthRPC++
-			cs.GRPC = wr.gsc.appendRequestIDToGRPCOptions(originalGRPCOptions, nthRequest, nthRPC)
+			attempt++
+			cs.GRPC = wr.gsc.appendRequestIDToGRPCOptions(originalGRPCOptions, nthRequest, attempt)
 			return originalRetryer.Retry(err)
 		})
 	}
