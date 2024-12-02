@@ -1592,6 +1592,8 @@ func newObjectFromProto(o *storagepb.Object) *ObjectAttrs {
 	}
 }
 
+var ErrStorageDoesNotEncode32BitValue = errors.New("storage does not encode 32-bit value")
+
 // Decode a uint32 encoded in Base64 in big-endian byte order.
 func decodeUint32(b64 string) (uint32, error) {
 	d, err := base64.StdEncoding.DecodeString(b64)
@@ -1599,7 +1601,7 @@ func decodeUint32(b64 string) (uint32, error) {
 		return 0, err
 	}
 	if len(d) != 4 {
-		return 0, fmt.Errorf("storage: %q does not encode a 32-bit value", d)
+		return 0, ErrStorageDoesNotEncode32BitValue
 	}
 	return uint32(d[0])<<24 + uint32(d[1])<<16 + uint32(d[2])<<8 + uint32(d[3]), nil
 }
