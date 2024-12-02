@@ -40,6 +40,7 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        true,
 				disableClientMetrics: false,
 				metricInterval:       0,
+				metricExporter:       nil,
 			},
 		},
 		{
@@ -50,6 +51,7 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        true,
 				disableClientMetrics: false,
 				metricInterval:       0,
+				metricExporter:       nil,
 			},
 		},
 		{
@@ -60,6 +62,7 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        true,
 				disableClientMetrics: false,
 				metricInterval:       0,
+				metricExporter:       nil,
 			},
 		},
 		{
@@ -70,6 +73,7 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        false,
 				disableClientMetrics: false,
 				metricInterval:       0,
+				metricExporter:       nil,
 			},
 		},
 		{
@@ -80,6 +84,7 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        false,
 				disableClientMetrics: false,
 				metricInterval:       0,
+				metricExporter:       nil,
 			},
 		},
 		{
@@ -90,6 +95,7 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        false,
 				disableClientMetrics: true,
 				metricInterval:       0,
+				metricExporter:       nil,
 			},
 		},
 		{
@@ -100,6 +106,7 @@ func TestApplyStorageOpt(t *testing.T) {
 				readAPIWasSet:        false,
 				disableClientMetrics: false,
 				metricInterval:       time.Minute * 5,
+				metricExporter:       nil,
 			},
 		},
 		{
