@@ -272,13 +272,17 @@ func TestIntegration_DatasetUpdateDefaultCollation(t *testing.T) {
 
 	// Update the default collation
 	md, err = ds.Update(ctx, DatasetMetadataToUpdate{
-		DefaultCollation: caseInsensitiveCollation,
+		DefaultCollation:  caseInsensitiveCollation,
+		IsCaseInsensitive: false,
 	}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if md.DefaultCollation != caseInsensitiveCollation {
 		t.Fatalf("got %q, want %q", md.DefaultCollation, caseInsensitiveCollation)
+	}
+	if md.IsCaseInsensitive != false {
+		t.Fatalf("IsCaseInsensitive: got %t, want %t", md.IsCaseInsensitive, false)
 	}
 
 	// Omitting DefaultCollation doesn't change it.
