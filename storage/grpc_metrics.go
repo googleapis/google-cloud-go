@@ -50,23 +50,6 @@ type storageMonitoredResource struct {
 	resource      *resource.Resource
 }
 
-func (smr *storageMonitoredResource) toResource() *resource.Resource {
-	if smr.resource != nil {
-		return smr.resource
-	}
-	// Ignore err since we aren't detecting attributes
-	smr.resource, _ = resource.New(context.TODO(), resource.WithAttributes([]attribute.KeyValue{
-		{Key: "gcp.resource_type", Value: attribute.StringValue(monitoredResourceName)},
-		{Key: "project_id", Value: attribute.StringValue(smr.project)},
-		{Key: "api", Value: attribute.StringValue(smr.api)},
-		{Key: "instance_id", Value: attribute.StringValue(smr.instance)},
-		{Key: "location", Value: attribute.StringValue(smr.location)},
-		{Key: "cloud_platform", Value: attribute.StringValue(smr.cloudPlatform)},
-		{Key: "host_id", Value: attribute.StringValue(smr.host)},
-	}...))
-	return smr.resource
-}
-
 func (smr *storageMonitoredResource) exporter() (metric.Exporter, error) {
 	exporter, err := mexporter.New(
 		mexporter.WithProjectID(smr.project),
@@ -110,6 +93,18 @@ func newStorageMonitoredResource(ctx context.Context, project, api string, opts 
 		smr.host = v.AsString()
 	} else {
 		smr.host = "unknown"
+	}
+	smr.resource, err = resource.New(ctx, resource.WithAttributes([]attribute.KeyValue{
+		{Key: "gcp.resource_type", Value: attribute.StringValue(monitoredResourceName)},
+		{Key: "project_id", Value: attribute.StringValue(smr.project)},
+		{Key: "api", Value: attribute.StringValue(smr.api)},
+		{Key: "instance_id", Value: attribute.StringValue(smr.instance)},
+		{Key: "location", Value: attribute.StringValue(smr.location)},
+		{Key: "cloud_platform", Value: attribute.StringValue(smr.cloudPlatform)},
+		{Key: "host_id", Value: attribute.StringValue(smr.host)},
+	}...))
+	if err != nil {
+		return nil, err
 	}
 	return smr, nil
 }
