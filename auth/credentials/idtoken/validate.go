@@ -78,9 +78,11 @@ type Validator struct {
 type ValidatorOptions struct {
 	// Client used to make requests to the certs URL. Optional.
 	Client *http.Client
-	// Custom certs URL for RS256 JWK to be used. Optional.
+	// Custom certs URL for RS256 JWK to be used. If not provided, the default
+	// Google oauth2 endpoint will be used. Optional.
 	RS256CertsURL string
-	// Custom certs URL for ES256 JWK to be used. Optional.
+	// Custom certs URL for ES256 JWK to be used. If not provided, the default
+	// Google IAP endpoint will be used. Optional.
 	ES256CertsURL string
 }
 
