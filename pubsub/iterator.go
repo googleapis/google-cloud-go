@@ -893,7 +893,7 @@ func (it *messageIterator) pingStream() {
 	spr := &pb.StreamingPullRequest{}
 	it.eoMu.RLock()
 	if it.sendNewAckDeadline {
-		spr.StreamAckDeadlineSeconds = int32(it.ackDeadline())
+		spr.StreamAckDeadlineSeconds = int32(it.ackDeadline()) / int32(time.Second)
 		it.sendNewAckDeadline = false
 	}
 	it.eoMu.RUnlock()
