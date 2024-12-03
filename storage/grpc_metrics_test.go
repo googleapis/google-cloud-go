@@ -99,7 +99,7 @@ func TestStorageMonitoredResource(t *testing.T) {
 			if err != nil {
 				t.Errorf("newStorageMonitoredResource: %v", err)
 			}
-			resultSet := smr.toResource().Set()
+			resultSet := smr.resource.Set()
 			for _, want := range test.wantAttributes.ToSlice() {
 				got, exists := resultSet.Value(want.Key)
 				if !exists {
