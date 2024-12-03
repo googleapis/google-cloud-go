@@ -46,6 +46,8 @@ var newVertexRagClientHook clientHook
 // VertexRagCallOptions contains the retry settings for each method of VertexRagClient.
 type VertexRagCallOptions struct {
 	RetrieveContexts   []gax.CallOption
+	AugmentPrompt      []gax.CallOption
+	CorroborateContent []gax.CallOption
 	GetLocation        []gax.CallOption
 	ListLocations      []gax.CallOption
 	GetIamPolicy       []gax.CallOption
@@ -76,6 +78,8 @@ func defaultVertexRagGRPCClientOptions() []option.ClientOption {
 func defaultVertexRagCallOptions() *VertexRagCallOptions {
 	return &VertexRagCallOptions{
 		RetrieveContexts:   []gax.CallOption{},
+		AugmentPrompt:      []gax.CallOption{},
+		CorroborateContent: []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -92,6 +96,8 @@ func defaultVertexRagCallOptions() *VertexRagCallOptions {
 func defaultVertexRagRESTCallOptions() *VertexRagCallOptions {
 	return &VertexRagCallOptions{
 		RetrieveContexts:   []gax.CallOption{},
+		AugmentPrompt:      []gax.CallOption{},
+		CorroborateContent: []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -111,6 +117,8 @@ type internalVertexRagClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	RetrieveContexts(context.Context, *aiplatformpb.RetrieveContextsRequest, ...gax.CallOption) (*aiplatformpb.RetrieveContextsResponse, error)
+	AugmentPrompt(context.Context, *aiplatformpb.AugmentPromptRequest, ...gax.CallOption) (*aiplatformpb.AugmentPromptResponse, error)
+	CorroborateContent(context.Context, *aiplatformpb.CorroborateContentRequest, ...gax.CallOption) (*aiplatformpb.CorroborateContentResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -161,6 +169,19 @@ func (c *VertexRagClient) Connection() *grpc.ClientConn {
 // RetrieveContexts retrieves relevant contexts for a query.
 func (c *VertexRagClient) RetrieveContexts(ctx context.Context, req *aiplatformpb.RetrieveContextsRequest, opts ...gax.CallOption) (*aiplatformpb.RetrieveContextsResponse, error) {
 	return c.internalClient.RetrieveContexts(ctx, req, opts...)
+}
+
+// AugmentPrompt given an input prompt, it returns augmented prompt from vertex rag store
+// to guide LLM towards generating grounded responses.
+func (c *VertexRagClient) AugmentPrompt(ctx context.Context, req *aiplatformpb.AugmentPromptRequest, opts ...gax.CallOption) (*aiplatformpb.AugmentPromptResponse, error) {
+	return c.internalClient.AugmentPrompt(ctx, req, opts...)
+}
+
+// CorroborateContent given an input text, it returns a score that evaluates the factuality of
+// the text. It also extracts and returns claims from the text and provides
+// supporting facts.
+func (c *VertexRagClient) CorroborateContent(ctx context.Context, req *aiplatformpb.CorroborateContentRequest, opts ...gax.CallOption) (*aiplatformpb.CorroborateContentResponse, error) {
+	return c.internalClient.CorroborateContent(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -390,6 +411,42 @@ func (c *vertexRagGRPCClient) RetrieveContexts(ctx context.Context, req *aiplatf
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.vertexRagClient.RetrieveContexts(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagGRPCClient) AugmentPrompt(ctx context.Context, req *aiplatformpb.AugmentPromptRequest, opts ...gax.CallOption) (*aiplatformpb.AugmentPromptResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AugmentPrompt[0:len((*c.CallOptions).AugmentPrompt):len((*c.CallOptions).AugmentPrompt)], opts...)
+	var resp *aiplatformpb.AugmentPromptResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.vertexRagClient.AugmentPrompt(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagGRPCClient) CorroborateContent(ctx context.Context, req *aiplatformpb.CorroborateContentRequest, opts ...gax.CallOption) (*aiplatformpb.CorroborateContentResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CorroborateContent[0:len((*c.CallOptions).CorroborateContent):len((*c.CallOptions).CorroborateContent)], opts...)
+	var resp *aiplatformpb.CorroborateContentResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.vertexRagClient.CorroborateContent(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -654,6 +711,141 @@ func (c *vertexRagRESTClient) RetrieveContexts(ctx context.Context, req *aiplatf
 	opts = append((*c.CallOptions).RetrieveContexts[0:len((*c.CallOptions).RetrieveContexts):len((*c.CallOptions).RetrieveContexts)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.RetrieveContextsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// AugmentPrompt given an input prompt, it returns augmented prompt from vertex rag store
+// to guide LLM towards generating grounded responses.
+func (c *vertexRagRESTClient) AugmentPrompt(ctx context.Context, req *aiplatformpb.AugmentPromptRequest, opts ...gax.CallOption) (*aiplatformpb.AugmentPromptResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:augmentPrompt", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).AugmentPrompt[0:len((*c.CallOptions).AugmentPrompt):len((*c.CallOptions).AugmentPrompt)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.AugmentPromptResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CorroborateContent given an input text, it returns a score that evaluates the factuality of
+// the text. It also extracts and returns claims from the text and provides
+// supporting facts.
+func (c *vertexRagRESTClient) CorroborateContent(ctx context.Context, req *aiplatformpb.CorroborateContentRequest, opts ...gax.CallOption) (*aiplatformpb.CorroborateContentResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:corroborateContent", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CorroborateContent[0:len((*c.CallOptions).CorroborateContent):len((*c.CallOptions).CorroborateContent)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.CorroborateContentResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
