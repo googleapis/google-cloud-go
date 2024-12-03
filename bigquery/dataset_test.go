@@ -331,8 +331,9 @@ func TestDatasetToBQ(t *testing.T) {
 				Connection:     "conn",
 				ExternalSource: "external_src",
 			},
-			Location: "EU",
-			Labels:   map[string]string{"x": "y"},
+			Location:          "EU",
+			Labels:            map[string]string{"x": "y"},
+			IsCaseInsensitive: true,
 			Access: []*AccessEntry{
 				{Role: OwnerRole, Entity: "example.com", EntityType: DomainEntity},
 				{
@@ -356,8 +357,9 @@ func TestDatasetToBQ(t *testing.T) {
 				Connection:     "conn",
 				ExternalSource: "external_src",
 			},
-			Location: "EU",
-			Labels:   map[string]string{"x": "y"},
+			Location:          "EU",
+			Labels:            map[string]string{"x": "y"},
+			IsCaseInsensitive: true,
 			Access: []*bq.DatasetAccess{
 				{Role: "OWNER", Domain: "example.com"},
 				{
@@ -416,8 +418,9 @@ func TestBQToDatasetMetadata(t *testing.T) {
 			Connection:     "conn",
 			ExternalSource: "external_src",
 		},
-		Location: "EU",
-		Labels:   map[string]string{"x": "y"},
+		Location:          "EU",
+		Labels:            map[string]string{"x": "y"},
+		IsCaseInsensitive: true,
 		Access: []*bq.DatasetAccess{
 			{Role: "READER", UserByEmail: "joe@example.com"},
 			{Role: "READER",
@@ -464,6 +467,7 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		StorageBillingModel: LogicalStorageBillingModel,
 		Location:            "EU",
 		Labels:              map[string]string{"x": "y"},
+		IsCaseInsensitive:   true,
 		Access: []*AccessEntry{
 			{Role: ReaderRole,
 				Entity:     "joe@example.com",
@@ -509,6 +513,7 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		Name:                       "name",
 		DefaultTableExpiration:     time.Hour,
 		DefaultPartitionExpiration: 24 * time.Hour,
+		IsCaseInsensitive:          true,
 		MaxTimeTravel:              time.Duration(181 * time.Minute),
 		StorageBillingModel:        PhysicalStorageBillingModel,
 		DefaultEncryptionConfig: &EncryptionConfig{
@@ -541,9 +546,10 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 			Connection:     "conn",
 			ExternalSource: "external_src",
 		},
-		Labels:          map[string]string{"label": "value"},
-		ForceSendFields: []string{"Description", "FriendlyName", "ExternalDatasetReference", "StorageBillingModel"},
-		NullFields:      []string{"Labels.del"},
+		Labels:            map[string]string{"label": "value"},
+		IsCaseInsensitive: true,
+		ForceSendFields:   []string{"Description", "FriendlyName", "ExternalDatasetReference", "StorageBillingModel", "IsCaseInsensitive"},
+		NullFields:        []string{"Labels.del"},
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("-got, +want:\n%s", diff)
