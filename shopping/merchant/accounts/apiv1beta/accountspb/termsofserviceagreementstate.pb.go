@@ -70,6 +70,8 @@ type TermsOfServiceAgreementState struct {
 
 	// Identifier. The resource name of the terms of service version.
 	// Format: `accounts/{account}/termsOfServiceAgreementState/{identifier}`
+	// The identifier format is: `{TermsOfServiceKind}-{country}`
+	// For example, an identifier could be: `MERCHANT_CENTER-US`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Region code as defined by https://cldr.unicode.org/. This is the
 	// country the current state applies to.
@@ -294,6 +296,7 @@ type GetTermsOfServiceAgreementStateRequest struct {
 
 	// Required. The resource name of the terms of service version.
 	// Format: `accounts/{account}/termsOfServiceAgreementState/{identifier}`
+	// The identifier format is: `{TermsOfServiceKind}-{country}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

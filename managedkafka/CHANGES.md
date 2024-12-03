@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.2.2...managedkafka/v0.2.3) (2024-11-19)
+
+
+### Documentation
+
+* **managedkafka:** Update title in README ([#11143](https://github.com/googleapis/google-cloud-go/issues/11143)) ([8823f23](https://github.com/googleapis/google-cloud-go/commit/8823f232e0685de7c4fb8ddbd1d98a33cff60b56))
+
+## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.2.1...managedkafka/v0.2.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **managedkafka:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **managedkafka:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/managedkafka/v0.2.0...managedkafka/v0.2.1) (2024-09-12)
 
 

@@ -1,5 +1,37 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.19.0...dlp/v1.20.0) (2024-10-23)
+
+
+### Features
+
+* **dlp:** Discovery of BigQuery snapshots ([70d82fe](https://github.com/googleapis/google-cloud-go/commit/70d82fe93f60f1075298a077ce1616f9ae7e13fe))
+
+
+### Bug Fixes
+
+* **dlp:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **dlp:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+
+### Documentation
+
+* **dlp:** Documentation revisions for data profiles ([70d82fe](https://github.com/googleapis/google-cloud-go/commit/70d82fe93f60f1075298a077ce1616f9ae7e13fe))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.18.1...dlp/v1.19.0) (2024-09-19)
+
+
+### Features
+
+* **dlp:** Action for publishing data profiles to SecOps (formelly known as Chronicle) ([#10884](https://github.com/googleapis/google-cloud-go/issues/10884)) ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+* **dlp:** Action for publishing data profiles to Security Command Center ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+* **dlp:** Discovery configs for AWS S3 buckets ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+
+
+### Documentation
+
+* **dlp:** Small improvements and clarifications ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.18.0...dlp/v1.18.1) (2024-09-12)
 
 

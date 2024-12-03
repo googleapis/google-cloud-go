@@ -1,6 +1,22 @@
 # Changelog
 
 
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.4.0...gkemulticloud/v1.4.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* **gkemulticloud:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **gkemulticloud:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.3.1...gkemulticloud/v1.4.0) (2024-09-19)
+
+
+### Features
+
+* **gkemulticloud:** An optional field `kubelet_config` in message `.google.cloud.gkemulticloud.v1.AwsNodePool` is added ([37866ce](https://github.com/googleapis/google-cloud-go/commit/37866ce67a286a3eed1b92f53bdac2ae8f1c63ed))
+* **gkemulticloud:** An optional field `security_posture_config` in message `.google.cloud.gkemulticloud.v1.AttachedCluster` is added ([37866ce](https://github.com/googleapis/google-cloud-go/commit/37866ce67a286a3eed1b92f53bdac2ae8f1c63ed))
+
 ## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.3.0...gkemulticloud/v1.3.1) (2024-09-12)
 
 

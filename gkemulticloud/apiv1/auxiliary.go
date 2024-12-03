@@ -1140,7 +1140,7 @@ type AttachedClusterIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*gkemulticloudpb.AttachedCluster, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AttachedClusterIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1187,7 +1187,7 @@ type AwsClusterIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*gkemulticloudpb.AwsCluster, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AwsClusterIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1234,7 +1234,7 @@ type AwsNodePoolIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*gkemulticloudpb.AwsNodePool, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AwsNodePoolIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1281,7 +1281,7 @@ type AzureClientIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*gkemulticloudpb.AzureClient, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AzureClientIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1328,7 +1328,7 @@ type AzureClusterIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*gkemulticloudpb.AzureCluster, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AzureClusterIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1375,7 +1375,7 @@ type AzureNodePoolIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*gkemulticloudpb.AzureNodePool, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AzureNodePoolIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -1422,7 +1422,7 @@ type OperationIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *OperationIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

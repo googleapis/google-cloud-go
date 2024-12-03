@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
-    "version": "0.9.2",
+    "version": "0.12.0",
     "language": "GO",
     "apis": [
       {
@@ -244,7 +244,7 @@
     {
       "regionTag": "merchantapi_v1beta_generated_AccountsService_DeleteAccount_sync",
       "title": "merchantapi DeleteAccount Sample",
-      "description": "DeleteAccount deletes the specified account regardless of its type: standalone, MCA or\nsub-account. Deleting an MCA leads to the deletion of all of its\nsub-accounts. Executing this method requires admin access.",
+      "description": "DeleteAccount deletes the specified account regardless of its type: standalone, MCA or\nsub-account. Deleting an MCA leads to the deletion of all of its\nsub-accounts. Executing this method requires admin access.\nThe deletion succeeds only if the account does not provide services\nto any other account and has no processed offers. You can use the `force`\nparameter to override this.",
       "file": "Client/DeleteAccount/main.go",
       "language": "GO",
       "clientMethod": {
@@ -335,7 +335,7 @@
     {
       "regionTag": "merchantapi_v1beta_generated_AccountsService_ListAccounts_sync",
       "title": "merchantapi ListAccounts Sample",
-      "description": "ListAccounts lists accounts accessible to the calling user and matching the\nconstraints of the request such as page size or filters.\nThis is not just listing the sub-accounts of an MCA, but all accounts the\ncalling user has access to including other MCAs, linked accounts,\nstandalone accounts and so on.",
+      "description": "ListAccounts lists accounts accessible to the calling user and matching the\nconstraints of the request such as page size or filters.\nThis is not just listing the sub-accounts of an MCA, but all accounts the\ncalling user has access to including other MCAs, linked accounts,\nstandalone accounts and so on. If no filter is provided, then it returns\naccounts the user is directly added to.",
       "file": "Client/ListAccounts/main.go",
       "language": "GO",
       "clientMethod": {
@@ -458,6 +458,98 @@
           "service": {
             "shortName": "AccountsService",
             "fullName": "google.shopping.merchant.accounts.v1beta.AccountsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AutofeedSettingsService_GetAutofeedSettings_sync",
+      "title": "merchantapi GetAutofeedSettings Sample",
+      "description": "GetAutofeedSettings retrieves the autofeed settings of an account.",
+      "file": "AutofeedSettingsClient/GetAutofeedSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAutofeedSettings",
+        "fullName": "google.shopping.merchant.accounts.v1beta.AutofeedSettingsClient.GetAutofeedSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetAutofeedSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.AutofeedSettings",
+        "client": {
+          "shortName": "AutofeedSettingsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AutofeedSettingsClient"
+        },
+        "method": {
+          "shortName": "GetAutofeedSettings",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AutofeedSettingsService.GetAutofeedSettings",
+          "service": {
+            "shortName": "AutofeedSettingsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AutofeedSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AutofeedSettingsService_UpdateAutofeedSettings_sync",
+      "title": "merchantapi UpdateAutofeedSettings Sample",
+      "description": "UpdateAutofeedSettings updates the autofeed settings of an account.",
+      "file": "AutofeedSettingsClient/UpdateAutofeedSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAutofeedSettings",
+        "fullName": "google.shopping.merchant.accounts.v1beta.AutofeedSettingsClient.UpdateAutofeedSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UpdateAutofeedSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.AutofeedSettings",
+        "client": {
+          "shortName": "AutofeedSettingsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AutofeedSettingsClient"
+        },
+        "method": {
+          "shortName": "UpdateAutofeedSettings",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AutofeedSettingsService.UpdateAutofeedSettings",
+          "service": {
+            "shortName": "AutofeedSettingsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AutofeedSettingsService"
           }
         }
       },

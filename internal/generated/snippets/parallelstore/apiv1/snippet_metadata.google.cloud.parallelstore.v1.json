@@ -1,0 +1,611 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/parallelstore/apiv1",
+    "version": "0.8.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.parallelstore.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "parallelstore_v1_generated_Parallelstore_CancelOperation_sync",
+      "title": "parallelstore CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.parallelstore.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parallelstore_v1_generated_Parallelstore_CreateInstance_sync",
+      "title": "parallelstore CreateInstance Sample",
+      "description": "CreateInstance creates a Parallelstore instance in a given project and location.",
+      "file": "Client/CreateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateInstance",
+        "fullName": "google.cloud.parallelstore.v1.Client.CreateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parallelstorepb.CreateInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateInstanceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateInstance",
+          "fullName": "google.cloud.parallelstore.v1.Parallelstore.CreateInstance",
+          "service": {
+            "shortName": "Parallelstore",
+            "fullName": "google.cloud.parallelstore.v1.Parallelstore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parallelstore_v1_generated_Parallelstore_DeleteInstance_sync",
+      "title": "parallelstore DeleteInstance Sample",
+      "description": "DeleteInstance deletes a single instance.",
+      "file": "Client/DeleteInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteInstance",
+        "fullName": "google.cloud.parallelstore.v1.Client.DeleteInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parallelstorepb.DeleteInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteInstanceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteInstance",
+          "fullName": "google.cloud.parallelstore.v1.Parallelstore.DeleteInstance",
+          "service": {
+            "shortName": "Parallelstore",
+            "fullName": "google.cloud.parallelstore.v1.Parallelstore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parallelstore_v1_generated_Parallelstore_DeleteOperation_sync",
+      "title": "parallelstore DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.parallelstore.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parallelstore_v1_generated_Parallelstore_ExportData_sync",
+      "title": "parallelstore ExportData Sample",
+      "description": "ExportData copies data from Parallelstore to Cloud Storage.",
+      "file": "Client/ExportData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportData",
+        "fullName": "google.cloud.parallelstore.v1.Client.ExportData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parallelstorepb.ExportDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportDataOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1.Client"
+        },
+        "method": {
+          "shortName": "ExportData",
+          "fullName": "google.cloud.parallelstore.v1.Parallelstore.ExportData",
+          "service": {
+            "shortName": "Parallelstore",
+            "fullName": "google.cloud.parallelstore.v1.Parallelstore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parallelstore_v1_generated_Parallelstore_GetInstance_sync",
+      "title": "parallelstore GetInstance Sample",
+      "description": "GetInstance gets details of a single instance.",
+      "file": "Client/GetInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInstance",
+        "fullName": "google.cloud.parallelstore.v1.Client.GetInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parallelstorepb.GetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*parallelstorepb.Instance",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1.Client"
+        },
+        "method": {
+          "shortName": "GetInstance",
+          "fullName": "google.cloud.parallelstore.v1.Parallelstore.GetInstance",
+          "service": {
+            "shortName": "Parallelstore",
+            "fullName": "google.cloud.parallelstore.v1.Parallelstore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parallelstore_v1_generated_Parallelstore_GetLocation_sync",
+      "title": "parallelstore GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.parallelstore.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parallelstore_v1_generated_Parallelstore_GetOperation_sync",
+      "title": "parallelstore GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.parallelstore.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parallelstore_v1_generated_Parallelstore_ImportData_sync",
+      "title": "parallelstore ImportData Sample",
+      "description": "ImportData copies data from Cloud Storage to Parallelstore.",
+      "file": "Client/ImportData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportData",
+        "fullName": "google.cloud.parallelstore.v1.Client.ImportData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parallelstorepb.ImportDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportDataOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1.Client"
+        },
+        "method": {
+          "shortName": "ImportData",
+          "fullName": "google.cloud.parallelstore.v1.Parallelstore.ImportData",
+          "service": {
+            "shortName": "Parallelstore",
+            "fullName": "google.cloud.parallelstore.v1.Parallelstore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parallelstore_v1_generated_Parallelstore_ListInstances_sync",
+      "title": "parallelstore ListInstances Sample",
+      "description": "ListInstances lists all instances in a given project and location.",
+      "file": "Client/ListInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInstances",
+        "fullName": "google.cloud.parallelstore.v1.Client.ListInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parallelstorepb.ListInstancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstanceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1.Client"
+        },
+        "method": {
+          "shortName": "ListInstances",
+          "fullName": "google.cloud.parallelstore.v1.Parallelstore.ListInstances",
+          "service": {
+            "shortName": "Parallelstore",
+            "fullName": "google.cloud.parallelstore.v1.Parallelstore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parallelstore_v1_generated_Parallelstore_ListLocations_sync",
+      "title": "parallelstore ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.parallelstore.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parallelstore_v1_generated_Parallelstore_ListOperations_sync",
+      "title": "parallelstore ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.parallelstore.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "parallelstore_v1_generated_Parallelstore_UpdateInstance_sync",
+      "title": "parallelstore UpdateInstance Sample",
+      "description": "UpdateInstance updates the parameters of a single instance.",
+      "file": "Client/UpdateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateInstance",
+        "fullName": "google.cloud.parallelstore.v1.Client.UpdateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parallelstorepb.UpdateInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateInstanceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateInstance",
+          "fullName": "google.cloud.parallelstore.v1.Parallelstore.UpdateInstance",
+          "service": {
+            "shortName": "Parallelstore",
+            "fullName": "google.cloud.parallelstore.v1.Parallelstore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

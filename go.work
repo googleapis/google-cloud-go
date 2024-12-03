@@ -1,4 +1,6 @@
-go 1.21
+go 1.21.13
+
+toolchain go1.23.0
 
 use (
 	.
@@ -116,6 +118,7 @@ use (
 	./networkservices
 	./notebooks
 	./optimization
+	./oracledatabase
 	./orchestration
 	./orgpolicy
 	./osconfig

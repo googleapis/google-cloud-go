@@ -466,12 +466,8 @@ func (c *termsOfServiceRESTClient) RetrieveLatestTermsOfService(ctx context.Cont
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	if req.GetKind() != 0 {
-		params.Add("kind", fmt.Sprintf("%v", req.GetKind()))
-	}
-	if req.GetRegionCode() != "" {
-		params.Add("regionCode", fmt.Sprintf("%v", req.GetRegionCode()))
-	}
+	params.Add("kind", fmt.Sprintf("%v", req.GetKind()))
+	params.Add("regionCode", fmt.Sprintf("%v", req.GetRegionCode()))
 
 	baseUrl.RawQuery = params.Encode()
 

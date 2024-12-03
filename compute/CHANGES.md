@@ -1,5 +1,27 @@
 # Changes
 
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.28.3...compute/v1.29.0) (2024-11-14)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20241105 ([#954](https://github.com/googleapis/google-cloud-go/issues/954)) ([f329c4c](https://github.com/googleapis/google-cloud-go/commit/f329c4c7782fc5f52751235d969bb8de11616ec3))
+
+## [1.28.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.28.2...compute/v1.28.3) (2024-11-06)
+
+
+### Bug Fixes
+
+* **compute:** Reduce size of Go compute package ([#946](https://github.com/googleapis/google-cloud-go/issues/946)) ([706ecb2](https://github.com/googleapis/google-cloud-go/commit/706ecb2c813da3109035b986a642ca891a33847f))
+
+## [1.28.2](https://github.com/googleapis/google-cloud-go/compare/compute/v1.28.1...compute/v1.28.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* **compute:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **compute:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
 ## [1.28.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.28.0...compute/v1.28.1) (2024-09-12)
 
 

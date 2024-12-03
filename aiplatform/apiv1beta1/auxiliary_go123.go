@@ -143,6 +143,18 @@ func (it *FeatureIterator) All() iter.Seq2[*aiplatformpb.Feature, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *FeatureMonitorIterator) All() iter.Seq2[*aiplatformpb.FeatureMonitor, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FeatureMonitorJobIterator) All() iter.Seq2[*aiplatformpb.FeatureMonitorJob, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *FeatureOnlineStoreIterator) All() iter.Seq2[*aiplatformpb.FeatureOnlineStore, error] {
 	return iterator.RangeAdapter(it.Next)
 }

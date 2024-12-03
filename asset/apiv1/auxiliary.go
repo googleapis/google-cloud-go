@@ -174,7 +174,7 @@ type AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -221,7 +221,7 @@ type AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -268,7 +268,7 @@ type AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator struct
 	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -315,7 +315,7 @@ type AssetIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.Asset, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *AssetIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -362,7 +362,7 @@ type IamPolicySearchResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.IamPolicySearchResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *IamPolicySearchResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -409,7 +409,7 @@ type ResourceSearchResultIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.ResourceSearchResult, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ResourceSearchResultIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -456,7 +456,7 @@ type SavedQueryIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.SavedQuery, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *SavedQueryIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

@@ -200,7 +200,7 @@ func ExampleTopic_Subscriptions() {
 	// List all subscriptions of the topic (maybe of multiple projects).
 	for subs := topic.Subscriptions(ctx); ; {
 		sub, err := subs.Next()
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {
@@ -464,7 +464,7 @@ func ExampleSnapshotConfigIterator_Next() {
 	iter := client.Snapshots(ctx)
 	for {
 		snapConfig, err := iter.Next()
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {

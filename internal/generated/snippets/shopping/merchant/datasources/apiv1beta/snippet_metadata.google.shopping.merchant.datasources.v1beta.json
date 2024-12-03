@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shopping/merchant/datasources/apiv1beta",
-    "version": "0.9.2",
+    "version": "0.12.0",
     "language": "GO",
     "apis": [
       {
@@ -273,6 +273,52 @@
           "service": {
             "shortName": "DataSourcesService",
             "fullName": "google.shopping.merchant.datasources.v1beta.DataSourcesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_FileUploadsService_GetFileUpload_sync",
+      "title": "merchantapi GetFileUpload Sample",
+      "description": "GetFileUpload gets the latest data source file upload. Only the `latest` alias is\naccepted for a file upload.",
+      "file": "FileUploadsClient/GetFileUpload/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFileUpload",
+        "fullName": "google.shopping.merchant.datasources.v1beta.FileUploadsClient.GetFileUpload",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datasourcespb.GetFileUploadRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datasourcespb.FileUpload",
+        "client": {
+          "shortName": "FileUploadsClient",
+          "fullName": "google.shopping.merchant.datasources.v1beta.FileUploadsClient"
+        },
+        "method": {
+          "shortName": "GetFileUpload",
+          "fullName": "google.shopping.merchant.datasources.v1beta.FileUploadsService.GetFileUpload",
+          "service": {
+            "shortName": "FileUploadsService",
+            "fullName": "google.shopping.merchant.datasources.v1beta.FileUploadsService"
           }
         }
       },

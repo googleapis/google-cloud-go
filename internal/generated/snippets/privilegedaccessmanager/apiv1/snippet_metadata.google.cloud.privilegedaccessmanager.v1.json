@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/privilegedaccessmanager/apiv1",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "language": "GO",
     "apis": [
       {
@@ -60,7 +60,7 @@
     {
       "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_CheckOnboardingStatus_sync",
       "title": "privilegedaccessmanager CheckOnboardingStatus Sample",
-      "description": "CheckOnboardingStatus checkOnboardingStatus reports the onboarding status for a\nproject/folder/organization. Any findings reported by this API need to be\nfixed before PAM can be used on the resource.",
+      "description": "CheckOnboardingStatus `CheckOnboardingStatus` reports the onboarding status for a\nproject/folder/organization. Any findings reported by this API need to be\nfixed before PAM can be used on the resource.",
       "file": "Client/CheckOnboardingStatus/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_CreateGrant_sync",
       "title": "privilegedaccessmanager CreateGrant Sample",
-      "description": "CreateGrant creates a new grant in a given project and location.",
+      "description": "CreateGrant creates a new grant in a given project/folder/organization and\nlocation.",
       "file": "Client/CreateGrant/main.go",
       "language": "GO",
       "clientMethod": {
@@ -198,7 +198,7 @@
     {
       "regionTag": "privilegedaccessmanager_v1_generated_PrivilegedAccessManager_DeleteEntitlement_sync",
       "title": "privilegedaccessmanager DeleteEntitlement Sample",
-      "description": "DeleteEntitlement deletes a single entitlement. This method can only be called when there\nare no in-progress (ACTIVE/ACTIVATING/REVOKING) grants under the\nentitlement.",
+      "description": "DeleteEntitlement deletes a single entitlement. This method can only be called when there\nare no in-progress (`ACTIVE`/`ACTIVATING`/`REVOKING`) grants under the\nentitlement.",
       "file": "Client/DeleteEntitlement/main.go",
       "language": "GO",
       "clientMethod": {

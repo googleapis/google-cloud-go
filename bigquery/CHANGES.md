@@ -3,6 +3,67 @@
 
 
 
+## [1.64.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.63.1...bigquery/v1.64.0) (2024-10-30)
+
+
+### Features
+
+* **bigquery/datatransfer:** Add scheduleOptionsV2 and Error fields for TransferConfig ([78d8513](https://github.com/googleapis/google-cloud-go/commit/78d8513f7e31c6ef118bdfc784049b8c7f1e3249))
+* **bigquery/storage:** Add experimental ArrowData type and arrow_data field within AppendRowsRequest ([f0b05e2](https://github.com/googleapis/google-cloud-go/commit/f0b05e260435d5e8889b9a0ca0ab215fcde169ab))
+
+
+### Bug Fixes
+
+* **bigquery:** Handle null RANGE ([#11058](https://github.com/googleapis/google-cloud-go/issues/11058)) ([9979e72](https://github.com/googleapis/google-cloud-go/commit/9979e72b57947ec1e11d3e0c4a7e1ec335a490cf)), refs [#11047](https://github.com/googleapis/google-cloud-go/issues/11047)
+* **bigquery:** Parse negative NUMERIC from arrow ([#11052](https://github.com/googleapis/google-cloud-go/issues/11052)) ([83352c4](https://github.com/googleapis/google-cloud-go/commit/83352c475681f596e0f1e811f8c2056aef6179b2))
+* **bigquery:** Update google.golang.org/api to v0.203.0 ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+* **bigquery:** WARNING: On approximately Dec 1, 2024, an update to Protobuf will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go files. This change is expected to affect very few if any users of this client library. For more information, see https://togithub.com/googleapis/google-cloud-go/issues/11020. ([8bb87d5](https://github.com/googleapis/google-cloud-go/commit/8bb87d56af1cba736e0fe243979723e747e5e11e))
+
+
+### Documentation
+
+* **bigquery:** Link types on package docs ([#11036](https://github.com/googleapis/google-cloud-go/issues/11036)) ([c4af6fe](https://github.com/googleapis/google-cloud-go/commit/c4af6fe0962e0e96223744a09fd7b5a638cd92fd))
+
+## [1.63.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.63.0...bigquery/v1.63.1) (2024-10-01)
+
+
+### Bug Fixes
+
+* **bigquery/storage:** Increase method timeout to 240s for BigQuery Metastore Partition Service API version v1alpha ([fdb4ea9](https://github.com/googleapis/google-cloud-go/commit/fdb4ea99189657880e5f0e0dce16bef1c3aa0d2f))
+* **bigquery:** Create read session with client or job projectID ([#10932](https://github.com/googleapis/google-cloud-go/issues/10932)) ([f98396e](https://github.com/googleapis/google-cloud-go/commit/f98396e074dff5261523b46a5c37d7888000f2cd))
+* **bigquery:** Missing schema for empty result set on stateless queries ([#10935](https://github.com/googleapis/google-cloud-go/issues/10935)) ([28a069a](https://github.com/googleapis/google-cloud-go/commit/28a069a4e30b3d6281fb2aa229aeb5cda3fff577))
+
+## [1.63.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.62.0...bigquery/v1.63.0) (2024-09-18)
+
+
+### Features
+
+* **bigquery/migration:** Update MS API stubs with Unified API ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **bigquery:** Add support for Go 1.23 iterators ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **bigquery:** New client(s) ([#10774](https://github.com/googleapis/google-cloud-go/issues/10774)) ([9638b8d](https://github.com/googleapis/google-cloud-go/commit/9638b8d00f7e2e1610a252061c3b5acd868906bc))
+
+
+### Bug Fixes
+
+* **bigquery:** Bump dependencies ([2ddeb15](https://github.com/googleapis/google-cloud-go/commit/2ddeb1544a53188a7592046b98913982f1b0cf04))
+* **bigquery:** ProcessStream check ctx done when queuing non retryable err ([#10675](https://github.com/googleapis/google-cloud-go/issues/10675)) ([60ad7f3](https://github.com/googleapis/google-cloud-go/commit/60ad7f32d69ed3986fb1326841bba2c5dc36e508))
+* **bigquery:** Properly handle RANGE type arrays ([#10883](https://github.com/googleapis/google-cloud-go/issues/10883)) ([ce3d492](https://github.com/googleapis/google-cloud-go/commit/ce3d4920258349618dab628bac85a0e2141a70a7))
+* **bigquery:** Remove retry on FailedPrecondition ([#10671](https://github.com/googleapis/google-cloud-go/issues/10671)) ([ab9a961](https://github.com/googleapis/google-cloud-go/commit/ab9a9610c2542e956a0edbffbadcaef588028dfa))
+* **bigquery:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+* **bigquery:** Update google.golang.org/api to v0.191.0 ([5b32644](https://github.com/googleapis/google-cloud-go/commit/5b32644eb82eb6bd6021f80b4fad471c60fb9d73))
+
+
+### Documentation
+
+* **bigquery/datatransfer:** Add a note to the CreateTransferConfigRequest and UpdateTransferConfigRequest to disable restricting service account usage ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **bigquery/datatransfer:** Deprecate `authorization_code` ([84461c0](https://github.com/googleapis/google-cloud-go/commit/84461c0ba464ec2f951987ba60030e37c8a8fc18))
+* **bigquery/migration:** A comment for field `name` in message `.google.cloud.bigquery.migration.v2.MigrationWorkflow` is changed to include 'Identifier' ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **bigquery/migration:** A comment for field `translation_config_details` in message `.google.cloud.bigquery.migration.v2.MigrationTask` is changed ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **bigquery/migration:** A comment for field `type` in message `.google.cloud.bigquery.migration.v2.MigrationTask` is changed to include new supported types ([1bb4c84](https://github.com/googleapis/google-cloud-go/commit/1bb4c846ec1ff37f394afb1684823ea76c18d16e))
+* **bigquery/storage:** A comment for field `location_uri` in message `.google.cloud.bigquery.storage.v1alpha.StorageDescriptor` is changed ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **bigquery/storage:** A comment for message `StreamMetastorePartitionsRequest` is changed ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+* **bigquery/storage:** A comment for message `StreamMetastorePartitionsResponse` is changed ([2710d0f](https://github.com/googleapis/google-cloud-go/commit/2710d0f8c66c17f1ddb1d4cc287f7aeb701c0f72))
+
 ## [1.62.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.61.0...bigquery/v1.62.0) (2024-07-22)
 
 
@@ -934,4 +995,3 @@ cloud.google.com/go.
 
 This is the first tag to carve out bigquery as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-

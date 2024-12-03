@@ -279,6 +279,9 @@ func (c *Client) CreateAndConfigureAccount(ctx context.Context, req *accountspb.
 // DeleteAccount deletes the specified account regardless of its type: standalone, MCA or
 // sub-account. Deleting an MCA leads to the deletion of all of its
 // sub-accounts. Executing this method requires admin access.
+// The deletion succeeds only if the account does not provide services
+// to any other account and has no processed offers. You can use the force
+// parameter to override this.
 func (c *Client) DeleteAccount(ctx context.Context, req *accountspb.DeleteAccountRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteAccount(ctx, req, opts...)
 }
@@ -293,7 +296,8 @@ func (c *Client) UpdateAccount(ctx context.Context, req *accountspb.UpdateAccoun
 // constraints of the request such as page size or filters.
 // This is not just listing the sub-accounts of an MCA, but all accounts the
 // calling user has access to including other MCAs, linked accounts,
-// standalone accounts and so on.
+// standalone accounts and so on. If no filter is provided, then it returns
+// accounts the user is directly added to.
 func (c *Client) ListAccounts(ctx context.Context, req *accountspb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
 	return c.internalClient.ListAccounts(ctx, req, opts...)
 }
@@ -737,6 +741,9 @@ func (c *restClient) CreateAndConfigureAccount(ctx context.Context, req *account
 // DeleteAccount deletes the specified account regardless of its type: standalone, MCA or
 // sub-account. Deleting an MCA leads to the deletion of all of its
 // sub-accounts. Executing this method requires admin access.
+// The deletion succeeds only if the account does not provide services
+// to any other account and has no processed offers. You can use the force
+// parameter to override this.
 func (c *restClient) DeleteAccount(ctx context.Context, req *accountspb.DeleteAccountRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -746,6 +753,9 @@ func (c *restClient) DeleteAccount(ctx context.Context, req *accountspb.DeleteAc
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -857,7 +867,8 @@ func (c *restClient) UpdateAccount(ctx context.Context, req *accountspb.UpdateAc
 // constraints of the request such as page size or filters.
 // This is not just listing the sub-accounts of an MCA, but all accounts the
 // calling user has access to including other MCAs, linked accounts,
-// standalone accounts and so on.
+// standalone accounts and so on. If no filter is provided, then it returns
+// accounts the user is directly added to.
 func (c *restClient) ListAccounts(ctx context.Context, req *accountspb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
 	it := &AccountIterator{}
 	req = proto.Clone(req).(*accountspb.ListAccountsRequest)

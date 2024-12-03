@@ -998,8 +998,8 @@ type JiraSource_JiraQueries struct {
 	ServerUri string `protobuf:"bytes,6,opt,name=server_uri,json=serverUri,proto3" json:"server_uri,omitempty"`
 	// Required. The SecretManager secret version resource name (e.g.
 	// projects/{project}/secrets/{secret}/versions/{version}) storing the
-	// Jira API key
-	// (https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/).
+	// Jira API key. See [Manage API tokens for your Atlassian
+	// account](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/).
 	ApiKeyConfig *ApiAuth_ApiKeyConfig `protobuf:"bytes,7,opt,name=api_key_config,json=apiKeyConfig,proto3" json:"api_key_config,omitempty"`
 }
 

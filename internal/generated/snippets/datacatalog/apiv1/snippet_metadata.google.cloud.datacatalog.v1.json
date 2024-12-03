@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datacatalog/apiv1",
-    "version": "1.22.1",
+    "version": "1.24.0",
     "language": "GO",
     "apis": [
       {
@@ -1293,6 +1293,98 @@
       ]
     },
     {
+      "regionTag": "datacatalog_v1_generated_DataCatalog_RetrieveConfig_sync",
+      "title": "datacatalog RetrieveConfig Sample",
+      "description": "RetrieveConfig retrieves the configuration related to the migration from Data Catalog to\nDataplex for a specific organization, including all the projects under it\nwhich have a separate configuration set.",
+      "file": "Client/RetrieveConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetrieveConfig",
+        "fullName": "google.cloud.datacatalog.v1.Client.RetrieveConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datacatalogpb.RetrieveConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datacatalogpb.OrganizationConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datacatalog.v1.Client"
+        },
+        "method": {
+          "shortName": "RetrieveConfig",
+          "fullName": "google.cloud.datacatalog.v1.DataCatalog.RetrieveConfig",
+          "service": {
+            "shortName": "DataCatalog",
+            "fullName": "google.cloud.datacatalog.v1.DataCatalog"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datacatalog_v1_generated_DataCatalog_RetrieveEffectiveConfig_sync",
+      "title": "datacatalog RetrieveEffectiveConfig Sample",
+      "description": "RetrieveEffectiveConfig retrieves the effective configuration related to the migration from Data\nCatalog to Dataplex for a specific organization or project. If there is no\nspecific configuration set for the resource, the setting is checked\nhierarchicahlly through the ancestors of the resource, starting from the\nresource itself.",
+      "file": "Client/RetrieveEffectiveConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetrieveEffectiveConfig",
+        "fullName": "google.cloud.datacatalog.v1.Client.RetrieveEffectiveConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datacatalogpb.RetrieveEffectiveConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datacatalogpb.MigrationConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datacatalog.v1.Client"
+        },
+        "method": {
+          "shortName": "RetrieveEffectiveConfig",
+          "fullName": "google.cloud.datacatalog.v1.DataCatalog.RetrieveEffectiveConfig",
+          "service": {
+            "shortName": "DataCatalog",
+            "fullName": "google.cloud.datacatalog.v1.DataCatalog"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datacatalog_v1_generated_DataCatalog_SearchCatalog_sync",
       "title": "datacatalog SearchCatalog Sample",
       "description": "SearchCatalog searches Data Catalog for multiple resources like entries and tags that\nmatch a query.\n\nThis is a [Custom Method]\n(https: //cloud.google.com/apis/design/custom_methods) that doesn't return\nall information on a resource, only its ID and high level fields. To get\nmore information, you can subsequently call specific get methods.\n\nNote: Data Catalog search queries don't guarantee full recall. Results\nthat match your query might not be returned, even in subsequent\nresult pages. Additionally, returned (and not returned) results can vary\nif you repeat search queries.\n\nFor more information, see [Data Catalog search syntax]\n(https: //cloud.google.com/data-catalog/docs/how-to/search-reference).",
@@ -1334,6 +1426,52 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datacatalog_v1_generated_DataCatalog_SetConfig_sync",
+      "title": "datacatalog SetConfig Sample",
+      "description": "SetConfig sets the configuration related to the migration to Dataplex for an\norganization or project.",
+      "file": "Client/SetConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetConfig",
+        "fullName": "google.cloud.datacatalog.v1.Client.SetConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datacatalogpb.SetConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datacatalogpb.MigrationConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datacatalog.v1.Client"
+        },
+        "method": {
+          "shortName": "SetConfig",
+          "fullName": "google.cloud.datacatalog.v1.DataCatalog.SetConfig",
+          "service": {
+            "shortName": "DataCatalog",
+            "fullName": "google.cloud.datacatalog.v1.DataCatalog"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

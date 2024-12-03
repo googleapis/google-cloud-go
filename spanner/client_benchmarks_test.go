@@ -18,7 +18,7 @@ package spanner
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"math/rand"
 	"reflect"
 	"sync"
@@ -51,6 +51,7 @@ var rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
 func createBenchmarkServer(incStep uint64) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
 	t := &testing.T{}
 	server, client, teardown = setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:     100,
 			MaxOpened:     400,
@@ -87,7 +88,7 @@ func createBenchmarkServer(incStep uint64) (server *MockedSpannerInMemTestServer
 		if uint64(client.idleSessions.idleList.Len()) == client.idleSessions.MinOpened {
 			return nil
 		}
-		return fmt.Errorf("not yet initialized")
+		return errors.New("not yet initialized")
 	})
 	return
 }

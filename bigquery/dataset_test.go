@@ -420,6 +420,15 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		Labels:   map[string]string{"x": "y"},
 		Access: []*bq.DatasetAccess{
 			{Role: "READER", UserByEmail: "joe@example.com"},
+			{Role: "READER",
+				UserByEmail: "jane@example.com",
+				Condition: &bq.Expr{
+					Description: "desc",
+					Expression:  "expr",
+					Location:    "loc",
+					Title:       "title",
+				},
+			},
 			{Role: "WRITER", GroupByEmail: "users@example.com"},
 			{
 				Dataset: &bq.DatasetAccessEntry{
@@ -456,7 +465,20 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		Location:            "EU",
 		Labels:              map[string]string{"x": "y"},
 		Access: []*AccessEntry{
-			{Role: ReaderRole, Entity: "joe@example.com", EntityType: UserEmailEntity},
+			{Role: ReaderRole,
+				Entity:     "joe@example.com",
+				EntityType: UserEmailEntity,
+			},
+			{Role: ReaderRole,
+				Entity:     "jane@example.com",
+				EntityType: UserEmailEntity,
+				Condition: &Expr{
+					Title:       "title",
+					Expression:  "expr",
+					Location:    "loc",
+					Description: "desc",
+				},
+			},
 			{Role: WriterRole, Entity: "users@example.com", EntityType: GroupEmailEntity},
 			{
 				EntityType: DatasetEntity,
@@ -536,6 +558,12 @@ func TestConvertAccessEntry(t *testing.T) {
 		{Role: OwnerRole, Entity: "e", EntityType: UserEmailEntity},
 		{Role: ReaderRole, Entity: "e", EntityType: SpecialGroupEntity},
 		{Role: ReaderRole, Entity: "e", EntityType: IAMMemberEntity},
+		{Role: WriterRole, Entity: "e", EntityType: IAMMemberEntity,
+			Condition: &Expr{Expression: "expr",
+				Title:       "title",
+				Location:    "loc",
+				Description: "desc",
+			}},
 		{Role: ReaderRole, EntityType: ViewEntity,
 			View: &Table{ProjectID: "p", DatasetID: "d", TableID: "t", c: c}},
 		{Role: ReaderRole, EntityType: RoutineEntity,

@@ -418,10 +418,10 @@ func (r *Row) ToStructLenient(p interface{}) error {
 //	err := spanner.SelectAll(row, &singersByPtr, spanner.WithLenient())
 func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptions) error {
 	if rows == nil {
-		return fmt.Errorf("rows is nil")
+		return errors.New("rows is nil")
 	}
 	if destination == nil {
-		return fmt.Errorf("destination is nil")
+		return errors.New("destination is nil")
 	}
 	dstVal := reflect.ValueOf(destination)
 	if !dstVal.IsValid() || (dstVal.Kind() == reflect.Ptr && dstVal.IsNil()) {

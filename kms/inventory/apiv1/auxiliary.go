@@ -42,7 +42,7 @@ type CryptoKeyIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*kmspb.CryptoKey, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *CryptoKeyIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
@@ -89,7 +89,7 @@ type ProtectedResourceIterator struct {
 	InternalFetch func(pageSize int, pageToken string) (results []*inventorypb.ProtectedResource, nextPageToken string, err error)
 }
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
 func (it *ProtectedResourceIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }

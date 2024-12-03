@@ -1,5 +1,17 @@
 # Changes
 
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.32.0...bigtable/v1.33.0) (2024-09-23)
+
+
+### Features
+
+* **bigtable/admin:** Add support for Cloud Bigtable Row Affinity in App Profiles ([b9dfce5](https://github.com/googleapis/google-cloud-go/commit/b9dfce5e509d0c795e89c66b7f6a6bb356e3a172))
+
+
+### Bug Fixes
+
+* **bigtable:** Rollback new auth library ([#10906](https://github.com/googleapis/google-cloud-go/issues/10906)) ([8109157](https://github.com/googleapis/google-cloud-go/commit/8109157cb2bfb700fde04361e0fa7c1345608fce))
+
 ## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.31.0...bigtable/v1.32.0) (2024-09-09)
 
 
@@ -408,3 +420,4 @@
 
 This is the first tag to carve out bigtable as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
+
