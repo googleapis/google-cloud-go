@@ -21,14 +21,13 @@
 package batchpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1747,10 +1746,10 @@ type AllocationPolicy_InstancePolicy struct {
 	// file system or a raw storage drive that is not ready for data
 	// storage and accessing.
 	Disks []*AllocationPolicy_AttachedDisk `protobuf:"bytes,6,rep,name=disks,proto3" json:"disks,omitempty"`
-	// Optional. If specified, VMs will consume only the specified reservation.
-	// If not specified (default), VMs will consume any applicable reservation.
-	// Additionally, VMs will not consume any reservation if "NO_RESERVATION"
-	// is specified.
+	// Optional. If not specified (default), VMs will consume any applicable
+	// reservation. If "NO_RESERVATION" is specified, VMs will not consume any
+	// reservation. Otherwise, if specified, VMs will consume only the specified
+	// reservation.
 	Reservation string `protobuf:"bytes,7,opt,name=reservation,proto3" json:"reservation,omitempty"`
 }
 
