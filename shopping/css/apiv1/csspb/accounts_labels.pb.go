@@ -22,9 +22,6 @@ package csspb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -790,7 +789,7 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AccountLabelsServiceClient interface {
-	// Lists the labels assigned to an account.
+	// Lists the labels owned by an account.
 	ListAccountLabels(ctx context.Context, in *ListAccountLabelsRequest, opts ...grpc.CallOption) (*ListAccountLabelsResponse, error)
 	// Creates a new label, not assigned to any account.
 	CreateAccountLabel(ctx context.Context, in *CreateAccountLabelRequest, opts ...grpc.CallOption) (*AccountLabel, error)
@@ -846,7 +845,7 @@ func (c *accountLabelsServiceClient) DeleteAccountLabel(ctx context.Context, in 
 
 // AccountLabelsServiceServer is the server API for AccountLabelsService service.
 type AccountLabelsServiceServer interface {
-	// Lists the labels assigned to an account.
+	// Lists the labels owned by an account.
 	ListAccountLabels(context.Context, *ListAccountLabelsRequest) (*ListAccountLabelsResponse, error)
 	// Creates a new label, not assigned to any account.
 	CreateAccountLabel(context.Context, *CreateAccountLabelRequest) (*AccountLabel, error)
