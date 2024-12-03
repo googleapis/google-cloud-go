@@ -86,22 +86,10 @@ var (
 
 // newGRPCSpannerClient initializes a new spannerClient that uses the gRPC
 // Spanner API.
-func newGRPCSpannerClient(ctx context.Context, sc *sessionClient, opts ...option.ClientOption) (spannerClient, error) {
+func newGRPCSpannerClient(ctx context.Context, sc *sessionClient, channelID uint64, opts ...option.ClientOption) (spannerClient, error) {
 	raw, err := vkit.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, err
-	}
-
-	// Retrieve the channelID for each spannerClient.
-	// It is assumed that this method is invoked
-	// under a lock already.
-	channelID, ok := sc.channelIDMap[raw]
-	if !ok {
-		if sc.channelIDMap == nil {
-			sc.channelIDMap = make(map[*vkit.Client]uint64)
-		}
-		channelID = uint64(len(sc.channelIDMap)) + 1
-		sc.channelIDMap[raw] = channelID
 	}
 
 	g := &grpcSpannerClient{raw: raw, metricsTracerFactory: sc.metricsTracerFactory}

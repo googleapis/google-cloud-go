@@ -106,7 +106,7 @@ type sessionClient struct {
 	callOptions          *vkit.CallOptions
 	otConfig             *openTelemetryConfig
 	metricsTracerFactory *builtinMetricsTracerFactory
-	channelIDMap         map[*vkit.Client]uint64
+	channelIDMap         map[*grpc.ClientConn]uint64
 	nthClient            int
 }
 
@@ -405,14 +405,30 @@ func (sc *sessionClient) sessionWithID(id string) (*session, error) {
 // optimal usage of server side caches.
 func (sc *sessionClient) nextClient() (spannerClient, error) {
 	var clientOpt option.ClientOption
+	var channelID uint64
 	if _, ok := sc.connPool.(*gmeWrapper); ok {
 		// Pass GCPMultiEndpoint as a pool.
 		clientOpt = gtransport.WithConnPool(sc.connPool)
 	} else {
 		// Pick a grpc.ClientConn from a regular pool.
-		clientOpt = option.WithGRPCConn(sc.connPool.Conn())
+		conn := sc.connPool.Conn()
+
+		// Retrieve the channelID for each spannerClient.
+		// It is assumed that this method is invoked
+		// under a lock already.
+		var ok bool
+		channelID, ok = sc.channelIDMap[conn]
+		if !ok {
+			if sc.channelIDMap == nil {
+				sc.channelIDMap = make(map[*grpc.ClientConn]uint64)
+			}
+			channelID = uint64(len(sc.channelIDMap)) + 1
+			sc.channelIDMap[conn] = channelID
+		}
+
+		clientOpt = option.WithGRPCConn(conn)
 	}
-	client, err := newGRPCSpannerClient(context.Background(), sc, clientOpt)
+	client, err := newGRPCSpannerClient(context.Background(), sc, channelID, clientOpt)
 	if err != nil {
 		return nil, err
 	}
