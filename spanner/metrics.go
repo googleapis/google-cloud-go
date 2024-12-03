@@ -191,7 +191,7 @@ type builtinMetricsTracerFactory struct {
 	isDirectPathEnabled bool // Indicates if DirectPath is enabled.
 
 	// shutdown is a function to be called on client close to clean up resources.
-	shutdown func()
+	shutdown func(ctx context.Context)
 
 	// clientAttributes are attributes specific to a client instance that do not change across different function calls on the client.
 	clientAttributes []attribute.KeyValue
@@ -226,7 +226,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 			attribute.String(monitoredResLabelKeyInstanceConfig, "unknown"),
 			attribute.String(monitoredResLabelKeyLocation, detectClientLocation(ctx)),
 		},
-		shutdown: func() {},
+		shutdown: func(ctx context.Context) {},
 	}
 
 	tracerFactory.isDirectPathEnabled = false
@@ -241,7 +241,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath string, metricsP
 		meterProvider = sdkmetric.NewMeterProvider(mpOptions...)
 
 		tracerFactory.enabled = true
-		tracerFactory.shutdown = func() { meterProvider.Shutdown(ctx) }
+		tracerFactory.shutdown = func(ctx context.Context) { meterProvider.Shutdown(ctx) }
 	} else {
 		switch metricsProvider.(type) {
 		case noop.MeterProvider:
