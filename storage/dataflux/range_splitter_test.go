@@ -207,8 +207,8 @@ func TestSplitRange(t *testing.T) {
 		},
 		{
 			desc:            "start range contains new character",
-			startRange:      "abc",
-			endRange:        "xyz",
+			startRange:      "aaaaabbcccccc",
+			endRange:        "xxxxyz",
 			numSplits:       2,
 			wantErr:         false,
 			wantSplitPoints: []string{"b", "c"},

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.1.3...servicehealth/v1.2.0) (2024-12-04)
+
+
+### Features
+
+* **servicehealth:** A new field `id` is added to message `.google.cloud.servicehealth.v1.Product` ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
 ## [1.1.3](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.1.2...servicehealth/v1.1.3) (2024-11-14)
 
 

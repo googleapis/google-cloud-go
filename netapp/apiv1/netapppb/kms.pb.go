@@ -340,9 +340,9 @@ type CreateKmsConfigRequest struct {
 	// Required. Value for parent.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. Id of the requesting KmsConfig. Must be unique within the parent
-	// resource. Must contain only letters, numbers, underscore and hyphen, with
-	// the first character a letter or underscore, the last a letter or underscore
-	// or a number, and a 63 character maximum.
+	// resource. Must contain only letters, numbers and hyphen, with the first
+	// character a letter, the last a letter or a
+	// number, and a 63 character maximum.
 	KmsConfigId string `protobuf:"bytes,2,opt,name=kms_config_id,json=kmsConfigId,proto3" json:"kms_config_id,omitempty"`
 	// Required. The required parameters to create a new KmsConfig.
 	KmsConfig *KmsConfig `protobuf:"bytes,3,opt,name=kms_config,json=kmsConfig,proto3" json:"kms_config,omitempty"`

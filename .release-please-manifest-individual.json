@@ -1,6 +1,6 @@
 {
-  "auth": "0.10.2",
-  "auth/oauth2adapt": "0.2.5",
+  "auth": "0.12.0",
+  "auth/oauth2adapt": "0.2.6",
   "bigquery": "1.64.0",
   "bigtable": "1.33.0",
   "datastore": "1.20.0",
@@ -8,7 +8,7 @@
   "firestore": "1.17.0",
   "logging": "1.12.0",
   "profiler": "0.4.1",
-  "pubsub": "1.45.1",
+  "pubsub": "1.45.2",
   "pubsublite": "1.8.2",
   "spanner": "1.73.0",
   "storage": "1.47.0",

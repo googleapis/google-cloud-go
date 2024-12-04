@@ -85,7 +85,7 @@ func TestPartitionQuery_QueryOptions(t *testing.T) {
 			}
 
 			ctx := context.Background()
-			_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client})
+			_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, QueryOptions: tt.client})
 			defer teardown()
 
 			var (
@@ -148,7 +148,7 @@ func TestPartitionQuery_ReadOptions(t *testing.T) {
 	for _, tt := range testcases {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, ReadOptions: *tt.client})
 			defer teardown()
 
 			var (
