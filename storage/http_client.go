@@ -34,6 +34,7 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
+	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
@@ -1022,7 +1023,13 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			}
 			if useRetry {
 				if s.retry != nil {
-					call.WithRetry(s.retry.backoff, s.retry.shouldRetry)
+					bo := &gax.Backoff{}
+					if s.retry.backoff != nil {
+						bo.Multiplier = s.retry.backoff.GetMultiplier()
+						bo.Initial = s.retry.backoff.GetInitial()
+						bo.Max = s.retry.backoff.GetMax()
+					}
+					call.WithRetry(bo, s.retry.shouldRetry)
 				} else {
 					call.WithRetry(nil, nil)
 				}

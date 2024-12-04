@@ -1396,7 +1396,7 @@ func TestRetryMaxAttemptsEmulated(t *testing.T) {
 		instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503", "return-503", "return-503", "return-503"}}
 		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-		config := &retryConfig{maxAttempts: expectedAttempts(3), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+		config := &retryConfig{maxAttempts: expectedAttempts(3), backoff: gaxBackoffFromStruct(&gax.Backoff{Initial: 10 * time.Millisecond})}
 		_, err = client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config))
 
 		var ae *apierror.APIError
@@ -1421,7 +1421,7 @@ func TestTimeoutErrorEmulated(t *testing.T) {
 		ctx, cancel := context.WithTimeout(ctx, time.Nanosecond)
 		defer cancel()
 		time.Sleep(5 * time.Nanosecond)
-		config := &retryConfig{backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+		config := &retryConfig{backoff: gaxBackoffFromStruct(&gax.Backoff{Initial: 10 * time.Millisecond})}
 		_, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config))
 
 		// Error may come through as a context.DeadlineExceeded (HTTP) or status.DeadlineExceeded (gRPC)
@@ -1447,7 +1447,7 @@ func TestRetryDeadlineExceedeEmulated(t *testing.T) {
 		instructions := map[string][]string{"storage.buckets.get": {"return-504", "return-504"}}
 		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-		config := &retryConfig{maxAttempts: expectedAttempts(4), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+		config := &retryConfig{maxAttempts: expectedAttempts(4), backoff: gaxBackoffFromStruct(&gax.Backoff{Initial: 10 * time.Millisecond})}
 		if _, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config)); err != nil {
 			t.Fatalf("GetBucket: got unexpected error %v, want nil", err)
 		}

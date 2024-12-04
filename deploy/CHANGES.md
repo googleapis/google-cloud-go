@@ -1,6 +1,28 @@
 # Changes
 
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.25.1...deploy/v1.26.0) (2024-12-04)
+
+
+### Features
+
+* **deploy:** A new field `dns_endpoint` is added to message `.google.cloud.deploy.v1.GkeCluster` ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
+
+### Documentation
+
+* **deploy:** A comment for field `internal_ip` in message `.google.cloud.deploy.v1.GkeCluster` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **deploy:** A comment for field `requested_cancellation` in message `.google.cloud.deploy.v1.OperationMetadata` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **deploy:** A comment for field `skaffold_version` in message `.google.cloud.deploy.v1.Release` is changed ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **deploy:** Documentation improvements. `skaffold_version` field is no longer explicitly marked as optional ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
+## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.25.0...deploy/v1.25.1) (2024-11-21)
+
+
+### Documentation
+
+* **deploy:** Minor documentation updates ([1036734](https://github.com/googleapis/google-cloud-go/commit/1036734d387691f6264bd7a51c9e19567815a3d2))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.24.0...deploy/v1.25.0) (2024-11-14)
 
 

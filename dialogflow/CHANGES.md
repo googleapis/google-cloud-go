@@ -1,5 +1,20 @@
 # Changes
 
+## [1.62.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.61.0...dialogflow/v1.62.0) (2024-12-04)
+
+
+### Features
+
+* **dialogflow:** Make TrainingPhrase name field output-only ([#11217](https://github.com/googleapis/google-cloud-go/issues/11217)) ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+
+## [1.61.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.60.0...dialogflow/v1.61.0) (2024-11-19)
+
+
+### Features
+
+* **dialogflow:** Add options of query_source, search_config, end_user_metadata and exact_search ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+* **dialogflow:** Expose metadata in AnswerSource ([c1e936d](https://github.com/googleapis/google-cloud-go/commit/c1e936df6527933f5e7c31be0f95aa46ff2c0e61))
+
 ## [1.60.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.59.0...dialogflow/v1.60.0) (2024-11-14)
 
 
