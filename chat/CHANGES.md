@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/chat/v0.7.1...chat/v0.8.0) (2024-12-04)
+
+
+### Features
+
+* **chat:** Chat Apps can now retrieve the import mode expire time information to know when to complete the import mode properly ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+
+
+### Documentation
+
+* **chat:** Update reference documentation to include import_mode_expire_time field ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+
 ## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/chat/v0.7.0...chat/v0.7.1) (2024-10-23)
 
 

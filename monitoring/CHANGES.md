@@ -1,5 +1,13 @@
 # Changes
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.21.2...monitoring/v1.22.0) (2024-12-04)
+
+
+### Features
+
+* **monitoring/apiv3:** Added support for notification prompts in AlertPolicy ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+* **monitoring/apiv3:** Added support for PromQL metric validation opt-out in AlertPolicy ([191a664](https://github.com/googleapis/google-cloud-go/commit/191a6643252221a2d6947d85aea7f31bae17cec6))
+
 ## [1.21.2](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.21.1...monitoring/v1.21.2) (2024-10-23)
 
 
