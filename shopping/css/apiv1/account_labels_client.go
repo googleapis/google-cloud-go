@@ -162,7 +162,7 @@ func (c *AccountLabelsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListAccountLabels lists the labels assigned to an account.
+// ListAccountLabels lists the labels owned by an account.
 func (c *AccountLabelsClient) ListAccountLabels(ctx context.Context, req *csspb.ListAccountLabelsRequest, opts ...gax.CallOption) *AccountLabelIterator {
 	return c.internalClient.ListAccountLabels(ctx, req, opts...)
 }
@@ -425,7 +425,7 @@ func (c *accountLabelsGRPCClient) DeleteAccountLabel(ctx context.Context, req *c
 	return err
 }
 
-// ListAccountLabels lists the labels assigned to an account.
+// ListAccountLabels lists the labels owned by an account.
 func (c *accountLabelsRESTClient) ListAccountLabels(ctx context.Context, req *csspb.ListAccountLabelsRequest, opts ...gax.CallOption) *AccountLabelIterator {
 	it := &AccountLabelIterator{}
 	req = proto.Clone(req).(*csspb.ListAccountLabelsRequest)
