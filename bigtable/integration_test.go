@@ -3746,29 +3746,35 @@ func TestIntegration_AdminBackup(t *testing.T) {
 
 	backupUID := uid.NewSpace("mybackup-", &uid.Options{})
 
-	standardBackupName := backupUID.New()
-	defer adminClient.DeleteBackup(ctx, sourceCluster, standardBackupName)
-	if err = adminClient.CreateBackup(ctx, tblConf.TableID, sourceCluster, standardBackupName, time.Now().Add(8*time.Hour)); err != nil {
+	stdBkpName := backupUID.New()
+	defer adminClient.DeleteBackup(ctx, sourceCluster, stdBkpName)
+	if err = adminClient.CreateBackup(ctx, tblConf.TableID, sourceCluster, stdBkpName, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
 
-	// Create hot backup
-	hotBackupName := backupUID.New()
-	defer adminClient.DeleteBackup(ctx, sourceCluster, hotBackupName)
-	wantHtsTime := time.Now().Add(45 * time.Minute)
-	if err = adminClient.CreateBackupWithOptions(ctx, tblConf.TableID, sourceCluster, hotBackupName, time.Now().Add(8*time.Hour), &BackupOptions{
-		BackupType:        BackupTypeHot,
-		HotToStandardTime: Ptr(wantHtsTime),
-	}); err != nil {
+	// Create hot backup with hot_to_standard_time
+	hotBkpName1 := backupUID.New()
+	defer adminClient.DeleteBackup(ctx, sourceCluster, hotBkpName1)
+	wantHtsTime := time.Now().Truncate(time.Second).Add(48 * time.Hour)
+	if err = adminClient.CreateBackupWithOptions(ctx, tblConf.TableID, sourceCluster, hotBkpName1,
+		time.Now().Add(8*time.Hour), HotBackup(&wantHtsTime)); err != nil {
+		t.Fatalf("Creating backup: %v", err)
+	}
+
+	// Create hot backup without hot_to_standard_time
+	hotBkpName2 := backupUID.New()
+	defer adminClient.DeleteBackup(ctx, sourceCluster, hotBkpName2)
+	if err = adminClient.CreateBackupWithOptions(ctx, tblConf.TableID, sourceCluster, hotBkpName2,
+		time.Now().Add(8*time.Hour), HotBackup(nil)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
 
 	// List backup
-	backups, err := list(sourceCluster)
+	gotBackups, err := list(sourceCluster)
 	if err != nil {
 		t.Fatalf("Listing backups: %v", err)
 	}
-	if got, want := len(backups), 2; got < want {
+	if got, want := len(gotBackups), 3; got < want {
 		t.Fatalf("Listing backup count: %d, want: >= %d", got, want)
 	}
 
@@ -3776,33 +3782,38 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		HotToStandardTime *time.Time
 		BackupType        BackupType
 	}{
-		standardBackupName: {
-			BackupType: BackupTypeUnspecified,
+		stdBkpName: {
+			BackupType: BackupTypeStandard,
 		},
-		hotBackupName: {
-			HotToStandardTime: &wantHtsTime,
+		hotBkpName1: {
 			BackupType:        BackupTypeHot,
+			HotToStandardTime: &wantHtsTime,
+		},
+		hotBkpName2: {
+			BackupType: BackupTypeHot,
 		},
 	}
 
 	foundBackups := map[string]bool{}
-	for _, backup := range backups {
-		if wantBackup, ok := wantBackups[backup.Name]; ok {
-			foundBackups[backup.Name] = true
-
-			if got, want := backup.SourceTable, tblConf.TableID; got != want {
-				t.Errorf("Backup SourceTable: %s, want: %s", got, want)
-			}
-			if got, want := backup.ExpireTime, backup.StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
-				t.Errorf("Backup ExpireTime: %s, want: %s", got, want)
-			}
-			if got, want := backup.BackupType, wantBackup.BackupType; got != want {
-				t.Errorf("Backup BackupType: %v, want: %v", got, want)
-			}
-			if got, want := backup.HotToStandardTime, wantBackup.HotToStandardTime; got != want {
-				t.Errorf("Backup HotToStandardTime: %v, want: %v", got, want)
-			}
+	for _, gotBackup := range gotBackups {
+		wantBackup, ok := wantBackups[gotBackup.Name]
+		if !ok {
 			break
+		}
+		foundBackups[gotBackup.Name] = true
+
+		if got, want := gotBackup.SourceTable, tblConf.TableID; got != want {
+			t.Errorf("%v SourceTable got: %s, want: %s", gotBackup.Name, got, want)
+		}
+		if got, want := gotBackup.ExpireTime, gotBackup.StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
+			t.Errorf("%v ExpireTime got: %s, want: %s", gotBackup.Name, got, want)
+		}
+		if got, want := gotBackup.BackupType, wantBackup.BackupType; got != want {
+			t.Errorf("%v BackupType got: %v, want: %v", gotBackup.Name, got, want)
+		}
+		if got, want := gotBackup.HotToStandardTime, wantBackup.HotToStandardTime; (got != nil && !got.Equal(*want)) ||
+			(got == nil && got != want) || (want == nil && got != want) {
+			t.Errorf("%v HotToStandardTime got: %v, want: %v", gotBackup.Name, got, want)
 		}
 	}
 
@@ -3810,37 +3821,37 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Errorf("foundBackups: %+v, wantBackups: %+v", foundBackups, wantBackups)
 	}
 
-	// Get backup
-	backup, err := adminClient.BackupInfo(ctx, sourceCluster, standardBackupName)
+	// Get BackupInfo
+	gotBackupInfo, err := adminClient.BackupInfo(ctx, sourceCluster, stdBkpName)
 	if err != nil {
-		t.Fatalf("BackupInfo: %v", backup)
+		t.Fatalf("BackupInfo: %v", gotBackupInfo)
 	}
-	if got, want := *backup, *backups[0]; cmp.Equal(got, &want) {
+	if got, want := *gotBackupInfo, *gotBackups[0]; cmp.Equal(got, &want) {
 		t.Errorf("BackupInfo: %v, want: %v", got, want)
 	}
 
 	// Update backup
 	newExpireTime := time.Now().Add(10 * time.Hour)
-	err = adminClient.UpdateBackup(ctx, sourceCluster, standardBackupName, newExpireTime)
+	err = adminClient.UpdateBackup(ctx, sourceCluster, stdBkpName, newExpireTime)
 	if err != nil {
 		t.Fatalf("UpdateBackup failed: %v", err)
 	}
 
 	// Check that updated backup has the correct expire time
-	updatedBackup, err := adminClient.BackupInfo(ctx, sourceCluster, standardBackupName)
+	updatedBackup, err := adminClient.BackupInfo(ctx, sourceCluster, stdBkpName)
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", err)
 	}
-	backup.ExpireTime = newExpireTime
+	gotBackupInfo.ExpireTime = newExpireTime
 	// Server clock and local clock may not be perfectly sync'ed.
-	if got, want := *updatedBackup, *backup; got.ExpireTime.Sub(want.ExpireTime) > time.Minute {
+	if got, want := *updatedBackup, *gotBackupInfo; got.ExpireTime.Sub(want.ExpireTime) > time.Minute {
 		t.Errorf("BackupInfo: %v, want: %v", got, want)
 	}
 
 	// Restore backup
 	restoredTable := tblConf.TableID + "-restored"
 	defer deleteTable(ctx, t, adminClient, restoredTable)
-	if err = adminClient.RestoreTable(ctx, restoredTable, sourceCluster, standardBackupName); err != nil {
+	if err = adminClient.RestoreTable(ctx, restoredTable, sourceCluster, stdBkpName); err != nil {
 		t.Fatalf("RestoreTable: %v", err)
 	}
 	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
@@ -3864,7 +3875,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	defer dAdminClient.Close()
 
 	defer deleteTable(ctx, t, dAdminClient, restoreTableName)
-	if err = dAdminClient.RestoreTableFrom(ctx, sourceInstance, restoreTableName, sourceCluster, standardBackupName); err != nil {
+	if err = dAdminClient.RestoreTableFrom(ctx, sourceInstance, restoreTableName, sourceCluster, stdBkpName); err != nil {
 		t.Fatalf("RestoreTableFrom: %v", err)
 	}
 	tblInfo, err := dAdminClient.TableInfo(ctx, restoreTableName)
@@ -3879,20 +3890,98 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// Delete backup
-	if err = adminClient.DeleteBackup(ctx, sourceCluster, standardBackupName); err != nil {
+	if err = adminClient.DeleteBackup(ctx, sourceCluster, stdBkpName); err != nil {
 		t.Fatalf("DeleteBackup: %v", err)
 	}
-	backups, err = list(sourceCluster)
+	gotBackups, err = list(sourceCluster)
 	if err != nil {
 		t.Fatalf("List after Delete: %v", err)
 	}
 
 	// Verify the backup was deleted.
-	for _, backup := range backups {
-		if backup.Name == standardBackupName {
+	for _, backup := range gotBackups {
+		if backup.Name == stdBkpName {
 			t.Errorf("Backup '%v' was not deleted", backup.Name)
 			break
 		}
+	}
+}
+
+func TestIntegration_AdminUpdateBackupHotToStandardTime(t *testing.T) {
+	// Setup test environment
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support backups")
+	}
+
+	// Create context
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	// Create table
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+
+	// Create hot backup with hot_to_standard_time 2 days from now
+	backupUID := uid.NewSpace("mybackup-", &uid.Options{})
+	bkpName := backupUID.New()
+	defer adminClient.DeleteBackup(ctx, testEnv.Config().Cluster, bkpName)
+	if err = adminClient.CreateBackupWithOptions(ctx, tblConf.TableID, testEnv.Config().Cluster, bkpName,
+		time.Now().Add(8*time.Hour), HotBackup(Ptr(time.Now().Truncate(time.Second).Add(2*24*time.Hour)))); err != nil {
+		t.Fatalf("Creating backup: %v", err)
+	}
+
+	for _, test := range []struct {
+		wantHtsTime *time.Time
+		desc        string
+	}{
+		{
+			desc:        "Unset hot_to_standard_time",
+			wantHtsTime: nil,
+		},
+		{
+			desc:        "Set hot_to_standard_time to 5 days from now",
+			wantHtsTime: Ptr(time.Now().Truncate(time.Second).Add(5 * 24 * time.Hour)),
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			// Update hot_to_standard_time
+			err = adminClient.UpdateBackupHotToStandardTime(ctx, testEnv.Config().Cluster, bkpName, test.wantHtsTime)
+			if err != nil {
+				t.Fatalf("UpdateBackupHotToStandardTime failed: %v", err)
+			}
+
+			// Check that updated backup has the correct hot_to_standard_time
+			updatedBackup, err := adminClient.BackupInfo(ctx, testEnv.Config().Cluster, bkpName)
+			if err != nil {
+				t.Fatalf("BackupInfo: %v", err)
+			}
+			gotHtsTime := updatedBackup.HotToStandardTime
+			if (test.wantHtsTime != nil && !test.wantHtsTime.Equal(*gotHtsTime)) ||
+				(test.wantHtsTime == nil && gotHtsTime != nil) ||
+				(test.wantHtsTime != nil && gotHtsTime == nil) {
+				t.Errorf("hot_to_standard_time got: %v, want: %v", gotHtsTime, test.wantHtsTime)
+			}
+		})
 	}
 }
 

@@ -2150,28 +2150,46 @@ func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, tab
 	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
 }
 
+type backupOptions struct {
+	backupType        *BackupType
+	hotToStandardTime *time.Time
+}
+
+// BackupOption can be used to specify parameters for backup operations.
+type BackupOption interface {
+	apply(o *backupOptions)
+}
+
+// setHotToStandardTime can be used to set backup type to [BackupTypeHot] and the
+// time at which the hot backup will
+// be converted to a standard backup.
+// Once the `hot_to_standard_time` has passed, Cloud Bigtable will convert the
+// hot backup to a standard backup. This value must be greater than the backup
+// creation time by at least 24 hours.
+type hotBackupOption struct {
+	htsTime *time.Time
+}
+
+func (hbo hotBackupOption) apply(o *backupOptions) {
+	o.hotToStandardTime = hbo.htsTime
+	btHot := BackupTypeHot
+	o.backupType = &btHot
+}
+
 // Ptr returns a pointer to its argument.
 // It can be used to initialize pointer fields:
 //
-//	backupOptions.HotToStandardTime = bigtable.Ptr[time.Time](time.Now())
+//	E.g. HotBackup(bigtable.Ptr[time.Time](time.Now()))
 func Ptr[T any](t T) *T { return &t }
 
-// BackupOptions holds optional parameters for backup operations.
-type BackupOptions struct {
-	BackupType BackupType
-
-	// The time at which the hot backup will be converted to a standard backup.
-	// Once the `hot_to_standard_time` has passed, Cloud Bigtable will convert the
-	// hot backup to a standard backup. This value must be greater than the backup
-	// creation time by:
-	// - At least 24 hours
-	//
-	// This field only applies for hot backups.
-	HotToStandardTime *time.Time
-}
-
-func (ac *AdminClient) CreateBackupWithOptions(ctx context.Context, table, cluster, backup string, expireTime time.Time, options *BackupOptions) error {
-	return ac.createBackup(ctx, table, cluster, backup, expireTime, options)
+// HotBackup can be used to set backup type to [BackupTypeHot] and optionally, specify the
+// time at which the hot backup will be converted to a standard backup.
+// Once the `hot_to_standard_time` has passed, Cloud Bigtable will convert the
+// hot backup to a standard backup. This value, if provided, must be greater than the backup
+// creation time by:
+// - At least 24 hours
+func HotBackup(hotToStandardTime *time.Time) BackupOption {
+	return hotBackupOption{htsTime: hotToStandardTime}
 }
 
 // CreateBackup creates a new backup in the specified cluster from the
@@ -2180,7 +2198,12 @@ func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup 
 	return ac.createBackup(ctx, table, cluster, backup, expireTime, nil)
 }
 
-func (ac *AdminClient) createBackup(ctx context.Context, table, cluster, backup string, expireTime time.Time, options *BackupOptions) error {
+// CreateBackupWithOptions is similar to CreateBackup but lets the user specify additional options.
+func (ac *AdminClient) CreateBackupWithOptions(ctx context.Context, table, cluster, backup string, expireTime time.Time, opts ...BackupOption) error {
+	return ac.createBackup(ctx, table, cluster, backup, expireTime, opts...)
+}
+
+func (ac *AdminClient) createBackup(ctx context.Context, table, cluster, backup string, expireTime time.Time, opts ...BackupOption) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 
@@ -2194,11 +2217,17 @@ func (ac *AdminClient) createBackup(ctx context.Context, table, cluster, backup 
 			SourceTable: prefix + "/tables/" + table,
 		},
 	}
-	if options != nil {
-		req.Backup.BackupType = btapb.Backup_BackupType(options.BackupType)
-		if options.HotToStandardTime != nil {
-			req.Backup.HotToStandardTime = timestamppb.New(*options.HotToStandardTime)
+	o := backupOptions{}
+	for _, opt := range opts {
+		if opt != nil {
+			opt.apply(&o)
 		}
+	}
+	if o.backupType != nil {
+		req.Backup.BackupType = btapb.Backup_BackupType(*o.backupType)
+	}
+	if o.hotToStandardTime != nil {
+		req.Backup.HotToStandardTime = timestamppb.New(*o.hotToStandardTime)
 	}
 	op, err := ac.tClient.CreateBackup(ctx, req)
 	if err != nil {
@@ -2348,19 +2377,19 @@ func (it *BackupIterator) Next() (*BackupInfo, error) {
 	return item, nil
 }
 
-// The type of the backup.
+// BackupType denotes the type of the backup.
 type BackupType int32
 
 const (
-	// Not specified.
+	// BackupTypeUnspecified denotes that backup type has not been specified.
 	BackupTypeUnspecified BackupType = 0
 
-	// The default type for Cloud Bigtable managed backups. Supported for
+	// BackupTypeStandard is the default type for Cloud Bigtable managed backups. Supported for
 	// backups created in both HDD and SSD instances. Requires optimization when
 	// restored to a table in an SSD instance.
 	BackupTypeStandard BackupType = 1
 
-	// A backup type with faster restore to SSD performance. Only supported for
+	// BackupTypeHot is a backup type with faster restore to SSD performance. Only supported for
 	// backups created in SSD instances. A new SSD table restored from a hot
 	// backup reaches production performance more quickly than a standard
 	// backup.
@@ -2445,23 +2474,25 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 	return err
 }
 
-// UpdateBackupWithHotToStandardTime updates the HotToStandardTime of a hot backup
-func (ac *AdminClient) UpdateBackupWithHotToStandardTime(ctx context.Context, cluster, backup string, hotToStandardTime time.Time) error {
+// UpdateBackupHotToStandardTime updates the HotToStandardTime of a hot backup.
+func (ac *AdminClient) UpdateBackupHotToStandardTime(ctx context.Context, cluster, backup string, hotToStandardTime *time.Time) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	backupPath := ac.backupPath(cluster, ac.instance, backup)
-
-	ts := timestamppb.New(hotToStandardTime)
 
 	updateMask := &field_mask.FieldMask{}
 	updateMask.Paths = append(updateMask.Paths, "hot_to_standard_time")
 
 	req := &btapb.UpdateBackupRequest{
 		Backup: &btapb.Backup{
-			Name:              backupPath,
-			HotToStandardTime: ts,
+			Name: backupPath,
 		},
 		UpdateMask: updateMask,
 	}
+
+	if hotToStandardTime != nil {
+		req.Backup.HotToStandardTime = timestamppb.New(*hotToStandardTime)
+	}
+
 	_, err := ac.tClient.UpdateBackup(ctx, req)
 	return err
 }
