@@ -121,11 +121,12 @@ type metricsContext struct {
 }
 
 type metricsConfig struct {
-	project        string
-	interval       time.Duration
-	customExporter *metric.Exporter
-	manualReader   *metric.ManualReader // used by tests
-	resourceOpts   []resource.Option    // used by tests
+	project         string
+	interval        time.Duration
+	customExporter  *metric.Exporter
+	manualReader    *metric.ManualReader // used by tests
+	disableExporter bool                 // used by tests disables exports
+	resourceOpts    []resource.Option    // used by tests
 }
 
 func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsContext, error) {
@@ -164,7 +165,8 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 	)
 	if cfg.manualReader != nil {
 		meterOpts = append(meterOpts, metric.WithReader(cfg.manualReader))
-	} else {
+	}
+	if !cfg.disableExporter {
 		meterOpts = append(meterOpts, metric.WithReader(
 			metric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, metric.WithInterval(interval))))
 	}

@@ -156,9 +156,10 @@ func TestNewGRPCMetricContext(t *testing.T) {
 			Value: attribute.StringValue("gce-instance-id")},
 	}
 	cfg := metricsConfig{
-		project:      "project-id",
-		manualReader: mr,
-		resourceOpts: []resource.Option{resource.WithAttributes(attrs...)},
+		project:         "project-id",
+		manualReader:    mr,
+		disableExporter: true, // disable since this is a unit test
+		resourceOpts:    []resource.Option{resource.WithAttributes(attrs...)},
 	}
 	mc, err := newGRPCMetricContext(ctx, cfg)
 	if err != nil {
