@@ -79,7 +79,7 @@ func newStorageMonitoredResource(ctx context.Context, project, api string, opts 
 	} else if !present && smr.project == "" {
 		return nil, errors.New("google cloud project is required to start client-side metrics")
 	}
-	if v, ok := s.Value("location"); ok {
+	if v, ok := s.Value("cloud.region"); ok {
 		smr.location = v.AsString()
 	} else {
 		smr.location = "global"
@@ -90,6 +90,8 @@ func newStorageMonitoredResource(ctx context.Context, project, api string, opts 
 		smr.cloudPlatform = "unknown"
 	}
 	if v, ok := s.Value("host.id"); ok {
+		smr.host = v.AsString()
+	} else if v, ok := s.Value("faas.id"); ok {
 		smr.host = v.AsString()
 	} else {
 		smr.host = "unknown"
@@ -123,13 +125,20 @@ type metricsConfig struct {
 	interval       time.Duration
 	customExporter *metric.Exporter
 	manualReader   *metric.ManualReader // used by tests
+	resourceOpts   []resource.Option    // used by tests
 }
 
 func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsContext, error) {
 	var exporter metric.Exporter
 	meterOpts := []metric.Option{}
 	if cfg.customExporter == nil {
-		smr, err := newStorageMonitoredResource(ctx, cfg.project, "grpc", resource.WithDetectors(gcp.NewDetector()))
+		var ropts []resource.Option
+		if cfg.resourceOpts != nil {
+			ropts = cfg.resourceOpts
+		} else {
+			ropts = []resource.Option{resource.WithDetectors(gcp.NewDetector())}
+		}
+		smr, err := newStorageMonitoredResource(ctx, cfg.project, "grpc", ropts...)
 		if err != nil {
 			return nil, err
 		}
@@ -146,8 +155,6 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 		interval = cfg.interval
 	}
 	meterOpts = append(meterOpts,
-		metric.WithReader(
-			metric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, metric.WithInterval(interval))),
 		// Metric views update histogram boundaries to be relevant to GCS
 		// otherwise default OTel histogram boundaries are used.
 		metric.WithView(
@@ -157,6 +164,9 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 	)
 	if cfg.manualReader != nil {
 		meterOpts = append(meterOpts, metric.WithReader(cfg.manualReader))
+	} else {
+		meterOpts = append(meterOpts, metric.WithReader(
+			metric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, metric.WithInterval(interval))))
 	}
 	provider := metric.NewMeterProvider(meterOpts...)
 	mo := opentelemetry.MetricsOptions{

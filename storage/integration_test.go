@@ -424,16 +424,16 @@ func TestIntegration_MetricsEnablement(t *testing.T) {
 		if err != iterator.Done {
 			t.Errorf("Objects.Next: expected iterator.Done got %v", err)
 		}
+		rm := metricdata.ResourceMetrics{}
+		if err := mr.Collect(ctx, &rm); err != nil {
+			t.Errorf("ManualReader.Collect: %v", err)
+		}
 		metricCheck := map[string]bool{
 			"grpc.client.attempt.started":                            false,
 			"grpc.client.attempt.duration":                           false,
 			"grpc.client.attempt.sent_total_compressed_message_size": false,
 			"grpc.client.attempt.rcvd_total_compressed_message_size": false,
 			"grpc.client.call.duration":                              false,
-		}
-		rm := metricdata.ResourceMetrics{}
-		if err := mr.Collect(context.Background(), &rm); err != nil {
-			t.Errorf("ManualReader.Collect: %v", err)
 		}
 		for _, sm := range rm.ScopeMetrics {
 			for _, m := range sm.Metrics {
@@ -460,8 +460,39 @@ func TestIntegration_MetricsEnablementInGCE(t *testing.T) {
 		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() != "gcp_compute_engine" {
 			t.Skip("only testable in a GCE instance")
 		}
+		instance, exists := attrs.Value("host.id")
+		if !exists {
+			t.Skip("GCE instance id not detected")
+		}
+		if v, exists := attrs.Value("cloud.region"); !exists || !strings.Contains(strings.ToLower(v.AsString()), "us-west1") {
+			t.Skip("inside a GCE instance but region is not us-west1")
+		}
 		it := client.Buckets(ctx, testutil.ProjID())
 		_, _ = it.Next()
+		rm := metricdata.ResourceMetrics{}
+		if err := mr.Collect(ctx, &rm); err != nil {
+			t.Errorf("ManualReader.Collect: %v", err)
+		}
+
+		monitoredResourceWant := map[string]string{
+			"gcp.resource_type": "storage.googleapis.com/Client",
+			"api":               "grpc",
+			"cloud_platform":    "gcp_compute_engine",
+			"host_id":           instance.AsString(),
+			"location":          "us-west1",
+			"project_id":        testutil.ProjID(),
+			"instance_id":       "ignore", // generated UUID
+		}
+		for _, attr := range rm.Resource.Attributes() {
+			want := monitoredResourceWant[string(attr.Key)]
+			if want == "ignore" {
+				continue
+			}
+			got := attr.Value.AsString()
+			if want != got {
+				t.Errorf("got: %v want: %v", got, want)
+			}
+		}
 		metricCheck := map[string]bool{
 			"grpc.client.attempt.started":                            false,
 			"grpc.client.attempt.duration":                           false,
@@ -478,10 +509,6 @@ func TestIntegration_MetricsEnablementInGCE(t *testing.T) {
 			// "grpc.lb.wrr.endpoint_weights":                           false,
 			// "grpc.lb.rls.target_picks":                               false,
 			// "grpc.lb.rls.failed_picks":                               false,
-		}
-		rm := metricdata.ResourceMetrics{}
-		if err := mr.Collect(context.Background(), &rm); err != nil {
-			t.Errorf("ManualReader.Collect: %v", err)
 		}
 		for _, sm := range rm.ScopeMetrics {
 			for _, m := range sm.Metrics {
