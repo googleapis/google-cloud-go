@@ -59,10 +59,10 @@ func (g *grpcSpannerClient) optsWithNextRequestID(priors []gax.CallOption) []gax
 	return append(priors, &retryerWithRequestID{g})
 }
 
-func (g *grpcSpannerClient) prepareRequestIDTrackers(clientID int, channelID uint64) {
+func (g *grpcSpannerClient) prepareRequestIDTrackers(clientID int, channelID uint64, nthRequest *atomic.Uint32) {
 	g.id = clientID // The ID derived from the SpannerClient.
 	g.channelID = channelID
-	g.nthRequest = new(atomic.Uint32)
+	g.nthRequest = nthRequest
 }
 
 // retryerWithRequestID is a gax.CallOption that injects "x-goog-spanner-request-id"

@@ -94,7 +94,7 @@ func newGRPCSpannerClient(ctx context.Context, sc *sessionClient, channelID uint
 
 	g := &grpcSpannerClient{raw: raw, metricsTracerFactory: sc.metricsTracerFactory}
 	clientID := sc.nthClient
-	g.prepareRequestIDTrackers(clientID, channelID)
+	g.prepareRequestIDTrackers(clientID, channelID, sc.nthRequest)
 
 	clientInfo := []string{"gccl", internal.Version}
 	if sc.userAgent != "" {
