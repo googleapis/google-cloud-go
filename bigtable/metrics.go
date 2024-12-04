@@ -70,7 +70,7 @@ const (
 // These are effectively constant, but for testing purposes they are mutable
 var (
 	// duration between two metric exports
-	defaultSamplePeriod = time.Minute
+	defaultSamplePeriod = 5 * time.Minute
 
 	metricsErrorPrefix = "bigtable-metrics: "
 
@@ -133,7 +133,6 @@ var (
 	// createExporterOptions takes Bigtable client options and returns exporter options
 	// Overwritten in tests
 	createExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
-		btOpts = append(btOpts, option.WithGRPCConnectionPool(4))
 		return btOpts
 	}
 )
