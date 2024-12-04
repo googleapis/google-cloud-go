@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -286,8 +285,9 @@ func (AgentAssistantFeedback_DocumentEfficiency) EnumDescriptor() ([]byte, []int
 //
 // [AnswerRecord.name][google.cloud.dialogflow.v2.AnswerRecord.name] to call the
 //
-//	[UpdateAnswerRecord][] method to send feedback about a specific answer
-//	that they believe is wrong.
+//	[AnswerRecords.UpdateAnswerRecord][google.cloud.dialogflow.v2.AnswerRecords.UpdateAnswerRecord]
+//	method to send feedback about a specific answer that they believe is
+//	wrong.
 type AnswerRecord struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

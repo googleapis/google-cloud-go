@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1139,9 +1138,11 @@ type SuggestConversationSummaryResponse struct {
 	// ID>/conversations/<Conversation ID>/messages/<Message ID>`.
 	LatestMessage string `protobuf:"bytes,2,opt,name=latest_message,json=latestMessage,proto3" json:"latest_message,omitempty"`
 	// Number of messages prior to and including
-	// [last_conversation_message][] used to compile the suggestion. It may be
-	// smaller than the [SuggestSummaryRequest.context_size][] field in the
-	// request if there weren't that many messages in the conversation.
+	// [latest_message][google.cloud.dialogflow.v2.SuggestConversationSummaryResponse.latest_message]
+	// used to compile the suggestion. It may be smaller than the
+	// [SuggestConversationSummaryRequest.context_size][google.cloud.dialogflow.v2.SuggestConversationSummaryRequest.context_size]
+	// field in the request if there weren't that many messages in the
+	// conversation.
 	ContextSize int32 `protobuf:"varint,3,opt,name=context_size,json=contextSize,proto3" json:"context_size,omitempty"`
 }
 
@@ -1297,9 +1298,11 @@ type GenerateStatelessSummaryResponse struct {
 	// the messages provided.
 	LatestMessage string `protobuf:"bytes,2,opt,name=latest_message,json=latestMessage,proto3" json:"latest_message,omitempty"`
 	// Number of messages prior to and including
-	// [last_conversation_message][] used to compile the suggestion. It may be
-	// smaller than the [GenerateStatelessSummaryRequest.context_size][] field in
-	// the request if there weren't that many messages in the conversation.
+	// [latest_message][google.cloud.dialogflow.v2.GenerateStatelessSummaryResponse.latest_message]
+	// used to compile the suggestion. It may be smaller than the
+	// [GenerateStatelessSummaryRequest.max_context_size][google.cloud.dialogflow.v2.GenerateStatelessSummaryRequest.max_context_size]
+	// field in the request if there weren't that many messages in the
+	// conversation.
 	ContextSize int32 `protobuf:"varint,3,opt,name=context_size,json=contextSize,proto3" json:"context_size,omitempty"`
 }
 

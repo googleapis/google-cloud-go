@@ -21,11 +21,8 @@
 package dialogflowpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1215,7 +1214,7 @@ func (x *SuggestionFeature) GetType() SuggestionFeature_Type {
 }
 
 // The request message for
-// [ConversationProfiles.SetSuggestionFeature][].
+// [ConversationProfiles.SetSuggestionFeatureConfig][google.cloud.dialogflow.v2.ConversationProfiles.SetSuggestionFeatureConfig].
 type SetSuggestionFeatureConfigRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1285,7 +1284,8 @@ func (x *SetSuggestionFeatureConfigRequest) GetSuggestionFeatureConfig() *HumanA
 	return nil
 }
 
-// The request message for [ConversationProfiles.ClearFeature][].
+// The request message for
+// [ConversationProfiles.ClearSuggestionFeatureConfig][google.cloud.dialogflow.v2.ConversationProfiles.ClearSuggestionFeatureConfig].
 type ClearSuggestionFeatureConfigRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1355,7 +1355,8 @@ func (x *ClearSuggestionFeatureConfigRequest) GetSuggestionFeatureType() Suggest
 	return SuggestionFeature_TYPE_UNSPECIFIED
 }
 
-// Metadata for a [ConversationProfile.SetSuggestionFeatureConfig][]
+// Metadata for a
+// [ConversationProfiles.SetSuggestionFeatureConfig][google.cloud.dialogflow.v2.ConversationProfiles.SetSuggestionFeatureConfig]
 // operation.
 type SetSuggestionFeatureConfigOperationMetadata struct {
 	state         protoimpl.MessageState
@@ -1435,7 +1436,8 @@ func (x *SetSuggestionFeatureConfigOperationMetadata) GetCreateTime() *timestamp
 	return nil
 }
 
-// Metadata for a [ConversationProfile.ClearSuggestionFeatureConfig][]
+// Metadata for a
+// [ConversationProfiles.ClearSuggestionFeatureConfig][google.cloud.dialogflow.v2.ConversationProfiles.ClearSuggestionFeatureConfig]
 // operation.
 type ClearSuggestionFeatureConfigOperationMetadata struct {
 	state         protoimpl.MessageState
@@ -4037,14 +4039,18 @@ type ConversationProfilesClient interface {
 	GetConversationProfile(ctx context.Context, in *GetConversationProfileRequest, opts ...grpc.CallOption) (*ConversationProfile, error)
 	// Creates a conversation profile in the specified project.
 	//
-	// [ConversationProfile.CreateTime][] and [ConversationProfile.UpdateTime][]
+	// [ConversationProfile.create_time][google.cloud.dialogflow.v2.ConversationProfile.create_time]
+	// and
+	// [ConversationProfile.update_time][google.cloud.dialogflow.v2.ConversationProfile.update_time]
 	// aren't populated in the response. You can retrieve them via
 	// [GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]
 	// API.
 	CreateConversationProfile(ctx context.Context, in *CreateConversationProfileRequest, opts ...grpc.CallOption) (*ConversationProfile, error)
 	// Updates the specified conversation profile.
 	//
-	// [ConversationProfile.CreateTime][] and [ConversationProfile.UpdateTime][]
+	// [ConversationProfile.create_time][google.cloud.dialogflow.v2.ConversationProfile.create_time]
+	// and
+	// [ConversationProfile.update_time][google.cloud.dialogflow.v2.ConversationProfile.update_time]
 	// aren't populated in the response. You can retrieve them via
 	// [GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]
 	// API.
@@ -4163,14 +4169,18 @@ type ConversationProfilesServer interface {
 	GetConversationProfile(context.Context, *GetConversationProfileRequest) (*ConversationProfile, error)
 	// Creates a conversation profile in the specified project.
 	//
-	// [ConversationProfile.CreateTime][] and [ConversationProfile.UpdateTime][]
+	// [ConversationProfile.create_time][google.cloud.dialogflow.v2.ConversationProfile.create_time]
+	// and
+	// [ConversationProfile.update_time][google.cloud.dialogflow.v2.ConversationProfile.update_time]
 	// aren't populated in the response. You can retrieve them via
 	// [GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]
 	// API.
 	CreateConversationProfile(context.Context, *CreateConversationProfileRequest) (*ConversationProfile, error)
 	// Updates the specified conversation profile.
 	//
-	// [ConversationProfile.CreateTime][] and [ConversationProfile.UpdateTime][]
+	// [ConversationProfile.create_time][google.cloud.dialogflow.v2.ConversationProfile.create_time]
+	// and
+	// [ConversationProfile.update_time][google.cloud.dialogflow.v2.ConversationProfile.update_time]
 	// aren't populated in the response. You can retrieve them via
 	// [GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]
 	// API.

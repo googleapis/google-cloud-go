@@ -21,13 +21,12 @@
 package dialogflowpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -260,8 +259,8 @@ const (
 	// No model variant specified. In this case Dialogflow defaults to
 	// USE_BEST_AVAILABLE.
 	SpeechModelVariant_SPEECH_MODEL_VARIANT_UNSPECIFIED SpeechModelVariant = 0
-	// Use the best available variant of the [Speech
-	// model][InputAudioConfig.model] that the caller is eligible for.
+	// Use the best available variant of the [Speech model][model] that the caller
+	// is eligible for.
 	//
 	// Please see the [Dialogflow
 	// docs](https://cloud.google.com/dialogflow/docs/data-logging) for
