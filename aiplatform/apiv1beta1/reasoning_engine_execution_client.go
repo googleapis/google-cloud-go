@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -35,8 +36,10 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
+	httpbodypb "google.golang.org/genproto/googleapis/api/httpbody"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -45,17 +48,18 @@ var newReasoningEngineExecutionClientHook clientHook
 
 // ReasoningEngineExecutionCallOptions contains the retry settings for each method of ReasoningEngineExecutionClient.
 type ReasoningEngineExecutionCallOptions struct {
-	QueryReasoningEngine []gax.CallOption
-	GetLocation          []gax.CallOption
-	ListLocations        []gax.CallOption
-	GetIamPolicy         []gax.CallOption
-	SetIamPolicy         []gax.CallOption
-	TestIamPermissions   []gax.CallOption
-	CancelOperation      []gax.CallOption
-	DeleteOperation      []gax.CallOption
-	GetOperation         []gax.CallOption
-	ListOperations       []gax.CallOption
-	WaitOperation        []gax.CallOption
+	QueryReasoningEngine       []gax.CallOption
+	StreamQueryReasoningEngine []gax.CallOption
+	GetLocation                []gax.CallOption
+	ListLocations              []gax.CallOption
+	GetIamPolicy               []gax.CallOption
+	SetIamPolicy               []gax.CallOption
+	TestIamPermissions         []gax.CallOption
+	CancelOperation            []gax.CallOption
+	DeleteOperation            []gax.CallOption
+	GetOperation               []gax.CallOption
+	ListOperations             []gax.CallOption
+	WaitOperation              []gax.CallOption
 }
 
 func defaultReasoningEngineExecutionGRPCClientOptions() []option.ClientOption {
@@ -75,33 +79,35 @@ func defaultReasoningEngineExecutionGRPCClientOptions() []option.ClientOption {
 
 func defaultReasoningEngineExecutionCallOptions() *ReasoningEngineExecutionCallOptions {
 	return &ReasoningEngineExecutionCallOptions{
-		QueryReasoningEngine: []gax.CallOption{},
-		GetLocation:          []gax.CallOption{},
-		ListLocations:        []gax.CallOption{},
-		GetIamPolicy:         []gax.CallOption{},
-		SetIamPolicy:         []gax.CallOption{},
-		TestIamPermissions:   []gax.CallOption{},
-		CancelOperation:      []gax.CallOption{},
-		DeleteOperation:      []gax.CallOption{},
-		GetOperation:         []gax.CallOption{},
-		ListOperations:       []gax.CallOption{},
-		WaitOperation:        []gax.CallOption{},
+		QueryReasoningEngine:       []gax.CallOption{},
+		StreamQueryReasoningEngine: []gax.CallOption{},
+		GetLocation:                []gax.CallOption{},
+		ListLocations:              []gax.CallOption{},
+		GetIamPolicy:               []gax.CallOption{},
+		SetIamPolicy:               []gax.CallOption{},
+		TestIamPermissions:         []gax.CallOption{},
+		CancelOperation:            []gax.CallOption{},
+		DeleteOperation:            []gax.CallOption{},
+		GetOperation:               []gax.CallOption{},
+		ListOperations:             []gax.CallOption{},
+		WaitOperation:              []gax.CallOption{},
 	}
 }
 
 func defaultReasoningEngineExecutionRESTCallOptions() *ReasoningEngineExecutionCallOptions {
 	return &ReasoningEngineExecutionCallOptions{
-		QueryReasoningEngine: []gax.CallOption{},
-		GetLocation:          []gax.CallOption{},
-		ListLocations:        []gax.CallOption{},
-		GetIamPolicy:         []gax.CallOption{},
-		SetIamPolicy:         []gax.CallOption{},
-		TestIamPermissions:   []gax.CallOption{},
-		CancelOperation:      []gax.CallOption{},
-		DeleteOperation:      []gax.CallOption{},
-		GetOperation:         []gax.CallOption{},
-		ListOperations:       []gax.CallOption{},
-		WaitOperation:        []gax.CallOption{},
+		QueryReasoningEngine:       []gax.CallOption{},
+		StreamQueryReasoningEngine: []gax.CallOption{},
+		GetLocation:                []gax.CallOption{},
+		ListLocations:              []gax.CallOption{},
+		GetIamPolicy:               []gax.CallOption{},
+		SetIamPolicy:               []gax.CallOption{},
+		TestIamPermissions:         []gax.CallOption{},
+		CancelOperation:            []gax.CallOption{},
+		DeleteOperation:            []gax.CallOption{},
+		GetOperation:               []gax.CallOption{},
+		ListOperations:             []gax.CallOption{},
+		WaitOperation:              []gax.CallOption{},
 	}
 }
 
@@ -111,6 +117,7 @@ type internalReasoningEngineExecutionClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	QueryReasoningEngine(context.Context, *aiplatformpb.QueryReasoningEngineRequest, ...gax.CallOption) (*aiplatformpb.QueryReasoningEngineResponse, error)
+	StreamQueryReasoningEngine(context.Context, *aiplatformpb.StreamQueryReasoningEngineRequest, ...gax.CallOption) (aiplatformpb.ReasoningEngineExecutionService_StreamQueryReasoningEngineClient, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -161,6 +168,11 @@ func (c *ReasoningEngineExecutionClient) Connection() *grpc.ClientConn {
 // QueryReasoningEngine queries using a reasoning engine.
 func (c *ReasoningEngineExecutionClient) QueryReasoningEngine(ctx context.Context, req *aiplatformpb.QueryReasoningEngineRequest, opts ...gax.CallOption) (*aiplatformpb.QueryReasoningEngineResponse, error) {
 	return c.internalClient.QueryReasoningEngine(ctx, req, opts...)
+}
+
+// StreamQueryReasoningEngine streams queries using a reasoning engine.
+func (c *ReasoningEngineExecutionClient) StreamQueryReasoningEngine(ctx context.Context, req *aiplatformpb.StreamQueryReasoningEngineRequest, opts ...gax.CallOption) (aiplatformpb.ReasoningEngineExecutionService_StreamQueryReasoningEngineClient, error) {
+	return c.internalClient.StreamQueryReasoningEngine(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -390,6 +402,24 @@ func (c *reasoningEngineExecutionGRPCClient) QueryReasoningEngine(ctx context.Co
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.reasoningEngineExecutionClient.QueryReasoningEngine(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *reasoningEngineExecutionGRPCClient) StreamQueryReasoningEngine(ctx context.Context, req *aiplatformpb.StreamQueryReasoningEngineRequest, opts ...gax.CallOption) (aiplatformpb.ReasoningEngineExecutionService_StreamQueryReasoningEngineClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).StreamQueryReasoningEngine[0:len((*c.CallOptions).StreamQueryReasoningEngine):len((*c.CallOptions).StreamQueryReasoningEngine)], opts...)
+	var resp aiplatformpb.ReasoningEngineExecutionService_StreamQueryReasoningEngineClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.reasoningEngineExecutionClient.StreamQueryReasoningEngine(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -690,6 +720,112 @@ func (c *reasoningEngineExecutionRESTClient) QueryReasoningEngine(ctx context.Co
 		return nil, e
 	}
 	return resp, nil
+}
+
+// StreamQueryReasoningEngine streams queries using a reasoning engine.
+func (c *reasoningEngineExecutionRESTClient) StreamQueryReasoningEngine(ctx context.Context, req *aiplatformpb.StreamQueryReasoningEngineRequest, opts ...gax.CallOption) (aiplatformpb.ReasoningEngineExecutionService_StreamQueryReasoningEngineClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:streamQuery", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	var streamClient *streamQueryReasoningEngineRESTClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		streamClient = &streamQueryReasoningEngineRESTClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&httpbodypb.HttpBody{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// streamQueryReasoningEngineRESTClient is the stream client used to consume the server stream created by
+// the REST implementation of StreamQueryReasoningEngine.
+type streamQueryReasoningEngineRESTClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *streamQueryReasoningEngineRESTClient) Recv() (*httpbodypb.HttpBody, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*httpbodypb.HttpBody)
+	return res, nil
+}
+
+func (c *streamQueryReasoningEngineRESTClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *streamQueryReasoningEngineRESTClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *streamQueryReasoningEngineRESTClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamQueryReasoningEngineRESTClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *streamQueryReasoningEngineRESTClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamQueryReasoningEngineRESTClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // GetLocation gets information about a location.
