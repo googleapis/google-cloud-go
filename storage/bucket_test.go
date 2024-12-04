@@ -1116,11 +1116,11 @@ func TestBucketRetryer(t *testing.T) {
 					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
-				backoff: &gax.Backoff{
+				backoff: gaxBackoffFromStruct(&gax.Backoff{
 					Initial:    2 * time.Second,
 					Max:        30 * time.Second,
 					Multiplier: 3,
-				},
+				}),
 				policy:      RetryAlways,
 				maxAttempts: expectedAttempts(5),
 				shouldRetry: func(err error) bool { return false },
@@ -1135,9 +1135,9 @@ func TestBucketRetryer(t *testing.T) {
 					}))
 			},
 			want: &retryConfig{
-				backoff: &gax.Backoff{
+				backoff: gaxBackoffFromStruct(&gax.Backoff{
 					Multiplier: 3,
-				}},
+				})},
 		},
 		{
 			name: "set policy only",

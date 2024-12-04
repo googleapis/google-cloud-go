@@ -81,6 +81,11 @@ type DatasetMetadata struct {
 	// More information: https://cloud.google.com/resource-manager/docs/tags/tags-overview
 	Tags []*DatasetTag
 
+	// TRUE if the dataset and its table names are case-insensitive, otherwise
+	// FALSE. By default, this is FALSE, which means the dataset and its table
+	// names are case-sensitive. This field does not affect routine references.
+	IsCaseInsensitive bool
+
 	// ETag is the ETag obtained when reading metadata. Pass it to Dataset.Update to
 	// ensure that the metadata hasn't changed since it was read.
 	ETag string
@@ -153,6 +158,11 @@ type DatasetMetadataToUpdate struct {
 
 	// The entire access list. It is not possible to replace individual entries.
 	Access []*AccessEntry
+
+	// TRUE if the dataset and its table names are case-insensitive, otherwise
+	// FALSE. By default, this is FALSE, which means the dataset and its table
+	// names are case-sensitive. This field does not affect routine references.
+	IsCaseInsensitive optional.Bool
 
 	labelUpdater
 }
@@ -243,6 +253,7 @@ func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	ds.DefaultCollation = dm.DefaultCollation
 	ds.MaxTimeTravelHours = int64(dm.MaxTimeTravel / time.Hour)
 	ds.StorageBillingModel = string(dm.StorageBillingModel)
+	ds.IsCaseInsensitive = dm.IsCaseInsensitive
 	ds.Labels = dm.Labels
 	var err error
 	ds.Access, err = accessListToBQ(dm.Access)
@@ -385,6 +396,7 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 		FullID:                     d.Id,
 		Location:                   d.Location,
 		Labels:                     d.Labels,
+		IsCaseInsensitive:          d.IsCaseInsensitive,
 		ETag:                       d.Etag,
 	}
 	for _, a := range d.Access {
@@ -516,6 +528,10 @@ func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 		if len(ds.Access) == 0 {
 			ds.NullFields = append(ds.NullFields, "Access")
 		}
+	}
+	if dm.IsCaseInsensitive != nil {
+		ds.IsCaseInsensitive = optional.ToBool(dm.IsCaseInsensitive)
+		forceSend("IsCaseInsensitive")
 	}
 	labels, forces, nulls := dm.update()
 	ds.Labels = labels
