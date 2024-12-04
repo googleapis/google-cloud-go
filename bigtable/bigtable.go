@@ -132,9 +132,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 		// Table, cluster and zone are unknown at this point
 		// Use default values
-		attribute.String(monitoredResLabelKeyTable, ""),
-		attribute.String(monitoredResLabelKeyCluster, ""),
-		attribute.String(monitoredResLabelKeyZone, "global"),
+		attribute.String(monitoredResLabelKeyTable, defaultTable),
+		attribute.String(monitoredResLabelKeyCluster, defaultCluster),
+		attribute.String(monitoredResLabelKeyZone, defaultZone),
 	)
 	o = append(o, internaloption.EnableAsyncRefreshDryRun(func() {
 		metricsTracerFactory.debugTags.Add(context.Background(), 1,

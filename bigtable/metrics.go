@@ -270,7 +270,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 	// Create debug_tags
 	tf.debugTags, err = meter.Int64Counter(
 		metricNameDebugTags,
-		metric.WithDescription("The number of additional RPCs sent after the initial attempt."),
+		metric.WithDescription("A counter of internal client events used for debugging."),
 		metric.WithUnit(metricUnitCount),
 	)
 	return err

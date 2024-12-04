@@ -30,6 +30,7 @@ import (
 const (
 	defaultCluster = "unspecified"
 	defaultZone    = "global"
+	defaultTable   = "unspecified"
 )
 
 // get GFE latency in ms from response metadata
