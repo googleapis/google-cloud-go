@@ -22,6 +22,7 @@ import (
 	"log"
 	"reflect"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
@@ -107,7 +108,11 @@ type sessionClient struct {
 	otConfig             *openTelemetryConfig
 	metricsTracerFactory *builtinMetricsTracerFactory
 	channelIDMap         map[*grpc.ClientConn]uint64
-	nthClient            int
+
+	// These fields are for request-id propagation.
+	nthClient int
+	// nthRequest shall always be incremented on every fresh request.
+	nthRequest *atomic.Uint32
 }
 
 // newSessionClient creates a session client to use for a database.
@@ -118,7 +123,6 @@ func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, 
 		database:             database,
 		userAgent:            userAgent,
 		id:                   clientID,
-		nthClient:            nthClient,
 		sessionLabels:        sessionLabels,
 		databaseRole:         databaseRole,
 		disableRouteToLeader: disableRouteToLeader,
@@ -126,6 +130,9 @@ func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, 
 		batchTimeout:         batchTimeout,
 		logger:               logger,
 		callOptions:          callOptions,
+
+		nthClient:  nthClient,
+		nthRequest: new(atomic.Uint32),
 	}
 }
 
