@@ -22,6 +22,7 @@ import (
 )
 
 func TestWorkstealListingEmulated(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/11205")
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client *storage.Client) {
 
 		attrs := &storage.BucketAttrs{
