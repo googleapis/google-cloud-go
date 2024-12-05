@@ -21,12 +21,11 @@
 package automlpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -36,7 +35,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Input configuration for [AutoMl.ImportData][google.cloud.automl.v1.AutoMl.ImportData] action.
+// Input configuration for
+// [AutoMl.ImportData][google.cloud.automl.v1.AutoMl.ImportData] action.
 //
 // The format of input depends on dataset_metadata the Dataset into which
 // the import is happening has. As input source the
@@ -52,9 +52,9 @@ const (
 // The formats are represented in EBNF with commas being literal and with
 // non-terminal symbols defined near the end of this comment. The formats are:
 //
-// <h4>AutoML Vision</h4>
+// #### AutoML Vision
 //
-// <div class="ds-selector-tabs"><section><h5>Classification</h5>
+// ##### Classification
 //
 // See [Preparing your training
 // data](https://cloud.google.com/vision/automl/docs/prepare) for more
@@ -67,16 +67,16 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing.
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing.
 //
-//	  - `GCS_FILE_PATH` - The Google Cloud Storage location of an image of up to
-//	    30MB in size. Supported extensions: .JPEG, .GIF, .PNG, .WEBP, .BMP,
-//	    .TIFF, .ICO.
+//   - `GCS_FILE_PATH` - The Google Cloud Storage location of an image of up to
+//     30MB in size. Supported extensions: .JPEG, .GIF, .PNG, .WEBP, .BMP,
+//     .TIFF, .ICO.
 //
 // *   `LABEL` - A label that identifies the object in the image.
 //
@@ -91,7 +91,7 @@ const (
 //	UNASSIGNED,gs://folder/image3.jpg,daisy
 //	UNASSIGNED,gs://folder/image4.jpg
 //
-// </section><section><h5>Object Detection</h5>
+// ##### Object Detection
 // See [Preparing your training
 // data](https://cloud.google.com/vision/automl/object-detection/docs/prepare)
 // for more information.
@@ -103,26 +103,26 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing.
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing.
 //
-//	  - `GCS_FILE_PATH` - The Google Cloud Storage location of an image of up to
-//	    30MB in size. Supported extensions: .JPEG, .GIF, .PNG. Each image
-//	    is assumed to be exhaustively labeled.
+//   - `GCS_FILE_PATH` - The Google Cloud Storage location of an image of up to
+//     30MB in size. Supported extensions: .JPEG, .GIF, .PNG. Each image
+//     is assumed to be exhaustively labeled.
 //
-//	  - `LABEL` - A label that identifies the object in the image specified by the
-//	    `BOUNDING_BOX`.
+//   - `LABEL` - A label that identifies the object in the image specified by the
+//     `BOUNDING_BOX`.
 //
-//	  - `BOUNDING BOX` - The vertices of an object in the example image.
-//	    The minimum allowed `BOUNDING_BOX` edge length is 0.01, and no more than
-//	    500 `BOUNDING_BOX` instances per image are allowed (one `BOUNDING_BOX`
-//	    per line). If an image has no looked for objects then it should be
-//	    mentioned just once with no LABEL and the ",,,,,,," in place of the
-//	    `BOUNDING_BOX`.
+//   - `BOUNDING BOX` - The vertices of an object in the example image.
+//     The minimum allowed `BOUNDING_BOX` edge length is 0.01, and no more than
+//     500 `BOUNDING_BOX` instances per image are allowed (one `BOUNDING_BOX`
+//     per line). If an image has no looked for objects then it should be
+//     mentioned just once with no LABEL and the ",,,,,,," in place of the
+//     `BOUNDING_BOX`.
 //
 // **Four sample rows:**
 //
@@ -134,9 +134,9 @@ const (
 //
 // </div>
 //
-// <h4>AutoML Video Intelligence</h4>
+// #### AutoML Video Intelligence
 //
-// <div class="ds-selector-tabs"><section><h5>Classification</h5>
+// ##### Classification
 //
 // See [Preparing your training
 // data](https://cloud.google.com/video-intelligence/automl/docs/prepare) for
@@ -177,7 +177,7 @@ const (
 //	gs://folder/vid2.avi,car,0,60.5
 //	gs://folder/vid3.avi,,,
 //
-// </section><section><h5>Object Tracking</h5>
+// ##### Object Tracking
 //
 // See [Preparing your training
 // data](/video-intelligence/automl/object-tracking/docs/prepare) for more
@@ -221,20 +221,17 @@ const (
 //
 // Seven sample rows of a CSV file for a particular ML_USE:
 //
-//	   gs://folder/video1.avi,car,1,12.10,0.8,0.8,0.9,0.8,0.9,0.9,0.8,0.9
-//	   gs://folder/video1.avi,car,1,12.90,0.4,0.8,0.5,0.8,0.5,0.9,0.4,0.9
-//	   gs://folder/video1.avi,car,2,12.10,.4,.2,.5,.2,.5,.3,.4,.3
-//	   gs://folder/video1.avi,car,2,12.90,.8,.2,,,.9,.3,,
-//	   gs://folder/video1.avi,bike,,12.50,.45,.45,,,.55,.55,,
-//	   gs://folder/video2.avi,car,1,0,.1,.9,,,.9,.1,,
-//	   gs://folder/video2.avi,,,,,,,,,,,
-//	</section>
+//	gs://folder/video1.avi,car,1,12.10,0.8,0.8,0.9,0.8,0.9,0.9,0.8,0.9
+//	gs://folder/video1.avi,car,1,12.90,0.4,0.8,0.5,0.8,0.5,0.9,0.4,0.9
+//	gs://folder/video1.avi,car,2,12.10,.4,.2,.5,.2,.5,.3,.4,.3
+//	gs://folder/video1.avi,car,2,12.90,.8,.2,,,.9,.3,,
+//	gs://folder/video1.avi,bike,,12.50,.45,.45,,,.55,.55,,
+//	gs://folder/video2.avi,car,1,0,.1,.9,,,.9,.1,,
+//	gs://folder/video2.avi,,,,,,,,,,,
 //
-// </div>
+// #### AutoML Natural Language
 //
-// <h4>AutoML Natural Language</h4>
-//
-// <div class="ds-selector-tabs"><section><h5>Entity Extraction</h5>
+// ##### Entity Extraction
 //
 // See [Preparing your training
 // data](/natural-language/automl/entity-analysis/docs/prepare) for more
@@ -247,16 +244,16 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing..
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing..
 //
-//	  - `GCS_FILE_PATH` - a Identifies JSON Lines (.JSONL) file stored in
-//	    Google Cloud Storage that contains in-line text in-line as documents
-//	    for model training.
+//   - `GCS_FILE_PATH` - a Identifies JSON Lines (.JSONL) file stored in
+//     Google Cloud Storage that contains in-line text in-line as documents
+//     for model training.
 //
 // After the training data set has been determined from the `TRAIN` and
 // `UNASSIGNED` CSV files, the training data is divided into train and
@@ -415,7 +412,7 @@ const (
 //	          },
 //	        ],
 //
-// </section><section><h5>Classification</h5>
+// ##### Classification
 //
 // See [Preparing your training
 // data](https://cloud.google.com/natural-language/automl/docs/prepare) for more
@@ -428,29 +425,29 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing.
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing.
 //
-//	  - `TEXT_SNIPPET` and `GCS_FILE_PATH` are distinguished by a pattern. If
-//	    the column content is a valid Google Cloud Storage file path, that is,
-//	    prefixed by "gs://", it is treated as a `GCS_FILE_PATH`. Otherwise, if
-//	    the content is enclosed in double quotes (""), it is treated as a
-//	    `TEXT_SNIPPET`. For `GCS_FILE_PATH`, the path must lead to a
-//	    file with supported extension and UTF-8 encoding, for example,
-//	    "gs://folder/content.txt" AutoML imports the file content
-//	    as a text snippet. For `TEXT_SNIPPET`, AutoML imports the column content
-//	    excluding quotes. In both cases, size of the content must be 10MB or
-//	    less in size. For zip files, the size of each file inside the zip must be
-//	    10MB or less in size.
+//   - `TEXT_SNIPPET` and `GCS_FILE_PATH` are distinguished by a pattern. If
+//     the column content is a valid Google Cloud Storage file path, that is,
+//     prefixed by "gs://", it is treated as a `GCS_FILE_PATH`. Otherwise, if
+//     the content is enclosed in double quotes (""), it is treated as a
+//     `TEXT_SNIPPET`. For `GCS_FILE_PATH`, the path must lead to a
+//     file with supported extension and UTF-8 encoding, for example,
+//     "gs://folder/content.txt" AutoML imports the file content
+//     as a text snippet. For `TEXT_SNIPPET`, AutoML imports the column content
+//     excluding quotes. In both cases, size of the content must be 10MB or
+//     less in size. For zip files, the size of each file inside the zip must be
+//     10MB or less in size.
 //
-//	    For the `MULTICLASS` classification type, at most one `LABEL` is allowed.
+//     For the `MULTICLASS` classification type, at most one `LABEL` is allowed.
 //
-//	    The `ML_USE` and `LABEL` columns are optional.
-//	    Supported file extensions: .TXT, .PDF, .TIF, .TIFF, .ZIP
+//     The `ML_USE` and `LABEL` columns are optional.
+//     Supported file extensions: .TXT, .PDF, .TIF, .TIFF, .ZIP
 //
 // A maximum of 100 unique labels are allowed per CSV row.
 //
@@ -461,7 +458,7 @@ const (
 //	TEST,gs://folder/document.pdf
 //	VALIDATE,gs://folder/text_files.zip,BadFood
 //
-// </section><section><h5>Sentiment Analysis</h5>
+// ##### Sentiment Analysis
 //
 // See [Preparing your training
 // data](https://cloud.google.com/natural-language/automl/docs/prepare) for more
@@ -474,57 +471,53 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing.
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing.
 //
-//	  - `TEXT_SNIPPET` and `GCS_FILE_PATH` are distinguished by a pattern. If
-//	    the column content is a valid  Google Cloud Storage file path, that is,
-//	    prefixed by "gs://", it is treated as a `GCS_FILE_PATH`. Otherwise, if
-//	    the content is enclosed in double quotes (""), it is treated as a
-//	    `TEXT_SNIPPET`. For `GCS_FILE_PATH`, the path must lead to a
-//	    file with supported extension and UTF-8 encoding, for example,
-//	    "gs://folder/content.txt" AutoML imports the file content
-//	    as a text snippet. For `TEXT_SNIPPET`, AutoML imports the column content
-//	    excluding quotes. In both cases, size of the content must be 128kB or
-//	    less in size. For zip files, the size of each file inside the zip must be
-//	    128kB or less in size.
+//   - `TEXT_SNIPPET` and `GCS_FILE_PATH` are distinguished by a pattern. If
+//     the column content is a valid  Google Cloud Storage file path, that is,
+//     prefixed by "gs://", it is treated as a `GCS_FILE_PATH`. Otherwise, if
+//     the content is enclosed in double quotes (""), it is treated as a
+//     `TEXT_SNIPPET`. For `GCS_FILE_PATH`, the path must lead to a
+//     file with supported extension and UTF-8 encoding, for example,
+//     "gs://folder/content.txt" AutoML imports the file content
+//     as a text snippet. For `TEXT_SNIPPET`, AutoML imports the column content
+//     excluding quotes. In both cases, size of the content must be 128kB or
+//     less in size. For zip files, the size of each file inside the zip must be
+//     128kB or less in size.
 //
-//	    The `ML_USE` and `SENTIMENT` columns are optional.
-//	    Supported file extensions: .TXT, .PDF, .TIF, .TIFF, .ZIP
+//     The `ML_USE` and `SENTIMENT` columns are optional.
+//     Supported file extensions: .TXT, .PDF, .TIF, .TIFF, .ZIP
 //
-//	  - `SENTIMENT` - An integer between 0 and
-//	    Dataset.text_sentiment_dataset_metadata.sentiment_max
-//	    (inclusive). Describes the ordinal of the sentiment - higher
-//	    value means a more positive sentiment. All the values are
-//	    completely relative, i.e. neither 0 needs to mean a negative or
-//	    neutral sentiment nor sentiment_max needs to mean a positive one -
-//	    it is just required that 0 is the least positive sentiment
-//	    in the data, and sentiment_max is the  most positive one.
-//	    The SENTIMENT shouldn't be confused with "score" or "magnitude"
-//	    from the previous Natural Language Sentiment Analysis API.
-//	    All SENTIMENT values between 0 and sentiment_max must be
-//	    represented in the imported data. On prediction the same 0 to
-//	    sentiment_max range will be used. The difference between
-//	    neighboring sentiment values needs not to be uniform, e.g. 1 and
-//	    2 may be similar whereas the difference between 2 and 3 may be
-//	    large.
+//   - `SENTIMENT` - An integer between 0 and
+//     Dataset.text_sentiment_dataset_metadata.sentiment_max
+//     (inclusive). Describes the ordinal of the sentiment - higher
+//     value means a more positive sentiment. All the values are
+//     completely relative, i.e. neither 0 needs to mean a negative or
+//     neutral sentiment nor sentiment_max needs to mean a positive one -
+//     it is just required that 0 is the least positive sentiment
+//     in the data, and sentiment_max is the  most positive one.
+//     The SENTIMENT shouldn't be confused with "score" or "magnitude"
+//     from the previous Natural Language Sentiment Analysis API.
+//     All SENTIMENT values between 0 and sentiment_max must be
+//     represented in the imported data. On prediction the same 0 to
+//     sentiment_max range will be used. The difference between
+//     neighboring sentiment values needs not to be uniform, e.g. 1 and
+//     2 may be similar whereas the difference between 2 and 3 may be
+//     large.
 //
 // Sample rows:
 //
-//	  TRAIN,"@freewrytin this is way too good for your product",2
-//	  gs://folder/content.txt,3
-//	  TEST,gs://folder/document.pdf
-//	  VALIDATE,gs://folder/text_files.zip,2
-//	</section>
+//	TRAIN,"@freewrytin this is way too good for your product",2
+//	gs://folder/content.txt,3
+//	TEST,gs://folder/document.pdf
+//	VALIDATE,gs://folder/text_files.zip,2
 //
-// </div>
-//
-// <h4>AutoML Tables</h4><div class="ui-datasection-main"><section
-// class="selected">
+// #### AutoML Tables
 //
 // See [Preparing your training
 // data](https://cloud.google.com/automl-tables/docs/prepare) for more
@@ -562,10 +555,6 @@ const (
 // An imported table must have between 2 and 1,000 columns, inclusive,
 // and between 1000 and 100,000,000 rows, inclusive. There are at most 5
 // import data running in parallel.
-//
-//	</section>
-//
-// </div>
 //
 // **Input field definitions:**
 //
@@ -667,7 +656,7 @@ type InputConfig struct {
 	// imported data, any string must be up to 25000
 	// characters long.
 	//
-	// <h4>AutoML Tables</h4>
+	// #### AutoML Tables
 	//
 	// `schema_inference_version`
 	// : (integer) This value must be supplied.
@@ -737,8 +726,9 @@ type isInputConfig_Source interface {
 
 type InputConfig_GcsSource struct {
 	// The Google Cloud Storage location for the input content.
-	// For [AutoMl.ImportData][google.cloud.automl.v1.AutoMl.ImportData], `gcs_source` points to a CSV file with
-	// a structure described in [InputConfig][google.cloud.automl.v1.InputConfig].
+	// For [AutoMl.ImportData][google.cloud.automl.v1.AutoMl.ImportData],
+	// `gcs_source` points to a CSV file with a structure described in
+	// [InputConfig][google.cloud.automl.v1.InputConfig].
 	GcsSource *GcsSource `protobuf:"bytes,1,opt,name=gcs_source,json=gcsSource,proto3,oneof"`
 }
 
@@ -755,8 +745,8 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 // non-terminal symbols defined near the end of this comment. The formats
 // are:
 //
-// <h4>AutoML Vision</h4>
-// <div class="ds-selector-tabs"><section><h5>Classification</h5>
+// #### AutoML Vision
+// ##### Classification
 //
 // One or more CSV files where each line is a single column:
 //
@@ -772,7 +762,7 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 //	gs://folder/image2.gif
 //	gs://folder/image3.png
 //
-// </section><section><h5>Object Detection</h5>
+// ##### Object Detection
 //
 // One or more CSV files where each line is a single column:
 //
@@ -784,15 +774,12 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 //
 // Sample rows:
 //
-//	  gs://folder/image1.jpeg
-//	  gs://folder/image2.gif
-//	  gs://folder/image3.png
-//	</section>
+//	gs://folder/image1.jpeg
+//	gs://folder/image2.gif
+//	gs://folder/image3.png
 //
-// </div>
-//
-// <h4>AutoML Video Intelligence</h4>
-// <div class="ds-selector-tabs"><section><h5>Classification</h5>
+// #### AutoML Video Intelligence
+// ##### Classification
 //
 // One or more CSV files where each line is a single column:
 //
@@ -811,7 +798,7 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 //	gs://folder/video1.mp4,20,60
 //	gs://folder/vid2.mov,0,inf
 //
-// </section><section><h5>Object Tracking</h5>
+// ##### Object Tracking
 //
 // One or more CSV files where each line is a single column:
 //
@@ -826,15 +813,12 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 //
 // Sample rows:
 //
-//	  gs://folder/video1.mp4,10,40
-//	  gs://folder/video1.mp4,20,60
-//	  gs://folder/vid2.mov,0,inf
-//	</section>
+//	gs://folder/video1.mp4,10,40
+//	gs://folder/video1.mp4,20,60
+//	gs://folder/vid2.mov,0,inf
 //
-// </div>
-//
-// <h4>AutoML Natural Language</h4>
-// <div class="ds-selector-tabs"><section><h5>Classification</h5>
+// #### AutoML Natural Language
+// ##### Classification
 //
 // One or more CSV files where each line is a single column:
 //
@@ -851,7 +835,7 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 //	gs://folder/text2.pdf
 //	gs://folder/text3.tif
 //
-// </section><section><h5>Sentiment Analysis</h5>
+// ##### Sentiment Analysis
 // One or more CSV files where each line is a single column:
 //
 //	GCS_FILE_PATH
@@ -867,7 +851,7 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 //	gs://folder/text2.pdf
 //	gs://folder/text3.tif
 //
-// </section><section><h5>Entity Extraction</h5>
+// ##### Entity Extraction
 //
 // One or more JSONL (JSON Lines) files that either provide inline text or
 // documents. You can only use one format, either inline text or documents,
@@ -921,28 +905,24 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 // Sample document JSONL file (Shown with artificial line
 // breaks. Actual line breaks are denoted by "\n".):
 //
-//	   {
-//	     "document": {
-//	       "input_config": {
-//	         "gcs_source": { "input_uris": [ "gs://folder/document1.pdf" ]
-//	         }
-//	       }
-//	     }
-//	   }\n
-//	   {
-//	     "document": {
-//	       "input_config": {
-//	         "gcs_source": { "input_uris": [ "gs://folder/document2.tif" ]
-//	         }
-//	       }
-//	     }
-//	   }
-//	</section>
+//	{
+//	  "document": {
+//	    "input_config": {
+//	      "gcs_source": { "input_uris": [ "gs://folder/document1.pdf" ]
+//	      }
+//	    }
+//	  }
+//	}\n
+//	{
+//	  "document": {
+//	    "input_config": {
+//	      "gcs_source": { "input_uris": [ "gs://folder/document2.tif" ]
+//	      }
+//	    }
+//	  }
+//	}
 //
-// </div>
-//
-// <h4>AutoML Tables</h4><div class="ui-datasection-main"><section
-// class="selected">
+// #### AutoML Tables
 //
 // See [Preparing your training
 // data](https://cloud.google.com/automl-tables/docs/predict-batch) for more
@@ -987,10 +967,6 @@ func (*InputConfig_GcsSource) isInputConfig_Source() {}
 // input feature column specs must contain values compatible with the
 // column spec's data types. Prediction on all the rows of the table
 // will be attempted.
-//
-//	</section>
-//
-// </div>
 //
 // **Input field definitions:**
 //
@@ -1242,9 +1218,10 @@ type isOutputConfig_Destination interface {
 }
 
 type OutputConfig_GcsDestination struct {
-	// Required. The Google Cloud Storage location where the output is to be written to.
-	// For Image Object Detection, Text Extraction, Video Classification and
-	// Tables, in the given directory a new directory will be created with name:
+	// Required. The Google Cloud Storage location where the output is to be
+	// written to. For Image Object Detection, Text Extraction, Video
+	// Classification and Tables, in the given directory a new directory will be
+	// created with name:
 	// export_data-<dataset-display-name>-<timestamp-of-export-call> where
 	// timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. All export
 	// output will be written into that directory.
@@ -1568,8 +1545,8 @@ type isBatchPredictOutputConfig_Destination interface {
 }
 
 type BatchPredictOutputConfig_GcsDestination struct {
-	// Required. The Google Cloud Storage location of the directory where the output is to
-	// be written to.
+	// Required. The Google Cloud Storage location of the directory where the
+	// output is to be written to.
 	GcsDestination *GcsDestination `protobuf:"bytes,1,opt,name=gcs_destination,json=gcsDestination,proto3,oneof"`
 }
 
@@ -1695,8 +1672,9 @@ type isModelExportOutputConfig_Destination interface {
 }
 
 type ModelExportOutputConfig_GcsDestination struct {
-	// Required. The Google Cloud Storage location where the model is to be written to.
-	// This location may only be set for the following model formats:
+	// Required. The Google Cloud Storage location where the model is to be
+	// written to. This location may only be set for the following model
+	// formats:
 	//
 	//	 "tflite", "edgetpu_tflite", "tf_saved_model", "tf_js", "core_ml".
 	//
