@@ -111,12 +111,6 @@ var (
 			},
 			recordedPerAttempt: true,
 		},
-		metricNameDebugTags: {
-			additionalAttrs: []string{
-				metricLabelKeyTag,
-			},
-			recordedPerAttempt: true,
-		},
 	}
 
 	// Generates unique client ID in the format go-<random UUID>@<hostname>
