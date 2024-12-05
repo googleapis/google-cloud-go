@@ -302,6 +302,80 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 	}
 }
 
+func TestReadWriteTransaction_PrecommitToken(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	client.enableMultiplexSessionForRW = true
+
+	type testCase struct {
+		name                   string
+		query                  bool
+		update                 bool
+		batchUpdate            bool
+		expectedPrecommitToken string
+		expectedSequenceNumber int32
+	}
+
+	testCases := []testCase{
+		{"Only Query", true, false, false, "PartialResultSetPrecommitToken", 3}, //since mock server is returning 3 rows
+		{"Query and Update", true, true, false, "ResultSetPrecommitToken", 4},
+		{"Query, Update, and Batch Update", true, true, true, "ExecuteBatchDmlResponsePrecommitToken", 5},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+				if tc.query {
+					iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+					defer iter.Stop()
+					for {
+						_, err := iter.Next()
+						if err == iterator.Done {
+							break
+						}
+						if err != nil {
+							return err
+						}
+					}
+				}
+
+				if tc.update {
+					if _, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
+						return err
+					}
+				}
+
+				if tc.batchUpdate {
+					if _, err := tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}}); err != nil {
+						return err
+					}
+				}
+
+				return nil
+			})
+			if err != nil {
+				t.Fatalf("%s failed: %v", tc.name, err)
+			}
+
+			requests := drainRequestsFromServer(server.TestSpanner)
+			commitReq := requests[len(requests)-1].(*sppb.CommitRequest)
+			if commitReq.PrecommitToken == nil || len(commitReq.PrecommitToken.GetPrecommitToken()) == 0 {
+				t.Fatalf("Expected commit request to contain a valid precommitToken, got: %v", commitReq.PrecommitToken)
+			}
+			// Validate that the precommit token contains the test argument.
+			if !strings.Contains(string(commitReq.PrecommitToken.GetPrecommitToken()), tc.expectedPrecommitToken) {
+				t.Fatalf("Precommit token does not contain the expected test argument")
+			}
+			// Validate that the sequence number is as expected.
+			if got, want := commitReq.PrecommitToken.GetSeqNum(), tc.expectedSequenceNumber; got != want {
+				t.Fatalf("Precommit token sequence number mismatch: got %d, want %d", got, want)
+			}
+		})
+	}
+}
+
 func TestBatchDML_WithMultipleDML(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

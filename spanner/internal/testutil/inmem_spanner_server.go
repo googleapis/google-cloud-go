@@ -25,6 +25,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
@@ -332,7 +333,8 @@ type inMemSpannerServer struct {
 	// counters.
 	transactionCounters map[string]*uint64
 	// The transactions that have been created on this mock server.
-	transactions map[string]*spannerpb.Transaction
+	transactions                   map[string]*spannerpb.Transaction
+	multiplexedSessionTransactions map[string]*Transaction
 	// The transactions that have been (manually) aborted on the server.
 	abortedTransactions map[string]bool
 	// The transactions that are marked as PartitionedDMLTransaction
@@ -356,6 +358,18 @@ type inMemSpannerServer struct {
 
 	// Server will stall on any requests.
 	freezed chan struct{}
+}
+
+type Transaction struct {
+	sequence    *atomic.Int32
+	transaction *spannerpb.Transaction
+}
+
+func (t *Transaction) getPreCommitToken(operation string) *spannerpb.MultiplexedSessionPrecommitToken {
+	return &spannerpb.MultiplexedSessionPrecommitToken{
+		SeqNum:         t.sequence.Add(1),
+		PrecommitToken: []byte(fmt.Sprintf("precommit-token-%v-%v", operation, t.sequence.Load())),
+	}
 }
 
 // NewInMemSpannerServer creates a new in-mem test server.
@@ -520,6 +534,7 @@ func (s *inMemSpannerServer) initDefaults() {
 	s.sessions = make(map[string]*spannerpb.Session)
 	s.sessionLastUseTime = make(map[string]time.Time)
 	s.transactions = make(map[string]*spannerpb.Transaction)
+	s.multiplexedSessionTransactions = make(map[string]*Transaction)
 	s.abortedTransactions = make(map[string]bool)
 	s.partitionedDmlTransactions = make(map[string]bool)
 	s.transactionCounters = make(map[string]*uint64)
@@ -596,6 +611,9 @@ func (s *inMemSpannerServer) beginTransaction(session *spannerpb.Session, option
 		ReadTimestamp: getCurrentTimestamp(),
 	}
 	s.mu.Lock()
+	if options.GetReadWrite() != nil && session.Multiplexed {
+		s.multiplexedSessionTransactions[id] = &Transaction{transaction: res, sequence: new(atomic.Int32)}
+	}
 	s.transactions[id] = res
 	s.partitionedDmlTransactions[id] = options.GetPartitionedDml() != nil
 	s.mu.Unlock()
@@ -633,6 +651,7 @@ func (s *inMemSpannerServer) removeTransaction(tx *spannerpb.Transaction) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.transactions, string(tx.Id))
+	delete(s.multiplexedSessionTransactions, string(tx.Id))
 	delete(s.partitionedDmlTransactions, string(tx.Id))
 }
 
@@ -869,9 +888,21 @@ func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.Exec
 	case StatementResultError:
 		return nil, statementResult.Err
 	case StatementResultResultSet:
+		// if request's session is multiplexed and transaction is Read/Write then add Pre-commit Token in Metadata
+		if statementResult.ResultSet != nil {
+			statementResult.ResultSet.PrecommitToken = s.multiplexedSessionTransactions[string(id)].getPreCommitToken("ResultSetPrecommitToken")
+		}
 		return statementResult.ResultSet, nil
 	case StatementResultUpdateCount:
-		return statementResult.convertUpdateCountToResultSet(!isPartitionedDml), nil
+		res := statementResult.convertUpdateCountToResultSet(!isPartitionedDml)
+		// if request's session is multiplexed and transaction is Read/Write then add Pre-commit Token in Metadata
+		s.mu.Lock()
+		txn, ok := s.multiplexedSessionTransactions[string(id)]
+		s.mu.Unlock()
+		if ok {
+			res.PrecommitToken = txn.getPreCommitToken("ResultSetPrecommitToken")
+		}
+		return res, nil
 	}
 	return nil, gstatus.Error(codes.Internal, "Unknown result type")
 }
@@ -937,6 +968,12 @@ func (s *inMemSpannerServer) executeStreamingSQL(req *spannerpb.ExecuteSqlReques
 					return nextPartialResultSetError.Err
 				}
 			}
+			s.mu.Lock()
+			txn, ok := s.multiplexedSessionTransactions[string(id)]
+			s.mu.Unlock()
+			if ok {
+				part.PrecommitToken = txn.getPreCommitToken("PartialResultSetPrecommitToken")
+			}
 			if err := stream.Send(part); err != nil {
 				return err
 			}
@@ -995,6 +1032,12 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 		case StatementResultUpdateCount:
 			resp.ResultSets[idx] = statementResult.convertUpdateCountToResultSet(!isPartitionedDml)
 		}
+	}
+	s.mu.Lock()
+	txn, ok := s.multiplexedSessionTransactions[string(id)]
+	s.mu.Unlock()
+	if ok {
+		resp.PrecommitToken = txn.getPreCommitToken("ExecuteBatchDmlResponsePrecommitToken")
 	}
 	return resp, nil
 }

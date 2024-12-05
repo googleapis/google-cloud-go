@@ -50,6 +50,8 @@ type txReadEnv interface {
 	getTransactionSelector() *sppb.TransactionSelector
 	// sets the transactionID
 	setTransactionID(id transactionID)
+	// updatePrecommitToken updates the precommit token for the transaction
+	updatePrecommitToken(token *sppb.MultiplexedSessionPrecommitToken)
 	// sets the transaction's read timestamp
 	setTimestamp(time.Time)
 	// release should be called at the end of every transactional read to deal
@@ -355,6 +357,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		func(err error) error {
 			return t.updateTxState(err)
 		},
+		t.updatePrecommitToken,
 		t.setTimestamp,
 		t.release,
 	)
@@ -642,6 +645,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		func(err error) error {
 			return t.updateTxState(err)
 		},
+		t.updatePrecommitToken,
 		t.setTimestamp,
 		t.release)
 }
@@ -867,6 +871,11 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 		t.state = txActive
 	}
 	return err
+}
+
+// no-op for ReadOnlyTransaction.
+func (t *ReadOnlyTransaction) updatePrecommitToken(token *sppb.MultiplexedSessionPrecommitToken) {
+	return
 }
 
 // acquire implements txReadEnv.acquire.
@@ -1153,7 +1162,9 @@ type ReadWriteTransaction struct {
 	// tx is the transaction ID in Cloud Spanner that uniquely identifies the
 	// ReadWriteTransaction. It is set only once in ReadWriteTransaction.begin()
 	// during the initialization of ReadWriteTransaction.
-	tx transactionID
+	tx             transactionID
+	precommitToken *sppb.MultiplexedSessionPrecommitToken
+
 	// txReadyOrClosed is for broadcasting that transaction ID has been returned
 	// by Cloud Spanner or that transaction is closed.
 	txReadyOrClosed chan struct{}
@@ -1250,6 +1261,7 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 			return 0, errInlineBeginTransactionFailed()
 		}
 	}
+	t.updatePrecommitToken(resultSet.GetPrecommitToken())
 	if resultSet.Stats == nil {
 		return 0, spannerErrorf(codes.InvalidArgument, "query passed to Update: %q", stmt.SQL)
 	}
@@ -1369,6 +1381,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		t.setTransactionID(nil)
 		return counts, errInlineBeginTransactionFailed()
 	}
+	t.updatePrecommitToken(resp.PrecommitToken)
 	if resp.Status != nil && resp.Status.Code != 0 {
 		return counts, t.txReadOnly.updateTxState(spannerErrorf(codes.Code(uint32(resp.Status.Code)), resp.Status.Message))
 	}
@@ -1482,6 +1495,17 @@ func (t *ReadWriteTransaction) setTransactionID(tx transactionID) {
 	t.state = txActive
 	close(t.txReadyOrClosed)
 	t.txReadyOrClosed = make(chan struct{})
+}
+
+func (t *ReadWriteTransaction) updatePrecommitToken(token *sppb.MultiplexedSessionPrecommitToken) {
+	if token == nil {
+		return
+	}
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	if t.precommitToken == nil || token.SeqNum > t.precommitToken.SeqNum {
+		t.precommitToken = token
+	}
 }
 
 // release implements txReadEnv.release.
@@ -1674,6 +1698,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		Transaction: &sppb.CommitRequest_TransactionId{
 			TransactionId: t.tx,
 		},
+		PrecommitToken:    t.precommitToken,
 		RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
 		Mutations:         mPb,
 		ReturnCommitStats: options.ReturnCommitStats,

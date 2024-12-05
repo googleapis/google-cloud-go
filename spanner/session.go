@@ -507,6 +507,9 @@ type SessionPoolConfig struct {
 	// Defaults to false.
 	TrackSessionHandles bool
 
+	// enableMultiplexSessionForRW is a flag to enable multiplexed session for read/write transactions.
+	enableMultiplexSessionForRW bool
+
 	// healthCheckSampleInterval is how often the health checker samples live
 	// session (for use in maintaining session pool size).
 	//
@@ -703,6 +706,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	if isMultiplexed != "" && isMultiplexed != "true" && isMultiplexed != "false" {
 		return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
 	}
+
 	pool := &sessionPool{
 		sc:                       sc,
 		valid:                    true,
@@ -713,7 +717,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		mw:                       newMaintenanceWindow(config.MaxOpened),
 		rand:                     rand.New(rand.NewSource(time.Now().UnixNano())),
 		otConfig:                 sc.otConfig,
-		enableMultiplexSession:   isMultiplexed == "true",
+		enableMultiplexSession:   isMultiplexed == "true" || config.enableMultiplexSessionForRW,
 	}
 
 	_, instance, database, err := parseDatabaseName(sc.database)
@@ -1291,6 +1295,7 @@ func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, erro
 				if isUnimplementedError(err) {
 					logf(p.sc.logger, "Multiplexed session is not enabled on this project, continuing with regular sessions")
 					p.enableMultiplexSession = false
+					p.enableMultiplexSessionForRW = false
 				} else {
 					p.mu.Unlock()
 					// If the error is a timeout, there is a chance that the session was

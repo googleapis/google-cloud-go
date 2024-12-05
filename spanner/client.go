@@ -107,19 +107,20 @@ func parseDatabaseName(db string) (project, instance, database string, err error
 // Client is a client for reading and writing data to a Cloud Spanner database.
 // A client is safe to use concurrently, except for its Close method.
 type Client struct {
-	sc                   *sessionClient
-	idleSessions         *sessionPool
-	logger               *log.Logger
-	qo                   QueryOptions
-	ro                   ReadOptions
-	ao                   []ApplyOption
-	txo                  TransactionOptions
-	bwo                  BatchWriteOptions
-	ct                   *commonTags
-	disableRouteToLeader bool
-	dro                  *sppb.DirectedReadOptions
-	otConfig             *openTelemetryConfig
-	metricsTracerFactory *builtinMetricsTracerFactory
+	sc                          *sessionClient
+	idleSessions                *sessionPool
+	logger                      *log.Logger
+	qo                          QueryOptions
+	ro                          ReadOptions
+	ao                          []ApplyOption
+	txo                         TransactionOptions
+	bwo                         BatchWriteOptions
+	ct                          *commonTags
+	disableRouteToLeader        bool
+	enableMultiplexSessionForRW bool
+	dro                         *sppb.DirectedReadOptions
+	otConfig                    *openTelemetryConfig
+	metricsTracerFactory        *builtinMetricsTracerFactory
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -478,6 +479,13 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.EnableEndToEndTracing || endToEndTracingEnvironmentVariable == "true" {
 		md.Append(endToEndTracingHeader, "true")
 	}
+	//TODO: Uncomment this once the feature is enabled.
+	//if isMultiplexForRW := os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW"); isMultiplexForRW != "" {
+	//	config.enableMultiplexSessionForRW, err = strconv.ParseBool(isMultiplexForRW)
+	//	if err != nil {
+	//		return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW must be either true or false")
+	//	}
+	//}
 
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
@@ -524,19 +532,20 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 
 	c = &Client{
-		sc:                   sc,
-		idleSessions:         sp,
-		logger:               config.Logger,
-		qo:                   getQueryOptions(config.QueryOptions),
-		ro:                   config.ReadOptions,
-		ao:                   config.ApplyOptions,
-		txo:                  config.TransactionOptions,
-		bwo:                  config.BatchWriteOptions,
-		ct:                   getCommonTags(sc),
-		disableRouteToLeader: config.DisableRouteToLeader,
-		dro:                  config.DirectedReadOptions,
-		otConfig:             otConfig,
-		metricsTracerFactory: metricsTracerFactory,
+		sc:                          sc,
+		idleSessions:                sp,
+		logger:                      config.Logger,
+		qo:                          getQueryOptions(config.QueryOptions),
+		ro:                          config.ReadOptions,
+		ao:                          config.ApplyOptions,
+		txo:                         config.TransactionOptions,
+		bwo:                         config.BatchWriteOptions,
+		ct:                          getCommonTags(sc),
+		disableRouteToLeader:        config.DisableRouteToLeader,
+		dro:                         config.DirectedReadOptions,
+		otConfig:                    otConfig,
+		metricsTracerFactory:        metricsTracerFactory,
+		enableMultiplexSessionForRW: config.enableMultiplexSessionForRW,
 	}
 	return c, nil
 }
@@ -1000,8 +1009,12 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			err error
 		)
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
-			// Session handle hasn't been allocated or has been destroyed.
-			sh, err = c.idleSessions.take(ctx)
+			if c.enableMultiplexSessionForRW {
+				sh, err = c.idleSessions.takeMultiplexed(ctx)
+			} else {
+				// Session handle hasn't been allocated or has been destroyed.
+				sh, err = c.idleSessions.take(ctx)
+			}
 			if err != nil {
 				// If session retrieval fails, just fail the transaction.
 				return err
