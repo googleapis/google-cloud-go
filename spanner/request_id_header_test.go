@@ -1370,3 +1370,34 @@ func TestRequestIDHeader_RetryOnAbortAndValidate(t *testing.T) {
 		t.Fatalf("RequestID segments mismatch: got - want +\n%s", diff)
 	}
 }
+
+func TestRequestIDInError(t *testing.T) {
+	cases := []struct {
+		name string
+		err  *Error
+		want string
+	}{
+		{"nil error", nil, "spanner: OK"},
+		{"only requestID", &Error{RequestID: "req-id"}, `spanner: code = "OK", desc = "", requestID = "req-id"`},
+		{
+			"with an error",
+			&Error{RequestID: "req-id", Code: codes.Internal, Desc: "An error"},
+			`spanner: code = "Internal", desc = "An error", requestID = "req-id"`,
+		},
+		{
+			"with additional details",
+			&Error{additionalInformation: "additional", RequestID: "req-id"},
+			`spanner: code = "OK", desc = "", additional information = additional, requestID = "req-id"`,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.err.Error()
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Fatalf("Error string mismatch: got - want +\n%s", diff)
+			}
+		})
+	}
+}
