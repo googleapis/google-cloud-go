@@ -89,13 +89,17 @@ func (e *Error) Error() string {
 		return "spanner: OK"
 	}
 	code := ErrCode(e)
+
+	var s string
 	if e.additionalInformation == "" {
-		return fmt.Sprintf("spanner: code = %q, desc = %q", code, e.Desc)
+		s = fmt.Sprintf("spanner: code = %q, desc = %q", code, e.Desc)
+	} else {
+		s = fmt.Sprintf("spanner: code = %q, desc = %q, additional information = %s", code, e.Desc, e.additionalInformation)
 	}
-	if e.RequestID == "" {
-		return fmt.Sprintf("spanner: code = %q, desc = %q, additional information = %s", code, e.Desc, e.additionalInformation)
+	if e.RequestID != "" {
+		s = fmt.Sprintf("%s, requestID = %q", s, e.RequestID)
 	}
-	return fmt.Sprintf("spanner: code = %q, desc = %q, additional information = %s; requestID = %q", code, e.Desc, e.additionalInformation, e.RequestID)
+	return s
 }
 
 // Unwrap returns the wrapped error (if any).
@@ -202,9 +206,6 @@ func toSpannerErrorWithCommitInfo(err error, errorDuringCommit bool) error {
 func ErrCode(err error) codes.Code {
 	if err == nil {
 		return codes.OK
-	}
-	if spe, ok := err.(*Error); ok {
-		return spe.Code
 	}
 	s, ok := status.FromError(err)
 	if !ok {
