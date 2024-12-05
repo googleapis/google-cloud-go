@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/apiv2",
-    "version": "1.61.0",
+    "version": "1.62.0",
     "language": "GO",
     "apis": [
       {
@@ -2673,7 +2673,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationProfiles_CreateConversationProfile_sync",
       "title": "dialogflow CreateConversationProfile Sample",
-      "description": "CreateConversationProfile creates a conversation profile in the specified project.\n\n[ConversationProfile.CreateTime][] and [ConversationProfile.UpdateTime][]\naren't populated in the response. You can retrieve them via\n[GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]\nAPI.",
+      "description": "CreateConversationProfile creates a conversation profile in the specified project.\n\n[ConversationProfile.create_time][google.cloud.dialogflow.v2.ConversationProfile.create_time]\nand\n[ConversationProfile.update_time][google.cloud.dialogflow.v2.ConversationProfile.update_time]\naren't populated in the response. You can retrieve them via\n[GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]\nAPI.",
       "file": "ConversationProfilesClient/CreateConversationProfile/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3086,7 +3086,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationProfiles_UpdateConversationProfile_sync",
       "title": "dialogflow UpdateConversationProfile Sample",
-      "description": "UpdateConversationProfile updates the specified conversation profile.\n\n[ConversationProfile.CreateTime][] and [ConversationProfile.UpdateTime][]\naren't populated in the response. You can retrieve them via\n[GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]\nAPI.",
+      "description": "UpdateConversationProfile updates the specified conversation profile.\n\n[ConversationProfile.create_time][google.cloud.dialogflow.v2.ConversationProfile.create_time]\nand\n[ConversationProfile.update_time][google.cloud.dialogflow.v2.ConversationProfile.update_time]\naren't populated in the response. You can retrieve them via\n[GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]\nAPI.",
       "file": "ConversationProfilesClient/UpdateConversationProfile/main.go",
       "language": "GO",
       "clientMethod": {
