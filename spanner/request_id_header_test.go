@@ -24,14 +24,17 @@ import (
 	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/structpb"
 
 	"cloud.google.com/go/spanner/internal/testutil"
@@ -49,7 +52,7 @@ type requestIDSegments struct {
 }
 
 func (ris *requestIDSegments) String() string {
-	return fmt.Sprintf("%d.%s.%d.%d.%d.%d", ris.Version, ris.ProcessID, ris.ClientID, ris.RequestNo, ris.ChannelID, ris.RPCNo)
+	return fmt.Sprintf("%d.%s.%d.%d.%d.%d", ris.Version, ris.ProcessID, ris.ClientID, ris.ChannelID, ris.RequestNo, ris.RPCNo)
 }
 
 func checkForMissingSpannerRequestIDHeader(opts []grpc.CallOption) (*requestIDSegments, error) {
@@ -89,7 +92,7 @@ func checkForMissingSpannerRequestIDHeader(opts []grpc.CallOption) (*requestIDSe
 }
 
 func validateRequestIDSegments(recv *requestIDSegments) error {
-	if recv.ProcessID == "" {
+	if recv == nil || recv.ProcessID == "" {
 		return status.Errorf(codes.InvalidArgument, "unset processId")
 	}
 	if len(recv.ProcessID) == 0 || len(recv.ProcessID) > 20 {
@@ -1272,5 +1275,98 @@ func TestRequestIDHeader_multipleParallelCallsWithConventialCustomerCalls(t *tes
 	// The methods invoked should be: ['/ExecuteStreamingSql', '/StreamingRead']
 	if g, w := interceptorTracker.streamCallCount(), uint64(2)*n; g != w && false {
 		t.Errorf("streamClientCall is incorrect; got=%d want=%d", g, w)
+	}
+}
+
+func newUnavailableErrorWithMinimalRetryDelay() error {
+	st := status.New(codes.Unavailable, "Please try again")
+	retry := &errdetails.RetryInfo{
+		RetryDelay: durationpb.New(time.Nanosecond),
+	}
+	st, _ = st.WithDetails(retry)
+	return st.Err()
+}
+
+func TestRequestIDHeader_RetryOnAbortAndValidate(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	interceptorTracker := newInterceptorTracker()
+	clientOpts := []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptorTracker.unaryClientInterceptor)),
+		option.WithGRPCDialOption(grpc.WithStreamInterceptor(interceptorTracker.streamClientInterceptor)),
+	}
+	clientConfig := ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     2,
+			MaxOpened:     10,
+			WriteSessions: 0.2,
+			incStep:       2,
+		},
+	}
+
+	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
+	t.Cleanup(tearDown)
+	defer sc.Close()
+
+	// First commit will fail, and the retry will begin a new transaction.
+	server.TestSpanner.PutExecutionTime(testutil.MethodCommitTransaction,
+		testutil.SimulatedExecutionTime{
+			Errors: []error{
+				newUnavailableErrorWithMinimalRetryDelay(),
+				newUnavailableErrorWithMinimalRetryDelay(),
+				newUnavailableErrorWithMinimalRetryDelay(),
+			},
+		})
+
+	ms := []*Mutation{
+		Insert("Accounts", []string{"AccountId"}, []interface{}{int64(1)}),
+	}
+
+	if _, e := sc.Apply(ctx, ms); e != nil {
+		t.Fatalf("ReadWriteTransaction retry on abort, got %v, want nil.", e)
+	}
+
+	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+		&sppb.CommitRequest{},
+		&sppb.CommitRequest{},
+		&sppb.CommitRequest{},
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	// The method CommitTransaction is retried 3 times due to the 3 retry errors, so we expect 4 invocations of it
+	// plus BatchCreateSession + BeginTransaction, hence a total of 6 calls.
+	// We expect 1 BatchCreateSessionsRequests + 6 * (BeginTransactionRequest + CommitRequest) = 13
+	if g, w := interceptorTracker.unaryCallCount(), uint64(6); g != w {
+		t.Errorf("unaryClientCall is incorrect; got=%d want=%d", g, w)
+	}
+
+	// We had a straight-up failure after the first BatchWrite call so only 1 call.
+	if g, w := interceptorTracker.streamCallCount(), uint64(0); g != w {
+		t.Errorf("streamClientCall is incorrect; got=%d want=%d", g, w)
+	}
+
+	if err := interceptorTracker.validateRequestIDsMonotonicity(); err != nil {
+		t.Fatal(err)
+	}
+
+	clientID := uint32(sc.sc.nthClient)
+	procID := randIDForProcess
+	version := xSpannerRequestIDVersion
+	wantUnarySegments := []*requestIDSegments{
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 1, RPCNo: 1}, // BatchCreateSession
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 2, RPCNo: 1}, // BeginTransaction
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 3, RPCNo: 1}, // Commit: failed on 1st attempt
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 3, RPCNo: 2}, // Commit: failed on 2nd attempt
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 3, RPCNo: 3}, // Commit: failed on 3rd attempt
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 3, RPCNo: 4}, // Commit: success on 4th attempt
+	}
+
+	if diff := cmp.Diff(interceptorTracker.unaryClientRequestIDSegments, wantUnarySegments); diff != "" {
+		t.Fatalf("RequestID segments mismatch: got - want +\n%s", diff)
 	}
 }

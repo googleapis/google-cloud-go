@@ -192,26 +192,42 @@ func (wr *requestIDHeaderInjector) interceptStream(ctx context.Context, desc *gr
 func (wr *retryerWithRequestID) Resolve(cs *gax.CallSettings) {
 	nthRequest := wr.gsc.nextNthRequest()
 	attempt := uint32(1)
-	originalGRPCOptions := cs.GRPC
 	// Inject the first request-id header.
-	cs.GRPC = wr.gsc.appendRequestIDToGRPCOptions(originalGRPCOptions, nthRequest, attempt)
+	// Note: after every gax.Invoke call, all the gRPC option headers are cleared out
+	// and nullified, but yet cs.GRPC still contains a reference to the inserted *metadata.MD
+	// just that it got cleared out and nullified. However, for retries we need to retain control
+	// of the entry to re-insert the updated request-id on every call, hence why we are creating
+	// and retaining a pointer reference to the metadata and shall be re-inserting the header value
+	// on every retry.
+	md := new(metadata.MD)
+	wr.generateAndInsertRequestID(md, nthRequest, attempt)
+	// Insert our grpc.CallOption that'll be updated by reference on every retry attempt.
+	cs.GRPC = append(cs.GRPC, grpc.Header(md))
 
 	if cs.Retry == nil {
 		// If there was no retry manager, our journey has ended.
 		return
 	}
 
-	// Otherwise in this case for each retry, we need to increment attempt on every
-	// retry and re-append the requestID header to the original cs.GRPC callOptions.
 	originalRetryer := cs.Retry()
 	newRetryer := func() gax.Retryer {
 		return (wrapRetryFn)(func(err error) (pause time.Duration, shouldRetry bool) {
 			attempt++
-			cs.GRPC = wr.gsc.appendRequestIDToGRPCOptions(originalGRPCOptions, nthRequest, attempt)
+			wr.generateAndInsertRequestID(md, nthRequest, attempt)
 			return originalRetryer.Retry(err)
 		})
 	}
 	cs.Retry = newRetryer
+}
+
+func (wr *retryerWithRequestID) generateAndInsertRequestID(md *metadata.MD, nthRequest, attempt uint32) {
+	// Google Engineering has requested that each value be added in Decimal unpadded.
+	// Should we have a standardized endianness: Little Endian or Big Endian?
+	reqID := fmt.Sprintf("%d.%s.%d.%d.%d.%d", xSpannerRequestIDVersion, randIDForProcess, wr.gsc.id, wr.gsc.channelID, nthRequest, attempt)
+	if *md == nil {
+		*md = metadata.MD{}
+	}
+	md.Set(xSpannerRequestIDHeader, reqID)
 }
 
 type wrapRetryFn func(err error) (time.Duration, bool)
