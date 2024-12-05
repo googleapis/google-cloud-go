@@ -17,3 +17,7 @@
 //go:build go1.23
 
 package addressvalidation_test
+
+import (
+	addressvalidation "cloud.google.com/go/maps/addressvalidation/apiv1"
+)
