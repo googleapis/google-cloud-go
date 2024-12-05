@@ -8,7 +8,6 @@ replace (
 )
 
 require (
-	cloud.google.com/go v0.116.0
 	cloud.google.com/go/spanner v1.73.0
 	go.opentelemetry.io/otel v1.29.0
 	go.opentelemetry.io/otel/sdk v1.29.0
@@ -19,6 +18,7 @@ require (
 
 require (
 	cel.dev/expr v0.16.0 // indirect
+	cloud.google.com/go v0.116.0 // indirect
 	cloud.google.com/go/auth v0.11.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.6 // indirect
 	cloud.google.com/go/compute/metadata v0.5.2 // indirect
