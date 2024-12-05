@@ -2176,20 +2176,20 @@ func (hbo hotBackupOption) apply(o *backupOptions) {
 	o.backupType = &btHot
 }
 
-// Ptr returns a pointer to its argument.
-// It can be used to initialize pointer fields:
-//
-//	E.g. HotBackup(bigtable.Ptr[time.Time](time.Now()))
-func Ptr[T any](t T) *T { return &t }
-
-// HotBackup can be used to set backup type to [BackupTypeHot] and optionally, specify the
-// time at which the hot backup will be converted to a standard backup.
-// Once the `hot_to_standard_time` has passed, Cloud Bigtable will convert the
-// hot backup to a standard backup. This value, if provided, must be greater than the backup
-// creation time by:
+// HotToStandardBackup option can be used to create backup with
+// type [BackupTypeHot] and specify time at which the hot backup will be
+// converted to a standard backup. Once the `hot_to_standard_time` has passed,
+// Cloud Bigtable will convert the hot backup to a standard backup.
+// This value must be greater than the backup creation time by:
 // - At least 24 hours
-func HotBackup(hotToStandardTime *time.Time) BackupOption {
-	return hotBackupOption{htsTime: hotToStandardTime}
+func HotToStandardBackup(hotToStandardTime time.Time) BackupOption {
+	return hotBackupOption{htsTime: &hotToStandardTime}
+}
+
+// HotBackup option can be used to create backup
+// with type [BackupTypeHot]
+func HotBackup() BackupOption {
+	return hotBackupOption{}
 }
 
 // CreateBackup creates a new backup in the specified cluster from the
