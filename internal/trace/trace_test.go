@@ -38,16 +38,6 @@ var (
 	ignoreValueFields = cmpopts.IgnoreFields(attribute.Value{}, "vtype", "numeric", "stringly", "slice")
 )
 
-func TestDeprecatedFunctions(t *testing.T) {
-	SetOpenTelemetryTracingEnabledField(true) // no-op
-	if IsOpenCensusTracingEnabled() {
-		t.Errorf("got true, want false")
-	}
-	if !IsOpenTelemetryTracingEnabled() {
-		t.Errorf("got false, want true")
-	}
-}
-
 func TestStartSpan(t *testing.T) {
 	ctx := context.Background()
 	te := testutil.NewOpenTelemetryTestExporter()

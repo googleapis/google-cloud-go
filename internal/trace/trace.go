@@ -31,40 +31,6 @@ const (
 	OpenTelemetryTracerName = "cloud.google.com/go"
 )
 
-// Deprecated: The default experimental tracing support for OpenCensus is
-// now deprecated in the Google Cloud client libraries for Go.
-//
-// SetOpenTelemetryTracingEnabledField programmatically sets the value provided
-// by GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING for the purpose of
-// unit testing. Do not invoke it directly. Intended for use only in unit tests.
-// Restore original value after each test.
-//
-// The default experimental tracing support for OpenCensus is now deprecated in
-// the Google Cloud client libraries for Go.
-func SetOpenTelemetryTracingEnabledField(enabled bool) {
-	// no-op
-}
-
-// Deprecated: The default experimental tracing support for OpenCensus is now
-// deprecated in the Google Cloud client libraries for Go.
-//
-// IsOpenCensusTracingEnabled returns true if the environment variable
-// GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING is set to the
-// case-insensitive value "opencensus".
-func IsOpenCensusTracingEnabled() bool {
-	return false
-}
-
-// Deprecated: The default experimental tracing support for OpenCensus is now
-// deprecated in the Google Cloud client libraries for Go.
-//
-// IsOpenTelemetryTracingEnabled returns true if the environment variable
-// GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING is NOT set to the
-// case-insensitive value "opencensus".
-func IsOpenTelemetryTracingEnabled() bool {
-	return true
-}
-
 // StartSpan adds an OpenTelemetry span to the trace with the given name.
 //
 // The default experimental tracing support for OpenCensus is now deprecated in
