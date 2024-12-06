@@ -782,6 +782,9 @@ func (c *modelGardenRESTClient) ListPublisherModels(ctx context.Context, req *ai
 		if req.GetLanguageCode() != "" {
 			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 		}
+		if req.GetListAllVersions() {
+			params.Add("listAllVersions", fmt.Sprintf("%v", req.GetListAllVersions()))
+		}
 		if req.GetOrderBy() != "" {
 			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
 		}
