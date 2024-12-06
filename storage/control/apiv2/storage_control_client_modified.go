@@ -28,6 +28,8 @@ import (
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	sv2pb "cloud.google.com/go/storage/internal/apiv2"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/storagepb"
 	controlpb "cloud.google.com/go/storage/control/apiv2/controlpb"
 	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
@@ -41,6 +43,8 @@ import (
 )
 
 var newStorageControlClientHook clientHook
+type GetBucketRequest = storagepb.GetBucketRequest
+type Bucket = storagepb.Bucket
 
 // StorageControlCallOptions contains the retry settings for each method of StorageControlClient.
 type StorageControlCallOptions struct {
@@ -210,6 +214,8 @@ type StorageControlClient struct {
 	// The internal transport-dependent client.
 	internalClient internalStorageControlClient
 
+	internalStorageClient *sv2pb.Client
+
 	// The call options for this service.
 	CallOptions *StorageControlCallOptions
 
@@ -240,6 +246,10 @@ func (c *StorageControlClient) setGoogleClientInfo(keyval ...string) {
 // return the same resource.
 func (c *StorageControlClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
+}
+
+func (c *StorageControlClient) GetBucket(ctx context.Context, req *GetBucketRequest, opts ...gax.CallOption) (*Bucket, error) {
+	return c.internalStorageClient.GetBucket(ctx, req, opts...)
 }
 
 // CreateFolder creates a new folder. This operation is only applicable to a hierarchical
@@ -346,6 +356,12 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 		return nil, err
 	}
 	client := StorageControlClient{CallOptions: defaultStorageControlCallOptions()}
+	// TODO: reuse the same connection pool
+	v2, err := sv2pb.NewClient(ctx, opts...)
+	if err != nil {
+		return nil, err
+	}
+	client.internalStorageClient = v2
 
 	c := &storageControlGRPCClient{
 		connPool:             connPool,
