@@ -233,7 +233,7 @@ func (x *DetectIntentRequest) GetInputAudio() []byte {
 	return nil
 }
 
-// The message returned from the DetectIntent method.
+// The message returned from the [DetectIntent][] method.
 type DetectIntentResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -610,8 +610,8 @@ type QueryResult struct {
 	// was not set.
 	//
 	// This field is not guaranteed to be accurate or set. In particular this
-	// field isn't set for StreamingDetectIntent since the streaming endpoint has
-	// separate confidence estimates per portion of the audio in
+	// field isn't set for [StreamingDetectIntent][] since the streaming endpoint
+	// has separate confidence estimates per portion of the audio in
 	// StreamingRecognitionResult.
 	SpeechRecognitionConfidence float32 `protobuf:"fixed32,2,opt,name=speech_recognition_confidence,json=speechRecognitionConfidence,proto3" json:"speech_recognition_confidence,omitempty"`
 	// The action name from the matched intent.
@@ -829,8 +829,7 @@ func (x *QueryResult) GetSentimentAnalysisResult() *SentimentAnalysisResult {
 }
 
 // The top-level message sent by the client to the
-// [Sessions.StreamingDetectIntent][google.cloud.dialogflow.v2.Sessions.StreamingDetectIntent]
-// method.
+// [StreamingDetectIntent][] method.
 //
 // Multiple request messages should be sent in order:
 //
@@ -1235,19 +1234,22 @@ func (x *CloudConversationDebuggingInfo) GetClientHalfCloseStreamingTimeOffset()
 }
 
 // The top-level message returned from the
-// `StreamingDetectIntent` method.
+// [StreamingDetectIntent][] method.
 //
 // Multiple response messages can be returned in order:
 //
-//  1. If the `StreamingDetectIntentRequest.input_audio` field was
-//     set, the `recognition_result` field is populated for one
-//     or more messages.
-//     See the
-//     [StreamingRecognitionResult][google.cloud.dialogflow.v2.StreamingRecognitionResult]
-//     message for details about the result message sequence.
+// 1.  If the
+// [StreamingDetectIntentRequest.input_audio][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.input_audio]
+// field was
 //
-//  2. The next message contains `response_id`, `query_result`
-//     and optionally `webhook_status` if a WebHook was called.
+//		set, the `recognition_result` field is populated for one
+//		or more messages.
+//		See the
+//		[StreamingRecognitionResult][google.cloud.dialogflow.v2.StreamingRecognitionResult]
+//		message for details about the result message sequence.
+//
+//	 2. The next message contains `response_id`, `query_result`
+//	    and optionally `webhook_status` if a WebHook was called.
 type StreamingDetectIntentResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1276,7 +1278,8 @@ type StreamingDetectIntentResponse struct {
 	// The config used by the speech synthesizer to generate the output audio.
 	OutputAudioConfig *OutputAudioConfig `protobuf:"bytes,6,opt,name=output_audio_config,json=outputAudioConfig,proto3" json:"output_audio_config,omitempty"`
 	// Debugging info that would get populated when
-	// `StreamingDetectIntentRequest.enable_debugging_info` is set to true.
+	// [StreamingDetectIntentRequest.enable_debugging_info][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.enable_debugging_info]
+	// is set to true.
 	DebuggingInfo *CloudConversationDebuggingInfo `protobuf:"bytes,8,opt,name=debugging_info,json=debuggingInfo,proto3" json:"debugging_info,omitempty"`
 }
 
@@ -1724,9 +1727,9 @@ func (x *SentimentAnalysisRequestConfig) GetAnalyzeQueryTextSentiment() bool {
 // The result of sentiment analysis. Sentiment analysis inspects user input
 // and identifies the prevailing subjective opinion, especially to determine a
 // user's attitude as positive, negative, or neutral.
-// For [Participants.DetectIntent][], it needs to be configured in
+// For [DetectIntent][], it needs to be configured in
 // [DetectIntentRequest.query_params][google.cloud.dialogflow.v2.DetectIntentRequest.query_params].
-// For [Participants.StreamingDetectIntent][], it needs to be configured in
+// For [StreamingDetectIntent][], it needs to be configured in
 // [StreamingDetectIntentRequest.query_params][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.query_params].
 // And for
 // [Participants.AnalyzeContent][google.cloud.dialogflow.v2.Participants.AnalyzeContent]
