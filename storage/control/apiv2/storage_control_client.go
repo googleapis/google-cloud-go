@@ -29,6 +29,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	controlpb "cloud.google.com/go/storage/control/apiv2/controlpb"
+	sv2pb "cloud.google.com/go/storage/internal/apiv2"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -44,16 +46,16 @@ var newStorageControlClientHook clientHook
 
 // StorageControlCallOptions contains the retry settings for each method of StorageControlClient.
 type StorageControlCallOptions struct {
-	CreateFolder        []gax.CallOption
-	DeleteFolder        []gax.CallOption
-	GetFolder           []gax.CallOption
-	ListFolders         []gax.CallOption
-	RenameFolder        []gax.CallOption
-	GetStorageLayout    []gax.CallOption
-	CreateManagedFolder []gax.CallOption
-	DeleteManagedFolder []gax.CallOption
-	GetManagedFolder    []gax.CallOption
-	ListManagedFolders  []gax.CallOption
+	CreateFolder		[]gax.CallOption
+	DeleteFolder		[]gax.CallOption
+	GetFolder		[]gax.CallOption
+	ListFolders		[]gax.CallOption
+	RenameFolder		[]gax.CallOption
+	GetStorageLayout	[]gax.CallOption
+	CreateManagedFolder	[]gax.CallOption
+	DeleteManagedFolder	[]gax.CallOption
+	GetManagedFolder	[]gax.CallOption
+	ListManagedFolders	[]gax.CallOption
 }
 
 func defaultStorageControlGRPCClientOptions() []option.ClientOption {
@@ -89,9 +91,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
+					Initial:	1000 * time.Millisecond,
+					Max:		60000 * time.Millisecond,
+					Multiplier:	2.00,
 				})
 			}),
 		},
@@ -105,9 +107,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
+					Initial:	1000 * time.Millisecond,
+					Max:		60000 * time.Millisecond,
+					Multiplier:	2.00,
 				})
 			}),
 		},
@@ -121,9 +123,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
+					Initial:	1000 * time.Millisecond,
+					Max:		60000 * time.Millisecond,
+					Multiplier:	2.00,
 				})
 			}),
 		},
@@ -137,9 +139,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
+					Initial:	1000 * time.Millisecond,
+					Max:		60000 * time.Millisecond,
+					Multiplier:	2.00,
 				})
 			}),
 		},
@@ -159,9 +161,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
+					Initial:	1000 * time.Millisecond,
+					Max:		60000 * time.Millisecond,
+					Multiplier:	2.00,
 				})
 			}),
 		},
@@ -175,9 +177,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
+					Initial:	1000 * time.Millisecond,
+					Max:		60000 * time.Millisecond,
+					Multiplier:	2.00,
 				})
 			}),
 		},
@@ -208,18 +210,20 @@ type internalStorageControlClient interface {
 // StorageControl service includes selected control plane operations.
 type StorageControlClient struct {
 	// The internal transport-dependent client.
-	internalClient internalStorageControlClient
+	internalClient	internalStorageControlClient
 
 	// The call options for this service.
-	CallOptions *StorageControlCallOptions
+	CallOptions	*StorageControlCallOptions
 
 	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-}
+	LROClient		*lroauto.OperationsClient
+	internalStorageClient	*
 
-// Wrapper methods routed to the internal client.
+	// Wrapper methods routed to the internal client.
+	sv2pb.Client
+}
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
@@ -310,21 +314,21 @@ func (c *StorageControlClient) ListManagedFolders(ctx context.Context, req *cont
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type storageControlGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
-	connPool gtransport.ConnPool
+	connPool	gtransport.ConnPool
 
 	// Points back to the CallOptions field of the containing StorageControlClient
-	CallOptions **StorageControlCallOptions
+	CallOptions	**StorageControlCallOptions
 
 	// The gRPC API client.
-	storageControlClient controlpb.StorageControlClient
+	storageControlClient	controlpb.StorageControlClient
 
 	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient **lroauto.OperationsClient
+	LROClient	**lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogHeaders []string
+	xGoogHeaders	[]string
 }
 
 // NewStorageControlClient creates a new storage control client based on gRPC.
@@ -348,9 +352,9 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 	client := StorageControlClient{CallOptions: defaultStorageControlCallOptions()}
 
 	c := &storageControlGRPCClient{
-		connPool:             connPool,
-		storageControlClient: controlpb.NewStorageControlClient(connPool),
-		CallOptions:          &client.CallOptions,
+		connPool:		connPool,
+		storageControlClient:	controlpb.NewStorageControlClient(connPool),
+		CallOptions:		&client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -367,13 +371,20 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 		return nil, err
 	}
 	c.LROClient = &client.LROClient
+	v2, err = sv2pb.NewClient(ctx,
+
+	// Connection returns a connection to the API service.
+	//
+	// Deprecated: Connections are now pooled so this method does not always
+	// return the same resource.
+	opts)
+	if err != nil {
+		return nil, err
+	}
+	client.internalStorageClient = v2
 	return &client, nil
 }
 
-// Connection returns a connection to the API service.
-//
-// Deprecated: Connections are now pooled so this method does not always
-// return the same resource.
 func (c *storageControlGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -742,4 +753,13 @@ func (c *storageControlGRPCClient) RenameFolderOperation(name string) *RenameFol
 	return &RenameFolderOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
+}
+
+type (
+	GetBucketRequest	storagepb.GetBucketRequest
+	Bucket			storagepb.Bucket
+)
+
+func (c *StorageControlClient) GetBucket(ctx context.Context, req *GetBucketRequest, opts ...gax.CallOption) (*Bucket, error) {
+	return c.internalStorageClient.GetBucket(ctx, req, opts)
 }
