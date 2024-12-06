@@ -53,7 +53,7 @@ type generateSplitsOpts struct {
 
 // newRangeSplitter creates a new RangeSplitter with the given alphabets.
 // RangeSplitter determines split points within a given range based on the given
-// alphabets.
+// alphabets. Note that the alphabets are a set of characters guaranteed to be unique.
 func newRangeSplitter(alphabet string) (*rangeSplitter, error) {
 
 	// Validate that we do not have empty alphabet passed in.
@@ -206,7 +206,8 @@ func constructAlphabetMap(alphabet []rune) map[rune]int {
 	return alphabetMap
 }
 
-// addCharsToAlphabet adds a character to the known alphabet.
+// addCharsToAlphabet adds the given chars to the known alphabet. Repeated chars are ignored
+// as alphabet contains unique chars.
 func (rs *rangeSplitter) addCharsToAlphabet(characters []rune) {
 	rs.mu.Lock()         // Acquire the lock
 	defer rs.mu.Unlock() // Release the lock when the function exits
@@ -216,6 +217,8 @@ func (rs *rangeSplitter) addCharsToAlphabet(characters []rune) {
 		if _, exists := rs.alphabetMap[char]; !exists {
 			allAlphabet = append(allAlphabet, char)
 			newChars = true
+			// Update the alphabet map so the new char is not repeated.
+			rs.alphabetMap[char] = 0
 		}
 	}
 	if newChars {

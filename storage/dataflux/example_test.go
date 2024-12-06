@@ -23,7 +23,7 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-func ExampleNextBatch_batch() {
+func ExampleLister() {
 	ctx := context.Background()
 	// Pass in any client opts or set retry policy here.
 	client, err := storage.NewClient(ctx)
@@ -42,8 +42,7 @@ func ExampleNextBatch_batch() {
 		SkipDirectoryObjects: false,
 	}
 
-	// Create Lister with desired options, including number of workers,
-	// part size, per operation timeout, etc.
+	// Create Lister with  fast-list input.
 	df := dataflux.NewLister(client, in)
 	defer df.Close()
 

@@ -46,7 +46,8 @@ type ReasoningEngineSpec struct {
 
 	// Required. User provided package spec of the ReasoningEngine.
 	PackageSpec *ReasoningEngineSpec_PackageSpec `protobuf:"bytes,2,opt,name=package_spec,json=packageSpec,proto3" json:"package_spec,omitempty"`
-	// Optional. Declarations for object class methods.
+	// Optional. Declarations for object class methods in OpenAPI specification
+	// format.
 	ClassMethods []*structpb.Struct `protobuf:"bytes,3,rep,name=class_methods,json=classMethods,proto3" json:"class_methods,omitempty"`
 }
 

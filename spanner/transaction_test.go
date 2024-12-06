@@ -489,6 +489,7 @@ func TestReadWriteStmtBasedTransaction_QueryAborted(t *testing.T) {
 func TestReadWriteStmtBasedTransaction_UpdateAborted(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			// Use a session pool with size 1 to ensure that there are no session leaks.
 			MinOpened: 1,
@@ -525,6 +526,7 @@ func TestReadWriteStmtBasedTransaction_UpdateAborted(t *testing.T) {
 func TestReadWriteStmtBasedTransaction_BatchUpdateAborted(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			// Use a session pool with size 1 to ensure that there are no session leaks.
 			MinOpened: 1,
@@ -561,6 +563,7 @@ func TestReadWriteStmtBasedTransaction_BatchUpdateAborted(t *testing.T) {
 func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime) (rowCount int64, attempts int, err error) {
 	// server, client, teardown := setupMockedTestServer(t)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			// Use a session pool with size 1 to ensure that there are no session leaks.
 			MinOpened: 1,
@@ -758,7 +761,7 @@ func TestPriorityInQueryOptions(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServerWithConfigAndClientOptions(
-		t, ClientConfig{QueryOptions: QueryOptions{Priority: sppb.RequestOptions_PRIORITY_LOW}},
+		t, ClientConfig{DisableNativeMetrics: true, QueryOptions: QueryOptions{Priority: sppb.RequestOptions_PRIORITY_LOW}},
 		[]option.ClientOption{},
 	)
 	defer teardown()

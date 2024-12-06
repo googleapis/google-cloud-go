@@ -51,6 +51,7 @@ var rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
 func createBenchmarkServer(incStep uint64) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
 	t := &testing.T{}
 	server, client, teardown = setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:     100,
 			MaxOpened:     400,
