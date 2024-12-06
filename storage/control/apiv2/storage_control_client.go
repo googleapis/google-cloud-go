@@ -371,13 +371,13 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 		return nil, err
 	}
 	c.LROClient = &client.LROClient
-	v2, err = sv2pb.NewClient(ctx,
+	v2, err := sv2pb.NewClient(ctx,
 
 	// Connection returns a connection to the API service.
 	//
 	// Deprecated: Connections are now pooled so this method does not always
 	// return the same resource.
-	opts)
+	opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -755,11 +755,13 @@ func (c *storageControlGRPCClient) RenameFolderOperation(name string) *RenameFol
 	}
 }
 
-type (
-	GetBucketRequest	storagepb.GetBucketRequest
-	Bucket			storagepb.Bucket
-)
+type Bucket= storagepb.Bucket
+type GetBucketRequest= storagepb.GetBucketRequest
+type CreateBucketRequest= storagepb.CreateBucketRequest
 
 func (c *StorageControlClient) GetBucket(ctx context.Context, req *GetBucketRequest, opts ...gax.CallOption) (*Bucket, error) {
-	return c.internalStorageClient.GetBucket(ctx, req, opts)
+	return c.internalStorageClient.GetBucket(ctx, req, opts...)
+}
+func (c *StorageControlClient) CreateBucket(ctx context.Context, req *CreateBucketRequest, opts ...gax.CallOption) (*Bucket, error) {
+	return c.internalStorageClient.CreateBucket(ctx, req, opts...)
 }
