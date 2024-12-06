@@ -17,7 +17,9 @@
 // Package routeoptimization is an auto-generated package for the
 // Route Optimization API.
 //
-// Route Optimization API.
+// The Route Optimization API assigns tasks and routes to a vehicle fleet,
+// optimizing against the objectives and constraints that you supply for your
+// transportation goals.
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
