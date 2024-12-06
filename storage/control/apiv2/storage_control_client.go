@@ -43,6 +43,8 @@ import (
 )
 
 var newStorageControlClientHook clientHook
+type GetBucketRequest = storagepb.GetBucketRequest
+type Bucket = storagepb.Bucket
 
 // StorageControlCallOptions contains the retry settings for each method of StorageControlClient.
 type StorageControlCallOptions struct {
@@ -191,7 +193,6 @@ type internalStorageControlClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	GetBucket(context.Context, *GetBucketRequest, ...gax.CallOption) (*Bucket, error)
 	CreateFolder(context.Context, *controlpb.CreateFolderRequest, ...gax.CallOption) (*controlpb.Folder, error)
 	DeleteFolder(context.Context, *controlpb.DeleteFolderRequest, ...gax.CallOption) error
 	GetFolder(context.Context, *controlpb.GetFolderRequest, ...gax.CallOption) (*controlpb.Folder, error)
@@ -212,6 +213,8 @@ type internalStorageControlClient interface {
 type StorageControlClient struct {
 	// The internal transport-dependent client.
 	internalClient internalStorageControlClient
+
+	internalStorageClient *sv2pb.Client
 
 	// The call options for this service.
 	CallOptions *StorageControlCallOptions
@@ -246,7 +249,7 @@ func (c *StorageControlClient) Connection() *grpc.ClientConn {
 }
 
 func (c *StorageControlClient) GetBucket(ctx context.Context, req *GetBucketRequest, opts ...gax.CallOption) (*Bucket, error) {
-	return c.internalClient.GetBucket(ctx, req, opts...)
+	return c.internalStorageClient.GetBucket(ctx, req, opts...)
 }
 
 // CreateFolder creates a new folder. This operation is only applicable to a hierarchical
@@ -325,9 +328,6 @@ type storageControlGRPCClient struct {
 	// The gRPC API client.
 	storageControlClient controlpb.StorageControlClient
 
-	// The Storage v2 gRPC API client.
-	storageClient *sv2pb.Client
-
 	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
@@ -355,17 +355,17 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 	if err != nil {
 		return nil, err
 	}
-
 	client := StorageControlClient{CallOptions: defaultStorageControlCallOptions()}
 	// TODO: reuse the same connection pool
 	v2, err := sv2pb.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
+	client.internalStorageClient = v2
+
 	c := &storageControlGRPCClient{
 		connPool:             connPool,
 		storageControlClient: controlpb.NewStorageControlClient(connPool),
-		storageClient:        v2,
 		CallOptions:          &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
@@ -409,13 +409,6 @@ func (c *storageControlGRPCClient) setGoogleClientInfo(keyval ...string) {
 // the client is no longer required.
 func (c *storageControlGRPCClient) Close() error {
 	return c.connPool.Close()
-}
-
-type GetBucketRequest = storagepb.GetBucketRequest
-type Bucket = storagepb.Bucket
-
-func (c *storageControlGRPCClient) GetBucket(ctx context.Context, req *GetBucketRequest, opts ...gax.CallOption) (*Bucket, error) {
-	return c.storageClient.GetBucket(ctx, req, opts...)
 }
 
 func (c *storageControlGRPCClient) CreateFolder(ctx context.Context, req *controlpb.CreateFolderRequest, opts ...gax.CallOption) (*controlpb.Folder, error) {
