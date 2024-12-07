@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/chat/apiv1",
-    "version": "$VERSION",
+    "version": "0.8.0",
     "language": "GO",
     "apis": [
       {
