@@ -21,11 +21,13 @@ func AddAliases(file *ast.File, aliases map[string]*alias) {
 		file.Decls = append(file.Decls, &ast.GenDecl{
 			Tok: token.TYPE,
 			Specs: []ast.Spec{
-				&ast.TypeSpec{
-					Name: ast.NewIdent(a.TypeName + "="),
-					Type: &ast.SelectorExpr{
-						X:   ast.NewIdent(a.TypeImport),
-						Sel: ast.NewIdent(a.TypeName),
+				&ast.ValueSpec{
+					Names: []*ast.Ident{ast.NewIdent(a.TypeName)},
+					Values: []ast.Expr{
+						&ast.SelectorExpr{
+							X:   ast.NewIdent(a.TypeImport),
+							Sel: ast.NewIdent(a.TypeName),
+						},
 					},
 				},
 			},
@@ -122,6 +124,7 @@ func GetStorageV2Func(file *ast.File, structName string, ignoredFuncNames []stri
 								}
 							}
 						}
+						// Update return values to use local aliases
 						if len(x.Type.Results.List) > 1 {
 							for idx, result := range x.Type.Results.List {
 								if starE, ok := result.Type.(*ast.StarExpr); ok {
