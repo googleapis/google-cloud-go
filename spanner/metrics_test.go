@@ -148,9 +148,8 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			if test.setEmulator {
-				// Set environment variable
-				t.Setenv("SPANNER_EMULATOR_HOST", "localhost:9010")
+			if test.setEmulator && isEmulatorEnvSet() == false {
+				t.Skip("Skipping test as SPANNER_EMULATOR_HOST is not set")
 			}
 			server, client, teardown := setupMockedTestServerWithConfig(t, test.config)
 			defer teardown()
