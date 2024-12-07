@@ -286,8 +286,9 @@ func (AgentAssistantFeedback_DocumentEfficiency) EnumDescriptor() ([]byte, []int
 //
 // [AnswerRecord.name][google.cloud.dialogflow.v2.AnswerRecord.name] to call the
 //
-//	[UpdateAnswerRecord][] method to send feedback about a specific answer
-//	that they believe is wrong.
+//	[AnswerRecords.UpdateAnswerRecord][google.cloud.dialogflow.v2.AnswerRecords.UpdateAnswerRecord]
+//	method to send feedback about a specific answer that they believe is
+//	wrong.
 type AnswerRecord struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

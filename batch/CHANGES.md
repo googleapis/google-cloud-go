@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.2...batch/v1.11.3) (2024-12-04)
+
+
+### Documentation
+
+* **batch:** Clarify that user provided labels will also be applied to Cloud Logging ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **batch:** Rephrase reservation field doc ([#11180](https://github.com/googleapis/google-cloud-go/issues/11180)) ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+* **batch:** Update reservation field to include NO_RESERVATION ([8dedb87](https://github.com/googleapis/google-cloud-go/commit/8dedb878c070cc1e92d62bb9b32358425e3ceffb))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/batch/v1.11.1...batch/v1.11.2) (2024-10-23)
 
 

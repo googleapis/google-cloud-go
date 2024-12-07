@@ -1396,7 +1396,7 @@ func TestRetryMaxAttemptsEmulated(t *testing.T) {
 		instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503", "return-503", "return-503", "return-503"}}
 		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-		config := &retryConfig{maxAttempts: expectedAttempts(3), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+		config := &retryConfig{maxAttempts: expectedAttempts(3), backoff: gaxBackoffFromStruct(&gax.Backoff{Initial: 10 * time.Millisecond})}
 		_, err = client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config))
 
 		var ae *apierror.APIError
@@ -1421,7 +1421,7 @@ func TestTimeoutErrorEmulated(t *testing.T) {
 		ctx, cancel := context.WithTimeout(ctx, time.Nanosecond)
 		defer cancel()
 		time.Sleep(5 * time.Nanosecond)
-		config := &retryConfig{backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+		config := &retryConfig{backoff: gaxBackoffFromStruct(&gax.Backoff{Initial: 10 * time.Millisecond})}
 		_, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config))
 
 		// Error may come through as a context.DeadlineExceeded (HTTP) or status.DeadlineExceeded (gRPC)
@@ -1447,7 +1447,7 @@ func TestRetryDeadlineExceedeEmulated(t *testing.T) {
 		instructions := map[string][]string{"storage.buckets.get": {"return-504", "return-504"}}
 		testID := createRetryTest(t, client, instructions)
 		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-		config := &retryConfig{maxAttempts: expectedAttempts(4), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+		config := &retryConfig{maxAttempts: expectedAttempts(4), backoff: gaxBackoffFromStruct(&gax.Backoff{Initial: 10 * time.Millisecond})}
 		if _, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config)); err != nil {
 			t.Fatalf("GetBucket: got unexpected error %v, want nil", err)
 		}
@@ -1504,6 +1504,145 @@ func TestRetryReadStallEmulated(t *testing.T) {
 	if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
 		t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
 	}
+}
+
+func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
+	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+
+		chunkSize := 2 * 1024 * 1024 // 2 MiB
+		fileSize := 5 * 1024 * 1024  // 5 MiB
+		tests := []struct {
+			name                 string
+			instructions         map[string][]string
+			chunkTransferTimeout time.Duration
+			expectedSuccess      bool
+		}{
+			{
+				name: "stall-on-first-chunk-with-chunk-transfer-timeout-zero",
+				instructions: map[string][]string{
+					"storage.objects.insert": {"stall-for-10s-after-1024K"},
+				},
+				chunkTransferTimeout: 0,
+				expectedSuccess:      false,
+			},
+			{
+				name: "stall-on-first-chunk-with-chunk-transfer-timeout-nonzero",
+				instructions: map[string][]string{
+					"storage.objects.insert": {"stall-for-10s-after-1024K"},
+				},
+				chunkTransferTimeout: 100 * time.Millisecond,
+				expectedSuccess:      true,
+			},
+			{
+				name: "stall-on-second-chunk-with-chunk-transfer-timeout-zero",
+				instructions: map[string][]string{
+					"storage.objects.insert": {"stall-for-10s-after-3072K"},
+				},
+				chunkTransferTimeout: 0,
+				expectedSuccess:      false,
+			},
+			{
+				name: "stall-on-second-chunk-with-chunk-transfer-timeout-nonzero",
+				instructions: map[string][]string{
+					"storage.objects.insert": {"stall-for-10s-after-3072K"},
+				},
+				chunkTransferTimeout: 100 * time.Millisecond,
+				expectedSuccess:      true,
+			},
+			{
+				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-zero",
+				instructions: map[string][]string{
+					"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"},
+				},
+				chunkTransferTimeout: 0,
+				expectedSuccess:      false,
+			},
+			{
+				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-nonzero",
+				instructions: map[string][]string{
+					"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"},
+				},
+				chunkTransferTimeout: 100 * time.Millisecond,
+				expectedSuccess:      true,
+			},
+		}
+
+		for _, tc := range tests {
+			t.Run(tc.name, func(t *testing.T) {
+				testID := createRetryTest(t, client, tc.instructions)
+				var cancel context.CancelFunc
+				rCtx := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+				rCtx, cancel = context.WithTimeout(rCtx, 1*time.Second)
+				defer cancel()
+
+				prefix := time.Now().Nanosecond()
+				want := &ObjectAttrs{
+					Bucket:     bucket,
+					Name:       fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+					Generation: defaultGen,
+				}
+
+				var gotAttrs *ObjectAttrs
+				params := &openWriterParams{
+					attrs:                want,
+					bucket:               bucket,
+					chunkSize:            chunkSize,
+					chunkTransferTimeout: tc.chunkTransferTimeout,
+					ctx:                  rCtx,
+					donec:                make(chan struct{}),
+					setError:             func(_ error) {}, // no-op
+					progress:             func(_ int64) {}, // no-op
+					setObj:               func(o *ObjectAttrs) { gotAttrs = o },
+				}
+
+				pw, err := client.OpenWriter(params)
+				if err != nil {
+					t.Fatalf("failed to open writer: %v", err)
+				}
+				buffer := bytes.Repeat([]byte("A"), fileSize)
+				_, err = pw.Write(buffer)
+				if tc.expectedSuccess {
+					if err != nil {
+						t.Fatalf("failed to populate test data: %v", err)
+					}
+					if err := pw.Close(); err != nil {
+						t.Fatalf("closing object: %v", err)
+					}
+					select {
+					case <-params.donec:
+					}
+					if gotAttrs == nil {
+						t.Fatalf("Writer finished, but resulting object wasn't set")
+					}
+					if diff := cmp.Diff(gotAttrs.Name, want.Name); diff != "" {
+						t.Fatalf("Resulting object name: got(-),want(+):\n%s", diff)
+					}
+
+					r, err := veneerClient.Bucket(bucket).Object(want.Name).NewReader(ctx)
+					if err != nil {
+						t.Fatalf("opening reading: %v", err)
+					}
+					wantLen := len(buffer)
+					got := make([]byte, wantLen)
+					n, err := r.Read(got)
+					if n != wantLen {
+						t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+					}
+					if diff := cmp.Diff(got, buffer); diff != "" {
+						t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
+					}
+				} else {
+					if !errors.Is(err, context.DeadlineExceeded) {
+						t.Fatalf("expected context deadline exceeded found %v", err)
+					}
+				}
+			})
+		}
+	})
 }
 
 // createRetryTest creates a bucket in the emulator and sets up a test using the

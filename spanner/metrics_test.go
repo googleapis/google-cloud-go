@@ -18,12 +18,14 @@ package spanner
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"sort"
 	"testing"
-
 	"time"
 
+	"cloud.google.com/go/internal/testutil"
+	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/api/option"
@@ -32,12 +34,15 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
-
-	"cloud.google.com/go/internal/testutil"
-	. "cloud.google.com/go/spanner/internal/testutil"
 )
 
 func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
+	flag.Parse() // Needed for testing.Short().
+	if testing.Short() {
+		t.Skip("TestNewBuiltinMetricsTracerFactory tests skipped in -short mode.")
+	}
+	t.Parallel()
+
 	ctx := context.Background()
 	clientUID := "test-uid"
 	createSessionRPC := "Spanner.BatchCreateSessions"
