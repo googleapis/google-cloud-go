@@ -6,6 +6,7 @@ import (
 	"go/printer"
 	"go/token"
 	"os"
+	"slices"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
@@ -78,27 +79,8 @@ func AddStorageV2Func(file *ast.File, funcName, requestTypeName, responseTypeNam
 		})
 }
 
-func main() {
-	// Read the source file
-	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, "../storage_control_client.go", nil, parser.ParseComments)
-	if err != nil {
-		panic(err)
-	}
-	// file2, err := parser.ParseFile(fset, "../storage_control_client_modified.go", nil, parser.ParseComments)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// ast.Print(nil, file2)
-
-	if ok := astutil.AddNamedImport(fset, file, "sv2pb", "cloud.google.com/go/storage/internal/apiv2"); !ok {
-		panic("Unable to add import sv2pb")
-	}
-	if ok := astutil.AddNamedImport(fset, file, "storagepb", "cloud.google.com/go/storage/internal/apiv2/storagepb"); !ok {
-		panic("Unable to add import storagepb")
-	}
-
-	astutil.Apply(file, nil, func(c *astutil.Cursor) bool {
+func AddStorageV2ContextToControl(f *ast.File) {
+	astutil.Apply(f, nil, func(c *astutil.Cursor) bool {
 		n := c.Node()
 		switch x := n.(type) {
 		case *ast.TypeSpec:
@@ -154,15 +136,117 @@ func main() {
 		}
 		return true
 	})
-	// Add funcs
-	AddAliases(file, map[string]*alias{
-		"Bucket":              &alias{TypeImport: "storagepb", TypeName: "Bucket"},
-		"GetBucketRequest":    &alias{TypeImport: "storagepb", TypeName: "GetBucketRequest"},
-		"CreateBucketRequest": &alias{TypeImport: "storagepb", TypeName: "CreateBucketRequest"},
+}
+
+func GetStorageV2Func(file *ast.File, structName string, ignoredFuncNames []string, newStructName, internalClientName string) []*ast.FuncDecl {
+	var fi []*ast.FuncDecl
+	astutil.Apply(file, nil, func(c *astutil.Cursor) bool {
+		n := c.Node()
+		switch x := n.(type) {
+		case *ast.FuncDecl:
+			if x.Recv != nil && !slices.Contains(ignoredFuncNames, x.Name.Name) {
+				recvType := x.Recv.List[0].Type
+				switch t := recvType.(type) {
+				case *ast.StarExpr:
+					if o := t.X.(*ast.Ident); o.Name == structName {
+						o.Name = newStructName
+						// Update parameter list to remove direct ref to storagev2 client proto
+						for _, param := range x.Type.Params.List {
+							for _, name := range param.Names {
+								if name.Name == "req" {
+									starE := param.Type.(*ast.StarExpr)
+									selE := starE.X.(*ast.SelectorExpr)
+									param.Type = &ast.StarExpr{
+										X: ast.NewIdent(selE.Sel.Name),
+									}
+								}
+							}
+						}
+						if len(x.Type.Results.List) > 1 {
+							for idx, result := range x.Type.Results.List {
+								if starE, ok := result.Type.(*ast.StarExpr); ok {
+									seE := starE.X.(*ast.SelectorExpr)
+									name := seE.X.(*ast.Ident)
+									if name.Name == "storagepb" {
+										x.Type.Results.List[idx] = &ast.Field{
+											Type: &ast.StarExpr{
+												X: seE.Sel,
+											},
+										}
+									}
+								}
+							}
+						}
+						astutil.Apply(x, nil, func(z *astutil.Cursor) bool {
+							q := z.Node()
+							switch v := q.(type) {
+							case *ast.CallExpr:
+								// modify internalClient name within func call
+								se := v.Fun.(*ast.SelectorExpr)
+								internalClientExpr := se.X.(*ast.SelectorExpr)
+								if internalClientExpr.Sel.Name == "internalClient" {
+									internalClientExpr.Sel.Name = internalClientName
+								}
+							}
+							return true
+						})
+						fi = append(fi, x)
+					}
+				}
+			}
+		}
+		return true
 	})
-	AddStorageV2Func(file, "GetBucket", "GetBucketRequest", "Bucket")
-	AddStorageV2Func(file, "CreateBucket", "CreateBucketRequest", "Bucket")
+	return fi
+}
+
+func main() {
+	// Read the source files for Storage Control and Storage V2
+	fset := token.NewFileSet()
+	storageControlFile, err := parser.ParseFile(fset, "../storage_control_client.go", nil, parser.ParseComments)
+	if err != nil {
+		panic(err)
+	}
+	storageV2File, err := parser.ParseFile(fset, "../../../internal/apiv2/storage_client.go", nil, parser.ParseComments)
+	if err != nil {
+		panic(err)
+	}
+	if ok := astutil.AddNamedImport(fset, storageControlFile, "sv2pb", "cloud.google.com/go/storage/internal/apiv2"); !ok {
+		panic("Unable to add import sv2pb")
+	}
+	if ok := astutil.AddNamedImport(fset, storageControlFile, "storagepb", "cloud.google.com/go/storage/internal/apiv2/storagepb"); !ok {
+		panic("Unable to add import storagepb")
+	}
+
+	AddStorageV2ContextToControl(storageControlFile)
+	AddAliases(storageControlFile, map[string]*alias{
+		"Bucket":                           &alias{TypeImport: "storagepb", TypeName: "Bucket"},
+		"Object":                           &alias{TypeImport: "storagepb", TypeName: "Object"},
+		"GetBucketRequest":                 &alias{TypeImport: "storagepb", TypeName: "GetBucketRequest"},
+		"CreateBucketRequest":              &alias{TypeImport: "storagepb", TypeName: "CreateBucketRequest"},
+		"DeleteBucketRequest":              &alias{TypeImport: "storagepb", TypeName: "DeleteBucketRequest"},
+		"LockBucketRetentionPolicyRequest": &alias{TypeImport: "storagepb", TypeName: "LockBucketRetentionPolicyRequest"},
+		"UpdateBucketRequest":              &alias{TypeImport: "storagepb", TypeName: "UpdateBucketRequest"},
+		"ComposeObjectRequest":             &alias{TypeImport: "storagepb", TypeName: "ComposeObjectRequest"},
+		"DeleteObjectRequest":              &alias{TypeImport: "storagepb", TypeName: "DeleteObjectRequest"},
+		"RestoreObjectRequest":             &alias{TypeImport: "storagepb", TypeName: "RestoreObjectRequest"},
+		"GetObjectRequest":                 &alias{TypeImport: "storagepb", TypeName: "GetObjectRequest"},
+		"UpdateObjectRequest":              &alias{TypeImport: "storagepb", TypeName: "UpdateObjectRequest"},
+		"RewriteObjectRequest":             &alias{TypeImport: "storagepb", TypeName: "RewriteObjectRequest"},
+		"RewriteResponse":                  &alias{TypeImport: "storagepb", TypeName: "RewriteResponse"},
+	})
+
+	disallowed := []string{
+		"WriteObject", "ReadObject", "StartResumableWrite", "QueryWriteStatus", "CancelResumableWrite", "BidiWriteObject", "Close", "setGoogleClientInfo", "Connection",
+		// Not ready yet
+		"GetIamPolicy", "SetIamPolicy", "TestIamPermissions", "ListObjects", "ListBuckets",
+	}
+	// Copy Storage V2 into Storage Control
+	fns := GetStorageV2Func(storageV2File, "Client", disallowed, "StorageControlClient", "internalStorageClient")
+	for _, fn := range fns {
+		storageControlFile.Decls = append(storageControlFile.Decls, fn)
+	}
 
 	// Print the modified AST
-	printer.Fprint(os.Stdout, fset, file)
+	printer.Fprint(os.Stdout, fset, storageControlFile)
 }

@@ -755,13 +755,61 @@ func (c *storageControlGRPCClient) RenameFolderOperation(name string) *RenameFol
 	}
 }
 
+type UpdateBucketRequest= storagepb.UpdateBucketRequest
+type UpdateObjectRequest= storagepb.UpdateObjectRequest
+type RewriteObjectRequest= storagepb.RewriteObjectRequest
+type Object= storagepb.Object
+type CreateBucketRequest= storagepb.CreateBucketRequest
+type RestoreObjectRequest= storagepb.RestoreObjectRequest
+type RewriteResponse= storagepb.RewriteResponse
+type DeleteBucketRequest= storagepb.DeleteBucketRequest
+type ComposeObjectRequest= storagepb.ComposeObjectRequest
+type DeleteObjectRequest= storagepb.DeleteObjectRequest
+type GetObjectRequest= storagepb.GetObjectRequest
 type Bucket= storagepb.Bucket
 type GetBucketRequest= storagepb.GetBucketRequest
-type CreateBucketRequest= storagepb.CreateBucketRequest
+type LockBucketRetentionPolicyRequest= storagepb.LockBucketRetentionPolicyRequest
+
+func (c *StorageControlClient) DeleteBucket(ctx context.Context, req *DeleteBucketRequest, opts ...gax.CallOption) error {
+	return c.internalStorageClient.DeleteBucket(ctx, req, opts...)
+}
 
 func (c *StorageControlClient) GetBucket(ctx context.Context, req *GetBucketRequest, opts ...gax.CallOption) (*Bucket, error) {
 	return c.internalStorageClient.GetBucket(ctx, req, opts...)
 }
+
 func (c *StorageControlClient) CreateBucket(ctx context.Context, req *CreateBucketRequest, opts ...gax.CallOption) (*Bucket, error) {
 	return c.internalStorageClient.CreateBucket(ctx, req, opts...)
+}
+
+func (c *StorageControlClient) LockBucketRetentionPolicy(ctx context.Context, req *LockBucketRetentionPolicyRequest, opts ...gax.CallOption) (*Bucket, error) {
+	return c.internalStorageClient.LockBucketRetentionPolicy(ctx, req, opts...)
+}
+
+func (c *StorageControlClient) UpdateBucket(ctx context.Context, req *UpdateBucketRequest, opts ...gax.CallOption) (*Bucket, error) {
+	return c.internalStorageClient.UpdateBucket(ctx, req, opts...)
+}
+
+func (c *StorageControlClient) ComposeObject(ctx context.Context, req *ComposeObjectRequest, opts ...gax.CallOption) (*Object, error) {
+	return c.internalStorageClient.ComposeObject(ctx, req, opts...)
+}
+
+func (c *StorageControlClient) DeleteObject(ctx context.Context, req *DeleteObjectRequest, opts ...gax.CallOption) error {
+	return c.internalStorageClient.DeleteObject(ctx, req, opts...)
+}
+
+func (c *StorageControlClient) RestoreObject(ctx context.Context, req *RestoreObjectRequest, opts ...gax.CallOption) (*Object, error) {
+	return c.internalStorageClient.RestoreObject(ctx, req, opts...)
+}
+
+func (c *StorageControlClient) GetObject(ctx context.Context, req *GetObjectRequest, opts ...gax.CallOption) (*Object, error) {
+	return c.internalStorageClient.GetObject(ctx, req, opts...)
+}
+
+func (c *StorageControlClient) UpdateObject(ctx context.Context, req *UpdateObjectRequest, opts ...gax.CallOption) (*Object, error) {
+	return c.internalStorageClient.UpdateObject(ctx, req, opts...)
+}
+
+func (c *StorageControlClient) RewriteObject(ctx context.Context, req *RewriteObjectRequest, opts ...gax.CallOption) (*RewriteResponse, error) {
+	return c.internalStorageClient.RewriteObject(ctx, req, opts...)
 }
