@@ -755,20 +755,20 @@ func (c *storageControlGRPCClient) RenameFolderOperation(name string) *RenameFol
 	}
 }
 
-type UpdateBucketRequest= storagepb.UpdateBucketRequest
-type UpdateObjectRequest= storagepb.UpdateObjectRequest
-type RewriteObjectRequest= storagepb.RewriteObjectRequest
-type Object= storagepb.Object
-type CreateBucketRequest= storagepb.CreateBucketRequest
-type RestoreObjectRequest= storagepb.RestoreObjectRequest
-type RewriteResponse= storagepb.RewriteResponse
 type DeleteBucketRequest= storagepb.DeleteBucketRequest
-type ComposeObjectRequest= storagepb.ComposeObjectRequest
+type LockBucketRetentionPolicyRequest= storagepb.LockBucketRetentionPolicyRequest
+type UpdateBucketRequest= storagepb.UpdateBucketRequest
+type Object= storagepb.Object
 type DeleteObjectRequest= storagepb.DeleteObjectRequest
+type RestoreObjectRequest= storagepb.RestoreObjectRequest
+type RewriteObjectRequest= storagepb.RewriteObjectRequest
+type GetBucketRequest= storagepb.GetBucketRequest
 type GetObjectRequest= storagepb.GetObjectRequest
 type Bucket= storagepb.Bucket
-type GetBucketRequest= storagepb.GetBucketRequest
-type LockBucketRetentionPolicyRequest= storagepb.LockBucketRetentionPolicyRequest
+type CreateBucketRequest= storagepb.CreateBucketRequest
+type ComposeObjectRequest= storagepb.ComposeObjectRequest
+type UpdateObjectRequest= storagepb.UpdateObjectRequest
+type RewriteResponse= storagepb.RewriteResponse
 
 func (c *StorageControlClient) DeleteBucket(ctx context.Context, req *DeleteBucketRequest, opts ...gax.CallOption) error {
 	return c.internalStorageClient.DeleteBucket(ctx, req, opts...)

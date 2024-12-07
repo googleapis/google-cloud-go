@@ -33,52 +33,6 @@ func AddAliases(file *ast.File, aliases map[string]*alias) {
 	}
 }
 
-func AddStorageV2Func(file *ast.File, funcName, requestTypeName, responseTypeName string) {
-	file.Decls = append(file.Decls,
-		&ast.FuncDecl{
-			Recv: &ast.FieldList{List: []*ast.Field{
-				{
-					Names: []*ast.Ident{ast.NewIdent("c")},
-					Type:  &ast.StarExpr{X: ast.NewIdent("StorageControlClient")},
-				},
-			}},
-			Name: ast.NewIdent(funcName),
-			Type: &ast.FuncType{
-				Params: &ast.FieldList{List: []*ast.Field{
-					{
-						Names: []*ast.Ident{ast.NewIdent("ctx")},
-						Type:  ast.NewIdent("context.Context"),
-					},
-					{
-						Names: []*ast.Ident{ast.NewIdent("req")},
-						Type:  &ast.StarExpr{X: ast.NewIdent(requestTypeName)},
-					},
-					{
-						Names: []*ast.Ident{ast.NewIdent("opts")},
-						Type:  &ast.Ellipsis{Elt: ast.NewIdent("gax.CallOption")},
-					},
-				}},
-				Results: &ast.FieldList{List: []*ast.Field{
-					{Type: &ast.StarExpr{X: ast.NewIdent(responseTypeName)}},
-					{Type: ast.NewIdent("error")},
-				}},
-			},
-			Body: &ast.BlockStmt{List: []ast.Stmt{
-				&ast.ReturnStmt{Results: []ast.Expr{
-					&ast.CallExpr{
-						Fun: &ast.SelectorExpr{
-							X:   &ast.SelectorExpr{X: ast.NewIdent("c"), Sel: ast.NewIdent("internalStorageClient")},
-							Sel: ast.NewIdent(funcName),
-						},
-						Args: []ast.Expr{
-							ast.NewIdent("ctx"), ast.NewIdent("req"), ast.NewIdent("opts..."),
-						},
-					},
-				}},
-			}},
-		})
-}
-
 func AddStorageV2ContextToControl(f *ast.File) {
 	astutil.Apply(f, nil, func(c *astutil.Cursor) bool {
 		n := c.Node()
@@ -138,8 +92,9 @@ func AddStorageV2ContextToControl(f *ast.File) {
 	})
 }
 
-func GetStorageV2Func(file *ast.File, structName string, ignoredFuncNames []string, newStructName, internalClientName string) []*ast.FuncDecl {
+func GetStorageV2Func(file *ast.File, structName string, ignoredFuncNames []string, newStructName, internalClientName string) ([]*ast.FuncDecl, map[string]*alias) {
 	var fi []*ast.FuncDecl
+	aliases := make(map[string]*alias)
 	astutil.Apply(file, nil, func(c *astutil.Cursor) bool {
 		n := c.Node()
 		switch x := n.(type) {
@@ -156,9 +111,14 @@ func GetStorageV2Func(file *ast.File, structName string, ignoredFuncNames []stri
 								if name.Name == "req" {
 									starE := param.Type.(*ast.StarExpr)
 									selE := starE.X.(*ast.SelectorExpr)
+									aliases[selE.Sel.Name] = &alias{
+										TypeImport: selE.X.(*ast.Ident).Name,
+										TypeName:   selE.Sel.Name,
+									}
 									param.Type = &ast.StarExpr{
 										X: ast.NewIdent(selE.Sel.Name),
 									}
+
 								}
 							}
 						}
@@ -168,6 +128,10 @@ func GetStorageV2Func(file *ast.File, structName string, ignoredFuncNames []stri
 									seE := starE.X.(*ast.SelectorExpr)
 									name := seE.X.(*ast.Ident)
 									if name.Name == "storagepb" {
+										aliases[seE.Sel.Name] = &alias{
+											TypeImport: seE.X.(*ast.Ident).Name,
+											TypeName:   seE.Sel.Name,
+										}
 										x.Type.Results.List[idx] = &ast.Field{
 											Type: &ast.StarExpr{
 												X: seE.Sel,
@@ -197,7 +161,7 @@ func GetStorageV2Func(file *ast.File, structName string, ignoredFuncNames []stri
 		}
 		return true
 	})
-	return fi
+	return fi, aliases
 }
 
 func main() {
@@ -219,31 +183,15 @@ func main() {
 	}
 
 	AddStorageV2ContextToControl(storageControlFile)
-	AddAliases(storageControlFile, map[string]*alias{
-		"Bucket":                           &alias{TypeImport: "storagepb", TypeName: "Bucket"},
-		"Object":                           &alias{TypeImport: "storagepb", TypeName: "Object"},
-		"GetBucketRequest":                 &alias{TypeImport: "storagepb", TypeName: "GetBucketRequest"},
-		"CreateBucketRequest":              &alias{TypeImport: "storagepb", TypeName: "CreateBucketRequest"},
-		"DeleteBucketRequest":              &alias{TypeImport: "storagepb", TypeName: "DeleteBucketRequest"},
-		"LockBucketRetentionPolicyRequest": &alias{TypeImport: "storagepb", TypeName: "LockBucketRetentionPolicyRequest"},
-		"UpdateBucketRequest":              &alias{TypeImport: "storagepb", TypeName: "UpdateBucketRequest"},
-		"ComposeObjectRequest":             &alias{TypeImport: "storagepb", TypeName: "ComposeObjectRequest"},
-		"DeleteObjectRequest":              &alias{TypeImport: "storagepb", TypeName: "DeleteObjectRequest"},
-		"RestoreObjectRequest":             &alias{TypeImport: "storagepb", TypeName: "RestoreObjectRequest"},
-		"GetObjectRequest":                 &alias{TypeImport: "storagepb", TypeName: "GetObjectRequest"},
-		"UpdateObjectRequest":              &alias{TypeImport: "storagepb", TypeName: "UpdateObjectRequest"},
-		"RewriteObjectRequest":             &alias{TypeImport: "storagepb", TypeName: "RewriteObjectRequest"},
-		"RewriteResponse":                  &alias{TypeImport: "storagepb", TypeName: "RewriteResponse"},
-	})
-
 	disallowed := []string{
 		"WriteObject", "ReadObject", "StartResumableWrite", "QueryWriteStatus", "CancelResumableWrite", "BidiWriteObject", "Close", "setGoogleClientInfo", "Connection",
 		// Not ready yet
 		"GetIamPolicy", "SetIamPolicy", "TestIamPermissions", "ListObjects", "ListBuckets",
 	}
 	// Copy Storage V2 into Storage Control
-	fns := GetStorageV2Func(storageV2File, "Client", disallowed, "StorageControlClient", "internalStorageClient")
-	for _, fn := range fns {
+	funcs, aliases := GetStorageV2Func(storageV2File, "Client", disallowed, "StorageControlClient", "internalStorageClient")
+	AddAliases(storageControlFile, aliases)
+	for _, fn := range funcs {
 		storageControlFile.Decls = append(storageControlFile.Decls, fn)
 	}
 
