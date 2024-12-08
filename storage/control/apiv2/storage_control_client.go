@@ -757,22 +757,22 @@ func (c *storageControlGRPCClient) RenameFolderOperation(name string) *RenameFol
 }
 
 type CreateBucketRequest = storagepb.CreateBucketRequest
-type DeleteObjectRequest = storagepb.DeleteObjectRequest
-type ListObjectsRequest = storagepb.ListObjectsRequest
+type BucketIterator = sv2pb.BucketIterator
+type UpdateBucketRequest = storagepb.UpdateBucketRequest
+type UpdateObjectRequest = storagepb.UpdateObjectRequest
+type ObjectIterator = sv2pb.ObjectIterator
 type LockBucketRetentionPolicyRequest = storagepb.LockBucketRetentionPolicyRequest
-type ComposeObjectRequest = storagepb.ComposeObjectRequest
-type Object = storagepb.Object
+type RestoreObjectRequest = storagepb.RestoreObjectRequest
+type GetObjectRequest = storagepb.GetObjectRequest
 type DeleteBucketRequest = storagepb.DeleteBucketRequest
 type GetBucketRequest = storagepb.GetBucketRequest
-type Bucket = storagepb.Bucket
 type ListBucketsRequest = storagepb.ListBucketsRequest
-type BucketIterator = sv2pb.BucketIterator
-type RestoreObjectRequest = storagepb.RestoreObjectRequest
-type UpdateObjectRequest = storagepb.UpdateObjectRequest
+type ListObjectsRequest = storagepb.ListObjectsRequest
+type Bucket = storagepb.Bucket
+type ComposeObjectRequest = storagepb.ComposeObjectRequest
+type Object = storagepb.Object
+type DeleteObjectRequest = storagepb.DeleteObjectRequest
 type RewriteObjectRequest = storagepb.RewriteObjectRequest
-type UpdateBucketRequest = storagepb.UpdateBucketRequest
-type GetObjectRequest = storagepb.GetObjectRequest
-type ObjectIterator = sv2pb.ObjectIterator
 type RewriteResponse = storagepb.RewriteResponse
 
 func (c *StorageControlClient) DeleteBucket(ctx context.Context, req *DeleteBucketRequest, opts ...gax.CallOption) error {
