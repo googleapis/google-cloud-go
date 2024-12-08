@@ -94,14 +94,16 @@ func AddStorageV2ContextToControl(f *ast.File) {
 	})
 }
 
-func GetStorageV2Func(file *ast.File, structName string, ignoredFuncNames []string, newStructName, internalClientName string) ([]*ast.FuncDecl, map[string]*alias) {
+func GetStorageV2Funcs(file *ast.File, structName string, ignoredFuncNames []string, newStructName, internalClientName string) ([]*ast.FuncDecl, map[string]*alias) {
 	var fi []*ast.FuncDecl
 	aliases := make(map[string]*alias)
 	astutil.Apply(file, nil, func(c *astutil.Cursor) bool {
 		n := c.Node()
 		switch x := n.(type) {
 		case *ast.FuncDecl:
-			if x.Recv != nil && !slices.Contains(ignoredFuncNames, x.Name.Name) {
+			// Check only public API
+			if x.Recv != nil && token.IsExported(x.Name.Name) && !slices.Contains(ignoredFuncNames, x.Name.Name) {
+				// Only want to copy methods from structName
 				recvType := x.Recv.List[0].Type
 				switch t := recvType.(type) {
 				case *ast.StarExpr:
@@ -113,14 +115,15 @@ func GetStorageV2Func(file *ast.File, structName string, ignoredFuncNames []stri
 								if name.Name == "req" {
 									starE := param.Type.(*ast.StarExpr)
 									selE := starE.X.(*ast.SelectorExpr)
-									aliases[selE.Sel.Name] = &alias{
-										TypeImport: selE.X.(*ast.Ident).Name,
-										TypeName:   selE.Sel.Name,
+									if selE.X.(*ast.Ident).Name == "storagepb" {
+										aliases[selE.Sel.Name] = &alias{
+											TypeImport: selE.X.(*ast.Ident).Name,
+											TypeName:   selE.Sel.Name,
+										}
+										param.Type = &ast.StarExpr{
+											X: ast.NewIdent(selE.Sel.Name),
+										}
 									}
-									param.Type = &ast.StarExpr{
-										X: ast.NewIdent(selE.Sel.Name),
-									}
-
 								}
 							}
 						}
@@ -131,7 +134,7 @@ func GetStorageV2Func(file *ast.File, structName string, ignoredFuncNames []stri
 								case *ast.SelectorExpr:
 									name := seX.X.(*ast.Ident)
 									// TODO: Get import based on name of object here?
-									if name.Name == "storagepb" {
+									if name.Name == "storagepb" && name.Name != "iampb" {
 										aliases[seX.Sel.Name] = &alias{
 											TypeImport: seX.X.(*ast.Ident).Name,
 											TypeName:   seX.Sel.Name,
@@ -141,6 +144,12 @@ func GetStorageV2Func(file *ast.File, structName string, ignoredFuncNames []stri
 												X: seX.Sel,
 											},
 										}
+									}
+								case *ast.Ident:
+									// Assume this is a type defined in sv2pb
+									aliases[seX.Name] = &alias{
+										TypeImport: "sv2pb",
+										TypeName:   seX.Name,
 									}
 								}
 							}
@@ -183,18 +192,20 @@ func main() {
 	if ok := astutil.AddNamedImport(fset, storageControlFile, "sv2pb", "cloud.google.com/go/storage/internal/apiv2"); !ok {
 		panic("Unable to add import sv2pb")
 	}
+	// Auto detect these imports
 	if ok := astutil.AddNamedImport(fset, storageControlFile, "storagepb", "cloud.google.com/go/storage/internal/apiv2/storagepb"); !ok {
 		panic("Unable to add import storagepb")
+	}
+	if ok := astutil.AddNamedImport(fset, storageControlFile, "iampb", "cloud.google.com/go/iam/apiv1/iampb"); !ok {
+		panic("Unable to add import iampb")
 	}
 	// detect imports
 	AddStorageV2ContextToControl(storageControlFile)
 	disallowed := []string{
-		"WriteObject", "ReadObject", "StartResumableWrite", "QueryWriteStatus", "CancelResumableWrite", "BidiWriteObject", "Close", "setGoogleClientInfo", "Connection",
-		// Not ready yet
-		"GetIamPolicy", "SetIamPolicy", "TestIamPermissions", "ListObjects", "ListBuckets",
+		"WriteObject", "ReadObject", "StartResumableWrite", "QueryWriteStatus", "CancelResumableWrite", "BidiWriteObject", "Close", "Connection",
 	}
 	// Copy Storage V2 into Storage Control
-	funcs, aliases := GetStorageV2Func(storageV2File, "Client", disallowed, "StorageControlClient", "internalStorageClient")
+	funcs, aliases := GetStorageV2Funcs(storageV2File, "Client", disallowed, "StorageControlClient", "internalStorageClient")
 	AddAliases(storageControlFile, aliases)
 	for _, fn := range funcs {
 		storageControlFile.Decls = append(storageControlFile.Decls, fn)

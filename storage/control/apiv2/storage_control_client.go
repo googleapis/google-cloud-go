@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/longrunning"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	controlpb "cloud.google.com/go/storage/control/apiv2/controlpb"
@@ -755,20 +756,24 @@ func (c *storageControlGRPCClient) RenameFolderOperation(name string) *RenameFol
 	}
 }
 
-type DeleteBucketRequest = storagepb.DeleteBucketRequest
 type CreateBucketRequest = storagepb.CreateBucketRequest
-type UpdateBucketRequest = storagepb.UpdateBucketRequest
-type ComposeObjectRequest = storagepb.ComposeObjectRequest
-type RestoreObjectRequest = storagepb.RestoreObjectRequest
-type RewriteResponse = storagepb.RewriteResponse
-type Bucket = storagepb.Bucket
-type LockBucketRetentionPolicyRequest = storagepb.LockBucketRetentionPolicyRequest
-type RewriteObjectRequest = storagepb.RewriteObjectRequest
-type GetBucketRequest = storagepb.GetBucketRequest
-type GetObjectRequest = storagepb.GetObjectRequest
-type UpdateObjectRequest = storagepb.UpdateObjectRequest
-type Object = storagepb.Object
 type DeleteObjectRequest = storagepb.DeleteObjectRequest
+type ListObjectsRequest = storagepb.ListObjectsRequest
+type LockBucketRetentionPolicyRequest = storagepb.LockBucketRetentionPolicyRequest
+type ComposeObjectRequest = storagepb.ComposeObjectRequest
+type Object = storagepb.Object
+type DeleteBucketRequest = storagepb.DeleteBucketRequest
+type GetBucketRequest = storagepb.GetBucketRequest
+type Bucket = storagepb.Bucket
+type ListBucketsRequest = storagepb.ListBucketsRequest
+type BucketIterator = sv2pb.BucketIterator
+type RestoreObjectRequest = storagepb.RestoreObjectRequest
+type UpdateObjectRequest = storagepb.UpdateObjectRequest
+type RewriteObjectRequest = storagepb.RewriteObjectRequest
+type UpdateBucketRequest = storagepb.UpdateBucketRequest
+type GetObjectRequest = storagepb.GetObjectRequest
+type ObjectIterator = sv2pb.ObjectIterator
+type RewriteResponse = storagepb.RewriteResponse
 
 func (c *StorageControlClient) DeleteBucket(ctx context.Context, req *DeleteBucketRequest, opts ...gax.CallOption) error {
 	return c.internalStorageClient.DeleteBucket(ctx, req, opts...)
@@ -782,8 +787,24 @@ func (c *StorageControlClient) CreateBucket(ctx context.Context, req *CreateBuck
 	return c.internalStorageClient.CreateBucket(ctx, req, opts...)
 }
 
+func (c *StorageControlClient) ListBuckets(ctx context.Context, req *ListBucketsRequest, opts ...gax.CallOption) *BucketIterator {
+	return c.internalStorageClient.ListBuckets(ctx, req, opts...)
+}
+
 func (c *StorageControlClient) LockBucketRetentionPolicy(ctx context.Context, req *LockBucketRetentionPolicyRequest, opts ...gax.CallOption) (*Bucket, error) {
 	return c.internalStorageClient.LockBucketRetentionPolicy(ctx, req, opts...)
+}
+
+func (c *StorageControlClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalStorageClient.GetIamPolicy(ctx, req, opts...)
+}
+
+func (c *StorageControlClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalStorageClient.SetIamPolicy(ctx, req, opts...)
+}
+
+func (c *StorageControlClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalStorageClient.TestIamPermissions(ctx, req, opts...)
 }
 
 func (c *StorageControlClient) UpdateBucket(ctx context.Context, req *UpdateBucketRequest, opts ...gax.CallOption) (*Bucket, error) {
@@ -808,6 +829,10 @@ func (c *StorageControlClient) GetObject(ctx context.Context, req *GetObjectRequ
 
 func (c *StorageControlClient) UpdateObject(ctx context.Context, req *UpdateObjectRequest, opts ...gax.CallOption) (*Object, error) {
 	return c.internalStorageClient.UpdateObject(ctx, req, opts...)
+}
+
+func (c *StorageControlClient) ListObjects(ctx context.Context, req *ListObjectsRequest, opts ...gax.CallOption) *ObjectIterator {
+	return c.internalStorageClient.ListObjects(ctx, req, opts...)
 }
 
 func (c *StorageControlClient) RewriteObject(ctx context.Context, req *RewriteObjectRequest, opts ...gax.CallOption) (*RewriteResponse, error) {
