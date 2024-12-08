@@ -125,25 +125,27 @@ func GetStorageV2Func(file *ast.File, structName string, ignoredFuncNames []stri
 							}
 						}
 						// Update return values to use local aliases
-						if len(x.Type.Results.List) > 1 {
-							for idx, result := range x.Type.Results.List {
-								if starE, ok := result.Type.(*ast.StarExpr); ok {
-									seE := starE.X.(*ast.SelectorExpr)
-									name := seE.X.(*ast.Ident)
+						for idx, result := range x.Type.Results.List {
+							if starE, ok := result.Type.(*ast.StarExpr); ok {
+								switch seX := starE.X.(type) {
+								case *ast.SelectorExpr:
+									name := seX.X.(*ast.Ident)
+									// TODO: Get import based on name of object here?
 									if name.Name == "storagepb" {
-										aliases[seE.Sel.Name] = &alias{
-											TypeImport: seE.X.(*ast.Ident).Name,
-											TypeName:   seE.Sel.Name,
+										aliases[seX.Sel.Name] = &alias{
+											TypeImport: seX.X.(*ast.Ident).Name,
+											TypeName:   seX.Sel.Name,
 										}
 										x.Type.Results.List[idx] = &ast.Field{
 											Type: &ast.StarExpr{
-												X: seE.Sel,
+												X: seX.Sel,
 											},
 										}
 									}
 								}
 							}
 						}
+
 						astutil.Apply(x, nil, func(z *astutil.Cursor) bool {
 							q := z.Node()
 							switch v := q.(type) {
@@ -184,7 +186,7 @@ func main() {
 	if ok := astutil.AddNamedImport(fset, storageControlFile, "storagepb", "cloud.google.com/go/storage/internal/apiv2/storagepb"); !ok {
 		panic("Unable to add import storagepb")
 	}
-
+	// detect imports
 	AddStorageV2ContextToControl(storageControlFile)
 	disallowed := []string{
 		"WriteObject", "ReadObject", "StartResumableWrite", "QueryWriteStatus", "CancelResumableWrite", "BidiWriteObject", "Close", "setGoogleClientInfo", "Connection",
