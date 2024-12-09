@@ -125,7 +125,6 @@ var (
 	// createExporterOptions takes Bigtable client options and returns exporter options
 	// Overwritten in tests
 	createExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
-		btOpts = append(btOpts, option.WithGRPCConnectionPool(4))
 		return btOpts
 	}
 )
