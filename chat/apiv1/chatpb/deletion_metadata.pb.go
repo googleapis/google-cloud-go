@@ -21,11 +21,10 @@
 package chatpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -35,7 +34,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Who deleted the message and how it was deleted.
+// Who deleted the message and how it was deleted. More values may be added in
+// the future.
 type DeletionMetadata_DeletionType int32
 
 const (
