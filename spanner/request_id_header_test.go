@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"math"
 	"regexp"
+	"slices"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -1166,7 +1167,7 @@ func TestRequestIDHeader_ReadWriteTransactionBatchUpdateWithOptions(t *testing.T
 	}
 }
 
-func TestRequestIDHeader_multipleParallelCallsWithConventialCustomerCalls(t *testing.T) {
+func TestRequestIDHeader_multipleParallelCallsWithConventionalCustomerCalls(t *testing.T) {
 	t.Parallel()
 
 	interceptorTracker := newInterceptorTracker()
@@ -1287,6 +1288,11 @@ func newUnavailableErrorWithMinimalRetryDelay() error {
 	return st.Err()
 }
 
+func newInvalidArgumentError() error {
+	st := status.New(codes.InvalidArgument, "Invalid argument")
+	return st.Err()
+}
+
 func TestRequestIDHeader_RetryOnAbortAndValidate(t *testing.T) {
 	t.Parallel()
 
@@ -1368,6 +1374,380 @@ func TestRequestIDHeader_RetryOnAbortAndValidate(t *testing.T) {
 
 	if diff := cmp.Diff(interceptorTracker.unaryClientRequestIDSegments, wantUnarySegments); diff != "" {
 		t.Fatalf("RequestID segments mismatch: got - want +\n%s", diff)
+	}
+}
+
+func TestRequestIDHeader_BatchCreateSessions_Unavailable(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	interceptorTracker := newInterceptorTracker()
+	clientOpts := []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptorTracker.unaryClientInterceptor)),
+		option.WithGRPCDialOption(grpc.WithStreamInterceptor(interceptorTracker.streamClientInterceptor)),
+	}
+	clientConfig := ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     2,
+			MaxOpened:     10,
+			WriteSessions: 0.2,
+			incStep:       2,
+		},
+	}
+
+	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
+	t.Cleanup(tearDown)
+	defer sc.Close()
+
+	// BatchCreateSessions returns UNAVAILABLE and should be retried.
+	server.TestSpanner.PutExecutionTime(testutil.MethodBatchCreateSession,
+		testutil.SimulatedExecutionTime{
+			Errors: []error{
+				newUnavailableErrorWithMinimalRetryDelay(),
+			},
+		})
+	iter := sc.Single().Query(ctx, Statement{SQL: testutil.SelectFooFromBar})
+	defer iter.Stop()
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	if g, w := interceptorTracker.unaryCallCount(), uint64(2); g != w {
+		t.Errorf("unaryClientCall is incorrect; got=%d want=%d", g, w)
+	}
+
+	if g, w := interceptorTracker.streamCallCount(), uint64(1); g != w {
+		t.Errorf("streamClientCall is incorrect; got=%d want=%d", g, w)
+	}
+
+	if err := interceptorTracker.validateRequestIDsMonotonicity(); err != nil {
+		t.Fatal(err)
+	}
+
+	clientID := uint32(sc.sc.nthClient)
+	procID := randIDForProcess
+	version := xSpannerRequestIDVersion
+	wantUnarySegments := []*requestIDSegments{
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 1, RPCNo: 1}, // BatchCreateSession (initial attempt)
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 1, RPCNo: 2}, // BatchCreateSession (retry)
+	}
+	wantStreamingSegments := []*requestIDSegments{
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 2, RPCNo: 1}, // ExecuteStreamingSql
+	}
+
+	if diff := cmp.Diff(interceptorTracker.unaryClientRequestIDSegments, wantUnarySegments); diff != "" {
+		t.Fatalf("RequestID unary segments mismatch: got - want +\n%s", diff)
+	}
+	if diff := cmp.Diff(interceptorTracker.streamClientRequestIDSegments, wantStreamingSegments); diff != "" {
+		t.Fatalf("RequestID streaming segments mismatch: got - want +\n%s", diff)
+	}
+}
+
+func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_Unavailable(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	interceptorTracker := newInterceptorTracker()
+	clientOpts := []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptorTracker.unaryClientInterceptor)),
+		option.WithGRPCDialOption(grpc.WithStreamInterceptor(interceptorTracker.streamClientInterceptor)),
+	}
+	clientConfig := ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     2,
+			MaxOpened:     10,
+			WriteSessions: 0.2,
+			incStep:       2,
+		},
+	}
+
+	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
+	t.Cleanup(tearDown)
+	defer sc.Close()
+
+	// ExecuteStreamingSql returns UNAVAILABLE and should be retried.
+	server.TestSpanner.PutExecutionTime(testutil.MethodExecuteStreamingSql,
+		testutil.SimulatedExecutionTime{
+			Errors: []error{
+				newUnavailableErrorWithMinimalRetryDelay(),
+			},
+		})
+	iter := sc.Single().Query(ctx, Statement{SQL: testutil.SelectFooFromBar})
+	defer iter.Stop()
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	if g, w := interceptorTracker.unaryCallCount(), uint64(1); g != w {
+		t.Errorf("unaryClientCall is incorrect; got=%d want=%d", g, w)
+	}
+
+	if g, w := interceptorTracker.streamCallCount(), uint64(2); g != w {
+		t.Errorf("streamClientCall is incorrect; got=%d want=%d", g, w)
+	}
+
+	if err := interceptorTracker.validateRequestIDsMonotonicity(); err != nil {
+		t.Fatal(err)
+	}
+
+	clientID := uint32(sc.sc.nthClient)
+	procID := randIDForProcess
+	version := xSpannerRequestIDVersion
+	wantUnarySegments := []*requestIDSegments{
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 1, RPCNo: 1}, // BatchCreateSession
+	}
+	wantStreamingSegments := []*requestIDSegments{
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 2, RPCNo: 1}, // ExecuteStreamingSql (initial attempt)
+		{Version: version, ProcessID: procID, ClientID: clientID, ChannelID: 1, RequestNo: 2, RPCNo: 2}, // ExecuteStreamingSql (retry)
+	}
+
+	if diff := cmp.Diff(interceptorTracker.unaryClientRequestIDSegments, wantUnarySegments); diff != "" {
+		t.Fatalf("RequestID unary segments mismatch: got - want +\n%s", diff)
+	}
+	if diff := cmp.Diff(interceptorTracker.streamClientRequestIDSegments, wantStreamingSegments); diff != "" {
+		t.Fatalf("RequestID streaming segments mismatch: got - want +\n%s", diff)
+	}
+}
+
+func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_InvalidArgument(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	interceptorTracker := newInterceptorTracker()
+	clientOpts := []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptorTracker.unaryClientInterceptor)),
+		option.WithGRPCDialOption(grpc.WithStreamInterceptor(interceptorTracker.streamClientInterceptor)),
+	}
+	clientConfig := ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     2,
+			MaxOpened:     10,
+			WriteSessions: 0.2,
+			incStep:       2,
+		},
+	}
+
+	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
+	t.Cleanup(tearDown)
+	defer sc.Close()
+
+	// Simulate that ExecuteStreamingSql is slow.
+	server.TestSpanner.PutExecutionTime(testutil.MethodExecuteStreamingSql,
+		testutil.SimulatedExecutionTime{Errors: []error{newInvalidArgumentError()}})
+
+	iter := sc.Single().Query(ctx, Statement{SQL: testutil.SelectFooFromBar})
+	defer iter.Stop()
+	_, err := iter.Next()
+	if err == nil {
+		t.Fatal("missing invalid argument error")
+	}
+	if g, w := ErrCode(err), codes.InvalidArgument; g != w {
+		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	spannerError, ok := err.(*Error)
+	if !ok {
+		t.Fatal("not a Spanner error")
+	}
+	if spannerError.RequestID == "" {
+		t.Fatal("missing RequestID on error")
+	}
+}
+
+func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_ContextDeadlineExceeded(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	interceptorTracker := newInterceptorTracker()
+	clientOpts := []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptorTracker.unaryClientInterceptor)),
+		option.WithGRPCDialOption(grpc.WithStreamInterceptor(interceptorTracker.streamClientInterceptor)),
+	}
+	clientConfig := ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     2,
+			MaxOpened:     10,
+			WriteSessions: 0.2,
+			incStep:       2,
+		},
+	}
+
+	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
+	t.Cleanup(tearDown)
+	defer sc.Close()
+
+	// Simulate that ExecuteStreamingSql is slow.
+	server.TestSpanner.PutExecutionTime(testutil.MethodExecuteStreamingSql,
+		testutil.SimulatedExecutionTime{MinimumExecutionTime: time.Second})
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Millisecond)
+	defer cancel()
+	iter := sc.Single().Query(ctx, Statement{SQL: testutil.SelectFooFromBar})
+	defer iter.Stop()
+	_, err := iter.Next()
+	if err == nil {
+		t.Fatal("missing deadline exceeded error")
+	}
+	if g, w := ErrCode(err), codes.DeadlineExceeded; g != w {
+		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	spannerError, ok := err.(*Error)
+	if !ok {
+		t.Fatal("not a Spanner error")
+	}
+	if spannerError.RequestID == "" {
+		t.Fatal("missing RequestID on error")
+	}
+}
+
+func TestRequestIDHeader_Commit_ContextDeadlineExceeded(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	interceptorTracker := newInterceptorTracker()
+	clientOpts := []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptorTracker.unaryClientInterceptor)),
+		option.WithGRPCDialOption(grpc.WithStreamInterceptor(interceptorTracker.streamClientInterceptor)),
+	}
+	clientConfig := ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     2,
+			MaxOpened:     10,
+			WriteSessions: 0.2,
+			incStep:       2,
+		},
+	}
+
+	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
+	t.Cleanup(tearDown)
+	defer sc.Close()
+
+	// Simulate that Commit is slow.
+	server.TestSpanner.PutExecutionTime(testutil.MethodCommitTransaction,
+		testutil.SimulatedExecutionTime{MinimumExecutionTime: time.Second})
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Millisecond)
+	defer cancel()
+	_, err := sc.Apply(ctx, []*Mutation{})
+	if err == nil {
+		t.Fatal("missing deadline exceeded error")
+	}
+	if g, w := ErrCode(err), codes.DeadlineExceeded; g != w {
+		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+	spannerError, ok := err.(*Error)
+	if !ok {
+		t.Fatal("not a Spanner error")
+	}
+	if spannerError.RequestID == "" {
+		t.Fatal("missing RequestID on error")
+	}
+}
+
+func TestRequestIDHeader_VerifyChannelNumber(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	interceptorTracker := newInterceptorTracker()
+	clientOpts := []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptorTracker.unaryClientInterceptor)),
+		option.WithGRPCDialOption(grpc.WithStreamInterceptor(interceptorTracker.streamClientInterceptor)),
+	}
+	clientConfig := ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 100,
+			MaxOpened: 400,
+			incStep:   25,
+		},
+		NumChannels: 4,
+	}
+
+	_, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
+	t.Cleanup(tearDown)
+	defer sc.Close()
+	// Wait for the session pool to be initialized.
+	sp := sc.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != clientConfig.MinOpened {
+			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
+		}
+		return nil
+	})
+	// Verify that we've seen request IDs for each channel number.
+	for channel := uint32(1); channel <= uint32(clientConfig.NumChannels); channel++ {
+		if !slices.ContainsFunc(interceptorTracker.unaryClientRequestIDSegments, func(segments *requestIDSegments) bool {
+			return segments.ChannelID == channel
+		}) {
+			t.Fatalf("missing channel %d in unary requests", channel)
+		}
+	}
+
+	// Execute MinOpened + 1 queries without closing the iterators.
+	// This will check out MinOpened + 1 sessions, which also triggers
+	// one more BatchCreateSessions call.
+	iterators := make([]*RowIterator, 0, clientConfig.MinOpened+1)
+	for i := 0; i < int(clientConfig.MinOpened)+1; i++ {
+		iter := sc.Single().Query(ctx, Statement{SQL: testutil.SelectFooFromBar})
+		iterators = append(iterators, iter)
+		_, err := iter.Next()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	// Verify that we've seen request IDs for each channel number.
+	for channel := uint32(1); channel <= uint32(clientConfig.NumChannels); channel++ {
+		if !slices.ContainsFunc(interceptorTracker.streamClientRequestIDSegments, func(segments *requestIDSegments) bool {
+			return segments.ChannelID == channel
+		}) {
+			t.Fatalf("missing channel %d in unary requests", channel)
+		}
+	}
+	// Verify that we've only seen channel numbers in the range [1, config.NumChannels].
+	for _, segmentsSlice := range [][]*requestIDSegments{interceptorTracker.streamClientRequestIDSegments, interceptorTracker.unaryClientRequestIDSegments} {
+		if slices.ContainsFunc(segmentsSlice, func(segments *requestIDSegments) bool {
+			return segments.ChannelID < 1 || segments.ChannelID > uint32(clientConfig.NumChannels)
+		}) {
+			t.Fatalf("invalid channel in requests: %v", segmentsSlice)
+		}
+	}
+
+	if g, w := interceptorTracker.unaryCallCount(), uint64(5); g != w {
+		t.Errorf("unaryClientCall is incorrect; got=%d want=%d", g, w)
+	}
+
+	if g, w := interceptorTracker.streamCallCount(), uint64(101); g != w {
+		t.Errorf("streamClientCall is incorrect; got=%d want=%d", g, w)
+	}
+
+	if err := interceptorTracker.validateRequestIDsMonotonicity(); err != nil {
+		t.Fatal(err)
 	}
 }
 
