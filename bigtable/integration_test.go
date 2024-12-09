@@ -3966,11 +3966,17 @@ func TestIntegration_AdminUpdateBackupHotToStandardTime(t *testing.T) {
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			// Update hot_to_standard_time
-			err = adminClient.UpdateBackupHotToStandardTime(ctx, testEnv.Config().Cluster, bkpName, test.wantHtsTime)
-			if err != nil {
-				t.Fatalf("UpdateBackupHotToStandardTime failed: %v", err)
+			if test.wantHtsTime == nil {
+				err = adminClient.UpdateBackupRemoveHotToStandardTime(ctx, testEnv.Config().Cluster, bkpName)
+				if err != nil {
+					t.Fatalf("UpdateBackupRemoveHotToStandardTime failed: %v", err)
+				}
+			} else {
+				err = adminClient.UpdateBackupHotToStandardTime(ctx, testEnv.Config().Cluster, bkpName, *test.wantHtsTime)
+				if err != nil {
+					t.Fatalf("UpdateBackupHotToStandardTime failed: %v", err)
+				}
 			}
-
 			// Check that updated backup has the correct hot_to_standard_time
 			updatedBackup, err := adminClient.BackupInfo(ctx, testEnv.Config().Cluster, bkpName)
 			if err != nil {

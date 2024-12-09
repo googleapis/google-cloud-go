@@ -2160,12 +2160,6 @@ type BackupOption interface {
 	apply(o *backupOptions)
 }
 
-// setHotToStandardTime can be used to set backup type to [BackupTypeHot] and the
-// time at which the hot backup will
-// be converted to a standard backup.
-// Once the `hot_to_standard_time` has passed, Cloud Bigtable will convert the
-// hot backup to a standard backup. This value must be greater than the backup
-// creation time by at least 24 hours.
 type hotBackupOption struct {
 	htsTime *time.Time
 }
@@ -2180,8 +2174,7 @@ func (hbo hotBackupOption) apply(o *backupOptions) {
 // type [BackupTypeHot] and specify time at which the hot backup will be
 // converted to a standard backup. Once the `hot_to_standard_time` has passed,
 // Cloud Bigtable will convert the hot backup to a standard backup.
-// This value must be greater than the backup creation time by:
-// - At least 24 hours
+// This value must be greater than the backup creation time by at least 24 hours
 func HotToStandardBackup(hotToStandardTime time.Time) BackupOption {
 	return hotBackupOption{htsTime: &hotToStandardTime}
 }
@@ -2412,8 +2405,7 @@ type BackupInfo struct {
 	// The time at which the hot backup will be converted to a standard backup.
 	// Once the `hot_to_standard_time` has passed, Cloud Bigtable will convert the
 	// hot backup to a standard backup. This value must be greater than the backup
-	// creation time by:
-	// - At least 24 hours
+	// creation time by at least 24 hours
 	//
 	// This field only applies for hot backups.
 	HotToStandardTime *time.Time
@@ -2475,7 +2467,16 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 }
 
 // UpdateBackupHotToStandardTime updates the HotToStandardTime of a hot backup.
-func (ac *AdminClient) UpdateBackupHotToStandardTime(ctx context.Context, cluster, backup string, hotToStandardTime *time.Time) error {
+func (ac *AdminClient) UpdateBackupHotToStandardTime(ctx context.Context, cluster, backup string, hotToStandardTime time.Time) error {
+	return ac.updateBackupHotToStandardTime(ctx, cluster, backup, &hotToStandardTime)
+}
+
+// UpdateBackupRemoveHotToStandardTime removes the HotToStandardTime of a hot backup.
+func (ac *AdminClient) UpdateBackupRemoveHotToStandardTime(ctx context.Context, cluster, backup string) error {
+	return ac.updateBackupHotToStandardTime(ctx, cluster, backup, nil)
+}
+
+func (ac *AdminClient) updateBackupHotToStandardTime(ctx context.Context, cluster, backup string, hotToStandardTime *time.Time) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	backupPath := ac.backupPath(cluster, ac.instance, backup)
 
