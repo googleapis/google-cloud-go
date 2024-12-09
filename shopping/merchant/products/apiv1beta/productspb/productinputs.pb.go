@@ -21,11 +21,8 @@
 package productspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	typepb "cloud.google.com/go/shopping/type/typepb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -46,16 +45,16 @@ const (
 // processed product that you see in Merchant Center, in Shopping ads, or across
 // Google surfaces. Product inputs, rules and supplemental data source data are
 // combined to create the processed
-// [product][google.shopping.content.bundles.Products.Product].
+// [Product][google.shopping.merchant.products.v1beta.Product].
 //
 // Required product input attributes to pass data validation checks are
 // primarily defined in the [Products Data
 // Specification](https://support.google.com/merchants/answer/188494).
 //
 // The following attributes are required:
-// [feedLabel][google.shopping.content.bundles.Products.feed_label],
-// [contentLanguage][google.shopping.content.bundles.Products.content_language]
-// and [offerId][google.shopping.content.bundles.Products.offer_id].
+// [feedLabel][google.shopping.merchant.products.v1beta.Product.feed_label],
+// [contentLanguage][google.shopping.merchant.products.v1beta.Product.content_language]
+// and [offerId][google.shopping.merchant.products.v1beta.Product.offer_id].
 //
 // After inserting, updating, or deleting a product input, it may take several
 // minutes before the processed product can be retrieved.
@@ -71,6 +70,10 @@ type ProductInput struct {
 	// Identifier. The name of the product input.
 	// Format:
 	// `"{productinput.name=accounts/{account}/productInputs/{productinput}}"`
+	// where the last section `productinput` consists of 4 parts:
+	// channel~content_language~feed_label~offer_id
+	// example for product input name is
+	// "accounts/123/productInputs/online~en~US~sku123"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The name of the processed product.
 	// Format:
@@ -299,6 +302,10 @@ type DeleteProductInputRequest struct {
 
 	// Required. The name of the product input resource to delete.
 	// Format: accounts/{account}/productInputs/{product}
+	// where the last section `product` consists of 4 parts:
+	// channel~content_language~feed_label~offer_id
+	// example for product name is
+	// "accounts/123/productInputs/online~en~US~sku123"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The primary or supplemental data source from which the product
 	// input should be deleted. Format:
