@@ -788,7 +788,7 @@ func (x *ImportConversationDataOperationResponse) GetImportCount() int32 {
 	return 0
 }
 
-// Metadata for [ConversationDatasets][CreateConversationDataset].
+// Metadata for [CreateConversationDataset][].
 type CreateConversationDatasetOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -839,7 +839,7 @@ func (x *CreateConversationDatasetOperationMetadata) GetConversationDataset() st
 	return ""
 }
 
-// Metadata for [ConversationDatasets][DeleteConversationDataset].
+// Metadata for [DeleteConversationDataset][].
 type DeleteConversationDatasetOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

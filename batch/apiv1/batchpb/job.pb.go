@@ -42,11 +42,12 @@ const (
 type LogsPolicy_Destination int32
 
 const (
-	// Logs are not preserved.
+	// (Default) Logs are not preserved.
 	LogsPolicy_DESTINATION_UNSPECIFIED LogsPolicy_Destination = 0
-	// Logs are streamed to Cloud Logging.
+	// Logs are streamed to Cloud Logging. Optionally, you can configure
+	// additional settings in the `cloudLoggingOption` field.
 	LogsPolicy_CLOUD_LOGGING LogsPolicy_Destination = 1
-	// Logs are saved to a file path.
+	// Logs are saved to the file path specified in the `logsPath` field.
 	LogsPolicy_PATH LogsPolicy_Destination = 2
 )
 
@@ -356,18 +357,18 @@ type Job struct {
 	TaskGroups []*TaskGroup `protobuf:"bytes,4,rep,name=task_groups,json=taskGroups,proto3" json:"task_groups,omitempty"`
 	// Compute resource allocation for all TaskGroups in the Job.
 	AllocationPolicy *AllocationPolicy `protobuf:"bytes,7,opt,name=allocation_policy,json=allocationPolicy,proto3" json:"allocation_policy,omitempty"`
-	// Labels for the Job. Labels could be user provided or system generated.
-	// For example,
+	// Custom labels to apply to the job and any Cloud Logging
+	// [LogEntry](https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry)
+	// that it generates.
 	//
-	//	"labels": {
-	//	   "department": "finance",
-	//	   "environment": "test"
-	//	 }
-	//
-	// You can assign up to 64 labels.  [Google Compute Engine label
-	// restrictions](https://cloud.google.com/compute/docs/labeling-resources#restrictions)
-	// apply.
-	// Label names that start with "goog-" or "google-" are reserved.
+	// Use labels to group and describe the resources they are applied to. Batch
+	// automatically applies predefined labels and supports multiple `labels`
+	// fields for each job, which each let you apply custom labels to various
+	// resources. Label names that start with "goog-" or "google-" are
+	// reserved for predefined labels. For more information about labels with
+	// Batch, see
+	// [Organize resources using
+	// labels](https://cloud.google.com/batch/docs/organize-resources-using-labels).
 	Labels map[string]string `protobuf:"bytes,8,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Output only. Job status. It is read only for users.
 	Status *JobStatus `protobuf:"bytes,9,opt,name=status,proto3" json:"status,omitempty"`
@@ -490,21 +491,28 @@ func (x *Job) GetNotifications() []*JobNotification {
 	return nil
 }
 
-// LogsPolicy describes how outputs from a Job's Tasks (stdout/stderr) will be
-// preserved.
+// LogsPolicy describes if and how a job's logs are preserved. Logs include
+// information that is automatically written by the Batch service agent and any
+// information that you configured the job's runnables to write to the `stdout`
+// or `stderr` streams.
 type LogsPolicy struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Where logs should be saved.
+	// If and where logs should be saved.
 	Destination LogsPolicy_Destination `protobuf:"varint,1,opt,name=destination,proto3,enum=google.cloud.batch.v1.LogsPolicy_Destination" json:"destination,omitempty"`
-	// The path to which logs are saved when the destination = PATH. This can be a
-	// local file path on the VM, or under the mount point of a Persistent Disk or
-	// Filestore, or a Cloud Storage path.
+	// When `destination` is set to `PATH`, you must set this field to the path
+	// where you want logs to be saved. This path can point to a local directory
+	// on the VM or (if congifured) a directory under the mount path of any
+	// Cloud Storage bucket, network file system (NFS), or writable persistent
+	// disk that is mounted to the job. For example, if the job has a bucket with
+	// `mountPath` set to `/mnt/disks/my-bucket`, you can write logs to the
+	// root directory of the `remotePath` of that bucket by setting this field to
+	// `/mnt/disks/my-bucket/`.
 	LogsPath string `protobuf:"bytes,2,opt,name=logs_path,json=logsPath,proto3" json:"logs_path,omitempty"`
-	// Optional. Additional settings for Cloud Logging. It will only take effect
-	// when the destination of `LogsPolicy` is set to `CLOUD_LOGGING`.
+	// Optional. When `destination` is set to `CLOUD_LOGGING`, you can optionally
+	// set this field to configure additional settings for Cloud Logging.
 	CloudLoggingOption *LogsPolicy_CloudLoggingOption `protobuf:"bytes,3,opt,name=cloud_logging_option,json=cloudLoggingOption,proto3" json:"cloud_logging_option,omitempty"`
 }
 
@@ -733,13 +741,17 @@ type AllocationPolicy struct {
 	//   - scopes: Additional OAuth scopes to grant the service account, beyond the
 	//     default cloud-platform scope. (list of strings)
 	ServiceAccount *ServiceAccount `protobuf:"bytes,9,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
-	// Labels applied to all VM instances and other resources
-	// created by AllocationPolicy.
-	// Labels could be user provided or system generated.
-	// You can assign up to 64 labels. [Google Compute Engine label
-	// restrictions](https://cloud.google.com/compute/docs/labeling-resources#restrictions)
-	// apply.
-	// Label names that start with "goog-" or "google-" are reserved.
+	// Custom labels to apply to the job and all the Compute Engine resources
+	// that both are created by this allocation policy and support labels.
+	//
+	// Use labels to group and describe the resources they are applied to. Batch
+	// automatically applies predefined labels and supports multiple `labels`
+	// fields for each job, which each let you apply custom labels to various
+	// resources. Label names that start with "goog-" or "google-" are
+	// reserved for predefined labels. For more information about labels with
+	// Batch, see
+	// [Organize resources using
+	// labels](https://cloud.google.com/batch/docs/organize-resources-using-labels).
 	Labels map[string]string `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// The network policy.
 	//
@@ -1058,7 +1070,7 @@ type LogsPolicy_CloudLoggingOption struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Set this flag to true to change the [monitored resource
+	// Optional. Set this field to `true` to change the [monitored resource
 	// type](https://cloud.google.com/monitoring/api/resources) for
 	// Cloud Logging logs generated by this Batch job from
 	// the
@@ -1743,8 +1755,10 @@ type AllocationPolicy_InstancePolicy struct {
 	// file system or a raw storage drive that is not ready for data
 	// storage and accessing.
 	Disks []*AllocationPolicy_AttachedDisk `protobuf:"bytes,6,rep,name=disks,proto3" json:"disks,omitempty"`
-	// Optional. If specified, VMs will consume only the specified reservation.
-	// If not specified (default), VMs will consume any applicable reservation.
+	// Optional. If not specified (default), VMs will consume any applicable
+	// reservation. If "NO_RESERVATION" is specified, VMs will not consume any
+	// reservation. Otherwise, if specified, VMs will consume only the specified
+	// reservation.
 	Reservation string `protobuf:"bytes,7,opt,name=reservation,proto3" json:"reservation,omitempty"`
 }
 
@@ -1965,7 +1979,8 @@ type AllocationPolicy_InstancePolicyOrTemplate_InstanceTemplate struct {
 	// Named the field as 'instance_template' instead of 'template' to avoid
 	// C++ keyword conflict.
 	//
-	// Batch only supports global instance templates.
+	// Batch only supports global instance templates from the same project as
+	// the job.
 	// You can specify the global instance template as a full or partial URL.
 	InstanceTemplate string `protobuf:"bytes,2,opt,name=instance_template,json=instanceTemplate,proto3,oneof"`
 }
