@@ -14,7 +14,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_CompleteImportSpace_sync",
       "title": "chat CompleteImportSpace Sample",
-      "description": "CompleteImportSpace completes the\n[import process](https: //developers.google.com/workspace/chat/import-data)\nfor the specified space and makes it visible to users.\nRequires app authentication and domain-wide delegation. For more\ninformation, see [Authorize Google Chat apps to import\ndata](https: //developers.google.com/workspace/chat/authorize-import).",
+      "description": "CompleteImportSpace completes the\n[import process](https: //developers.google.com/workspace/chat/import-data)\nfor the specified space and makes it visible to users.\n\nRequires [app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand domain-wide delegation. For more information, see [Authorize Google\nChat apps to import\ndata](https: //developers.google.com/workspace/chat/authorize-import).",
       "file": "Client/CompleteImportSpace/main.go",
       "language": "GO",
       "clientMethod": {
@@ -60,7 +60,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_CreateMembership_sync",
       "title": "chat CreateMembership Sample",
-      "description": "CreateMembership creates a membership for the calling Chat app, a user, or a Google Group.\nCreating memberships for other Chat apps isn't supported.\nWhen creating a membership, if the specified member has their auto-accept\npolicy turned off, then they're invited, and must accept the space\ninvitation before joining. Otherwise, creating a membership adds the member\ndirectly to the specified space.\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\n\nFor example usage, see: \n\n- [Invite or add a user to a\nspace](https: //developers.google.com/workspace/chat/create-members#create-user-membership).\n\n- [Invite or add a Google Group to a\nspace](https: //developers.google.com/workspace/chat/create-members#create-group-membership).\n\n- [Add the Chat app to a\nspace](https: //developers.google.com/workspace/chat/create-members#create-membership-calling-api).",
+      "description": "CreateMembership creates a membership for the calling Chat app, a user, or a Google Group.\nCreating memberships for other Chat apps isn't supported.\nWhen creating a membership, if the specified member has their auto-accept\npolicy turned off, then they're invited, and must accept the space\ninvitation before joining. Otherwise, creating a membership adds the member\ndirectly to the specified space.\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nwith [administrator approval](https: //support.google.com/a?p=chat-app-auth)\nin [Developer Preview](https: //developers.google.com/workspace/preview)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nYou can authenticate and authorize this method with administrator\nprivileges by setting the `use_admin_access` field in the request.\n\nFor example usage, see: \n\n- [Invite or add a user to a\nspace](https: //developers.google.com/workspace/chat/create-members#create-user-membership).\n\n- [Invite or add a Google Group to a\nspace](https: //developers.google.com/workspace/chat/create-members#create-group-membership).\n\n- [Add the Chat app to a\nspace](https: //developers.google.com/workspace/chat/create-members#create-membership-calling-api).",
       "file": "Client/CreateMembership/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_CreateMessage_sync",
       "title": "chat CreateMessage Sample",
-      "description": "CreateMessage creates a message in a Google Chat space. For an example, see [Send a\nmessage](https: //developers.google.com/workspace/chat/create-messages).\n\nThe `create()` method requires either user or app authentication. Chat\nattributes the message sender differently depending on the type of\nauthentication that you use in your request.\n\nThe following image shows how Chat attributes a message when you use app\nauthentication. Chat displays the Chat app as the message\nsender. The content of the message can contain text (`text`), cards\n(`cardsV2`), and accessory widgets (`accessoryWidgets`).\n\n![Message sent with app\nauthentication](https: //developers.google.com/workspace/chat/images/message-app-auth.svg)\n\nThe following image shows how Chat attributes a message when you use user\nauthentication. Chat displays the user as the message sender and attributes\nthe Chat app to the message by displaying its name. The content of message\ncan only contain text (`text`).\n\n![Message sent with user\nauthentication](https: //developers.google.com/workspace/chat/images/message-user-auth.svg)\n\nThe maximum message size, including the message contents, is 32,000 bytes.",
+      "description": "CreateMessage creates a message in a Google Chat space. For an example, see [Send a\nmessage](https: //developers.google.com/workspace/chat/create-messages).\n\nThe `create()` method requires either [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nor [app\nauthentication](https: //developers.google.com/workspace/chat/authorize-import).\nChat attributes the message sender differently depending on the type of\nauthentication that you use in your request.\n\nThe following image shows how Chat attributes a message when you use app\nauthentication. Chat displays the Chat app as the message\nsender. The content of the message can contain text (`text`), cards\n(`cardsV2`), and accessory widgets (`accessoryWidgets`).\n\n![Message sent with app\nauthentication](https: //developers.google.com/workspace/chat/images/message-app-auth.svg)\n\nThe following image shows how Chat attributes a message when you use user\nauthentication. Chat displays the user as the message sender and attributes\nthe Chat app to the message by displaying its name. The content of message\ncan only contain text (`text`).\n\n![Message sent with user\nauthentication](https: //developers.google.com/workspace/chat/images/message-user-auth.svg)\n\nThe maximum message size, including the message contents, is 32,000 bytes.\n\nFor\n[webhook](https: //developers.google.com/workspace/chat/quickstart/webhooks)\nrequests, the response doesn't contain the full message. The response only\npopulates the `name` and `thread.name` fields in addition to the\ninformation that was in the request.",
       "file": "Client/CreateMessage/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_CreateReaction_sync",
       "title": "chat CreateReaction Sample",
-      "description": "CreateReaction creates a reaction and adds it to a message. Only unicode emojis are\nsupported. For an example, see\n[Add a reaction to a\nmessage](https: //developers.google.com/workspace/chat/create-reactions).\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "CreateReaction creates a reaction and adds it to a message. Only unicode emojis are\nsupported. For an example, see\n[Add a reaction to a\nmessage](https: //developers.google.com/workspace/chat/create-reactions).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
       "file": "Client/CreateReaction/main.go",
       "language": "GO",
       "clientMethod": {
@@ -198,7 +198,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_CreateSpace_sync",
       "title": "chat CreateSpace Sample",
-      "description": "CreateSpace creates a space with no members. Can be used to create a named space.\nSpaces grouped by topics aren't supported. For an example, see\n[Create a\nspace](https: //developers.google.com/workspace/chat/create-spaces).\n\nIf you receive the error message `ALREADY_EXISTS` when creating\na space, try a different `displayName`. An existing space within\nthe Google Workspace organization might already use this display name.\n\nIf you're a member of the [Developer Preview\nprogram](https: //developers.google.com/workspace/preview), you can create a\ngroup chat in import mode using `spaceType.GROUP_CHAT`.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "CreateSpace creates a space with no members. Can be used to create a named space, or a\ngroup chat in `Import mode`. For an example, see [Create a\nspace](https: //developers.google.com/workspace/chat/create-spaces).\n\nIf you receive the error message `ALREADY_EXISTS` when creating\na space, try a different `displayName`. An existing space within\nthe Google Workspace organization might already use this display name.\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nwith [administrator approval](https: //support.google.com/a?p=chat-app-auth)\nin [Developer Preview](https: //developers.google.com/workspace/preview)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\n\nWhen authenticating as an app, the `space.customer` field must be set in\nthe request.",
       "file": "Client/CreateSpace/main.go",
       "language": "GO",
       "clientMethod": {
@@ -244,7 +244,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_DeleteMembership_sync",
       "title": "chat DeleteMembership Sample",
-      "description": "DeleteMembership deletes a membership. For an example, see\n[Remove a user or a Google Chat app from a\nspace](https: //developers.google.com/workspace/chat/delete-members).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "DeleteMembership deletes a membership. For an example, see\n[Remove a user or a Google Chat app from a\nspace](https: //developers.google.com/workspace/chat/delete-members).\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nwith [administrator approval](https: //support.google.com/a?p=chat-app-auth)\nin [Developer Preview](https: //developers.google.com/workspace/preview)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nYou can authenticate and authorize this method with administrator\nprivileges by setting the `use_admin_access` field in the request.",
       "file": "Client/DeleteMembership/main.go",
       "language": "GO",
       "clientMethod": {
@@ -290,7 +290,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_DeleteMessage_sync",
       "title": "chat DeleteMessage Sample",
-      "description": "DeleteMessage deletes a message.\nFor an example, see [Delete a\nmessage](https: //developers.google.com/workspace/chat/delete-messages).\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\nWhen using app authentication, requests can only delete messages\ncreated by the calling Chat app.",
+      "description": "DeleteMessage deletes a message.\nFor an example, see [Delete a\nmessage](https: //developers.google.com/workspace/chat/delete-messages).\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\n\nWhen using app authentication, requests can only delete messages\ncreated by the calling Chat app.",
       "file": "Client/DeleteMessage/main.go",
       "language": "GO",
       "clientMethod": {
@@ -335,7 +335,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_DeleteReaction_sync",
       "title": "chat DeleteReaction Sample",
-      "description": "DeleteReaction deletes a reaction to a message. Only unicode emojis are supported.\nFor an example, see\n[Delete a\nreaction](https: //developers.google.com/workspace/chat/delete-reactions).\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "DeleteReaction deletes a reaction to a message. Only unicode emojis are supported.\nFor an example, see\n[Delete a\nreaction](https: //developers.google.com/workspace/chat/delete-reactions).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
       "file": "Client/DeleteReaction/main.go",
       "language": "GO",
       "clientMethod": {
@@ -380,7 +380,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_DeleteSpace_sync",
       "title": "chat DeleteSpace Sample",
-      "description": "DeleteSpace deletes a named space. Always performs a cascading delete, which means\nthat the space's child resources—like messages posted in the space and\nmemberships in the space—are also deleted. For an example, see\n[Delete a\nspace](https: //developers.google.com/workspace/chat/delete-spaces).\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nfrom a user who has permission to delete the space.",
+      "description": "DeleteSpace deletes a named space. Always performs a cascading delete, which means\nthat the space's child resources—like messages posted in the space and\nmemberships in the space—are also deleted. For an example, see\n[Delete a\nspace](https: //developers.google.com/workspace/chat/delete-spaces).\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nwith [administrator approval](https: //support.google.com/a?p=chat-app-auth)\nin [Developer Preview](https: //developers.google.com/workspace/preview)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nYou can authenticate and authorize this method with administrator\nprivileges by setting the `use_admin_access` field in the request.",
       "file": "Client/DeleteSpace/main.go",
       "language": "GO",
       "clientMethod": {
@@ -425,7 +425,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_FindDirectMessage_sync",
       "title": "chat FindDirectMessage Sample",
-      "description": "FindDirectMessage returns the existing direct message with the specified user. If no direct\nmessage space is found, returns a `404 NOT_FOUND` error. For an example,\nsee\n[Find a direct message](/chat/api/guides/v1/spaces/find-direct-message).\n\nWith [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user),\nreturns the direct message space between the specified user and the\nauthenticated user.\n\nWith [app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app),\nreturns the direct message space between the specified user and the calling\nChat app.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nor [app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app).",
+      "description": "FindDirectMessage returns the existing direct message with the specified user. If no direct\nmessage space is found, returns a `404 NOT_FOUND` error. For an example,\nsee\n[Find a direct message](/chat/api/guides/v1/spaces/find-direct-message).\n\nWith [app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app),\nreturns the direct message space between the specified user and the calling\nChat app.\n\nWith [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user),\nreturns the direct message space between the specified user and the\nauthenticated user.\n\n// Supports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)",
       "file": "Client/FindDirectMessage/main.go",
       "language": "GO",
       "clientMethod": {
@@ -517,7 +517,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_GetMembership_sync",
       "title": "chat GetMembership Sample",
-      "description": "GetMembership returns details about a membership. For an example, see\n[Get details about a user's or Google Chat app's\nmembership](https: //developers.google.com/workspace/chat/get-members).\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "GetMembership returns details about a membership. For an example, see\n[Get details about a user's or Google Chat app's\nmembership](https: //developers.google.com/workspace/chat/get-members).\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nYou can authenticate and authorize this method with administrator\nprivileges by setting the `use_admin_access` field in the request.",
       "file": "Client/GetMembership/main.go",
       "language": "GO",
       "clientMethod": {
@@ -563,7 +563,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_GetMessage_sync",
       "title": "chat GetMessage Sample",
-      "description": "GetMessage returns details about a message.\nFor an example, see [Get details about a\nmessage](https: //developers.google.com/workspace/chat/get-messages).\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\n\nNote: Might return a message from a blocked member or space.",
+      "description": "GetMessage returns details about a message.\nFor an example, see [Get details about a\nmessage](https: //developers.google.com/workspace/chat/get-messages).\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\n\nNote: Might return a message from a blocked member or space.",
       "file": "Client/GetMessage/main.go",
       "language": "GO",
       "clientMethod": {
@@ -609,7 +609,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_GetSpace_sync",
       "title": "chat GetSpace Sample",
-      "description": "GetSpace returns details about a space. For an example, see\n[Get details about a\nspace](https: //developers.google.com/workspace/chat/get-spaces).\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "GetSpace returns details about a space. For an example, see\n[Get details about a\nspace](https: //developers.google.com/workspace/chat/get-spaces).\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nYou can authenticate and authorize this method with administrator\nprivileges by setting the `use_admin_access` field in the request.",
       "file": "Client/GetSpace/main.go",
       "language": "GO",
       "clientMethod": {
@@ -793,7 +793,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_ListMemberships_sync",
       "title": "chat ListMemberships Sample",
-      "description": "ListMemberships lists memberships in a space. For an example, see [List users and Google\nChat apps in a\nspace](https: //developers.google.com/workspace/chat/list-members). Listing\nmemberships with [app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nlists memberships in spaces that the Chat app has\naccess to, but excludes Chat app memberships,\nincluding its own. Listing memberships with\n[User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nlists memberships in spaces that the authenticated user has access to.\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "ListMemberships lists memberships in a space. For an example, see [List users and Google\nChat apps in a\nspace](https: //developers.google.com/workspace/chat/list-members). Listing\nmemberships with [app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nlists memberships in spaces that the Chat app has\naccess to, but excludes Chat app memberships,\nincluding its own. Listing memberships with\n[User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nlists memberships in spaces that the authenticated user has access to.\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nYou can authenticate and authorize this method with administrator\nprivileges by setting the `use_admin_access` field in the request.",
       "file": "Client/ListMemberships/main.go",
       "language": "GO",
       "clientMethod": {
@@ -839,7 +839,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_ListMessages_sync",
       "title": "chat ListMessages Sample",
-      "description": "ListMessages lists messages in a space that the caller is a member of, including\nmessages from blocked members and spaces. If you list messages from a\nspace with no messages, the response is an empty object. When using a\nREST/HTTP interface, the response contains an empty JSON object, `{}`.\nFor an example, see\n[List\nmessages](https: //developers.google.com/workspace/chat/api/guides/v1/messages/list).\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "ListMessages lists messages in a space that the caller is a member of, including\nmessages from blocked members and spaces. If you list messages from a\nspace with no messages, the response is an empty object. When using a\nREST/HTTP interface, the response contains an empty JSON object, `{}`.\nFor an example, see\n[List\nmessages](https: //developers.google.com/workspace/chat/api/guides/v1/messages/list).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
       "file": "Client/ListMessages/main.go",
       "language": "GO",
       "clientMethod": {
@@ -885,7 +885,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_ListReactions_sync",
       "title": "chat ListReactions Sample",
-      "description": "ListReactions lists reactions to a message. For an example, see\n[List reactions for a\nmessage](https: //developers.google.com/workspace/chat/list-reactions).\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "ListReactions lists reactions to a message. For an example, see\n[List reactions for a\nmessage](https: //developers.google.com/workspace/chat/list-reactions).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
       "file": "Client/ListReactions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -977,7 +977,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_ListSpaces_sync",
       "title": "chat ListSpaces Sample",
-      "description": "ListSpaces lists spaces the caller is a member of. Group chats and DMs aren't listed\nuntil the first message is sent. For an example, see\n[List\nspaces](https: //developers.google.com/workspace/chat/list-spaces).\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\n\nLists spaces visible to the caller or authenticated user. Group chats\nand DMs aren't listed until the first message is sent.\n\nTo list all named spaces by Google Workspace organization, use the\n[`spaces.search()`](https: //developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)\nmethod using Workspace administrator privileges instead.",
+      "description": "ListSpaces lists spaces the caller is a member of. Group chats and DMs aren't listed\nuntil the first message is sent. For an example, see\n[List\nspaces](https: //developers.google.com/workspace/chat/list-spaces).\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\n\nTo list all named spaces by Google Workspace organization, use the\n[`spaces.search()`](https: //developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)\nmethod using Workspace administrator privileges instead.",
       "file": "Client/ListSpaces/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1023,7 +1023,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_SearchSpaces_sync",
       "title": "chat SearchSpaces Sample",
-      "description": "SearchSpaces returns a list of spaces in a Google Workspace organization based on an\nadministrator's search. Requires [user\nauthentication with administrator\nprivileges](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges).\nIn the request, set `use_admin_access` to `true`.",
+      "description": "SearchSpaces returns a list of spaces in a Google Workspace organization based on an\nadministrator's search.\n\nRequires [user\nauthentication with administrator\nprivileges](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges).\nIn the request, set `use_admin_access` to `true`.",
       "file": "Client/SearchSpaces/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1115,7 +1115,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_UpdateMembership_sync",
       "title": "chat UpdateMembership Sample",
-      "description": "UpdateMembership updates a membership. For an example, see [Update a user's membership in\na space](https: //developers.google.com/workspace/chat/update-members).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "UpdateMembership updates a membership. For an example, see [Update a user's membership in\na space](https: //developers.google.com/workspace/chat/update-members).\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nwith [administrator approval](https: //support.google.com/a?p=chat-app-auth)\nin [Developer Preview](https: //developers.google.com/workspace/preview)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nYou can authenticate and authorize this method with administrator\nprivileges by setting the `use_admin_access` field in the request.",
       "file": "Client/UpdateMembership/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1161,7 +1161,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_UpdateMessage_sync",
       "title": "chat UpdateMessage Sample",
-      "description": "UpdateMessage updates a message. There's a difference between the `patch` and `update`\nmethods. The `patch`\nmethod uses a `patch` request while the `update` method uses a `put`\nrequest. We recommend using the `patch` method. For an example, see\n[Update a\nmessage](https: //developers.google.com/workspace/chat/update-messages).\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\nWhen using app authentication, requests can only update messages\ncreated by the calling Chat app.",
+      "description": "UpdateMessage updates a message. There's a difference between the `patch` and `update`\nmethods. The `patch`\nmethod uses a `patch` request while the `update` method uses a `put`\nrequest. We recommend using the `patch` method. For an example, see\n[Update a\nmessage](https: //developers.google.com/workspace/chat/update-messages).\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\n\nWhen using app authentication, requests can only update messages\ncreated by the calling Chat app.",
       "file": "Client/UpdateMessage/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1207,7 +1207,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_UpdateSpace_sync",
       "title": "chat UpdateSpace Sample",
-      "description": "UpdateSpace updates a space. For an example, see\n[Update a\nspace](https: //developers.google.com/workspace/chat/update-spaces).\n\nIf you're updating the `displayName` field and receive the error message\n`ALREADY_EXISTS`, try a different display name.. An existing space within\nthe Google Workspace organization might already use this display name.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "description": "UpdateSpace updates a space. For an example, see\n[Update a\nspace](https: //developers.google.com/workspace/chat/update-spaces).\n\nIf you're updating the `displayName` field and receive the error message\n`ALREADY_EXISTS`, try a different display name.. An existing space within\nthe Google Workspace organization might already use this display name.\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [App\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nwith [administrator approval](https: //support.google.com/a?p=chat-app-auth)\nin [Developer Preview](https: //developers.google.com/workspace/preview)\n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nYou can authenticate and authorize this method with administrator\nprivileges by setting the `use_admin_access` field in the request.",
       "file": "Client/UpdateSpace/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1299,7 +1299,7 @@
     {
       "regionTag": "chat_v1_generated_ChatService_UploadAttachment_sync",
       "title": "chat UploadAttachment Sample",
-      "description": "UploadAttachment uploads an attachment. For an example, see\n[Upload media as a file\nattachment](https: //developers.google.com/workspace/chat/upload-media-attachments).\nRequires user\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\n\nYou can upload attachments up to 200 MB. Certain file types aren't\nsupported. For details, see [File types blocked by Google\nChat](https: //support.google.com/chat/answer/7651457?&co=GENIE.Platform%3DDesktop#File%20types%20blocked%20in%20Google%20Chat).",
+      "description": "UploadAttachment uploads an attachment. For an example, see\n[Upload media as a file\nattachment](https: //developers.google.com/workspace/chat/upload-media-attachments).\n\nRequires user\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\n\nYou can upload attachments up to 200 MB. Certain file types aren't\nsupported. For details, see [File types blocked by Google\nChat](https: //support.google.com/chat/answer/7651457?&co=GENIE.Platform%3DDesktop#File%20types%20blocked%20in%20Google%20Chat).",
       "file": "Client/UploadAttachment/main.go",
       "language": "GO",
       "clientMethod": {
