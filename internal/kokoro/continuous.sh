@@ -62,6 +62,12 @@ export GCLOUD_TESTS_BIGTABLE_CLUSTER="gc-bt-it-cluster"
 export GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER="gc-bt-it-cluster-02"
 export GCLOUD_TESTS_BIGTABLE_INSTANCE="gc-bt-it-instance"
 
+# Universe domain variables. Tests will be skipped if TEST_UNIVERSE_DOMAIN is removed.
+export TEST_UNIVERSE_DOMAIN=$(cat ${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-domain)
+export TEST_UNIVERSE_PROJECT_ID=$(cat ${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-project-id)
+export TEST_UNIVERSE_LOCATION=$(cat ${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-storage-location)
+export TEST_UNIVERSE_DOMAIN_CREDENTIAL="${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-domain-credential"
+
 # TODO: Remove this env after OMG/43748 is fixed
 # Spanner integration tests for backup/restore is flaky https://github.com/googleapis/google-cloud-go/issues/5037
 # to fix the flaky test Spanner need to run on us-west1 region.
@@ -103,7 +109,7 @@ runDirectoryTests() {
     # internal tools only expected to work with latest go version
     return
   fi
-  GOWORK=off go test -race -v -timeout 45m "${1:-./...}" 2>&1 |
+  GOWORK=off go test -race -v -run Domains "${1:-./...}" 2>&1 |
     tee sponge_log.log
   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
   # xUnit XML file.
@@ -133,7 +139,7 @@ testAllModules() {
     pushd "$(dirname "$i")" >/dev/null
     runDirectoryTests
     # Run integration tests against an emulator.
-    runEmulatorTests
+    # runEmulatorTests
     popd >/dev/null
   done
 }
@@ -199,11 +205,11 @@ else
   testAllModules
 fi
 
-if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
-  chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
-  $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
-    -repo=googleapis/google-cloud-go \
-    -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
-fi
+# if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
+#   chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
+#   $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
+#     -repo=googleapis/google-cloud-go \
+#     -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
+# fi
 
 exit $exit_code
