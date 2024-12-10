@@ -15,6 +15,7 @@
 package gdch
 
 import (
+	"bytes"
 	"context"
 	"crypto"
 	"crypto/tls"
@@ -23,9 +24,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"os"
-	"strings"
 	"time"
 
 	"cloud.google.com/go/auth"
@@ -104,6 +103,14 @@ type gdchProvider struct {
 	client *http.Client
 }
 
+type tokenRequest struct {
+	GrantType    string `json:"grant_type"`
+	Audience     string `json:"audience"`
+	SubjectToken string `json:"subject_token"`
+	SubjectType  string `json:"subject_token_type"`
+	TokenType    string `json:"requested_token_type"`
+}
+
 func (g gdchProvider) Token(ctx context.Context) (*auth.Token, error) {
 	addCertToTransport(g.client, g.certPool)
 	iat := time.Now()
@@ -116,7 +123,7 @@ func (g gdchProvider) Token(ctx context.Context) (*auth.Token, error) {
 		Exp: exp.Unix(),
 	}
 	h := jwt.Header{
-		Algorithm: jwt.HeaderAlgRSA256,
+		Algorithm: jwt.HeaderAlgES256,
 		Type:      jwt.HeaderType,
 		KeyID:     string(g.pkID),
 	}
@@ -124,18 +131,23 @@ func (g gdchProvider) Token(ctx context.Context) (*auth.Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	v := url.Values{}
-	v.Set("grant_type", GrantType)
-	v.Set("audience", g.aud)
-	v.Set("requested_token_type", requestTokenType)
-	v.Set("subject_token", payload)
-	v.Set("subject_token_type", subjectTokenType)
-
-	req, err := http.NewRequestWithContext(ctx, "POST", g.tokenURL, strings.NewReader(v.Encode()))
+	tokReq := &tokenRequest{
+		GrantType:    GrantType,
+		Audience:     g.aud,
+		SubjectToken: payload,
+		SubjectType:  subjectTokenType,
+		TokenType:    requestTokenType,
+	}
+	b, err := json.Marshal(tokReq)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	req, err := http.NewRequestWithContext(ctx, "POST", g.tokenURL, bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
 	resp, body, err := internal.DoRequest(g.client, req)
 	if err != nil {
 		return nil, fmt.Errorf("credentials: cannot fetch token: %w", err)

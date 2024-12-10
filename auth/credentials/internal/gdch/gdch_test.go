@@ -19,6 +19,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -44,10 +45,16 @@ func TestTokenProvider(t *testing.T) {
 		if r.Method != "POST" {
 			t.Errorf("unexpected request method: %v", r.Method)
 		}
-		if err := r.ParseForm(); err != nil {
-			t.Error(err)
+		b, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Fatal(err)
 		}
-		parts := strings.Split(r.FormValue("subject_token"), ".")
+		var tokReq tokenRequest
+		if err := json.Unmarshal(b, &tokReq); err != nil {
+			t.Fatal(err)
+		}
+
+		parts := strings.Split(tokReq.SubjectToken, ".")
 		var header jwt.Header
 		var claims jwt.Claims
 		b, err = base64.RawURLEncoding.DecodeString(parts[0])
@@ -65,10 +72,10 @@ func TestTokenProvider(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if got := r.FormValue("audience"); got != aud {
+		if got := tokReq.Audience; got != aud {
 			t.Errorf("got audience %v, want %v", got, GrantType)
 		}
-		if want := jwt.HeaderAlgRSA256; header.Algorithm != want {
+		if want := jwt.HeaderAlgES256; header.Algorithm != want {
 			t.Errorf("got alg %q, want %q", header.Algorithm, want)
 		}
 		if want := jwt.HeaderType; header.Type != want {
