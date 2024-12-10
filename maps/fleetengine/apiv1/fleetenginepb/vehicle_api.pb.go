@@ -22,9 +22,6 @@ package fleetenginepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
@@ -37,6 +34,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1454,12 +1453,11 @@ type VehicleMatch struct {
 	VehicleTripsWaypoints []*Waypoint `protobuf:"bytes,7,rep,name=vehicle_trips_waypoints,json=vehicleTripsWaypoints,proto3" json:"vehicle_trips_waypoints,omitempty"`
 	// Type of the vehicle match.
 	VehicleMatchType VehicleMatch_VehicleMatchType `protobuf:"varint,8,opt,name=vehicle_match_type,json=vehicleMatchType,proto3,enum=maps.fleetengine.v1.VehicleMatch_VehicleMatchType" json:"vehicle_match_type,omitempty"`
-	// The order requested for sorting vehicle matches.
+	// The order requested for sorting vehicle matches. Equivalent to
+	// `ordered_by`.
 	RequestedOrderedBy SearchVehiclesRequest_VehicleMatchOrder `protobuf:"varint,9,opt,name=requested_ordered_by,json=requestedOrderedBy,proto3,enum=maps.fleetengine.v1.SearchVehiclesRequest_VehicleMatchOrder" json:"requested_ordered_by,omitempty"`
-	// The actual order that was used for this vehicle. Normally this
-	// will match the 'order_by' field from the request; however, in certain
-	// circumstances such as an internal server error, a different method
-	// may be used (such as `PICKUP_POINT_STRAIGHT_DISTANCE`).
+	// The order requested for sorting vehicle matches. Equivalent to
+	// `requested_ordered_by`.
 	OrderedBy SearchVehiclesRequest_VehicleMatchOrder `protobuf:"varint,10,opt,name=ordered_by,json=orderedBy,proto3,enum=maps.fleetengine.v1.SearchVehiclesRequest_VehicleMatchOrder" json:"ordered_by,omitempty"`
 }
 
