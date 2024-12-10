@@ -7,7 +7,7 @@
   "errorreporting": "0.3.2",
   "firestore": "1.17.0",
   "logging": "1.12.0",
-  "profiler": "0.4.1",
+  "profiler": "0.4.2",
   "pubsub": "1.45.3",
   "pubsublite": "1.8.2",
   "spanner": "1.73.0",
