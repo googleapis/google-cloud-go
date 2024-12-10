@@ -44,7 +44,7 @@ func ExampleInstanceGroupManagersClient_AggregatedList_all() {
 	}
 	for resp, err := range c.AggregatedList(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleInstanceGroupManagersClient_List_all() {
 	}
 	for resp, err := range c.List(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleInstanceGroupManagersClient_ListErrors_all() {
 	}
 	for resp, err := range c.ListErrors(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -122,7 +122,7 @@ func ExampleInstanceGroupManagersClient_ListManagedInstances_all() {
 	}
 	for resp, err := range c.ListManagedInstances(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -148,7 +148,7 @@ func ExampleInstanceGroupManagersClient_ListPerInstanceConfigs_all() {
 	}
 	for resp, err := range c.ListPerInstanceConfigs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

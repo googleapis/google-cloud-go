@@ -46,7 +46,7 @@ func ExampleJobClient_ListBatchPredictionJobs_all() {
 	}
 	for resp, err := range c.ListBatchPredictionJobs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -72,7 +72,7 @@ func ExampleJobClient_ListCustomJobs_all() {
 	}
 	for resp, err := range c.ListCustomJobs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -98,7 +98,7 @@ func ExampleJobClient_ListDataLabelingJobs_all() {
 	}
 	for resp, err := range c.ListDataLabelingJobs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -124,7 +124,7 @@ func ExampleJobClient_ListHyperparameterTuningJobs_all() {
 	}
 	for resp, err := range c.ListHyperparameterTuningJobs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -150,7 +150,7 @@ func ExampleJobClient_ListModelDeploymentMonitoringJobs_all() {
 	}
 	for resp, err := range c.ListModelDeploymentMonitoringJobs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -176,7 +176,7 @@ func ExampleJobClient_ListNasJobs_all() {
 	}
 	for resp, err := range c.ListNasJobs(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -202,7 +202,7 @@ func ExampleJobClient_ListNasTrialDetails_all() {
 	}
 	for resp, err := range c.ListNasTrialDetails(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -228,7 +228,7 @@ func ExampleJobClient_SearchModelDeploymentMonitoringStatsAnomalies_all() {
 	}
 	for resp, err := range c.SearchModelDeploymentMonitoringStatsAnomalies(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -254,7 +254,7 @@ func ExampleJobClient_ListLocations_all() {
 	}
 	for resp, err := range c.ListLocations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -280,7 +280,7 @@ func ExampleJobClient_ListOperations_all() {
 	}
 	for resp, err := range c.ListOperations(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

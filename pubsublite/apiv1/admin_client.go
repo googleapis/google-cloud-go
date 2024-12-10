@@ -19,6 +19,7 @@ package pubsublite
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 	"time"
@@ -659,6 +660,8 @@ type adminGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewAdminClient creates a new admin service client based on gRPC.
@@ -686,6 +689,7 @@ func NewAdminClient(ctx context.Context, opts ...option.ClientOption) (*AdminCli
 		connPool:         connPool,
 		adminClient:      pubsublitepb.NewAdminServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -740,7 +744,7 @@ func (c *adminGRPCClient) CreateTopic(ctx context.Context, req *pubsublitepb.Cre
 	var resp *pubsublitepb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.CreateTopic(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.CreateTopic, req, settings.GRPC, c.logger, "CreateTopic")
 		return err
 	}, opts...)
 	if err != nil {
@@ -758,7 +762,7 @@ func (c *adminGRPCClient) GetTopic(ctx context.Context, req *pubsublitepb.GetTop
 	var resp *pubsublitepb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.GetTopic(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.GetTopic, req, settings.GRPC, c.logger, "GetTopic")
 		return err
 	}, opts...)
 	if err != nil {
@@ -776,7 +780,7 @@ func (c *adminGRPCClient) GetTopicPartitions(ctx context.Context, req *pubsublit
 	var resp *pubsublitepb.TopicPartitions
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.GetTopicPartitions(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.GetTopicPartitions, req, settings.GRPC, c.logger, "GetTopicPartitions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -805,7 +809,7 @@ func (c *adminGRPCClient) ListTopics(ctx context.Context, req *pubsublitepb.List
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.adminClient.ListTopics(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.adminClient.ListTopics, req, settings.GRPC, c.logger, "ListTopics")
 			return err
 		}, opts...)
 		if err != nil {
@@ -840,7 +844,7 @@ func (c *adminGRPCClient) UpdateTopic(ctx context.Context, req *pubsublitepb.Upd
 	var resp *pubsublitepb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.UpdateTopic(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.UpdateTopic, req, settings.GRPC, c.logger, "UpdateTopic")
 		return err
 	}, opts...)
 	if err != nil {
@@ -857,7 +861,7 @@ func (c *adminGRPCClient) DeleteTopic(ctx context.Context, req *pubsublitepb.Del
 	opts = append((*c.CallOptions).DeleteTopic[0:len((*c.CallOptions).DeleteTopic):len((*c.CallOptions).DeleteTopic)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.adminClient.DeleteTopic(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.adminClient.DeleteTopic, req, settings.GRPC, c.logger, "DeleteTopic")
 		return err
 	}, opts...)
 	return err
@@ -883,7 +887,7 @@ func (c *adminGRPCClient) ListTopicSubscriptions(ctx context.Context, req *pubsu
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.adminClient.ListTopicSubscriptions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.adminClient.ListTopicSubscriptions, req, settings.GRPC, c.logger, "ListTopicSubscriptions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -918,7 +922,7 @@ func (c *adminGRPCClient) CreateSubscription(ctx context.Context, req *pubsublit
 	var resp *pubsublitepb.Subscription
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.CreateSubscription(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.CreateSubscription, req, settings.GRPC, c.logger, "CreateSubscription")
 		return err
 	}, opts...)
 	if err != nil {
@@ -936,7 +940,7 @@ func (c *adminGRPCClient) GetSubscription(ctx context.Context, req *pubsublitepb
 	var resp *pubsublitepb.Subscription
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.GetSubscription(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.GetSubscription, req, settings.GRPC, c.logger, "GetSubscription")
 		return err
 	}, opts...)
 	if err != nil {
@@ -965,7 +969,7 @@ func (c *adminGRPCClient) ListSubscriptions(ctx context.Context, req *pubsublite
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.adminClient.ListSubscriptions(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.adminClient.ListSubscriptions, req, settings.GRPC, c.logger, "ListSubscriptions")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1000,7 +1004,7 @@ func (c *adminGRPCClient) UpdateSubscription(ctx context.Context, req *pubsublit
 	var resp *pubsublitepb.Subscription
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.UpdateSubscription(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.UpdateSubscription, req, settings.GRPC, c.logger, "UpdateSubscription")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1017,7 +1021,7 @@ func (c *adminGRPCClient) DeleteSubscription(ctx context.Context, req *pubsublit
 	opts = append((*c.CallOptions).DeleteSubscription[0:len((*c.CallOptions).DeleteSubscription):len((*c.CallOptions).DeleteSubscription)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.adminClient.DeleteSubscription(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.adminClient.DeleteSubscription, req, settings.GRPC, c.logger, "DeleteSubscription")
 		return err
 	}, opts...)
 	return err
@@ -1032,7 +1036,7 @@ func (c *adminGRPCClient) SeekSubscription(ctx context.Context, req *pubsublitep
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.SeekSubscription(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.SeekSubscription, req, settings.GRPC, c.logger, "SeekSubscription")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1052,7 +1056,7 @@ func (c *adminGRPCClient) CreateReservation(ctx context.Context, req *pubsublite
 	var resp *pubsublitepb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.CreateReservation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.CreateReservation, req, settings.GRPC, c.logger, "CreateReservation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1070,7 +1074,7 @@ func (c *adminGRPCClient) GetReservation(ctx context.Context, req *pubsublitepb.
 	var resp *pubsublitepb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.GetReservation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.GetReservation, req, settings.GRPC, c.logger, "GetReservation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1099,7 +1103,7 @@ func (c *adminGRPCClient) ListReservations(ctx context.Context, req *pubsublitep
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.adminClient.ListReservations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.adminClient.ListReservations, req, settings.GRPC, c.logger, "ListReservations")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1134,7 +1138,7 @@ func (c *adminGRPCClient) UpdateReservation(ctx context.Context, req *pubsublite
 	var resp *pubsublitepb.Reservation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.adminClient.UpdateReservation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.adminClient.UpdateReservation, req, settings.GRPC, c.logger, "UpdateReservation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1151,7 +1155,7 @@ func (c *adminGRPCClient) DeleteReservation(ctx context.Context, req *pubsublite
 	opts = append((*c.CallOptions).DeleteReservation[0:len((*c.CallOptions).DeleteReservation):len((*c.CallOptions).DeleteReservation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.adminClient.DeleteReservation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.adminClient.DeleteReservation, req, settings.GRPC, c.logger, "DeleteReservation")
 		return err
 	}, opts...)
 	return err
@@ -1177,7 +1181,7 @@ func (c *adminGRPCClient) ListReservationTopics(ctx context.Context, req *pubsub
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.adminClient.ListReservationTopics(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.adminClient.ListReservationTopics, req, settings.GRPC, c.logger, "ListReservationTopics")
 			return err
 		}, opts...)
 		if err != nil {
@@ -1211,7 +1215,7 @@ func (c *adminGRPCClient) CancelOperation(ctx context.Context, req *longrunningp
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
 		return err
 	}, opts...)
 	return err
@@ -1225,7 +1229,7 @@ func (c *adminGRPCClient) DeleteOperation(ctx context.Context, req *longrunningp
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
 		return err
 	}, opts...)
 	return err
@@ -1240,7 +1244,7 @@ func (c *adminGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1269,7 +1273,7 @@ func (c *adminGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
 			return err
 		}, opts...)
 		if err != nil {

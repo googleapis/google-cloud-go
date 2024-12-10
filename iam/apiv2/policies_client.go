@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,7 +31,6 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -339,6 +338,8 @@ type policiesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewPoliciesClient creates a new policies client based on gRPC.
@@ -365,6 +366,7 @@ func NewPoliciesClient(ctx context.Context, opts ...option.ClientOption) (*Polic
 		connPool:         connPool,
 		policiesClient:   iampb.NewPoliciesClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -428,6 +430,8 @@ type policiesRESTClient struct {
 
 	// Points back to the CallOptions field of the containing PoliciesClient
 	CallOptions **PoliciesCallOptions
+
+	logger *slog.Logger
 }
 
 // NewPoliciesRESTClient creates a new policies rest client.
@@ -445,6 +449,7 @@ func NewPoliciesRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -518,7 +523,7 @@ func (c *policiesGRPCClient) ListPolicies(ctx context.Context, req *iampb.ListPo
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.policiesClient.ListPolicies(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.policiesClient.ListPolicies, req, settings.GRPC, c.logger, "ListPolicies")
 			return err
 		}, opts...)
 		if err != nil {
@@ -553,7 +558,7 @@ func (c *policiesGRPCClient) GetPolicy(ctx context.Context, req *iampb.GetPolicy
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policiesClient.GetPolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policiesClient.GetPolicy, req, settings.GRPC, c.logger, "GetPolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -571,7 +576,7 @@ func (c *policiesGRPCClient) CreatePolicy(ctx context.Context, req *iampb.Create
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policiesClient.CreatePolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policiesClient.CreatePolicy, req, settings.GRPC, c.logger, "CreatePolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -591,7 +596,7 @@ func (c *policiesGRPCClient) UpdatePolicy(ctx context.Context, req *iampb.Update
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policiesClient.UpdatePolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policiesClient.UpdatePolicy, req, settings.GRPC, c.logger, "UpdatePolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -611,7 +616,7 @@ func (c *policiesGRPCClient) DeletePolicy(ctx context.Context, req *iampb.Delete
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.policiesClient.DeletePolicy(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.policiesClient.DeletePolicy, req, settings.GRPC, c.logger, "DeletePolicy")
 		return err
 	}, opts...)
 	if err != nil {
@@ -631,7 +636,7 @@ func (c *policiesGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -689,21 +694,10 @@ func (c *policiesRESTClient) ListPolicies(ctx context.Context, req *iampb.ListPo
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListPolicies")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}
@@ -766,17 +760,7 @@ func (c *policiesRESTClient) GetPolicy(ctx context.Context, req *iampb.GetPolicy
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPolicy")
 		if err != nil {
 			return err
 		}
@@ -835,21 +819,10 @@ func (c *policiesRESTClient) CreatePolicy(ctx context.Context, req *iampb.Create
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreatePolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -918,21 +891,10 @@ func (c *policiesRESTClient) UpdatePolicy(ctx context.Context, req *iampb.Update
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdatePolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -985,21 +947,10 @@ func (c *policiesRESTClient) DeletePolicy(ctx context.Context, req *iampb.Delete
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeletePolicy")
 		if err != nil {
 			return err
 		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
 		if err := unm.Unmarshal(buf, resp); err != nil {
 			return err
 		}
@@ -1050,17 +1001,7 @@ func (c *policiesRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}

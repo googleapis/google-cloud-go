@@ -44,7 +44,7 @@ func ExampleAnalyticsAdminClient_ListAccessBindings_all() {
 	}
 	for resp, err := range c.ListAccessBindings(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -70,7 +70,7 @@ func ExampleAnalyticsAdminClient_ListAccountSummaries_all() {
 	}
 	for resp, err := range c.ListAccountSummaries(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -96,7 +96,7 @@ func ExampleAnalyticsAdminClient_ListAccounts_all() {
 	}
 	for resp, err := range c.ListAccounts(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -122,7 +122,7 @@ func ExampleAnalyticsAdminClient_ListAdSenseLinks_all() {
 	}
 	for resp, err := range c.ListAdSenseLinks(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -148,7 +148,7 @@ func ExampleAnalyticsAdminClient_ListAudiences_all() {
 	}
 	for resp, err := range c.ListAudiences(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -174,7 +174,7 @@ func ExampleAnalyticsAdminClient_ListBigQueryLinks_all() {
 	}
 	for resp, err := range c.ListBigQueryLinks(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -200,7 +200,7 @@ func ExampleAnalyticsAdminClient_ListCalculatedMetrics_all() {
 	}
 	for resp, err := range c.ListCalculatedMetrics(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -226,7 +226,7 @@ func ExampleAnalyticsAdminClient_ListChannelGroups_all() {
 	}
 	for resp, err := range c.ListChannelGroups(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -252,7 +252,7 @@ func ExampleAnalyticsAdminClient_ListConversionEvents_all() {
 	}
 	for resp, err := range c.ListConversionEvents(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -278,7 +278,7 @@ func ExampleAnalyticsAdminClient_ListCustomDimensions_all() {
 	}
 	for resp, err := range c.ListCustomDimensions(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -304,7 +304,7 @@ func ExampleAnalyticsAdminClient_ListCustomMetrics_all() {
 	}
 	for resp, err := range c.ListCustomMetrics(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -330,7 +330,7 @@ func ExampleAnalyticsAdminClient_ListDataStreams_all() {
 	}
 	for resp, err := range c.ListDataStreams(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -356,7 +356,7 @@ func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinkProposals_all(
 	}
 	for resp, err := range c.ListDisplayVideo360AdvertiserLinkProposals(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -382,7 +382,7 @@ func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinks_all() {
 	}
 	for resp, err := range c.ListDisplayVideo360AdvertiserLinks(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -408,7 +408,7 @@ func ExampleAnalyticsAdminClient_ListEventCreateRules_all() {
 	}
 	for resp, err := range c.ListEventCreateRules(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -434,7 +434,7 @@ func ExampleAnalyticsAdminClient_ListEventEditRules_all() {
 	}
 	for resp, err := range c.ListEventEditRules(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -460,7 +460,7 @@ func ExampleAnalyticsAdminClient_ListExpandedDataSets_all() {
 	}
 	for resp, err := range c.ListExpandedDataSets(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -486,7 +486,7 @@ func ExampleAnalyticsAdminClient_ListFirebaseLinks_all() {
 	}
 	for resp, err := range c.ListFirebaseLinks(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -512,7 +512,7 @@ func ExampleAnalyticsAdminClient_ListGoogleAdsLinks_all() {
 	}
 	for resp, err := range c.ListGoogleAdsLinks(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -538,7 +538,7 @@ func ExampleAnalyticsAdminClient_ListKeyEvents_all() {
 	}
 	for resp, err := range c.ListKeyEvents(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -564,7 +564,7 @@ func ExampleAnalyticsAdminClient_ListMeasurementProtocolSecrets_all() {
 	}
 	for resp, err := range c.ListMeasurementProtocolSecrets(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -590,7 +590,7 @@ func ExampleAnalyticsAdminClient_ListProperties_all() {
 	}
 	for resp, err := range c.ListProperties(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -616,7 +616,7 @@ func ExampleAnalyticsAdminClient_ListRollupPropertySourceLinks_all() {
 	}
 	for resp, err := range c.ListRollupPropertySourceLinks(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -642,7 +642,7 @@ func ExampleAnalyticsAdminClient_ListSKAdNetworkConversionValueSchemas_all() {
 	}
 	for resp, err := range c.ListSKAdNetworkConversionValueSchemas(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -668,7 +668,7 @@ func ExampleAnalyticsAdminClient_ListSearchAds360Links_all() {
 	}
 	for resp, err := range c.ListSearchAds360Links(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -694,7 +694,7 @@ func ExampleAnalyticsAdminClient_ListSubpropertyEventFilters_all() {
 	}
 	for resp, err := range c.ListSubpropertyEventFilters(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -720,7 +720,7 @@ func ExampleAnalyticsAdminClient_SearchChangeHistoryEvents_all() {
 	}
 	for resp, err := range c.SearchChangeHistoryEvents(ctx, req).All() {
 		if err != nil {
-			// TODO: Handle error.
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
 		}
 		// TODO: Use resp.
 		_ = resp

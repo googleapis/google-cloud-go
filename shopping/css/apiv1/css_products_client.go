@@ -19,7 +19,7 @@ package css
 import (
 	"context"
 	"fmt"
-	"io"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -27,7 +27,6 @@ import (
 
 	csspb "cloud.google.com/go/shopping/css/apiv1/csspb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -196,6 +195,8 @@ type cssProductsGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewCssProductsClient creates a new css products service client based on gRPC.
@@ -223,6 +224,7 @@ func NewCssProductsClient(ctx context.Context, opts ...option.ClientOption) (*Cs
 		connPool:          connPool,
 		cssProductsClient: csspb.NewCssProductsServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
+		logger:            internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -269,6 +271,8 @@ type cssProductsRESTClient struct {
 
 	// Points back to the CallOptions field of the containing CssProductsClient
 	CallOptions **CssProductsCallOptions
+
+	logger *slog.Logger
 }
 
 // NewCssProductsRESTClient creates a new css products service rest client.
@@ -287,6 +291,7 @@ func NewCssProductsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -339,7 +344,7 @@ func (c *cssProductsGRPCClient) GetCssProduct(ctx context.Context, req *csspb.Ge
 	var resp *csspb.CssProduct
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.cssProductsClient.GetCssProduct(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.cssProductsClient.GetCssProduct, req, settings.GRPC, c.logger, "GetCssProduct")
 		return err
 	}, opts...)
 	if err != nil {
@@ -368,7 +373,7 @@ func (c *cssProductsGRPCClient) ListCssProducts(ctx context.Context, req *csspb.
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.cssProductsClient.ListCssProducts(ctx, req, settings.GRPC...)
+			resp, err = executeRPC(ctx, c.cssProductsClient.ListCssProducts, req, settings.GRPC, c.logger, "ListCssProducts")
 			return err
 		}, opts...)
 		if err != nil {
@@ -429,17 +434,7 @@ func (c *cssProductsRESTClient) GetCssProduct(ctx context.Context, req *csspb.Ge
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCssProduct")
 		if err != nil {
 			return err
 		}
@@ -507,21 +502,10 @@ func (c *cssProductsRESTClient) ListCssProducts(ctx context.Context, req *csspb.
 			}
 			httpReq.Header = headers
 
-			httpRsp, err := c.httpClient.Do(httpReq)
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListCssProducts")
 			if err != nil {
 				return err
 			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
 			if err := unm.Unmarshal(buf, resp); err != nil {
 				return err
 			}

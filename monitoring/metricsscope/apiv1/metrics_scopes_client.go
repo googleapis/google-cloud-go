@@ -19,6 +19,7 @@ package metricsscope
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"net/url"
 
@@ -176,6 +177,8 @@ type metricsScopesGRPCClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewMetricsScopesClient creates a new metrics scopes client based on gRPC.
@@ -203,6 +206,7 @@ func NewMetricsScopesClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		metricsScopesClient: metricsscopepb.NewMetricsScopesClient(connPool),
 		CallOptions:         &client.CallOptions,
+		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
 
@@ -256,7 +260,7 @@ func (c *metricsScopesGRPCClient) GetMetricsScope(ctx context.Context, req *metr
 	var resp *metricsscopepb.MetricsScope
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricsScopesClient.GetMetricsScope(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricsScopesClient.GetMetricsScope, req, settings.GRPC, c.logger, "GetMetricsScope")
 		return err
 	}, opts...)
 	if err != nil {
@@ -271,7 +275,7 @@ func (c *metricsScopesGRPCClient) ListMetricsScopesByMonitoredProject(ctx contex
 	var resp *metricsscopepb.ListMetricsScopesByMonitoredProjectResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricsScopesClient.ListMetricsScopesByMonitoredProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricsScopesClient.ListMetricsScopesByMonitoredProject, req, settings.GRPC, c.logger, "ListMetricsScopesByMonitoredProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -289,7 +293,7 @@ func (c *metricsScopesGRPCClient) CreateMonitoredProject(ctx context.Context, re
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricsScopesClient.CreateMonitoredProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricsScopesClient.CreateMonitoredProject, req, settings.GRPC, c.logger, "CreateMonitoredProject")
 		return err
 	}, opts...)
 	if err != nil {
@@ -309,7 +313,7 @@ func (c *metricsScopesGRPCClient) DeleteMonitoredProject(ctx context.Context, re
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.metricsScopesClient.DeleteMonitoredProject(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.metricsScopesClient.DeleteMonitoredProject, req, settings.GRPC, c.logger, "DeleteMonitoredProject")
 		return err
 	}, opts...)
 	if err != nil {
