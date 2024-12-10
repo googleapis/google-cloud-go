@@ -357,6 +357,12 @@ func (it *NetworkIterator) All() iter.Seq2[*computepb.Network, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *NetworkProfileIterator) All() iter.Seq2[*computepb.NetworkProfile, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *NodeGroupIterator) All() iter.Seq2[*computepb.NodeGroup, error] {
 	return iterator.RangeAdapter(it.Next)
 }
