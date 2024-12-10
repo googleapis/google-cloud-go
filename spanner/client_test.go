@@ -5028,6 +5028,7 @@ func transactionOptionsTestCases() []TransactionOptionsTestCase {
 }
 
 func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T) {
+	t.Skip("open census spans are no longer exported by gapics")
 	// This test cannot be parallel, as the TestExporter does not support that.
 	te := itestutil.NewTestExporter()
 	defer te.Unregister()
@@ -5072,6 +5073,7 @@ func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T)
 }
 
 func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
+	t.Skip("open census spans are no longer exported by gapics")
 	// This test cannot be parallel, as the TestExporter does not support that.
 	te := itestutil.NewTestExporter()
 	defer te.Unregister()
@@ -5902,6 +5904,7 @@ func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
 	}
 }
 func TestClient_BatchWrite_SpanExported(t *testing.T) {
+	t.Skip("open census spans are no longer exported by gapics")
 	testcases := []struct {
 		name   string
 		code   codes.Code
