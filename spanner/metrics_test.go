@@ -112,7 +112,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		desc                   string
 		config                 ClientConfig
 		wantBuiltinEnabled     bool
-		setEmulator            bool
+		runOnlyInEmulator      bool
 		wantCreateTSCallsCount int // No. of CreateTimeSeries calls
 		wantMethods            []string
 		wantOTELValue          map[string]map[string]int64
@@ -141,15 +141,16 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			},
 		},
 		{
-			desc:        "should not create instruments when SPANNER_EMULATOR_HOST is set",
-			config:      ClientConfig{},
-			setEmulator: true,
+			desc:               "should not create instruments when SPANNER_EMULATOR_HOST is set",
+			config:             ClientConfig{},
+			runOnlyInEmulator:  true,
+			wantBuiltinEnabled: false,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			if test.setEmulator && isEmulatorEnvSet() == false {
-				t.Skip("Skipping test as SPANNER_EMULATOR_HOST is not set")
+			if test.runOnlyInEmulator && !isEmulatorEnvSet() {
+				t.Skip("Skipping test that should only run in emulator")
 			}
 			server, client, teardown := setupMockedTestServerWithConfig(t, test.config)
 			defer teardown()
