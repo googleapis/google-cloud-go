@@ -51,6 +51,7 @@ type RegionSecurityPoliciesCallOptions struct {
 	Patch      []gax.CallOption
 	PatchRule  []gax.CallOption
 	RemoveRule []gax.CallOption
+	SetLabels  []gax.CallOption
 }
 
 func defaultRegionSecurityPoliciesRESTCallOptions() *RegionSecurityPoliciesCallOptions {
@@ -109,6 +110,9 @@ func defaultRegionSecurityPoliciesRESTCallOptions() *RegionSecurityPoliciesCallO
 		RemoveRule: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		SetLabels: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -126,6 +130,7 @@ type internalRegionSecurityPoliciesClient interface {
 	Patch(context.Context, *computepb.PatchRegionSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
 	PatchRule(context.Context, *computepb.PatchRuleRegionSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
 	RemoveRule(context.Context, *computepb.RemoveRuleRegionSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
+	SetLabels(context.Context, *computepb.SetLabelsRegionSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // RegionSecurityPoliciesClient is a client for interacting with Google Compute Engine API.
@@ -206,6 +211,11 @@ func (c *RegionSecurityPoliciesClient) PatchRule(ctx context.Context, req *compu
 // RemoveRule deletes a rule at the specified priority.
 func (c *RegionSecurityPoliciesClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveRule(ctx, req, opts...)
+}
+
+// SetLabels sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+func (c *RegionSecurityPoliciesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -931,6 +941,83 @@ func (c *regionSecurityPoliciesRESTClient) RemoveRule(ctx context.Context, req *
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
+}
+
+// SetLabels sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+func (c *regionSecurityPoliciesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetRegionSetLabelsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies/%v/setLabels", req.GetProject(), req.GetRegion(), req.GetResource())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}
