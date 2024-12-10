@@ -119,8 +119,10 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		wantOTELMetrics        map[string][]string
 	}{
 		{
-			desc:                   "should create a new tracer factory with default meter provider",
-			config:                 ClientConfig{},
+			desc:              "should create a new tracer factory with default meter provider",
+			runOnlyInEmulator: isEmulatorEnvSet(),
+			config:            ClientConfig{},
+
 			wantBuiltinEnabled:     true,
 			wantCreateTSCallsCount: 2,
 			wantMethods:            []string{createSessionRPC, "Spanner.StreamingRead"},
@@ -142,14 +144,14 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		},
 		{
 			desc:               "should not create instruments when SPANNER_EMULATOR_HOST is set",
+			runOnlyInEmulator:  !isEmulatorEnvSet(),
 			config:             ClientConfig{},
-			runOnlyInEmulator:  true,
 			wantBuiltinEnabled: false,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			if test.runOnlyInEmulator && !isEmulatorEnvSet() {
+			if test.runOnlyInEmulator {
 				t.Skip("Skipping test that should only run in emulator")
 			}
 			server, client, teardown := setupMockedTestServerWithConfig(t, test.config)
